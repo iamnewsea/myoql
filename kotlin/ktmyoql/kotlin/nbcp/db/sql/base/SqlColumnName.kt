@@ -1,0 +1,83 @@
+package nbcp.db.sql
+
+import nbcp.base.extend.AsString
+import nbcp.base.extend.HasValue
+import nbcp.db.*
+import nbcp.db.sql.*
+import java.io.Serializable
+
+
+data class SqlColumnName(val dbType: DbType, var tableName: String, var name: String) : Serializable {
+    companion object {
+        fun of(name: String): SqlColumnName {
+            return SqlColumnName(DbType.Other,"", name)
+        }
+
+        fun of(dbType:DbType, name: String): SqlColumnName {
+            return SqlColumnName(dbType,"", name)
+        }
+    }
+
+    private var columnAliaValue: String = ""
+
+    open val fullName: String
+        get() {
+            if (this.tableName.HasValue) {
+                return "`${this.tableName}`.`${this.name}`"
+            }
+
+            //按常数列, 函数列,表达式来对待
+            return "${this.name}"
+        }
+
+    //用于 json 中的 key
+    //变量，必须是  #s_corp_name@
+    open val jsonKeyName: String
+        get() {
+            if (columnAliaValue.HasValue) return this.columnAliaValue
+
+            if (this.tableName.HasValue) {
+                return "${this.tableName}_${this.name}"
+            }
+
+            //按常数列, 函数列,表达式来对待
+            return "${this.name}"
+        }
+
+    fun alias(alias: String): SqlColumnName {
+        if (alias == this.name) {
+            this.columnAliaValue = ""
+            return this;
+        }
+
+        var ret = SqlColumnName(dbType, tableName, name);
+        ret.columnAliaValue = alias;
+        return ret;
+    }
+
+    //返回 columnAliaValue.AsString( name )
+    fun getAliasName(): String = this.columnAliaValue.AsString(this.name)
+
+    override fun toString(): String {
+        return name
+    }
+
+    override fun equals(other: Any?): Boolean {
+        //地址。
+        if (super.equals(other)) return true;
+
+        if (other == null) return false;
+        if (other is SqlColumnName) {
+            return this.dbType == other.dbType && this.tableName == other.tableName && this.name == other.name && this.columnAliaValue == other.columnAliaValue
+        }
+        return false;
+    }
+
+    fun toArray(): SqlColumnNames {
+        return SqlColumnNames(this);
+    }
+}
+
+fun List<SqlColumnName>.toArray() :SqlColumnNames{
+    return SqlColumnNames(*this.toTypedArray())
+}
