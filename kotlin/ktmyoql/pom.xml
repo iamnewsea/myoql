@@ -5,7 +5,7 @@
 
     <groupId>cn.dev8</groupId>
     <artifactId>ktmyoql</artifactId>
-    <version>${ktmyoql.version}</version>
+    <version>${parent.version}</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
@@ -20,7 +20,7 @@
     <parent>
         <groupId>cn.dev8</groupId>
         <artifactId>kotlin</artifactId>
-        <version>0.0.1</version>
+        <version>0.1.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -91,7 +91,7 @@
         <dependency>
             <groupId>cn.dev8</groupId>
             <artifactId>ktext</artifactId>
-            <version>${ktext.version}</version>
+            <version>${version}</version>
         </dependency>
         <!--<dependency>-->
         <!--<groupId>org.springframework.data</groupId>-->

@@ -5,7 +5,7 @@
 
     <groupId>cn.dev8</groupId>
     <artifactId>kotlin</artifactId>
-    <version>0.0.1</version>
+    <version>0.1.0</version>
     <packaging>pom</packaging>
     <name>kotlin-myoql-component</name>
 
@@ -41,9 +41,9 @@
         <spring.version>5.2.1.RELEASE</spring.version>
         <jackson.version>2.10.0</jackson.version>
 
-        <ktext.version>0.0.11</ktext.version>
-        <ktmyoql.version>0.0.9</ktmyoql.version>
-        <ktmvc.version>0.0.1</ktmvc.version>
+<!--        <ktext.version>0.0.11</ktext.version>-->
+<!--        <ktmyoql.version>0.0.9</ktmyoql.version>-->
+<!--        <ktmvc.version>0.0.1</ktmvc.version>-->
     </properties>
 
 
