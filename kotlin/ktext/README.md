@@ -116,10 +116,6 @@
 ## 其它
 - using ，在每个作用域里控制变量。
 
-# 发布
-> mvn clean package -Dmaven.test.skip=true
-
-> mvn clean deploy -P release
 
 
 # 使用

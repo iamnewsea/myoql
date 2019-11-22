@@ -5,7 +5,7 @@
 
     <groupId>cn.dev8</groupId>
     <artifactId>ktmvc</artifactId>
-    <version>0.0.1</version>
+    <version>${ktmvc.version</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
@@ -56,35 +56,35 @@
         </dependency>
 
     </dependencies>
-    <build>
-        <sourceDirectory>kotlin</sourceDirectory>
-        <plugins>
-            <plugin>
-                <artifactId>kotlin-maven-plugin</artifactId>
-                <version>${kotlin.version}</version>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <configuration>
-                    <jvmTarget>1.8</jvmTarget>
-                    <compilerPlugins>
-                        <plugin>spring</plugin>
-                    </compilerPlugins>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.jetbrains.kotlin</groupId>
-                        <artifactId>kotlin-maven-allopen</artifactId>
-                        <version>${kotlin.version}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+<!--    <build>-->
+<!--        <sourceDirectory>kotlin</sourceDirectory>-->
+<!--        <plugins>-->
+<!--            <plugin>-->
+<!--                <artifactId>kotlin-maven-plugin</artifactId>-->
+<!--                <version>${kotlin.version}</version>-->
+<!--                <groupId>org.jetbrains.kotlin</groupId>-->
+<!--                <configuration>-->
+<!--                    <jvmTarget>1.8</jvmTarget>-->
+<!--                    <compilerPlugins>-->
+<!--                        <plugin>spring</plugin>-->
+<!--                    </compilerPlugins>-->
+<!--                </configuration>-->
+<!--                <dependencies>-->
+<!--                    <dependency>-->
+<!--                        <groupId>org.jetbrains.kotlin</groupId>-->
+<!--                        <artifactId>kotlin-maven-allopen</artifactId>-->
+<!--                        <version>${kotlin.version}</version>-->
+<!--                    </dependency>-->
+<!--                </dependencies>-->
+<!--            </plugin>-->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-compiler-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    <source>1.8</source>-->
+<!--                    <target>1.8</target>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+<!--        </plugins>-->
+<!--    </build>-->
 </project>
