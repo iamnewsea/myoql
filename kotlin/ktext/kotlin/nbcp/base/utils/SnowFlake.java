@@ -6,13 +6,16 @@ import org.springframework.stereotype.Component;
 
 /**
  * Twitter的分布式自增ID雪花算法snowflake
+ * 需要配置：
+ * server.dataCenterId
+ * server.machineId
  **/
 @Component
 public class SnowFlake implements InitializingBean {
 
-    @Value("${shop.code.dataCenterId:1}")//数据中心
+    @Value("${server.dataCenterId:1}")//数据中心
             Integer dataCenterId;
-    @Value("${shop.code.machineId:1}")//机器标识
+    @Value("${server.machineId:1}")//机器标识
             Integer machineId;
 
     /**

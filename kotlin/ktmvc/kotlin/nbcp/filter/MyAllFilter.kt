@@ -26,8 +26,10 @@ import javax.servlet.http.HttpServletResponse
 /**
  * Created by udi on 2017.3.11.
  * 不拦截 GET,HEAD,OPTIONS 请求
+ * 需要配置 ：
+ * 1. server.filter.allowOrigins
+ * 2. server.filter.ignore-log-urls
  */
-
 @Order(Ordered.HIGHEST_PRECEDENCE)
 //@Configuration
 @WebFilter(urlPatterns = arrayOf("/*", "/**"))
@@ -41,9 +43,9 @@ open class MyAllFilter : Filter {
     override fun init(p0: FilterConfig?) {
     }
 
-    @Value("\${shop.filter.allowOrigins:}")
+    @Value("\${server.filter.allowOrigins:}")
     var allowOrigins: String = "";
-    @Value("\${shop.filter.ignore-log-urls:}")
+    @Value("\${server.filter.ignore-log-urls:}")
     var ignoreLogUrls: List<String> = listOf()
 //    @Value("\${server.session.cookie.name}")
 //    var cookieName = "";

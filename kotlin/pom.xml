@@ -5,7 +5,7 @@
 
     <groupId>cn.dev8</groupId>
     <artifactId>kotlin</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <packaging>pom</packaging>
     <name>kotlin-myoql-component</name>
 
@@ -265,4 +265,10 @@
             <timezone>+8</timezone>
         </developer>
     </developers>
+
+    <scm>
+        <connection>scm:git:git@gitee.com:imnewsea/myoql.git</connection>
+        <developerConnection>scm:git:git@gitee.com:imnewsea/myoql.git</developerConnection>
+        <url>https://gitee.com/imnewsea/myoql</url>
+    </scm>
 </project>
