@@ -37,6 +37,7 @@ def resetVersion(module,groupId,artifactId,version):
     dom = xml.dom.minidom.parse('pom.xml')
     root = dom.documentElement
 
+    vv_data = root.getElementsByTagName('version')[0].childNodes[0];
     mns = list(filter(lambda x: x.nodeType == 1, root.getElementsByTagName('parent')[0].childNodes));
     t_groupId= list(filter( lambda x: x.tagName == "groupId",mns ))[0].childNodes[0].data
     t_artifactId= list(filter( lambda x: x.tagName == "artifactId",mns))[0].childNodes[0].data
@@ -48,9 +49,7 @@ def resetVersion(module,groupId,artifactId,version):
     if t_artifactId != artifactId :
         return;
 
-    if t_version_data.data == version :
-        return;
-
+    vv_data.data = version
     t_version_data.data = version
 
     with open('pom.xml','w',encoding='UTF-8') as fh:

@@ -28,9 +28,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 /**
  * 使用 GET，SET 方式序列化JSON，应用在Web返回值的场景中。
  */
-@Component
-class GetSetTypeJsonMapper /*@JvmOverloads private constructor()*/
-    : ObjectMapper(), InitializingBean {
+class GetSetTypeJsonMapper : ObjectMapper() {
 
     init {
         // 设置输出时包含属性的风格
@@ -51,43 +49,22 @@ class GetSetTypeJsonMapper /*@JvmOverloads private constructor()*/
 
         // 设置输入时忽略在JSON字符串中存在但Java对象实际没有的属性
         this.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-        // 空值处理为空串
-//        this.serializerProvider.setNullValueSerializer(object : JsonSerializer<Any>() {
-//            @Throws(IOException::class, JsonProcessingException::class)
-//            override fun serialize(value: Any, jgen: JsonGenerator,
-//                                   provider: SerializerProvider) {
-//                jgen.writeString("")
-//            }
-//        })
-//
-//        this.serializerProvider.setDefaultKeySerializer(object : JsonSerializer<Any>() {
-//            @Throws(IOException::class, JsonProcessingException::class)
-//            override fun serialize(value: Any, jgen: JsonGenerator,
-//                                   provider: SerializerProvider) {
-//                jgen.writeString("")
-//            }
 //        })
         // 设置时区
         this.setTimeZone(TimeZone.getTimeZone("GMT+:08:00"))
 
         this.registerKotlinModule()
 
-//        this.setAnnotationIntrospector(MongoFieldSerializer())
+        this.registerModule(SpringUtil.getBean<JavascriptDateModule>());
     }
-
-    @Autowired
-    private lateinit var jsonModule: JavascriptDateModule
-
-    override fun afterPropertiesSet() {
-        this.registerModule(jsonModule);
-    }
-
 
     companion object {
         /**
          * 创建只输出非Null且非Empty(如List.isEmpty)的属性到Json字符串的Mapper,建议在外部接口中使用.
          */
-        val instance: GetSetTypeJsonMapper by lazy { SpringUtil.getBean<GetSetTypeJsonMapper>() }
+        val instance: GetSetTypeJsonMapper by lazy {
+            return@lazy GetSetTypeJsonMapper()
+        }
 
         internal val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

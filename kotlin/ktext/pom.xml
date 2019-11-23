@@ -3,7 +3,7 @@
 
     <groupId>cn.dev8</groupId>
     <artifactId>ktext</artifactId>
-    <version>${parent.version}</version>
+    <version>0.1.2</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
@@ -38,14 +38,13 @@
     <parent>
         <groupId>cn.dev8</groupId>
         <artifactId>kotlin</artifactId>
-        <version>0.1.1</version>
+        <version>0.1.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
 
 
     <dependencies>
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
