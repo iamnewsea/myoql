@@ -29,8 +29,9 @@ import org.springframework.context.annotation.Primary
 /**
  * 使用 字段值 方式序列化JSON，应用在数据库的场景中。
  */
-
-class FieldTypeJsonMapper : ObjectMapper() {
+@Primary
+@Component
+class FieldTypeJsonMapper : ObjectMapper(),InitializingBean {
     init {
         // 设置输出时包含属性的风格
         this.findAndRegisterModules();
@@ -55,7 +56,6 @@ class FieldTypeJsonMapper : ObjectMapper() {
         this.setTimeZone(TimeZone.getTimeZone("GMT+:08:00"))
 
         this.registerKotlinModule()
-        this.registerModule(SpringUtil.getBean<JavascriptDateModule>());
     }
 
 
@@ -64,12 +64,18 @@ class FieldTypeJsonMapper : ObjectMapper() {
         /**
          * 创建只输出非Null且非Empty(如List.isEmpty)的属性到Json字符串的Mapper,建议在外部接口中使用.
          */
-        val instance: FieldTypeJsonMapper by lazy {
-            var ret =  FieldTypeJsonMapper()
-            return@lazy ret
-        }
+        val instance: FieldTypeJsonMapper by lazy { SpringUtil.getBean<FieldTypeJsonMapper>() }
 
         internal val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    }
+
+
+    @Autowired
+    lateinit var  dateModule: JavascriptDateModule;
+
+    override fun afterPropertiesSet() {
+
+        this.registerModule(dateModule);
     }
 
 }
