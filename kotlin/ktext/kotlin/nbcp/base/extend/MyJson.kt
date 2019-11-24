@@ -26,7 +26,7 @@ import java.util.*
  * Created by udi on 17-5-23.
  */
 
-class RawJsonObject(value: String) :MyString(value){}
+class RawJsonObject(value: String) : MyString(value) {}
 
 @Component
 class RawJsonSerializer : JsonSerializer<RawJsonObject>() {
@@ -44,8 +44,11 @@ class RawJsonSerializer : JsonSerializer<RawJsonObject>() {
 }
 
 
-fun <T> T.ToJson(): String {
+fun <T> T.ToJson(getSetStyle: Boolean = false): String {
     if (this is String) return this;
+
+    var instance: ObjectMapper = if (getSetStyle) GetSetTypeJsonMapper.instance else FieldTypeJsonMapper.instance
+
     return FieldTypeJsonMapper.instance.writeValueAsString(this) ?: ""
 }
 
