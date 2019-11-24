@@ -262,6 +262,8 @@
             <roles>
                 <role>Project lead</role>
             </roles>
+            <url>https://gitee.com/imnewsea/myoql</url>
+            <organization></organization>
             <timezone>+8</timezone>
         </developer>
     </developers>
