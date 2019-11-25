@@ -14,3 +14,8 @@
 - server.filter.ignore-log-urls 表示哪些URL在请求过程中添加 LogScope.NoInfo 作用域。
 - server.dataCenterId 表示服务所在的数据中心Id，生成雪花算法时使用。
 - server.machineId 表示数据中心下属的服务器Id，生成雪花算法时使用。
+
+
+# 复制新项目
+
+
