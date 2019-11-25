@@ -24,7 +24,7 @@ def setWorkPath():
 def printHelp():
     print('''
 替换 xml 文件中的值。
-python reset_pom_value.py -f pom.xml所在路径（默认当前） -t xpath表达式 -v 新的值
+python reset_pom_value.py -f 根pom.xml所在路径（默认当前） -t xpath表达式 -v 新的值
 ''')
 
 def getArgs():
@@ -67,7 +67,7 @@ def check_same(module, groupId, artifactId):
     return True
 
 
-def getSubPoms():
+def getAllPoms():
     dom = etree.parse("pom.xml")
     nsmap = dom.getroot().nsmap[None]
 
@@ -88,7 +88,8 @@ def getSubPoms():
 
 
 def resetData(module, tag, value):
-    os.chdir(module);
+    if module:
+        os.chdir(module);
 
     dom = etree.parse("pom.xml")
     nsmap = dom.getroot().nsmap[None]
@@ -108,8 +109,6 @@ def resetData(module, tag, value):
 
 
 if __name__ == '__main__':
-    print("-------------------------------------------------------------------------------")
-    print(os.linesep)
 
     setWorkPath();
 
@@ -117,11 +116,17 @@ if __name__ == '__main__':
     if file:
         os.chdir(file)
 
-    subPoms = getSubPoms()
+
+    print("-------------------------------------------------------------------------------")
+    print(os.linesep)
+
+    subPoms = getAllPoms()
     for s in subPoms:
         resetData(s, tag, value)
         os.chdir("..")
 
+
+    resetData("",tag,value)
     print("")
     print("%s %s %s 设置完成！" % (file, tag, value))
     print("-------------------------------------------------------------------------------")
