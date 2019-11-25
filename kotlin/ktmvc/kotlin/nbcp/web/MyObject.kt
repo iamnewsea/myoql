@@ -82,58 +82,63 @@ val HttpServletRequest.IsOctetContent: Boolean
     }
 
 
+private fun _getClientIp(request: HttpServletRequest): String {
+    // 如果 X-Real-IP == remoteAddr 且不是局域网Ip，则返回。
+    var remoteAddr = request.remoteAddr
+    var realIp = request.getHeader("X-Real-IP") ?: "";
+    var forwardIps = (request.getHeader("X-Forwarded-For") ?: "")
+            .split(",")
+            .map { it.trim() }
+            .filter { it.HasValue && !it.VbSame("unknown") && !MyUtil.isLocalIp(it) }
+            .toList();
+
+
+    if (MyUtil.isLocalIp(realIp)) {
+        realIp = "";
+    }
+
+    //如果都没有设置，直接返回 remoteAddr.
+    if (!forwardIps.any() || realIp.isEmpty()) {
+        return remoteAddr
+    }
+
+    // 如果设置了 X-Real-IP
+    // 必须 = realIp
+    if (realIp.HasValue) {
+        return realIp;
+    }
+
+    //如果设置了 X-Forwarded-For
+    if (forwardIps.any()) {
+        return forwardIps[0];
+    }
+    return remoteAddr
+}
+
 /**
  * 获取客户端Ip，已缓存到 Request 对象。
- * 1. 先从 X-Forwarded-For 中取第一个有效Ip。
- * 2. 如果取不到，则按顺序获取Ip："X-Real-IP", "Proxy-Client-IP", "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR"
- * 3. 最后取 remoteAddr
+ * Nginx 应该在最外层， 设置 X-Real-IP 和 X-Forwarded-For.
+ * proxy_set_header X-Real-IP $remote_addr;
+ * proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+ * 如果没有设置 X-Real-IP 和 X-Forwarded-For，返回  remoteAddr
+ * 否则返回 X-Real-IP ， X-Forwarded-For
+ * 默认返回 remoteAddr
  */
 val HttpServletRequest.ClientIp: String
     get() {
         var clientIp = this.getAttribute("ClientIp").AsString()
-        if( clientIp.HasValue){
+        if (clientIp.HasValue) {
             return clientIp
         }
 
-        clientIp = this.getHeader("X-Forwarded-For") ?: ""
-        if (clientIp.VbSame("unknown")) {
-            clientIp = "";
-        }
+        clientIp = _getClientIp(this);
 
-        clientIp = clientIp.split(",").firstOrNull { o -> MyUtil.isLocalIp(o) == false } ?: ""
-
-        if (clientIp.isEmpty() == false) {
-            return clientIp;
-        }
-
-        var list = mutableListOf("X-Real-IP", "Proxy-Client-IP", "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR")
-//        if (list.contains(SystemContext.proxy_client_ip_header) == false) {
-//            list.add(SystemContext.proxy_client_ip_header)
-//        }
-
-        if (list.any {
-                    clientIp = this.getHeader(it) ?: "";
-                    if (clientIp.VbSame("unknown")) {
-                        clientIp = "";
-                    }
-
-                    if (clientIp.isEmpty() == false) {
-                        return@any true;
-                    }
-                    return@any false
-                }
-        ) {
-            return clientIp;
-        }
-
-
-        clientIp = this.remoteAddr
 
         if (clientIp == "0:0:0:0:0:0:0:1") {
             clientIp = "127.0.0.1"
         }
 
-        this.setAttribute("ClientIp",clientIp);
+        this.setAttribute("ClientIp", clientIp);
         return clientIp;
     }
 
