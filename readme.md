@@ -15,5 +15,10 @@
 - server.dataCenterId 表示服务所在的数据中心Id，生成雪花算法时使用。
 - server.machineId 表示数据中心下属的服务器Id，生成雪花算法时使用。
 
+# nginx 代理：
 
+```
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+```
 
