@@ -91,6 +91,7 @@ class ExcelComponent(var fileName: String) {
         return columnDataIndexs;
     }
 
+    //                        translateRowJson:((JsonMap)->Unit)? = null,
     fun<T> getDataTable(clazz:Class<T>, skip: Int = 0,
                      filter: ((JsonMap) -> Boolean)? = null): DataTable<T> {
         var dt = DataTable<T>()
@@ -106,6 +107,7 @@ class ExcelComponent(var fileName: String) {
         getData(skip) { row ->
             //判断该行是否是主键空值.
             //主键全空.
+
 
             var pk_map = row.filterKeys { pks.contains(it) }
             var pk_value = pks.map { pk_map.get(it) }.joinToString(",")
@@ -129,6 +131,47 @@ class ExcelComponent(var fileName: String) {
         pk_values.clear();
         return dt;
     }
+
+    val sheetNames:Array<String>
+        get() {
+            var ret = mutableListOf<String>()
+
+            val file = FileMagic.prepareToCheckMagic(FileInputStream(fileName))
+            try {
+                val fm = FileMagic.valueOf(file)
+                when (fm) {
+                    FileMagic.OOXML -> {
+                        var book = WorkbookFactory.create(FileInputStream(fileName))
+                        for(i in 0..(book.numberOfSheets-1)){
+                            ret.add(book.getSheetAt(i).sheetName)
+                        }
+
+                        book.close()
+                    }
+
+                    FileMagic.OLE2 -> {
+                        var xlsxPackage = OPCPackage.open(fileName, PackageAccess.READ)
+
+                        try {
+                            var xssfReader = XSSFReader(xlsxPackage)
+                            var iter  = xssfReader.sheetsData as XSSFReader.SheetIterator
+                            while (iter.hasNext()) {
+                                iter.next().use { stream ->
+                                    ret.add(iter.sheetName);
+                                }
+                            }
+                        } finally {
+                            xlsxPackage.close();
+                        }
+                    }
+                }
+
+            } finally {
+                file.close()
+            }
+
+            return ret.toTypedArray()
+        }
 
     /**读取数据，跳过空行,跳过Header.name.isEmpty 的列。
      * @param columns 列定义. 位置无关.
