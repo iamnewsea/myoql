@@ -1,38 +1,42 @@
 package nbcp.base.extend
 
 
-
+//顺序会变
 fun <V> LinkedHashMap<String, V>.RenameKey(oldKey: String, newKey: String) {
     var index = this.keys.indexOf(oldKey);
     if (index < 0) {
         throw Exception("找不到Key")
     }
 
-    var other = LinkedHashMap<String, V>();
+    var value = this.get(oldKey)!!;
+    this.remove(oldKey);
+    this.put(newKey,value);
 
-    for (i in this.keys.indices) {
-        var k = this.keys.elementAt(i);
-        if (k == oldKey) {
-            var value = this[oldKey];
-            for (j in i + 1..this.size - 1) {
-                k = this.keys.elementAt(j);
-                other.put(k, this[k]!!);
-            }
-
-            for (j in i..this.size - 1) {
-                k = this.keys.elementAt(i + 1);
-                this.remove(k)
-            }
-
-            this.put(newKey, value!!);
-
-            for (j in other.keys.indices) {
-                k = other.keys.elementAt(j);
-                this.put(k, other[k]!!);
-            }
-            break;
-        }
-    }
+//    var other = LinkedHashMap<String, V>();
+//
+//    for (i in this.keys.indices) {
+//        var k = this.keys.elementAt(i);
+//        if (k == oldKey) {
+//            var value = this[oldKey];
+//            for (j in i + 1..this.size - 1) {
+//                k = this.keys.elementAt(j);
+//                other.put(k, this[k]!!);
+//            }
+//
+//            for (j in i..this.size - 1) {
+//                k = this.keys.elementAt(i + 1);
+//                this.remove(k)
+//            }
+//
+//            this.put(newKey, value!!);
+//
+//            for (j in other.keys.indices) {
+//                k = other.keys.elementAt(j);
+//                this.put(k, other[k]!!);
+//            }
+//            break;
+//        }
+//    }
 }
 
 inline fun <reified K, reified V, reified RK, reified RV> Map<K, V>.ToMap(keyAct: ((Map.Entry<K, V>) -> RK), valueAct: ((Map.Entry<K, V>) -> RV)): LinkedHashMap<RK, RV> {

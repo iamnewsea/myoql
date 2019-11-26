@@ -65,6 +65,47 @@ class ExcelComponent(var fileName: String) {
     private var offset_row: Int = 0;
     private var pks: List<String> = listOf();
 
+    val sheetNames: Array<String>
+        get() {
+            var ret = mutableListOf<String>()
+
+            val file = FileMagic.prepareToCheckMagic(FileInputStream(fileName))
+            try {
+                val fm = FileMagic.valueOf(file)
+                when (fm) {
+                    FileMagic.OOXML -> {
+                        var book = WorkbookFactory.create(FileInputStream(fileName))
+                        for (i in 0..(book.numberOfSheets - 1)) {
+                            ret.add(book.getSheetAt(i).sheetName)
+                        }
+
+                        book.close()
+                    }
+
+                    FileMagic.OLE2 -> {
+                        var xlsxPackage = OPCPackage.open(fileName, PackageAccess.READ)
+
+                        try {
+                            var xssfReader = XSSFReader(xlsxPackage)
+                            var iter = xssfReader.sheetsData as XSSFReader.SheetIterator
+                            while (iter.hasNext()) {
+                                iter.next().use { stream ->
+                                    ret.add(iter.sheetName);
+                                }
+                            }
+                        } finally {
+                            xlsxPackage.close();
+                        }
+                    }
+                }
+
+            } finally {
+                file.close()
+            }
+
+            return ret.toTypedArray()
+        }
+
     fun select(sheetName: String, columns: List<String>, pks: List<String>, offset_row: Int = 0) {
         this.sheetName = sheetName;
         this.columns = columns;
@@ -72,6 +113,128 @@ class ExcelComponent(var fileName: String) {
         this.offset_row = offset_row;
     }
 
+
+    fun readRowData(sheetName: String, rowIndex: Int): Array<String> {
+        var ret = mutableListOf<String>();
+        val file = FileMagic.prepareToCheckMagic(FileInputStream(fileName))
+        try {
+            val fm = FileMagic.valueOf(file)
+            when (fm) {
+                FileMagic.OOXML -> {
+                    var xlsxPackage = OPCPackage.open(fileName, PackageAccess.READ)
+
+                    try {
+                        var xssfReader = XSSFReader(xlsxPackage)
+                        var iter = xssfReader.sheetsData as XSSFReader.SheetIterator
+
+
+                        while (iter.hasNext()) {
+                            var r = iter.next().use { stream ->
+
+                                if (iter.sheetName == sheetName) {
+
+                                    var strings = ReadOnlySharedStringsTable(xlsxPackage);
+                                    var styles = xssfReader.getStylesTable();
+                                    var formatter = DataFormatter()
+                                    var sheetSource = InputSource(stream);
+                                    var sheetParser = SAXHelper.newXMLReader();
+
+                                    try {
+                                        sheetParser.contentHandler = XSSFSheetXMLHandler(styles, null, strings,
+                                                SheetContentRowArrayDataReader(sheetParser, offset_row, {
+                                                    ret.addAll(it);
+                                                    return@SheetContentRowArrayDataReader false;
+                                                }), formatter, false);
+                                        sheetParser.parse(sheetSource)
+                                    } catch (e: Exception) {
+                                        if (e.cause is ReturnException == false) {
+                                            throw e;
+                                        }
+                                    }
+                                    return@use false;
+                                }
+
+                                return@use true;
+                            }
+
+                            if (r == false) break;
+                        }
+                    } finally {
+                        xlsxPackage.close();
+                    }
+                    return ret.toTypedArray();
+                }
+                FileMagic.OLE2 -> {
+                    var book = WorkbookFactory.create(FileInputStream(fileName))
+                    var sheet: Sheet;
+
+                    try {
+                        sheet = book.getSheet(sheetName);
+                    } catch (e: java.lang.Exception) {
+                        book.close();
+                        throw java.lang.Exception("打不开Excel文件的 ${sheetName} ！")
+                    }
+
+                    try {
+                        //公式执行器
+                        var evaluator = book.creationHelper.createFormulaEvaluator()
+
+                        var row = sheet.getRow(offset_row)
+                        if (row == null) {
+                            return ret.toTypedArray();
+                        }
+
+
+                        for (i in 1..row.lastCellNum) {
+                            var cell = row.getCell(i - 1);
+                            if (cell == null) {
+                                ret.add("")
+                                continue
+                            }
+
+
+                            //处理 日期，时间 格式。
+                            if (cell.cellType == CellType.NUMERIC) {
+                                var value = cell.numericCellValue.toBigDecimal().toPlainString()
+                                if (value.indexOf(".") < 0 || "General" == cell.cellStyle.dataFormatString) {
+                                    ret.add(value);
+                                    continue;
+                                }
+
+                                if (cell.cellStyle.dataFormatString.indexOf("yy") >= 0 &&
+                                        cell.cellStyle.dataFormatString.indexOf("m") >= 0 &&
+                                        cell.cellStyle.dataFormatString.indexOf("d") >= 0 &&
+                                        cell.cellStyle.dataFormatString.indexOf("h:mm:ss") >= 0) {
+
+                                    ret.add(cell.dateCellValue.AsLocalDateTime().AsString())
+                                    continue;
+                                } else if (cell.cellStyle.dataFormatString.indexOf("h:mm:ss") >= 0) {
+                                    ret.add(cell.dateCellValue.AsLocalTime().AsString())
+                                    continue;
+                                } else if (cell.cellStyle.dataFormatString.indexOf("yy") >= 0 &&
+                                        cell.cellStyle.dataFormatString.indexOf("m") >= 0 &&
+                                        cell.cellStyle.dataFormatString.indexOf("d") >= 0) {
+                                    ret.add(cell.dateCellValue.AsLocalDate().AsString())
+                                    continue;
+                                }
+                            }
+
+                            ret.add(cell.getStringValue(evaluator).AsString().trim())
+                        }
+
+                    } finally {
+                        book.close()
+                    }
+
+                }
+            }
+
+        } finally {
+            file.close()
+        }
+
+        return ret.toTypedArray();
+    }
 
     private fun getHeaderColumnsIndexMap(headerRow: Row, columns: List<String>, evaluator: FormulaEvaluator): LinkedHashMap<Int, String> {
 
@@ -92,9 +255,9 @@ class ExcelComponent(var fileName: String) {
     }
 
     //                        translateRowJson:((JsonMap)->Unit)? = null,
-    fun<T> getDataTable(clazz:Class<T>, skip: Int = 0,
-                     filter: ((JsonMap) -> Boolean)? = null): DataTable<T> {
-        var dt = DataTable<T>()
+    fun <T> getDataTable(clazz: Class<T>, skip: Int = 0,
+                         filter: ((JsonMap) -> Boolean)? = null): DataTable<T> {
+        var dt = DataTable<T>(clazz)
 
         var pk_values = mutableListOf<String>()
 
@@ -108,7 +271,6 @@ class ExcelComponent(var fileName: String) {
             //判断该行是否是主键空值.
             //主键全空.
 
-
             var pk_map = row.filterKeys { pks.contains(it) }
             var pk_value = pks.map { pk_map.get(it) }.joinToString(",")
 
@@ -118,7 +280,7 @@ class ExcelComponent(var fileName: String) {
             pk_values.add(pk_value);
 
             if (filter != null) {
-                if (filter(row)) {
+                if (filter(row) == false) {
                     return@getData false;
                 }
             }
@@ -132,46 +294,6 @@ class ExcelComponent(var fileName: String) {
         return dt;
     }
 
-    val sheetNames:Array<String>
-        get() {
-            var ret = mutableListOf<String>()
-
-            val file = FileMagic.prepareToCheckMagic(FileInputStream(fileName))
-            try {
-                val fm = FileMagic.valueOf(file)
-                when (fm) {
-                    FileMagic.OOXML -> {
-                        var book = WorkbookFactory.create(FileInputStream(fileName))
-                        for(i in 0..(book.numberOfSheets-1)){
-                            ret.add(book.getSheetAt(i).sheetName)
-                        }
-
-                        book.close()
-                    }
-
-                    FileMagic.OLE2 -> {
-                        var xlsxPackage = OPCPackage.open(fileName, PackageAccess.READ)
-
-                        try {
-                            var xssfReader = XSSFReader(xlsxPackage)
-                            var iter  = xssfReader.sheetsData as XSSFReader.SheetIterator
-                            while (iter.hasNext()) {
-                                iter.next().use { stream ->
-                                    ret.add(iter.sheetName);
-                                }
-                            }
-                        } finally {
-                            xlsxPackage.close();
-                        }
-                    }
-                }
-
-            } finally {
-                file.close()
-            }
-
-            return ret.toTypedArray()
-        }
 
     /**读取数据，跳过空行,跳过Header.name.isEmpty 的列。
      * @param columns 列定义. 位置无关.
@@ -180,7 +302,7 @@ class ExcelComponent(var fileName: String) {
      * @param broke_lines: 允许连续的空行。
      */
     private fun getData(skip: Int = 0,
-                filter: (JsonMap) -> Boolean
+                        filter: (JsonMap) -> Boolean
     ) {
         if (columns.isEmpty()) {
             return;
@@ -289,7 +411,7 @@ class ExcelComponent(var fileName: String) {
 
 
     private fun readOle2ExcelData(skip: Int = 0,
-                          filter: (JsonMap) -> Boolean
+                                  filter: (JsonMap) -> Boolean
     ) {
         var book = WorkbookFactory.create(FileInputStream(fileName))
         var sheet: Sheet;
@@ -424,118 +546,6 @@ class ExcelComponent(var fileName: String) {
         }
     }
 
-    class SheetContentReader(
-            var xmlReader: XMLReader,
-            var columns: List<String>,
-            var filter: ((JsonMap) -> Boolean),
-            var offset_row: Int = 0,
-            var skip: Int = 0) : XSSFSheetXMLHandler.SheetContentsHandler {
-        var currentRowIndex = -1;
-        var currentDataRow = linkedMapOf<Int, String>();
-        // key: excel 中的 列的索引 , value = column_name
-        var columns_index_map = linkedMapOf<Int, String>()
-        var row_can_reading = false;
-        var skipped = 0;
-        var header_inited = false;
-
-        init {
-        }
-
-        override fun endRow(rowNum: Int) {
-            if (row_can_reading == false) return;
-            if (header_inited == false) {
-                //校验列头.
-                if (columns_index_map.size != columns.size) {
-                    var diff = DiffData.load(columns.toList(), columns_index_map.values.toList(), { a, b -> a == b })
-                    if (diff.isSame() == false) {
-                        if (diff.more1.any()) {
-                            throw Exception("发现缺失列: " + diff.more1.joinToString(","));
-                        } else if (diff.more2.any()) {
-                            throw Exception("发现多余列: " + diff.more2.joinToString(","));
-                        }
-                    }
-                }
-
-                header_inited = true;
-                return;
-            }
-
-            //按 columns 排序.
-//            var values = columns.map { column -> columns_index_map.filterValues { it == column }.map { it.key }.first() }
-//                    .map { columnIndex -> currentDataRow.get(columnIndex) }
-
-//            container.rows.add(values.toTypedArray());
-
-            var row = JsonMap();
-            columns.forEach { column ->
-                var columnIndex = columns_index_map.filterValues { it == column }.map { it.key }.first()
-                var value = currentDataRow.getOrDefault(columnIndex, "")
-                row.set(column, value);
-            }
-
-
-            //
-            if (filter.invoke(row) == false) {
-                throw ReturnException();
-            }
-        }
-
-        override fun startRow(rowNum: Int) {
-            currentRowIndex = rowNum;
-            row_can_reading = false;
-            if (currentRowIndex < offset_row) {
-                return
-            }
-
-            if (skipped < skip) {
-                skipped++;
-                return;
-            }
-
-            row_can_reading = true;
-            currentDataRow = linkedMapOf();
-        }
-
-        override fun cell(cellReference: String, formattedValue: String, comment: XSSFComment?) {
-            if (row_can_reading == false) return;
-            var text = formattedValue.trim();
-
-            val columnIndex = CellReference(cellReference).getCol().toInt()
-            if (header_inited == false) {
-                if (text.isEmpty()) {
-                    return;
-                }
-
-                //读取Header
-                var colIndex = columns.indexOf(text);
-                if (colIndex < 0) {
-                    throw Exception("发现多余列: " + text);
-                }
-
-                columns_index_map.set(columnIndex, text);
-                return;
-            }
-
-            if (columns_index_map.containsKey(columnIndex) == false) {
-                return;
-            }
-
-            var handler = (xmlReader.contentHandler as XSSFSheetXMLHandler)
-
-
-            var formatIndex = MyUtil.getPrivatePropertyValue(handler, "formatIndex").AsInt()
-            var formatString = MyUtil.getPrivatePropertyValue(handler, "formatString").AsString()
-            var nextDataType = MyUtil.getPrivatePropertyValue(handler, "nextDataType").AsString()
-            var value = MyUtil.getPrivatePropertyValue(handler, "value").AsDouble()
-            //[$-F400]h:mm:ss\ AM/PM = 3:20:39 下午
-
-            if (value >= 0 && nextDataType == "NUMBER" && org.apache.poi.ss.usermodel.DateUtil.isADateFormat(formatIndex, formatString)) {
-                currentDataRow.set(columnIndex, org.apache.poi.ss.usermodel.DateUtil.getJavaDate(value).AsLocalDateTime().AsString());
-            } else {
-                currentDataRow.set(columnIndex, text);
-            }
-        }
-    }
 
     private fun getSheetData(
             xlsxPackage: OPCPackage,
