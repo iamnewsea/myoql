@@ -110,12 +110,12 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
     fun setEntity(entity: Any, whereColumnsFunc: ((M) -> MongoColumns)? = null, unsetColumnsFunc: ((M) -> MongoColumns)? = null): MongoUpdateClip<M> {
         //从之前的 where 中提出 unsetColumns
         var whereColumns = listOf<String>();
-        if (whereColumns != null) {
+        if (whereColumnsFunc != null) {
             whereColumns = whereColumnsFunc!!(this.moerEntity).map { it.toString() }
         }
 
         var unsetColumns = mutableSetOf<String>();
-        if (unsetColumns != null) {
+        if (unsetColumnsFunc != null) {
             unsetColumns = unsetColumnsFunc!!(this.moerEntity).map { it.toString() }.toMutableSet()
         }
 
