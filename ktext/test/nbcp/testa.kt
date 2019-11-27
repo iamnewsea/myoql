@@ -9,6 +9,7 @@ class testa : TestBase() {
 
     class c {
         var id: String = "";
+        var isAdmin:Boolean = false;
 
         fun getName(): String {
             return "ok"
@@ -17,10 +18,7 @@ class testa : TestBase() {
 
     @Test
     fun abc() {
-        System.setProperty("server.upload.host","http://dev8.cn:99")
-        System.setProperty("server.upload.logoSize","256")
-
-        var url = IdUrl("123","/logo.png")
+        var url = c();
 
         var json1 = FieldTypeJsonMapper.instance.writeValueAsString(url);
         println(json1);
@@ -28,5 +26,8 @@ class testa : TestBase() {
 
         var json2 = GetSetTypeJsonMapper.instance.writeValueAsString(url);
         print(json2)
+
+        var json3 = GetSetTypeJsonMapper.instance.readValue("""{"id":"","name":"ok","isAdmin":true}""",c::class.java);
+        println(json3.isAdmin)
     }
 }

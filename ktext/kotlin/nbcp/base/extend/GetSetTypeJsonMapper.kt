@@ -40,9 +40,10 @@ class GetSetTypeJsonMapper : ObjectMapper() {
         this.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true)
         this.configure(MapperFeature.USE_STD_BEAN_NAMING, true)
 
+
         this.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.DEFAULT);
         this.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.DEFAULT);
-        this.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE);
+        this.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.DEFAULT);
         this.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.NONE);
 
         this.setDateFormat(SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
