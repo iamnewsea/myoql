@@ -70,8 +70,10 @@ private fun proc_mongo_match(key: MongoColumnName, value: Any?): Pair<String, An
 /**
  *  ( it.name match "a") match_and (it.id match 1)
  */
-infix fun Criteria.match_and(to: Criteria?): Criteria {
-    if (null == to) return this;
+infix fun Criteria?.match_and(to: Criteria): Criteria {
+    if (this == null) return to;
+    if( to.key.isNullOrEmpty() ) return this;
+    if(this.key.isNullOrEmpty()) return to;
 
     var where = Criteria();
 
@@ -82,7 +84,11 @@ infix fun Criteria.match_and(to: Criteria?): Criteria {
 /**
  *  ( it.name match "a") match_or (it.id match 1)  match_or (id.age match 18)
  */
-infix fun Criteria.match_or(to: Criteria): Criteria {
+infix fun Criteria?.match_or(to: Criteria ): Criteria {
+    if (this == null) return to;
+    if( to.key.isNullOrEmpty() ) return this;
+    if(this.key.isNullOrEmpty()) return to;
+
     var where = Criteria();
 
     where.orOperator(this, to)
