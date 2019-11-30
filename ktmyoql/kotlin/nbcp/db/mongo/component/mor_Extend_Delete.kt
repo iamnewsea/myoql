@@ -28,7 +28,7 @@ class MongoDeleteClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
 
 
     fun exec(): Int {
-        var criteria = db.getMongoCriteria(*whereData.toTypedArray());
+        var criteria = this.moerEntity.getMongoCriteria(*whereData.toTypedArray());
 
         var result = mongoTemplate.remove(
                 Query.query(criteria),

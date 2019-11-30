@@ -192,7 +192,7 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
      * pullWhere 是要删除实体的条件。如： _id pair "ab" , name pair "def"
      */
     fun pull(key: (M) -> MongoColumnName, vararg pullWhere: Criteria): MongoUpdateClip<M> {
-        this.pullData.put(key(this.moerEntity).toString(), db.getMongoCriteria(*pullWhere));
+        this.pullData.put(key(this.moerEntity).toString(), this.moerEntity.getMongoCriteria(*pullWhere));
         return this;
     }
 
@@ -228,7 +228,7 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
 
 //        procMongo_IdColumn(whereData);
 
-        var criteria = db.getMongoCriteria(*whereData.toTypedArray());
+        var criteria = this.moerEntity.getMongoCriteria(*whereData.toTypedArray());
 
         var whereCriteriaObject = criteria.criteriaObject
         db.logger.info("Update:[" + this.collectionName + "]" + whereCriteriaObject.toJson())

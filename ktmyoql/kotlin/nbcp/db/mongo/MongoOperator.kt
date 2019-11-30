@@ -67,6 +67,9 @@ private fun proc_mongo_match(key: MongoColumnName, value: Any?): Pair<String, An
     return Pair<String, Any?>(key.toString(), value);
 }
 
+/**
+ *  ( it.name match "a") match_and (it.id match 1)
+ */
 infix fun Criteria.match_and(to: Criteria?): Criteria {
     if (null == to) return this;
 
@@ -76,6 +79,9 @@ infix fun Criteria.match_and(to: Criteria?): Criteria {
     return where;
 }
 
+/**
+ *  ( it.name match "a") match_or (it.id match 1)  match_or (id.age match 18)
+ */
 infix fun Criteria.match_or(to: Criteria): Criteria {
     var where = Criteria();
 
@@ -99,7 +105,7 @@ infix fun MongoColumnName.match_like(like: String): Criteria {
     return this match_pattern "${like}"
 }
 
-infix fun MongoColumnName.match_ne(value: Any?): Criteria {
+infix fun MongoColumnName.match_not_equal(value: Any?): Criteria {
     var (key, to) = proc_mongo_match(this, value);
     return Criteria.where(key).`ne`(to)
 }

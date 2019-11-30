@@ -104,7 +104,7 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
 
 
     fun toCursor(): DBCursor {
-        var criteria = db.getMongoCriteria(*whereData.toTypedArray());
+        var criteria = this.moerEntity.getMongoCriteria(*whereData.toTypedArray());
 
         var msgs = mutableListOf<String>()
         msgs.add("query:[" + this.collectionName + "]" + criteria.criteriaObject.toJson())
@@ -237,11 +237,11 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
      * 将忽略 skip , take
      */
     fun count(): Int {
-        return mongoTemplate.count(Query.query(db.getMongoCriteria(*whereData.toTypedArray())), collectionName).toInt()
+        return mongoTemplate.count(Query.query(this.moerEntity.getMongoCriteria(*whereData.toTypedArray())), collectionName).toInt()
     }
 
     fun exists(): Boolean {
-        return mongoTemplate.exists(Query.query(db.getMongoCriteria(*whereData.toTypedArray())), collectionName);
+        return mongoTemplate.exists(Query.query(this.moerEntity.getMongoCriteria(*whereData.toTypedArray())), collectionName);
     }
 
     fun toList(mapFunc: ((DBObject) -> Unit)? = null): MutableList<E> {

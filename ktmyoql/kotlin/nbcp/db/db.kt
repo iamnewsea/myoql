@@ -64,11 +64,11 @@ object db {
             execLastAutoId.set(value);
         }
 
-    fun getMongoCriteria(vararg where: Criteria): Criteria {
-        if (where.size == 1) return where[0];
-        if (where.size == 0) return Criteria();
-        return Criteria().andOperator(*where);
-    }
+//    fun getMongoCriteria(vararg where: Criteria): Criteria {
+//        if (where.size == 1) return where[0];
+//        if (where.size == 0) return Criteria();
+//        return Criteria().andOperator(*where);
+//    }
 
     fun change_id2Id(value: MutableMap<String, Any>, remove_id: Boolean = true) {
         var keys = value.keys.toTypedArray();

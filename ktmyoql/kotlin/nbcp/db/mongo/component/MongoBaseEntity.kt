@@ -108,6 +108,12 @@ cursor: {} } """;
 //        return ret;
 //    }
 
+    fun getMongoCriteria(vararg where: Criteria): Criteria {
+        if (where.size == 1) return where[0];
+        if (where.size == 0) return Criteria();
+        return Criteria().andOperator(*where);
+    }
+
 }
 
 

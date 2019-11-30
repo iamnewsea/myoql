@@ -85,7 +85,7 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
     fun toExpression(): String {
         var pipeLines = mutableListOf<Pair<String, Any>>();
         if (this.whereData.any()) {
-            var criteria = db.getMongoCriteria(*whereData.toTypedArray());
+            var criteria = this.moerEntity.getMongoCriteria(*whereData.toTypedArray());
             pipeLines.add("\$match" to criteria)
         }
         pipeLines.addAll(this.pipeLines);
