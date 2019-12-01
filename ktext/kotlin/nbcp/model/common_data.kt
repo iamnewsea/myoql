@@ -7,9 +7,13 @@ import nbcp.base.utils.SpringUtil
  * Created by yuxh on 2018/11/13
  */
 
+open class IdValue(var id: String = "", var value: String = "") : java.io.Serializable {}
+
 open class IdName(var id: String = "", var name: String = "") : java.io.Serializable {}
 
 open class CodeName(var code: String = "", var name: String = "") : java.io.Serializable {}
+
+open class CodeValue(var code: String = "", var value: String = "") : java.io.Serializable {}
 
 open class IdCodeName(var id: String = "", code: String = "", name: String = "") : CodeName(id, name) {}
 
