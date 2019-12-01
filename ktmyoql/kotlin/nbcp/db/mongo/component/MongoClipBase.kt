@@ -1,9 +1,11 @@
 package nbcp.db.mongo
 
 import com.mongodb.DBCollection
+import nbcp.base.extend.Slice
 import org.springframework.data.mongodb.core.MongoTemplate
 import nbcp.base.utils.SpringUtil
 import nbcp.db.mongo.*
+import org.springframework.data.mongodb.core.query.Criteria
 import java.io.Serializable
 
 /**
@@ -20,6 +22,13 @@ open class MongoClipBase(var collectionName: String): Serializable {
 
     fun getCollection(): DBCollection{
         return mongoTemplate.mongoDbFactory.legacyDb.getCollection(this.collectionName)
+    }
+
+    fun getMongoCriteria(vararg where: Criteria): Criteria {
+        if (where.size == 0) return Criteria();
+        if (where.size == 1) return where[0];
+        var first = where.first();
+        return first.andOperator(*where.Slice(1).toTypedArray())
     }
 }
 
