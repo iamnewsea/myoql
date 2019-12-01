@@ -27,8 +27,7 @@ open class MongoClipBase(var collectionName: String): Serializable {
     fun getMongoCriteria(vararg where: Criteria): Criteria {
         if (where.size == 0) return Criteria();
         if (where.size == 1) return where[0];
-        var first = where.first();
-        return first.andOperator(*where.Slice(1).toTypedArray())
+        return Criteria().andOperator(*where);
     }
 }
 

@@ -3,7 +3,6 @@ package nbcp.db.mongo
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
 import nbcp.base.extend.*
-import nbcp.base.utils.MyUtil
 import nbcp.db.db
 import nbcp.db.mongo.*
 
