@@ -36,6 +36,7 @@ data class MongoSaveClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
         return this;
     }
 
+    //仅更新有效
     fun unset(column: (M) -> MongoColumnName): MongoSaveClip<M, E> {
         this.unsetColumns.add(column(moerEntity));
         return this;

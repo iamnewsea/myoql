@@ -71,20 +71,21 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
         return this;
     }
 
-    fun set(key: MongoColumnName, value: Any?): MongoUpdateClip<M> {
-        this.setData.put(key.toString(), value);
-        return this;
-    }
+
 
     fun set(key: String, value: Any?): MongoUpdateClip<M> {
-        return set(MongoColumnName(key), value)
+        return set { MongoColumnName(key) to value }
     }
 
-    fun set(func: (M) -> MongoColumnName, value: Any?): MongoUpdateClip<M> {
-        var p = func(moerEntity);
-        this.setData.put(p.toString(), value);
-        return this;
-    }
+//    fun set(key: MongoColumnName, value: Any?): MongoUpdateClip<M> {
+//        this.setData.put(key.toString(), value);
+//        return this;
+//    }
+//    fun set(func: (M) -> MongoColumnName, value: Any?): MongoUpdateClip<M> {
+//        var p = func(moerEntity);
+//        this.setData.put(p.toString(), value);
+//        return this;
+//    }
 
     fun set(func: (M) -> Pair<MongoColumnName, Any?>): MongoUpdateClip<M> {
         var p = func(moerEntity);
@@ -97,8 +98,13 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
 //        return this.setData.get(key) == value;
 //    }
 
-    fun unset(key: (M) -> MongoColumnName): MongoUpdateClip<M> {
-        this.unsetData.add(key(this.moerEntity).toString());
+    fun unset(key: String): MongoUpdateClip<M> {
+        this.unsetData.add(key);
+        return this;
+    }
+
+    fun unset(keyFunc: (M) -> MongoColumnName): MongoUpdateClip<M> {
+        this.unsetData.add(keyFunc(this.moerEntity).toString());
         return this;
     }
 
