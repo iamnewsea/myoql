@@ -13,6 +13,7 @@ import nbcp.base.utils.CodeUtil
 import nbcp.base.utils.Md5Util
 import nbcp.web.*
 import org.slf4j.MDC
+import org.springframework.web.multipart.commons.CommonsMultipartResolver
 import java.lang.Exception
 import java.lang.reflect.UndeclaredThrowableException
 import java.nio.charset.Charset
@@ -112,11 +113,8 @@ open class MyAllFilter : Filter {
 
         var queryMap = request.queryJson
 
-        if (queryMap.containsKey("trace-id")) {
-            request.setAttribute(".trace.id.", CodeUtil.getCode());
-        }
-
         if (request.method == "GET") {
+            //JSONP
             if (queryMap.containsKey("callback")) {
                 var myRequest = MyHttpRequestWrapper(request);
                 var myResponse = MyHttpResponseWrapper(response)
@@ -139,6 +137,13 @@ open class MyAllFilter : Filter {
 
             return;
         }
+
+        //如果是上传
+        if (request.contentLength > 10485760) {
+            chain?.doFilter(request, response);
+            return;
+        }
+
         var myRequest = MyHttpRequestWrapper(request);
         var myResponse = MyHttpResponseWrapper(response)
         request.characterEncoding = "utf-8";
@@ -229,6 +234,8 @@ open class MyAllFilter : Filter {
 
         //文件上传是 multipart/form-data;
         if (request.IsOctetContent == false) {
+            //如果不是文件上传
+
             var htmlString = request.body.toString(utf8)
             if (htmlString.HasValue) {
                 msgs.add("[request body]:")
@@ -290,19 +297,21 @@ open class MyAllFilter : Filter {
             if (allowHeaders.any()) {
                 response.setHeader("Access-Control-Allow-Headers", allowHeaders.joinToString(","))
             }
-            response.setHeader("Access-Control-Expose-Headers","*")
+            response.setHeader("Access-Control-Expose-Headers", "*")
         }
     }
 
     fun afterComplete(request: MyHttpRequestWrapper, response: MyHttpResponseWrapper, callback: String, startAt: Long) {
-        var resValue = response.result;
+        if (response.IsOctetContent) {
+            var msg = mutableListOf<String>()
+            msg.add("[response] ${request.requestURI} ${response.status} ${System.currentTimeMillis() - startAt}毫秒")
 
-        var resStringValue = resValue.toString(utf8)
-
-        // 处理: null
-        if (resStringValue == "null" && response.contentType.contains("json")) {
-            resValue = "{}".toByteArray(utf8)
-            resStringValue = "{}";
+            for (h in response.headerNames) {
+                msg.add("\t${h}:${response.getHeader(h)}")
+            }
+            msg.add("<----]]]");
+            logger.info(msg.joinToString(line_break))
+            return;
         }
 
         //设置 Set-Cookie:PZXTK=59160c3a-5443-490f-a94f-db1e83f041fd; Path=/; HttpOnly
@@ -318,6 +327,9 @@ open class MyAllFilter : Filter {
 //            }
 //        }
 
+
+        var resValue = response.result;
+        var resStringValue = resValue.toString(utf8)
 
         if (response.status < 400 && resValue.size > 32) {
             var md5 = Md5Util.getBase64Md5(resValue);
@@ -345,18 +357,15 @@ open class MyAllFilter : Filter {
             var msg = mutableListOf<String>()
             msg.add("[response] ${request.requestURI} ${response.status} ${System.currentTimeMillis() - startAt}毫秒")
 
-            if (!response.IsOctetContent) {
-                for (h in response.headerNames) {
-                    msg.add("\t${h}:${response.getHeader(h)}")
-                }
-
-                if (resValue.size > 0) {
-                    msg.add("[response body]:")
-                    msg.add("\t" + resStringValue.Slice(0, 8192))
-                    msg.add("<----]]]")
-                }
+            for (h in response.headerNames) {
+                msg.add("\t${h}:${response.getHeader(h)}")
             }
 
+            if (resValue.size > 0) {
+                msg.add("[response body]:")
+                msg.add("\t" + resStringValue.Slice(0, 8192))
+                msg.add("<----]]]")
+            }
             logger.info(msg.joinToString(line_break))
         }
     }

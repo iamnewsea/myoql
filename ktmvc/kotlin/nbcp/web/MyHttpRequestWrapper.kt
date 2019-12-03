@@ -22,6 +22,7 @@ import javax.servlet.ServletContext
 import javax.servlet.http.*
 import nbcp.base.utf8
 import nbcp.db.IdName
+import java.lang.RuntimeException
 
 /**
  * Created by udi on 17-4-3.
@@ -53,7 +54,16 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
         }
     }
 
-    val body: ByteArray = request.inputStream.readBytes()
+//    private var body_read = false;
+
+    val body: ByteArray by lazy {
+        //如果 10MB
+        if (request.contentLength > 10485760) {
+            throw RuntimeException("超过10MB不能获取Body!");
+        }
+//        body_read = true;
+        return@lazy request.inputStream.readBytes()
+    }
 
     val json: JsonMap by lazy {
         var ret = JsonMap();
@@ -88,7 +98,7 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
                     }
                 } else {
                     var bodyString = body.toString(utf8).trim()
-                    ret =  JsonMap.loadFromUrl(bodyString)
+                    ret = JsonMap.loadFromUrl(bodyString)
                 }
             }
         } catch (e: Exception) {
@@ -127,13 +137,16 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
     @Throws(IOException::class)
     override fun getInputStream(): ServletInputStream {
 
-        val bais = ByteArrayInputStream(body)
+        val bais by lazy {
+            return@lazy ByteArrayInputStream(body);
+        }
 
         return object : ServletInputStream() {
 
             @Throws(IOException::class)
             override fun read(): Int {
-                return bais.read()
+                 return bais.read()
+//                return request.inputStream.read()
             }
 
             override fun isFinished(): Boolean {

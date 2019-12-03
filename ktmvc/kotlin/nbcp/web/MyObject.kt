@@ -66,7 +66,7 @@ private val String.ContentTypeIsOctetContent: Boolean
 val HttpServletResponse.IsOctetContent: Boolean
     get() {
         if (this.contentType == null) {
-            return false
+            return true
         }
 
         return this.contentType.ContentTypeIsOctetContent
@@ -75,7 +75,7 @@ val HttpServletResponse.IsOctetContent: Boolean
 val HttpServletRequest.IsOctetContent: Boolean
     get() {
         if (this.contentType == null) {
-            return false
+            return true
         }
 
         return this.contentType.ContentTypeIsOctetContent
