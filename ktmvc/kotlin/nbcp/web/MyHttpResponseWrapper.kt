@@ -49,28 +49,35 @@ class MyHttpResponseWrapper(
 
     /**
      * 只能调用一次,set调用之后,就会关闭流.
+     * 文件太大，会返回 null
+     * 关闭会返回 null
+     *
      */
-    var result: ByteArray
+    var result: ByteArray?
         @Throws(IOException::class)
         get() {
             flushBuffer()
+            var size =  this.out.bos.size() ;
+
+            //大于10MB
+            if( size > 10485760 ) return null;
 
             var result: ByteArray  = this.out.bos.toByteArray()
             if (result.size == 0) return ByteArray(0)
 
-            if (result[0].toInt() == 65279) {
-                result = Arrays.copyOfRange(result, 1, result.size - 1)
-            }
+//            if (result[0].toInt() == 65279) {
+//                result = Arrays.copyOfRange(result, 1, result.size - 1)
+//            }
             return result
         }
         @Throws(IOException::class)
-        set(result) {
-            if (result.size == 0) return
+        set(value) {
+            if (value == null ||value.isEmpty() ) return
 
             val response = getResponse()
-            response.setContentLength(result.size)
+            response.setContentLength(value.size)
             val sos = response.outputStream
-            sos.write(result)
+            sos.write(value)
             sos.flush()
             sos.close()
         }

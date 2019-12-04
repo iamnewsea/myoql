@@ -56,10 +56,14 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
 
 //    private var body_read = false;
 
-    val body: ByteArray by lazy {
+    //文件上传或 大于 10MB 会返回 null , throw RuntimeException("超过10MB不能获取Body!");
+    val body: ByteArray? by lazy {
         //如果 10MB
+        if (this.IsOctetContent) {
+            return@lazy null;
+        }
         if (request.contentLength > 10485760) {
-            throw RuntimeException("超过10MB不能获取Body!");
+            return@lazy null;
         }
 //        body_read = true;
         return@lazy request.inputStream.readBytes()
@@ -75,7 +79,8 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
             if (request.contentType.startsWith(MediaType.APPLICATION_JSON_VALUE) ||
                     request.contentType.startsWith(MediaType.APPLICATION_JSON_UTF8_VALUE)) {
 
-                var bodyString = body.toString(utf8).trim()
+                var bodyString = (body ?: byteArrayOf()).toString(utf8).trim()
+
                 if (bodyString.startsWith("{") && bodyString.endsWith("}")) {
                     ret = bodyString.FromJson();
                 }
@@ -97,7 +102,7 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
                         }
                     }
                 } else {
-                    var bodyString = body.toString(utf8).trim()
+                    var bodyString = (body ?: byteArrayOf()).toString(utf8).trim()
                     ret = JsonMap.loadFromUrl(bodyString)
                 }
             }
@@ -145,7 +150,7 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
 
             @Throws(IOException::class)
             override fun read(): Int {
-                 return bais.read()
+                return bais.read()
 //                return request.inputStream.read()
             }
 

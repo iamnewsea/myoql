@@ -138,14 +138,16 @@ open class MyAllFilter : Filter {
             return;
         }
 
+
         //如果是上传
-        if (request.contentLength > 10485760) {
-            chain?.doFilter(request, response);
-            return;
-        }
+        //        if (request.contentLength > 10485760) {
+        //            chain?.doFilter(request, myResponse);
+        //            return;
+        //        }
+
 
         var myRequest = MyHttpRequestWrapper(request);
-        var myResponse = MyHttpResponseWrapper(response)
+        var myResponse = MyHttpResponseWrapper(response);
         request.characterEncoding = "utf-8";
 
         procFilter(myRequest, myResponse, chain, startAt)
@@ -232,16 +234,13 @@ open class MyAllFilter : Filter {
             msgs.add("\t${h}: ${request.getHeader(h)}")
         }
 
-        //文件上传是 multipart/form-data;
-        if (request.IsOctetContent == false) {
-            //如果不是文件上传
 
-            var htmlString = request.body.toString(utf8)
-            if (htmlString.HasValue) {
-                msgs.add("[request body]:")
-                msgs.add("\t" + htmlString)
-            }
+        var htmlString = (request.body ?: byteArrayOf()).toString(utf8)
+        if (htmlString.HasValue) {
+            msgs.add("[request body]:")
+            msgs.add("\t" + htmlString)
         }
+
 
         logger.info(msgs.joinToString(line_break))
     }
@@ -329,17 +328,20 @@ open class MyAllFilter : Filter {
 
 
         var resValue = response.result;
-        var resStringValue = resValue.toString(utf8)
+        var resStringValue = ""
+        if (resValue != null) {
+            resStringValue = resValue.toString(utf8)
 
-        if (response.status < 400 && resValue.size > 32) {
-            var md5 = Md5Util.getBase64Md5(resValue);
-            //body id
-            response.addHeader("_bid_", md5);
+            if (response.status < 400 && resValue.size > 32) {
+                var md5 = Md5Util.getBase64Md5(resValue);
+                //body id
+                response.addHeader("_bid_", md5);
 
-            var ori_md5 = request.getHeader("_bid_");
-            if (ori_md5.HasValue) {
-                if (md5 == Md5Util.getBase64Md5(resValue)) {
-                    response.status = 280
+                var ori_md5 = request.getHeader("_bid_");
+                if (ori_md5.HasValue) {
+                    if (md5 == Md5Util.getBase64Md5(resValue)) {
+                        response.status = 280
+                    }
                 }
             }
         }
@@ -361,11 +363,12 @@ open class MyAllFilter : Filter {
                 msg.add("\t${h}:${response.getHeader(h)}")
             }
 
-            if (resValue.size > 0) {
+            if (resValue != null && resValue.size > 0) {
                 msg.add("[response body]:")
                 msg.add("\t" + resStringValue.Slice(0, 8192))
-                msg.add("<----]]]")
             }
+
+            msg.add("<----]]]")
             logger.info(msg.joinToString(line_break))
         }
     }

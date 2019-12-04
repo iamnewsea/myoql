@@ -72,7 +72,7 @@ class GroupAjax : HttpServlet() {
             return
         }
 
-        var json = (request as MyHttpRequestWrapper).body.toString(utf8).trim()
+        var json = (request.body ?: byteArrayOf()).toString(utf8).trim()
         var resp_text = groupAjax(json.FromJson())
         if (resp_text.isNotEmpty()) {
             resp.contentType = "application/json;charset=UTF-8"

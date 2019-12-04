@@ -117,7 +117,7 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
 
         if (value == null && request != null) {
             if (parameter.hasParameterAnnotation(JsonModel::class.java)) {
-                return request.body.toString(utf8).FromJson(parameter.parameterType);
+                return (request.body ?: byteArrayOf()).toString(utf8).FromJson(parameter.parameterType);
             }
 
             value = request.json.get(key)
