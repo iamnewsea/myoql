@@ -128,7 +128,7 @@ open class MyAllFilter : Filter {
             } else {
                 chain?.doFilter(request, response)
 
-                logNewSession(request, response);
+//                logNewSession(request, response);
             }
 
             logger.info("${request.LoginUser.name.AsString()} ${request.ClientIp} ${request.method} ${request.requestURI}${if (request.queryString == null) "" else ("?" + request.queryString)}  --->\n" +
@@ -153,14 +153,14 @@ open class MyAllFilter : Filter {
         procFilter(myRequest, myResponse, chain, startAt)
     }
 
-    private fun logNewSession(request: HttpServletRequest, httpResponse: HttpServletResponse) {
-        if (request.session.isNew) {
-            var setCookie = httpResponse.getHeader("Set-Cookie");
-            if (setCookie != null) {
-                logger.info("Set-Cookie: ${setCookie}")
-            }
-        }
-    }
+//    private fun logNewSession(request: HttpServletRequest, httpResponse: HttpServletResponse) {
+//        if (request.session.isNew) {
+//            var setCookie = httpResponse.getHeader("Set-Cookie");
+//            if (setCookie != null) {
+//                logger.info("Set-Cookie: ${setCookie}")
+//            }
+//        }
+//    }
 
     private fun procFilter(request: MyHttpRequestWrapper, response: MyHttpResponseWrapper, chain: FilterChain?, startAt: Long) {
         RequestContextHolder.setRequestAttributes(ServletRequestAttributes(request, response))
