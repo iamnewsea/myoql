@@ -37,7 +37,7 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
     private var skip: Int = 0;
     private var take: Int = -1;
 
-    fun addPipeLine(key: PipeLineJsonOperatorEnum, json: JsonMap): MongoAggregateClip<M, E> {
+    fun addPipeLine(key: PipeLineEnum, json: JsonMap): MongoAggregateClip<M, E> {
         this.pipeLines.add("\$${key}" to json);
         return this;
     }

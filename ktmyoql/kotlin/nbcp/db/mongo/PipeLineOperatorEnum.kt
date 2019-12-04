@@ -1,6 +1,6 @@
 package nbcp.db.mongo
 
-enum class PipeLineJsonOperatorEnum {
+enum class PipeLineEnum {
     addFields,
     bucket,
     bucketAuto,
