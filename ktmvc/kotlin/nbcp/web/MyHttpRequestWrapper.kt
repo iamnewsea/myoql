@@ -56,13 +56,13 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
 
 //    private var body_read = false;
 
-    //文件上传或 大于 10MB 会返回 null , throw RuntimeException("超过10MB不能获取Body!");
+    //文件上传或 大于 1 MB 会返回 null , throw RuntimeException("超过10MB不能获取Body!");
     val body: ByteArray? by lazy {
         //如果 10MB
         if (this.IsOctetContent) {
             return@lazy null;
         }
-        if (request.contentLength > 10485760) {
+        if (request.contentLength > 1048576) {
             return@lazy null;
         }
 //        body_read = true;

@@ -57,12 +57,12 @@ class MyHttpResponseWrapper(
         @Throws(IOException::class)
         get() {
             flushBuffer()
-            var size =  this.out.bos.size() ;
+            var size = this.out.bos.size();
 
-            //大于10MB
-            if( size > 10485760 ) return null;
+            //大于1MB，算文件下载。不记录。
+            if (size > 1048576) return null;
 
-            var result: ByteArray  = this.out.bos.toByteArray()
+            var result: ByteArray = this.out.bos.toByteArray()
             if (result.size == 0) return ByteArray(0)
 
 //            if (result[0].toInt() == 65279) {
@@ -72,7 +72,7 @@ class MyHttpResponseWrapper(
         }
         @Throws(IOException::class)
         set(value) {
-            if (value == null ||value.isEmpty() ) return
+            if (value == null || value.isEmpty()) return
 
             val response = getResponse()
             response.setContentLength(value.size)
@@ -107,15 +107,13 @@ class MyHttpResponseWrapper(
 
 
     inner class ByteServletOutputStream : ServletOutputStream() {
-
-
-        var bos: ByteArrayOutputStream  = ByteArrayOutputStream()
+        var bos: ByteArrayOutputStream = ByteArrayOutputStream()
 
         override fun isReady(): Boolean {
             return true
         }
 
-        override fun setWriteListener( p0: WriteListener) {}
+        override fun setWriteListener(p0: WriteListener) {}
 
         @Throws(IOException::class)
         override fun write(b: Int) {
