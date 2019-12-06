@@ -2,9 +2,13 @@ package nbcp.db
 
 import com.mongodb.DBObject
 import nbcp.base.extend.AsInt
+import nbcp.base.extend.IsStringType
+import nbcp.base.extend.Slice
+import nbcp.base.utils.RecursionUtil
 import nbcp.base.utils.SpringUtil
 import nbcp.db.mongo.MongoEventConfig
 import nbcp.db.sql.SqlBaseTable
+import org.bson.Document
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.Criteria
 import kotlin.concurrent.getOrSet
@@ -116,5 +120,29 @@ object db {
                 change_id2Id(v, remove_id);
             }
         }
+    }
+
+    /**
+     *value 可能会是： Document{{answerRole=Patriarch}}
+     */
+    fun proc_document_json(value: Document) {
+        RecursionUtil.recursionJson(value, { k, v, p ->
+            if (v == null) return@recursionJson true
+            var v_type = v::class.java;
+            if (v_type.IsStringType() == false) return@recursionJson true
+
+            var v_string_value = v.toString()
+            if (v_string_value.startsWith("Document{{") && v_string_value.endsWith("}}")) {
+                if (p is Document) {
+                    //Document{{answerRole=Patriarch}}
+                    var ary = v_string_value.Slice(10, -2).split("=")
+                    var json = Document();
+                    json.set(ary[0], ary[1]);
+                    p.set(k, json);
+                }
+            }
+
+            return@recursionJson true
+        })
     }
 }

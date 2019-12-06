@@ -102,6 +102,9 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
             } else if (value is Number) {
                 return@map "{$key:$value}";
             } else if (value is String) {
+//                if( key == "_id" || key.endsWith("._id")){
+//                    return@map """{$key:{##oid:"${value}"}}""".replace("##","$")
+//                }
                 return@map """{$key:"${value}"}"""
             } else if (value is Map<*, *>) {
                 return@map "{$key:${value.ToJson()}}"
@@ -128,15 +131,15 @@ cursor: {} } """
         return Md5Util.getBase64Md5(exp);
     }
 
-    fun toList(itemFunc: ((JsonMap) -> Unit)? = null): MutableList<E> {
+    fun toList(itemFunc: ((Document) -> Unit)? = null): MutableList<E> {
         return toList(this.moerEntity.entityClass, itemFunc);
     }
 
-    fun <R : Any> toList(clazz: Class<R>, itemFunc: ((JsonMap) -> Unit)? = null): MutableList<R> {
+    fun <R : Any> toList(clazz: Class<R>, itemFunc: ((Document) -> Unit)? = null): MutableList<R> {
         return toMapList(itemFunc).map { it.ConvertJson(clazz) }.toMutableList()
     }
 
-    fun toMapList(itemFunc: ((JsonMap) -> Unit)? = null): MutableList<Document> {
+    fun toMapList(itemFunc: ((Document) -> Unit)? = null): MutableList<Document> {
         var queryJson = toExpression();
         var result = mongoTemplate.executeCommand(queryJson)
 
@@ -146,7 +149,12 @@ cursor: {} } """
         }
 
         ((result.get("cursor") as Document).get("firstBatch") as ArrayList<Document>).forEach {
-            db.change_id2Id(it);
+//            db.change_id2Id(it);
+            //value 可能会是： Document{{answerRole=Patriarch}}
+            db.proc_document_json(it);
+            if( itemFunc != null) {
+                itemFunc(it);
+            }
             ret.add(it)
         }
 
@@ -154,7 +162,7 @@ cursor: {} } """
     }
 
 
-    fun toMap(itemFunc: ((JsonMap) -> Unit)? = null): Document {
+    fun toMap(itemFunc: ((Document) -> Unit)? = null): Document {
         this.limit(1);
         var ret = toMapList(itemFunc);
         if (ret.any() == false) return Document();
@@ -184,11 +192,11 @@ cursor: {} } """
         return toList(moerEntity.entityClass)
     }
 
-    fun toListResult(itemFunc: ((JsonMap) -> Unit)? = null): ListResult<E> {
+    fun toListResult(itemFunc: ((Document) -> Unit)? = null): ListResult<E> {
         return toListResult(moerEntity.entityClass, itemFunc);
     }
 
-    fun <R : Any> toListResult(entityClass: Class<R>, itemFunc: ((JsonMap) -> Unit)? = null): ListResult<R> {
+    fun <R : Any> toListResult(entityClass: Class<R>, itemFunc: ((Document) -> Unit)? = null): ListResult<R> {
         var ret = ListResult<R>()
         var data = toList(entityClass, itemFunc)
 
@@ -213,7 +221,7 @@ cursor: {} } """
         return toEntity(R::class.java);
     }
 
-    fun <R : Any> toEntity(clazz: Class<R>, itemFunc: ((JsonMap) -> Unit)? = null): R? {
+    fun <R : Any> toEntity(clazz: Class<R>, itemFunc: ((Document) -> Unit)? = null): R? {
         this.limit(1);
         return toList(clazz, itemFunc).firstOrNull();
     }

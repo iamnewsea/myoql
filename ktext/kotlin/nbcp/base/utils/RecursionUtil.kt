@@ -1,5 +1,9 @@
 package nbcp.base.utils
 
+import nbcp.base.extend.ForEachExt
+import nbcp.base.extend.IsListType
+import nbcp.base.extend.IsSimpleType
+import java.lang.reflect.Modifier
 import java.util.*
 
 /**
@@ -26,7 +30,7 @@ object RecursionUtil {
     /* 递归执行
     * @param Exec 传入的是子项
     */
-    fun <T> execute(Container: MutableList<T>, Subs: (T) -> MutableList<T>, Exec: (T,MutableList<T>,Int) -> RecursionReturnEnum): Int {
+    fun <T> execute(Container: MutableList<T>, Subs: (T) -> MutableList<T>, Exec: (T, MutableList<T>, Int) -> RecursionReturnEnum): Int {
         if (Container.size == 0) return 0
         var counted = 0;
         var removeIndeies = mutableListOf<Int>();
@@ -34,7 +38,7 @@ object RecursionUtil {
         for (i in Container.indices) {
             val item = Container[i]
             counted++;
-            val ret = Exec(item,Container,i)
+            val ret = Exec(item, Container, i)
 
             if (ret == RecursionReturnEnum.StopSub)
                 continue
@@ -102,5 +106,61 @@ object RecursionUtil {
             }
         }
         root.add(subTree);
+    }
+
+    /**
+     * 遍历对象
+     * @param eachJsonItemCallback: key,value,parent三个参数
+     */
+    fun recursionJson(json: Any, eachJsonItemCallback: (String, Any?, Any) -> Boolean, deepth: Int = 0): Boolean {
+        var type = json::class.java;
+        if (type.IsSimpleType()) {
+            return true;
+        }
+
+
+        if (type.isArray) {
+            return (json as Array<*>).ForEachExt { it, index ->
+                if (it == null) {
+                    return@ForEachExt true
+                }
+                return@ForEachExt recursionJson(it, eachJsonItemCallback, deepth + 1)
+            }
+        } else if (type.IsListType()) {
+            return (json as List<*>).ForEachExt { it, index ->
+                if (it == null) {
+                    return@ForEachExt true
+                }
+
+                return@ForEachExt recursionJson(it, eachJsonItemCallback, deepth + 1)
+            }
+        }
+
+
+        return type.declaredFields.ForEachExt { it, index ->
+            if (it.modifiers and Modifier.STATIC == Modifier.STATIC) {
+                return@ForEachExt true
+            }
+
+            if (it.modifiers and Modifier.TRANSIENT == Modifier.TRANSIENT) {
+                return@ForEachExt true;
+            }
+
+            var key = it.name;
+            it.isAccessible = true;
+
+            var value = it.get(json);
+
+            if (eachJsonItemCallback(key, value, json) === false) {
+                return@ForEachExt false;
+            }
+
+            if (value != null) {
+                if (recursionJson(value, eachJsonItemCallback, deepth + 1) === false) {
+                    return@ForEachExt false;
+                }
+            }
+            return@ForEachExt true
+        }
     }
 }

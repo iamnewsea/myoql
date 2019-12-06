@@ -1,4 +1,5 @@
 @file:JvmName("MyTypeConverter")
+
 package nbcp.base.extend
 
 import java.text.SimpleDateFormat
@@ -92,7 +93,7 @@ fun Any.ConvertType(clazz: Class<*>): Any? {
     }
     if (clazz == Date::class.java) {
         var dt = this.AsLocalDateTime();
-        if( dt == null) return dt;
+        if (dt == null) return dt;
         return Date.from(dt.atZone(ZoneId.systemDefault()).toInstant());
     }
 
@@ -173,11 +174,11 @@ fun Any?.AsString(defaultValue: String = ""): String {
     return ret
 }
 
-fun LocalDate.format(pattern:String):String{
+fun LocalDate.format(pattern: String): String {
     return this.format(java.time.format.DateTimeFormatter.ofPattern(pattern));
 }
 
-fun LocalDateTime.format(pattern:String):String{
+fun LocalDateTime.format(pattern: String): String {
     return this.format(java.time.format.DateTimeFormatter.ofPattern(pattern));
 }
 
@@ -326,7 +327,7 @@ fun <T> String.ToEnum(enumClazz: Class<T>): T? {
 fun <T> Int.ToEnum(enumClazz: Class<T>): T? {
     if (enumClazz.isEnum == false) return null;
     var numberField = enumClazz.GetEnumNumberField();
-    if( numberField == null) return null;
+    if (numberField == null) return null;
 
     numberField.isAccessible = true;
     return enumClazz.GetEnumList().firstOrNull { numberField.get(it).AsInt() == this }
@@ -589,7 +590,7 @@ fun LocalDateTime.AsDate(defaultValue: Date = Date(0)): Date {
 }
 
 
-fun Any?.AsDate(defaultValue: Date = Date(0)): Date  {
+fun Any?.AsDate(defaultValue: Date = Date(0)): Date {
     if (this is Date) {
         return this
     } else if (this is LocalDate) {
@@ -621,11 +622,29 @@ fun Any?.AsDate(defaultValue: Date = Date(0)): Date  {
 }
 
 
-
-fun<V> Map<String,V>.getStringValue(key: String): String {
+/**
+ * 通过 path 获取 value,每级返回的值必须是 Map<String,V> 否则返回 null
+ * @param key:
+ */
+fun <V> Map<String, V>.getPathValue(vararg keys: String): Any? {
+    if (keys.any() == false) return null;
+    var key = keys.first();
     var v = this.get(key)
+    if (v == null) return null;
+
+    var left_keys = keys.Slice(1);
+    if (left_keys.any() == false) return v;
+
+    if (v is Map<*, *>) {
+        return (v as Map<String, V>).getPathValue(*left_keys.toTypedArray())
+    }
+    return v.toString()
+}
+
+fun <V> Map<String, V>.getStringValue(vararg keys: String): String {
+    var v = this.getPathValue(*keys)
     if (v == null) return "";
-    var v_type = (v as Any)::class.java;
+    var v_type = v::class.java;
     if (v_type.isArray) {
         return (v as Array<String>).joinToString(",")
     } else if (List::class.java.isAssignableFrom(v_type)) {
@@ -634,8 +653,8 @@ fun<V> Map<String,V>.getStringValue(key: String): String {
     return v.toString()
 }
 
-fun<V> Map<String,V>.getIntValue(key: String): Int {
-    var v: V? = get(key)
+fun <V> Map<String, V>.getIntValue(vararg keys: String): Int {
+    var v = getPathValue(*keys)
     if (v == null) return 0;
     return v.AsInt()
 }

@@ -174,15 +174,19 @@ open class MyAllFilter : Filter {
         try {
             chain?.doFilter(request, response);
         } catch (e: Exception) {
-            var err = getInnerException(e);
-            var errorInfo = mutableListOf<String>()
-            errorInfo.add(err::class.java.simpleName + ": " + err.message.AsString())
-            errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }.take(24))
+            try {
+                var err = getInnerException(e);
+                var errorInfo = mutableListOf<String>()
+                errorInfo.add(err::class.java.simpleName + ": " + err.message.AsString())
+                errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }.take(24))
 
-            logger.error(errorInfo.joinToString("\r\n"))
-            response.status = 500;
-            response.contentType = "application/json;charset=UTF-8"
-            response.outputStream.write("""{"msg":${err.Detail.ToJsonValue()}}""".toByteArray(utf8))
+                logger.error(errorInfo.joinToString("\r\n"))
+                response.status = 500;
+                response.contentType = "application/json;charset=UTF-8"
+                response.outputStream.write("""{"msg":${err.Detail.ToJsonValue()}}""".toByteArray(utf8))
+            } catch (e: Exception) {
+                logger.error("MyAllFilter处理异常时遇到错误:" + e.message.AsString())
+            }
         }
 
         procCORS(request, response)

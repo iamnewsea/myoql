@@ -4,6 +4,7 @@ import com.mongodb.BasicDBList
 import com.mongodb.BasicDBObject
 import com.mongodb.DBObject
 import com.mongodb.client.model.Filters
+import nbcp.base.comm.JsonMap
 import org.bson.BSONObject
 import org.bson.BasicBSONObject
 import org.bson.BsonString
@@ -230,3 +231,8 @@ infix fun MongoColumnName.match_elemMatch(value: Criteria): Criteria {
 //    return Criteria.where(key).`filter`(value);
 //}
 
+
+fun String.toOIdJson(): JsonMap {
+//    if(ObjectId.isValid(this) == false)
+    return JsonMap("\$oid" to this)
+}

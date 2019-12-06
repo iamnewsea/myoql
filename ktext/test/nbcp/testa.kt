@@ -1,7 +1,10 @@
 package nbcp
 
+import nbcp.base.comm.ApiResult
 import nbcp.base.extend.FieldTypeJsonMapper
 import nbcp.base.extend.GetSetTypeJsonMapper
+import nbcp.base.utils.RecursionUtil
+import nbcp.db.IdName
 import nbcp.db.IdUrl
 import org.junit.Test
 
@@ -9,7 +12,7 @@ class testa : TestBase() {
 
     class c {
         var id: String = "";
-        var isAdmin:Boolean = false;
+        var isAdmin: Boolean = false;
 
         fun getName(): String {
             return "ok"
@@ -18,16 +21,13 @@ class testa : TestBase() {
 
     @Test
     fun abc() {
-        var url = c();
+        var list = ApiResult<List<IdName>>()
+        list.data = mutableListOf();
+        (list.data!! as MutableList).add(IdName("1", "ok"))
 
-        var json1 = FieldTypeJsonMapper.instance.writeValueAsString(url);
-        println(json1);
-
-
-        var json2 = GetSetTypeJsonMapper.instance.writeValueAsString(url);
-        print(json2)
-
-        var json3 = GetSetTypeJsonMapper.instance.readValue("""{"id":"","name":"ok","isAdmin":true}""",c::class.java);
-        println(json3.isAdmin)
+        RecursionUtil.recursionJson(list, { k, v, p ->
+            println(k + ":" + (v ?: ""))
+            return@recursionJson true;
+        });
     }
 }

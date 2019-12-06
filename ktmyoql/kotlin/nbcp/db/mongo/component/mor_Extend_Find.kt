@@ -321,8 +321,8 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
      * @param func : 每条数据的回调，返回Int,表示在下一条数据的基础上跳过多少行，默认为0，可以是负数。
      * @return 当 func 返回 null 时停止 ，返回 false , 其它情况返回 true
      */
-    fun ForEach(func: (E?) -> Int?) {
-        var skip = 0;
+    fun ForEach(initSkip: Int = 0, func: (E?) -> Int?) {
+        var skip = initSkip;
         while (true) {
             var ent = this.limit(skip, 1).toEntity();
 
