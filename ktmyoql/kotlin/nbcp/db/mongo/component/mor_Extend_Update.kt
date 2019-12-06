@@ -12,6 +12,7 @@ import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
 import nbcp.db.db
 import nbcp.db.mongo.*
+import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 
 /**
@@ -24,6 +25,12 @@ import java.time.LocalDateTime
  * MongoUpdate
  */
 class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M) : MongoClipBase(moerEntity.tableName), IMongoWhereable {
+    companion object {
+        private val logger by lazy {
+            return@lazy LoggerFactory.getLogger(this::class.java)
+        }
+    }
+
     private var whereData = mutableListOf<Criteria>()
     private var setData = LinkedHashMap<String, Any?>()
     private var unsetData = mutableListOf<String>()
@@ -70,7 +77,6 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
         this.setData.put(v.first.toString(), v.second);
         return this;
     }
-
 
 
     fun set(key: String, value: Any?): MongoUpdateClip<M> {
@@ -227,6 +233,7 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
         return execAll();
     }
 
+
     /**
      * 更新条件可以为空。
      */
@@ -237,7 +244,7 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
         var criteria = this.moerEntity.getMongoCriteria(*whereData.toTypedArray());
 
         var whereCriteriaObject = criteria.criteriaObject
-        db.logger.info("Update:[" + this.collectionName + "]" + whereCriteriaObject.toJson())
+
 //        for (wkv in whereData) {
 //            criteria = criteria.and(wkv.first).`is`(wkv.second);
 //        }
@@ -304,18 +311,33 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
             return 0;
         }
 
+        var ret = 0;
+        try {
+            var result = mongoTemplate.updateMulti(
+                    Query.query(criteria),
+                    update,
+                    collectionName);
 
-        var result = mongoTemplate.updateMulti(
-                Query.query(criteria),
-                update,
-                collectionName);
+            if (result.modifiedCount > 0) {
+                db.mongoEvents.onUpdated(this, settingResult.extData)
+            }
 
-        if (result.modifiedCount > 0) {
-            db.mongoEvents.onUpdated(this, settingResult.extData)
+            ret = result.matchedCount.toInt();
+            db.affectRowCount = ret
+        } catch (e: Exception) {
+            ret = -1;
+            throw e;
+        } finally {
+            var msg = "update:[" + this.collectionName + "] " + whereCriteriaObject.toJson() + " ,result:" + ret;
+            if (ret < 0) {
+                logger.error(msg)
+            } else {
+                logger.info(msg)
+            }
         }
 
-        db.affectRowCount = result.matchedCount.toInt()
-        return result.matchedCount.toInt();
+
+        return ret;
     }
 }
 

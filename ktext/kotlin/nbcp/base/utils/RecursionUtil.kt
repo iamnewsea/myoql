@@ -14,6 +14,12 @@ enum class RecursionReturnEnum private constructor(val Value: Int) {
     Remove(8);
 }
 
+//enum class ExecuteForReturnEnum{
+//    Continue,
+//    Break,
+//
+//}
+
 object RecursionUtil {
 
 

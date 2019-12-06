@@ -85,8 +85,20 @@ fun <T> T.IsIn(equalFunc: ((T, T) -> Boolean)? = null, vararg values: T): Boolea
 //}
 
 
+/**
+ * 查找最近添加的。
+ * @param func : 查找要返回的对象，返回true即是查找的对象。
+ * func:((T)->Boolean)
+ */
+inline fun <reified R> Stack<*>.getLatest(): R? {
+    if( this.size == 0) return null
 
-
+    for (i in this.indices.reversed()) {
+        var item = this[i];
+        if (item is R) return item
+    }
+    return null;
+}
 
 
 interface IDisposeable {
@@ -101,13 +113,12 @@ enum class LogScope : IDisposeable {
 
     override fun dispose() {
     }
-
-
 }
 
-private val _scopes = ThreadLocal.withInitial { Stack<IDisposeable>() }
 
-val scopes: Stack<IDisposeable>
+private val _scopes = ThreadLocal.withInitial { Stack<Any>() }
+
+val scopes: Stack<Any>
     get() = _scopes.get();
 
 /**
@@ -118,12 +129,14 @@ val scopes: Stack<IDisposeable>
  *
  * using(
  */
-fun <T> using(init: IDisposeable, body: () -> T): T {
+fun <T> using(init: Any, body: () -> T): T {
     scopes.push(init);
     try {
         return body();
     } finally {
-        init.dispose();
+        if (init is IDisposeable) {
+            init.dispose();
+        }
         if (scopes.isEmpty() == false) {
             scopes.pop()
         }
@@ -148,9 +161,6 @@ fun <T> using(init: IDisposeable, body: () -> T): T {
 //}
 
 
-
-
-
 //inline fun <reified K, reified V> Map<K, V>.ToLinkedHashMap(): LinkedHashMap<K, V> {
 //    var map = linkedMapOf<K, V>()
 //    this.forEach {
@@ -158,7 +168,6 @@ fun <T> using(init: IDisposeable, body: () -> T): T {
 //    }
 //    return map;
 //}
-
 
 
 fun Serializable.ToSerializableByteArray(): ByteArray {
@@ -215,7 +224,6 @@ val File.FullName: String
 //    get () {
 //        return Date(Math.floor(this.time / MyUtil.OneDayMilliseconds.toDouble()).toLong() * MyUtil.OneDayMilliseconds - MyUtil.OneHourMilliseconds * 8);
 //    }
-
 
 
 /**

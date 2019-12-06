@@ -14,6 +14,8 @@ import nbcp.db.mongo.MongoQueryClip
 import nbcp.db.mongo.MongoUpdateClip
 
 import nbcp.db.mongo.*
+import org.slf4j.LoggerFactory
+import java.lang.Exception
 import java.util.stream.IntStream
 
 typealias mongoQuery = org.springframework.data.mongodb.core.query.Query
@@ -21,11 +23,18 @@ typealias mongoQuery = org.springframework.data.mongodb.core.query.Query
 /**
  * mongo 的操作的基类
  */
-abstract class MongoBaseEntity<T : IMongoDocument>(val entityClass: Class<T>, entityName: String):BaseDbEntity(entityName) {
+abstract class MongoBaseEntity<T : IMongoDocument>(val entityClass: Class<T>, entityName: String) : BaseDbEntity(entityName) {
 //    abstract fun getColumns(): Array<String>;
+companion object {
+    private val logger by lazy {
+        return@lazy LoggerFactory.getLogger(this::class.java)
+    }
+}
 
-
-    var mongoTemplate = SpringUtil.getBean<MongoTemplate>()
+    val mongoTemplate: MongoTemplate
+        get() {
+            return scopes.getLatest<MongoTemplate>() ?: SpringUtil.getBean<MongoTemplate>()
+        }
 
 
     /**
@@ -37,9 +46,28 @@ abstract class MongoBaseEntity<T : IMongoDocument>(val entityClass: Class<T>, en
             entity.set("id", ObjectId().toString())
         }
 
-        mongoTemplate.insert(entity, tableName);
-        db.affectRowCount = 1;
-        return entity.get("id").toString()
+        var ret = 0;
+        var retId = "";
+        try {
+            mongoTemplate.insert(entity, tableName);
+            ret = 1;
+            db.affectRowCount = ret;
+            retId= entity.get("id").toString()
+        }
+        catch(e:Exception){
+            ret = -1;
+            throw e;
+        }
+        finally {
+            if( ret < 0) {
+                logger.error("insert:[" + this.tableName + "] ,returnId:" + retId);
+            }
+            else{
+                logger.info("insert:[" + this.tableName + "] ,returnId:" + retId);
+            }
+        }
+
+        return retId
     }
 
 
@@ -93,7 +121,7 @@ cursor: {} } """;
             }
         }
         mongoTemplate.insertAll(entities)
-        db.affectRowCount =entities.size
+        db.affectRowCount = entities.size
     }
 
 

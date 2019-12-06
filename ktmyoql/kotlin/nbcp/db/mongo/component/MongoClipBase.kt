@@ -2,6 +2,8 @@ package nbcp.db.mongo
 
 import com.mongodb.DBCollection
 import nbcp.base.extend.Slice
+import nbcp.base.extend.getLatest
+import nbcp.base.extend.scopes
 import org.springframework.data.mongodb.core.MongoTemplate
 import nbcp.base.utils.SpringUtil
 import nbcp.db.mongo.*
@@ -17,7 +19,10 @@ import java.io.Serializable
 //collectionClazz 是集合类型。
 open class MongoClipBase(var collectionName: String): Serializable {
 
-    var mongoTemplate = SpringUtil.getBean<MongoTemplate>();
+    val mongoTemplate: MongoTemplate
+        get() {
+            return scopes.getLatest<MongoTemplate>() ?: SpringUtil.getBean<MongoTemplate>()
+        }
 
 
     fun getCollection(): DBCollection{
@@ -37,7 +42,7 @@ interface IMongoWhereable {
 
 
 
-fun <T:MongoClipBase> T.useTemplate(template: MongoTemplate):T{
-    this.mongoTemplate = template;
-    return this;
-}
+//fun <T:MongoClipBase> T.useTemplate(template: MongoTemplate):T{
+//    this.mongoTemplate = template;
+//    return this;
+//}

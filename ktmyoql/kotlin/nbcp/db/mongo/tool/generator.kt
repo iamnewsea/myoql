@@ -2,6 +2,7 @@ package nbcp.db.mongo.tool
 
 import nbcp.base.comm.StringMap
 import nbcp.base.extend.*
+import nbcp.base.line_break
 import nbcp.base.utils.MyUtil
 import nbcp.db.mongo.MongoEntityGroup
 
@@ -340,7 +341,7 @@ ${props.joinToString("\n")}
         return getEntityName(entTypeName);
     }
 
-    fun genVarEntity(entType: Class<*>): String {
+    private fun genVarEntity(entType: Class<*>): String {
         var entTypeName = entType.name.split(".").last();
         if (entTypeName.endsWith("\$Companion")) {
             return "";
@@ -349,7 +350,8 @@ ${props.joinToString("\n")}
         var entityTypeName = entTypeName + "Entity";
         var entityVarName = getEntityName(entTypeName);
 
-        return """val ${entityVarName}=${entityTypeName}();""";
+        return """val ${entityVarName}=${entityTypeName}();
+fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""";
     }
 
 
@@ -374,9 +376,8 @@ ${props.joinToString("\n")}
         var entityTypeName = entTypeName + "Entity"
         var entityVarName = getEntityName(entTypeName)
 
-        var ent = """class ${entityTypeName}():MongoBaseEntity<${entTypeName}>(${entTypeName}::class.java,"${MyUtil.getSmallCamelCase(entType.simpleName)}") {
+        var ent = """class ${entityTypeName}(collectionName:String="${MyUtil.getSmallCamelCase(entType.simpleName)}"):MongoBaseEntity<${entTypeName}>(${entTypeName}::class.java,collectionName) {
 ${props.joinToString("\n")}
-
 }
 """
 

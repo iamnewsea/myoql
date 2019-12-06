@@ -17,6 +17,8 @@ import nbcp.base.utils.Md5Util
 import nbcp.base.utils.MyUtil
 import nbcp.db.db
 import nbcp.db.mongo.*
+import org.slf4j.LoggerFactory
+import java.lang.Exception
 
 /**
  * Created by Cy on 17-4-7.
@@ -102,17 +104,42 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
         return this;
     }
 
-
-    fun toCursor(): DBCursor {
-        var criteria = this.moerEntity.getMongoCriteria(*whereData.toTypedArray());
-
-        var msgs = mutableListOf<String>()
-        msgs.add("query:[" + this.collectionName + "]" + criteria.criteriaObject.toJson())
-        if (selectDbObjects.any()) {
-            msgs.add("SelectDbObjects:[" + this.collectionName + "]" + (selectDbObjects.map { (it as BasicDBObject).toJson() }).joinToString(","))
+    companion object {
+        private val logger by lazy {
+            return@lazy LoggerFactory.getLogger(this::class.java)
         }
-        db.logger.info(msgs.joinToString(line_break))
+    }
 
+
+    /**
+     * 返回该对象的 Md5。
+     */
+    private fun getCacheKey(): String {
+        var unKeys = mutableListOf<String>()
+
+        unKeys.add(whereData.map { it.criteriaObject.toJson() }.joinToString("&"))
+        unKeys.add(skip.toString())
+        unKeys.add(take.toString())
+        unKeys.add(sort.toJson())
+        unKeys.add(selectColumns.joinToString(","))
+        unKeys.add(unSelectColumns.joinToString(","))
+
+
+        return Md5Util.getBase64Md5(unKeys.joinToString("\n"));
+    }
+
+    fun <R> toList(clazz: Class<R>, mapFunc: ((DBObject) -> Unit)? = null): MutableList<R> {
+        var isString = false;
+        if (clazz.IsSimpleType()) {
+            isString = clazz.name == "java.lang.String";
+        }
+//        else if (selectColumns.any() == false) {
+//            if (Map::class.java.isAssignableFrom(clazz) == false) {
+//                select(*clazz.fields.map { it.name }.toTypedArray())
+//            }
+//        }
+
+        var criteria = this.moerEntity.getMongoCriteria(*whereData.toTypedArray());
         var projection = BasicDBObject();
         selectColumns.forEach {
             projection.put(it, 1)
@@ -147,38 +174,6 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
         }
 
         var cursor = coll.find(criteria.toDBObject(), option)
-        return cursor;
-    }
-
-    /**
-     * 返回该对象的 Md5。
-     */
-    private fun getCacheKey(): String {
-        var unKeys = mutableListOf<String>()
-
-        unKeys.add(whereData.map { it.criteriaObject.toJson() }.joinToString("&"))
-        unKeys.add(skip.toString())
-        unKeys.add(take.toString())
-        unKeys.add(sort.toJson())
-        unKeys.add(selectColumns.joinToString(","))
-        unKeys.add(unSelectColumns.joinToString(","))
-
-
-        return Md5Util.getBase64Md5(unKeys.joinToString("\n"));
-    }
-
-    fun <R> toList(clazz: Class<R>, mapFunc: ((DBObject) -> Unit)? = null): MutableList<R> {
-        var isString = false;
-        if (clazz.IsSimpleType()) {
-            isString = clazz.name == "java.lang.String";
-        }
-//        else if (selectColumns.any() == false) {
-//            if (Map::class.java.isAssignableFrom(clazz) == false) {
-//                select(*clazz.fields.map { it.name }.toTypedArray())
-//            }
-//        }
-
-        var cursor = toCursor();
 
 
 //        var cacheValue = MyCache.find(this.collectionName, this.getCacheKey())
@@ -191,34 +186,62 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
 
         var ret = mutableListOf<R>();
         var lastKey = selectColumns.lastOrNull() ?: ""
-        cursor.forEach {
-            db.change_id2Id(it);
+        var error = false;
+        try {
+            cursor.forEach {
+                db.change_id2Id(it);
 
 //            if( it.containsField("_id")){
 //                it.put("id",it.get("_id").toString())
 //            }
 
-            if (isString) {
-                if (lastKey.isEmpty()) {
-                    lastKey = it.keySet().last()
-                }
+                if (isString) {
+                    if (lastKey.isEmpty()) {
+                        lastKey = it.keySet().last()
+                    }
 
-                ret.add(it.GetComplexPropertyValue(lastKey) as R)
-            } else if (clazz.IsSimpleType()) {
-                if (lastKey.isEmpty()) {
-                    lastKey = it.keySet().last()
-                }
+                    ret.add(it.GetComplexPropertyValue(lastKey) as R)
+                } else if (clazz.IsSimpleType()) {
+                    if (lastKey.isEmpty()) {
+                        lastKey = it.keySet().last()
+                    }
 
-                ret.add(it.GetComplexPropertyValue(*lastKey.split(".").toTypedArray()) as R);
-            } else {
-                if (DBObject::class.java.isAssignableFrom(clazz)) {
-                    ret.add(it as R);
+                    ret.add(it.GetComplexPropertyValue(*lastKey.split(".").toTypedArray()) as R);
                 } else {
+                    if (DBObject::class.java.isAssignableFrom(clazz)) {
+                        ret.add(it as R);
+                    } else {
 //                    var ent = mapper.toEntity(it)
-                    var ent = it.ConvertJson(clazz)
-                    ret.add(ent);
+                        var ent = it.ConvertJson(clazz)
+                        ret.add(ent);
+                    }
                 }
             }
+        } catch (e: Exception) {
+            error = true;
+            throw e;
+        } finally {
+            if (logger.isInfoEnabled || error) {
+                var msgs = mutableListOf<String>()
+                msgs.add("query:[" + this.collectionName + "] ");
+                msgs.add("    where:" + criteria.criteriaObject.toJson())
+                if (selectDbObjects.any()) {
+                    msgs.add("    select:" + (selectDbObjects.map { (it as BasicDBObject).toJson() }).joinToString(","))
+                }
+                if (sort.any()) {
+                    msgs.add("    sort:" + sort.ToJson())
+                }
+                if (skip > 0 || take > 0) {
+                    msgs.add("    limit:${skip},${take}")
+                }
+
+                if (error) {
+                    logger.error(msgs.joinToString(line_break))
+                } else {
+                    logger.info(msgs.joinToString(line_break))
+                }
+            }
+
         }
 
 
@@ -245,25 +268,25 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
     }
 
     fun toList(mapFunc: ((DBObject) -> Unit)? = null): MutableList<E> {
-        return toList(moerEntity.entityClass,mapFunc)
+        return toList(moerEntity.entityClass, mapFunc)
     }
 
     fun toEntity(mapFunc: ((DBObject) -> Unit)? = null): E? {
         this.take = 1;
-        return toList(moerEntity.entityClass,mapFunc).firstOrNull();
+        return toList(moerEntity.entityClass, mapFunc).firstOrNull();
     }
 
 //    inline fun <reified R> toEntity(): R? {
 //        return toEntity(R::class.java);
 //    }
 
-    fun <R> toEntity(clazz: Class<R>,mapFunc: ((DBObject) -> Unit)? = null): R? {
+    fun <R> toEntity(clazz: Class<R>, mapFunc: ((DBObject) -> Unit)? = null): R? {
         this.take = 1;
-        return toList(clazz,mapFunc).firstOrNull();
+        return toList(clazz, mapFunc).firstOrNull();
     }
 
 
-    fun <R> toListResult(clazz: Class<R>,  mapFunc: ((DBObject) -> Unit)? = null): ListResult<R> {
+    fun <R> toListResult(clazz: Class<R>, mapFunc: ((DBObject) -> Unit)? = null): ListResult<R> {
         var ret = ListResult<R>();
         ret.data = toList(clazz, mapFunc);
 
@@ -282,7 +305,7 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
     }
 
     fun toMapListResult(): ListResult<JsonMap> {
-       return toListResult(JsonMap::class.java);
+        return toListResult(JsonMap::class.java);
     }
 
 
@@ -290,6 +313,25 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
     fun unSelect(column: MongoColumnName): MongoQueryClip<M, E> {
         unSelectColumns.add(column.toString());
         return this;
+    }
+
+
+    /**
+     * 不是一次查询出来，而是分批查。适用于大数据遍历
+     * @param func : 每条数据的回调，返回Int,表示在下一条数据的基础上跳过多少行，默认为0，可以是负数。
+     * @return 当 func 返回 null 时停止 ，返回 false , 其它情况返回 true
+     */
+    fun ForEach(func: (E?) -> Int?) {
+        var skip = 0;
+        while (true) {
+            var ent = this.limit(skip, 1).toEntity();
+
+            var ret = func(ent);
+            if (ret == null) {
+                return;
+            }
+            skip += 1 + ret;
+        }
     }
 }
 

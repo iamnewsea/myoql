@@ -8,6 +8,7 @@ import nbcp.base.utils.JarClassUtil
 import nbcp.base.utils.MyUtil
 import nbcp.db.db
 import nbcp.db.mongo.*
+import org.slf4j.LoggerFactory
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.*
@@ -46,6 +47,9 @@ data class MongoUpdateData(
 @Component
 open class MongoEventConfig : ApplicationListener<ContextRefreshedEvent> {
     companion object {
+        private val logger by lazy {
+            return@lazy LoggerFactory.getLogger(this::class.java)
+        }
 //        private val all_entities = mutableListOf<MongoBaseEntity<IMongoDocument>>()
         private val list_entity_settings = mutableListOf<MongoUpdateData>()
         private val list_entity_setteds = mutableListOf<MongoUpdateData>()
@@ -145,7 +149,7 @@ open class MongoEventConfig : ApplicationListener<ContextRefreshedEvent> {
                 ret = it.callback.invoke(null, update, value)
             }
 
-            db.logger.info("Mongo entity updatting event: ${it.entityClass.name}.${it.entityFieldName} -> ${it.callback.declaringClass}.${it.callback.name}")
+             logger.info("Mongo entity updatting event: ${it.entityClass.name}.${it.entityFieldName} -> ${it.callback.declaringClass}.${it.callback.name}")
 
             if (ret is SettingResult) {
                 retResult.result = ret.result
@@ -156,7 +160,7 @@ open class MongoEventConfig : ApplicationListener<ContextRefreshedEvent> {
             } else if (ret is Boolean) {
                 retResult.result = ret;
             } else {
-                db.logger.error("mongo updating 拦截器返回了不识别的类型:${ret::class.java}")
+                 logger.error("mongo updating 拦截器返回了不识别的类型:${ret::class.java}")
             }
 
             if (retResult.result == false) {
@@ -166,6 +170,8 @@ open class MongoEventConfig : ApplicationListener<ContextRefreshedEvent> {
 
         return retResult;
     }
+
+
 
     fun onUpdated(update: MongoUpdateClip<*>, extData: Any?) {
         var setted = list_entity_setteds.filter { it.entityClass == update.moerEntity.entityClass }.sortedBy { it.entityFieldName }
@@ -182,7 +188,7 @@ open class MongoEventConfig : ApplicationListener<ContextRefreshedEvent> {
                 it.callback.invoke(null, update, value);
             }
 
-            db.logger.info("Mongo entity updatted event: ${it.entityClass.name}.${it.entityFieldName} -> ${it.callback.declaringClass}.${it.callback.name}")
+             logger.info("Mongo entity updatted event: ${it.entityClass.name}.${it.entityFieldName} -> ${it.callback.declaringClass}.${it.callback.name}")
         }
     }
 }

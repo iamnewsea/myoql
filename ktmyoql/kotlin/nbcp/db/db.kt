@@ -17,9 +17,9 @@ enum class DatabaseEnum {
 }
 
 object db {
-    val logger by lazy {
-        return@lazy LoggerFactory.getLogger(this::class.java)
-    }
+//    private val logger by lazy {
+//        return@lazy LoggerFactory.getLogger(this::class.java)
+//    }
 
     var currentDatabaseType: DatabaseEnum = DatabaseEnum.Mysql
 
