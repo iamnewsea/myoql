@@ -1,6 +1,6 @@
 package nbcp
 
-import nbcp.base.comm.ApiResult
+import nbcp.comm.*
 import nbcp.base.extend.FieldTypeJsonMapper
 import nbcp.base.extend.GetSetTypeJsonMapper
 import nbcp.base.utils.RecursionUtil

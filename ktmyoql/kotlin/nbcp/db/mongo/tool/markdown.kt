@@ -1,6 +1,6 @@
 package nbcp.db.mongo.tool
 
-import nbcp.base.comm.StringMap
+import nbcp.comm.*
 import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
 import nbcp.db.mongo.MongoEntityGroup

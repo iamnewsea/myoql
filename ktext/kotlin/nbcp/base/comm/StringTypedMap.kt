@@ -1,4 +1,4 @@
-package nbcp.base.comm
+package nbcp.comm
 
 import org.slf4j.LoggerFactory
 import nbcp.base.extend.*

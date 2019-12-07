@@ -1,6 +1,6 @@
 package nbcp.tool
 
-import nbcp.base.comm.StringMap
+import nbcp.comm.*
 import java.io.File
 import java.lang.reflect.Field
 import java.util.ArrayList

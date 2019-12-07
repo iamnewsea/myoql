@@ -1,6 +1,6 @@
 package nbcp.db.mysql
 
-import nbcp.base.comm.JsonMap
+import nbcp.comm.*
 import nbcp.base.extend.CloneObject
 import nbcp.db.sql.*
 import nbcp.db.*

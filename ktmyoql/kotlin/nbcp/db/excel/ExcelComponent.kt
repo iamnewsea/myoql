@@ -3,7 +3,7 @@ package nbcp.db.excel
 
 import org.apache.poi.hssf.record.chart.NumberFormatIndexRecord
 import org.apache.poi.ss.usermodel.*
-import nbcp.base.comm.JsonMap
+import nbcp.comm.*
 import nbcp.base.extend.*
 import nbcp.model.DataTable
 import java.time.LocalDate
@@ -27,8 +27,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.stereotype.Component
 import org.xml.sax.InputSource
 import org.xml.sax.XMLReader
-import nbcp.base.comm.DiffData
-import nbcp.base.comm.StringMap
+import nbcp.comm.*
+import nbcp.comm.*
 import nbcp.base.utils.MyUtil
 import org.springframework.context.annotation.Lazy
 import java.io.*

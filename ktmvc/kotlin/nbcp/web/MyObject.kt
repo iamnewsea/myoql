@@ -1,6 +1,6 @@
 package nbcp.web
 
-import nbcp.base.comm.JsonMap
+import nbcp.comm.*
 import nbcp.base.extend.*
 import org.springframework.http.MediaType
 import nbcp.base.utf8

@@ -1,8 +1,8 @@
 package nbcp.handler
 
-import nbcp.base.comm.JsonMap
-import nbcp.base.comm.OpenAction
-import nbcp.base.comm.StringMap
+import nbcp.comm.*
+import nbcp.comm.*
+import nbcp.comm.*
 import nbcp.base.extend.*
 import nbcp.base.utf8
 import nbcp.base.utils.HttpUtil

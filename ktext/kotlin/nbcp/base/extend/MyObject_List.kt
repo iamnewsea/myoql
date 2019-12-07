@@ -1,6 +1,6 @@
 package nbcp.base.extend
 
-import nbcp.base.comm.DiffData
+import nbcp.comm.*
 
 
 fun MutableList<*>.RemoveRange(startIndex: Int, endIndex: Int) {

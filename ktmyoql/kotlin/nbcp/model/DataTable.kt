@@ -1,8 +1,8 @@
 package nbcp.model
 
-import nbcp.base.comm.DiffData
-import nbcp.base.comm.JsonMap
-import nbcp.base.comm.StringMap
+import nbcp.comm.*
+import nbcp.comm.*
+import nbcp.comm.*
 import nbcp.base.extend.AsString
 import nbcp.base.extend.IsIn
 import java.io.Serializable

@@ -1,7 +1,7 @@
 package nbcp.db.excel
 
-import nbcp.base.comm.DiffData
-import nbcp.base.comm.JsonMap
+import nbcp.comm.*
+import nbcp.comm.*
 import nbcp.base.extend.AsDouble
 import nbcp.base.extend.AsInt
 import nbcp.base.extend.AsLocalDateTime

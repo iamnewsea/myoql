@@ -1,6 +1,6 @@
 package nbcp.db
 
-import nbcp.base.comm.JsonMap
+import nbcp.comm.*
 
 /**
  * 缓存类型

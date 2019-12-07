@@ -3,9 +3,9 @@ package nbcp.base.utils
 /**
  * Created by udi on 17-4-30.
  */
-import nbcp.base.comm.StringMap
+import nbcp.comm.*
 import org.slf4j.LoggerFactory
-import nbcp.base.comm.JsonMap
+import nbcp.comm.*
 import nbcp.base.extend.*
 import nbcp.base.utf8
 import java.awt.image.BufferedImage

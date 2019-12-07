@@ -3,7 +3,7 @@ package nbcp.db.mysql.component
 import org.springframework.context.annotation.Bean
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Component
-import nbcp.base.comm.JsonMap
+import nbcp.comm.*
 import java.sql.ResultSet
 
 /**

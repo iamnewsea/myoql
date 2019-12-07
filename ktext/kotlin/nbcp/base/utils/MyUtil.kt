@@ -1,6 +1,6 @@
 package nbcp.base.utils
 
-import nbcp.base.comm.*
+import nbcp.comm.*
 import nbcp.base.extend.*
 import nbcp.db.CodeName
 import java.io.File

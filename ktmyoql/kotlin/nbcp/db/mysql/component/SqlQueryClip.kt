@@ -1,8 +1,8 @@
 package nbcp.db.mysql
 
 import org.slf4j.LoggerFactory
-import nbcp.base.comm.JsonMap
-import nbcp.base.comm.ListResult
+import nbcp.comm.*
+import nbcp.comm.*
 import nbcp.base.extend.*
 import nbcp.base.line_break
 import nbcp.db.*

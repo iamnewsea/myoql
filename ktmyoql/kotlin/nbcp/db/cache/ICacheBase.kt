@@ -1,7 +1,7 @@
 package nbcp.db
 
-import nbcp.base.comm.JsonMap
-import nbcp.base.comm.StringMap
+import nbcp.comm.*
+import nbcp.comm.*
 import nbcp.db.sql.SingleSqlData
 
 interface IDataCache4Sql {

@@ -1,7 +1,7 @@
 package nbcp.db.sql
 
-import nbcp.base.comm.JsonMap
-import nbcp.base.comm.StringMap
+import nbcp.comm.*
+import nbcp.comm.*
 import nbcp.base.extend.Slice
 import nbcp.db.mysql.*
 import java.io.Serializable

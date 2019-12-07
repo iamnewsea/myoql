@@ -1,7 +1,7 @@
 package nbcp.base.extend
 
 
-import nbcp.base.comm.JsonMap
+import nbcp.comm.*
 import java.lang.StringBuilder
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -9,7 +9,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 import org.w3c.dom.DocumentType
-import nbcp.base.comm.StringMap
+import nbcp.comm.*
 import java.io.ByteArrayInputStream
 import java.util.regex.Pattern
 import javax.xml.parsers.DocumentBuilderFactory

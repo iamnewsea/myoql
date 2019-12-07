@@ -1,4 +1,4 @@
-package nbcp.base.comm
+package nbcp.comm
 
 /**
  * Created by udi on 17-3-30.

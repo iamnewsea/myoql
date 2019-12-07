@@ -1,4 +1,4 @@
-package nbcp.base.comm
+package nbcp.comm
 
 import org.slf4j.LoggerFactory
 import nbcp.base.extend.*
@@ -44,11 +44,11 @@ open class ListQueryModel {
  */
 class ListResult<T>(msg: String = "",
                     var total: Int = -1,
-                    var data: MutableList<T> = mutableListOf(),
+                    var data: List<T> = listOf(),
                     var value: Any? = null
 ) : JsonResult(msg) {
     companion object {
-        fun<T> of(data:MutableList<T>):ListResult<T>{
+        fun<T> of(data:List<T>):ListResult<T>{
             var ret = ListResult<T>();
             ret.data = data;
             ret.total = data.size;

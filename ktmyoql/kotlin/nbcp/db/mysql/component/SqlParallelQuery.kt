@@ -1,7 +1,7 @@
 package nbcp.db.mysql.component
 
-import nbcp.base.comm.JsonMap
-import nbcp.base.comm.ListResult
+import nbcp.comm.*
+import nbcp.comm.*
 import nbcp.base.extend.AsString
 import nbcp.db.mysql.*
 import java.util.concurrent.Callable

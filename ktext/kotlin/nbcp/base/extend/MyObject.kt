@@ -1,7 +1,7 @@
 package nbcp.base.extend
 
 import org.slf4j.Logger
-import nbcp.base.comm.DiffData
+import nbcp.comm.*
 import nbcp.base.utf8
 import nbcp.base.utils.BufferTailReader
 import java.util.*
@@ -473,7 +473,9 @@ fun Temporal.BetweenDays(nextTime: Temporal): Int {
 }
 
 
-//包含只读属性. 即: 可能没有 setField 方法.
+/**
+ *
+ */
 //val Class<*>.properties: Array<Field>
 //    get() {
 //        var ret = mutableListOf<Field>()

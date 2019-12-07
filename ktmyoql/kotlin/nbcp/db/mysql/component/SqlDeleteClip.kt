@@ -1,7 +1,7 @@
 package nbcp.db.mysql
 
 import org.slf4j.LoggerFactory
-import nbcp.base.comm.JsonMap
+import nbcp.comm.*
 import nbcp.base.extend.AsString
 import nbcp.db.db
 import nbcp.db.sql.*

@@ -2,7 +2,7 @@ package nbcp.db.mysql
 
 
 import nbcp.db.IdName
-import nbcp.base.comm.JsonMap
+import nbcp.comm.*
 import nbcp.base.extend.*
 import nbcp.db.sql.*
 import nbcp.db.mysql.*

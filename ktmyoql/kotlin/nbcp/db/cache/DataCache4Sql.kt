@@ -1,13 +1,13 @@
 package nbcp.db
 
-import nbcp.base.comm.ApiResult
+import nbcp.comm.*
 import nbcp.db.CacheKey
 import nbcp.db.sql.*
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Service
-import nbcp.base.comm.JsonMap
-import nbcp.base.comm.StringMap
+import nbcp.comm.*
+import nbcp.comm.*
 import nbcp.base.extend.*
 import nbcp.base.utils.Md5Util
 import nbcp.base.utils.SpringUtil

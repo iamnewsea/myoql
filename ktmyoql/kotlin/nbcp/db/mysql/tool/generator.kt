@@ -1,6 +1,6 @@
 package nbcp.db.mysql.tool
 
-import nbcp.base.comm.StringMap
+import nbcp.comm.*
 import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
 import nbcp.db.mysql.*

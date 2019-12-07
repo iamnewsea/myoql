@@ -1,6 +1,6 @@
 package nbcp.db.mysql
 
-import nbcp.base.comm.JsonMap
+import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import nbcp.db.*
 import nbcp.db.sql.*

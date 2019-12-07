@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
-import nbcp.base.comm.JsonMap
-import nbcp.base.comm.StringMap
+import nbcp.comm.*
+import nbcp.comm.*
 
 import nbcp.base.extend.AsInt
 import nbcp.base.extend.AsString
