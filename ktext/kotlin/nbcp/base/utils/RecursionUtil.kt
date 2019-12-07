@@ -138,11 +138,11 @@ object RecursionUtil {
 
 
         return type.declaredFields.ForEachExt { it, index ->
-            if (it.modifiers and Modifier.STATIC == Modifier.STATIC) {
+            if (it.modifiers and Modifier.STATIC > 0) {
                 return@ForEachExt true
             }
 
-            if (it.modifiers and Modifier.TRANSIENT == Modifier.TRANSIENT) {
+            if (it.modifiers and Modifier.TRANSIENT > 0) {
                 return@ForEachExt true;
             }
 

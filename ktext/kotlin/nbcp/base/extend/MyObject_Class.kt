@@ -70,8 +70,8 @@ fun <T> Class<T>.GetEnumNumberField(): Field? {
 
 
     var ret = this.declaredFields.filter {
-        it.modifiers and Modifier.PRIVATE == Modifier.PRIVATE &&
-                it.modifiers and Modifier.STATIC == 0 &&
+        it.modifiers and Modifier.PRIVATE > 0 &&
+                (it.modifiers and Modifier.STATIC == 0) &&
                 it.type.IsNumberType()
     }
     if (ret.size == 1) {
@@ -96,12 +96,15 @@ fun <T> Class<T>.GetEnumStringField(): Field? {
 }
 
 
-
 //如果父类与子类有相同的字段，返回子类字段。
 val Class<*>.AllFields: List<Field>
     get() {
         var ret = mutableListOf<Field>();
-        ret.addAll(this.declaredFields)
+        ret.addAll(this.declaredFields.filter {
+            if (it.modifiers and Modifier.STATIC > 0) return@filter false;
+            if (it.modifiers and Modifier.TRANSIENT > 0) return@filter false;
+            true
+        })
 
         if (this.superclass == null || this.superclass == Any::class.java) {
             return ret;
