@@ -114,55 +114,6 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
         return this;
     }
 
-    /**
-     * @param entity 要更新的实体
-     * @param whereColumnsFunc where 列。
-     * @param unsetColumnsFunc 排除要更新的列。
-     */
-    fun setEntity(entity: Any, whereColumnsFunc: ((M) -> MongoColumns)? = null, unsetColumnsFunc: ((M) -> MongoColumns)? = null): MongoUpdateClip<M> {
-        //从之前的 where 中提出 unsetColumns
-        var whereColumns = listOf<String>();
-        if (whereColumnsFunc != null) {
-            whereColumns = whereColumnsFunc!!(this.moerEntity).map { it.toString() }
-        }
-
-        var unsetColumns = mutableSetOf<String>();
-        if (unsetColumnsFunc != null) {
-            unsetColumns = unsetColumnsFunc!!(this.moerEntity).map { it.toString() }.toMutableSet()
-        }
-
-
-        this.whereData.forEach {
-            unsetColumns.addAll(it.criteriaObject.keys);
-        }
-        entity::class.java.AllFields.forEach {
-            var findKey = it.name;
-            if (it.name == "id") {
-                findKey = "_id"
-            }
-            if (whereColumns.contains(findKey)) {
-                var value = MyUtil.getPrivatePropertyValue(entity, it.name);
-
-                this.where(it.name match value);
-                return@forEach
-            }
-
-            if (it.name == "id") {
-                return@forEach
-            }
-
-            if (unsetColumns.contains(it.name)) {
-                return@forEach
-            }
-
-            var value = MyUtil.getPrivatePropertyValue(entity, it.name);
-            if (value == null) {
-                return@forEach
-            }
-            this.set(it.name, value);
-        }
-        return this;
-    }
 //    fun set(actionIf: () -> Pair<String, Any?>?): MongoUpdateClip<T> {
 //        var setData = actionIf();
 //
