@@ -20,7 +20,7 @@ fun Any.ConvertType(clazz: Class<*>): Any? {
     var className = clazz.name;
 
     if (clazz == Boolean::class.java || className == "java.lang.Boolean") {
-        return this.AsBoolean()
+        return this.AsBooleanWithNull()
     }
     if (clazz == Character::class.java || className == "Char::class.java") {
         return this.toString()[0]
@@ -183,20 +183,24 @@ fun LocalDateTime.format(pattern: String): String {
 }
 
 fun Any?.AsBoolean(defaultValue: Boolean = false): Boolean {
-    if (this == null) return defaultValue;
+    return this.AsBooleanWithNull() ?: defaultValue
+}
+
+fun Any?.AsBooleanWithNull(): Boolean? {
+    if (this == null) return null;
     if (this is Boolean) return this;
 
     if (this is Number) {
         if (this == 1) return true;
         if (this == 0) return false;
 
-        return defaultValue;
+        return null;
     }
 
     if (this is Char) {
         if (this == '1') return true;
         if (this == '0') return false
-        return defaultValue
+        return null
     }
 
     var value = this;
@@ -215,9 +219,8 @@ fun Any?.AsBoolean(defaultValue: Boolean = false): Boolean {
         if (value.equals("no", true)) return false
         if (value.equals("0", true)) return false
     }
-    return defaultValue;
+    return null;
 }
-
 
 fun Any?.AsLong(defaultValue: Long = 0): Long {
     if (this == null) return defaultValue;
