@@ -174,38 +174,42 @@ open class MyAllFilter : Filter {
         try {
             chain?.doFilter(request, response);
         } catch (e: Exception) {
+            var errorMsg = ""
             try {
-                var err = getInnerException(e);
+                var err = e;//getInnerException(e);
                 var errorInfo = mutableListOf<String>()
                 errorInfo.add(err::class.java.simpleName + ": " + err.message.AsString())
                 errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }.take(24))
 
                 logger.error(errorInfo.joinToString("\r\n"))
-                response.status = 500;
-                response.contentType = "application/json;charset=UTF-8"
-                response.outputStream.write("""{"msg":${err.Detail.ToJsonValue()}}""".toByteArray(utf8))
+                errorMsg = err.Detail.AsString(err.message.AsString()).ToJsonValue()
+
             } catch (e: Exception) {
                 logger.error("MyAllFilter处理异常时遇到错误:" + e.message.AsString())
             }
+
+            response.status = 500;
+            response.contentType = "application/json;charset=UTF-8"
+            response.outputStream.write("""{"msg":${errorMsg}}""".toByteArray(utf8))
         }
 
         procCORS(request, response)
         afterComplete(request, response, "", startAt);
     }
 
-    private fun getInnerException(e: Throwable): Throwable {
-        var err = e;
-        if (err is UndeclaredThrowableException) {
-            return err.undeclaredThrowable;
-        }
-
-        if (err is ServletException) {
-            if (err.rootCause != null) {
-                return getInnerException(err.rootCause)
-            }
-        }
-        return err;
-    }
+//    private fun getInnerException(e: Throwable): Throwable {
+//        var err = e;
+//        if (err is UndeclaredThrowableException) {
+//            return err.undeclaredThrowable;
+//        }
+//
+//        if (err is ServletException) {
+//            if (err.rootCause != null) {
+//                return getInnerException(err.rootCause)
+//            }
+//        }
+//        return err;
+//    }
 
     fun setLang(request: MyHttpRequestWrapper) {
         var lang = request.getCookie("lang");
