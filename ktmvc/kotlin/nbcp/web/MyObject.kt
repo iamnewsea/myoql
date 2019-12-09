@@ -16,6 +16,11 @@ infix fun String.lang(englishMessage: String): String {
     return this;
 }
 
+fun ServletResponse.WriteXmlRawValue(xml: String) {
+    this.contentType = MediaType.TEXT_XML_VALUE;
+    this.outputStream.write(xml.toByteArray(utf8));
+}
+
 fun ServletResponse.WriteJsonRawValue(json: String) {
     this.contentType = MediaType.APPLICATION_JSON_UTF8_VALUE;
     this.outputStream.write(json.toByteArray(utf8));

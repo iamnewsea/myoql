@@ -139,6 +139,9 @@ cursor: {} } """
         return toMapList(itemFunc).map { it.ConvertJson(clazz) }.toMutableList()
     }
 
+    /**
+     * 核心函数
+     */
     fun toMapList(itemFunc: ((Document) -> Unit)? = null): MutableList<Document> {
         var queryJson = toExpression();
         var result = mongoTemplate.executeCommand(queryJson)
