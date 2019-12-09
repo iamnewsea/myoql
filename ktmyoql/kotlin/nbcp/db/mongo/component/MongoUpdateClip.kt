@@ -123,8 +123,13 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
 //        return this;
 //    }
 
-    fun inc(key: (M) -> MongoColumnName, value: Int): MongoUpdateClip<M> {
-        this.incData.put(key(this.moerEntity).toString(), value);
+    /**
+     * 数据加法
+     * .inc{ it.incField to 1 }
+     */
+    fun inc(incData: (M) -> Pair<MongoColumnName, Int>): MongoUpdateClip<M> {
+        var kv = incData(this.moerEntity)
+        this.incData.put(kv.first.toString(), kv.second);
         return this;
     }
 
