@@ -436,7 +436,8 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
     } else if (this is java.sql.Timestamp) {
         return this.toLocalDateTime()
     } else if (this is Date) {
-        return LocalDateTime.of(this.year + 1900, this.month + 1, this.date, this.hours, this.minutes, this.seconds, (this.time % 1000).AsInt() * 1000000)
+        return LocalDateTime.ofInstant(this.toInstant(), ZoneId.systemDefault());
+        //return LocalDateTime.of(this.year + 1900, this.month + 1, this.date, this.hours, this.minutes, this.seconds, (this.time % 1000).AsInt() * 1000000)
 //        var value = this.time;
 //
 //        var ret = LocalDate.of(1970, 1, 1).atStartOfDay();

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component
 import java.lang.reflect.Type
 import java.sql.Timestamp
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -23,6 +24,15 @@ import java.util.*
  * Created by yuxh on 2018/9/18
  */
 
+class DateJsonSerializer : JsonSerializer<Date>() {
+    override fun serialize(value: Date?, generator: JsonGenerator, serializers: SerializerProvider) {
+        if (value == null) {
+            generator.writeNull()
+        } else {
+            generator.writeString(SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(value))
+        }
+    }
+}
 
 class LocalDateJsonSerializer : JsonSerializer<LocalDate>() {
     override fun serialize(value: LocalDate?, generator: JsonGenerator, serializers: SerializerProvider) {
@@ -65,6 +75,19 @@ class TimestampJsonSerializer : JsonSerializer<Timestamp>() {
     }
 }
 
+class DateJsonDeserializer : JsonDeserializer<Date>() {
+    override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): Date? {
+        if (json == null) {
+            return null;
+        }
+
+        if (json.valueAsString.contains("-")) {
+            return json.valueAsString.AsDate();
+        }
+
+        return Date(json.longValue);
+    }
+}
 
 class LocalDateJsonDeserializer : JsonDeserializer<LocalDate>() {
     override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): LocalDate? {
@@ -128,17 +151,19 @@ class TimestampJsonDeserializer : JsonDeserializer<Timestamp>() {
 // http://www.jianshu.com/p/a0fb6559f56d
 @Component
 class JavascriptDateModule() : SimpleModule(PackageVersion.VERSION), BeanPostProcessor {
-    override fun postProcessAfterInitialization(bean: Any , beanName: String ): Any {
+    override fun postProcessAfterInitialization(bean: Any, beanName: String): Any {
         return bean;
     }
 
 
     init {
+        addSerializer(Date::class.java, DateJsonSerializer());
         addSerializer(LocalDate::class.java, LocalDateJsonSerializer());
         addSerializer(LocalTime::class.java, LocalTimeJsonSerializer());
-        addSerializer(LocalDateTime::class.java, LocalDateTimeJsonSerializer());
+        addSerializer(LocalDateTime::class.java, LocalDateTimeJsonSerializer())
         addSerializer(java.sql.Timestamp::class.java, TimestampJsonSerializer())
 
+        addDeserializer(Date::class.java, DateJsonDeserializer())
         addDeserializer(LocalDate::class.java, LocalDateJsonDeserializer())
         addDeserializer(LocalTime::class.java, LocalTimeJsonDeserializer())
         addDeserializer(LocalDateTime::class.java, LocalDateTimeJsonDeserializer())
