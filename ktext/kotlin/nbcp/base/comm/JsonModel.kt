@@ -22,6 +22,12 @@ annotation class JsonModel
 //@Repeatable
 annotation class Require(val group: String = "")
 
+
+@Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Ignore(val group: String = "")
+
+
 //@Repeatable
 //@Target(AnnotationTarget.FIELD, AnnotationTarget.TYPE, AnnotationTarget.CLASS )
 //@Retention(AnnotationRetention.RUNTIME)
