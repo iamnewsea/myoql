@@ -27,6 +27,18 @@ if __name__=='__main__':
     if(returnCode !=0 ):
         err("sync_version")
 
+    returnCode = os.system("python install_jar.py -f ktext")
+    if(returnCode !=0 ):
+        err("ktext")
+
+    returnCode = os.system("python install_jar.py -f ktmyoql")
+    if(returnCode !=0 ):
+        err("ktmyoql")
+
+    returnCode = os.system("python install_jar.py -f ktmvc")
+    if(returnCode !=0 ):
+        err("ktmvc")
+
     print(os.linesep)
 
     returnCode = os.system("mvn clean deploy -P release")
