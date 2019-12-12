@@ -176,7 +176,7 @@ open class MyAllFilter : Filter {
         } catch (e: Exception) {
             var errorMsg = ""
             try {
-                var err = e;//getInnerException(e);
+                var err = getInnerException(e);
                 var errorInfo = mutableListOf<String>()
                 errorInfo.add(err::class.java.simpleName + ": " + err.message.AsString())
                 errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }.take(24))
@@ -197,19 +197,19 @@ open class MyAllFilter : Filter {
         afterComplete(request, response, "", startAt);
     }
 
-//    private fun getInnerException(e: Throwable): Throwable {
-//        var err = e;
-//        if (err is UndeclaredThrowableException) {
-//            return err.undeclaredThrowable;
-//        }
-//
-//        if (err is ServletException) {
-//            if (err.rootCause != null) {
-//                return getInnerException(err.rootCause)
-//            }
-//        }
-//        return err;
-//    }
+    private fun getInnerException(e: Throwable): Throwable {
+        var err = e;
+        if (err is UndeclaredThrowableException) {
+            return err.undeclaredThrowable;
+        }
+
+        if (err is ServletException) {
+            if (err.rootCause != null) {
+                return getInnerException(err.rootCause)
+            }
+        }
+        return err;
+    }
 
     fun setLang(request: MyHttpRequestWrapper) {
         var lang = request.getCookie("lang");
