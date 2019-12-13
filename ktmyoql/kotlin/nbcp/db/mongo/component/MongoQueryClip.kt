@@ -383,12 +383,12 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
             return@abc null;
         }
 
-        return DbReader(nextFunc);
+        return DbReader(nextFunc)
     }
 }
 
 
-class DbReader<T>(var nextFunc: () -> T?) : Iterator<T> {
+class DbReader<T>(private val nextFunc: () -> T?) : Iterator<T> {
     private var nextEntity: T? = null
 
     init {
