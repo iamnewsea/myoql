@@ -362,7 +362,7 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
             }
 
             if( currentData.size < batchSize){
-                throw RuntimeException("null")
+                return@abc null;
             }
 
             current = 0;
