@@ -110,7 +110,7 @@ open class MyAllFilter : Filter {
 //            }
 //        }
 
-
+        var loginName = request.LoginUser.name.AsString();
         var queryMap = request.queryJson
 
         if (request.method == "GET") {
@@ -124,14 +124,14 @@ open class MyAllFilter : Filter {
 
                 chain?.doFilter(myRequest, myResponse);
 
-                afterComplete(myRequest, myResponse, queryMap.getStringValue("callback"), startAt);
+                afterComplete(myRequest, myResponse, queryMap.getStringValue("callback"), startAt, "");
             } else {
                 chain?.doFilter(request, response)
 
 //                logNewSession(request, response);
             }
 
-            logger.info("${request.LoginUser.name.AsString()} ${request.ClientIp} ${request.method} ${request.requestURI}${if (request.queryString == null) "" else ("?" + request.queryString)}  --->\n" +
+            logger.info("${loginName} ${request.ClientIp} ${request.method} ${request.requestURI}${if (request.queryString == null) "" else ("?" + request.queryString)}  --->\n" +
                     "[response] ${response.status} ${System.currentTimeMillis() - startAt}毫秒")
 
 
@@ -150,7 +150,7 @@ open class MyAllFilter : Filter {
         var myResponse = MyHttpResponseWrapper(response);
         request.characterEncoding = "utf-8";
 
-        procFilter(myRequest, myResponse, chain, startAt)
+        procFilter(myRequest, myResponse, chain, startAt, loginName)
     }
 
 //    private fun logNewSession(request: HttpServletRequest, httpResponse: HttpServletResponse) {
@@ -162,39 +162,39 @@ open class MyAllFilter : Filter {
 //        }
 //    }
 
-    private fun procFilter(request: MyHttpRequestWrapper, response: MyHttpResponseWrapper, chain: FilterChain?, startAt: Long) {
+    private fun procFilter(request: MyHttpRequestWrapper, response: MyHttpResponseWrapper, chain: FilterChain?, startAt: Long, loginName: String) {
         RequestContextHolder.setRequestAttributes(ServletRequestAttributes(request, response))
 
-        beforeRequest(request)
+        beforeRequest(request, loginName)
 
         //set lang
         setLang(request);
+        var errorMsg = ""
 
-        var err: Throwable? = null
         try {
             chain?.doFilter(request, response);
         } catch (e: Exception) {
-            var errorMsg = ""
             try {
                 var err = getInnerException(e);
+                errorMsg = err.Detail.AsString(err.message.AsString()).AsString("(未知错误)")
                 var errorInfo = mutableListOf<String>()
-                errorInfo.add(err::class.java.simpleName + ": " + err.message.AsString())
+                errorInfo.add(err::class.java.simpleName + ": " + errorMsg)
                 errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }.take(24))
 
-                logger.error(errorInfo.joinToString("\r\n"))
-                errorMsg = err.Detail.AsString(err.message.AsString()).ToJsonValue()
+                logger.error(errorInfo.joinToString("\r\n"));
 
             } catch (e: Exception) {
                 logger.error("MyAllFilter处理异常时遇到错误:" + e.message.AsString())
             }
 
             response.status = 500;
-            response.contentType = "application/json;charset=UTF-8"
-            response.outputStream.write("""{"msg":${errorMsg}}""".toByteArray(utf8))
+
+            //会不会有 之前 response.write 的情况导致回发数据混乱？
+//            response.outputStream.write("""{"msg":${errorMsg}}""".toByteArray(utf8))
         }
 
-        procCORS(request, response)
-        afterComplete(request, response, "", startAt);
+        procCORS(request, response);
+        afterComplete(request, response, "", startAt, errorMsg);
     }
 
     private fun getInnerException(e: Throwable): Throwable {
@@ -228,11 +228,11 @@ open class MyAllFilter : Filter {
         }
     }
 
-    private fun beforeRequest(request: MyHttpRequestWrapper) {
+    private fun beforeRequest(request: MyHttpRequestWrapper, loginName: String) {
         if (logger.isInfoEnabled == false) return
 
         var msgs = mutableListOf<String>()
-        msgs.add("[[[--------> ${request.LoginUser.name.AsString()} ${request.ClientIp} ${request.method} ${request.requestURI}" + (if (request.queryString == null) "" else ("?" + request.queryString)))
+        msgs.add("[[[--------> ${loginName} ${request.ClientIp} ${request.method} ${request.requestURI}" + (if (request.queryString == null) "" else ("?" + request.queryString)))
 
         if (request.headerNames.hasMoreElements()) {
             msgs.add("[request header]:")
@@ -308,20 +308,8 @@ open class MyAllFilter : Filter {
         }
     }
 
-    fun afterComplete(request: MyHttpRequestWrapper, response: MyHttpResponseWrapper, callback: String, startAt: Long) {
-        if (response.IsOctetContent) {
-            var msg = mutableListOf<String>()
-            msg.add("[response] ${request.requestURI} ${response.status} ${System.currentTimeMillis() - startAt}毫秒")
-
-            for (h in response.headerNames) {
-                msg.add("\t${h}:${response.getHeader(h)}")
-            }
-            msg.add("<----]]]");
-            logger.info(msg.joinToString(line_break))
-            return;
-        }
-
-        //设置 Set-Cookie:PZXTK=59160c3a-5443-490f-a94f-db1e83f041fd; Path=/; HttpOnly
+    fun afterComplete(request: MyHttpRequestWrapper, response: MyHttpResponseWrapper, callback: String, startAt: Long, errorMsg: String) {
+//设置 Set-Cookie:PZXTK=59160c3a-5443-490f-a94f-db1e83f041fd; Path=/; HttpOnly
 //        var setCookieValue = myResponse.getHeader("Set-Cookie")
 //        if (setCookieValue.HasValue) {
 //            myResponse.setHeader("Set-Cookie", setCookieValue.replace("HttpOnly", "").trim().trimEnd(';'))
@@ -334,34 +322,29 @@ open class MyAllFilter : Filter {
 //            }
 //        }
 
+        var error = errorMsg.HasValue;
+        var resStringValue = errorMsg;
+        if (error) {
+            response.contentType = "application/json;charset=UTF-8"
+            response.result = resStringValue.toByteArray(utf8)
+        } else if (response.IsOctetContent == false) {
+            var resValue = response.result ?: byteArrayOf();
+            resStringValue = resValue.toString(utf8);
 
-        var resValue = response.result;
-        var resStringValue = ""
-        if (resValue != null) {
-            resStringValue = resValue.toString(utf8)
+            if (callback.isNotEmpty() && response.contentType.contains("json")) {
+                response.contentType = "application/javascript;charset=UTF-8"
+                response.result = """${callback}(${resStringValue})""".toByteArray(utf8)
+            } else {
+                setResponseBid(resValue, request, response);
 
-            if (response.status < 400 && resValue.size > 32) {
-                var md5 = Md5Util.getBase64Md5(resValue);
-                //body id
-                response.addHeader("_bid_", md5);
-
-                var ori_md5 = request.getHeader("_bid_");
-                if (ori_md5.HasValue) {
-                    if (md5 == Md5Util.getBase64Md5(resValue)) {
-                        response.status = 280
-                    }
+                if (response.status == 280) {
+                    response.result = byteArrayOf();
+                } else {
+                    response.result = resValue
                 }
             }
         }
 
-        if (callback.isNotEmpty() && response.contentType.contains("json")) {
-            response.contentType = "application/javascript;charset=UTF-8"
-            response.result = """${callback}(${resStringValue})""".toByteArray(utf8)
-        } else if (response.status == 280) {
-            response.result = byteArrayOf();
-        } else {
-            response.result = resValue
-        }
 
         if (logger.isInfoEnabled) {
             var msg = mutableListOf<String>()
@@ -371,7 +354,7 @@ open class MyAllFilter : Filter {
                 msg.add("\t${h}:${response.getHeader(h)}")
             }
 
-            if (resValue != null && resValue.size > 0) {
+            if (resStringValue.HasValue) {
                 msg.add("[response body]:")
                 msg.add("\t" + resStringValue.Slice(0, 8192))
             }
@@ -379,5 +362,21 @@ open class MyAllFilter : Filter {
             msg.add("<----]]]")
             logger.info(msg.joinToString(line_break))
         }
+    }
+
+    private fun setResponseBid(resValue: ByteArray, request: MyHttpRequestWrapper, response: MyHttpResponseWrapper): Boolean {
+        if (resValue.isEmpty()) return false;
+        var ori_md5 = request.getHeader("_bid_");
+        if (ori_md5 == null) return false;
+        if (response.status >= 400 || resValue.size < 32) return false;
+
+        var md5 = Md5Util.getBase64Md5(resValue);
+        //body id
+        response.addHeader("_bid_", md5);
+        if (ori_md5.HasValue && ori_md5 == md5) {
+            response.status = 280
+            return true;
+        }
+        return false;
     }
 }
