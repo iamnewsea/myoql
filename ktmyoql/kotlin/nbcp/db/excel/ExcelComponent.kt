@@ -59,12 +59,12 @@ fun Cell?.getStringValue(evaluator: FormulaEvaluator): String {
 /**
  * Excel 导入导出。
  */
-class ExcelComponent(var fileName: String) {
+class ExcelComponent() {
     private var columns: List<String> = listOf()
     private var sheetName: String = ""
     private var offset_row: Int = 0;
     private var pks: List<String> = listOf();
-
+    private var fileName: String = "";
     val sheetNames: Array<String>
         get() {
             var ret = mutableListOf<String>()
@@ -106,6 +106,9 @@ class ExcelComponent(var fileName: String) {
             return ret.toTypedArray()
         }
 
+    fun using(fileName: String){
+        this.fileName = fileName;
+    }
     fun select(sheetName: String, columns: List<String>, pks: List<String>, offset_row: Int = 0) {
         this.sheetName = sheetName;
         this.columns = columns;
@@ -348,8 +351,9 @@ class ExcelComponent(var fileName: String) {
     }
 
 
-    //回写数据
-    //按 data.tableName == sheetName
+    /**回写数据 按 data.tableName == sheetName
+     * @param getRowData: 返回 null 停止。
+     */
     fun writeNewData(offset_column: Int = 0, getRowData: (Int) -> JsonMap?): ByteArray {
         val book = SXSSFWorkbook(1000)
 

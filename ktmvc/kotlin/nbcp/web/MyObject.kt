@@ -4,6 +4,7 @@ import nbcp.comm.*
 import nbcp.base.extend.*
 import org.springframework.http.MediaType
 import nbcp.base.utf8
+import nbcp.base.utils.JsUtil
 import nbcp.base.utils.MyUtil
 import nbcp.db.LoginUserModel
 import javax.servlet.ServletResponse
@@ -30,7 +31,9 @@ fun ServletResponse.WriteTextValue(text: String) {
     this.contentType = "text/html;charset=UTF-8";
     this.outputStream.write(text.toByteArray(utf8));
 }
-
+fun HttpServletResponse.setDownloadFileName(fileName: String) {
+    this.setHeader("Content-Disposition", "attachment; filename=" + JsUtil.encodeURIComponent(fileName));
+}
 
 private val String.ContentTypeIsOctetContent: Boolean
     get() {
