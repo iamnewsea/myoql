@@ -28,10 +28,11 @@ import java.util.regex.Pattern
 
 private fun proc_mongo_key(key: MongoColumnName): String {
     var key = key;
-    if (key.toString() == "id") {
+    var keyString = key.toString();
+    if (keyString == "id") {
         key = MongoColumnName("_id")
-    } else if (key.endsWith(".id")) {
-        key = key.slice(0..key.length - 4) + "._id";
+    } else if (keyString.endsWith(".id")) {
+        key = MongoColumnName(keyString.slice(0..keyString.length - 4) + "._id")
     }
 
     return key.toString();
@@ -39,16 +40,17 @@ private fun proc_mongo_key(key: MongoColumnName): String {
 
 private fun proc_mongo_match(key: MongoColumnName, value: Any?): Pair<String, Any?> {
     var key = key
+    var keyString = key.toString();
     var isId = false;
-    if (key.toString() == "id") {
+    if (keyString == "id") {
         key = MongoColumnName("_id")
         isId = true;
-    } else if (key.toString() == "_id") {
+    } else if (keyString == "_id") {
         isId = true;
-    } else if (key.endsWith(".id")) {
-        key = key.slice(0..key.length - 4) + "._id";
+    } else if (keyString.endsWith(".id")) {
+        key = MongoColumnName(keyString.slice(0..keyString.length - 4) + "._id")
         isId = true;
-    } else if (key.endsWith("._id")) {
+    } else if (keyString.endsWith("._id")) {
         isId = true;
     }
 
@@ -89,18 +91,6 @@ infix fun MongoColumnName.match_not_equal(value: Any?): Criteria {
     return Criteria.where(key).`ne`(to)
 }
 
-infix fun MongoColumnName.match_dbColumn(to: MongoColumnName): Criteria {
-    var (key, to) = proc_mongo_match(this, to);
-
-    var d2 = BasicDBList();
-    d2.add("$" + key)
-    d2.add("$" + to)
-
-    var dict = BasicBSONObject()
-    dict.put("\$eq", d2)
-
-    return Criteria.where("$" + "expr").`is`(dict);
-}
 
 /* mongo 3.4
 infix fun String.match_dbColumn_3_4(to: Any?): Criteria {
