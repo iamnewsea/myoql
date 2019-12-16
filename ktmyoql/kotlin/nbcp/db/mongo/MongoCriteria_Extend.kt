@@ -16,9 +16,6 @@ import java.lang.reflect.ParameterizedType
  */
 infix fun Criteria?.match_and(to: Criteria): Criteria {
     if (this == null) return to;
-    if( to.key.isNullOrEmpty() ) return this;
-    if(this.key.isNullOrEmpty()) return to;
-
     var where = Criteria();
 
     where.andOperator(this, to)
@@ -28,17 +25,13 @@ infix fun Criteria?.match_and(to: Criteria): Criteria {
 /**
  *  ( it.name match "a") match_or (it.id match 1)  match_or (id.age match 18)
  */
-infix fun Criteria?.match_or(to: Criteria ): Criteria {
+infix fun Criteria?.match_or(to: Criteria): Criteria {
     if (this == null) return to;
-    if( to.key.isNullOrEmpty() ) return this;
-    if(this.key.isNullOrEmpty()) return to;
-
     var where = Criteria();
 
     where.orOperator(this, to)
     return where;
 }
-
 
 
 fun BSONObject.ReadIdName(): IdName {
