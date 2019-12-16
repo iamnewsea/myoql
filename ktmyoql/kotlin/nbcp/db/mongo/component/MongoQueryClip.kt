@@ -72,6 +72,13 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
         return this;
     }
 
+    fun whereOr(vararg wheres: (M) -> Criteria): MongoQueryClip<M, E> {
+        var where = Criteria();
+        where.orOperator(*wheres.map { it(moerEntity) }.toTypedArray())
+        this.whereData.add(where);
+        return this;
+    }
+
     fun whereIf(whereIf: Boolean, whereData: ((M) -> Criteria)): MongoQueryClip<M, E> {
         if (whereIf == false) return this;
 
@@ -361,7 +368,7 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
                 return@abc ret;
             }
 
-            if( currentData.size < batchSize){
+            if (currentData.size < batchSize) {
                 return@abc null;
             }
 

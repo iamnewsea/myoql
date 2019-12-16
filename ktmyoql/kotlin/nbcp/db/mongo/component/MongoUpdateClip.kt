@@ -57,6 +57,13 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
         return this;
     }
 
+    fun whereOr(vararg wheres: (M) -> Criteria): MongoUpdateClip<M> {
+        var where = Criteria();
+        where.orOperator(*wheres.map { it(moerEntity) }.toTypedArray())
+        this.whereData.add(where);
+        return this;
+    }
+
     /**
      * 如果条件成立,则使用 where
      */

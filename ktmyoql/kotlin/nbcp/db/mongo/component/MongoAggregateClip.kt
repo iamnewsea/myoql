@@ -70,6 +70,12 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
         return this;
     }
 
+    fun whereOr(vararg wheres: (M) -> Criteria): MongoAggregateClip<M,E> {
+        var where = Criteria();
+        where.orOperator(*wheres.map { it(moerEntity) }.toTypedArray())
+        this.whereData.add(where);
+        return this;
+    }
 
     fun select(vararg columns: String): MongoAggregateClip<M, E> {
         selectColumns.addAll(columns)
