@@ -225,7 +225,7 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
         } else if (take >= 0) {
             ret.expression += " limit  ${take}"
         } else if (skip > 0) {
-            ret.expression += " limit  ${skip},999"
+            ret.expression += " limit  ${skip},99999"
         }
 
 
