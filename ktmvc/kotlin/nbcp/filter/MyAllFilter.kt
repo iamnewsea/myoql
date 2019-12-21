@@ -11,6 +11,7 @@ import nbcp.base.*
 
 import nbcp.base.utils.CodeUtil
 import nbcp.base.utils.Md5Util
+import nbcp.comm.JsonMap
 import nbcp.web.*
 import org.slf4j.MDC
 import org.springframework.web.multipart.commons.CommonsMultipartResolver
@@ -187,6 +188,7 @@ open class MyAllFilter : Filter {
                 logger.error("MyAllFilter处理异常时遇到错误:" + e.message.AsString())
             }
 
+            errorMsg = JsonMap("msg" to errorMsg).ToJson()
             response.status = 500;
 
             //会不会有 之前 response.write 的情况导致回发数据混乱？

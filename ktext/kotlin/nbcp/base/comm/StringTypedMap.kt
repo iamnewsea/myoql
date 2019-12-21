@@ -14,9 +14,7 @@ open class StringTypedMap<T> : LinkedHashMap<String, T> {
 
     constructor(data: Map<String, T>) : this() {
         data.forEach {
-            if (it.value != null) {
-                this.put(it.key, it.value);
-            }
+            this.put(it.key, it.value);
         }
     }
 
@@ -25,9 +23,7 @@ open class StringTypedMap<T> : LinkedHashMap<String, T> {
 
     constructor(pairs: List<Pair<String, T>>) : this() {
         for (p in pairs) {
-            if (p.second != null) {
-                this.put(p.first, p.second);
-            }
+            this.put(p.first, p.second);
         }
     }
 
@@ -126,7 +122,7 @@ open class StringTypedMap<T> : LinkedHashMap<String, T> {
             if (type.IsNumberType()) {
                 return "${value}"
             }
-            if (type.IsBooleanType() ) {
+            if (type.IsBooleanType()) {
                 return "${value}"
             } else {
                 return """"${value}""""

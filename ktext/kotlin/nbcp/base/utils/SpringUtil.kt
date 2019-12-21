@@ -35,10 +35,15 @@ open class SpringUtil : ApplicationContextAware {
 //            return
 //        }
 
-
-        //通过name获取 Bean.
-        fun getBeanObject(name: String): Any {
+        fun getBeanObjectByArgs(name: String): Any {
             return context.getBean(name);
+        }
+
+        /**
+         * 通过 name 获取Bean，并传递参数
+         */
+        fun getBeanObjectByArgs(name: String, vararg args: Any): Any {
+            return context.getBean(name, *args);
         }
 
 
@@ -53,8 +58,15 @@ open class SpringUtil : ApplicationContextAware {
             return context.getBean(T::class.java);
         }
 
+        /**
+         * 通过 类型 获取Bean，并传递参数
+         */
+        inline fun <reified T> getBeanByArgs(vararg args: Any): T {
+            return context.getBean(T::class.java, *args);
+        }
 
-        inline fun <reified T> getBean(name: String): T {
+
+        inline fun <reified T> getBeanByName(name: String): T {
             return context.getBean(name, T::class.java);
         }
 

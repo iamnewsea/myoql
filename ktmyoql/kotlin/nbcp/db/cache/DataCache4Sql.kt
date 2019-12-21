@@ -19,10 +19,10 @@ import nbcp.db.mysql.*
 class ProxyDataCache4Sql : IProxyCache4Sql {
 
     private val requestCache by lazy {
-        return@lazy SpringUtil.getBean<IDataCache4Sql>("request")
+        return@lazy SpringUtil.getBeanByName<IDataCache4Sql>("request")
     }
     private val redisCache by lazy {
-        return@lazy SpringUtil.getBean<IDataCache4Sql>("redis")
+        return@lazy SpringUtil.getBeanByName<IDataCache4Sql>("redis")
     }
 
 

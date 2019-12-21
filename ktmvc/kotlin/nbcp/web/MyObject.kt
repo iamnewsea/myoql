@@ -31,6 +31,7 @@ fun ServletResponse.WriteTextValue(text: String) {
     this.contentType = "text/html;charset=UTF-8";
     this.outputStream.write(text.toByteArray(utf8));
 }
+
 fun HttpServletResponse.setDownloadFileName(fileName: String) {
     this.setHeader("Content-Disposition", "attachment; filename=" + JsUtil.encodeURIComponent(fileName));
 }
@@ -225,3 +226,30 @@ val HttpServletRequest.queryJson: JsonMap
         this.setAttribute(queryJson_key, dbValue2)
         return dbValue2;
     }
+
+/**
+ * 从Form表单， URL ， Header，Cookie中查找参数
+ */
+fun HttpServletRequest.findParameterValue(key: String): String? {
+    var ret = this.getParameter(key)
+    if (ret != null) {
+        return ret;
+    }
+
+    ret = this.queryJson.get(key)?.toString();
+    if (ret != null) {
+        return ret;
+    }
+
+    ret = this.getHeader(key)
+    if (ret != null) {
+        return ret;
+    }
+
+    ret = this.cookies.find { it.name == key }?.value
+    if (ret != null) {
+        return ret;
+    }
+
+    return null;
+}

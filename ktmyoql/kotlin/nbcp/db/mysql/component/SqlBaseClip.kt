@@ -40,7 +40,7 @@ abstract class SqlBaseClip(var datasourceName: String) : Serializable {
             if (datasourceName.HasValue) {
                 var ret = jdbcMap.get(datasourceName)
                 if (ret == null) {
-                    jdbcMap.set(datasourceName, JdbcTemplate(SpringUtil.getBean<DataSource>(datasourceName)))
+                    jdbcMap.set(datasourceName, JdbcTemplate(SpringUtil.getBeanByName<DataSource>(datasourceName)))
                     ret = jdbcMap.get(datasourceName)
                 }
 
@@ -56,7 +56,7 @@ abstract class SqlBaseClip(var datasourceName: String) : Serializable {
     val transactionTemplate: TransactionTemplate
         get() {
             if (datasourceName.HasValue) {
-                var dataSource = SpringUtil.getBean<DataSource>(datasourceName)
+                var dataSource = SpringUtil.getBeanByName<DataSource>(datasourceName)
                 var tx = DataSourceTransactionManager(dataSource)
                 return TransactionTemplate(tx)
             }
