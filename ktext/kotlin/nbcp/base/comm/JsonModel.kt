@@ -1,5 +1,7 @@
 package nbcp.comm
 
+import java.lang.annotation.ElementType
+
 /**
  * Created by udi on 17-3-30.
  */
@@ -17,15 +19,15 @@ annotation class JsonModel
 
 //表示该字段必须有值。可以通过反射，遍历字段，进行验证。
 //参数 Group 表示分组，用途等。可以重复使用该注解
-@Target(AnnotationTarget.FIELD)
+@java.lang.annotation.Target(ElementType.FIELD, ElementType.PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
 //@Repeatable
-annotation class Require(val group: String = "")
+annotation class Require(val value: String = "")
 
 
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Ignore(val group: String = "")
+annotation class Ignore(val value: String = "")
 
 
 //@Repeatable

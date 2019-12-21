@@ -17,6 +17,7 @@ import nbcp.base.extend.*
 import nbcp.base.utf8
 import nbcp.base.utils.MyUtil
 import nbcp.base.utils.SpringUtil
+import java.lang.RuntimeException
 import java.nio.charset.Charset
 import java.time.*
 import java.util.*
@@ -129,6 +130,12 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
         }
 
         if (value == null) {
+            var require = parameter.getParameterAnnotation(Require::class.java)
+            if (require != null) {
+                throw RuntimeException(require.value.AsString("参数${parameter.parameterName}不能为空"))
+            }
+
+
             if (parameter.parameterType == String::class.java) {
                 return "";
             } else if (parameter.parameterType.IsNumberType()) {
