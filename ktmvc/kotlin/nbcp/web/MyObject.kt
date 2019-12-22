@@ -228,10 +228,15 @@ val HttpServletRequest.queryJson: JsonMap
     }
 
 /**
- * 从Form表单， URL ， Header，Cookie中查找参数
+ * 从request属性，Form表单， URL ， Header，Cookie中查找参数
  */
 fun HttpServletRequest.findParameterValue(key: String): String? {
-    var ret = this.getParameter(key)
+    var ret = this.getAttribute(key)?.toString()
+    if (ret != null) {
+        return ret;
+    }
+
+    ret = this.getParameter(key)
     if (ret != null) {
         return ret;
     }
