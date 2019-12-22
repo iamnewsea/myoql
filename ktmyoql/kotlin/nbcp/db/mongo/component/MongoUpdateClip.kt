@@ -58,8 +58,12 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
     }
 
     fun whereOr(vararg wheres: (M) -> Criteria): MongoUpdateClip<M> {
+        return whereOr(*wheres.map { it(moerEntity) }.toTypedArray())
+    }
+
+    fun whereOr(vararg wheres: Criteria): MongoUpdateClip<M> {
         var where = Criteria();
-        where.orOperator(*wheres.map { it(moerEntity) }.toTypedArray())
+        where.orOperator(*wheres)
         this.whereData.add(where);
         return this;
     }

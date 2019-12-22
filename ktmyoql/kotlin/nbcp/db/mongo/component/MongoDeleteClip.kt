@@ -35,8 +35,12 @@ class MongoDeleteClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
     }
 
     fun whereOr(vararg wheres: (M) -> Criteria): MongoDeleteClip<M> {
+        return whereOr(*wheres.map { it(moerEntity) }.toTypedArray())
+    }
+
+    fun whereOr(vararg wheres: Criteria): MongoDeleteClip<M> {
         var where = Criteria();
-        where.orOperator(*wheres.map { it(moerEntity) }.toTypedArray())
+        where.orOperator(*wheres)
         this.whereData.add(where);
         return this;
     }

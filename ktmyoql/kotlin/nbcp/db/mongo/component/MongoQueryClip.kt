@@ -34,7 +34,7 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
     private var sort: Document = Document()
     //    private var whereJs: String = "";
     private var selectColumns = mutableSetOf<String>();
-//    private var selectDbObjects = mutableSetOf<String>();
+    //    private var selectDbObjects = mutableSetOf<String>();
     private var unSelectColumns = mutableSetOf<String>()
 
     fun limit(skip: Int, take: Int): MongoQueryClip<M, E> {
@@ -72,8 +72,12 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
     }
 
     fun whereOr(vararg wheres: (M) -> Criteria): MongoQueryClip<M, E> {
+        return whereOr(*wheres.map { it(moerEntity) }.toTypedArray())
+    }
+
+    fun whereOr(vararg wheres: Criteria): MongoQueryClip<M, E> {
         var where = Criteria();
-        where.orOperator(*wheres.map { it(moerEntity) }.toTypedArray())
+        where.orOperator(*wheres)
         this.whereData.add(where);
         return this;
     }
@@ -157,7 +161,7 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
             projection.put(it, 0)
         }
 
-        var query = BasicQuery(criteria.toDocument(),projection);
+        var query = BasicQuery(criteria.toDocument(), projection);
 
         if (this.skip > 0) {
             query.skip(this.skip.AsLong())
@@ -171,7 +175,7 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
             query.sortObject = sort
         }
 
-        var cursor = mongoTemplate.find (query, Document::class.java, this.collectionName)
+        var cursor = mongoTemplate.find(query, Document::class.java, this.collectionName)
 
 //        var cacheValue = MyCache.find(this.collectionName, this.getCacheKey())
 //        if (cacheValue.HasValue) {

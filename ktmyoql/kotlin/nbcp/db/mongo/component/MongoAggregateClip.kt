@@ -70,9 +70,13 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
         return this;
     }
 
-    fun whereOr(vararg wheres: (M) -> Criteria): MongoAggregateClip<M,E> {
+    fun whereOr(vararg wheres: (M) -> Criteria): MongoAggregateClip<M, E> {
+        return whereOr(*wheres.map { it(moerEntity) }.toTypedArray())
+    }
+
+    fun whereOr(vararg wheres: Criteria): MongoAggregateClip<M, E> {
         var where = Criteria();
-        where.orOperator(*wheres.map { it(moerEntity) }.toTypedArray())
+        where.orOperator(*wheres)
         this.whereData.add(where);
         return this;
     }
