@@ -1,8 +1,6 @@
 package nbcp.db.mongo
 
-import com.mongodb.BasicDBObject
 import com.mongodb.DBCursor
-import com.mongodb.DBObject
 import com.mongodb.client.model.DBCollectionFindOptions
 import nbcp.comm.*
 import org.bson.Document
@@ -18,6 +16,7 @@ import nbcp.base.utils.MyUtil
 import nbcp.db.db
 import nbcp.db.mongo.*
 import org.slf4j.LoggerFactory
+import org.springframework.data.mongodb.core.query.BasicQuery
 import java.lang.Exception
 import java.lang.RuntimeException
 
@@ -32,10 +31,10 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
     var whereData = mutableListOf<Criteria>()
     private var skip: Int = 0;
     private var take: Int = -1;
-    private var sort: BasicDBObject = BasicDBObject()
+    private var sort: Document = Document()
     //    private var whereJs: String = "";
     private var selectColumns = mutableSetOf<String>();
-    private var selectDbObjects = mutableSetOf<DBObject>();
+//    private var selectDbObjects = mutableSetOf<String>();
     private var unSelectColumns = mutableSetOf<String>()
 
     fun limit(skip: Int, take: Int): MongoQueryClip<M, E> {
@@ -97,11 +96,6 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
         return this;
     }
 
-    fun select(columns: DBObject): MongoQueryClip<M, E> {
-        selectDbObjects.add(columns)
-        return this;
-    }
-
     fun select(column: (M) -> MongoColumnName): MongoQueryClip<M, E> {
         this.selectColumns.add(column(moerEntity).toString());
         return this;
@@ -136,7 +130,7 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
         return Md5Util.getBase64Md5(unKeys.joinToString("\n"));
     }
 
-    fun <R> toList(clazz: Class<R>, mapFunc: ((DBObject) -> Unit)? = null): MutableList<R> {
+    fun <R> toList(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): MutableList<R> {
         var isString = false;
         if (clazz.IsSimpleType()) {
             isString = clazz.name == "java.lang.String";
@@ -148,41 +142,36 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
 //        }
 
         var criteria = this.moerEntity.getMongoCriteria(*whereData.toTypedArray());
-        var projection = BasicDBObject();
+        var projection = Document();
         selectColumns.forEach {
             projection.put(it, 1)
         }
 
-        selectDbObjects.forEach {
-            it.keySet().forEach { key ->
-                projection.put(key, it.get(key))
-            }
-        }
+//        selectDbObjects.forEach {
+////            it.keys.forEach { key ->
+////                projection.put(key, it.get(key))
+////            }
+////        }
 
         unSelectColumns.forEach {
             projection.put(it, 0)
         }
 
-        var coll = getCollection()
-
-
-        var option = DBCollectionFindOptions();
-        option.projection(projection);
+        var query = BasicQuery(criteria.toDocument(),projection);
 
         if (this.skip > 0) {
-            option.skip(this.skip)
+            query.skip(this.skip.AsLong())
         }
 
         if (this.take > 0) {
-            option.limit(this.take)
+            query.limit(this.take)
         }
 
         if (sort.any()) {
-            option.sort(sort);
+            query.sortObject = sort
         }
 
-        var cursor = coll.find(criteria.toDBObject(), option)
-
+        var cursor = mongoTemplate.find (query, Document::class.java, this.collectionName)
 
 //        var cacheValue = MyCache.find(this.collectionName, this.getCacheKey())
 //        if (cacheValue.HasValue) {
@@ -205,18 +194,18 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
 
                 if (isString) {
                     if (lastKey.isEmpty()) {
-                        lastKey = it.keySet().last()
+                        lastKey = it.keys.last()
                     }
 
                     ret.add(it.GetComplexPropertyValue(lastKey) as R)
                 } else if (clazz.IsSimpleType()) {
                     if (lastKey.isEmpty()) {
-                        lastKey = it.keySet().last()
+                        lastKey = it.keys.last()
                     }
 
                     ret.add(it.GetComplexPropertyValue(*lastKey.split(".").toTypedArray()) as R);
                 } else {
-                    if (DBObject::class.java.isAssignableFrom(clazz)) {
+                    if (Document::class.java.isAssignableFrom(clazz)) {
                         ret.add(it as R);
                     } else {
 //                    var ent = mapper.toEntity(it)
@@ -233,8 +222,11 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
                 var msgs = mutableListOf<String>()
                 msgs.add("query:[" + this.collectionName + "] ");
                 msgs.add("    where:" + criteria.criteriaObject.toJson())
-                if (selectDbObjects.any()) {
-                    msgs.add("    select:" + (selectDbObjects.map { (it as BasicDBObject).toJson() }).joinToString(","))
+                if (selectColumns.any()) {
+                    msgs.add("    select:" + selectColumns.joinToString(","))
+                }
+                if (unSelectColumns.any()) {
+                    msgs.add("    unselect:" + unSelectColumns.joinToString(","))
                 }
                 if (sort.any()) {
                     msgs.add("    sort:" + sort.ToJson())
@@ -275,11 +267,11 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
         return mongoTemplate.exists(Query.query(this.moerEntity.getMongoCriteria(*whereData.toTypedArray())), collectionName);
     }
 
-    fun toList(mapFunc: ((DBObject) -> Unit)? = null): MutableList<E> {
+    fun toList(mapFunc: ((Document) -> Unit)? = null): MutableList<E> {
         return toList(moerEntity.entityClass, mapFunc)
     }
 
-    fun toEntity(mapFunc: ((DBObject) -> Unit)? = null): E? {
+    fun toEntity(mapFunc: ((Document) -> Unit)? = null): E? {
         this.take = 1;
         return toList(moerEntity.entityClass, mapFunc).firstOrNull();
     }
@@ -288,13 +280,13 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
 //        return toEntity(R::class.java);
 //    }
 
-    fun <R> toEntity(clazz: Class<R>, mapFunc: ((DBObject) -> Unit)? = null): R? {
+    fun <R> toEntity(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): R? {
         this.take = 1;
         return toList(clazz, mapFunc).firstOrNull();
     }
 
 
-    fun <R> toListResult(clazz: Class<R>, mapFunc: ((DBObject) -> Unit)? = null): ListResult<R> {
+    fun <R> toListResult(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): ListResult<R> {
         var ret = ListResult<R>();
         ret.data = toList(clazz, mapFunc);
 
@@ -308,7 +300,7 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
         return ret;
     }
 
-    fun toListResult(mapFunc: ((DBObject) -> Unit)? = null): ListResult<E> {
+    fun toListResult(mapFunc: ((Document) -> Unit)? = null): ListResult<E> {
         return toListResult(this.moerEntity.entityClass, mapFunc);
     }
 
@@ -349,7 +341,7 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
      * @param func : 每条数据的回调，返回Int,表示在下一条数据的基础上跳过多少行，默认为0，可以是负数。
      * @return 执行回调的总条数
      */
-    fun <R> readStreamEntity(clazz: Class<R>, mapFunc: ((DBObject) -> Unit)? = null, initSkip: Int = 0, batchSize: Int = 20): DbReader<R> {
+    fun <R> readStreamEntity(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null, initSkip: Int = 0, batchSize: Int = 20): DbReader<R> {
 
         var skip = initSkip;
 

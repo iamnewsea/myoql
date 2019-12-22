@@ -9,13 +9,22 @@ import nbcp.base.extend.IsStringType
 import nbcp.base.extend.Slice
 import nbcp.base.utils.RecursionUtil
 import nbcp.base.utils.SpringUtil
+import nbcp.comm.StringMap
+import nbcp.comm.StringTypedMap
+import nbcp.db.mongo.Date2LocalDateTimeConverter
 import nbcp.db.mongo.MongoEventConfig
 import nbcp.db.sql.SqlBaseTable
 import org.bson.Document
 import org.slf4j.LoggerFactory
+import org.springframework.core.convert.support.GenericConversionService
 import org.springframework.data.mongodb.MongoDbFactory
 import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory
+import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver
+import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper
+import org.springframework.data.mongodb.core.convert.MappingMongoConverter
+import org.springframework.data.mongodb.core.mapping.MongoMappingContext
 import org.springframework.data.mongodb.core.query.Criteria
 import java.util.ArrayList
 import kotlin.concurrent.getOrSet
@@ -153,31 +162,26 @@ object db {
         })
     }
 
-//    fun getMongoTemplate(
-//            host: String,
-//            port: Int,
-//            databaseName: String,
-//            userName: String,
-//            password: String): MongoTemplate {
-//
-//        //ServerAddress(host,port)两个参数分别为 IP地址 端口号
-//        //ServerAddress(host,port)两个参数分别为 IP地址 端口号
-//        val serverAddress = ServerAddress(host, port)
-//        val addrs: MutableList<ServerAddress> = ArrayList<ServerAddress>()
-//        addrs.add(serverAddress)
-//
-//        //MongoCredential.createScramSha1Credential(username,source,password)三个参数分别为 用户名 数据库名称 密码
-//        //MongoCredential.createScramSha1Credential(username,source,password)三个参数分别为 用户名 数据库名称 密码
-//        val credential: MongoCredential = MongoCredential.createScramSha1Credential(userName, databaseName, password.toCharArray())
-//        val credentials: MutableList<MongoCredential> = ArrayList<MongoCredential>()
-//        credentials.add(credential)
-//
-//        //通过连接认证获取MongoDB连接
-//        //通过连接认证获取MongoDB连接
-//        val mongoClient = MongoClient(addrs, credentials)
-//        val mongoDbFactory: MongoDbFactory = SimpleMongoDbFactory(mongoClient, databaseName)
-//        //SimpleMongoClientDbFactory("mongodb://dev:123@52borui.cn:27017/edu_report_10")
-//
-//        return MongoTemplate(mongoDbFactory)
-//    }
+    private var dynamicMongoMap = StringMap();
+    fun setDynamicMongo(collectionName: String, connectionUri: String) {
+        this.dynamicMongoMap.set(collectionName, connectionUri)
+    }
+
+    private var dynamicMongoTemplate = StringTypedMap<MongoTemplate>();
+    fun getDynamicMongoTemplateByCollectionName(collectionName: String): MongoTemplate? {
+        var uri = dynamicMongoMap.get(collectionName);
+        if (uri == null) return null;
+
+        return getDynamicMongoTemplateByUri(uri)
+    }
+
+    fun getDynamicMongoTemplateByUri(uri: String): MongoTemplate? {
+        var dbFactory = SimpleMongoClientDbFactory(uri);
+        val converter = MappingMongoConverter(DefaultDbRefResolver(dbFactory), MongoMappingContext())
+        converter.setTypeMapper(DefaultMongoTypeMapper(null));
+        (converter.conversionService as GenericConversionService).addConverter(Date2LocalDateTimeConverter())
+
+        return dynamicMongoTemplate.getOrPut(uri, { MongoTemplate(dbFactory, converter) })
+    }
+
 }

@@ -109,7 +109,7 @@ fun <T : Any> Document.ReadAs(value: T): T {
 /**
  * 根据路径查找值.
  */
-fun DBObject.GetComplexPropertyValue(property: String): String {
+fun Document.GetComplexPropertyValue(property: String): String {
     var sects = property.split(".");
 
     if (sects.size == 0) return "";
@@ -121,7 +121,7 @@ fun DBObject.GetComplexPropertyValue(property: String): String {
 /**
  * 根据路径查找值.
  */
-fun DBObject.GetComplexPropertyValue(vararg eachProperty: String): Any? {
+fun Document.GetComplexPropertyValue(vararg eachProperty: String): Any? {
     if (eachProperty.size == 0) return null;
 
     var key = eachProperty[0];
@@ -152,7 +152,7 @@ fun DBObject.GetComplexPropertyValue(vararg eachProperty: String): Any? {
         return retVal;
     }
 
-    return (retVal as DBObject).GetComplexPropertyValue(*eachProperty.takeLast(eachProperty.size - 1).toTypedArray());
+    return (retVal as Document).GetComplexPropertyValue(*eachProperty.takeLast(eachProperty.size - 1).toTypedArray());
 }
 
 
@@ -166,6 +166,27 @@ fun Criteria.toDBObject(): BasicDBObject {
             ret[it] = null
         } else if (value is Criteria) {
             ret[it] = value.toDBObject();
+        } else {
+            ret[it] = value;
+        }
+
+        ret[it] = value;
+    }
+
+    return ret;
+}
+
+
+fun Criteria.toDocument(): Document {
+    var ret = Document();
+
+    this.criteriaObject.keys.forEach {
+        var value = this.criteriaObject.get(it)
+
+        if (value == null) {
+            ret[it] = null
+        } else if (value is Criteria) {
+            ret[it] = value.toDocument();
         } else {
             ret[it] = value;
         }

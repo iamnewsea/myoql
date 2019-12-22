@@ -1,12 +1,15 @@
 package nbcp.db.mongo
 
 import com.mongodb.DBCollection
+import com.mongodb.client.MongoCollection
 import nbcp.base.extend.Slice
 import nbcp.base.extend.getLatest
 import nbcp.base.extend.scopes
 import org.springframework.data.mongodb.core.MongoTemplate
 import nbcp.base.utils.SpringUtil
+import nbcp.db.db
 import nbcp.db.mongo.*
+import org.bson.Document
 import org.springframework.data.mongodb.core.query.Criteria
 import java.io.Serializable
 
@@ -21,13 +24,13 @@ open class MongoClipBase(var collectionName: String): Serializable {
 
     val mongoTemplate: MongoTemplate
         get() {
-            return scopes.getLatest<MongoTemplate>() ?: SpringUtil.getBean<MongoTemplate>()
+            return db.getDynamicMongoTemplateByCollectionName(collectionName) ?: scopes.getLatest<MongoTemplate>() ?: SpringUtil.getBean<MongoTemplate>()
         }
 
 
-    fun getCollection(): DBCollection{
-        return mongoTemplate.mongoDbFactory.legacyDb.getCollection(this.collectionName)
-    }
+//    fun getCollection(): MongoCollection<Document> {
+//        return mongoTemplate.mongoDbFactory.db.getCollection(this.collectionName)
+//    }
 
     fun getMongoCriteria(vararg where: Criteria): Criteria {
         if (where.size == 0) return Criteria();
