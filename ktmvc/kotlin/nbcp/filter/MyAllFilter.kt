@@ -49,6 +49,9 @@ open class MyAllFilter : Filter {
     var allowOrigins: String = "";
     @Value("\${server.filter.ignore-log-urls:}")
     var ignoreLogUrls: List<String> = listOf()
+
+    @Value("\${server.filter.headers:}")
+    var headers: List<String> = listOf()
 //    @Value("\${server.session.cookie.name}")
 //    var cookieName = "";
 
@@ -271,24 +274,27 @@ open class MyAllFilter : Filter {
             response.setHeader("Access-Control-Max-Age", "2592000") //30天。
 
             response.setHeader("Access-Control-Allow-Credentials", "true")
-            response.setHeader("Access-Control-Allow-Methods", request.getHeader("Access-Control-Request-Method"))
+            response.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,PUT,HEAD,OPTIONS,DELETE")
 
 
-            var allowHeaders = mutableListOf<String>();
+            var allowHeaders = mutableSetOf<String>();
+
+            //添加指定的
+            allowHeaders.addAll(headers)
 
             if (request.method == "OPTIONS") {
                 allowHeaders.addAll(request.getHeader("Access-Control-Request-Headers").AsString().split(",").filter { it.HasValue })
             }
 
             if (allowHeaders.any() == false) {
-                allowHeaders = request.headerNames.toList().toMutableList()
+                allowHeaders.addAll(request.headerNames.toList())
+
 
                 //https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
                 var standardHeaders = arrayOf(
                         "expires",
                         "cache-control",
                         "content-language",
-                        "content-type",
                         "last-modified",
                         "pragma",
                         "origin",
@@ -302,6 +308,7 @@ open class MyAllFilter : Filter {
                 //移除标准 header
                 allowHeaders.removeAll { standardHeaders.contains(it.toLowerCase()) }
             }
+
 
             if (allowHeaders.any()) {
                 response.setHeader("Access-Control-Allow-Headers", allowHeaders.joinToString(","))
