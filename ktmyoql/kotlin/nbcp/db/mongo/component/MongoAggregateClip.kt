@@ -77,16 +77,45 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
         return select(column(moerEntity).toString());
     }
 
-    fun count(columnName:String):MongoAggregateClip<M, E> {
+    fun count(columnName: String): MongoAggregateClip<M, E> {
         pipeLines.add("\$count" to columnName)
         return this;
     }
 
-    fun unset(vararg columns:String):MongoAggregateClip<M, E> {
+    fun unset(vararg columns: String): MongoAggregateClip<M, E> {
         pipeLines.add("\$unset" to columns)
         return this;
     }
 
+    /**
+     * @param eachItems: 每一个聚合的表达式。
+     *
+     * @see PipeLineGroupExpression
+     */
+    fun group(_id: String?, vararg eachItems: MyRawString): MongoAggregateClip<M, E> {
+        var raw = "{_id:${if(_id == null) "null" else """${_id}""" }${"," + eachItems.toString()}}";
+
+        pipeLines.add("\$group:" to MyRawString(raw))
+        return this;
+    }
+
+
+    fun orderBy(vararg sortFuncs: (M) -> MongoOrderBy): MongoAggregateClip<M, E> {
+        var sorts = sortFuncs.map {
+            var sort = it(this.moerEntity)
+            var sortName = sort.orderBy.toString()
+            if (sortName == "id") {
+                sortName = "_id"
+            } else if (sortName.endsWith(".id")) {
+                sortName = sortName.slice(0..sortName.length - 3) + "._id";
+            }
+
+            return@map sortName + ":" + (if (sort.Asc) 1 else -1)
+        }
+
+        pipeLines.add("\$sort:" to MyRawString("{" + sorts.joinToString(",") + "}"))
+        return this;
+    }
 
     fun toExpression(): String {
         var pipeLines = mutableListOf<Pair<String, Any>>();
@@ -99,6 +128,8 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
                 return@map """{$key:${value.criteriaObject.toJson()}}"""
             } else if (value is Number) {
                 return@map "{$key:$value}";
+            } else if (value is MyRawString) {
+                return@map "{$key:${value.toString()}}";
             } else if (value is String) {
 //                if( key == "_id" || key.endsWith("._id")){
 //                    return@map """{$key:{##oid:"${value}"}}""".replace("##","$")

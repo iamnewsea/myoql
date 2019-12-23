@@ -19,8 +19,10 @@ import javax.xml.parsers.DocumentBuilderFactory
  * Created by udi on 17-4-3.
  */
 
-
-open class MyString(private var value: String) : Comparable<String>, CharSequence {
+/**
+ * 自定义字符串
+ */
+open class MyString(private val value: String) : Comparable<String>, CharSequence {
     override val length: Int = this.value.length
 
     override fun get(index: Int): Char = this.value.get(index)
@@ -31,6 +33,11 @@ open class MyString(private var value: String) : Comparable<String>, CharSequenc
 
     override fun toString(): String = this.value;
 }
+
+/**
+ * 表达不需要转义的字符串，用于 Json,Xml中，表过传递的是元始值。
+ */
+open class MyRawString(value: String) :  MyString(value)
 
 
 //不区分大小写格式的比较。

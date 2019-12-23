@@ -1,5 +1,10 @@
 package nbcp.db.mongo
 
+import nbcp.base.extend.MyRawString
+import nbcp.base.extend.MyString
+import nbcp.base.extend.ToJson
+import nbcp.comm.JsonMap
+
 /**
  * https://docs.mongodb.com/manual/reference/operator/aggregation/
  */
@@ -126,4 +131,54 @@ enum class PipeLineOperatorEnum {
     week,
     year,
     zip
+}
+
+/**
+ * https://docs.mongodb.com/manual/reference/operator/aggregation/group/#accumulators-group
+ */
+enum class PipeLineAccumulatorOperatorEnum {
+    addToSet,
+    avg,
+    first,
+    last,
+    max,
+    mergeObjects,
+    min,
+    push,
+    stdDevPop,
+    stdDevSamp,
+    sum
+}
+
+/**
+ * 以 totalSaleAmount: { $sum: { $multiply: [ "$price", "$quantity" ] } } 为例 。
+ * PipeLineGroupExpression()
+ *  .op(PipeLineOperatorEnum.multiply, arrayOf("$price","$quantity"))
+ *  .done(PipeLineAccumulatorOperatorEnum.sum,"totalSaleAmount")
+ */
+class PipeLineGroupExpression(value: String = "") : MyRawString(value) {
+    fun op(operator: PipeLineOperatorEnum, rawValue: String): PipeLineGroupExpression {
+        return PipeLineGroupExpression("{$${operator}:${rawValue}")
+    }
+
+    fun op(operator: PipeLineOperatorEnum, rawValue: PipeLineGroupExpression): PipeLineGroupExpression {
+        return PipeLineGroupExpression("{$${operator}:${rawValue.toString()}")
+    }
+
+    fun op(operator: PipeLineOperatorEnum, rawValue: Array<*>): PipeLineGroupExpression {
+        return PipeLineGroupExpression("{$${operator}:${rawValue.ToJson()}")
+    }
+
+
+    fun op(operator: PipeLineOperatorEnum, rawValue: JsonMap): PipeLineGroupExpression {
+        return PipeLineGroupExpression("{$${operator}:${rawValue.ToJson()}")
+    }
+
+
+    /**
+     * 聚合
+     */
+    fun accumulate(operator: PipeLineAccumulatorOperatorEnum, columnName:String): MyRawString {
+        return MyRawString("{${columnName}:{$${operator}:${this.toString()}}}")
+    }
 }
