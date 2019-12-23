@@ -32,19 +32,14 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
     }
 
     private var pipeLines = mutableListOf<Pair<String, Any>>();
-    private var whereData = mutableListOf<Criteria>()
-    private var selectColumns = mutableSetOf<String>();
     private var skip: Int = 0;
     private var take: Int = -1;
 
+    /**
+     * 通用函数
+     */
     fun addPipeLine(key: PipeLineEnum, json: JsonMap): MongoAggregateClip<M, E> {
         this.pipeLines.add("\$${key}" to json);
-        return this;
-    }
-
-    fun limit(take: Int): MongoAggregateClip<M, E> {
-        this.take = take;
-        this.pipeLines.add("\$limit" to take);
         return this;
     }
 
@@ -54,56 +49,48 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
         return this;
     }
 
-    fun limit(skip: Int, take: Int): MongoAggregateClip<M, E> {
-        this.skip = skip;
+    fun take(take: Int): MongoAggregateClip<M, E> {
         this.take = take;
-        return this.skip(skip).limit(take)
-    }
-
-    fun where(whereData: Criteria): MongoAggregateClip<M, E> {
-        this.whereData.add(whereData);
+        this.pipeLines.add("\$limit" to take);
         return this;
     }
 
-    fun where(where: (M) -> Criteria): MongoAggregateClip<M, E> {
-        this.whereData.add(where(moerEntity));
+    fun limit(skip: Int, take: Int): MongoAggregateClip<M, E> {
+        return this.skip(skip).take(take)
+    }
+
+    fun where(vararg whereDatas: Criteria): MongoAggregateClip<M, E> {
+        pipeLines.add("\$match" to this.moerEntity.getMongoCriteria(*whereDatas))
         return this;
     }
 
-    fun whereOr(vararg wheres: (M) -> Criteria): MongoAggregateClip<M, E> {
-        return whereOr(*wheres.map { it(moerEntity) }.toTypedArray())
-    }
-
-    fun whereOr(vararg wheres: Criteria): MongoAggregateClip<M, E> {
-        if( wheres.any() == false) return this;
-        var where = Criteria();
-        where.orOperator(*wheres)
-        this.whereData.add(where);
-        return this;
+    fun where(vararg wheres: (M) -> Criteria): MongoAggregateClip<M, E> {
+        return where(*wheres.map { it(moerEntity) }.toTypedArray());
     }
 
     fun select(vararg columns: String): MongoAggregateClip<M, E> {
-        selectColumns.addAll(columns)
+        pipeLines.add("\$project" to columns.map { it to "\$${it}" }.toMap());
         return this;
     }
 
     fun select(column: (M) -> MongoColumnName): MongoAggregateClip<M, E> {
-        this.selectColumns.add(column(moerEntity).toString());
+        return select(column(moerEntity).toString());
+    }
+
+    fun count(columnName:String):MongoAggregateClip<M, E> {
+        pipeLines.add("\$count" to columnName)
+        return this;
+    }
+
+    fun unset(vararg columns:String):MongoAggregateClip<M, E> {
+        pipeLines.add("\$unset" to columns)
         return this;
     }
 
 
     fun toExpression(): String {
         var pipeLines = mutableListOf<Pair<String, Any>>();
-        if (this.whereData.any()) {
-            var criteria = this.moerEntity.getMongoCriteria(*whereData.toTypedArray());
-            pipeLines.add("\$match" to criteria)
-        }
         pipeLines.addAll(this.pipeLines);
-
-        if (this.selectColumns.any()) {
-            pipeLines.add("\$project" to this.selectColumns.map { it to "\$${it}" }.toMap());
-        }
 
         var pipeLineExpression = "[" + pipeLines.map {
             var key = it.first;
@@ -117,9 +104,10 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
 //                    return@map """{$key:{##oid:"${value}"}}""".replace("##","$")
 //                }
                 return@map """{$key:"${value}"}"""
-            } else if (value is Map<*, *>) {
-                return@map "{$key:${value.ToJson()}}"
             }
+//            else if (value is Map<*, *>) {
+//                return@map "{$key:${value.ToJson()}}"
+//            }
 
             println("不识别的类型：${value::class.java.name}")
             return@map "{$key:${value.ToJson()}}"
@@ -163,10 +151,10 @@ cursor: {} } """
         }
 
         ((result.get("cursor") as Document).get("firstBatch") as ArrayList<Document>).forEach {
-//            db.change_id2Id(it);
+            //            db.change_id2Id(it);
             //value 可能会是： Document{{answerRole=Patriarch}}
             db.proc_document_json(it);
-            if( itemFunc != null) {
+            if (itemFunc != null) {
                 itemFunc(it);
             }
             ret.add(it)
@@ -177,7 +165,7 @@ cursor: {} } """
 
 
     fun toMap(itemFunc: ((Document) -> Unit)? = null): Document {
-        this.limit(1);
+        this.take(1);
         var ret = toMapList(itemFunc);
         if (ret.any() == false) return Document();
         return ret.first();
@@ -227,7 +215,7 @@ cursor: {} } """
     }
 
     fun toEntity(): E? {
-        this.limit(1)
+        this.take(1)
         return toList(moerEntity.entityClass).firstOrNull();
     }
 
@@ -236,7 +224,7 @@ cursor: {} } """
     }
 
     fun <R : Any> toEntity(clazz: Class<R>, itemFunc: ((Document) -> Unit)? = null): R? {
-        this.limit(1);
+        this.take(1);
         return toList(clazz, itemFunc).firstOrNull();
     }
 }
