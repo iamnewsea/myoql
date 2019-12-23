@@ -76,6 +76,7 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
     }
 
     fun whereOr(vararg wheres: Criteria): MongoQueryClip<M, E> {
+        if( wheres.any() == false) return this;
         var where = Criteria();
         where.orOperator(*wheres)
         this.whereData.add(where);

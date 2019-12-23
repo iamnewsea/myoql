@@ -75,6 +75,7 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
     }
 
     fun whereOr(vararg wheres: Criteria): MongoAggregateClip<M, E> {
+        if( wheres.any() == false) return this;
         var where = Criteria();
         where.orOperator(*wheres)
         this.whereData.add(where);
