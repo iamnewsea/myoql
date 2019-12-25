@@ -93,29 +93,37 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
      * @see PipeLineGroupExpression
      */
     fun group(_id: String?, vararg eachItems: MyRawString): MongoAggregateClip<M, E> {
-        var raw = "{_id:${if(_id == null) "null" else """${_id}""" }${"," + eachItems.toString()}}";
+        var raw = "{_id:${if (_id == null) "null" else """"${_id}""""}${"," + eachItems.map { it.toString() }.joinToString("")}}";
 
-        pipeLines.add("\$group:" to MyRawString(raw))
+        pipeLines.add("\$group" to MyRawString(raw))
         return this;
     }
 
-
-    fun orderBy(vararg sortFuncs: (M) -> MongoOrderBy): MongoAggregateClip<M, E> {
+    /**
+     * @param sortFuncs: true:正序， false,逆序。
+     */
+    fun orderBy(vararg sortFuncs: Pair<String, Boolean>): MongoAggregateClip<M, E> {
         var sorts = sortFuncs.map {
-            var sort = it(this.moerEntity)
-            var sortName = sort.orderBy.toString()
+            var sortName = it.first
             if (sortName == "id") {
                 sortName = "_id"
             } else if (sortName.endsWith(".id")) {
                 sortName = sortName.slice(0..sortName.length - 3) + "._id";
             }
 
-            return@map sortName + ":" + (if (sort.Asc) 1 else -1)
+            return@map """"${sortName}":""" + (if (it.second) 1 else -1)
         }
 
-        pipeLines.add("\$sort:" to MyRawString("{" + sorts.joinToString(",") + "}"))
+        pipeLines.add("\$sort" to MyRawString("{" + sorts.joinToString(",") + "}"))
         return this;
     }
+
+//    fun orderBy(vararg sortFuncs: (M) -> MongoOrderBy): MongoAggregateClip<M, E> {
+//        return orderBy(*sortFuncs.map {
+//            var order = it(moerEntity);
+//            return@map order.orderBy.toString() to order.Asc
+//        }.toTypedArray());
+//    }
 
     fun toExpression(): String {
         var pipeLines = mutableListOf<Pair<String, Any>>();

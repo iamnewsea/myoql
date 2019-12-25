@@ -158,7 +158,7 @@ enum class PipeLineAccumulatorOperatorEnum {
  */
 class PipeLineGroupExpression(value: String = "") : MyRawString(value) {
     fun op(operator: PipeLineOperatorEnum, rawValue: String): PipeLineGroupExpression {
-        return PipeLineGroupExpression("{$${operator}:${rawValue}")
+        return PipeLineGroupExpression("""{$${operator}:"${rawValue}"""")
     }
 
     fun op(operator: PipeLineOperatorEnum, rawValue: PipeLineGroupExpression): PipeLineGroupExpression {
@@ -179,6 +179,6 @@ class PipeLineGroupExpression(value: String = "") : MyRawString(value) {
      * 聚合
      */
     fun accumulate(operator: PipeLineAccumulatorOperatorEnum, columnName:String): MyRawString {
-        return MyRawString("{${columnName}:{$${operator}:${this.toString()}}}")
+        return MyRawString(""""${columnName}":{$${operator}:"${this.toString()}"}""")
     }
 }
