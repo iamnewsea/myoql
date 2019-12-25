@@ -41,11 +41,15 @@ def getJavaFiles():
     artifactId = root.getElementsByTagName('artifactId')[0].childNodes[0].data;
     version = root.getElementsByTagName('version')[0].childNodes[0].data;
 
-    cleanCMD = "mvn clean package -Dmaven.test.skip=true"
-    jarFile = "target/%s-%s.jar" % (artifactId,version)
-    installCMD="mvn install:install-file -Dfile=%s -DgroupId=%s -DartifactId=%s -Dversion=%s -Dpackaging=jar" %(jarFile.replace("/",os.sep),groupId,artifactId,version)
 
-    return cleanCMD,jarFile,installCMD
+    jarFile = "target/%s-%s.jar" % (artifactId,version)
+    install="mvn install:install-file -Dfile={} -DgroupId=%s -DartifactId=%s -Dversion=%s -Dpackaging=jar {}" %(groupId,artifactId,version)
+
+    return "mvn clean package -Dmaven.test.skip=true", \
+           install.format(jarFile.replace("/",os.sep),""), \
+           install.format(jarFile.replace("/",os.sep),"-Dclassifier=javadoc"), \
+           install.format(jarFile.replace("/",os.sep),"-Dclassifier=sources")
+
 
 if __name__=='__main__':
 
@@ -54,7 +58,7 @@ if __name__=='__main__':
     setWorkPath();
     os.chdir(file);
 
-    cleanCMD,jarFile,installCMD = getJavaFiles()
+    cleanCMD,installCMD,installJavaDoc,installSource = getJavaFiles()
 
     print("-------------------------------------------------------------------------------")
     print("")
@@ -62,14 +66,24 @@ if __name__=='__main__':
     print("")
     print(os.linesep)
 
-
+    print(cleanCMD)
     returnCode = os.system(cleanCMD)
     if(returnCode !=0 ):
         err("clean")
 
     print(os.linesep)
-
+    print(installCMD)
     returnCode = os.system(installCMD)
+    if (returnCode != 0):
+        err("install")
+
+    print(installJavaDoc)
+    returnCode = os.system(installJavaDoc)
+    if (returnCode != 0):
+        err("install")
+
+    print(installSource)
+    returnCode = os.system(installSource)
     if (returnCode != 0):
         err("install")
 
