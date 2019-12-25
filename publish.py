@@ -8,6 +8,9 @@ import  xml.dom.minidom
 import  getopt
 
 
+# 第一个参数
+version = sys.argv[1];
+
 def err(message):
     print("%s 发生了错误！！！" %(message))
     sys.exit(1)
@@ -23,7 +26,7 @@ if __name__=='__main__':
 
     setWorkPath();
 
-    returnCode = os.system("python sync_version.py")
+    returnCode = os.system("python sync_version.py {}".format(version))
     if(returnCode !=0 ):
         err("sync_version")
 
