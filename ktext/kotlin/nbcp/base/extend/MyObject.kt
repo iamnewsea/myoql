@@ -91,7 +91,7 @@ fun <T> T.IsIn(equalFunc: ((T, T) -> Boolean)? = null, vararg values: T): Boolea
  * func:((T)->Boolean)
  */
 inline fun <reified R> Stack<*>.getLatest(): R? {
-    if( this.size == 0) return null
+    if (this.size == 0) return null
 
     for (i in this.indices.reversed()) {
         var item = this[i];
@@ -129,19 +129,42 @@ val scopes: Stack<Any>
  *
  * using(
  */
-fun <T> using(init: Any, body: () -> T): T {
+inline fun <T> using(init: Any, body: () -> T): T {
     scopes.push(init);
     try {
-        return body();
-    } finally {
+        var ret = body();
+
         if (init is IDisposeable) {
             init.dispose();
         }
+
+        return ret;
+    } finally {
         if (scopes.isEmpty() == false) {
             scopes.pop()
         }
     }
 }
+
+
+inline fun <T> using(init: Any, body: () -> T, finally: (() -> Unit)): T {
+    scopes.push(init);
+    try {
+        var ret = body();
+
+        if (init is IDisposeable) {
+            init.dispose();
+        }
+        finally()
+        return ret;
+    } finally {
+        if (scopes.isEmpty() == false) {
+            scopes.pop()
+        }
+    }
+}
+
+
 //fun HttpServletResponse.SetJsonContent(vararg json:Pair<String,Any>){
 //    this.contentType = "application/json;charset=utf-8";
 //    this.writer.write(json.toMap().ToJson())
@@ -240,22 +263,22 @@ val File.FullName: String
 </String> */
 fun File.ReadTailLines(action: ((String, Int) -> Boolean)): Int {
     if (this.isFile == false) return -1;
-
     var reader = BufferTailReader(this)
+    try {
+        while (true) {
+            var line = reader.readLine()
+            if (line == null) {
+                return reader.currentLineIndex;
+            }
 
-    while (true) {
-        var line = reader.readLine()
-        if (line == null) {
-            return reader.currentLineIndex;
+            if (action(line, reader.currentLineIndex) == false) {
+                return reader.currentLineIndex;
+            }
         }
-
-        if (action(line, reader.currentLineIndex) == false) {
-            return reader.currentLineIndex;
-        }
+        return reader.currentLineIndex;
+    } finally {
+        reader.close()
     }
-
-    reader.close();
-    return reader.currentLineIndex;
 }
 
 

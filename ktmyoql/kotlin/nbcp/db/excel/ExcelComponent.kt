@@ -74,12 +74,14 @@ class ExcelComponent() {
                 val fm = FileMagic.valueOf(file)
                 when (fm) {
                     FileMagic.OOXML -> {
-                        var book = WorkbookFactory.create(FileInputStream(fileName))
-                        for (i in 0..(book.numberOfSheets - 1)) {
-                            ret.add(book.getSheetAt(i).sheetName)
+                        var book = WorkbookFactory.create(FileInputStream(fileName));
+                        try {
+                            for (i in 0..(book.numberOfSheets - 1)) {
+                                ret.add(book.getSheetAt(i).sheetName)
+                            }
+                        } finally {
+                            book.close()
                         }
-
-                        book.close()
                     }
 
                     FileMagic.OLE2 -> {
@@ -106,9 +108,10 @@ class ExcelComponent() {
             return ret.toTypedArray()
         }
 
-    fun using(fileName: String){
+    fun usingFile(fileName: String) {
         this.fileName = fileName;
     }
+
     fun select(sheetName: String, columns: List<String>, pks: List<String>, offset_row: Int = 0) {
         this.sheetName = sheetName;
         this.columns = columns;
