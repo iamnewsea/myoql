@@ -175,13 +175,19 @@ object db {
         return getDynamicMongoTemplateByUri(uri)
     }
 
+    /**
+     * 根据Uri获取 MongoTemplate，会缓存
+     */
     fun getDynamicMongoTemplateByUri(uri: String): MongoTemplate? {
-        var dbFactory = SimpleMongoClientDbFactory(uri);
-        val converter = MappingMongoConverter(DefaultDbRefResolver(dbFactory), MongoMappingContext())
-        converter.setTypeMapper(DefaultMongoTypeMapper(null));
-        (converter.conversionService as GenericConversionService).addConverter(Date2LocalDateTimeConverter())
+        return dynamicMongoTemplate.getOrPut(uri, {
 
-        return dynamicMongoTemplate.getOrPut(uri, { MongoTemplate(dbFactory, converter) })
+            var dbFactory = SimpleMongoClientDbFactory(uri);
+            val converter = MappingMongoConverter(DefaultDbRefResolver(dbFactory), MongoMappingContext())
+            converter.setTypeMapper(DefaultMongoTypeMapper(null));
+            (converter.conversionService as GenericConversionService).addConverter(Date2LocalDateTimeConverter())
+
+            return@getOrPut MongoTemplate(dbFactory, converter);
+        })
     }
 
 }
