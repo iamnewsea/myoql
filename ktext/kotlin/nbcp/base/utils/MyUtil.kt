@@ -41,7 +41,7 @@ object MyUtil {
         }
 
     fun isLocalIp(Ip: String): Boolean {
-        return Ip.isEmpty() || Ip.startsWith("192.168.") || Ip.startsWith("10.") || Ip.startsWith("172.") || Ip.startsWith("127.") || Ip.startsWith("0.") ||  Ip.startsWith("0:")
+        return Ip.isEmpty() || Ip.startsWith("192.168.") || Ip.startsWith("10.") || Ip.startsWith("172.") || Ip.startsWith("127.") || Ip.startsWith("0.") || Ip.startsWith("0:")
     }
 
     private fun getMd5(localFile: File): String {
@@ -113,16 +113,39 @@ object MyUtil {
         return "";
     }
 
+    /**
+     * 获取启动Jar所的路径
+     * 调试时，会返回 target/classes/nbcp/base/utils
+     */
     fun getStartingJarFile(): File {
-        var file = this::class.java.getResource("").file
-        //file:/home/udi/IdeaProjects/pandian/target/pandian-corp-1.0.1.jar!/BOOT-INF/classes!/pandian/web/sys/
+        /**
+        file:/opt/edu_report/admin-api-1.0.1.jar!/BOOT-INF/classes!/
+        /D:/code/edu_report/server/admin/target/classes/
+         */
+        var file = this::class.java.getResource("/").file
+        print(file)
+        var startIndex = if (file.startsWith("//file:/")) 5 else 0
 
-        var index = file.indexOf("!/BOOT-INF/classes!") - 1;
+        //如果是Jar包
+        var index = file.indexOf("!/BOOT-INF/classes!/");
         if (index > 0) {
-            return File(file.slice(5..index));
+            return File(file.slice(startIndex..(index - 1)))
+        } else {
+            //如果是调试模式
+            index = file.indexOf("/target/classes/")
+            if (index > 0) {
+                var mvn_file = File(file.Slice(0, -8)).listFiles { it -> it.name == "maven-archiver" }.firstOrNull()?.listFiles { it -> it.name == "pom.properties" }?.firstOrNull()
+                if (mvn_file != null) {
+                    var jarFile_lines = mvn_file.readLines()
+                    var version = jarFile_lines.first { it.startsWith("version=") }.split("=").last()
+                    var artifactId = jarFile_lines.first { it.startsWith("artifactId=") }.split("=").last()
+
+                    return File(file.Slice(0, -8) + artifactId + "-" + version + ".jar")
+                }
+            }
         }
 
-        return File(file);
+        return File(file)
     }
 
     fun getPrivatePropertyValue(entity: Any, property: String): Any? {
@@ -231,7 +254,7 @@ object MyUtil {
     }
 
     private fun getClassName(fullPath: String, basePack: String, jarPath: String): String {
-        if( fullPath.endsWith(".class") == false){
+        if (fullPath.endsWith(".class") == false) {
             return "";
         }
 
