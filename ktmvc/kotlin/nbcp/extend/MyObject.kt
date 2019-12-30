@@ -258,3 +258,11 @@ fun HttpServletRequest.findParameterValue(key: String): String? {
 
     return null;
 }
+
+/**
+ * URL + 参数
+ */
+val HttpServletRequest.fullUrl: String
+    get() {
+        return this.requestURI + (if (this.queryString.isNullOrEmpty()) "" else ("?" + this.queryString))
+    }

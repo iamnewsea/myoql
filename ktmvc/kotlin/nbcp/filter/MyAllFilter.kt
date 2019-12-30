@@ -135,7 +135,7 @@ open class MyAllFilter : Filter {
 //                logNewSession(request, response);
             }
 
-            logger.info("${loginName} ${request.ClientIp} ${request.method} ${request.requestURI}${if (request.queryString == null) "" else ("?" + request.queryString)}  --->\n" +
+            logger.info("${loginName} ${request.ClientIp} ${request.method} ${request.fullUrl}  --->\n" +
                     "[response] ${response.status} ${System.currentTimeMillis() - startAt}毫秒")
 
 
@@ -237,7 +237,7 @@ open class MyAllFilter : Filter {
         if (logger.isInfoEnabled == false) return
 
         var msgs = mutableListOf<String>()
-        msgs.add("[[[--------> ${loginName} ${request.ClientIp} ${request.method} ${request.requestURI}" + (if (request.queryString == null) "" else ("?" + request.queryString)))
+        msgs.add("[[[--------> ${loginName} ${request.ClientIp} ${request.method} ${request.fullUrl}")
 
         if (request.headerNames.hasMoreElements()) {
             msgs.add("[request header]:")

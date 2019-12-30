@@ -1,8 +1,6 @@
 package nbcp.web
 
 
-import org.jetbrains.annotations.NotNull
-import org.jetbrains.annotations.Nullable
 import org.springframework.core.MethodParameter
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.bind.support.WebDataBinderFactory
@@ -11,23 +9,16 @@ import org.springframework.web.context.request.ServletWebRequest
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.method.support.ModelAndViewContainer
 import nbcp.comm.*
-import nbcp.comm.*
-import nbcp.comm.*
 import nbcp.base.extend.*
 import nbcp.base.utf8
 import nbcp.base.utils.MyUtil
-import nbcp.base.utils.SpringUtil
 import java.lang.RuntimeException
-import java.nio.charset.Charset
-import java.time.*
-import java.util.*
+import java.lang.reflect.Method
 import javax.servlet.ServletRequest
 import javax.servlet.ServletRequestWrapper
 import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpSession
-import kotlin.collections.ArrayList
-import kotlin.reflect.jvm.jvmName
 
 
 /**
@@ -87,7 +78,7 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
     override fun resolveArgument(parameter: MethodParameter, mavContainer: ModelAndViewContainer?, nativeRequest: NativeWebRequest, binderFactory: WebDataBinderFactory?): Any? {
         if (mavContainer == null || nativeRequest == null || binderFactory == null) return null
         var webRequest = (nativeRequest as ServletWebRequest).request
-        var request = getMyRequest(webRequest);
+        var myRequest = getMyRequest(webRequest);
         var value: Any? = null
         var key = parameter.parameterName
 
@@ -116,12 +107,12 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
             }
         }
 
-        if (value == null && request != null) {
+        if (value == null && myRequest != null) {
             if (parameter.hasParameterAnnotation(JsonModel::class.java)) {
-                return (request.body ?: byteArrayOf()).toString(utf8).FromJson(parameter.parameterType);
+                return (myRequest.body ?: byteArrayOf()).toString(utf8).FromJson(parameter.parameterType);
             }
 
-            value = request.json.get(key)
+            value = myRequest.json.get(key)
         }
 
 
@@ -132,9 +123,17 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
         if (value == null) {
             var require = parameter.getParameterAnnotation(Require::class.java)
             if (require != null) {
-                throw RuntimeException(require.value.AsString("参数${parameter.parameterName}不能为空"))
+                var caller = ""
+                if( parameter.executable is Method){
+                    var method = parameter.executable as Method
+                    caller = "${method.name}(${method.parameters.map{it.toString()}.joinToString()}):${method.returnType.name}"
+                }
+                else{
+                    var method = parameter.executable
+                    caller = "${method.name}(${method.parameters.map{it.toString()}.joinToString()})"
+                }
+                throw RuntimeException(require.value.AsString("请求:${webRequest.fullUrl} --> 方法:${caller} 中，找不到参数${parameter.parameterName}"))
             }
-
 
             if (parameter.parameterType == String::class.java) {
                 return "";
