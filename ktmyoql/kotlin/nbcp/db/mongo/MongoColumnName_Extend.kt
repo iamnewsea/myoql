@@ -1,15 +1,7 @@
 package nbcp.db.mongo
 
-import com.mongodb.BasicDBList
-import com.mongodb.BasicDBObject
-import com.mongodb.DBObject
-import com.mongodb.client.model.Filters
 import nbcp.comm.*
-import org.bson.BSONObject
 import org.bson.BasicBSONObject
-import org.bson.BsonString
-import org.bson.Document
-import org.bson.conversions.Bson
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
@@ -17,7 +9,6 @@ import nbcp.db.IdName
 import nbcp.base.extend.*
 import nbcp.db.mongo.*
 import nbcp.db.mongo.component.MongoTypeEnum
-import java.lang.reflect.ParameterizedType
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.regex.Pattern

@@ -1,7 +1,7 @@
 package nbcp.db.mongo
 
-import com.mongodb.BasicDBObject
-import com.mongodb.DBObject
+
+//import com.mongodb.DBObject
 import nbcp.base.extend.*
 import nbcp.db.IdName
 import org.bson.BSONObject
@@ -156,25 +156,25 @@ fun Document.GetComplexPropertyValue(vararg eachProperty: String): Any? {
 }
 
 
-fun Criteria.toDBObject(): BasicDBObject {
-    var ret = BasicDBObject();
-
-    this.criteriaObject.keys.forEach {
-        var value = this.criteriaObject.get(it)
-
-        if (value == null) {
-            ret[it] = null
-        } else if (value is Criteria) {
-            ret[it] = value.toDBObject();
-        } else {
-            ret[it] = value;
-        }
-
-        ret[it] = value;
-    }
-
-    return ret;
-}
+//fun Criteria.toDBObject(): BasicDBObject {
+//    var ret = BasicDBObject();
+//
+//    this.criteriaObject.keys.forEach {
+//        var value = this.criteriaObject.get(it)
+//
+//        if (value == null) {
+//            ret[it] = null
+//        } else if (value is Criteria) {
+//            ret[it] = value.toDBObject();
+//        } else {
+//            ret[it] = value;
+//        }
+//
+//        ret[it] = value;
+//    }
+//
+//    return ret;
+//}
 
 
 fun Criteria.toDocument(): Document {
@@ -198,20 +198,24 @@ fun Criteria.toDocument(): Document {
 }
 
 
-fun DBObject.toDocument(): Document {
-    var ret = Document();
-
-    this.keySet().forEach {
-        var value = this.get(it);
-
-        if (value is DBObject) {
-            ret[it] = value.toDocument();
-        } else if (value is BsonString)
-            ret[it] = value;
-    }
-
-    return ret;
-}
+//fun DBObject.toDocument(): Document {
+//    var ret = Document();
+//
+//    this.keySet().forEach {
+//        var value = this.get(it);
+//
+//        if (value is DBObject) {
+//            ret[it] = value.toDocument();
+//        } else if (value is BsonString) {
+//            ret[it] = value.toString()
+//        } else {
+//            ret[it] = value
+//        }
+//
+//    }
+//
+//    return ret;
+//}
 
 
 

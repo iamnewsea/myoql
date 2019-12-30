@@ -1,9 +1,6 @@
 package nbcp.db.mongo
 
 import com.mongodb.BasicDBList
-import com.mongodb.BasicDBObject
-import com.mongodb.DBObject
-import com.mongodb.client.model.Filters
 import nbcp.comm.*
 import org.bson.BSONObject
 import org.bson.BasicBSONObject

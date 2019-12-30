@@ -1,22 +1,17 @@
 package nbcp.db.mongo
 
-import com.mongodb.BasicDBObject
+
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import nbcp.base.extend.*
-import nbcp.base.utils.MyUtil
 import nbcp.base.utils.SpringUtil
 import nbcp.db.db
-import nbcp.db.mongo.MongoDeleteClip
-import nbcp.db.mongo.MongoQueryClip
-import nbcp.db.mongo.MongoUpdateClip
 
 import nbcp.db.mongo.*
 import org.slf4j.LoggerFactory
 import java.lang.Exception
-import java.util.stream.IntStream
 
 typealias mongoQuery = org.springframework.data.mongodb.core.query.Query
 
@@ -41,8 +36,9 @@ companion object {
      * @param entity 实体
      * @return 返回Id
      */
-    fun insert(entity: BasicDBObject): String {
-        if (entity.containsField("id") == false) {
+    fun insert(entity: Map<String,*>): String {
+        var entity = entity.toMutableMap()
+        if (entity.containsKey("id") == false) {
             entity.set("id", ObjectId().toString())
         }
 

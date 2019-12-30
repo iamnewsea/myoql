@@ -1,6 +1,5 @@
 package nbcp.db.mongo
 
-import com.mongodb.BasicDBObject
 import com.mongodb.DBCursor
 import com.mongodb.DBObject
 import com.mongodb.client.model.DBCollectionFindOptions

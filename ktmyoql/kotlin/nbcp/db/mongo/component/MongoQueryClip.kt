@@ -190,9 +190,8 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
         var lastKey = selectColumns.lastOrNull() ?: ""
         var error = false;
         try {
+            db.change_id2Id(cursor);
             cursor.forEach {
-                db.change_id2Id(it);
-
 //            if( it.containsField("_id")){
 //                it.put("id",it.get("_id").toString())
 //            }

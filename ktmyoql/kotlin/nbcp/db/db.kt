@@ -90,13 +90,27 @@ object db {
 //        return Criteria().andOperator(*where);
 //    }
 
-    fun change_id2Id(value: MutableMap<String, Any>, remove_id: Boolean = true) {
+    fun change_id2Id(value: Collection<*>, remove_id: Boolean = true) {
+        value.forEach{ v->
+            if( v == null){
+                return@forEach
+            }
+
+            if (v is MutableMap<*, *>) {
+                change_id2Id(v, remove_id);
+            } else if (v is Collection<*>) {
+                change_id2Id(v, remove_id);
+            }
+        }
+    }
+
+    fun change_id2Id(value: MutableMap<*, *>, remove_id: Boolean = true) {
         var keys = value.keys.toTypedArray();
         var needReplace = keys.contains("_id") && !keys.contains("id")
         for (k in keys) {
             var v = value.get(k);
             if (needReplace && (k == "_id")) {
-                value.set("id", v?.toString() ?: "");
+                (value as MutableMap<Any, Any?>).set("id", v?.toString() ?: "");
                 if (remove_id) {
                     value.remove("_id")
                 }
@@ -107,36 +121,36 @@ object db {
                 continue;
             }
             if (v is MutableMap<*, *>) {
-                change_id2Id(v as MutableMap<String, Any>, remove_id);
-            } else if (v is DBObject) {
+                change_id2Id(v, remove_id);
+            } else if (v is Collection<*>) {
                 change_id2Id(v, remove_id);
             }
         }
     }
 
-    fun change_id2Id(value: DBObject, remove_id: Boolean = true) {
-        var keys = value.keySet().toTypedArray();
-        var needReplace = keys.contains("_id") && !keys.contains("id")
-        for (k in keys) {
-            var v = value.get(k);
-            if (needReplace && (k == "_id")) {
-                value.put("id", v?.toString() ?: "");
-                if (remove_id) {
-                    value.removeField("_id")
-                }
-                needReplace = false;
-                continue;
-            }
-            if (v == null) {
-                continue;
-            }
-            if (v is MutableMap<*, *>) {
-                change_id2Id(v as MutableMap<String, Any>, remove_id);
-            } else if (v is DBObject) {
-                change_id2Id(v, remove_id);
-            }
-        }
-    }
+//    fun change_id2Id(value: DBObject, remove_id: Boolean = true) {
+//        var keys = value.keySet().toTypedArray();
+//        var needReplace = keys.contains("_id") && !keys.contains("id")
+//        for (k in keys) {
+//            var v = value.get(k);
+//            if (needReplace && (k == "_id")) {
+//                value.put("id", v?.toString() ?: "");
+//                if (remove_id) {
+//                    value.removeField("_id")
+//                }
+//                needReplace = false;
+//                continue;
+//            }
+//            if (v == null) {
+//                continue;
+//            }
+//            if (v is MutableMap<*, *>) {
+//                change_id2Id(v, remove_id);
+//            } else if (v is DBObject) {
+//                change_id2Id(v, remove_id);
+//            }
+//        }
+//    }
 
     /**
      *value 可能会是： Document{{answerRole=Patriarch}}

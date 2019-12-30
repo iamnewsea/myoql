@@ -1,6 +1,5 @@
 package nbcp.db.mongo
 
-import com.mongodb.BasicDBObject
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
