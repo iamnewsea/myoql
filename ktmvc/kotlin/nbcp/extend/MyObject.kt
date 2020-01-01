@@ -34,6 +34,7 @@ fun ServletResponse.WriteTextValue(text: String) {
 
 fun HttpServletResponse.setDownloadFileName(fileName: String) {
     this.setHeader("Content-Disposition", "attachment; filename=" + JsUtil.encodeURIComponent(fileName));
+    this.contentType = "application/octet-stream"
 }
 
 private val String.ContentTypeIsOctetContent: Boolean
