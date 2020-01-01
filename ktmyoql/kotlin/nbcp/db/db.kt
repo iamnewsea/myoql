@@ -7,12 +7,15 @@ import com.mongodb.ServerAddress
 import nbcp.base.extend.AsInt
 import nbcp.base.extend.IsStringType
 import nbcp.base.extend.Slice
+import nbcp.base.extend.ToJson
 import nbcp.base.utils.RecursionUtil
 import nbcp.base.utils.SpringUtil
+import nbcp.comm.JsonMap
 import nbcp.comm.StringMap
 import nbcp.comm.StringTypedMap
 import nbcp.db.mongo.Date2LocalDateTimeConverter
 import nbcp.db.mongo.MongoEventConfig
+import nbcp.db.mongo.PipeLineOperatorEnum
 import nbcp.db.sql.SqlBaseTable
 import org.bson.Document
 import org.slf4j.LoggerFactory
@@ -204,4 +207,5 @@ object db {
         })
     }
 
+    val mongo = db_mongo
 }

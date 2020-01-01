@@ -42,6 +42,11 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
         return this;
     }
 
+    fun addPipeLine(key: PipeLineEnum, json: MyRawString): MongoAggregateClip<M, E> {
+        this.pipeLines.add("\$${key}" to json);
+        return this;
+    }
+
     fun skip(skip: Int): MongoAggregateClip<M, E> {
         this.skip = skip;
         this.pipeLines.add("\$skip" to skip);
@@ -96,7 +101,7 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
     /**
      * @param eachItems: 每一个聚合的表达式。
      *
-     * @see PipeLineGroupExpression
+     * @see MongoExpression
      */
     fun group(_id: String?, vararg eachItems: MyRawString): MongoAggregateClip<M, E> {
         var raw = "{_id:${if (_id == null) "null" else """"${_id}""""}${"," + eachItems.map { it.toString() }.joinToString("")}}";
