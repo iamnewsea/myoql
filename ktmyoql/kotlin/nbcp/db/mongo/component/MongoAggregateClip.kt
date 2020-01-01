@@ -58,13 +58,20 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
         return this.skip(skip).take(take)
     }
 
-    fun where(vararg whereDatas: Criteria): MongoAggregateClip<M, E> {
+    fun wheres(vararg whereDatas: Criteria): MongoAggregateClip<M, E> {
+        if( whereDatas.any() == false) return this;
         pipeLines.add("\$match" to this.moerEntity.getMongoCriteria(*whereDatas))
         return this;
     }
 
-    fun where(vararg wheres: (M) -> Criteria): MongoAggregateClip<M, E> {
-        return where(*wheres.map { it(moerEntity) }.toTypedArray());
+    fun wheres(vararg wheres: (M) -> Criteria): MongoAggregateClip<M, E> {
+        return wheres(*wheres.map { it(moerEntity) }.toTypedArray());
+    }
+
+    /**开始收集where条件
+     */
+    fun beginMatch(): BeginMatchClip<M, E> {
+        return BeginMatchClip<M, E>(this)
     }
 
     fun select(vararg columns: String): MongoAggregateClip<M, E> {
@@ -268,3 +275,14 @@ cursor: {} } """
 }
 
 
+class BeginMatchClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var aggregate: MongoAggregateClip<M, E>) {
+    private var wheres = mutableListOf<Criteria>()
+    fun where(where: (M) -> Criteria): BeginMatchClip<M, E> {
+        wheres.add(where(this.aggregate.moerEntity))
+        return this;
+    }
+
+    fun endMatch(): MongoAggregateClip<M, E> {
+        return this.aggregate.wheres(*this.wheres.toTypedArray())
+    }
+}
