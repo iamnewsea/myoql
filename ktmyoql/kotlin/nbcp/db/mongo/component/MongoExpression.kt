@@ -1,12 +1,37 @@
 package nbcp.db.mongo
 
-import nbcp.base.extend.MyRawString
+
 import nbcp.base.extend.ToJson
+import nbcp.comm.JsonMap
 import org.springframework.data.mongodb.core.query.Criteria
+import java.lang.RuntimeException
 
+/**
+ * 把 where 转换为表达式，如：
+ * "field" : { "$gt" : 1}
+ * -->
+ * "$gt" : ["$field" , 1 ]
+ */
+fun Criteria.toExpression(): JsonMap {
+    var ret = JsonMap()
+    this.criteriaObject.forEach { ent ->
+        var key = "$" + ent.key
+        var value = ent.value
 
-fun Criteria.toExpression(): MongoExpression {
-    return MongoExpression(this.criteriaObject.toJson(), true)
+        if (value is Map<*, *>) {
+            if (value.size == 1) {
+                var first = value.entries.first()
+                ret.set(first.key.toString(), arrayOf(key, first.value))
+            } else {
+                throw RuntimeException("不识别的表达式: " + value.ToJson())
+            }
+        }
+        //简单类型
+        else {
+            ret.set("\$eq", arrayOf(key, value))
+        }
+    }
+    return ret
 }
 
 /** 从里往外写。
@@ -28,29 +53,25 @@ fun Criteria.toExpression(): MongoExpression {
  *  ( "abc" mongo_multi "def" ) mongo
  */
 
-class MongoExpression(value: String = "", val isObjectValue: Boolean = false) : MyRawString(value) {
-    override fun toString(): String {
-        var ret = super.toString();
-
-        if (isObjectValue) {
-            return "{" + ret + "}"
-        }
-        return ret
+class MongoExpression : JsonMap {
+    constructor() : super() {
     }
 
+    constructor(vararg pairs: Pair<String, Any?>) : super(pairs.toList()) {
+    }
 
     /**
      * 聚合
      */
     fun accumulate(operator: PipeLineAccumulatorOperatorEnum): MongoExpression {
-        return MongoExpression("""$${operator}:"${this.toString()}""", true)
+        return MongoExpression("$" + operator.toString() to this)
     }
 
 
     /**
      * 返回 列名:表达式
      */
-    fun As(columnName: String): MyRawString {
-        return MyRawString(""""${columnName}":${this.toString()}""")
+    fun As(columnName: String): JsonMap {
+        return JsonMap(columnName to this)
     }
 }

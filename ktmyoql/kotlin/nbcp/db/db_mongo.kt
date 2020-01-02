@@ -1,7 +1,6 @@
 package nbcp.db
 
-import nbcp.base.extend.MyRawString
-import nbcp.base.extend.ToJson
+
 import nbcp.comm.JsonMap
 import nbcp.db.mongo.*
 import org.springframework.data.mongodb.core.query.Criteria
@@ -15,19 +14,19 @@ object db_mongo {
 //    }
 
     fun cond(ifExpression: Criteria, trueExpression: String, falseExpression: String): MongoExpression {
-        return op(PipeLineOperatorEnum.cond, arrayOf(MyRawString(ifExpression.criteriaObject.toJson()), trueExpression, falseExpression))
+        return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
 
     fun cond(ifExpression: Criteria, trueExpression: MongoExpression, falseExpression: MongoExpression): MongoExpression {
-        return op(PipeLineOperatorEnum.cond, arrayOf(MyRawString(ifExpression.criteriaObject.toJson()), trueExpression, falseExpression))
+        return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
 
     fun cond(ifExpression: Criteria, trueExpression: String, falseExpression: MongoExpression): MongoExpression {
-        return op(PipeLineOperatorEnum.cond, arrayOf(MyRawString(ifExpression.criteriaObject.toJson()), trueExpression, falseExpression))
+        return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
 
     fun cond(ifExpression: Criteria, trueExpression: MongoExpression, falseExpression: String): MongoExpression {
-        return op(PipeLineOperatorEnum.cond, arrayOf(MyRawString(ifExpression.criteriaObject.toJson()), trueExpression, falseExpression))
+        return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
 
     fun cond(ifExpression: MongoExpression, trueExpression: MongoExpression, falseExpression: MongoExpression): MongoExpression {
@@ -35,29 +34,35 @@ object db_mongo {
     }
 
 
-    fun op(rawValue: String): MongoExpression {
-        return MongoExpression("\"" + rawValue + "\"")
-    }
-
-    fun value(rawValue: String): MongoExpression {
-        return MongoExpression(rawValue)
-    }
-
     fun op(operator: PipeLineOperatorEnum, rawValue: String): MongoExpression {
-        return MongoExpression("""$${operator}:"${rawValue}"""", true)
+        return MongoExpression("$" + operator.toString() to rawValue)
     }
 
     fun op(operator: PipeLineOperatorEnum, rawValue: MongoExpression): MongoExpression {
-        return MongoExpression("$${operator}:${rawValue.toString()}", true)
+        return MongoExpression("$" + operator.toString() to rawValue)
     }
 
     fun op(operator: PipeLineOperatorEnum, rawValue: Array<*>): MongoExpression {
-        return MongoExpression("$${operator}:${rawValue.ToJson()}", true)
+        return MongoExpression("$" + operator.toString() to rawValue)
     }
 
 
     fun op(operator: PipeLineOperatorEnum, rawValue: JsonMap): MongoExpression {
-        return MongoExpression("$${operator}:${rawValue.ToJson()}", true)
+        return MongoExpression("$" + operator.toString() to rawValue)
     }
 
+    /**
+     * 聚合
+     */
+    fun accumulate(operator: PipeLineAccumulatorOperatorEnum, rawValue: String): MongoExpression {
+        return MongoExpression("$" + operator.toString() to rawValue)
+    }
+
+    fun accumulate(operator: PipeLineAccumulatorOperatorEnum, rawValue: Int): MongoExpression {
+        return MongoExpression("$" + operator.toString() to rawValue)
+    }
+
+    fun accumulate(operator: PipeLineAccumulatorOperatorEnum, rawValue: Double): MongoExpression {
+        return MongoExpression("$" + operator.toString() to rawValue)
+    }
 }

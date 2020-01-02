@@ -42,7 +42,7 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
         return this;
     }
 
-    fun addPipeLine(key: PipeLineEnum, json: MyRawString): MongoAggregateClip<M, E> {
+    fun addPipeLine(key: PipeLineEnum, json: String): MongoAggregateClip<M, E> {
         this.pipeLines.add("\$${key}" to json);
         return this;
     }
@@ -64,7 +64,7 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
     }
 
     fun wheres(vararg whereDatas: Criteria): MongoAggregateClip<M, E> {
-        if( whereDatas.any() == false) return this;
+        if (whereDatas.any() == false) return this;
         pipeLines.add("\$match" to this.moerEntity.getMongoCriteria(*whereDatas))
         return this;
     }
@@ -103,10 +103,13 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
      *
      * @see MongoExpression
      */
-    fun group(_id: String?, vararg eachItems: MyRawString): MongoAggregateClip<M, E> {
-        var raw = "{_id:${if (_id == null) "null" else """"${_id}""""}${"," + eachItems.map { it.toString() }.joinToString("")}}";
+    fun group(_id: String?, eachItems: JsonMap): MongoAggregateClip<M, E> {
+        var raw = JsonMap();
+        raw.put("_id", _id)
+        raw.putAll(eachItems)
 
-        pipeLines.add("\$group" to MyRawString(raw))
+
+        pipeLines.add("\$group" to raw)
         return this;
     }
 
@@ -122,10 +125,10 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
                 sortName = sortName.slice(0..sortName.length - 3) + "._id";
             }
 
-            return@map """"${sortName}":""" + (if (it.second) 1 else -1)
+            return@map sortName to (if (it.second) 1 else -1)
         }
 
-        pipeLines.add("\$sort" to MyRawString("{" + sorts.joinToString(",") + "}"))
+        pipeLines.add("\$sort" to JsonMap(sorts.toList()))
         return this;
     }
 
@@ -147,17 +150,15 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
                 return@map """{$key:${value.criteriaObject.toJson()}}"""
             } else if (value is Number) {
                 return@map "{$key:$value}";
-            } else if (value is MyRawString) {
-                return@map "{$key:${value.toString()}}";
-            } else if (value is String) {
+            }else if (value is String) {
 //                if( key == "_id" || key.endsWith("._id")){
 //                    return@map """{$key:{##oid:"${value}"}}""".replace("##","$")
 //                }
                 return@map """{$key:"${value}"}"""
             }
-//            else if (value is Map<*, *>) {
-//                return@map "{$key:${value.ToJson()}}"
-//            }
+            else if (value is Map<*, *>) {
+                return@map "{$key:${value.ToJson()}}"
+            }
 
             println("不识别的类型：${value::class.java.name}")
             return@map "{$key:${value.ToJson()}}"

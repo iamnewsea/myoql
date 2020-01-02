@@ -34,12 +34,6 @@ open class MyString(private val value: String) : Comparable<String>, CharSequenc
     override fun toString(): String = this.value;
 }
 
-/**
- * 表达不需要转义的字符串，用于 Json,Xml中，表过传递的是元始值。
- */
-open class MyRawString(value: String) :  MyString(value)
-
-
 //不区分大小写格式的比较。
 infix inline fun String.VbSame(other: String?): Boolean {
     if (other == null) return false;

@@ -1,6 +1,5 @@
 package nbcp.db.mongo
 
-import nbcp.base.extend.MyRawString
 import nbcp.base.extend.MyString
 import nbcp.base.extend.ToJson
 import nbcp.comm.JsonMap
