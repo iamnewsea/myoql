@@ -9,7 +9,7 @@ import  getopt
 
 
 # 第一个参数
-version = sys.argv[1];
+version = sys.argv[1]
 
 def err(message):
     print("%s 发生了错误！！！" %(message))
@@ -24,7 +24,7 @@ def setWorkPath():
 
 if __name__=='__main__':
 
-    setWorkPath();
+    setWorkPath()
 
     returnCode = os.system("python sync_version.py {}".format(version))
     if(returnCode !=0 ):
