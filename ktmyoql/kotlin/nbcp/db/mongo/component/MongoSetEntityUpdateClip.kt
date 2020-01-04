@@ -25,8 +25,8 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
         }
     }
 
-    private var whereColumns: MutableSet<String>? = null
-    private var setColumns: MutableSet<String>? = null
+    private var whereColumns = mutableSetOf<String>()
+    private var setColumns = mutableSetOf<String>()
     private var unsetColumns = mutableSetOf<String>()
     /**
      * @param entity 要更新的实体
@@ -38,33 +38,26 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
 //        return this;
 //    }
 
-    fun withColumns(setFunc: (M) -> MongoColumns): MongoSetEntityUpdateClip<M> {
-        if (this.setColumns == null) {
-            this.setColumns = mutableSetOf<String>()
-        }
-        this.setColumns!!.addAll(setFunc(this.moerEntity).map { it.toString() })
+    fun withColumn(setFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M> {
+        this.setColumns.add(setFunc(this.moerEntity).toString())
         return this;
     }
 
-    fun withoutColumns(unsetFunc: (M) -> MongoColumns): MongoSetEntityUpdateClip<M> {
-        this.unsetColumns.addAll(unsetFunc(this.moerEntity).map { it.toString() })
+    fun withoutColumn(unsetFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M> {
+        this.unsetColumns.add(unsetFunc(this.moerEntity).toString())
         return this;
     }
 
-    fun whereColumns(whereFunc: (M) -> MongoColumns): MongoSetEntityUpdateClip<M> {
-        if (whereColumns == null) {
-            this.whereColumns = mutableSetOf<String>()
-        }
-        this.whereColumns!!.addAll(whereFunc(this.moerEntity).map { it.toString() })
+    fun whereColumn(whereFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M> {
+        this.whereColumns.add(whereFunc(this.moerEntity).toString())
         return this;
     }
 
     fun withRequestParams(keys: Set<String>): MongoSetEntityUpdateClip<M> {
-        var cols = MongoColumns();
-        keys.forEach {
-            cols.add(MongoColumnName(it));
+        keys.forEach { key ->
+            withColumn { MongoColumnName(key) }
         }
-        return withColumns { cols };
+        return this
     }
 
     fun exec(): Int {
