@@ -65,8 +65,8 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
 //            throw RuntimeException("entity不能为空")
 //        }
 
-        if (whereColumns == null) {
-            whereColumns = mutableSetOf("_id");
+        if (whereColumns.any() == false) {
+            whereColumns.add("_id")
         }
 
         var update = MongoUpdateClip(this.moerEntity)
@@ -76,7 +76,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
                 findKey = "_id"
             }
 
-            if (whereColumns!!.contains(findKey)) {
+            if (whereColumns.contains(findKey)) {
                 var value = MyUtil.getPrivatePropertyValue(this.entity, it.name);
                 if (value != null) {
                     if (value is String) {
@@ -95,7 +95,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
                 return@forEach
             }
 
-            if (setColumns != null && !setColumns!!.contains(it.name)) {
+            if (setColumns.any() && (setColumns.contains(it.name) == false)) {
                 return@forEach;
             }
 
