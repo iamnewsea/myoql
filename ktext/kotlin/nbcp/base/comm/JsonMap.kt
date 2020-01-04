@@ -98,17 +98,17 @@ open class JsonMap : StringTypedMap<Any?> {
     constructor(data: List<Pair<String, Any?>>) : super(data) {
     }
 
-//    operator fun plus(other: JsonMap): JsonMap {
-//        var ret = JsonMap()
-//        ret.putAll(this)
-//        ret.putAll(other)
-//        return ret;
-//    }
+    operator fun plus(other: JsonMap): JsonMap {
+        var ret = JsonMap()
+        ret.putAll(this)
+        ret.putAll(other)
+        return ret;
+    }
 
 
-//    operator fun plusAssign(other: JsonMap) {
-//        this.putAll(other)
-//    }
+    operator fun plusAssign(other: JsonMap) {
+        this.putAll(other)
+    }
 }
 
 
