@@ -76,7 +76,7 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
     }
 
     fun whereOr(vararg wheres: Criteria): MongoQueryClip<M, E> {
-        if( wheres.any() == false) return this;
+        if (wheres.any() == false) return this;
         var where = Criteria();
         where.orOperator(*wheres)
         this.whereData.add(where);
@@ -192,7 +192,7 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
         try {
             db.change_id2Id(cursor);
             cursor.forEach {
-//            if( it.containsField("_id")){
+                //            if( it.containsField("_id")){
 //                it.put("id",it.get("_id").toString())
 //            }
 
@@ -320,16 +320,41 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
     }
 
 
-    fun ForEach(initSkip: Int = 0, func: (E?) -> Int?) {
+    fun ForEach(batchSize: Int, initSkip: Int = 0, func: (E?, Int) -> Int?) {
         var skip = initSkip;
         while (true) {
-            var ent = this.limit(skip, 1).toEntity();
+            var ents = this.limit(skip, batchSize).toList()
+            var ret: Int? = null
 
-            var ret = func(ent);
-            if (ret == null) {
-                return;
+
+            var len = ents.size;
+            if (len == 0) {
+                ret = func(null, skip)
+                if (ret == null) {
+                    break
+                } else {
+                    skip += ret
+                    continue
+                }
+            } else {
+                if (ents.ForEachExt { item, index ->
+                            ret = func(item, skip + index)
+                            if (ret == null) {
+                                return
+                            }
+
+                            if (ret == 0) {
+                                return@ForEachExt true
+                            } else {
+                                skip += (1 + index + ret!!)
+                                return@ForEachExt false
+                            }
+                        }) {
+                    skip += len;
+                } else {
+                    continue
+                }
             }
-            skip += 1 + ret;
         }
     }
 
