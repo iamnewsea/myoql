@@ -33,7 +33,8 @@ class GetSetTypeJsonMapper : ObjectMapper() {
     init {
         // 设置输出时包含属性的风格
         this.findAndRegisterModules();
-        this.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        //在某些时候，如 mongo.aggregate.group._id 时， null 。
+//        this.setSerializationInclusion(JsonInclude.Include.NON_NULL)
 
         // 允许单引号、允许不带引号的字段名称
         this.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)

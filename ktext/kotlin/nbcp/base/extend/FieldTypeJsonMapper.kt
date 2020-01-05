@@ -31,11 +31,12 @@ import org.springframework.context.annotation.Primary
  */
 @Primary
 @Component
-class FieldTypeJsonMapper : ObjectMapper(),InitializingBean {
+class FieldTypeJsonMapper : ObjectMapper(), InitializingBean {
     init {
         // 设置输出时包含属性的风格
         this.findAndRegisterModules();
-        this.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        //在某些时候，如 mongo.aggregate.group._id 时， null 。
+//        this.setSerializationInclusion(JsonInclude.Include.NON_NULL)
 
         // 允许单引号、允许不带引号的字段名称
         this.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
@@ -59,7 +60,6 @@ class FieldTypeJsonMapper : ObjectMapper(),InitializingBean {
     }
 
 
-
     companion object {
         /**
          * 创建只输出非Null且非Empty(如List.isEmpty)的属性到Json字符串的Mapper,建议在外部接口中使用.
@@ -71,7 +71,7 @@ class FieldTypeJsonMapper : ObjectMapper(),InitializingBean {
 
 
     @Autowired
-    lateinit var  dateModule: JavascriptDateModule;
+    lateinit var dateModule: JavascriptDateModule;
 
     override fun afterPropertiesSet() {
 
