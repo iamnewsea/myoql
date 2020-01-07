@@ -54,8 +54,8 @@ open class IdNameUrl(id: String = "", var name: String = "", url: String = "") :
  */
 open class LoginUserModel(
         id: String = "",
-        name: String = "",
         var loginName: String = "",
+        name: String = "",
         var token: String = "",
         var organization: IdName = IdName(),
         var roles: List<String> = listOf() //角色
