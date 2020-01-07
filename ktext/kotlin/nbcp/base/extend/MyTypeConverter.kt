@@ -100,6 +100,12 @@ fun Any.ConvertType(clazz: Class<*>): Any? {
     return this.ConvertJson(clazz);
 }
 
+/**
+ * 转为Int。
+ * Char转Int，按字符串转。
+ * Boolean，tru -> 1 , false->0
+ * 字符串，先转 toBigDecimal 再转 Int
+ */
 fun Any?.AsInt(defaultValue: Int = 0): Int {
     if (this == null) return defaultValue;
     var ret = defaultValue;
@@ -108,9 +114,7 @@ fun Any?.AsInt(defaultValue: Int = 0): Int {
     try {
         if (this is Int) ret = this;
         else if (this is Number) ret = this.toInt();
-        else if (this is Char) {
-            return this.toInt()
-        } else if (this is Boolean) {
+        else if (this is Boolean) {
             if (this == true) return 1;
             return 0;
         } else {
@@ -118,6 +122,11 @@ fun Any?.AsInt(defaultValue: Int = 0): Int {
 
             if (value is CharSequence) {
                 value = value.toString();
+            }
+            //特殊处理一下。
+            //Char的AsInt
+            else if (value is Char) {
+                value = value.toString()
             }
 
             if (value is String) {
@@ -310,11 +319,11 @@ fun Any?.AsFloat(defaultValue: Float = 0F): Float {
     }
 }
 
-inline fun<reified T> String.ToEnum():T?{
+inline fun <reified T> String.ToEnum(): T? {
     return this.ToEnum(T::class.java)
 }
 
-inline fun<reified T> Int.ToEnum():T?{
+inline fun <reified T> Int.ToEnum(): T? {
     return this.ToEnum(T::class.java)
 }
 
