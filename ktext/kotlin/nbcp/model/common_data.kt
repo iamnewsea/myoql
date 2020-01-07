@@ -49,5 +49,20 @@ open class IdUrl(var id: String = "", var url: String = "") : java.io.Serializab
 open class IdNameUrl(id: String = "", var name: String = "", url: String = "") : IdUrl()
 
 
-open class LoginUserModel(id: String = "", var loginName: String = "", name: String = "", var token: String = "") : IdName(id, name)
+/**
+ * 登录用户数据
+ */
+open class LoginUserModel(
+        id: String = "",
+        var loginName: String = "",
+        name: String = "",
+        var token: String = "",
+        var organization: IdName = IdName(),
+        var roles: List<String> = listOf() //角色
+) : IdName(id, name) {
+
+    fun AsIdName(): IdName {
+        return IdName(this.id, this.name)
+    }
+}
 
