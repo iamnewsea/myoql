@@ -64,27 +64,42 @@ object db {
         }
     }
 
-    private val execAffectRows: ThreadLocal<Int> = ThreadLocal.withInitial { return@withInitial -1 }
+    private val _lastCommand: ThreadLocal<String> = ThreadLocal.withInitial { return@withInitial "" }
 
+    //最后执行的命令
+    @JvmStatic
+    var lastCommand: String
+        get() {
+            return _lastCommand.get()
+        }
+        set(value) {
+            _lastCommand.set(value);
+        }
+
+
+    private val _affectRowCount: ThreadLocal<Int> = ThreadLocal.withInitial { return@withInitial -1 }
+
+    //最后执行的影响行数
     @JvmStatic
     var affectRowCount: Int
         get() {
-            return execAffectRows.get()
+            return _affectRowCount.get()
         }
         set(value) {
-            execAffectRows.set(value);
+            _affectRowCount.set(value);
         }
 
 
-    private val execLastAutoId: ThreadLocal<Int> = ThreadLocal.withInitial { return@withInitial -1; }
+    private val _lastAutoId: ThreadLocal<Int> = ThreadLocal.withInitial { return@withInitial -1; }
 
+    //对sql数据来说，记录最后一条插入数据的自增Id
     @JvmStatic
     var lastAutoId: Int
         get() {
-            return execLastAutoId.get()
+            return _lastAutoId.get()
         }
         set(value) {
-            execLastAutoId.set(value);
+            _lastAutoId.set(value);
         }
 
 //    fun getMongoCriteria(vararg where: Criteria): Criteria {
@@ -94,8 +109,8 @@ object db {
 //    }
 
     fun change_id2Id(value: Collection<*>, remove_id: Boolean = true) {
-        value.forEach{ v->
-            if( v == null){
+        value.forEach { v ->
+            if (v == null) {
                 return@forEach
             }
 

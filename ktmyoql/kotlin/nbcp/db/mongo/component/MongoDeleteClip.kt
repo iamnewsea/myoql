@@ -47,6 +47,7 @@ class MongoDeleteClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
     }
 
     fun exec(): Int {
+        db.affectRowCount = 0;
         var criteria = this.moerEntity.getMongoCriteria(*whereData.toTypedArray());
         var ret = 0;
         try {

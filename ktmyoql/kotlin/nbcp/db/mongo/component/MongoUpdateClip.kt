@@ -205,7 +205,7 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
      * 更新条件可以为空。
      */
     fun execAll(): Int {
-
+        db.affectRowCount = 0;
 //        procMongo_IdColumn(whereData);
 
         var criteria = this.moerEntity.getMongoCriteria(*whereData.toTypedArray());
@@ -258,7 +258,7 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
 
         //如果没有要更新的列.
         if (update.updateObject.keys.size == 0) {
-            db.affectRowCount = 0;
+
             return 0;
         }
 

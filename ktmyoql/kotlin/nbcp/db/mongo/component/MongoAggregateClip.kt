@@ -16,6 +16,7 @@ import nbcp.base.utils.Md5Util
 import nbcp.db.db
 import nbcp.db.mongo.*
 import org.slf4j.LoggerFactory
+import java.lang.RuntimeException
 
 /**
  * Created by Cy on 17-4-7.
@@ -150,13 +151,12 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
                 return@map """{$key:${value.criteriaObject.toJson()}}"""
             } else if (value is Number) {
                 return@map "{$key:$value}";
-            }else if (value is String) {
+            } else if (value is String) {
 //                if( key == "_id" || key.endsWith("._id")){
 //                    return@map """{$key:{##oid:"${value}"}}""".replace("##","$")
 //                }
                 return@map """{$key:"${value}"}"""
-            }
-            else if (value is Map<*, *>) {
+            } else if (value is Map<*, *>) {
                 return@map "{$key:${value.ToJson()}}"
             }
 
@@ -168,8 +168,6 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
 aggregate: "${this.moerEntity.tableName}",
 pipeline: ${pipeLineExpression} ,
 cursor: {} } """
-
-        logger.info(exp);
         return exp;
     }
 
@@ -194,14 +192,34 @@ cursor: {} } """
      */
     fun toMapList(itemFunc: ((Document) -> Unit)? = null): MutableList<Document> {
         var queryJson = toExpression();
-        var result = mongoTemplate.executeCommand(queryJson)
+        var result: Document? = null
+        try {
+            result = mongoTemplate.executeCommand(queryJson)
+        } catch (e: Exception) {
+            throw e;
+        } finally {
+            if (result != null) {
+                logger.info(queryJson + " result:" + result.toJson())
+            } else {
+                logger.error(queryJson + " error !")
+            }
+        }
+
+        if (result == null) {
+            throw RuntimeException("mongo执行错误!")
+        }
 
         var ret = mutableListOf<Document>()
         if (result.getDouble("ok") != 1.0) {
+            db.affectRowCount = 0;
             return ret
         }
 
-        ((result.get("cursor") as Document).get("firstBatch") as ArrayList<Document>).forEach {
+        var list = ((result.get("cursor") as Document).get("firstBatch") as ArrayList<Document>);
+
+        db.affectRowCount = list.size;
+
+        list.forEach {
             //            db.change_id2Id(it);
             //value 可能会是： Document{{answerRole=Patriarch}}
             db.proc_document_json(it);
