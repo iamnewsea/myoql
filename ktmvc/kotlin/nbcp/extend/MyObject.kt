@@ -252,7 +252,7 @@ fun HttpServletRequest.findParameterValue(key: String): String? {
         return ret;
     }
 
-    ret = this.cookies.find { it.name == key }?.value
+    ret = this.cookies?.firstOrNull { it.name == key }?.value
     if (ret != null) {
         return ret;
     }
