@@ -1,6 +1,7 @@
 package nbcp.web
 
 
+import nbcp.base.extend.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -8,13 +9,9 @@ import org.springframework.http.MediaType
 import nbcp.comm.*
 import nbcp.comm.*
 
-import nbcp.base.extend.AsInt
-import nbcp.base.extend.AsString
 import java.nio.charset.Charset
 import javax.servlet.ReadListener
 import javax.servlet.ServletInputStream
-import nbcp.base.extend.FromJson
-import nbcp.base.extend.HasValue
 import nbcp.base.utils.SpringUtil
 import java.io.*
 import java.util.*
@@ -107,7 +104,7 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
                 }
             }
         } catch (e: Exception) {
-            logger.error(e.message, e);
+            logger.Error(e);
         }
 
         return@lazy ret;

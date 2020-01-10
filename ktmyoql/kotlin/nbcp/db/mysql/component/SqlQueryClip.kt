@@ -305,6 +305,7 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
     }
 
     fun <M2 : SqlBaseTable<out IBaseDbEntity>> insertInto(insertTable: M2): Int {
+        db.affectRowCount = -1;
         var select = this
 
         if (select.columns.any() == false) {
@@ -325,22 +326,21 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
 
         var executeSql = SqlExecuteData(exp + sql.executeSql, sql.parameters)
 
-        logger.info(executeSql.executeSql + line_break + "\t" + executeSql.parameters.ToJson())
-
-
-        var n = 0;
+        var n = -1;
         try {
             n = SqlBaseClip.getJdbcTemplateByDatasrouce(insertTable.datasourceName).update(executeSql.executeSql, *executeSql.parameters.map { it.value }.toTypedArray())
+            if (n > 0) {
+                cacheService.insertSelect4BrokeCache(insertTable.tableName)
+            }
         } catch (e: Exception) {
-            logger.error(e.message, e);
             throw e;
+        } finally {
+            logger.InfoError(n < 0) {
+                executeSql.executeSql + line_break + "\t" + executeSql.parameters.ToJson()
+            }
         }
 
-        if (n > 0) {
-            cacheService.insertSelect4BrokeCache(insertTable.tableName)
-        }
-
-        db.affectRowCount =n
+        db.affectRowCount = n
         return n
     }
 

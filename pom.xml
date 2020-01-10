@@ -11,8 +11,8 @@
         <module>ktext</module>
         <module>ktmyoql</module>
         <module>ktmvc</module>
-
     </modules>
+
     <licenses>
         <license>
             <name>The MIT License (MIT)</name>

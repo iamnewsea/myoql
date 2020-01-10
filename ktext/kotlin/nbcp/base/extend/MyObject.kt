@@ -9,6 +9,7 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import kotlin.collections.LinkedHashMap
 import nbcp.base.utils.MyUtil
+import org.slf4j.event.Level
 import java.lang.reflect.Field
 import java.nio.charset.Charset
 import java.time.*
@@ -558,3 +559,48 @@ fun <T : Serializable> T.CloneObject(): T {
     ois.close();
     return cloneObj;
 }
+
+fun Logger.Log(level: Level, msgFunc: (() -> String)) {
+    try {
+        if (level == Level.INFO) {
+            if (this.isInfoEnabled) {
+                this.info(msgFunc())
+            }
+        } else if (level == Level.ERROR) {
+            if (this.isErrorEnabled) {
+                this.error(msgFunc())
+            }
+        } else if (level == Level.WARN) {
+            if (this.isWarnEnabled) {
+                this.warn(msgFunc())
+            }
+        } else if (level == Level.TRACE) {
+            if (this.isTraceEnabled) {
+                this.trace(msgFunc())
+            }
+        } else if (level == Level.DEBUG) {
+            if (this.isDebugEnabled) {
+                this.debug(msgFunc())
+            }
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
+fun Logger.InfoError(error: Boolean, msgFunc: (() -> String)) {
+    if (error) {
+        this.Error(msgFunc)
+    } else {
+        this.Info(msgFunc)
+    }
+}
+
+fun Logger.Trace(infoFunc: (() -> String)) = this.Log(Level.TRACE, infoFunc)
+fun Logger.Debug(infoFunc: (() -> String)) = this.Log(Level.DEBUG, infoFunc)
+fun Logger.Info(infoFunc: (() -> String)) = this.Log(Level.INFO, infoFunc)
+fun Logger.Warn(infoFunc: (() -> String)) = this.Log(Level.WARN, infoFunc)
+fun Logger.Error(infoFunc: (() -> String)) = this.Log(Level.ERROR, infoFunc)
+
+
+

@@ -80,10 +80,8 @@ open class SpringUtil : ApplicationContextAware {
     override fun setApplicationContext(applicationContext: ApplicationContext) {
         if (applicationContext != null) {
             SpringUtil.applicationContext = applicationContext
-
-            logger.info("成功设置 ApplicationContext .")
         } else {
-            logger.error("设置 ApplicationContext 出现了空值!")
+            logger.error("设置 ApplicationContext 出现了异常!")
         }
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
 import nbcp.comm.*
 import nbcp.base.extend.*
+import nbcp.base.line_break
 import nbcp.base.utils.SpringUtil
 import nbcp.db.*
 import nbcp.db.mysql.component.JsonMapRowMapper
@@ -15,6 +16,7 @@ import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
 import java.io.Serializable
 import javax.sql.DataSource
 import nbcp.db.sql.*
+
 /*
  ORM解决80%的问题即可. 对于 自连接,复杂的查询, 直接写Sql吧.
  */
@@ -69,7 +71,8 @@ abstract class SqlBaseClip(var datasourceName: String) : Serializable {
 }
 
 
-abstract class SqlBaseQueryClip(private var mainEntity: SqlBaseTable<*>? = null) : SqlBaseClip(mainEntity?.datasourceName ?: "") {
+abstract class SqlBaseQueryClip(private var mainEntity: SqlBaseTable<*>? = null) : SqlBaseClip(mainEntity?.datasourceName
+        ?: "") {
     protected var skip = 0;
     protected var take = -1;
     protected var distinct = false;
@@ -155,6 +158,7 @@ abstract class SqlBaseQueryClip(private var mainEntity: SqlBaseTable<*>? = null)
     }
 
     protected fun toMapList(sql: SingleSqlData): MutableList<JsonMap> {
+        db.affectRowCount = -1
         var retJsons = mutableListOf<Map<String, Any?>>()
 
         var cacheKey = cacheService.getCacheKey(sql)
@@ -169,27 +173,27 @@ abstract class SqlBaseQueryClip(private var mainEntity: SqlBaseTable<*>? = null)
             var params = executeData.parameters.map { it.value }.toTypedArray()
 
 //            logger.info(executeData.executeSql +"  [" + executeData.parameters.map { it.value.AsString() }.joinToString(",") +"]");
-            var msg_log = mutableListOf("[sql] ${executeData.executeSql}" , "[参数] ${params.map { it.AsString() }.joinToString(",")}")
             var startAt = System.currentTimeMillis();
 
+            var error = false;
             try {
                 retJsons = jdbcTemplate.queryForList(executeData.executeSql, *params).toMutableList()
 
-                msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
-                logger.info(msg_log .joinToString("\n"))
+                if (retJsons.size > 0) {
+                    //setCache
+
+                    cacheService.setCacheJson(cacheKey, retJsons.ToJson())
+                }
+
             } catch (e: Exception) {
-                msg_log.add("""[错误] ${e.message}
-${e.stackTrace.map { "\t" + it.toString() }}
-""")
-
-                logger.error(msg_log .joinToString("\n"))
+                error = true;
                 throw e;
-            }
-
-            if (retJsons.size > 0) {
-                //setCache
-
-                cacheService.setCacheJson(cacheKey, retJsons.ToJson())
+            } finally {
+                logger.InfoError(error) {
+                    var msg_log = mutableListOf("[sql] ${executeData.executeSql}", "[参数] ${params.map { it.AsString() }.joinToString(",")}")
+                    msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
+                    return@InfoError msg_log.joinToString(line_break)
+                }
             }
         } else {
             //logger.info("sql query from cache: " + cacheKey.toString())
@@ -229,7 +233,8 @@ ${e.stackTrace.map { "\t" + it.toString() }}
     }
 }
 
-abstract class SqlBaseExecuteClip(private var mainEntity: SqlBaseTable<*>? = null ) : SqlBaseClip(mainEntity?.datasourceName ?: "") {
+abstract class SqlBaseExecuteClip(private var mainEntity: SqlBaseTable<*>? = null) : SqlBaseClip(mainEntity?.datasourceName
+        ?: "") {
     abstract fun exec(): Int
 }
 

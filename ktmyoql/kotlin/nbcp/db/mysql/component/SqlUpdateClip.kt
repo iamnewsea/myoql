@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import nbcp.db.*
 import nbcp.db.sql.*
 import nbcp.base.extend.*
+import nbcp.base.line_break
 import nbcp.base.utils.MyUtil
 import java.io.Serializable
 
@@ -143,31 +144,30 @@ class SqlUpdateClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
     }
 
     override fun exec(): Int {
+        db.affectRowCount = -1;
         var sql = toSql()
         var executeData = sql.toExecuteSqlAndParameters();
         var params = executeData.parameters.map { it.value }.toTypedArray()
 
-        var msg_log = mutableListOf("[sql] ${executeData.executeSql}", "[参数] ${params.map { it.AsString() }.joinToString(",")}")
         var startAt = System.currentTimeMillis();
 
-        var n = 0;
+        var n = -1;
         try {
             n = jdbcTemplate.update(executeData.executeSql, *params)
 
-            msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
-            logger.info(msg_log.joinToString("\n"))
+            if (n > 0) {
+                cacheService.updated4BrokeCache(sql)
+            }
         } catch (e: Exception) {
-            msg_log.add("""[错误] ${e.message}
-${e.stackTrace.map { "\t" + it.toString() }}
-""")
-
-            logger.error(msg_log.joinToString("\n"))
             throw e;
+        } finally {
+            logger.InfoError(n < 0) {
+                var msg_log = mutableListOf("[sql] ${executeData.executeSql}", "[参数] ${params.map { it.AsString() }.joinToString(",")}")
+                msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
+                return@InfoError msg_log.joinToString(line_break)
+            }
         }
 
-        if (n > 0) {
-            cacheService.updated4BrokeCache(sql)
-        }
         db.affectRowCount = n;
         return n;
     }

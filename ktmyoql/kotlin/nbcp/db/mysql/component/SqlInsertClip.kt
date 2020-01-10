@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import nbcp.comm.*
 import nbcp.base.extend.*
+import nbcp.base.line_break
 import nbcp.base.utils.MyUtil
 import nbcp.db.db
 import nbcp.db.sql.*
@@ -201,11 +202,12 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
 
 
     private fun doBatch_EachItem(insertColumns: List<SqlColumnName>): IntArray {
+        db.affectRowCount = -1;
         var exp = "insert into ${mainEntity.quoteTableName} (${insertColumns.map { "${db.getQuoteName(it.name)}" }.joinToString(",")}) values (${insertColumns.map { "?" }.joinToString(",")})";
 
-        var msg_log = mutableListOf("[sql] ${exp}", "[参数]\n${entities.map { ent -> insertColumns.map { column -> ent.getStringValue(column.name) }.joinToString(",") }.joinToString("\t\n")}")
         var startAt = System.currentTimeMillis();
 
+        var error = false
         var n = intArrayOf();
         try {
             n = jdbcTemplate.batchUpdate(exp, object : BatchPreparedStatementSetter {
@@ -227,16 +229,16 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
                     }
                 }
             });
-
-            msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
-            logger.info(msg_log.joinToString("\n"))
+            db.affectRowCount = n.sum()
         } catch (e: Exception) {
-            msg_log.add("""[错误] ${e.message}
-${e.stackTrace.map { "\t" + it.toString() }}
-""")
-
-            logger.error(msg_log.joinToString("\n"))
+            error = true;
             throw e;
+        } finally {
+            logger.InfoError(error) {
+                var msg_log = mutableListOf("[sql] ${exp}", "[参数]\n${entities.map { ent -> insertColumns.map { column -> ent.getStringValue(column.name) }.joinToString(",") }.joinToString("\t\n")}")
+                msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
+                return@InfoError msg_log.joinToString(line_break)
+            }
         }
 
         return n;
@@ -253,10 +255,8 @@ ${e.stackTrace.map { "\t" + it.toString() }}
             insertColumns = insertColumns.Intersect(columns, { a, b -> a.name == b.name })
         }
 
+        logger.Info { "预计批量插入 ${this.mainEntity.tableName} 总数：${entities.size} 条,skip: ${skip}, take: ${take} !" }
 
-        if (logger.isInfoEnabled) {
-            logger.info("预计批量插入 ${this.mainEntity.tableName} 总数：${entities.size} 条,skip: ${skip}, take: ${take} !")
-        }
 
         var result = 0;
         if (take < 0) {
@@ -271,6 +271,7 @@ ${e.stackTrace.map { "\t" + it.toString() }}
             var msg_log = mutableListOf("[sql] ${executeSql}")
             var startAt = System.currentTimeMillis();
 
+            var error = false;
             var index = 1;
             try {
                 result = jdbcTemplate.update(PreparedStatementCreator {
@@ -287,21 +288,20 @@ ${e.stackTrace.map { "\t" + it.toString() }}
                     return@PreparedStatementCreator ps
                 })
 
-                msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
-                logger.info(msg_log.joinToString("\n"))
+                logger.info("批量插入完成 ${result} 条!")
             } catch (e: Exception) {
-                msg_log.add("""[错误] ${e.message}
-${e.stackTrace.map { "\t" + it.toString() }}
-""")
-
-                logger.error(msg_log.joinToString("\n"))
+                error = true
                 throw e;
+            } finally {
+                logger.InfoError(error) {
+                    msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
+                    return@InfoError msg_log.joinToString(line_break)
+                }
             }
         }
 
-        if (logger.isInfoEnabled) {
-            logger.info("批量插入完成 ${result} 条!")
-        }
+
+
         return result
     }
 
@@ -314,10 +314,11 @@ ${e.stackTrace.map { "\t" + it.toString() }}
 
         var executeData = sql.toExecuteSqlAndParameters();
 
-        var msg_log = mutableListOf("[sql] ${executeData.executeSql}")
-        var startAt = System.currentTimeMillis();
-        msg_log.add("[参数] ${executeData.parameters.map { it.value.AsString() }.joinToString(",")}")
 
+        var startAt = System.currentTimeMillis();
+
+
+        var error = false;
         var n = 0;
         if (autoIncrmentKey.HasValue) {
             var idKey = GeneratedKeyHolder()
@@ -331,16 +332,16 @@ ${e.stackTrace.map { "\t" + it.toString() }}
                     return@PreparedStatementCreator ps
                 }, idKey)
 
-                msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
-                logger.info(msg_log.joinToString("\n"))
             } catch (e: Exception) {
-
-                msg_log.add("""[错误] ${e.message}
-${e.stackTrace.map { "\t" + it.toString() }}
-""")
-
-                logger.error(msg_log.joinToString("\n"))
+                error = true
                 throw e;
+            } finally {
+                logger.InfoError(error) {
+                    var msg_log = mutableListOf("[sql] ${executeData.executeSql}")
+                    msg_log.add("[参数] ${executeData.parameters.map { it.value.AsString() }.joinToString(",")}")
+                    msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
+                    return@InfoError msg_log.joinToString(line_break)
+                }
             }
 
             var idValue = idKey.key.toInt()
@@ -361,16 +362,16 @@ ${e.stackTrace.map { "\t" + it.toString() }}
 
                     return@PreparedStatementCreator ps
                 })
-
-                msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
-                logger.info(msg_log.joinToString("\n"))
             } catch (e: Exception) {
-                msg_log.add("""[错误] ${e.message}
-${e.stackTrace.map { "\t" + it.toString() }}
-""")
-
-                logger.error(msg_log.joinToString("\n"))
+                error = true
                 throw e;
+            } finally {
+                logger.InfoError(error) {
+                    var msg_log = mutableListOf("[sql] ${executeData.executeSql}")
+                    msg_log.add("[参数] ${executeData.parameters.map { it.value.AsString() }.joinToString(",")}")
+                    msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
+                    return@InfoError msg_log.joinToString(line_break)
+                }
             }
         }
 

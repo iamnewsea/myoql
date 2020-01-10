@@ -50,18 +50,18 @@ open class MongoEventConfig : ApplicationListener<ContextRefreshedEvent> {
         private val logger by lazy {
             return@lazy LoggerFactory.getLogger(this::class.java)
         }
-//        private val all_entities = mutableListOf<MongoBaseEntity<IMongoDocument>>()
+        //        private val all_entities = mutableListOf<MongoBaseEntity<IMongoDocument>>()
         private val list_entity_settings = mutableListOf<MongoUpdateData>()
         private val list_entity_setteds = mutableListOf<MongoUpdateData>()
 
 
-        fun addMongoEntityEvent(fieldDefine: KMutableProperty1<*, *>?, callback: KFunction2<MongoUpdateClip<*>, Any, Unit>){
+        fun addMongoEntityEvent(fieldDefine: KMutableProperty1<*, *>?, callback: KFunction2<MongoUpdateClip<*>, Any, Unit>) {
             list_entity_setteds.addAll(arrayOf(
-                    *getEventDatas(  fieldDefine, callback)
+                    *getEventDatas(fieldDefine, callback)
             ))
         }
 
-        private fun getEventDatas(  fieldDefine: KMutableProperty1<*, *>?, callback: KFunction2<MongoUpdateClip<*>, Any, Unit>): Array<MongoUpdateData> {
+        private fun getEventDatas(fieldDefine: KMutableProperty1<*, *>?, callback: KFunction2<MongoUpdateClip<*>, Any, Unit>): Array<MongoUpdateData> {
             var callbackClass = ((callback as FunctionReference).owner as KClass<*>).java
 
             var callbackMethods = callbackClass.methods.filter {
@@ -69,7 +69,7 @@ open class MongoEventConfig : ApplicationListener<ContextRefreshedEvent> {
             }
 
 
-            var entityClass =   ((fieldDefine as MutablePropertyReference1).owner as KClass<*>).java
+            var entityClass = ((fieldDefine as MutablePropertyReference1).owner as KClass<*>).java
 
             var filedName = fieldDefine?.name ?: ""
 
@@ -125,10 +125,6 @@ open class MongoEventConfig : ApplicationListener<ContextRefreshedEvent> {
     }
 
 
-
-
-
-
     fun onUpdating(update: MongoUpdateClip<*>): SettingResult {
 
         var retResult = SettingResult()
@@ -149,7 +145,7 @@ open class MongoEventConfig : ApplicationListener<ContextRefreshedEvent> {
                 ret = it.callback.invoke(null, update, value)
             }
 
-             logger.info("Mongo entity updatting event: ${it.entityClass.name}.${it.entityFieldName} -> ${it.callback.declaringClass}.${it.callback.name}")
+            logger.Info { "Mongo entity updatting event: ${it.entityClass.name}.${it.entityFieldName} -> ${it.callback.declaringClass}.${it.callback.name}" }
 
             if (ret is SettingResult) {
                 retResult.result = ret.result
@@ -160,7 +156,7 @@ open class MongoEventConfig : ApplicationListener<ContextRefreshedEvent> {
             } else if (ret is Boolean) {
                 retResult.result = ret;
             } else {
-                 logger.error("mongo updating 拦截器返回了不识别的类型:${ret::class.java}")
+                logger.Error { "mongo updating 拦截器返回了不识别的类型:${ret::class.java}" }
             }
 
             if (retResult.result == false) {
@@ -170,7 +166,6 @@ open class MongoEventConfig : ApplicationListener<ContextRefreshedEvent> {
 
         return retResult;
     }
-
 
 
     fun onUpdated(update: MongoUpdateClip<*>, extData: Any?) {
@@ -188,7 +183,7 @@ open class MongoEventConfig : ApplicationListener<ContextRefreshedEvent> {
                 it.callback.invoke(null, update, value);
             }
 
-             logger.info("Mongo entity updatted event: ${it.entityClass.name}.${it.entityFieldName} -> ${it.callback.declaringClass}.${it.callback.name}")
+            logger.Info { "Mongo entity updatted event: ${it.entityClass.name}.${it.entityFieldName} -> ${it.callback.declaringClass}.${it.callback.name}" }
         }
     }
 }

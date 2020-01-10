@@ -61,7 +61,7 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
     }
 
     fun whereOr(vararg wheres: Criteria): MongoUpdateClip<M> {
-        if( wheres.any() == false) return this;
+        if (wheres.any() == false) return this;
         var where = Criteria();
         where.orOperator(*wheres)
         this.whereData.add(where);
@@ -205,12 +205,11 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
      * 更新条件可以为空。
      */
     fun execAll(): Int {
-        db.affectRowCount = 0;
+        db.affectRowCount = -1;
 //        procMongo_IdColumn(whereData);
 
         var criteria = this.moerEntity.getMongoCriteria(*whereData.toTypedArray());
 
-        var whereCriteriaObject = criteria.criteriaObject
 
 //        for (wkv in whereData) {
 //            criteria = criteria.and(wkv.first).`is`(wkv.second);
@@ -295,11 +294,8 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
             ret = -1;
             throw e;
         } finally {
-            var msg = "update:[" + this.collectionName + "] " + whereCriteriaObject.toJson() + " ,result:" + ret;
-            if (ret < 0) {
-                logger.error(msg)
-            } else {
-                logger.info(msg)
+            logger.InfoError(ret < 0) {
+                "update:[" + this.collectionName + "],where:" + criteria.criteriaObject.toJson() + ",set:" + update.updateObject.toJson() + " ,result:" + ret
             }
         }
 

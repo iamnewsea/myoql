@@ -135,8 +135,10 @@ open class MyAllFilter : Filter {
 //                logNewSession(request, response);
             }
 
-            logger.info("${loginName} ${request.ClientIp} ${request.method} ${request.fullUrl}  --->\n" +
-                    "[response] ${response.status} ${System.currentTimeMillis() - startAt}毫秒")
+            logger.Info {
+                "${loginName} ${request.ClientIp} ${request.method} ${request.fullUrl}  --->" + line_break +
+                        "[response] ${response.status} ${System.currentTimeMillis() - startAt}毫秒"
+            }
 
 
             return;
@@ -178,17 +180,14 @@ open class MyAllFilter : Filter {
         try {
             chain?.doFilter(request, response);
         } catch (e: Exception) {
-            try {
+            logger.Error{
                 var err = getInnerException(e);
                 errorMsg = err.Detail.AsString(err.message.AsString()).AsString("(未知错误)")
                 var errorInfo = mutableListOf<String>()
                 errorInfo.add(err::class.java.simpleName + ": " + errorMsg)
                 errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }.take(24))
 
-                logger.error(errorInfo.joinToString("\r\n"));
-
-            } catch (e: Exception) {
-                logger.error("MyAllFilter处理异常时遇到错误:" + e.message.AsString())
+                return@Error errorInfo.joinToString(line_break)
             }
 
             errorMsg = JsonMap("msg" to errorMsg).ToJson()
@@ -234,28 +233,28 @@ open class MyAllFilter : Filter {
     }
 
     private fun beforeRequest(request: MyHttpRequestWrapper, loginName: String) {
-        if (logger.isInfoEnabled == false) return
+        logger.Info {
+            var msgs = mutableListOf<String>()
+            msgs.add("[[[--------> ${loginName} ${request.ClientIp} ${request.method} ${request.fullUrl}")
 
-        var msgs = mutableListOf<String>()
-        msgs.add("[[[--------> ${loginName} ${request.ClientIp} ${request.method} ${request.fullUrl}")
+            if (request.headerNames.hasMoreElements()) {
+                msgs.add("[request header]:")
+            }
 
-        if (request.headerNames.hasMoreElements()) {
-            msgs.add("[request header]:")
+            for (h in request.headerNames) {
+                msgs.add("\t${h}: ${request.getHeader(h)}")
+            }
+
+
+            var htmlString = (request.body ?: byteArrayOf()).toString(utf8)
+            if (htmlString.HasValue) {
+                msgs.add("[request body]:")
+                msgs.add("\t" + htmlString)
+            }
+
+
+            return@Info msgs.joinToString(line_break)
         }
-
-        for (h in request.headerNames) {
-            msgs.add("\t${h}: ${request.getHeader(h)}")
-        }
-
-
-        var htmlString = (request.body ?: byteArrayOf()).toString(utf8)
-        if (htmlString.HasValue) {
-            msgs.add("[request body]:")
-            msgs.add("\t" + htmlString)
-        }
-
-
-        logger.info(msgs.joinToString(line_break))
     }
 
     private fun procCORS(request: HttpServletRequest, response: HttpServletResponse) {
@@ -354,8 +353,9 @@ open class MyAllFilter : Filter {
             }
         }
 
+        logger.Info {
 
-        if (logger.isInfoEnabled) {
+
             var msg = mutableListOf<String>()
             msg.add("[response] ${request.requestURI} ${response.status} ${System.currentTimeMillis() - startAt}毫秒")
 
@@ -369,7 +369,7 @@ open class MyAllFilter : Filter {
             }
 
             msg.add("<----]]]")
-            logger.info(msg.joinToString(line_break))
+            return@Info msg.joinToString(line_break)
         }
     }
 

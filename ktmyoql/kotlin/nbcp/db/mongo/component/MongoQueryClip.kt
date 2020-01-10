@@ -222,7 +222,7 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
             error = true;
             throw e;
         } finally {
-            if (logger.isInfoEnabled || error) {
+            fun getMsgs(): String {
                 var msgs = mutableListOf<String>()
                 msgs.add("query:[" + this.collectionName + "] ");
                 msgs.add("    where:" + criteria.criteriaObject.toJson())
@@ -238,14 +238,10 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
                 if (skip > 0 || take > 0) {
                     msgs.add("    limit:${skip},${take}")
                 }
-
-                if (error) {
-                    logger.error(msgs.joinToString(line_break))
-                } else {
-                    logger.info(msgs.joinToString(line_break))
-                }
+                return msgs.joinToString(line_break);
             }
 
+            logger.InfoError(error) { getMsgs() }
         }
 
 

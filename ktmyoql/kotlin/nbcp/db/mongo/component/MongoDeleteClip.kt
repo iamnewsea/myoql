@@ -1,6 +1,7 @@
 package nbcp.db.mongo
 
 
+import nbcp.base.extend.*
 import nbcp.base.line_break
 import nbcp.db.db
 import org.bson.types.ObjectId
@@ -39,7 +40,7 @@ class MongoDeleteClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
     }
 
     fun whereOr(vararg wheres: Criteria): MongoDeleteClip<M> {
-        if( wheres.any() == false) return this;
+        if (wheres.any() == false) return this;
         var where = Criteria();
         where.orOperator(*wheres)
         this.whereData.add(where);
@@ -47,7 +48,7 @@ class MongoDeleteClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
     }
 
     fun exec(): Int {
-        db.affectRowCount = 0;
+        db.affectRowCount = -1;
         var criteria = this.moerEntity.getMongoCriteria(*whereData.toTypedArray());
         var ret = 0;
         try {
@@ -61,13 +62,7 @@ class MongoDeleteClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
             ret = -1;
             throw e;
         } finally {
-            var msg = "delete:[" + this.collectionName + "] " + criteria.criteriaObject.toJson() + ",result:${ret}";
-
-            if (ret < 0) {
-                logger.error(msg)
-            } else {
-                logger.info(msg);
-            }
+            logger.InfoError(ret < 0) { "delete:[" + this.collectionName + "] " + criteria.criteriaObject.toJson() + ",result:${ret}" };
         }
 
         return ret;

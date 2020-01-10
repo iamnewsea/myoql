@@ -191,6 +191,7 @@ cursor: {} } """
      * 核心函数
      */
     fun toMapList(itemFunc: ((Document) -> Unit)? = null): MutableList<Document> {
+        db.affectRowCount = -1;
         var queryJson = toExpression();
         var result: Document? = null
         try {
@@ -198,20 +199,19 @@ cursor: {} } """
         } catch (e: Exception) {
             throw e;
         } finally {
-            if (result != null) {
-                logger.info(queryJson + " result:" + result.toJson())
-            } else {
-                logger.error(queryJson + " error !")
-            }
+            logger.InfoError(result == null) { queryJson + " result:" + (result?.toJson() ?: "") }
         }
 
         if (result == null) {
-            throw RuntimeException("mongo执行错误!")
+            throw RuntimeException("mongo aggregate执行错误!")
+        }
+        if (result.containsKey("ok") == false) {
+            throw RuntimeException("mongo aggregate执行错误!" + result.toJson())
         }
 
         var ret = mutableListOf<Document>()
         if (result.getDouble("ok") != 1.0) {
-            db.affectRowCount = 0;
+            db.affectRowCount = result.getDouble("ok").AsInt()
             return ret
         }
 

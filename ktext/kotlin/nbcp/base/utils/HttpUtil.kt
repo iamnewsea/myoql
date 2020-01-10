@@ -7,6 +7,7 @@ import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import nbcp.comm.*
 import nbcp.base.extend.*
+import nbcp.base.line_break
 import nbcp.base.utf8
 import java.awt.image.BufferedImage
 import java.io.*
@@ -120,8 +121,8 @@ class HttpUtil(var url: String = "") {
     fun doGet(charsetCallback: ((HttpURLConnection) -> Charset)? = null): String {
         var charset = utf8
         var retData = doNet({ it.requestMethod = "GET" }
-        , {}, { conn ->
-            if( charsetCallback != null){
+                , {}, { conn ->
+            if (charsetCallback != null) {
                 charset = charsetCallback.invoke(conn);
             }
         })
@@ -148,14 +149,14 @@ class HttpUtil(var url: String = "") {
         return doPost(requestBody);
     }
 
-    fun doPost(requestBody: String,charsetCallback: ((HttpURLConnection) -> Charset)? = null ): String {
-        logger.info("[post]\t${url}\n${requestHeader.map { it.key + ":" + it.value }.joinToString("\n")}")
+    fun doPost(requestBody: String, charsetCallback: ((HttpURLConnection) -> Charset)? = null): String {
+        logger.Info { "[post]\t${url}\n${requestHeader.map { it.key + ":" + it.value }.joinToString("\n")}" }
 
         var charset = utf8
 //        var isTxt = false;
         var ret = doNet({ it.requestMethod = "POST" }, {
             if (requestBody.HasValue) {
-                logger.info("\t[post_body]${requestBody}")
+                logger.Info { "\t[post_body]${requestBody}" }
                 //conn.setRequestProperty("Content-Length", requestBody.toByteArray().size.toString());
                 //POST请求
                 var out = OutputStreamWriter(it.outputStream);
@@ -165,8 +166,8 @@ class HttpUtil(var url: String = "") {
                 out.close();
             }
         }
-        , { conn ->
-            if( charsetCallback != null){
+                , { conn ->
+            if (charsetCallback != null) {
                 charset = charsetCallback.invoke(conn);
             }
         })
@@ -203,18 +204,18 @@ class HttpUtil(var url: String = "") {
 
             this.status = conn.responseCode
 
-            if (this.status != 200) {
-                logger.error("${conn.requestMethod} ${url}\t[status:${this.status}]")
-            } else {
-                logger.info("${conn.requestMethod} ${url}\t[status:${this.status}]")
+            logger.InfoError(this.status != 200) {
+                "${conn.requestMethod} ${url}\t[status:${this.status}]"
             }
 
-            logger.info(conn.headerFields.map {
-                if (it.key == null) {
-                    return@map "\t${it.value.joinToString(",")}"
-                }
-                return@map "\t${it.key}:${it.value}"
-            }.joinToString("\n"))
+            logger.Info {
+                conn.headerFields.map {
+                    if (it.key == null) {
+                        return@map "\t${it.value.joinToString(",")}"
+                    }
+                    return@map "\t${it.key}:${it.value}"
+                }.joinToString(line_break)
+            }
 
             conn.headerFields.forEach {
                 if (it.key == null) {
@@ -232,7 +233,6 @@ class HttpUtil(var url: String = "") {
             }
             //读取响应
         } catch (e: Exception) {
-            logger.error(e.message ?: "网络请求错误!")
             throw e;
         } finally {
             if (conn != null) {

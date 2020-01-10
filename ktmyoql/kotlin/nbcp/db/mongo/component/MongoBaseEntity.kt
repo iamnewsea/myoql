@@ -19,12 +19,12 @@ typealias mongoQuery = org.springframework.data.mongodb.core.query.Query
  * mongo 的操作的基类
  */
 abstract class MongoBaseEntity<T : IMongoDocument>(val entityClass: Class<T>, entityName: String) : BaseDbEntity(entityName) {
-//    abstract fun getColumns(): Array<String>;
-companion object {
-    private val logger by lazy {
-        return@lazy LoggerFactory.getLogger(this::class.java)
+    //    abstract fun getColumns(): Array<String>;
+    companion object {
+        private val logger by lazy {
+            return@lazy LoggerFactory.getLogger(this::class.java)
+        }
     }
-}
 
     val mongoTemplate: MongoTemplate
         get() {
@@ -36,31 +36,22 @@ companion object {
      * @param entity 实体
      * @return 返回Id
      */
-    fun insert(entity: Map<String,*>): String {
+    fun insert(entity: Map<String, *>): String {
+        db.affectRowCount = -1;
         var entity = entity.toMutableMap()
         if (entity.containsKey("id") == false) {
             entity.set("id", ObjectId().toString())
         }
 
-        var ret = 0;
         var retId = "";
         try {
             mongoTemplate.insert(entity, tableName);
-            ret = 1;
-            db.affectRowCount = ret;
-            retId= entity.get("id").toString()
-        }
-        catch(e:Exception){
-            ret = -1;
+            db.affectRowCount = 1;
+            retId = entity.get("id").toString()
+        } catch (e: Exception) {
             throw e;
-        }
-        finally {
-            if( ret < 0) {
-                logger.error("insert:[" + this.tableName + "] ,returnId:" + retId);
-            }
-            else{
-                logger.info("insert:[" + this.tableName + "] ,returnId:" + retId);
-            }
+        } finally {
+            logger.InfoError(retId.isEmpty()) { "insert:[" + this.tableName + "],data:" + entity.ToJson() + ",_id:" + retId }
         }
 
         return retId
