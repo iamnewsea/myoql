@@ -199,14 +199,14 @@ cursor: {} } """
         } catch (e: Exception) {
             throw e;
         } finally {
-            logger.InfoError(result == null) { queryJson + " result:" + (result?.toJson() ?: "") }
+            logger.InfoError(result == null) { queryJson + " result:" + (result?.ToJson() ?: "") }
         }
 
         if (result == null) {
             throw RuntimeException("mongo aggregate执行错误!")
         }
         if (result.containsKey("ok") == false) {
-            throw RuntimeException("mongo aggregate执行错误!" + result.toJson())
+            throw RuntimeException("mongo aggregate执行错误!" + result.ToJson())
         }
 
         var ret = mutableListOf<Document>()

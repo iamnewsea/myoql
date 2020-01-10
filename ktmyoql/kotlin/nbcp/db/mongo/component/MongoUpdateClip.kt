@@ -295,7 +295,7 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
             throw e;
         } finally {
             logger.InfoError(ret < 0) {
-                "update:[" + this.collectionName + "],where:" + criteria.criteriaObject.toJson() + ",set:" + update.updateObject.toJson() + " ,result:" + ret
+                "update:[" + this.collectionName + "],where:" + criteria.criteriaObject.ToJson() + ",set:" + update.updateObject.ToJson() + " ,result:" + ret
             }
         }
 

@@ -124,10 +124,10 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
     private fun getCacheKey(): String {
         var unKeys = mutableListOf<String>()
 
-        unKeys.add(whereData.map { it.criteriaObject.toJson() }.joinToString("&"))
+        unKeys.add(whereData.map { it.criteriaObject.ToJson() }.joinToString("&"))
         unKeys.add(skip.toString())
         unKeys.add(take.toString())
-        unKeys.add(sort.toJson())
+        unKeys.add(sort.ToJson())
         unKeys.add(selectColumns.joinToString(","))
         unKeys.add(unSelectColumns.joinToString(","))
 
@@ -228,7 +228,7 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
             fun getMsgs(): String {
                 var msgs = mutableListOf<String>()
                 msgs.add("query:[" + this.collectionName + "] ");
-                msgs.add(" where:" + criteria.criteriaObject.toJson())
+                msgs.add(" where:" + criteria.criteriaObject.ToJson())
                 if (selectColumns.any()) {
                     msgs.add(" select:" + selectColumns.joinToString(","))
                 }

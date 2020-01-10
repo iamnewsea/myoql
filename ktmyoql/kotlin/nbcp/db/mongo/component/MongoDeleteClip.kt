@@ -62,7 +62,7 @@ class MongoDeleteClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
             ret = -1;
             throw e;
         } finally {
-            logger.InfoError(ret < 0) { "delete:[" + this.collectionName + "] " + criteria.criteriaObject.toJson() + ",result:${ret}" };
+            logger.InfoError(ret < 0) { "delete:[" + this.collectionName + "] " + criteria.criteriaObject.ToJson() + ",result:${ret}" };
         }
 
         return ret;
