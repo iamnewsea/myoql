@@ -136,6 +136,7 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
     }
 
     fun <R> toList(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): MutableList<R> {
+        db.affectRowCount = -1;
         var isString = false;
         if (clazz.IsSimpleType()) {
             isString = clazz.name == "java.lang.String";
@@ -218,6 +219,8 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
                     }
                 }
             }
+
+            db.affectRowCount = cursor.size;
         } catch (e: Exception) {
             error = true;
             throw e;
@@ -225,19 +228,21 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
             fun getMsgs(): String {
                 var msgs = mutableListOf<String>()
                 msgs.add("query:[" + this.collectionName + "] ");
-                msgs.add("    where:" + criteria.criteriaObject.toJson())
+                msgs.add(" where:" + criteria.criteriaObject.toJson())
                 if (selectColumns.any()) {
-                    msgs.add("    select:" + selectColumns.joinToString(","))
+                    msgs.add(" select:" + selectColumns.joinToString(","))
                 }
                 if (unSelectColumns.any()) {
-                    msgs.add("    unselect:" + unSelectColumns.joinToString(","))
+                    msgs.add(" unselect:" + unSelectColumns.joinToString(","))
                 }
                 if (sort.any()) {
-                    msgs.add("    sort:" + sort.ToJson())
+                    msgs.add(" sort:" + sort.ToJson())
                 }
                 if (skip > 0 || take > 0) {
-                    msgs.add("    limit:${skip},${take}")
+                    msgs.add(" limit:${skip},${take}")
                 }
+
+                msgs.add(" result_count:" + cursor.size.toString())
                 return msgs.joinToString(line_break);
             }
 
