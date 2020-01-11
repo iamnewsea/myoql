@@ -1,4 +1,4 @@
-package nbcp.db.mysql
+package nbcp.db.sql
 
 
 import nbcp.db.IdName

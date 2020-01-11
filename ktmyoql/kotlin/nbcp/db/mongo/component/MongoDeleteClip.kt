@@ -19,7 +19,7 @@ import java.lang.Exception
  * MongoDelete
  */
 class MongoDeleteClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M) : MongoClipBase(moerEntity.tableName), IMongoWhereable {
-    private var whereData = mutableListOf<Criteria>()
+    val whereData = mutableListOf<Criteria>()
 
     companion object {
         private var logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -50,6 +50,12 @@ class MongoDeleteClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
     fun exec(): Int {
         db.affectRowCount = -1;
         var criteria = this.moerEntity.getMongoCriteria(*whereData.toTypedArray());
+
+        var settingResult = db.mongoEvents.onDeleting(this)
+        if (settingResult.any { (it.second?.result ?: true) == false }) {
+            return 0;
+        }
+
         var ret = 0;
         try {
             var result = mongoTemplate.remove(
@@ -58,12 +64,19 @@ class MongoDeleteClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
 
             ret = result.deletedCount.toInt()
             db.affectRowCount = ret;
+
+            if (ret > 0) {
+                settingResult.forEach {
+                    it.first.delete(this,it.second)
+                }
+            }
         } catch (e: Exception) {
             ret = -1;
             throw e;
         } finally {
             logger.InfoError(ret < 0) { "delete:[" + this.collectionName + "] " + criteria.criteriaObject.ToJson() + ",result:${ret}" };
         }
+
 
         return ret;
     }

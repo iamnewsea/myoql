@@ -1,6 +1,5 @@
-package nbcp.db.mysql.component
+package nbcp.db.sql.component
 
-import org.springframework.context.annotation.Bean
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Component
 import nbcp.comm.*

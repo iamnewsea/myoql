@@ -3,9 +3,9 @@ package nbcp.db.sql
 import kotlin.reflect.KClass
 
 
-@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class SqlEntityGroup(val group: String)
+//@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
+//@Retention(AnnotationRetention.RUNTIME)
+//annotation class SqlEntityGroup(val group: String)
 
 //尽量不使用, 尽量使用 sql 数据库的列名.
 //@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS, AnnotationTarget.FIELD)

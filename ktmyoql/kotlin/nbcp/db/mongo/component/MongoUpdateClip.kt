@@ -273,7 +273,7 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
 
 
         var settingResult = db.mongoEvents.onUpdating(this)
-        if (settingResult.result == false) {
+        if (settingResult.any { (it.second?.result ?: true) == false }) {
             return 0;
         }
 
@@ -285,7 +285,9 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
                     collectionName);
 
             if (result.modifiedCount > 0) {
-                db.mongoEvents.onUpdated(this, settingResult.extData)
+                settingResult.forEach {
+                    it.first.update(this,it.second)
+                }
             }
 
             ret = result.matchedCount.toInt();

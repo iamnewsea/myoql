@@ -1,7 +1,5 @@
-package nbcp.db.mysql
+package nbcp.db.sql
 
-import nbcp.db.CacheKey
-import nbcp.db.CacheKeyTypeEnum
 import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
@@ -11,7 +9,7 @@ import nbcp.base.extend.*
 import nbcp.base.line_break
 import nbcp.base.utils.SpringUtil
 import nbcp.db.*
-import nbcp.db.mysql.component.JsonMapRowMapper
+import nbcp.db.sql.component.JsonMapRowMapper
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
 import java.io.Serializable
 import javax.sql.DataSource

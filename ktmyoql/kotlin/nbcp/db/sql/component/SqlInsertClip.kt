@@ -1,4 +1,4 @@
-package nbcp.db.mysql
+package nbcp.db.sql
 
 import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.BatchPreparedStatementSetter

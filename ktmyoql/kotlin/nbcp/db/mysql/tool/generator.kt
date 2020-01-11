@@ -3,6 +3,7 @@ package nbcp.db.mysql.tool
 import nbcp.comm.*
 import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
+import nbcp.db.DbEntityGroup
 import nbcp.db.mysql.*
 import nbcp.db.sql.*
 import java.io.File
@@ -43,21 +44,22 @@ class generator {
         File(moer_Path).createNewFile()
 
         moer_File = FileWriter(moer_Path, true);
-        var groups = getGroups(basePackage,anyEntityClass);
+        var groups = getGroups(basePackage,anyEntityClass).filter { it.key != "base" };
 
 
         println("---------------生成 dbr---------------")
 
         writeToFile("""
-package nbcp.db.mysql.table
+package nbcp.db.sql.table
 
 import nbcp.db.*
 import nbcp.db.sql.*
+import nbcp.db.sql.entity.*
 import nbcp.db.mysql.*
 import nbcp.db.mysql.entity.*
 import nbcp.base.extend.*
 import nbcp.base.utils.*
-
+import org.springframework.stereotype.Component
 
 //generate auto @${LocalDateTime.now().AsString()}
 """)
@@ -65,6 +67,8 @@ import nbcp.base.utils.*
         groups.forEach { group ->
 
             writeToFile("""
+@Component("sql.${group.key}")
+@DataGroup("${group.key}")
 class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
     override fun getEntities():Set<SqlBaseTable<*>> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
 """)
@@ -105,9 +109,9 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 
 
         MyUtil.findClasses(basePackage, anyEntityClass)
-                .filter { it.isAnnotationPresent(SqlEntityGroup::class.java) }
+                .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
                 .forEach {
-                    var groupName = it.getAnnotation(SqlEntityGroup::class.java).group;
+                    var groupName = it.getAnnotation(DbEntityGroup::class.java).group;
 
                     if (ret.containsKey(groupName) == false) {
                         ret[groupName] = mutableListOf();

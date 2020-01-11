@@ -3,7 +3,7 @@ package nbcp.db.mongo.tool
 import nbcp.comm.*
 import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
-import nbcp.db.mongo.MongoEntityGroup
+import nbcp.db.DbEntityGroup
 import java.io.File
 import java.io.FileWriter
 import java.lang.reflect.Field
@@ -180,10 +180,10 @@ body table thead th{
 
 
         MyUtil.findClasses(basePackage, anyEntityClass)
-                .filter { it.isAnnotationPresent(MongoEntityGroup::class.java) }
+                .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
                 .forEach {
 
-                    var groupName = it.getAnnotation(MongoEntityGroup::class.java).group;
+                    var groupName = it.getAnnotation(DbEntityGroup::class.java).group;
 
                     if (ret.containsKey(groupName) == false) {
                         ret[groupName] = mutableListOf();

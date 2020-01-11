@@ -1,4 +1,4 @@
-package nbcp.db.mysql
+package nbcp.db.sql
 
 import nbcp.comm.*
 import org.slf4j.LoggerFactory

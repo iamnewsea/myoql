@@ -1,13 +1,10 @@
-package nbcp.db.mysql.component
+package nbcp.db.sql.component
 
-import nbcp.comm.*
 import nbcp.comm.*
 import nbcp.base.extend.AsString
 import nbcp.db.mysql.*
-import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
-import java.util.concurrent.TimeUnit
 import nbcp.db.sql.*
 /**
  * Created by yuxh on 2019/4/16

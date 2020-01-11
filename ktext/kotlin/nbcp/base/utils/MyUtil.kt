@@ -321,7 +321,12 @@ object MyUtil {
                 continue;
             }
 
-            val className = jarEntryName.Slice(0, -".class".length)
+            val className = jarEntryName.Slice(0, -".class".length).replace('/', '.', false);
+
+            if (basePack.HasValue && className.startsWith(basePack) == false) {
+                continue
+            }
+
             val cls = Class.forName(className)
 
             list.add(cls);

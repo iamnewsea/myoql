@@ -4,10 +4,12 @@ package nbcp.db.mongo.table
 import org.slf4j.LoggerFactory
 import nbcp.base.extend.*
 import nbcp.base.utils.*
+import nbcp.db.mongo.entity.*
 import nbcp.db.mongo.*
 import nbcp.db.*
+import org.springframework.stereotype.Component
 
-//generate auto @2020-01-07 10:48:37
+//generate auto @2020-01-11 18:31:22
 
 class IdNameMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
@@ -31,13 +33,13 @@ class ObjectMeta (private val _pname:String):MongoColumnName() {
 }
 
 
+@Component("mongo.base")
+@DataGroup("base")
 class BaseGroup : IDataGroup{
-    override fun getEntities():Set<BaseDbEntity> = setOf(sysAnnex,sysCity,sysDustbin,sysLog)
+    override fun getEntities():Set<BaseDbEntity> = setOf(sysAnnex,sysDustbin,sysLog)
 
     val sysAnnex=SysAnnexEntity();
     fun sysAnnex(collectionName:String)=SysAnnexEntity(collectionName);
-    val sysCity=SysCityEntity();
-    fun sysCity(collectionName:String)=SysCityEntity(collectionName);
     val sysDustbin=SysDustbinEntity();
     fun sysDustbin(collectionName:String)=SysDustbinEntity(collectionName);
     val sysLog=SysLogEntity();
@@ -57,20 +59,6 @@ class BaseGroup : IDataGroup{
         val corpId=MongoColumnName("corpId")
         val errorMsg=MongoColumnName("errorMsg")
         val createAt=MongoColumnName("createAt")
-        val id=MongoColumnName("_id")
-    }
-    
-    class SysCityEntity(collectionName:String="sysCity"):MongoBaseEntity<SysCity>(SysCity::class.java,collectionName) {
-        val code=MongoColumnName("code")
-        val pcode=MongoColumnName("pcode")
-        val name=MongoColumnName("name")
-        val fullName=MongoColumnName("fullName")
-        val level=MongoColumnName("level")
-        val lng=MongoColumnName("lng")
-        val lat=MongoColumnName("lat")
-        val pinyin=MongoColumnName("pinyin")
-        val telCode=MongoColumnName("telCode")
-        val postCode=MongoColumnName("postCode")
         val id=MongoColumnName("_id")
     }
     

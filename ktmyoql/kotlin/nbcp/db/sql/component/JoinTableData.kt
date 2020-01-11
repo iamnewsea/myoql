@@ -1,8 +1,7 @@
-package nbcp.db.mysql
+package nbcp.db.sql
 
 
 import nbcp.db.sql.*
-import nbcp.db.mysql.WhereData
 import java.io.Serializable
 
 

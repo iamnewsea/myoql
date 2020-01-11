@@ -100,15 +100,28 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
     }
 
     /**
+     * @param _id: 如果要设置列，前面加$.
      * @param eachItems: 每一个聚合的表达式。
-     *
      * @see MongoExpression
+     * .group("$level",db.mongo..)
      */
-    fun group(_id: String?, eachItems: JsonMap): MongoAggregateClip<M, E> {
+    fun group(_id: String, eachItems: JsonMap): MongoAggregateClip<M, E> {
         var raw = JsonMap();
         raw.put("_id", _id)
         raw.putAll(eachItems)
 
+
+        pipeLines.add("\$group" to raw)
+        return this;
+    }
+
+    fun group(_id: JsonMap?, eachItems: JsonMap? = null): MongoAggregateClip<M, E> {
+        var raw = JsonMap();
+        raw.put("_id", _id)
+
+        if (eachItems != null) {
+            raw.putAll(eachItems)
+        }
 
         pipeLines.add("\$group" to raw)
         return this;

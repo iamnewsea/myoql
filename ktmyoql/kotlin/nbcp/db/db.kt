@@ -1,36 +1,22 @@
 package nbcp.db
 
-import com.mongodb.DBObject
-import com.mongodb.MongoClient
-import com.mongodb.MongoCredential
-import com.mongodb.ServerAddress
-import nbcp.base.extend.AsInt
 import nbcp.base.extend.IsStringType
 import nbcp.base.extend.Slice
-import nbcp.base.extend.ToJson
 import nbcp.base.utils.RecursionUtil
 import nbcp.base.utils.SpringUtil
-import nbcp.comm.JsonMap
 import nbcp.comm.StringMap
 import nbcp.comm.StringTypedMap
-import nbcp.db.mongo.Date2LocalDateTimeConverter
-import nbcp.db.mongo.MongoEventConfig
-import nbcp.db.mongo.PipeLineOperatorEnum
+import nbcp.db.mongo.*
+import nbcp.db.mongo.MongoEntityEvent
 import nbcp.db.sql.SqlBaseTable
 import org.bson.Document
-import org.slf4j.LoggerFactory
 import org.springframework.core.convert.support.GenericConversionService
-import org.springframework.data.mongodb.MongoDbFactory
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory
-import org.springframework.data.mongodb.core.SimpleMongoDbFactory
 import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext
-import org.springframework.data.mongodb.core.query.Criteria
-import java.util.ArrayList
-import kotlin.concurrent.getOrSet
 
 enum class DatabaseEnum {
     Mysql,
@@ -51,7 +37,7 @@ object db {
 
     //     val sqlEvents = SpringUtil.getBean<SqlEventConfig>();
     val mongoEvents by lazy {
-        return@lazy SpringUtil.getBean<MongoEventConfig>();
+        return@lazy SpringUtil.getBean<MongoEntityEvent>();
     }
 
     fun getQuoteName(value: String): String {
@@ -63,6 +49,20 @@ object db {
             return """"${value}""""
         }
     }
+
+    private val _beforeExecuteDbData: ThreadLocal<Any?> = ThreadLocal.withInitial { return@withInitial null }
+
+    //执行前保存的数据,可能会执行后用到。
+    //删除数据之前，先查出来，执行成功后，放到垃圾箱。
+    @JvmStatic
+    var beforeExecuteDbData: Any?
+        get() {
+            return _beforeExecuteDbData.get()
+        }
+        set(value) {
+            _beforeExecuteDbData.set(value);
+        }
+
 
     private val _lastCommand: ThreadLocal<String> = ThreadLocal.withInitial { return@withInitial "" }
 
@@ -102,11 +102,6 @@ object db {
             _lastAutoId.set(value);
         }
 
-//    fun getMongoCriteria(vararg where: Criteria): Criteria {
-//        if (where.size == 1) return where[0];
-//        if (where.size == 0) return Criteria();
-//        return Criteria().andOperator(*where);
-//    }
 
     fun change_id2Id(value: Collection<*>, remove_id: Boolean = true) {
         value.forEach { v ->

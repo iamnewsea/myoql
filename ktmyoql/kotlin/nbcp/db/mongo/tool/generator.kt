@@ -4,7 +4,7 @@ import nbcp.comm.*
 import nbcp.base.extend.*
 import nbcp.base.line_break
 import nbcp.base.utils.MyUtil
-import nbcp.db.mongo.MongoEntityGroup
+import nbcp.db.DbEntityGroup
 
 import java.io.File
 import java.io.FileWriter
@@ -35,7 +35,7 @@ class generator {
 
         moer_File = FileWriter(moer_Path, true);
 
-        var groups = getGroups(basePackage, anyEntityClass);
+        var groups = getGroups(basePackage, anyEntityClass).filter { it.key != "base" };
         var embClasses = getEmbClasses(groups);
 
         println("开始生成 mor...")
@@ -49,6 +49,7 @@ import nbcp.base.utils.*
 import nbcp.db.mongo.entity.*
 import nbcp.db.mongo.*
 import nbcp.db.*
+import org.springframework.stereotype.Component
 
 //generate auto @${LocalDateTime.now().AsString()}
 """)
@@ -62,6 +63,8 @@ import nbcp.db.*
             var groupEntities = group.value
 
             writeToFile("""
+@Component("mongo.${groupName}")
+@DataGroup("${groupName}")
 class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
     override fun getEntities():Set<BaseDbEntity> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
 """)
@@ -124,10 +127,10 @@ data class moer_map(val _pname:String)
 
 
         MyUtil.findClasses(basePackage, anyEntityClass)
-                .filter { it.isAnnotationPresent(MongoEntityGroup::class.java) }
+                .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
                 .forEach {
 
-                    var groupName = it.getAnnotation(MongoEntityGroup::class.java).group;
+                    var groupName = it.getAnnotation(DbEntityGroup::class.java).group;
 
                     if (ret.containsKey(groupName) == false) {
                         ret[groupName] = mutableListOf();
@@ -185,7 +188,7 @@ data class moer_map(val _pname:String)
         return ret.distinctBy { it.name }
     }
 
-    fun getEmbClasses(groups: HashMap<String, MutableList<Class<*>>>): MutableList<Class<*>> {
+    fun getEmbClasses(groups: Map<String, MutableList<Class<*>>>): MutableList<Class<*>> {
         var list = mutableListOf<Class<*>>()
 
         groups.values.forEach {
