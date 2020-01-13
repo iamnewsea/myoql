@@ -15,7 +15,7 @@ import org.xml.sax.XMLReader
 class SheetContentReader(
         var xmlReader: XMLReader,
         var columns: List<String>,
-        var filter: ((JsonMap) -> Boolean),
+        var filter: ((JsonMap,Map<Int, String>) -> Boolean),
         var offset_row: Int = 0 ) : XSSFSheetXMLHandler.SheetContentsHandler {
     var currentRowIndex = -1;
     var currentDataRow = linkedMapOf<Int, String>();
@@ -62,7 +62,7 @@ class SheetContentReader(
 
 
         //
-        if (filter.invoke(row) == false) {
+        if (filter.invoke(row,currentDataRow) == false) {
             throw ReturnException();
         }
     }

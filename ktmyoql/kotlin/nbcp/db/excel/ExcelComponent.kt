@@ -142,12 +142,12 @@ class ExcelComponent() {
      * 读取数据
      */
     fun <T> getDataTable(clazz: Class<T>,
-                         filter: ((JsonMap) -> Boolean)? = null): DataTable<T> {
+                         filter: ((JsonMap, Map<Int, String>) -> Boolean)? = null): DataTable<T> {
         var dt = DataTable<T>(clazz)
 
         var pk_values = mutableListOf<String>()
 
-        readData { row ->
+        readData { row,oriData ->
             //判断该行是否是主键空值.
             //主键全空.
             if (pks.any()) {
@@ -161,7 +161,7 @@ class ExcelComponent() {
             }
 
             if (filter != null) {
-                if (filter(row) == false) {
+                if (filter(row,oriData) == false) {
                     return@readData false;
                 }
             }
@@ -179,7 +179,7 @@ class ExcelComponent() {
     /**读取数据，跳过 offset_row 。
      * @param filter
      */
-    fun readData(filter: (JsonMap) -> Boolean) {
+    fun readData(filter: (JsonMap, Map<Int, String>) -> Boolean) {
         if (columns.isEmpty()) {
             return;
         }
@@ -195,7 +195,7 @@ class ExcelComponent() {
         try {
             val fm = FileMagic.valueOf(file)
             var lined = 0;
-            var filter2: (JsonMap) -> Boolean = f2@{ row ->
+            var filter2: (JsonMap, Map<Int, String>) -> Boolean = f2@{ row, oriData ->
                 lined++;
                 if (row.any() == false) {
                     return@f2 false;
@@ -214,7 +214,7 @@ class ExcelComponent() {
                     }
                 }
 
-                return@f2 filter(row);
+                return@f2 filter(row, oriData);
             }
 
             when (fm) {
@@ -291,7 +291,7 @@ class ExcelComponent() {
     }
 
 
-    private fun readOle2ExcelData(filter: (JsonMap) -> Boolean
+    private fun readOle2ExcelData(filter: (JsonMap, Map<Int, String>) -> Boolean
     ) {
         var book = WorkbookFactory.create(FileInputStream(fileName))
         var sheet: Sheet;
@@ -310,35 +310,28 @@ class ExcelComponent() {
         try {
             //公式执行器
             var evaluator = book.creationHelper.createFormulaEvaluator()
-            var header_row = sheet.getRow(offset_row)
 
-            // key: excel 中的 列的索引 , value = column_name
-            var columns_index_map = getHeaderColumnsIndexMap(header_row, columns, evaluator);
 
-            if (columns_index_map.size != columns.size) {
-                var ext_columns = columns.minus(columns_index_map.values);
-                throw Exception("找不到列：${ext_columns.joinToString(",")}")
-            }
+
 
             for (rowIndex in (offset_row + 1)..sheet.lastRowNum) {
                 var row = sheet.getRow(rowIndex)
                 if (row == null) {
                     break
                 }
-                var rowData = JsonMap();
-                for (columnIndex in columns_index_map.keys) {
+                var oriData = mutableMapOf<Int, String>()
+
+                for (columnIndex in (row.firstCellNum - 1)..(row.lastCellNum - 1)) {
                     var cell = row.getCell(columnIndex);
                     if (cell == null) {
                         continue
                     }
 
-                    var columnName = columns_index_map.get(columnIndex)!!;
-
                     //处理 日期，时间 格式。
                     if (cell.cellType == CellType.NUMERIC) {
                         var value = cell.numericCellValue.toBigDecimal().toPlainString()
                         if (value.indexOf(".") < 0 || "General" == cell.cellStyle.dataFormatString) {
-                            rowData.set(columnName, value);
+                            oriData.set(columnIndex, value);
                             continue;
                         }
 
@@ -347,24 +340,39 @@ class ExcelComponent() {
                                 cell.cellStyle.dataFormatString.indexOf("d") >= 0 &&
                                 cell.cellStyle.dataFormatString.indexOf("h:mm:ss") >= 0) {
 
-                            rowData.set(columnName, cell.dateCellValue.AsLocalDateTime().AsString());
+                            oriData.set(columnIndex, cell.dateCellValue.AsLocalDateTime().AsString());
                             continue;
                         } else if (cell.cellStyle.dataFormatString.indexOf("h:mm:ss") >= 0) {
-                            rowData.set(columnName, cell.dateCellValue.AsLocalTime().AsString());
+                            oriData.set(columnIndex, cell.dateCellValue.AsLocalTime().AsString());
                             continue;
                         } else if (cell.cellStyle.dataFormatString.indexOf("yy") >= 0 &&
                                 cell.cellStyle.dataFormatString.indexOf("m") >= 0 &&
                                 cell.cellStyle.dataFormatString.indexOf("d") >= 0) {
-                            rowData.set(columnName, cell.dateCellValue.AsLocalDate().AsString());
+                            oriData.set(columnIndex, cell.dateCellValue.AsLocalDate().AsString());
                             continue;
                         }
                     }
 
-                    rowData.set(columnName, cell.getStringValue(evaluator).AsString().trim())
+                    oriData.set(columnIndex, cell.getStringValue(evaluator).AsString().trim())
+                }
+
+                var header_row = sheet.getRow(offset_row)
+                // key: excel 中的 列的索引 , value = column_name
+                var columns_index_map = getHeaderColumnsIndexMap(header_row, columns, evaluator);
+
+//                if (columns_index_map.size != columns.size) {
+//                    var ext_columns = columns.minus(columns_index_map.values);
+//                    throw Exception("找不到列：${ext_columns.joinToString(",")}")
+//                }
+
+                var rowData = JsonMap();
+                for (columnIndex in columns_index_map.keys) {
+                    var columnName = columns_index_map.get(columnIndex)!!;
+                    rowData.set(columnName, oriData[columnIndex])
                 }
 
 
-                if (filter(rowData) == false) {
+                if (filter(rowData, oriData) == false) {
                     return;
                 }
             }
@@ -375,7 +383,7 @@ class ExcelComponent() {
     }
 
 
-    private fun readOpenXmlExcelData(filter: (JsonMap) -> Boolean) {
+    private fun readOpenXmlExcelData(filter: (JsonMap, Map<Int, String>) -> Boolean) {
         var xlsxPackage = OPCPackage.open(fileName, PackageAccess.READ)
 
         try {
@@ -430,7 +438,7 @@ class ExcelComponent() {
             sheetInputStream: InputStream,
             columns: List<String>,
             offset_row: Int = 0,
-            filter: ((JsonMap) -> Boolean)
+            filter: ((JsonMap, Map<Int, String>) -> Boolean)
     ) {
 
         var strings = ReadOnlySharedStringsTable(xlsxPackage);
