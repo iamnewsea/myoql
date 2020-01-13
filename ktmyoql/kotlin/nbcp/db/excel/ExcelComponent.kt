@@ -60,10 +60,10 @@ fun Cell?.getStringValue(evaluator: FormulaEvaluator): String {
  * Excel 导入导出。
  */
 class ExcelComponent() {
-    private var columns: List<String> = listOf()
+    private var columns: Array<String> = arrayOf()
     private var sheetName: String = ""
     private var offset_row: Int = 0;
-    private var pks: List<String> = listOf();
+    private var pks: Array<String> = arrayOf()
     private var fileName: String = "";
     val sheetNames: Array<String>
         get() {
@@ -112,7 +112,7 @@ class ExcelComponent() {
         this.fileName = fileName;
     }
 
-    fun select(sheetName: String, columns: List<String>, pks: List<String>, offset_row: Int = 0) {
+    fun select(sheetName: String, columns: Array<String>, pks: Array<String>, offset_row: Int = 0) {
         this.sheetName = sheetName;
         this.columns = columns;
         this.pks = pks;
@@ -242,7 +242,7 @@ class ExcelComponent() {
         return ret.toTypedArray();
     }
 
-    private fun getHeaderColumnsIndexMap(headerRow: Row, columns: List<String>, evaluator: FormulaEvaluator): LinkedHashMap<Int, String> {
+    private fun getHeaderColumnsIndexMap(headerRow: Row, columns: Array<String>, evaluator: FormulaEvaluator): LinkedHashMap<Int, String> {
 
         var columnDataIndexs = linkedMapOf<Int, String>()
         for (columnIndex in headerRow.firstCellNum.AsInt()..headerRow.lastCellNum) {
@@ -315,7 +315,7 @@ class ExcelComponent() {
         }
 
         if (pks.isEmpty() == false) {
-            var ext_pks = pks.minus(columns);
+            var ext_pks = pks.toList().minus(columns);
             if (ext_pks.any()) {
                 throw Exception("${sheetName}多余的主键定义:${ext_pks.joinToString(",")}");
             }
@@ -443,7 +443,7 @@ class ExcelComponent() {
             var columns_index_map = getHeaderColumnsIndexMap(header_row, columns, evaluator);
 
             if (columns_index_map.size != columns.size) {
-                var ext_columns = columns.minus(columns_index_map.values);
+                var ext_columns = columns.toList().minus(columns_index_map.values);
                 throw Exception("找不到列：${ext_columns.joinToString(",")}")
             }
 
@@ -558,7 +558,7 @@ class ExcelComponent() {
             xlsxPackage: OPCPackage,
             xssfReader: XSSFReader,
             sheetInputStream: InputStream,
-            columns: List<String>,
+            columns: Array<String>,
             offset_row: Int = 0,
             skip: Int = 0,
             filter: ((JsonMap) -> Boolean)

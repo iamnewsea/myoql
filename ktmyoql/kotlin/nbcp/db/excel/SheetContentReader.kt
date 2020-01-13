@@ -14,7 +14,7 @@ import org.xml.sax.XMLReader
 
 class SheetContentReader(
         var xmlReader: XMLReader,
-        var columns: List<String>,
+        var columns: Array<String>,
         var filter: ((JsonMap) -> Boolean),
         var offset_row: Int = 0,
         var skip: Int = 0) : XSSFSheetXMLHandler.SheetContentsHandler {
