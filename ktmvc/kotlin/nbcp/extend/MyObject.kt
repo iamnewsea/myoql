@@ -267,3 +267,8 @@ val HttpServletRequest.fullUrl: String
     get() {
         return this.requestURI + (if (this.queryString.isNullOrEmpty()) "" else ("?" + this.queryString))
     }
+
+//呼叫父窗口，弹出消息
+fun HttpServletResponse.parentAlert(msg: String, title: String = "", targetOrigin: String = "*") {
+    this.WriteTextValue("<script>window.parent.postMessage({event:'error',arguments:['${msg}','${title}']},'${targetOrigin}')</script>")
+}
