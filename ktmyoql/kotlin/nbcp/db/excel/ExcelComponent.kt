@@ -60,10 +60,10 @@ fun Cell?.getStringValue(evaluator: FormulaEvaluator): String {
  * Excel 导入导出。
  */
 class ExcelComponent() {
-    private var columns: Array<String> = arrayOf()
+    private var columns: List<String> = listOf()
     private var sheetName: String = ""
     private var offset_row: Int = 0;
-    private var pks: Array<String> = arrayOf()
+    private var pks: List<String> = listOf()
     private var fileName: String = "";
     val sheetNames: Array<String>
         get() {
@@ -112,7 +112,7 @@ class ExcelComponent() {
         this.fileName = fileName;
     }
 
-    fun select(sheetName: String, columns: Array<String>, pks: Array<String>, offset_row: Int = 0) {
+    fun select(sheetName: String, columns: List<String>, pks: List<String>, offset_row: Int = 0) {
         this.sheetName = sheetName;
         this.columns = columns;
         this.pks = pks;
@@ -120,129 +120,7 @@ class ExcelComponent() {
     }
 
 
-    fun readRowData(sheetName: String, rowIndex: Int): Array<String> {
-        var ret = mutableListOf<String>();
-        val file = FileMagic.prepareToCheckMagic(FileInputStream(fileName))
-        try {
-            val fm = FileMagic.valueOf(file)
-            when (fm) {
-                FileMagic.OOXML -> {
-                    var xlsxPackage = OPCPackage.open(fileName, PackageAccess.READ)
-
-                    try {
-                        var xssfReader = XSSFReader(xlsxPackage)
-                        var iter = xssfReader.sheetsData as XSSFReader.SheetIterator
-
-
-                        while (iter.hasNext()) {
-                            var r = iter.next().use { stream ->
-
-                                if (iter.sheetName == sheetName) {
-
-                                    var strings = ReadOnlySharedStringsTable(xlsxPackage);
-                                    var styles = xssfReader.getStylesTable();
-                                    var formatter = DataFormatter()
-                                    var sheetSource = InputSource(stream);
-                                    var sheetParser = SAXHelper.newXMLReader();
-
-                                    try {
-                                        sheetParser.contentHandler = XSSFSheetXMLHandler(styles, null, strings,
-                                                SheetContentRowArrayDataReader(sheetParser, offset_row, {
-                                                    ret.addAll(it);
-                                                    return@SheetContentRowArrayDataReader false;
-                                                }), formatter, false);
-                                        sheetParser.parse(sheetSource)
-                                    } catch (e: Exception) {
-                                        if (e.cause is ReturnException == false) {
-                                            throw e;
-                                        }
-                                    }
-                                    return@use false;
-                                }
-
-                                return@use true;
-                            }
-
-                            if (r == false) break;
-                        }
-                    } finally {
-                        xlsxPackage.close();
-                    }
-                    return ret.toTypedArray();
-                }
-                FileMagic.OLE2 -> {
-                    var book = WorkbookFactory.create(FileInputStream(fileName))
-                    var sheet: Sheet;
-
-                    try {
-                        sheet = book.getSheet(sheetName);
-                    } catch (e: java.lang.Exception) {
-                        book.close();
-                        throw java.lang.Exception("打不开Excel文件的 ${sheetName} ！")
-                    }
-
-                    try {
-                        //公式执行器
-                        var evaluator = book.creationHelper.createFormulaEvaluator()
-
-                        var row = sheet.getRow(offset_row)
-                        if (row == null) {
-                            return ret.toTypedArray();
-                        }
-
-
-                        for (i in 1..row.lastCellNum) {
-                            var cell = row.getCell(i - 1);
-                            if (cell == null) {
-                                ret.add("")
-                                continue
-                            }
-
-
-                            //处理 日期，时间 格式。
-                            if (cell.cellType == CellType.NUMERIC) {
-                                var value = cell.numericCellValue.toBigDecimal().toPlainString()
-                                if (value.indexOf(".") < 0 || "General" == cell.cellStyle.dataFormatString) {
-                                    ret.add(value);
-                                    continue;
-                                }
-
-                                if (cell.cellStyle.dataFormatString.indexOf("yy") >= 0 &&
-                                        cell.cellStyle.dataFormatString.indexOf("m") >= 0 &&
-                                        cell.cellStyle.dataFormatString.indexOf("d") >= 0 &&
-                                        cell.cellStyle.dataFormatString.indexOf("h:mm:ss") >= 0) {
-
-                                    ret.add(cell.dateCellValue.AsLocalDateTime().AsString())
-                                    continue;
-                                } else if (cell.cellStyle.dataFormatString.indexOf("h:mm:ss") >= 0) {
-                                    ret.add(cell.dateCellValue.AsLocalTime().AsString())
-                                    continue;
-                                } else if (cell.cellStyle.dataFormatString.indexOf("yy") >= 0 &&
-                                        cell.cellStyle.dataFormatString.indexOf("m") >= 0 &&
-                                        cell.cellStyle.dataFormatString.indexOf("d") >= 0) {
-                                    ret.add(cell.dateCellValue.AsLocalDate().AsString())
-                                    continue;
-                                }
-                            }
-
-                            ret.add(cell.getStringValue(evaluator).AsString().trim())
-                        }
-
-                    } finally {
-                        book.close()
-                    }
-
-                }
-            }
-
-        } finally {
-            file.close()
-        }
-
-        return ret.toTypedArray();
-    }
-
-    private fun getHeaderColumnsIndexMap(headerRow: Row, columns: Array<String>, evaluator: FormulaEvaluator): LinkedHashMap<Int, String> {
+    private fun getHeaderColumnsIndexMap(headerRow: Row, columns: List<String>, evaluator: FormulaEvaluator): LinkedHashMap<Int, String> {
 
         var columnDataIndexs = linkedMapOf<Int, String>()
         for (columnIndex in headerRow.firstCellNum.AsInt()..headerRow.lastCellNum) {
@@ -260,40 +138,37 @@ class ExcelComponent() {
         return columnDataIndexs;
     }
 
-    //                        translateRowJson:((JsonMap)->Unit)? = null,
-    fun <T> getDataTable(clazz: Class<T>, skip: Int = 0,
+    /**
+     * 读取数据
+     */
+    fun <T> getDataTable(clazz: Class<T>,
                          filter: ((JsonMap) -> Boolean)? = null): DataTable<T> {
         var dt = DataTable<T>(clazz)
 
         var pk_values = mutableListOf<String>()
 
-
-        var fields = clazz.declaredFields.map {
-            it.isAccessible = true
-            return@map it;
-        }
-
-        getData(skip) { row ->
+        readData { row ->
             //判断该行是否是主键空值.
             //主键全空.
+            if (pks.any()) {
+                var pk_map = row.filterKeys { pks.contains(it) }
+                var pk_value = pks.map { pk_map.get(it) }.joinToString(",")
 
-            var pk_map = row.filterKeys { pks.contains(it) }
-            var pk_value = pks.map { pk_map.get(it) }.joinToString(",")
-
-            if (pk_values.contains(pk_value)) {
-                throw Exception("发现第 ${pk_values.size + 1} 行存在重复数据!")
+                if (pk_values.contains(pk_value)) {
+                    throw Exception("发现第 ${pk_values.size + 1} 行存在重复数据!")
+                }
+                pk_values.add(pk_value);
             }
-            pk_values.add(pk_value);
 
             if (filter != null) {
                 if (filter(row) == false) {
-                    return@getData false;
+                    return@readData false;
                 }
             }
 
             dt.rows.add(row.ConvertJson(clazz));
 
-            return@getData true;
+            return@readData true;
         }
 
         pk_values.clear();
@@ -301,21 +176,16 @@ class ExcelComponent() {
     }
 
 
-    /**读取数据，跳过空行,跳过Header.name.isEmpty 的列。
-     * @param columns 列定义. 位置无关.
-     * @param offset_row 前面的空行.
-     * @param pks: 主键列， 主键列不能为空。
-     * @param broke_lines: 允许连续的空行。
+    /**读取数据，跳过 offset_row 。
+     * @param filter
      */
-    private fun getData(skip: Int = 0,
-                        filter: (JsonMap) -> Boolean
-    ) {
+    fun readData(filter: (JsonMap) -> Boolean) {
         if (columns.isEmpty()) {
             return;
         }
 
         if (pks.isEmpty() == false) {
-            var ext_pks = pks.toList().minus(columns);
+            var ext_pks = pks.minus(columns);
             if (ext_pks.any()) {
                 throw Exception("${sheetName}多余的主键定义:${ext_pks.joinToString(",")}");
             }
@@ -330,22 +200,26 @@ class ExcelComponent() {
                 if (row.any() == false) {
                     return@f2 false;
                 }
-                var pk_map = row.filterKeys { pks.contains(it) }
 
-                if (pk_map.any() == false) {
-                    throw Exception("找不到主键的值!，行：${lined}}")
+                if (pks.any()) {
+                    var pk_map = row.filterKeys { pks.contains(it) }
+
+                    if (pk_map.any() == false) {
+                        throw Exception("找不到主键的值!，行：${lined}}")
+                    }
+
+                    var pk_empty_map = pk_map.filter { it.value.AsString().isEmpty() }
+                    if (pk_empty_map.any()) {
+                        throw Exception("发现主键空值，行：${lined}, 列: ${pk_empty_map.map { it.key }.joinToString(",")}")
+                    }
                 }
 
-                var pk_empty_map = pk_map.filter { it.value.AsString().isEmpty() }
-                if (pk_empty_map.any()) {
-                    throw Exception("发现主键空值，行：${lined}, 列: ${pk_empty_map.map { it.key }.joinToString(",")}")
-                }
                 return@f2 filter(row);
             }
 
             when (fm) {
-                FileMagic.OOXML -> readOpenXmlExcelData(skip, filter2);
-                FileMagic.OLE2 -> readOle2ExcelData(skip, filter2)
+                FileMagic.OOXML -> readOpenXmlExcelData(filter2);
+                FileMagic.OLE2 -> readOle2ExcelData(filter2)
             }
 
         } finally {
@@ -417,8 +291,7 @@ class ExcelComponent() {
     }
 
 
-    private fun readOle2ExcelData(skip: Int = 0,
-                                  filter: (JsonMap) -> Boolean
+    private fun readOle2ExcelData(filter: (JsonMap) -> Boolean
     ) {
         var book = WorkbookFactory.create(FileInputStream(fileName))
         var sheet: Sheet;
@@ -443,11 +316,11 @@ class ExcelComponent() {
             var columns_index_map = getHeaderColumnsIndexMap(header_row, columns, evaluator);
 
             if (columns_index_map.size != columns.size) {
-                var ext_columns = columns.toList().minus(columns_index_map.values);
+                var ext_columns = columns.minus(columns_index_map.values);
                 throw Exception("找不到列：${ext_columns.joinToString(",")}")
             }
 
-            for (rowIndex in (offset_row + 1 + skip)..sheet.lastRowNum) {
+            for (rowIndex in (offset_row + 1)..sheet.lastRowNum) {
                 var row = sheet.getRow(rowIndex)
                 if (row == null) {
                     break
@@ -502,10 +375,7 @@ class ExcelComponent() {
     }
 
 
-    private fun readOpenXmlExcelData(
-            skip: Int = 0,
-            filter: (JsonMap) -> Boolean
-    ) {
+    private fun readOpenXmlExcelData(filter: (JsonMap) -> Boolean) {
         var xlsxPackage = OPCPackage.open(fileName, PackageAccess.READ)
 
         try {
@@ -518,7 +388,7 @@ class ExcelComponent() {
             while (iter.hasNext()) {
                 iter.next().use { stream ->
                     if (sheetName.isEmpty()) {
-                        getSheetData(xlsxPackage, xssfReader, stream, columns, offset_row, skip, filter)
+                        getSheetData(xlsxPackage, xssfReader, stream, columns, offset_row, filter)
                         return;
                     }
 
@@ -536,11 +406,11 @@ class ExcelComponent() {
             while (iter.hasNext()) {
                 iter.next().use { stream ->
                     if (sheetCount == 1) {
-                        getSheetData(xlsxPackage, xssfReader, stream, columns, offset_row, skip, filter)
+                        getSheetData(xlsxPackage, xssfReader, stream, columns, offset_row, filter)
                         return;
                     } else {
                         if (iter.sheetName == sheetName) {
-                            getSheetData(xlsxPackage, xssfReader, stream, columns, offset_row, skip, filter)
+                            getSheetData(xlsxPackage, xssfReader, stream, columns, offset_row, filter)
                             return;
                         }
                     }
@@ -558,9 +428,8 @@ class ExcelComponent() {
             xlsxPackage: OPCPackage,
             xssfReader: XSSFReader,
             sheetInputStream: InputStream,
-            columns: Array<String>,
+            columns: List<String>,
             offset_row: Int = 0,
-            skip: Int = 0,
             filter: ((JsonMap) -> Boolean)
     ) {
 
@@ -571,7 +440,7 @@ class ExcelComponent() {
         var sheetParser = SAXHelper.newXMLReader();
 
         try {
-            sheetParser.contentHandler = XSSFSheetXMLHandler(styles, null, strings, SheetContentReader(sheetParser, columns, filter, offset_row, skip), formatter, false);
+            sheetParser.contentHandler = XSSFSheetXMLHandler(styles, null, strings, SheetContentReader(sheetParser, columns, filter, offset_row), formatter, false);
             sheetParser.parse(sheetSource)
         } catch (e: Exception) {
             if (e.cause is ReturnException == false) {

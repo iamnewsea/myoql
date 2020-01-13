@@ -1,0 +1,125 @@
+    /**
+     * 读取一行数据
+     * @param rowIndex: 相对 offset_row 获取的行
+     */
+//    fun readOneRowData(rowIndex: Int): Array<String> {
+//        var ret = mutableListOf<String>();
+//        val file = FileMagic.prepareToCheckMagic(FileInputStream(fileName))
+//        try {
+//            val fm = FileMagic.valueOf(file)
+//            when (fm) {
+//                FileMagic.OOXML -> {
+//                    var xlsxPackage = OPCPackage.open(fileName, PackageAccess.READ)
+//
+//                    try {
+//                        var xssfReader = XSSFReader(xlsxPackage)
+//                        var iter = xssfReader.sheetsData as XSSFReader.SheetIterator
+//
+//
+//                        while (iter.hasNext()) {
+//                            var r = iter.next().use { stream ->
+//
+//                                if (iter.sheetName == sheetName) {
+//
+//                                    var strings = ReadOnlySharedStringsTable(xlsxPackage);
+//                                    var styles = xssfReader.getStylesTable();
+//                                    var formatter = DataFormatter()
+//                                    var sheetSource = InputSource(stream);
+//                                    var sheetParser = SAXHelper.newXMLReader();
+//
+//                                    try {
+//                                        sheetParser.contentHandler = XSSFSheetXMLHandler(styles, null, strings,
+//                                                SheetContentRowArrayDataReader(sheetParser, offset_row + rowIndex, {
+//                                                    ret.addAll(it);
+//                                                    return@SheetContentRowArrayDataReader false;
+//                                                }), formatter, false);
+//                                        sheetParser.parse(sheetSource)
+//                                    } catch (e: Exception) {
+//                                        if (e.cause is ReturnException == false) {
+//                                            throw e;
+//                                        }
+//                                    }
+//                                    return@use false;
+//                                }
+//
+//                                return@use true;
+//                            }
+//
+//                            if (r == false) break;
+//                        }
+//                    } finally {
+//                        xlsxPackage.close();
+//                    }
+//                    return ret.toTypedArray();
+//                }
+//                FileMagic.OLE2 -> {
+//                    var book = WorkbookFactory.create(FileInputStream(fileName))
+//                    var sheet: Sheet;
+//
+//                    try {
+//                        sheet = book.getSheet(sheetName);
+//                    } catch (e: java.lang.Exception) {
+//                        book.close();
+//                        throw java.lang.Exception("打不开Excel文件的 ${sheetName} ！")
+//                    }
+//
+//                    try {
+//                        //公式执行器
+//                        var evaluator = book.creationHelper.createFormulaEvaluator()
+//
+//                        var row = sheet.getRow(offset_row)
+//                        if (row == null) {
+//                            return ret.toTypedArray();
+//                        }
+//
+//
+//                        for (i in 1..row.lastCellNum) {
+//                            var cell = row.getCell(i - 1);
+//                            if (cell == null) {
+//                                ret.add("")
+//                                continue
+//                            }
+//
+//
+//                            //处理 日期，时间 格式。
+//                            if (cell.cellType == CellType.NUMERIC) {
+//                                var value = cell.numericCellValue.toBigDecimal().toPlainString()
+//                                if (value.indexOf(".") < 0 || "General" == cell.cellStyle.dataFormatString) {
+//                                    ret.add(value);
+//                                    continue;
+//                                }
+//
+//                                if (cell.cellStyle.dataFormatString.indexOf("yy") >= 0 &&
+//                                        cell.cellStyle.dataFormatString.indexOf("m") >= 0 &&
+//                                        cell.cellStyle.dataFormatString.indexOf("d") >= 0 &&
+//                                        cell.cellStyle.dataFormatString.indexOf("h:mm:ss") >= 0) {
+//
+//                                    ret.add(cell.dateCellValue.AsLocalDateTime().AsString())
+//                                    continue;
+//                                } else if (cell.cellStyle.dataFormatString.indexOf("h:mm:ss") >= 0) {
+//                                    ret.add(cell.dateCellValue.AsLocalTime().AsString())
+//                                    continue;
+//                                } else if (cell.cellStyle.dataFormatString.indexOf("yy") >= 0 &&
+//                                        cell.cellStyle.dataFormatString.indexOf("m") >= 0 &&
+//                                        cell.cellStyle.dataFormatString.indexOf("d") >= 0) {
+//                                    ret.add(cell.dateCellValue.AsLocalDate().AsString())
+//                                    continue;
+//                                }
+//                            }
+//
+//                            ret.add(cell.getStringValue(evaluator).AsString().trim())
+//                        }
+//
+//                    } finally {
+//                        book.close()
+//                    }
+//
+//                }
+//            }
+//
+//        } finally {
+//            file.close()
+//        }
+//
+//        return ret.toTypedArray();
+//    }

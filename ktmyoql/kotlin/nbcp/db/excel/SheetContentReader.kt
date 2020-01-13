@@ -14,16 +14,15 @@ import org.xml.sax.XMLReader
 
 class SheetContentReader(
         var xmlReader: XMLReader,
-        var columns: Array<String>,
+        var columns: List<String>,
         var filter: ((JsonMap) -> Boolean),
-        var offset_row: Int = 0,
-        var skip: Int = 0) : XSSFSheetXMLHandler.SheetContentsHandler {
+        var offset_row: Int = 0 ) : XSSFSheetXMLHandler.SheetContentsHandler {
     var currentRowIndex = -1;
     var currentDataRow = linkedMapOf<Int, String>();
     // key: excel 中的 列的索引 , value = column_name
     var columns_index_map = linkedMapOf<Int, String>()
     var row_can_reading = false;
-    var skipped = 0;
+//    var skipped = 0;
     var header_inited = false;
 
     init {
@@ -75,10 +74,10 @@ class SheetContentReader(
             return
         }
 
-        if (skipped < skip) {
-            skipped++;
-            return;
-        }
+//        if (skipped < skip) {
+//            skipped++;
+//            return;
+//        }
 
         row_can_reading = true;
         currentDataRow = linkedMapOf();
