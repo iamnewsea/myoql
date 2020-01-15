@@ -5,9 +5,12 @@ import org.bson.types.ObjectId
 import nbcp.base.extend.HasValue
 import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
+import nbcp.comm.JsonMap
+import nbcp.comm.StringMap
 import nbcp.db.db
 import nbcp.db.mongo.*
 import org.slf4j.LoggerFactory
+import org.springframework.data.mongodb.core.query.Criteria
 
 /**
  * Created by udi on 17-4-7.
@@ -25,6 +28,8 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
         }
     }
 
+    private var whereData = mutableListOf<Criteria>()
+    private var setData = LinkedHashMap<String, Any?>()
     private var whereColumns = mutableSetOf<String>()
     private var setColumns = mutableSetOf<String>()
     private var unsetColumns = mutableSetOf<String>()
@@ -60,14 +65,26 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
         return this
     }
 
-    fun exec(): Int {
-//        if (this.entity == null) {
-//            throw RuntimeException("entity不能为空")
-//        }
+    //额外设置
+    fun set(setItemAction: (M) -> Pair<MongoColumnName, Any?>): MongoSetEntityUpdateClip<M> {
+        var setItem = setItemAction(this.moerEntity);
+        this.setData.set(setItem.first.toString(), setItem.second);
+        return this;
+    }
 
+    fun where(where: (M) -> Criteria): MongoSetEntityUpdateClip<M> {
+        this.whereData.add(where(moerEntity));
+        return this;
+    }
+
+
+    fun exec(): Int {
         if (whereColumns.any() == false) {
             whereColumns.add("_id")
         }
+
+        var whereData2 = LinkedHashMap<String, Any?>()
+        var setData2 = LinkedHashMap<String, Any?>()
 
         var update = MongoUpdateClip(this.moerEntity)
         this.entity::class.java.AllFields.forEach {
@@ -78,16 +95,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
 
             if (whereColumns.contains(findKey)) {
                 var value = MyUtil.getPrivatePropertyValue(this.entity, it.name);
-                if (value != null) {
-                    if (value is String) {
-                        if (value.HasValue) {
-                            update.where(it.name match value);
-                        }
-                    } else {
-                        update.where(it.name match value);
-                    }
-                }
-
+                whereData2.put(it.name, value)
                 return@forEach
             }
 
@@ -104,12 +112,26 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
             }
 
             var value = MyUtil.getPrivatePropertyValue(this.entity, it.name);
-//            if (value == null) {
-//                return@forEach
-//            }
-            update.set(it.name, value);
+            setData2.put(it.name, value)
         }
 
+        var setKeys = this.whereData.map { it.toDocument().keys.toTypedArray() }.Unwind();
+        whereData2.forEach { key, value ->
+            if (setKeys.contains(key)) {
+                return@forEach
+            }
+
+            update.where(key match value);
+        }
+        this.whereData.forEach {
+            update.where(it)
+        }
+
+        setData2.putAll(this.setData)
+
+        setData2.forEach { key, value ->
+            update.set(key, value);
+        }
         return update.exec();
     }
 
