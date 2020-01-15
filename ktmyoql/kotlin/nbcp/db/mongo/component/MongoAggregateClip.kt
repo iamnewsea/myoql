@@ -161,7 +161,7 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
             var key = it.first;
             var value = it.second;
             if (value is Criteria) {
-                return@map """{$key:${value.criteriaObject.toJson()}}"""
+                return@map """{$key:${value.criteriaObject.ToJsonWithNull()}}"""
             } else if (value is Number) {
                 return@map "{$key:$value}";
             } else if (value is String) {
@@ -170,11 +170,11 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
 //                }
                 return@map """{$key:"${value}"}"""
             } else if (value is Map<*, *>) {
-                return@map "{$key:${value.ToJson()}}"
+                return@map "{$key:${value.ToJsonWithNull()}}"
             }
 
             println("不识别的类型：${value::class.java.name}")
-            return@map "{$key:${value.ToJson()}}"
+            return@map "{$key:${value.ToJsonWithNull()}}"
         }.joinToString(",") + "]"
 
         var exp = """{

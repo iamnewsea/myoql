@@ -43,22 +43,39 @@ class RawJsonSerializer : JsonSerializer<RawJsonObject>() {
     }
 }
 
+private fun getJsonInstance(getSetStyle: Boolean = false, withNull: Boolean = false): ObjectMapper {
+    return if (getSetStyle && withNull)
+        GetSetWithNullTypeJsonMapper.instance
+    else if (getSetStyle && !withNull)
+        GetSetTypeJsonMapper.instance
+    else if (!getSetStyle && withNull)
+        FieldWithNullTypeJsonMapper.instance
+    else FieldTypeJsonMapper.instance
+}
 
-fun <T> T.ToJson(getSetStyle: Boolean = false): String {
+/**
+ * @param getSetStyle 使用 Field 还是 GetSet 序列化。默认使用 Field
+ * @param withNull: 序列化时，是否序列化 null 值 。 默认不序列化
+ */
+fun <T> T.ToJson(getSetStyle: Boolean = false, withNull: Boolean = false): String {
     if (this is String) return this;
 
-    var instance: ObjectMapper = if (getSetStyle) GetSetTypeJsonMapper.instance else FieldTypeJsonMapper.instance
+    return getJsonInstance(getSetStyle, withNull).writeValueAsString(this) ?: ""
+}
 
-    return FieldTypeJsonMapper.instance.writeValueAsString(this) ?: ""
+fun <T> T.ToJsonWithNull(getSetStyle: Boolean = false): String {
+    if (this is String) return this;
+
+    return getJsonInstance(getSetStyle, true).writeValueAsString(this) ?: ""
 }
 
 //如果是 string , 会返回： "123" 这样， 用于 返回的 Json Value
-fun <T> T.ToJsonValue(): String {
-    return FieldTypeJsonMapper.instance.writeValueAsString(this) ?: "null"
+fun <T> T.ToJsonValue(getSetStyle: Boolean = false, withNull: Boolean = false): String {
+    return getJsonInstance(getSetStyle, withNull).writeValueAsString(this) ?: "null"
 }
 
 
-fun <T> String.FromJson(collectionClass: Class<T>): T {
+fun <T> String.FromJson(collectionClass: Class<T>, getSetStyle: Boolean = false, withNull: Boolean = false): T {
     if (collectionClass == String::class.java) {
         return this as T
     }

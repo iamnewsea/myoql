@@ -29,16 +29,14 @@ import org.springframework.context.annotation.Primary
 /**
  * 使用 字段值 方式序列化JSON，应用在数据库的场景中。
  */
-@Primary
-@Component
-open class FieldTypeJsonMapper : ObjectMapper(), InitializingBean {
+class FieldWithNullTypeJsonMapper : ObjectMapper()  {
     init {
         // 设置输出时包含属性的风格
         this.findAndRegisterModules();
         //在某些时候，如 mongo.aggregate.group._id 时， null 。
-        //默认只序列化 not null 的。
-        this.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-
+        //序列化 null的。
+        //this.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+//
         // 允许单引号、允许不带引号的字段名称
         this.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
         this.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true)
@@ -58,6 +56,8 @@ open class FieldTypeJsonMapper : ObjectMapper(), InitializingBean {
         this.setTimeZone(TimeZone.getTimeZone("GMT+:08:00"))
 
         this.registerKotlinModule()
+
+        this.registerModule(SpringUtil.getBean<JavascriptDateModule>());
     }
 
 
@@ -65,18 +65,8 @@ open class FieldTypeJsonMapper : ObjectMapper(), InitializingBean {
         /**
          * 创建只输出非Null且非Empty(如List.isEmpty)的属性到Json字符串的Mapper,建议在外部接口中使用.
          */
-        val instance: FieldTypeJsonMapper by lazy { SpringUtil.getBean<FieldTypeJsonMapper>() }
+        val instance: FieldWithNullTypeJsonMapper by lazy { SpringUtil.getBean<FieldWithNullTypeJsonMapper>() }
 
         internal val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
-
-
-    @Autowired
-    lateinit var dateModule: JavascriptDateModule;
-
-    override fun afterPropertiesSet() {
-
-        this.registerModule(dateModule);
-    }
-
 }
