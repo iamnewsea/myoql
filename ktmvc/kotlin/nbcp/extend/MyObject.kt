@@ -189,13 +189,15 @@ val HttpServletRequest.RequestId: UInt
 //        request_cache = value
 //    }
 
-
+/**
+ * 高并发系统不应该有Session。使用token即可。
+ */
 var HttpServletRequest.LoginUser: LoginUserModel
     get() {
-        return this.session.getAttribute("(LoginUser)") as LoginUserModel? ?: LoginUserModel()
+        return this.getAttribute("(LoginUser)") as LoginUserModel? ?: LoginUserModel()
     }
     set(value) {
-        this.session.setAttribute("(LoginUser)", value)
+        this.setAttribute("(LoginUser)", value)
         HttpContext.response.setHeader("token", value.token)
     }
 

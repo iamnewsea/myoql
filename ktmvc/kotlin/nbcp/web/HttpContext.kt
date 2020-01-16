@@ -32,11 +32,11 @@ object HttpContext {
             return (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.request!!
         }
 
-    @JvmStatic
-    val session: HttpSession
-        get() {
-            return request.session;
-        }
+//    @JvmStatic
+//    val session: HttpSession
+//        get() {
+//            return request.session;
+//        }
 
     @JvmStatic
     val response: HttpServletResponse
