@@ -28,35 +28,10 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 /**
  * 使用 GET，SET 方式序列化JSON，应用在Web返回值的场景中。
  */
-open class GetSetWithNullTypeJsonMapper : ObjectMapper() {
+open class GetSetWithNullTypeJsonMapper : JsonBaseObjectMapper() {
 
     init {
-        // 设置输出时包含属性的风格
-        this.findAndRegisterModules();
-        //在某些时候，如 mongo.aggregate.group._id 时， null 。
-        //序列化 null的。
-//        this.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-
-        // 允许单引号、允许不带引号的字段名称
-        this.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
-        this.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true)
-        this.configure(MapperFeature.USE_STD_BEAN_NAMING, true)
-
-
-        this.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.DEFAULT);
-        this.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.DEFAULT);
-        this.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.DEFAULT);
-        this.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.NONE);
-
-        this.setDateFormat(SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-
-        // 设置输入时忽略在JSON字符串中存在但Java对象实际没有的属性
-        this.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-//        })
-        // 设置时区
-        this.setTimeZone(TimeZone.getTimeZone("GMT+:08:00"))
-
-        this.registerKotlinModule()
+        setDefaultConfig()
 
         this.registerModule(SpringUtil.getBean<JavascriptDateModule>());
     }
@@ -65,8 +40,6 @@ open class GetSetWithNullTypeJsonMapper : ObjectMapper() {
         /**
          * 创建只输出非Null且非Empty(如List.isEmpty)的属性到Json字符串的Mapper,建议在外部接口中使用.
          */
-        val instance: GetSetWithNullTypeJsonMapper by lazy {
-            return@lazy GetSetWithNullTypeJsonMapper()
-        }
+        val instance: GetSetWithNullTypeJsonMapper by lazy { return@lazy GetSetWithNullTypeJsonMapper() }
     }
 }
