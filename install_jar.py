@@ -19,7 +19,7 @@ def setWorkPath():
     base_path =  os.path.abspath( os.path.join( __file__ ,"../" ) )
     os.chdir( base_path)
 
-def getFile( ):
+def getArgument():
     file = ""
     try:
         opts, args = getopt.getopt(sys.argv[1:],"hf:",["file="])
@@ -40,10 +40,15 @@ def getJavaFiles():
     groupId = root.getElementsByTagName('groupId')[0].childNodes[0].data;
     artifactId = root.getElementsByTagName('artifactId')[0].childNodes[0].data;
     version = root.getElementsByTagName('version')[0].childNodes[0].data;
+    type = root.getElementsByTagName('packaging')[0].childNodes[0].data;
 
 
     jarFile = "target/%s-%s.jar" % (artifactId,version)
-    install="mvn install:install-file -Dfile={} -DgroupId=%s -DartifactId=%s -Dversion=%s -Dpackaging=jar {}" %(groupId,artifactId,version)
+    install="mvn install:install-file -Dfile={} -DgroupId=%s -DartifactId=%s -Dversion=%s -Dpackaging=%s {}" %(groupId,artifactId,version,type)
+
+    if type == "pom":
+        return "",install.format("pom.xml",""),"",""
+
 
     return "mvn clean package -Dmaven.test.skip=true", \
            install.format(jarFile.replace("/",os.sep),""), \
@@ -53,10 +58,11 @@ def getJavaFiles():
 
 if __name__=='__main__':
 
-    file = getFile()
+    file = getArgument()
 
     setWorkPath();
-    os.chdir(file);
+    if file :
+        os.chdir(file);
 
     cleanCMD,installCMD,installJavaDoc,installSource = getJavaFiles()
 
@@ -64,28 +70,34 @@ if __name__=='__main__':
     print("")
     print("正在打包 %s 并安装实体jar ..."%(file))
     print("")
-    print(os.linesep)
 
-    print(cleanCMD)
-    returnCode = os.system(cleanCMD)
-    if(returnCode !=0 ):
-        err("clean")
+    if cleanCMD :
+        print(os.linesep)
+        print(cleanCMD)
+        returnCode = os.system(cleanCMD)
+        if(returnCode !=0 ):
+            err("clean")
 
-    print(os.linesep)
-    print(installCMD)
-    returnCode = os.system(installCMD)
-    if (returnCode != 0):
-        err("install")
+    if installCMD:
+        print(os.linesep)
+        print(installCMD)
+        returnCode = os.system(installCMD)
+        if (returnCode != 0):
+            err("install")
 
-    print(installJavaDoc)
-    returnCode = os.system(installJavaDoc)
-    if (returnCode != 0):
-        err("install")
+    if installJavaDoc:
+        print(os.linesep)
+        print(installJavaDoc)
+        returnCode = os.system(installJavaDoc)
+        if (returnCode != 0):
+            err("install")
 
-    print(installSource)
-    returnCode = os.system(installSource)
-    if (returnCode != 0):
-        err("install")
+    if installSource:
+        print(os.linesep)
+        print(installSource)
+        returnCode = os.system(installSource)
+        if (returnCode != 0):
+            err("install")
 
     print("")
     print("%s 安装完成！"%(file))

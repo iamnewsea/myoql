@@ -17,6 +17,12 @@ def replaceOsSep(src):
 
 
 if __name__=='__main__':
+    returnCode = os.system("python install_jar.py")
+    if(returnCode !=0 ):
+        err("install_jar")
+
+    print(os.linesep)
+
     returnCode = os.system("python install_jar.py -f ktext")
     if(returnCode !=0 ):
         err("install_jar ktext")
