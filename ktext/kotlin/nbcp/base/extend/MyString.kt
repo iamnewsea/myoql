@@ -166,7 +166,7 @@ private fun getMatchedQuoteKey(value: String, startIndex: Int, quoteKeys: Array<
     if (list.size == 0) return ""
     else if (list.size == 1) return list.first();
     else {
-        throw Exception("QuoteDefine 出现多个 ${list.joinToString(",")}")
+        throw RuntimeException("QuoteDefine 出现多个 ${list.joinToString(",")}")
     }
 }
 

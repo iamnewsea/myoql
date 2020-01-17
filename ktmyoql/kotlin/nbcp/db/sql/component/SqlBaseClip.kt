@@ -91,7 +91,7 @@ abstract class SqlBaseQueryClip(private var mainEntity: SqlBaseTable<*>? = null)
         //只取第一列的值. JsonMap 也必须仅有一列.
         if (clazz.IsSimpleType()) {
             if (retJson.keys.size != 1) {
-                throw Exception("查询单列数据时返回了多列数据!")
+                throw RuntimeException("查询单列数据时返回了多列数据!")
             }
             var ret2 = retJson.values.firstOrNull()
             if (ret2 == null) {

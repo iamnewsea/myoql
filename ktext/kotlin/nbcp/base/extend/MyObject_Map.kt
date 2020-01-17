@@ -5,7 +5,7 @@ package nbcp.base.extend
 fun <V> LinkedHashMap<String, V>.RenameKey(oldKey: String, newKey: String) {
     var index = this.keys.indexOf(oldKey);
     if (index < 0) {
-        throw Exception("找不到Key")
+        throw RuntimeException("找不到Key")
     }
 
     var value = this.get(oldKey)!!;

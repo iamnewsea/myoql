@@ -58,7 +58,7 @@ class SqlTokenAnalysor() {
             "set" -> return toSet(exps);
             "union" -> return toUnion(exps);
         }
-        throw Exception("不识别的Sql！" + exps.joinToString(","))
+        throw RuntimeException("不识别的Sql！" + exps.joinToString(","))
     }
 
     private fun toSelect(sqls: List<String>): SqlBaseSect {

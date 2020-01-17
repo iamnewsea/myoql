@@ -16,7 +16,6 @@ import java.util.LinkedHashSet
 import java.net.URLDecoder
 
 
-
 //
 //interface ClassFilter {
 //    fun accept(clazz: Class<*>): Boolean
@@ -134,7 +133,7 @@ object JarClassUtil {
      */
     fun findClassesInPackageByFile(
             packageName: String,
-           packagePath: String,
+            packagePath: String,
             recursive: Boolean,
             classes: MutableSet<Class<*>>) {
         // 获取此包的目录 建立一个File
@@ -179,30 +178,25 @@ object JarClassUtil {
         val classes = LinkedHashSet<Class<*>>()
         //获取指定接口的实现类
         if (!clazz.isInterface) {
-            try {
+            /**
+             * 循环判断路径下的所有类是否继承了指定类
+             * 并且排除父类自己
+             */
+            val iterator = classesAll.iterator()
+            while (iterator.hasNext()) {
+                val cls = iterator.next()
                 /**
-                 * 循环判断路径下的所有类是否继承了指定类
-                 * 并且排除父类自己
+                 * isAssignableFrom该方法的解析，请参考博客：
+                 * http://blog.csdn.net/u010156024/article/details/44875195
                  */
-                val iterator = classesAll.iterator()
-                while (iterator.hasNext()) {
-                    val cls = iterator.next()
-                    /**
-                     * isAssignableFrom该方法的解析，请参考博客：
-                     * http://blog.csdn.net/u010156024/article/details/44875195
-                     */
-                    if (clazz.isAssignableFrom(cls)) {
-                        if (clazz != cls) {//自身并不加进去
-                            classes.add(cls)
-                        } else {
+                if (clazz.isAssignableFrom(cls)) {
+                    if (clazz != cls) {//自身并不加进去
+                        classes.add(cls)
+                    } else {
 
-                        }
                     }
                 }
-            } catch (e: Exception) {
-                println("出现异常")
             }
-
         }
         return classes
     }

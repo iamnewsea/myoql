@@ -110,9 +110,13 @@ annotation class DbEntityFieldRef(val idField: String, val nameField: String, va
 //        var eventBean: IDbEntityDelete
 //)
 
-
+/**
+ * 冗余字段的引用。如 user.corp.name 引用的是  corp.name
+ */
 data class DbEntityFieldRefData(
+        //实体，如 user
         var entityClass: Class<*>, //moer class
+        //实体的引用Id
         var idField: String,
         var nameField: String,
         var masterEntityClass: Class<*>,

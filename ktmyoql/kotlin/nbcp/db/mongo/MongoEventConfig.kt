@@ -9,6 +9,7 @@ import nbcp.base.utils.MyUtil
 import nbcp.db.db
 import nbcp.db.mongo.*
 import org.slf4j.LoggerFactory
+import java.lang.RuntimeException
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.*
@@ -77,12 +78,12 @@ open class MongoEventConfig : ApplicationListener<ContextRefreshedEvent> {
 
             //参数校验。
             if (callbackMethods.size == 0) {
-                throw Exception("未找到 ${defineMsg}")
+                throw RuntimeException("未找到 ${defineMsg}")
             }
 
             callbackMethods = callbackMethods.filter {
                 if (it.modifiers and Modifier.STATIC != Modifier.STATIC) {
-                    throw Exception("${defineMsg} 必须是 static")
+                    throw RuntimeException("${defineMsg} 必须是 static")
                 }
 
                 var ps = it.parameters
@@ -91,11 +92,11 @@ open class MongoEventConfig : ApplicationListener<ContextRefreshedEvent> {
                 //一个： 拦截对该实体的所有字段的更新
                 //两个： 拦截对某一个字段的更新，第二个参数是更新的值。
                 if (ps.size != 1 && ps.size != 2) {
-                    throw Exception("${defineMsg} 参数必须是2个")
+                    throw RuntimeException("${defineMsg} 参数必须是2个")
                 }
 
                 if (ps[0].type != MongoUpdateClip::class.java) {
-                    throw Exception("${defineMsg} 第一个参数必须是 MongoUpdateClip")
+                    throw RuntimeException("${defineMsg} 第一个参数必须是 MongoUpdateClip")
                 }
 
                 return@filter true
@@ -103,7 +104,7 @@ open class MongoEventConfig : ApplicationListener<ContextRefreshedEvent> {
 
             //参数校验。
             if (callbackMethods.size == 0) {
-                throw Exception("${defineMsg} 参数不正确。")
+                throw RuntimeException("${defineMsg} 参数不正确。")
             }
 
 

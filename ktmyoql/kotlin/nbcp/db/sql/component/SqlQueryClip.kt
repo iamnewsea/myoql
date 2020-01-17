@@ -82,9 +82,9 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
 
         var fks = this.mainEntity.getFks().filter { it.refTable == joinTable.tableName }
         if (fks.size == 0) {
-            throw Exception("找不到 ${this.mainEntity.tableName}->${joinTable.tableName} 的外键定义")
+            throw RuntimeException("找不到 ${this.mainEntity.tableName}->${joinTable.tableName} 的外键定义")
         } else if (fks.size > 1) {
-            throw Exception("找到多个外键定义: ${this.mainEntity.tableName}->${joinTable.tableName}")
+            throw RuntimeException("找到多个外键定义: ${this.mainEntity.tableName}->${joinTable.tableName}")
         }
 
         var fk = fks.first()
@@ -317,7 +317,7 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
         //校验, 必须是表的列.
         var surplusColumns = select.columns.map { it.getAliasName() }.minus(insertTable::class.memberProperties.map { it.name })
         if (surplusColumns.any()) {
-            throw Exception("插入 select 语句时,发现多余的列: ${surplusColumns.joinToString(",")}")
+            throw RuntimeException("插入 select 语句时,发现多余的列: ${surplusColumns.joinToString(",")}")
         }
 
         var exp = "insert into ${insertTable.quoteTableName} (${select.columns.map { "${db.getQuoteName(it.getAliasName())}" }.joinToString(",")}) ";

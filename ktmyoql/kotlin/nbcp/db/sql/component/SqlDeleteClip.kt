@@ -28,7 +28,7 @@ class SqlDeleteClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
 
     override fun toSql(): SingleSqlData {
         if (whereDatas.hasValue == false) {
-            throw Exception("不允许执行没有 where 条件的 delete ${mainEntity.tableName} 语句")
+            throw RuntimeException("不允许执行没有 where 条件的 delete ${mainEntity.tableName} 语句")
         }
 
         var where = whereDatas.toSingleData();

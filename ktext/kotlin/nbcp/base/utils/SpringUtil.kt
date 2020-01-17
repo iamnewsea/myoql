@@ -22,7 +22,7 @@ open class SpringUtil : ApplicationContextAware {
         val context: ApplicationContext
             get() {
                 if (applicationContext == null) {
-                    throw Exception("ApplicationContext为空,在 @SpringBootApplication 下添加 @Import(SpringUtil::class)")
+                    throw RuntimeException("ApplicationContext为空,在 @SpringBootApplication 下添加 @Import(SpringUtil::class)")
                 }
                 return applicationContext!!
             }

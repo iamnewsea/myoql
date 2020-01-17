@@ -190,7 +190,7 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
      */
     fun exec(): Int {
         if (whereData.size == 0) {
-            throw Exception("更新条件为空，不允许更新")
+            throw RuntimeException("更新条件为空，不允许更新")
             return 0;
         }
 
@@ -242,7 +242,7 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
             } else {
                 var type = value::class.java;
                 if (type.IsSimpleType() == false) {
-                    throw Exception("pull 必须是简单类型")
+                    throw RuntimeException("pull 必须是简单类型")
                 }
 
                 update = update.pull(kv.key, value);

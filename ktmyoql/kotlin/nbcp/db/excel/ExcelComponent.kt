@@ -155,7 +155,7 @@ class ExcelComponent() {
                 var pk_value = pks.map { pk_map.get(it) }.joinToString(",")
 
                 if (pk_values.contains(pk_value)) {
-                    throw Exception("发现第 ${pk_values.size + 1} 行存在重复数据!")
+                    throw RuntimeException("发现第 ${pk_values.size + 1} 行存在重复数据!")
                 }
                 pk_values.add(pk_value);
             }
@@ -187,7 +187,7 @@ class ExcelComponent() {
         if (pks.isEmpty() == false) {
             var ext_pks = pks.minus(columns);
             if (ext_pks.any()) {
-                throw Exception("${sheetName}多余的主键定义:${ext_pks.joinToString(",")}");
+                throw RuntimeException("${sheetName}多余的主键定义:${ext_pks.joinToString(",")}");
             }
         }
 
@@ -205,12 +205,12 @@ class ExcelComponent() {
                     var pk_map = row.filterKeys { pks.contains(it) }
 
                     if (pk_map.any() == false) {
-                        throw Exception("找不到主键的值!，行：${lined}}")
+                        throw RuntimeException("找不到主键的值!，行：${lined}}")
                     }
 
                     var pk_empty_map = pk_map.filter { it.value.AsString().isEmpty() }
                     if (pk_empty_map.any()) {
-                        throw Exception("发现主键空值，行：${lined}, 列: ${pk_empty_map.map { it.key }.joinToString(",")}")
+                        throw RuntimeException("发现主键空值，行：${lined}, 列: ${pk_empty_map.map { it.key }.joinToString(",")}")
                     }
                 }
 
@@ -362,7 +362,7 @@ class ExcelComponent() {
 
 //                if (columns_index_map.size != columns.size) {
 //                    var ext_columns = columns.minus(columns_index_map.values);
-//                    throw Exception("找不到列：${ext_columns.joinToString(",")}")
+//                    throw RuntimeException("找不到列：${ext_columns.joinToString(",")}")
 //                }
 
                 var rowData = JsonMap();

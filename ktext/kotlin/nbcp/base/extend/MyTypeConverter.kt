@@ -385,7 +385,7 @@ fun Any?.AsLocalTime(defaultVale: LocalTime = LocalTime.MIN): LocalTime {
         //当地时间。
         return LocalTime.of(this.hours, this.minutes, this.seconds, (this.time % 1000).AsInt() * 1000000)
     } else {
-        throw Exception("非法的类型转换,试图从 ${this::class.java}类型 到 LocalTime类型")
+        throw RuntimeException("非法的类型转换,试图从 ${this::class.java}类型 到 LocalTime类型")
     }
 
     if (strValue.length < 5 && !strValue.any { it == ':' }) {
@@ -468,7 +468,7 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
 //        return ret;
 //        return LocalDateTime.ofInstant(this.toInstant(), ZoneId.systemDefault());
     } else {
-        throw Exception("非法的类型转换,试图从 ${this::class.java}类型 到 LocalDateTime类型")
+        throw RuntimeException("非法的类型转换,试图从 ${this::class.java}类型 到 LocalDateTime类型")
     }
 
     if (strValue.length < 8) {

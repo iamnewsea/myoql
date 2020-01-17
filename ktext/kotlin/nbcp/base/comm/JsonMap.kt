@@ -45,7 +45,7 @@ open class JsonMap : StringTypedMap<Any?> {
             if (ret is JsonMap) {
                 return ret
             }
-            throw Exception("实体${entity::class.java}转JsonMap出错!")
+            throw RuntimeException("实体${entity::class.java}转JsonMap出错!")
         }
 
 

@@ -9,9 +9,13 @@ import org.springframework.stereotype.Component
 @Component
 class MongoEntityEvent : BeanPostProcessor {
     companion object {
+        //所有的组。
         val groups = mutableSetOf<IDataGroup>()
+        //需要删 除后放入垃圾箱的实体
         val dustbinEntitys = mutableSetOf<Class<*>>()  //mongo meta class
+        // 冗余字段的引用。如 user.corp.name 引用的是  corp.name
         val refsMap = mutableListOf<DbEntityFieldRefData>()
+        //
         val updateEvent = mutableListOf<IDbEntityUpdate>()
         val deleteEvent = mutableListOf<IDbEntityDelete>()
     }

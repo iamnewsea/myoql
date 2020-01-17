@@ -21,7 +21,7 @@ fun <M : MongoBaseEntity<T>, T : IMongoDocument> M.queryById(id: String): MongoQ
 fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.updateById(id: String): MongoUpdateClip<M> {
     var id = id.trim()
     if (id.isEmpty()) {
-        throw Exception("按id更新mongo数据时，id不能为空！")
+        throw RuntimeException("按id更新mongo数据时，id不能为空！")
     }
     return MongoUpdateClip(this).where("id" match id);
 }

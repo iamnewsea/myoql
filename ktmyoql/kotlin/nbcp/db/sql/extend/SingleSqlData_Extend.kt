@@ -143,7 +143,7 @@ fun Class<*>.ToSqlType(): Int {
     } else if (Number::class.java.isAssignableFrom(this)) {
         return java.sql.Types.NUMERIC
     }
-    throw Exception("不识别的类型:${this.name}")
+    throw RuntimeException("不识别的类型:${this.name}")
     return java.sql.Types.OTHER
 }
 

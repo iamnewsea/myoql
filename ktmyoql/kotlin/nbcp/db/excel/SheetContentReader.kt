@@ -36,9 +36,9 @@ class SheetContentReader(
                 var diff = DiffData.load(columns.toList(), columns_index_map.values.toList(), { a, b -> a == b })
                 if (diff.isSame() == false) {
                     if (diff.more1.any()) {
-                        throw Exception("发现缺失列: " + diff.more1.joinToString(","));
+                        throw RuntimeException("发现缺失列: " + diff.more1.joinToString(","));
                     } else if (diff.more2.any()) {
-                        throw Exception("发现多余列: " + diff.more2.joinToString(","));
+                        throw RuntimeException("发现多余列: " + diff.more2.joinToString(","));
                     }
                 }
             }
@@ -96,7 +96,7 @@ class SheetContentReader(
             //读取Header
             var colIndex = columns.indexOf(text);
             if (colIndex < 0) {
-                throw Exception("发现多余列: " + text);
+                throw RuntimeException("发现多余列: " + text);
             }
 
             columns_index_map.set(columnIndex, text);
