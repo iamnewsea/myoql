@@ -124,7 +124,12 @@ object MyUtil {
          */
         var file = this::class.java.getResource("/").file
         print(file)
-        var startIndex = if (file.startsWith("//file:/")) 5 else 0
+        var startIndex = 0
+        if (file.startsWith("//file:/")) {
+            startIndex = 7
+        } else if (file.startsWith("file:/")) {
+            startIndex = 5
+        }
 
         //如果是Jar包
         var index = file.indexOf("!/BOOT-INF/classes!/");
