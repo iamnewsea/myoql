@@ -136,8 +136,22 @@ open class MyAllFilter : Filter {
             }
 
             logger.Info {
-                "${loginName} ${request.ClientIp} ${request.method} ${request.fullUrl}  --->" + line_break +
-                        "[response] ${response.status} ${System.currentTimeMillis() - startAt}毫秒"
+                var msgs = mutableListOf<String>()
+                msgs.add("[[----> ${loginName} ${request.ClientIp} ${request.method} ${request.fullUrl}")
+                msgs.add("[response] ${response.status} ${System.currentTimeMillis() - startAt}毫秒")
+
+                var cookie = response.getHeader("Set-Cookie")
+                if (cookie.HasValue) {
+                    msgs.add("Set-Cookie:" + cookie)
+                }
+
+                var contentType = response.getHeader("Content-Type")
+                if (contentType.HasValue) {
+                    msgs.add("Content-Type:" + contentType)
+                }
+
+                msgs.add("<----]]")
+                return@Info msgs.joinToString(line_break)
             }
 
 
@@ -235,7 +249,7 @@ open class MyAllFilter : Filter {
     private fun beforeRequest(request: MyHttpRequestWrapper, loginName: String) {
         logger.Info {
             var msgs = mutableListOf<String>()
-            msgs.add("[[[--------> ${loginName} ${request.ClientIp} ${request.method} ${request.fullUrl}")
+            msgs.add("[[----> ${loginName} ${request.ClientIp} ${request.method} ${request.fullUrl}")
 
             if (request.headerNames.hasMoreElements()) {
                 msgs.add("[request header]:")
@@ -368,7 +382,7 @@ open class MyAllFilter : Filter {
                 msg.add("\t" + resStringValue.Slice(0, 8192))
             }
 
-            msg.add("<----]]]")
+            msg.add("<----]]")
             return@Info msg.joinToString(line_break)
         }
     }
