@@ -73,9 +73,10 @@ import org.springframework.stereotype.Component
 class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
     override fun getEntities():Set<BaseDbEntity> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
 """)
+            println("${groupName}:")
             groupEntities.forEach {
                 count++;
-                println("${count.toString().padStart(2, ' ')} 生成实体：${groupName}.${it.simpleName}")
+                println("${count.toString().padStart(2, ' ')} 生成实体：${groupName}.${it.simpleName}".ToTab(1))
                 writeToFile(genVarEntity(it).ToTab(1))
             }
 
