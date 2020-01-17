@@ -159,26 +159,26 @@ var Request_Id: UInt = 0U;
  * 获取当前请求Id，已缓存。
  * Id值是自增的，不保证全周期唯一。
  */
-val HttpServletRequest.RequestId: UInt
-    get() {
-        return this::RequestId::class.java.Lock {
-            var ret = this.getAttribute("Request-Id");
-            if (ret != null) {
-                return@Lock ret.AsInt().toUInt();
-            }
-
-            ret = this.getHeader("Request-Id");
-            if (ret != null) {
-                this.setAttribute("Request-Id", ret);
-                return ret.AsInt().toUInt();
-            }
-            /*LocalTime.now().toSecondOfDay().toUInt() + */
-            var currentId = (++Request_Id);
-            this.setAttribute("Request-Id", currentId);
-
-            return@Lock currentId;
-        }
-    }
+//val HttpServletRequest.RequestId: UInt
+//    get() {
+//        return this::RequestId::class.java.Lock {
+//            var ret = this.getAttribute("Request-Id");
+//            if (ret != null) {
+//                return@Lock ret.AsInt().toUInt();
+//            }
+//
+//            ret = this.getHeader("Request-Id");
+//            if (ret != null) {
+//                this.setAttribute("Request-Id", ret);
+//                return ret.AsInt().toUInt();
+//            }
+//            /*LocalTime.now().toSecondOfDay().toUInt() + */
+//            var currentId = (++Request_Id);
+//            this.setAttribute("Request-Id", currentId);
+//
+//            return@Lock currentId;
+//        }
+//    }
 
 //var request_cache: IDataCache4Sql? = null
 //var ServletRequest.requestCache: IDataCache4Sql?

@@ -77,7 +77,7 @@ open class MyAllFilter : Filter {
             return;
         }
 
-        MDC.put("request_id", httpRequest.RequestId.toString())
+        MDC.put("request_id", httpRequest.session.id.AsString())
 //        MDC.put("user_name", request.LoginUser.name.AsString())
 //        MDC.put("client_ip", request.ClientIp)
 
@@ -180,7 +180,7 @@ open class MyAllFilter : Filter {
         try {
             chain?.doFilter(request, response);
         } catch (e: Exception) {
-            logger.Error{
+            logger.Error {
                 var err = getInnerException(e);
                 errorMsg = err.Detail.AsString(err.message.AsString()).AsString("(未知错误)")
                 var errorInfo = mutableListOf<String>()
