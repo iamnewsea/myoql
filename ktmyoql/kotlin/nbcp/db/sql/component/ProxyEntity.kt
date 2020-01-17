@@ -29,7 +29,7 @@ fun <M : SqlBaseTable<out T>, T : IBaseDbEntity> M.update(): SqlUpdateClip<M, T>
 
 //自增主键 ,返回到 entity 实体上. 以及 dbr.lastAutoId
 //返回 影响行数
-fun <M : SqlBaseTable<out T>, T : IBaseDbEntity> M.insert(entity: T): Int {
+fun <M : SqlBaseTable<out T>, T : IBaseDbEntity> M.doInsert(entity: T): Int {
     return SqlInsertClip(this).insert(entity).exec()
 }
 

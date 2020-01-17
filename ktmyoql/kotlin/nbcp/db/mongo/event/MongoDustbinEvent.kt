@@ -4,13 +4,14 @@ import nbcp.db.*
 import nbcp.db.mongo.MongoDeleteClip
 import nbcp.db.mongo.MongoEntityEvent
 import nbcp.db.mongo.entity.SysDustbin
+import nbcp.db.mongo.table.BaseGroup
 import nbcp.db.mongo.toDocument
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.BasicQuery
 
 
-@DbEntityDelete( )
+@DbEntityDelete()
 class MongoDustbinEvent : IMongoEntityDelete {
 
     override fun beforeDelete(delete: MongoDeleteClip<*>): DbEntityEventResult? {
@@ -34,6 +35,6 @@ class MongoDustbinEvent : IMongoEntityDelete {
         dustbin.id = ObjectId().toString()
         dustbin.table = delete.collectionName
         dustbin.data = data;
-        delete.mongoTemplate.insert(dustbin)
+        BaseGroup.SysDustbinEntity().doInsert(dustbin)
     }
 }

@@ -36,7 +36,7 @@ abstract class MongoBaseEntity<T : IMongoDocument>(val entityClass: Class<T>, en
      * @param entity 实体
      * @return 返回Id
      */
-    fun insert(entity: Map<String, *>): String {
+    fun doInsert(entity: Map<String, *>): String {
         db.affectRowCount = -1;
         var entity = entity.toMutableMap()
         if (entity.containsKey("id") == false) {
@@ -44,19 +44,44 @@ abstract class MongoBaseEntity<T : IMongoDocument>(val entityClass: Class<T>, en
         }
 
         var retId = "";
+        var error = false;
         try {
             mongoTemplate.insert(entity, tableName);
             db.affectRowCount = 1;
             retId = entity.get("id").toString()
         } catch (e: Exception) {
+            error = true;
             throw e;
         } finally {
-            logger.InfoError(retId.isEmpty()) { "insert:[" + this.tableName + "],data:" + entity.ToJson() + ",_id:" + retId }
+            logger.InfoError(error) { "insert:[" + this.tableName + "],data:" + entity.ToJson() + ",_id:" + retId }
         }
 
         return retId
     }
 
+    /**
+     * @param entity 实体
+     * @return 返回Id
+     */
+    fun doInsert(entity: T): String {
+        if (entity.id.isEmpty()) {
+            entity.id = ObjectId().toString();
+        }
+
+        var error = false;
+        try {
+            mongoTemplate.insert(entity, tableName);
+            db.affectRowCount = 1;
+        } catch (e: Exception) {
+            error = true;
+            throw e;
+        } finally {
+            logger.InfoError(error) { "insert:[" + this.tableName + "],data:" + entity.ToJson() + ",_id:" + entity.id }
+        }
+
+
+        return entity.id;
+    }
 
     /**
      * 扩展的aggregate
@@ -82,22 +107,6 @@ cursor: {} } """;
         }
 
         return ret.toTypedArray()
-    }
-
-
-    /**
-     * @param entity 实体
-     * @return 返回Id
-     */
-    fun insert(entity: T): String {
-        if (entity.id.isEmpty()) {
-            entity.id = ObjectId().toString();
-        }
-
-        mongoTemplate.insert(entity, tableName);
-        db.affectRowCount = 1;
-
-        return entity.id;
     }
 
 

@@ -32,8 +32,6 @@ class SqlDustbinEvent : ISqlEntityDelete {
         dustbin.table = delete.mainEntity.tableName
         dustbin.data = data.ToJson()
 
-        BaseGroup.s_dustbin_table().insert(s_dustbin())
-//        SqlInsertClip(delete.mainEntity).insert(dustbin)
-//        delete.mongoTemplate.insert(dustbin)
+        BaseGroup.s_dustbin_table().doInsert(dustbin)
     }
 }
