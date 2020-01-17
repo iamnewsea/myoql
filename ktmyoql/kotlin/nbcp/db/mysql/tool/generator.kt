@@ -32,7 +32,12 @@ class generator {
 
     private lateinit var moer_File: FileWriter
 
-    fun work(targetFileName: String,basePackage:String,anyEntityClass:Class<*>,nameMapping: StringMap = StringMap()) {
+    fun work(targetFileName: String, //目标文件
+             basePackage: String,    //实体的包名
+             anyEntityClass: Class<*>, //任意实体的类名
+             nameMapping: StringMap = StringMap(), // 名称转换
+             ignoreGroups: List<String> = listOf("base")  //忽略的包名
+    ) {
         this.nameMapping = nameMapping
         var p = System.getProperty("file.separator");
 
@@ -44,7 +49,7 @@ class generator {
         File(moer_Path).createNewFile()
 
         moer_File = FileWriter(moer_Path, true);
-        var groups = getGroups(basePackage,anyEntityClass).filter { it.key != "base" };
+        var groups = getGroups(basePackage, anyEntityClass).filter { ignoreGroups.contains(it.key) == false };
 
 
         println("---------------生成 dbr---------------")
@@ -63,6 +68,7 @@ import org.springframework.stereotype.Component
 
 //generate auto @${LocalDateTime.now().AsString()}
 """)
+        var count = 0;
 
         groups.forEach { group ->
 
@@ -73,6 +79,8 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
     override fun getEntities():Set<SqlBaseTable<*>> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
 """)
             group.value.forEach { entityType ->
+                count++;
+                println("${count.toString().padStart(2, ' ')} 生成实体：${group.key}.${entityType.simpleName}")
                 writeToFile(genVarEntity(entityType).ToTab(1))
             }
 
@@ -97,14 +105,14 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 
     fun getEntityName(name: String): String {
         var name = name;
-        nameMapping.forEach{
-            name = name.replace(it.key,it.value)
+        nameMapping.forEach {
+            name = name.replace(it.key, it.value)
         }
 
         return name[0].toLowerCase() + name.substring(1);
     }
 
-    fun getGroups(basePackage:String,anyEntityClass:Class<*>): HashMap<String, MutableList<Class<*>>> {
+    fun getGroups(basePackage: String, anyEntityClass: Class<*>): HashMap<String, MutableList<Class<*>>> {
         var ret = HashMap<String, MutableList<Class<*>>>();
 
 
@@ -258,7 +266,8 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                     var converter = it.getAnnotation(ConverterValueToDb::class.java)
                     var ann_converter = "";
                     if (converter != null) {
-                        ann_converter = "@ConverterValueToDb(" + (converter.converter.qualifiedName ?: "") + "::class)\n";
+                        ann_converter = "@ConverterValueToDb(" + (converter.converter.qualifiedName
+                                ?: "") + "::class)\n";
                     }
 
                     var dbType = DbType.of(it.type)

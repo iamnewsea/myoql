@@ -1,12 +1,9 @@
 package nbcp.db
 
-import nbcp.db.mongo.MongoDeleteClip
-import nbcp.db.mongo.MongoUpdateClip
 import org.springframework.core.annotation.AliasFor
-import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.stereotype.Component
+import java.lang.annotation.Documented
 import java.lang.annotation.Inherited
-import kotlin.reflect.KClass
 
 /**
  *  Mongo实体的组
@@ -31,27 +28,22 @@ annotation class DataGroup(val group: String)
 annotation class MongoEntitySysDustbin()
 
 
-
 /**
  * 标注 实体更新的 Bean，需要实现  IDbEntityUpdate
  */
-@Repeatable
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @Component
-@Inherited
-annotation class DbEntityUpdate(val name: String)
+annotation class DbEntityUpdate(@get:AliasFor(annotation = Component::class) val value: String = "")
 
 
 /**
  * 标注 实体删除的 Bean，需要实现  IDbEntityDelete
  */
-@Repeatable
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @Component
-@Inherited
-annotation class DbEntityDelete(val name: String)
+annotation class DbEntityDelete(@get:AliasFor(annotation = Component::class) val value: String = "")
 
 
 /**
@@ -119,20 +111,3 @@ data class DbEntityEventResult(
         var extData: Any? = null
 )
 
-/**
- * 实体Update接口，标记 DbEntityUpdate 注解的类使用。
- */
-interface IDbEntityUpdate {
-    fun beforeUpdate(update: MongoUpdateClip<*>): DbEntityEventResult?
-
-    fun update(update: MongoUpdateClip<*>, eventData: DbEntityEventResult?)
-}
-
-/**
- * 实体 Delete 接口，标记 DbEntityDelete 注解的类使用。
- */
-interface IDbEntityDelete {
-    fun beforeDelete(delete: MongoDeleteClip<*>): DbEntityEventResult?
-
-    fun delete(delete: MongoDeleteClip<*>, eventData: DbEntityEventResult?)
-}

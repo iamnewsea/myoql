@@ -168,14 +168,13 @@ abstract class SqlBaseQueryClip(private var mainEntity: SqlBaseTable<*>? = null)
 
         if (cacheJson.isNullOrEmpty()) {
             var executeData = sql.toExecuteSqlAndParameters()
-            var params = executeData.parameters.map { it.value }.toTypedArray()
 
 //            logger.info(executeData.executeSql +"  [" + executeData.parameters.map { it.value.AsString() }.joinToString(",") +"]");
             var startAt = System.currentTimeMillis();
 
             var error = false;
             try {
-                retJsons = jdbcTemplate.queryForList(executeData.executeSql, *params).toMutableList()
+                retJsons = jdbcTemplate.queryForList(executeData.executeSql, *executeData.executeParameters).toMutableList()
 
                 if (retJsons.size > 0) {
                     //setCache
@@ -188,7 +187,7 @@ abstract class SqlBaseQueryClip(private var mainEntity: SqlBaseTable<*>? = null)
                 throw e;
             } finally {
                 logger.InfoError(error) {
-                    var msg_log = mutableListOf("[sql] ${executeData.executeSql}", "[参数] ${params.map { it.AsString() }.joinToString(",")}")
+                    var msg_log = mutableListOf("[sql] ${executeData.executeSql}", "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}")
                     msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
                     return@InfoError msg_log.joinToString(line_break)
                 }

@@ -1,4 +1,4 @@
-package nbcp.db.mongo.event
+package nbcp.db.mongo
 
 import nbcp.db.*
 import nbcp.db.mongo.MongoDeleteClip
@@ -9,8 +9,9 @@ import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.BasicQuery
 
-@DbEntityDelete("Dustbin")
-class MongoDustbinEvent : IDbEntityDelete {
+
+@DbEntityDelete( )
+class MongoDustbinEvent : IMongoEntityDelete {
 
     override fun beforeDelete(delete: MongoDeleteClip<*>): DbEntityEventResult? {
         var dust = delete.moerEntity.entityClass.getAnnotation(MongoEntitySysDustbin::class.java)

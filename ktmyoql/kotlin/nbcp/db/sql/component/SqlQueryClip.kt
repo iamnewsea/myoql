@@ -2,11 +2,9 @@ package nbcp.db.sql
 
 import org.slf4j.LoggerFactory
 import nbcp.comm.*
-import nbcp.comm.*
 import nbcp.base.extend.*
 import nbcp.base.line_break
 import nbcp.db.*
-import nbcp.db.sql.*
 import kotlin.reflect.full.memberProperties
 
 
@@ -178,11 +176,11 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
                 }
             }
 
-            ret.expression += " from " + mainEntity.selectSql
+            ret.expression += " from " + mainEntity.fromTableName
         }
 
         joins.forEach {
-            ret.expression += " ${it.joinType} ${it.joinTable.selectSql} on ("
+            ret.expression += " ${it.joinType} ${it.joinTable.fromTableName} on ("
 
             ret += it.onWhere.toSingleData()
 
@@ -328,7 +326,7 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
 
         var n = -1;
         try {
-            n = SqlBaseClip.getJdbcTemplateByDatasrouce(insertTable.datasourceName).update(executeSql.executeSql, *executeSql.parameters.map { it.value }.toTypedArray())
+            n = SqlBaseClip.getJdbcTemplateByDatasrouce(insertTable.datasourceName).update(executeSql.executeSql, *executeSql.executeParameters)
             if (n > 0) {
                 cacheService.insertSelect4BrokeCache(insertTable.tableName)
             }

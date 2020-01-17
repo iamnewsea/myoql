@@ -3,7 +3,6 @@ package nbcp.db.sql
 import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import nbcp.db.*
-import nbcp.db.sql.*
 import nbcp.base.extend.*
 import nbcp.base.line_break
 import nbcp.base.utils.MyUtil
@@ -94,7 +93,7 @@ class SqlUpdateClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
         }
 
         joins.forEach {
-            ret.expression += " ${it.joinType} ${it.joinTable.selectSql} on ("
+            ret.expression += " ${it.joinType} ${it.joinTable.fromTableName} on ("
 
             ret += it.onWhere.toSingleData()
 
@@ -147,13 +146,12 @@ class SqlUpdateClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
         db.affectRowCount = -1;
         var sql = toSql()
         var executeData = sql.toExecuteSqlAndParameters();
-        var params = executeData.parameters.map { it.value }.toTypedArray()
 
         var startAt = System.currentTimeMillis();
 
         var n = -1;
         try {
-            n = jdbcTemplate.update(executeData.executeSql, *params)
+            n = jdbcTemplate.update(executeData.executeSql, *executeData.executeParameters)
 
             if (n > 0) {
                 cacheService.updated4BrokeCache(sql)
@@ -162,7 +160,7 @@ class SqlUpdateClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
             throw e;
         } finally {
             logger.InfoError(n < 0) {
-                var msg_log = mutableListOf("[sql] ${executeData.executeSql}", "[参数] ${params.map { it.AsString() }.joinToString(",")}")
+                var msg_log = mutableListOf("[sql] ${executeData.executeSql}", "[参数] ${executeData.executeParameters.joinToString(",")}")
                 msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
                 return@InfoError msg_log.joinToString(line_break)
             }

@@ -9,8 +9,7 @@
 //@Target(ElementType.TYPE)
 //@Retention(RetentionPolicy.RUNTIME)
 //@Component
-//@Inherited
 //public @interface DbEntityDelete {
-//    @AliasFor(value = "name", annotation = Component.class)
-//    String name() default "";
+//    @AliasFor(annotation = Component.class,attribute = "value")
+//    String value() default "";
 //}

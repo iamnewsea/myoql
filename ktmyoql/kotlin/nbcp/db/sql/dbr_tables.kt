@@ -10,15 +10,16 @@ import nbcp.base.extend.*
 import nbcp.base.utils.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-01-11 18:44:09
+//generate auto @2020-01-17 16:17:32
 
 
 @Component("sql.base")
 @DataGroup("base")
 class BaseGroup : IDataGroup{
-    override fun getEntities():Set<SqlBaseTable<*>> = setOf(s_annex,s_log)
+    override fun getEntities():Set<SqlBaseTable<*>> = setOf(s_annex,s_dustbin,s_log)
 
     val s_annex by lazy{ return@lazy s_annex_table(); }
+    val s_dustbin by lazy{ return@lazy s_dustbin_table(); }
     val s_log by lazy{ return@lazy s_log_table(); }
 
 
@@ -58,6 +59,40 @@ class BaseGroup : IDataGroup{
         }
     
         fun updateById (id: String ): SqlUpdateClip<s_annex_table,s_annex> {
+            return this.update().where{ (it.id match_equal id) }
+        }
+    
+    }
+    
+    class s_dustbin_table(datasource:String=""):SqlBaseTable<s_dustbin>(s_dustbin::class.java,"s_dustbin",datasource) {
+        val id=SqlColumnName(DbType.String,this.getAliaTableName(),"id")
+        val table=SqlColumnName(DbType.String,this.getAliaTableName(),"table")
+        val remark=SqlColumnName(DbType.String,this.getAliaTableName(),"remark")
+        val creator_id=SqlColumnName(DbType.String,this.getAliaTableName(),"creator_id")
+        val creator_name=SqlColumnName(DbType.String,this.getAliaTableName(),"creator_name")
+        val data=SqlColumnName(DbType.String,this.getAliaTableName(),"data")
+        val createAt=SqlColumnName(DbType.DateTime,this.getAliaTableName(),"createAt")
+    
+        override fun getAutoIncrementKey(): String { return ""}
+        override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}
+        override fun getRks(): Array<Array<String>>{ return arrayOf( )}
+        override fun getFks(): Array<FkDefine>{ return arrayOf()}
+    
+    
+        fun queryById (id: String ): SqlQueryClip<s_dustbin_table, s_dustbin> {
+            return this.query().where{ (it.id match_equal id) }
+        }
+    
+    
+        fun findById (id: String ): s_dustbin? {
+            return this.query().where{ (it.id match_equal id) }.limit(0,1).toEntity()
+        }
+    
+        fun deleteById (id: String ): SqlDeleteClip<s_dustbin_table,s_dustbin> {
+            return this.delete().where{ (it.id match_equal id) }
+        }
+    
+        fun updateById (id: String ): SqlUpdateClip<s_dustbin_table,s_dustbin> {
             return this.update().where{ (it.id match_equal id) }
         }
     

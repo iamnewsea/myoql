@@ -19,7 +19,7 @@ class SqlDeleteClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    private var whereDatas = WhereData()
+    val whereDatas = WhereData()
 
     fun where(whereData: (M) -> WhereData): SqlDeleteClip<M, T> {
         this.whereDatas.and(whereData(this.mainEntity));
@@ -48,13 +48,11 @@ class SqlDeleteClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
         db.affectRowCount = -1;
         var sql = toSql()
         var executeData = sql.toExecuteSqlAndParameters();
-        var params = executeData.parameters.map { it.value }.toTypedArray()
-
         var startAt = System.currentTimeMillis();
 
         var n = -1;
         try {
-            n = jdbcTemplate.update(executeData.executeSql, *params)
+            n = jdbcTemplate.update(executeData.executeSql, *executeData.executeParameters)
             if (n > 0) {
                 cacheService.delete4BrokeCache(sql)
             }
@@ -62,7 +60,7 @@ class SqlDeleteClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
             throw e;
         } finally {
             logger.InfoError(n < 0) {
-                var msg_log = mutableListOf("[sql] ${executeData.executeSql}", "[参数] ${params.map { it.AsString() }.joinToString(",")}")
+                var msg_log = mutableListOf("[sql] ${executeData.executeSql}", "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}")
                 msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
                 return@InfoError msg_log.joinToString(line_break)
             }

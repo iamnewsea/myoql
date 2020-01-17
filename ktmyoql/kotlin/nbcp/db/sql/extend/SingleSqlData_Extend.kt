@@ -199,7 +199,11 @@ fun PreparedStatement.setValue(index: Int, param: SqlParameterData) {
 val SqlBaseTable<out IBaseDbEntity>.quoteTableName: String
     get() = "${db.getQuoteName(this.tableName)}"
 
-val SqlBaseTable<out IBaseDbEntity>.selectSql: String
+/**
+ * 如果有别名，返回： table as t
+ * 否则返回   table
+ */
+val SqlBaseTable<out IBaseDbEntity>.fromTableName: String
     get() {
         var ret = "${db.getQuoteName(this.tableName)}"
         if (this.getAliaTableName().HasValue && (this.getAliaTableName() != this.tableName)) {

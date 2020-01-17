@@ -1,6 +1,7 @@
 package nbcp.db.sql.entity
 
 import nbcp.db.DbEntityGroup
+import nbcp.db.IdName
 import java.time.LocalDateTime
 import nbcp.db.sql.*
 
@@ -42,4 +43,16 @@ data class s_log(
         var clientIp: String = "",
         var module: String = "",
         var remark: String = ""
+) : IBaseDbEntity()
+
+@DbEntityGroup("base")
+@SqlUks("id")
+data class s_dustbin(
+        var id: String = "",
+        var table: String = "",
+        var remark: String = "",
+        var creator_id: String = "",
+        var creator_name: String = "",
+        var data: String = "",  //保存 JSON 数据
+        var createAt: LocalDateTime = LocalDateTime.now()
 ) : IBaseDbEntity()

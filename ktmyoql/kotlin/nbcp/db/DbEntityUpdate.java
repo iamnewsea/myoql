@@ -1,18 +1,19 @@
 //package nbcp.db;
 //
 //
-//import kotlin.annotation.AnnotationRetention;
-//import kotlin.annotation.AnnotationTarget;
+//import java.lang.annotation.Documented;
+//import java.lang.annotation.ElementType;
+//import java.lang.annotation.Retention;
+//import java.lang.annotation.RetentionPolicy;
+//import java.lang.annotation.Target;
 //import org.springframework.core.annotation.AliasFor;
 //import org.springframework.stereotype.Component;
-//
-//import java.lang.annotation.*;
 //
 //@Target(ElementType.TYPE)
 //@Retention(RetentionPolicy.RUNTIME)
 //@Component
-//@Inherited
+//@Documented
 //public @interface DbEntityUpdate {
-//    @AliasFor(value = "name", annotation = Component.class)
-//    String name();
+//    @AliasFor(annotation = Component.class,attribute = "value")
+//    String value() default "";
 //}

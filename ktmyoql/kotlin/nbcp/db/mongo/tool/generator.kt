@@ -20,7 +20,12 @@ class generator {
 
     private lateinit var moer_File: FileWriter
 
-    fun work(targetFileName: String, basePackage: String, anyEntityClass: Class<*>, nameMapping: StringMap = StringMap()) {
+    fun work(targetFileName: String,  //目标文件
+             basePackage: String,   //实体的包名
+             anyEntityClass: Class<*>,  //任意实体的类名
+             nameMapping: StringMap = StringMap(), // 名称转换
+             ignoreGroups: List<String> = listOf("base")  //忽略的包名
+    ) {
         this.nameMapping = nameMapping;
 
         var p = System.getProperty("file.separator");
@@ -35,7 +40,7 @@ class generator {
 
         moer_File = FileWriter(moer_Path, true);
 
-        var groups = getGroups(basePackage, anyEntityClass).filter { it.key != "base" };
+        var groups = getGroups(basePackage, anyEntityClass).filter { ignoreGroups.contains(it.key) == false };
         var embClasses = getEmbClasses(groups);
 
         println("开始生成 mor...")

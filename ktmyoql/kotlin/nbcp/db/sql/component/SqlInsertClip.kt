@@ -338,7 +338,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
             } finally {
                 logger.InfoError(error) {
                     var msg_log = mutableListOf("[sql] ${executeData.executeSql}")
-                    msg_log.add("[参数] ${executeData.parameters.map { it.value.AsString() }.joinToString(",")}")
+                    msg_log.add("[参数] ${executeData.executeParameters.joinToString(",")}")
                     msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
                     return@InfoError msg_log.joinToString(line_break)
                 }
@@ -368,7 +368,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
             } finally {
                 logger.InfoError(error) {
                     var msg_log = mutableListOf("[sql] ${executeData.executeSql}")
-                    msg_log.add("[参数] ${executeData.parameters.map { it.value.AsString() }.joinToString(",")}")
+                    msg_log.add("[参数] ${executeData.executeParameters.joinToString(",")}")
                     msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
                     return@InfoError msg_log.joinToString(line_break)
                 }

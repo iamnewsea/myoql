@@ -9,6 +9,6 @@ class testa : TestBase() {
 
     @Test
     fun abc() {
-
+        println("OK")
     }
 }

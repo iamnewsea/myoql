@@ -11,5 +11,9 @@ data class SqlParameterData(
 
 data class SqlExecuteData(
         var executeSql: String = "",
+        //程序自己标记的命名参数。不能直接使用它来执行。
         var parameters: Array<SqlParameterData> = arrayOf()
-)
+) {
+    //jdbcTemplate认可的可执行匹配的参数。
+    val executeParameters: Array<Any?> = parameters.map { it.value }.toTypedArray()
+}

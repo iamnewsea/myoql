@@ -16,9 +16,9 @@ class MongoEntityEvent : BeanPostProcessor {
         // 冗余字段的引用。如 user.corp.name 引用的是  corp.name
         val refsMap = mutableListOf<DbEntityFieldRefData>()
         //注册的 Update Bean
-        val updateEvent = mutableListOf<IDbEntityUpdate>()
+        val updateEvent = mutableListOf<IMongoEntityUpdate>()
         //注册的 Delete Bean
-        val deleteEvent = mutableListOf<IDbEntityDelete>()
+        val deleteEvent = mutableListOf<IMongoEntityDelete>()
     }
 
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
@@ -36,7 +36,7 @@ class MongoEntityEvent : BeanPostProcessor {
                 }
             }
         }
-        if (bean is IDbEntityUpdate) {
+        if (bean is IMongoEntityUpdate) {
             var ann = bean::class.java.getAnnotation(DbEntityUpdate::class.java)
             if (ann != null) {
                 updateEvent.add(bean)
@@ -44,7 +44,7 @@ class MongoEntityEvent : BeanPostProcessor {
         }
 
 
-        if (bean is IDbEntityDelete) {
+        if (bean is IMongoEntityDelete) {
             var ann = bean::class.java.getAnnotation(DbEntityDelete::class.java)
             if (ann != null) {
                 deleteEvent.add(bean)
@@ -77,9 +77,9 @@ class MongoEntityEvent : BeanPostProcessor {
     }
 
 
-    fun onUpdating(update: MongoUpdateClip<*>): Array<Pair<IDbEntityUpdate, DbEntityEventResult?>> {
+    fun onUpdating(update: MongoUpdateClip<*>): Array<Pair<IMongoEntityUpdate, DbEntityEventResult?>> {
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<IDbEntityUpdate, DbEntityEventResult?>>()
+        var list = mutableListOf<Pair<IMongoEntityUpdate, DbEntityEventResult?>>()
         updateEvent.ForEachExt { it, index ->
             var ret = it.beforeUpdate(update);
             if (ret != null && ret.result == false) {
@@ -91,10 +91,10 @@ class MongoEntityEvent : BeanPostProcessor {
         return list.toTypedArray()
     }
 
-    fun onDeleting(delete: MongoDeleteClip<*>): Array<Pair<IDbEntityDelete, DbEntityEventResult?>> {
+    fun onDeleting(delete: MongoDeleteClip<*>): Array<Pair<IMongoEntityDelete, DbEntityEventResult?>> {
 
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<IDbEntityDelete, DbEntityEventResult?>>()
+        var list = mutableListOf<Pair<IMongoEntityDelete, DbEntityEventResult?>>()
         deleteEvent.ForEachExt { it, index ->
             var ret = it.beforeDelete(delete);
             if (ret != null && ret.result == false) {
