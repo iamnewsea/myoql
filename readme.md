@@ -3,8 +3,9 @@
 
 - 修改 /pom.xml version
 - python sync_version.py
-- mvn clean package -Dmaven.test.skip=true
-- mvn clean deploy -P release
+- 本地安装： python all_jar.py 
+- 安装到远程仓库：python publish ${version}
+- 本发安装单个Jar包： python install_jar.py -f ktext
 
 # 使用包需要配置的变量
 
