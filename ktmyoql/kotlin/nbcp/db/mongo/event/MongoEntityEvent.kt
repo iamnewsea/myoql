@@ -15,8 +15,9 @@ class MongoEntityEvent : BeanPostProcessor {
         val dustbinEntitys = mutableSetOf<Class<*>>()  //mongo meta class
         // 冗余字段的引用。如 user.corp.name 引用的是  corp.name
         val refsMap = mutableListOf<DbEntityFieldRefData>()
-        //
+        //注册的 Update Bean
         val updateEvent = mutableListOf<IDbEntityUpdate>()
+        //注册的 Delete Bean
         val deleteEvent = mutableListOf<IDbEntityDelete>()
     }
 
