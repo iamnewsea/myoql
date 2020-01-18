@@ -79,7 +79,7 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
                 var bodyString = (body ?: byteArrayOf()).toString(utf8).trim()
 
                 if (bodyString.startsWith("{") && bodyString.endsWith("}")) {
-                    ret = bodyString.FromJson();
+                    ret = bodyString.FromJsonWithDefaultValue();
                 }
             } else if (request.contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
                 //按 key进行分组，假设客户端是：

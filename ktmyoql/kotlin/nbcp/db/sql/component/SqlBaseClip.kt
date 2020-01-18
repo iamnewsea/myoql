@@ -194,7 +194,7 @@ abstract class SqlBaseQueryClip(private var mainEntity: SqlBaseTable<*>? = null)
             }
         } else {
             //logger.info("sql query from cache: " + cacheKey.toString())
-            retJsons = cacheJson.FromJson<MutableList<Map<String, Any?>>>()
+            retJsons = cacheJson.FromJsonWithDefaultValue<MutableList<Map<String, Any?>>>()
         }
 
         db.affectRowCount = retJsons.size

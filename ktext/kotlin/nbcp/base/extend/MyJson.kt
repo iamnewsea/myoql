@@ -74,15 +74,20 @@ fun <T> T.ToJsonValue(getSetStyle: Boolean = false, withNull: Boolean = false): 
     return getJsonInstance(getSetStyle, withNull).writeValueAsString(this) ?: "null"
 }
 
+fun <T> String.FromJsonWithDefaultValue(collectionClass: Class<T>, getSetStyle: Boolean = false, withNull: Boolean = false): T {
+    return this.FromJson<T>(collectionClass, getSetStyle, withNull) ?: collectionClass.newInstance()
+}
 
-fun <T> String.FromJson(collectionClass: Class<T>, getSetStyle: Boolean = false, withNull: Boolean = false): T {
+fun <T> String.FromJson(collectionClass: Class<T>, getSetStyle: Boolean = false, withNull: Boolean = false): T? {
+    if (this.isEmpty()) return null
+
     if (collectionClass == String::class.java) {
         return this as T
     }
 
     var jsonString = this.RemoveComment().Remove("\r\n", "\n")
     if (jsonString.isEmpty()) {
-        return collectionClass.newInstance();
+        return null;
     }
 
     var ret: T? = null
@@ -104,6 +109,10 @@ fun <T> Any.ConvertJson(clazz: Class<T>): T {
     return FieldTypeJsonMapper.instance.convertValue(this, clazz)
 }
 
-inline fun <reified T> String.FromJson(): T {
+inline fun <reified T> String.FromJson(): T? {
     return this.FromJson(T::class.java)
+}
+
+inline fun <reified T> String.FromJsonWithDefaultValue(): T {
+    return this.FromJsonWithDefaultValue(T::class.java)
 }
