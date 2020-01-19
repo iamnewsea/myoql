@@ -92,8 +92,8 @@
     var n = mor.组件.实体名.delete( where条件 , where条件 )
     
 ##Mongo添加:
-     mor.组件.实体名.insert( 实体 )
-     mor.组件.实体名.insertAll( 实体集合 )
+     mor.组件.实体名.doInsert( 实体 )
+     mor.组件.实体名.doInsertAll( 实体集合 )
 
 ##注意事项:
     - 不要使用 save 方法，save方法有两个问题：

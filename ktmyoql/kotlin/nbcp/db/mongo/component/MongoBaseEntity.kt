@@ -110,7 +110,7 @@ cursor: {} } """;
     }
 
 
-    fun insertAll(entities: Collection<T>) {
+    fun doInsertAll(entities: Collection<T>): Int {
         entities.forEach {
             if (it.id.isEmpty()) {
                 it.id = ObjectId().toString()
@@ -118,6 +118,7 @@ cursor: {} } """;
         }
         mongoTemplate.insertAll(entities)
         db.affectRowCount = entities.size
+        return db.affectRowCount
     }
 
 
