@@ -15,17 +15,24 @@ import java.util.ArrayList
  * 普通的返回对象。
  */
 
-    open class JsonResult(var msg: String = "", var cause: String = "") {}
+open class JsonResult(var msg: String = "", var cause: String = "") {}
 
-class ApiResult<T>(msg: String = "", cause: String = "") : JsonResult(msg, cause) {
+open class ApiResult<T>(msg: String = "", cause: String = "") : JsonResult(msg, cause) {
     var data: T? = null
 
     companion object {
-        fun <T> of(data: T?): ApiResult<T> {
+        fun<T> of(data: T?): ApiResult<T> {
             var ret = ApiResult<T>();
             ret.data = data;
             return ret;
         }
+    }
+}
+
+
+class NoDataResult<T>() : ApiResult<T>("找不到数据") {
+    constructor(cause: String) : this() {
+        super.msg = "找不到" + cause + "的数据";
     }
 }
 
