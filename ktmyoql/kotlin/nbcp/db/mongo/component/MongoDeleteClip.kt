@@ -52,7 +52,7 @@ class MongoDeleteClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
         var criteria = this.moerEntity.getMongoCriteria(*whereData.toTypedArray());
 
         var settingResult = db.mongoEvents.onDeleting(this)
-        if (settingResult.any { (it.second?.result ?: true) == false }) {
+        if (settingResult.any { it.second.result == false }) {
             return 0;
         }
 
@@ -67,7 +67,7 @@ class MongoDeleteClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
 
             if (ret > 0) {
                 settingResult.forEach {
-                    it.first.delete(this,it.second)
+                    it.first.delete(this, it.second)
                 }
             }
         } catch (e: Exception) {

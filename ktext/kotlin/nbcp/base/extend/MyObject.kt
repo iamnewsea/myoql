@@ -116,6 +116,7 @@ enum class LogScope : IDisposeable {
     }
 }
 
+class NoAffectRowCount{} //不记录到 affectRows里。用于拦截事件
 
 private val _scopes = ThreadLocal.withInitial { Stack<Any>() }
 

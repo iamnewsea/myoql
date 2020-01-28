@@ -17,17 +17,17 @@ import java.util.regex.Pattern
  * Created by udi on 17-7-10.
  */
 
-private fun proc_mongo_key(key: MongoColumnName): String {
-    var key = key;
-    var keyString = key.toString();
-    if (keyString == "id") {
-        key = MongoColumnName("_id")
-    } else if (keyString.endsWith(".id")) {
-        key = MongoColumnName(keyString.slice(0..keyString.length - 4) + "._id")
-    }
-
-    return key.toString();
-}
+//private fun proc_mongo_key(key: MongoColumnName): String {
+//    var key = key;
+//    var keyString = key.toString();
+//    if (keyString == "id") {
+//        key = MongoColumnName("_id")
+//    } else if (keyString.endsWith(".id")) {
+//        key = MongoColumnName(keyString.slice(0..keyString.length - 4) + "._id")
+//    }
+//
+//    return key.toString();
+//}
 
 private fun proc_mongo_match(key: MongoColumnName, value: Any?): Pair<String, Any?> {
     var key = key
@@ -48,13 +48,44 @@ private fun proc_mongo_match(key: MongoColumnName, value: Any?): Pair<String, An
     var value = value;
     if (value != null) {
         var type = value::class.java
-        if (isId && value is String && ObjectId.isValid(value)) {
-            value = ObjectId(value);
-        } else if (type.isEnum) {
+        if (type.isEnum) {
             value = value.toString();
         } else if (type == LocalDateTime::class.java ||
                 type == LocalDate::class.java) {
             value = value.AsLocalDateTime().AsDate()
+        } else if (isId) {
+            if (value is String) {
+                if (ObjectId.isValid(value)) {
+                    value = ObjectId(value);
+                }
+            } else if (type.isArray) {
+                value = (value as Array<*>).map {
+                    if (it is String && ObjectId.isValid(it)) {
+                        return@map ObjectId(it)
+                    }
+
+                    return@map it
+                }.toTypedArray()
+            } else if (type.IsListType()) {
+                value = (value as List<*>).map {
+                    if (it is String && ObjectId.isValid(it)) {
+                        return@map ObjectId(it)
+                    }
+
+                    return@map it
+                }
+            } else if (value is Pair<*, *>) {
+                var v1 = value.first;
+                if (v1 is String && ObjectId.isValid(v1)) {
+                    v1 = ObjectId(v1)
+                }
+
+                var v2 = value.second;
+                if (v2 is String && ObjectId.isValid(v2)) {
+                    v2 = ObjectId(v2)
+                }
+                value = Pair<Any?, Any?>(v1, v2);
+            }
         }
     }
 
@@ -103,13 +134,9 @@ infix fun MongoColumnName.match(to: Any?): Criteria {
 
 //array_all
 infix fun MongoColumnName.match_all(to: Array<*>): Criteria {
-    var key = proc_mongo_key(this)
-    var tos = mutableListOf<Any?>()
-    to.forEach {
-        var (key1, to1) = proc_mongo_match(this, it);
-        tos.add(to1);
-    }
-    return Criteria.where(key).`all`(*tos.toTypedArray());
+    var (key, tos) = proc_mongo_match(this, to)
+
+    return Criteria.where(key).`all`(*(tos as Array<*>));
 }
 
 //infix fun <T> String.match_like(to: T): Criteria {
@@ -147,12 +174,12 @@ infix fun MongoColumnName.match_lessThan(to: Any): Criteria {
 
 //大于等于并且小于。
 infix fun MongoColumnName.match_between(value: Pair<Any, Any>): Criteria {
-    var (key, from) = proc_mongo_match(this, value.first);
-    var (key1, to) = proc_mongo_match(this, value.second);
+    var (key, value2) = proc_mongo_match(this, value);
+    var pair = value2 as Pair<Any, Any>
 
     var dict = BasicBSONObject()
-    dict.put("\$gte", from)
-    dict.put("\$lt", to)
+    dict.put("\$gte", pair.first)
+    dict.put("\$lt", pair.second)
     return Criteria.where(key).`is`(dict)
     //return Criteria.where(key).gte(from).andOperator(Criteria.where(key).lt(to))
 }
@@ -163,23 +190,14 @@ infix fun MongoColumnName.match_in(to: Collection<*>): Criteria {
 
 //db.test1.find({"age":{"$in":['值1','值2',.....]}})
 infix fun MongoColumnName.match_in(to: Array<*>): Criteria {
-    var key = proc_mongo_key(this)
-    var tos = mutableListOf<Any?>()
-    to.forEach {
-        var (key1, to1) = proc_mongo_match(this, it);
-        tos.add(to1);
-    }
-    return Criteria.where(key).`in`(*tos.toTypedArray());
+    var (key, tos) = proc_mongo_match(this, to)
+
+    return Criteria.where(key).`in`(*(tos as Array<*>));
 }
 
 infix fun MongoColumnName.match_notin(to: Array<*>): Criteria {
-    var key = proc_mongo_key(this);
-    var tos = mutableListOf<Any?>()
-    to.forEach {
-        var (key1, to1) = proc_mongo_match(this, it);
-        tos.add(to1);
-    }
-    return Criteria.where(key).`nin`(*tos.toTypedArray());
+    var (key, tos) = proc_mongo_match(this, to)
+    return Criteria.where(key).`nin`(*(tos as Array<*>));
 }
 
 infix fun MongoColumnName.match_notin(to: Collection<*>): Criteria {

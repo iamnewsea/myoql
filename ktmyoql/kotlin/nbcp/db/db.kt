@@ -1,7 +1,6 @@
 package nbcp.db
 
-import nbcp.base.extend.IsStringType
-import nbcp.base.extend.Slice
+import nbcp.base.extend.*
 import nbcp.base.utils.RecursionUtil
 import nbcp.base.utils.SpringUtil
 import nbcp.comm.StringMap
@@ -86,6 +85,9 @@ object db {
             return _affectRowCount.get()
         }
         set(value) {
+            if (scopes.getLatest<NoAffectRowCount>() != null) {
+                return;
+            }
             _affectRowCount.set(value);
         }
 

@@ -4,6 +4,7 @@ import org.springframework.core.annotation.AliasFor
 import org.springframework.stereotype.Component
 import java.lang.annotation.Documented
 import java.lang.annotation.Inherited
+import kotlin.reflect.KClass
 
 /**
  *  Mongo实体的组
@@ -55,13 +56,16 @@ annotation class DbEntityFieldRefs(val values: Array<DbEntityFieldRef>)
 
 /**
  * 标记Mongo字段是另一个表字段的引用， 当另一个表字段更新后，更新该字段
+ * 例子： 对user表标注：
+ * DbEntityFieldRef("corp.id","corp.name","SysCorporation","id","name")
+ * 当 SysCorporation.name 发生变化后， 该表自动更新。
  */
 @java.lang.annotation.Repeatable(DbEntityFieldRefs::class)
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @Component
 @Inherited
-annotation class DbEntityFieldRef(val idField: String, val nameField: String, val masterEntityClass: String, val masterIdField: String, val masterNameField: String)
+annotation class DbEntityFieldRef(val idField: String, val nameField: String, val masterEntityClass: KClass<*>, val masterIdField: String, val masterNameField: String)
 
 
 /**
@@ -77,24 +81,24 @@ annotation class DbEntityFieldRef(val idField: String, val nameField: String, va
  *
  */
 data class DbEntityFieldRefData(
-        //实体，如 user
-        var entityClass: Class<*>, //moer class
+        //实体，entity 如 SysUser
+        var entityClass: Class<*>,
         //实体的引用Id， 如 "corp._id"
         var idField: String,
         //实体的冗余字段, 如： "corp.name"
         var nameField: String,
         // 引用的实体
         var masterEntityClass: Class<*>,
-        //引用实体的Id字段， user.corp._id == corp._id
+        //引用实体的Id字段， corp 表的 , "id"
         var masterIdField: String,
-        //冗余字段对应的引用实体字段， user.corp.name == corp.name
+        //冗余字段对应的引用实体字段， corp表的 , "name"
         var masterNameField: String
 ) {
     constructor(entityClass: Class<*>, annRef: DbEntityFieldRef) : this(
             entityClass, //moer class
             annRef.idField,
             annRef.nameField,
-            Class.forName(annRef.masterEntityClass),
+            annRef.masterEntityClass.java,
             annRef.masterIdField,
             annRef.masterNameField) {
 

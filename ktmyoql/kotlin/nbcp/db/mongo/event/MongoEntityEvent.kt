@@ -3,6 +3,7 @@ package nbcp.db.mongo
 import nbcp.base.extend.ForEachExt
 import nbcp.db.*
 import nbcp.db.mongo.*
+import nbcp.db.mongo.component.MongoBaseUpdateClip
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component
 
@@ -12,7 +13,7 @@ class MongoEntityEvent : BeanPostProcessor {
         //所有的组。
         val groups = mutableSetOf<IDataGroup>()
         //需要删 除后放入垃圾箱的实体
-        val dustbinEntitys = mutableSetOf<Class<*>>()  //mongo meta class
+        val dustbinEntitys = mutableSetOf<Class<*>>()  //mongo entity class
         // 冗余字段的引用。如 user.corp.name 引用的是  corp.name
         val refsMap = mutableListOf<DbEntityFieldRefData>()
         //注册的 Update Bean
@@ -77,12 +78,12 @@ class MongoEntityEvent : BeanPostProcessor {
     }
 
 
-    fun onUpdating(update: MongoUpdateClip<*>): Array<Pair<IMongoEntityUpdate, DbEntityEventResult?>> {
+    fun onUpdating(update: MongoBaseUpdateClip): Array<Pair<IMongoEntityUpdate, DbEntityEventResult>> {
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<IMongoEntityUpdate, DbEntityEventResult?>>()
+        var list = mutableListOf<Pair<IMongoEntityUpdate, DbEntityEventResult>>()
         updateEvent.ForEachExt { it, index ->
             var ret = it.beforeUpdate(update);
-            if (ret != null && ret.result == false) {
+            if (ret.result == false) {
                 return@ForEachExt false;
             }
             list.add(it to ret)
@@ -91,13 +92,13 @@ class MongoEntityEvent : BeanPostProcessor {
         return list.toTypedArray()
     }
 
-    fun onDeleting(delete: MongoDeleteClip<*>): Array<Pair<IMongoEntityDelete, DbEntityEventResult?>> {
+    fun onDeleting(delete: MongoDeleteClip<*>): Array<Pair<IMongoEntityDelete, DbEntityEventResult>> {
 
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<IMongoEntityDelete, DbEntityEventResult?>>()
+        var list = mutableListOf<Pair<IMongoEntityDelete, DbEntityEventResult>>()
         deleteEvent.ForEachExt { it, index ->
             var ret = it.beforeDelete(delete);
-            if (ret != null && ret.result == false) {
+            if ( ret.result == false) {
                 return@ForEachExt false;
             }
             list.add(it to ret)
