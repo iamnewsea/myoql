@@ -116,13 +116,14 @@ object MyUtil {
     /**
      * 获取启动Jar所的路径
      * 调试时，会返回 target/classes/nbcp/base/utils
+     * @param clazz: 启动Jar所任意类
      */
-    fun getStartingJarFile(): File {
+    fun getStartingJarFile(clazz: Class<*>): File {
         /**
         file:/opt/edu_report/admin-api-1.0.1.jar!/BOOT-INF/classes!/
         /D:/code/edu_report/server/admin/target/classes/
          */
-        var file = this::class.java.getResource("/").file
+        var file = clazz.protectionDomain.codeSource.location.path
         print(file)
         var startIndex = 0
         if (file.startsWith("//file:/")) {
