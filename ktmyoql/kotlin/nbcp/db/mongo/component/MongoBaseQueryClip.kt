@@ -25,7 +25,7 @@ open class MongoBaseQueryClip (tableName:String ): MongoClipBase(tableName), IMo
     //    private var selectDbObjects = mutableSetOf<String>();
     protected var unSelectColumns = mutableSetOf<String>()
 
-    fun select(column:String){
+    fun selectField(column:String){
         this.selectColumns.add(column);
     }
 

@@ -60,7 +60,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
                     //查询数据，把Id查出来。
                     var query = MongoBaseQueryClip(update.collectionName)
                     query.whereData.addAll(update.whereData)
-                    query.select(ref.masterIdField)
+                    query.selectField(ref.masterIdField)
 
                     return@getOrPut query.toList(String::class.java).toTypedArray()
                 }
