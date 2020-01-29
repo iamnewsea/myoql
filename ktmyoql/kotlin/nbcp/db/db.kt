@@ -174,7 +174,7 @@ object db {
     /**
      * 把 Document 推送到数据库，需要转换 id
      */
-    fun procSetDocumentData(value: Map<String, *>): Map<String, *> {
+    fun procSetDocumentData(value: Any): Any {
         RecursionUtil.recursionJson(value, { key, value, json ->
             if (json is MutableMap<*, *>) {
                 if (key == "id") {

@@ -66,7 +66,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
 
         for (kv in setData) {
             if (kv.value != null) {
-                update = update.set(kv.key, if (kv.value is Document) db.procSetDocumentData(kv.value as Document) else kv.value);
+                update = update.set(kv.key, db.procSetDocumentData(kv.value!!));
             } else {
                 update = update.unset(kv.key);
             }
@@ -77,7 +77,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         }
 
         for (kv in pushData) {
-            update = update.push(kv.key, if (kv.value is Document) db.procSetDocumentData(kv.value as Document) else kv.value);
+            update = update.push(kv.key, db.procSetDocumentData(kv.value));
         }
 
 
