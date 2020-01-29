@@ -92,29 +92,29 @@ inline fun <T> Iterator<T>.Filter(predicate: (T) -> Boolean): MutableList<T> {
 
     return list;
 }
+
 /*
 比较两个数组的内容是否相同, 去除相同数据进行比较 .如:
 [1,1,2] .equalArrayContent( [1,2,2] )  == true
  */
-fun Array<*>.EqualArrayContent(other: Array<*>, withIndex:Boolean = false): Boolean {
-    return this.toList().EqualArrayContent(other.toList(),withIndex);
+fun Array<*>.EqualArrayContent(other: Array<*>, withIndex: Boolean = false): Boolean {
+    return this.toList().EqualArrayContent(other.toList(), withIndex);
 }
 
 
-
 /*
 比较两个数组的内容是否相同, 去除相同数据进行比较 .如:
 [1,1,2] .equalArrayContent( [1,2,2] )  == true
  */
-fun Collection<*>.EqualArrayContent(other: Collection<*>,withIndex:Boolean = false): Boolean {
+fun Collection<*>.EqualArrayContent(other: Collection<*>, withIndex: Boolean = false): Boolean {
     if (this.size == 0 && other.size == 0) return true;
     else if (this.size == 0) return false;
     else if (other.size == 0) return false;
 
-    if( withIndex){
-        this.forEachIndexed{ index,item->
+    if (withIndex) {
+        this.forEachIndexed { index, item ->
             var otherItem = other.elementAt(index);
-            if( item != otherItem){
+            if (item != otherItem) {
                 return false;
             }
         }
@@ -158,13 +158,23 @@ inline fun <T> List<out T>.Skip(skipNumber: Int): List<T> {
 //    return this.toList().ContentSame(other.toList());
 //}
 
-//forEach的增强版
+/**
+ * forEach的增强版
+ * @return  遍历完所有元素返回 true, 如果没有对象，返回 true.
+ */
 inline fun <T> Iterable<out T>.ForEachExt(action: (T, Int) -> Boolean): Boolean {
-    if (this.any() == false) return false;
+    if (this.any() == false) return true;
 
     var index = -1;
-    for (element in this) {
+    while (true) {
         index++;
+        if (index >= this.count()) {
+            break;
+        }
+
+        var element = this.elementAt(index);
+
+        println(index.toString() + ":" + element.ToJson())
         if (action(element, index) == false) {
             return false;
         }

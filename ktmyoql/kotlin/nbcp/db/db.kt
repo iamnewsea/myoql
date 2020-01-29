@@ -119,6 +119,27 @@ object db {
                 procResultData_id2Id(v, remove_id);
             } else if (v is Collection<*>) {
                 procResultData_id2Id(v, remove_id);
+            } else if (v is Array<*>) {
+                procResultData_id2Id(v, remove_id);
+            }
+        }
+    }
+
+    /**
+     * 把 _id 转换为 id
+     */
+    fun procResultData_id2Id(value: Array<*>, remove_id: Boolean = true) {
+        value.forEach { v ->
+            if (v == null) {
+                return@forEach
+            }
+
+            if (v is MutableMap<*, *>) {
+                procResultData_id2Id(v, remove_id);
+            } else if (v is Collection<*>) {
+                procResultData_id2Id(v, remove_id);
+            } else if (v is Array<*>) {
+                procResultData_id2Id(v, remove_id);
             }
         }
     }
@@ -175,9 +196,11 @@ object db {
      * 把 Document 推送到数据库，需要转换 id
      */
     fun procSetDocumentData(value: Any): Any {
-        RecursionUtil.recursionJson(value, { key, value, json ->
+        RecursionUtil.recursionJson(value, { json,type ->
             if (json is MutableMap<*, *>) {
-                if (key == "id") {
+                if (json.contains("id")) {
+                    var value = json.get("id");
+
                     if (value is String && ObjectId.isValid(value)) {
                         (json as MutableMap<String, Any?>).put("_id", ObjectId(value));
                         json.remove("id")
@@ -198,21 +221,60 @@ object db {
      *value 可能会是： Document{{answerRole=Patriarch}}
      */
     fun procResultDocumentJsonData(value: Document) {
-        RecursionUtil.recursionJson(value, { k, v, p ->
-            if (v == null) return@recursionJson true
-            var v_type = v::class.java;
-            if (v_type.IsStringType() == false) return@recursionJson true
-
-            var v_string_value = v.toString()
+        fun test(item: Any?): Boolean {
+            if (item == null) return false;
+            var type = item::class.java;
+            if (type.IsStringType() == false) return false;
+            var v_string_value = item.toString()
             if (v_string_value.startsWith("Document{{") && v_string_value.endsWith("}}")) {
-                if (p is Document) {
-                    //Document{{answerRole=Patriarch}}
-                    var ary = v_string_value.Slice(10, -2).split("=")
-                    var json = Document();
-                    json.set(ary[0], ary[1]);
-                    p.set(k, json);
-                }
+                return true;
             }
+            return false;
+        }
+
+        fun proc(item: Any): Any {
+            var v_string_value = item.toString()
+            if (v_string_value.startsWith("Document{{") && v_string_value.endsWith("}}")) {
+                //Document{{answerRole=Patriarch}}
+                //目前只发现一个键值对形式的。
+                var ary = v_string_value.Slice(10, -2).split("=")
+                var json = Document();
+                json.set(ary[0], ary[1]);
+                return json;
+            }
+            return item;
+        }
+
+        RecursionUtil.recursionJson(value, { json, type ->
+            if (type.isArray) {
+                (json as Array<Any>).forEachIndexed { index, it ->
+                    if (it == null || !test(it)) {
+                        return@forEachIndexed
+                    }
+
+                    json.set(index, proc(it));
+                    return@forEachIndexed
+                }
+            } else if (json is MutableList<*>) {
+                json.forEachIndexed { index, it ->
+                    if (it == null || !test(it)) {
+                        return@forEachIndexed
+                    }
+                    (json as MutableList<Any>)[index] = proc(it);
+                }
+            } else if (json is Map<*, *>) {
+                json.keys.toTypedArray().forEachIndexed { index, it ->
+                    if (it == null || !test(it)) {
+                        return@forEachIndexed
+                    }
+                    (json as MutableMap<Any, Any>).set(it, proc(it));
+
+                    return@forEachIndexed
+                }
+            } else {
+                println("不识别的类型：" + json::class.java.name)
+            }
+
 
             return@recursionJson true
         })

@@ -3,6 +3,7 @@ package nbcp
 import nbcp.comm.*
 import nbcp.base.extend.FieldTypeJsonMapper
 import nbcp.base.extend.GetSetTypeJsonMapper
+import nbcp.base.extend.ToJson
 import nbcp.base.utils.RecursionUtil
 import nbcp.db.IdName
 import nbcp.db.IdUrl
@@ -25,8 +26,8 @@ class testa : TestBase() {
         list.data = mutableListOf();
         (list.data!! as MutableList).add(IdName("1", "ok"))
 
-        RecursionUtil.recursionJson(list, { k, v, p ->
-            println(k + ":" + (v ?: ""))
+        RecursionUtil.recursionJson(list, { json,type ->
+            println(json.ToJson())
             return@recursionJson true;
         });
     }

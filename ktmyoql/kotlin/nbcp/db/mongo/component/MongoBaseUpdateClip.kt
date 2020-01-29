@@ -65,8 +65,10 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         var update = org.springframework.data.mongodb.core.query.Update();
 
         for (kv in setData) {
-            if (kv.value != null) {
-                update = update.set(kv.key, db.procSetDocumentData(kv.value!!));
+            var value = kv.value;
+            if (value != null) {
+                value = db.procSetDocumentData(kv.value!!)
+                update = update.set(kv.key, value);
             } else {
                 update = update.unset(kv.key);
             }
@@ -77,7 +79,8 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         }
 
         for (kv in pushData) {
-            update = update.push(kv.key, db.procSetDocumentData(kv.value));
+            var value = db.procSetDocumentData(kv.value)
+            update = update.push(kv.key, value);
         }
 
 

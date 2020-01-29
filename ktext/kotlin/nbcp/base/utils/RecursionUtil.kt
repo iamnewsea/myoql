@@ -109,22 +109,28 @@ object RecursionUtil {
     }
 
     /**
-     * 遍历对象 ,包括 Map,Array,List,Object
-     * @param eachJsonItemCallback: key,value,parent三个参数
+     * 遍历对象 ,包括 Map,Array,List,Object， 应该拿到对象后，对象属性值及子属性操作，而不能增减父对象。
+     * @param eachJsonItemCallback: value 参数
      */
-    fun recursionJson(json: Any, eachJsonItemCallback: (String, Any?, Any) -> Boolean, deepth: Int = 0): Boolean {
+    fun recursionJson(json: Any, eachJsonItemCallback: (Any,Class<*>) -> Boolean, deepth: Int = 0): Boolean {
         var type = json::class.java;
         if (type.IsSimpleType()) {
             return true;
         }
 
+        if(eachJsonItemCallback(json,type) == false){
+            return false;
+        }
 
         if (type.isArray) {
             return (json as Array<*>).ForEachExt { it, index ->
                 if (it == null) {
                     return@ForEachExt true
                 }
-                return@ForEachExt recursionJson(it, eachJsonItemCallback, deepth + 1)
+                if(recursionJson(it, eachJsonItemCallback, deepth + 1) == false){
+                    return@ForEachExt false;
+                }
+                return@ForEachExt true
             }
         } else if (type.IsListType()) {
             return (json as List<*>).ForEachExt { it, index ->
@@ -132,28 +138,32 @@ object RecursionUtil {
                     return@ForEachExt true
                 }
 
-                return@ForEachExt recursionJson(it, eachJsonItemCallback, deepth + 1)
-            }
-        }
-
-        //判断对象是否是 Map
-        if (json is Map<*, *>) {
-            return json.keys.ForEachExt { key, index ->
-                var value = json.get(key);
-
-                if (eachJsonItemCallback(key.AsString(), value, json) === false) {
+                if(recursionJson(it, eachJsonItemCallback, deepth + 1) == false){
                     return@ForEachExt false;
-                }
-
-                if (value != null) {
-                    if (recursionJson(value, eachJsonItemCallback, deepth + 1) === false) {
-                        return@ForEachExt false;
-                    }
                 }
 
                 return@ForEachExt true;
             }
         }
+
+
+
+
+        //判断对象是否是 Map
+        if (json is Map<*, *>) {
+            return json.keys.toTypedArray().ForEachExt { key, index ->
+                var value = json.get(key);
+                if( value == null){
+                    return@ForEachExt true;
+                }
+
+                if (recursionJson(value, eachJsonItemCallback, deepth + 1) === false) {
+                    return@ForEachExt false;
+                }
+                return@ForEachExt true;
+            }
+        }
+
 
         return type.declaredFields.ForEachExt { it, index ->
             if (it.modifiers and Modifier.STATIC > 0) {
@@ -168,14 +178,12 @@ object RecursionUtil {
             var key = it.name;
             var value = it.get(json);
 
-            if (eachJsonItemCallback(key, value, json) === false) {
-                return@ForEachExt false;
+            if( value == null){
+                return@ForEachExt true;
             }
 
-            if (value != null) {
-                if (recursionJson(value, eachJsonItemCallback, deepth + 1) === false) {
-                    return@ForEachExt false;
-                }
+            if (recursionJson(value, eachJsonItemCallback, deepth + 1) === false) {
+                return@ForEachExt false;
             }
             return@ForEachExt true
         }
