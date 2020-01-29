@@ -3,9 +3,11 @@ package nbcp.db.mongo.component
 import nbcp.base.extend.InfoError
 import nbcp.base.extend.IsSimpleType
 import nbcp.base.extend.ToJson
+import nbcp.base.utils.RecursionUtil
 import nbcp.db.db
 import nbcp.db.mongo.IMongoWhereable
 import nbcp.db.mongo.MongoClipBase
+import org.bson.Document
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
@@ -48,9 +50,6 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             return 0;
         }
 
-        if (this.setData.containsKey("updateAt") == false) {
-            this.setData.put("updateAt", LocalDateTime.now())
-        }
         return execAll();
     }
 
@@ -60,20 +59,14 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
      */
     fun execAll(): Int {
         db.affectRowCount = -1;
-//        procMongo_IdColumn(whereData);
 
         var criteria = this.getMongoCriteria(*whereData.toTypedArray());
-
-
-//        for (wkv in whereData) {
-//            criteria = criteria.and(wkv.first).`is`(wkv.second);
-//        }
 
         var update = org.springframework.data.mongodb.core.query.Update();
 
         for (kv in setData) {
             if (kv.value != null) {
-                update = update.set(kv.key, kv.value!!);
+                update = update.set(kv.key, if (kv.value is Document) db.procSetDocumentData(kv.value as Document) else kv.value);
             } else {
                 update = update.unset(kv.key);
             }
@@ -84,12 +77,11 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         }
 
         for (kv in pushData) {
-            update = update.push(kv.key, kv.value);
+            update = update.push(kv.key, if (kv.value is Document) db.procSetDocumentData(kv.value as Document) else kv.value);
         }
 
 
         for (kv in pullData) {
-//            procMongo_IdColumn(kv.value)
             var value = kv.value;
             if (value is Criteria) {
                 update = update.pull(kv.key, value.criteriaObject);
@@ -114,7 +106,6 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             return 0;
         }
 
-
 //        var eventObject: MongoUpdateEventObject? = null;
 //        if (whereCriteriaObject.keys.contains("_id")) {
 //            var _id_value = whereCriteriaObject["_id"].toString();
@@ -126,7 +117,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
 
 
         var settingResult = db.mongoEvents.onUpdating(this)
-        if (settingResult.any { (it.second?.result ?: true) == false }) {
+        if (settingResult.any { it.second.result == false }) {
             return 0;
         }
 
@@ -157,4 +148,5 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
 
         return ret;
     }
+
 }

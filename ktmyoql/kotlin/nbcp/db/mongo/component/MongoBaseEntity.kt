@@ -46,7 +46,7 @@ abstract class MongoBaseEntity<T : IMongoDocument>(val entityClass: Class<T>, en
         var retId = "";
         var error = false;
         try {
-            mongoTemplate.insert(entity, tableName);
+            mongoTemplate.insert(db.procSetDocumentData(entity), tableName);
             db.affectRowCount = 1;
             retId = entity.get("id").toString()
         } catch (e: Exception) {

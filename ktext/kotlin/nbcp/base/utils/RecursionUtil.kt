@@ -1,5 +1,6 @@
 package nbcp.base.utils
 
+import nbcp.base.extend.AsString
 import nbcp.base.extend.ForEachExt
 import nbcp.base.extend.IsListType
 import nbcp.base.extend.IsSimpleType
@@ -25,7 +26,6 @@ enum class RecursionReturnEnum private constructor(val Value: Int) {
 //}
 
 object RecursionUtil {
-
 
     /* 递归执行
     * @param Exec 传入的是子项
@@ -109,7 +109,7 @@ object RecursionUtil {
     }
 
     /**
-     * 遍历对象
+     * 遍历对象 ,包括 Map,Array,List,Object
      * @param eachJsonItemCallback: key,value,parent三个参数
      */
     fun recursionJson(json: Any, eachJsonItemCallback: (String, Any?, Any) -> Boolean, deepth: Int = 0): Boolean {
@@ -136,6 +136,24 @@ object RecursionUtil {
             }
         }
 
+        //判断对象是否是 Map
+        if (json is Map<*, *>) {
+            return json.keys.ForEachExt { key, index ->
+                var value = json.get(key);
+
+                if (eachJsonItemCallback(key.AsString(), value, json) === false) {
+                    return@ForEachExt false;
+                }
+
+                if (value != null) {
+                    if (recursionJson(value, eachJsonItemCallback, deepth + 1) === false) {
+                        return@ForEachExt false;
+                    }
+                }
+
+                return@ForEachExt true;
+            }
+        }
 
         return type.declaredFields.ForEachExt { it, index ->
             if (it.modifiers and Modifier.STATIC > 0) {
@@ -146,9 +164,8 @@ object RecursionUtil {
                 return@ForEachExt true;
             }
 
-            var key = it.name;
             it.isAccessible = true;
-
+            var key = it.name;
             var value = it.get(json);
 
             if (eachJsonItemCallback(key, value, json) === false) {

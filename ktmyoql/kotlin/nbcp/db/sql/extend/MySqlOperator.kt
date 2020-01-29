@@ -16,7 +16,6 @@ import java.util.regex.Pattern
 /**
  * Created by udi on 17-7-10.
  */
-
 fun proc_value(value: Any): Any {
     var type = value::class.java
     if (type.isEnum) {

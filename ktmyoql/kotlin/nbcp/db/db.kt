@@ -9,6 +9,7 @@ import nbcp.db.mongo.*
 import nbcp.db.mongo.MongoEntityEvent
 import nbcp.db.sql.SqlBaseTable
 import org.bson.Document
+import org.bson.types.ObjectId
 import org.springframework.core.convert.support.GenericConversionService
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory
@@ -105,21 +106,24 @@ object db {
         }
 
 
-    fun change_id2Id(value: Collection<*>, remove_id: Boolean = true) {
+    /**
+     * 把 _id 转换为 id
+     */
+    fun procResultData_id2Id(value: Collection<*>, remove_id: Boolean = true) {
         value.forEach { v ->
             if (v == null) {
                 return@forEach
             }
 
             if (v is MutableMap<*, *>) {
-                change_id2Id(v, remove_id);
+                procResultData_id2Id(v, remove_id);
             } else if (v is Collection<*>) {
-                change_id2Id(v, remove_id);
+                procResultData_id2Id(v, remove_id);
             }
         }
     }
 
-    fun change_id2Id(value: MutableMap<*, *>, remove_id: Boolean = true) {
+    fun procResultData_id2Id(value: MutableMap<*, *>, remove_id: Boolean = true) {
         var keys = value.keys.toTypedArray();
         var needReplace = keys.contains("_id") && !keys.contains("id")
         for (k in keys) {
@@ -136,9 +140,9 @@ object db {
                 continue;
             }
             if (v is MutableMap<*, *>) {
-                change_id2Id(v, remove_id);
+                procResultData_id2Id(v, remove_id);
             } else if (v is Collection<*>) {
-                change_id2Id(v, remove_id);
+                procResultData_id2Id(v, remove_id);
             }
         }
     }
@@ -168,9 +172,32 @@ object db {
 //    }
 
     /**
+     * 把 Document 推送到数据库，需要转换 id
+     */
+    fun procSetDocumentData(value: Map<String, *>): Map<String, *> {
+        RecursionUtil.recursionJson(value, { key, value, json ->
+            if (json is MutableMap<*, *>) {
+                if (key == "id") {
+                    if (value is String && ObjectId.isValid(value)) {
+                        (json as MutableMap<String, Any?>).put("_id", ObjectId(value));
+                        json.remove("id")
+                        return@recursionJson true;
+                    }
+
+                    (json as MutableMap<String, Any?>).put("_id", value)
+                    json.remove("id")
+                }
+            }
+            return@recursionJson true;
+        });
+
+        return value;
+    }
+
+    /**
      *value 可能会是： Document{{answerRole=Patriarch}}
      */
-    fun proc_document_json(value: Document) {
+    fun procResultDocumentJsonData(value: Document) {
         RecursionUtil.recursionJson(value, { k, v, p ->
             if (v == null) return@recursionJson true
             var v_type = v::class.java;

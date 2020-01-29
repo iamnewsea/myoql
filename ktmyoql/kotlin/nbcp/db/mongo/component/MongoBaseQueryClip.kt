@@ -111,7 +111,7 @@ open class MongoBaseQueryClip (tableName:String ): MongoClipBase(tableName), IMo
         var lastKey = selectColumns.lastOrNull() ?: ""
         var error = false;
         try {
-            db.change_id2Id(cursor);
+            db.procResultData_id2Id(cursor);
             cursor.forEach {
                 //            if( it.containsField("_id")){
 //                it.put("id",it.get("_id").toString())
