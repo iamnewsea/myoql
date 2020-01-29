@@ -52,6 +52,9 @@ open class MongoBaseQueryClip (tableName:String ): MongoClipBase(tableName), IMo
         return Md5Util.getBase64Md5(unKeys.joinToString("\n"));
     }
 
+    /**
+     * 核心功能，查询列表，原始数据对象是 Document
+     */
     fun <R> toList(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): MutableList<R> {
         db.affectRowCount = -1;
         var isString = false;
