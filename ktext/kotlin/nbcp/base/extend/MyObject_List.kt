@@ -159,12 +159,11 @@ inline fun <T> List<out T>.Skip(skipNumber: Int): List<T> {
 //}
 
 /**
- * forEach的增强版
+ * forEach的增强版.
  * @return  遍历完所有元素返回 true, 如果没有对象，返回 true.
  */
 inline fun <T> Iterable<out T>.ForEachExt(action: (T, Int) -> Boolean): Boolean {
     if (this.any() == false) return true;
-
     var index = -1;
     while (true) {
         index++;
@@ -173,8 +172,6 @@ inline fun <T> Iterable<out T>.ForEachExt(action: (T, Int) -> Boolean): Boolean 
         }
 
         var element = this.elementAt(index);
-
-        println(index.toString() + ":" + element.ToJson())
         if (action(element, index) == false) {
             return false;
         }
