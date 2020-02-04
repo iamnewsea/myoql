@@ -32,6 +32,12 @@ import org.springframework.context.annotation.Primary
 class FieldWithNullTypeJsonMapper : JsonBaseObjectMapper() {
     init {
         setDefaultConfig()
+
+        this.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
+        this.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
+        this.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE);
+        this.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+
         this.registerModule(SpringUtil.getBean<JavascriptDateModule>());
     }
 

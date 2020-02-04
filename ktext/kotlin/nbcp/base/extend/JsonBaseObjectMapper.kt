@@ -25,11 +25,6 @@ abstract class JsonBaseObjectMapper : ObjectMapper(){
         this.configure(MapperFeature.USE_STD_BEAN_NAMING, true)
 
 
-        this.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.DEFAULT);
-        this.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.DEFAULT);
-        this.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.DEFAULT);
-        this.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.NONE);
-
         this.setDateFormat(SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 
         // 设置输入时忽略在JSON字符串中存在但Java对象实际没有的属性
