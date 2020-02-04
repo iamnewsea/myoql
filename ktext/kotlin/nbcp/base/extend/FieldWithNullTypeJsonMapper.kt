@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Primary
 /**
  * 使用 字段值 方式序列化JSON，应用在数据库的场景中。
  */
-class FieldWithNullTypeJsonMapper : JsonBaseObjectMapper() {
+open class FieldWithNullTypeJsonMapper : JsonBaseObjectMapper() {
     init {
         setDefaultConfig()
 

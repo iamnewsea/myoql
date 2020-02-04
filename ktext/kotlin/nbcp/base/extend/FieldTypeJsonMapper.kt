@@ -31,13 +31,12 @@ import org.springframework.context.annotation.Primary
  */
 @Primary
 @Component
-open class FieldTypeJsonMapper : JsonBaseObjectMapper(), InitializingBean {
+open class FieldTypeJsonMapper : FieldWithNullTypeJsonMapper(), InitializingBean {
     init {
 
         //在某些时候，如 mongo.aggregate.group._id 时， null 。
         //默认只序列化 not null 的。
         this.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-        setDefaultConfig()
     }
 
     companion object {
