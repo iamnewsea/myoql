@@ -11,8 +11,8 @@ import nbcp.base.utils.SpringUtil
 import java.text.SimpleDateFormat
 import java.util.*
 
-abstract class JsonBaseObjectMapper : ObjectMapper(){
-    fun setDefaultConfig(){
+abstract class JsonBaseObjectMapper : ObjectMapper() {
+    init {
         // 设置输出时包含属性的风格
         this.findAndRegisterModules();
         //在某些时候，如 mongo.aggregate.group._id 时， null 。

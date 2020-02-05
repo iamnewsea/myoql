@@ -31,8 +31,12 @@ import org.springframework.context.annotation.Primary
  */
 @Primary
 @Component
-open class FieldTypeJsonMapper : FieldWithNullTypeJsonMapper(), InitializingBean {
+open class FieldTypeJsonMapper : JsonBaseObjectMapper(), InitializingBean {
     init {
+        this.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
+        this.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
+        this.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE);
+        this.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
         //在某些时候，如 mongo.aggregate.group._id 时， null 。
         //默认只序列化 not null 的。

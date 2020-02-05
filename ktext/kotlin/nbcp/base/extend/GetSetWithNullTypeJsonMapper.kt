@@ -31,8 +31,6 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 open class GetSetWithNullTypeJsonMapper : JsonBaseObjectMapper() {
 
     init {
-        setDefaultConfig()
-
         this.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.DEFAULT);
         this.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.DEFAULT);
         this.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.DEFAULT);
