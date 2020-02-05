@@ -22,15 +22,16 @@ fun Document.GetComplexPropertyValue(property: String): String {
 
 /**
  * 根据路径查找值.
+ * @param eachProperty : 每个key,每次只取第一个，递归时传递剩余的keys.
  */
 fun Document.GetComplexPropertyValue(vararg eachProperty: String): Any? {
     if (eachProperty.size == 0) return null;
 
     var key = eachProperty[0];
 
-    if (key == "id") {
-        key = "_id";
-    }
+//    if (key == "id") {
+//        key = "_id";
+//    }
 
     var retVal: Any? = null;
     var aryIndex = key.indexOf('[');
@@ -48,6 +49,19 @@ fun Document.GetComplexPropertyValue(vararg eachProperty: String): Any? {
         retVal = aryValue[aryPropertys.last()]
     } else {
         retVal = this.get(key);
+
+
+        /**
+         * 如果取不到值。则尝试 id , _id
+         */
+        if( eachProperty.size == 1 &&  retVal == null ){
+            if( key == "id"){
+                retVal = this.get("_id");
+            }
+            else if( key == "_id"){
+                retVal = this.get("id")
+            }
+        }
     }
 
     if (eachProperty.size == 1) {
