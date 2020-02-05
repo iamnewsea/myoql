@@ -10,6 +10,7 @@ import nbcp.db.mongo.MongoClipBase
 import org.bson.Document
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.CriteriaDefinition
 import org.springframework.data.mongodb.core.query.Query
 import java.time.LocalDateTime
 
@@ -20,14 +21,23 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         }
     }
 
-    var whereData = mutableListOf<Criteria>()
-        private set
+    val whereData = mutableListOf<Criteria>()
+//        private set
 
-    protected var setData = LinkedHashMap<String, Any?>()
-    protected var unsetData = mutableListOf<String>()
+
+    /**保存 arrayFilters
+     * https://docs.mongodb.com/manual/reference/method/db.collection.update/index.html#update-arrayfilters
+     */
+    protected val arrayFilters:MutableList<CriteriaDefinition> = mutableListOf()
+
+    protected val setData = LinkedHashMap<String, Any?>()
+    protected val unsetData = mutableListOf<String>()
     protected val pushData = LinkedHashMap<String, Any>() //加
     protected val pullData = LinkedHashMap<String, Any>() //删
     protected val incData = LinkedHashMap<String, Int>() //
+
+
+    //---------------------------------------------
 
     fun setValue(column: String, value: Any?) {
         this.setData.put(column, value);
@@ -122,6 +132,10 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         var settingResult = db.mongoEvents.onUpdating(this)
         if (settingResult.any { it.second.result == false }) {
             return 0;
+        }
+
+        this.arrayFilters.forEach {
+            update.filterArray(it)
         }
 
         var ret = 0;

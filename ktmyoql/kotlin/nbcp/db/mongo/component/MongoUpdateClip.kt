@@ -13,6 +13,7 @@ import nbcp.db.db
 import nbcp.db.mongo.*
 import nbcp.db.mongo.component.MongoBaseUpdateClip
 import org.slf4j.LoggerFactory
+import org.springframework.data.mongodb.core.query.CriteriaDefinition
 import java.time.LocalDateTime
 
 /**
@@ -165,5 +166,13 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
         return this;
     }
 
+
+    /**
+     *@param define: 更新的参数，应该使用 Where 表达式子类 Criteria 传递
+     */
+    fun arrayFilter(define: Criteria): MongoUpdateClip<M> {
+        this.arrayFilters.add(define)
+        return this;
+    }
 }
 
