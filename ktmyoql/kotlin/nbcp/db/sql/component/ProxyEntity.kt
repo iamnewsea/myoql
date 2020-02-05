@@ -11,10 +11,10 @@ import kotlin.reflect.full.memberProperties
 //import nbcp.db.mongo.entity.IMongoDocument
 
 
-fun <M : SqlBaseTable<out T>, T :  IBaseDbEntity> M.query(selectColumn: ((M) -> SqlColumnName)? = null): SqlQueryClip<M, T> {
+fun <M : SqlBaseTable<out T>, T : IBaseDbEntity> M.query(selectColumn: ((M) -> SqlColumnName)? = null): SqlQueryClip<M, T> {
     var ret = SqlQueryClip<M, T>(this);
     if (selectColumn != null) {
-        ret.selectOne { selectColumn(this) }
+        ret.select { selectColumn(this) }
     }
     return ret;
 }

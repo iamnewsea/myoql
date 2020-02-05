@@ -49,10 +49,10 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
     }
 
     /**
-     * 选择某些列，也可以选单列
+     * 选择某列
      */
-    fun select(vararg selectColumn: (M) -> SqlColumnName): SqlQueryClip<M, T> {
-        this.columns.addAll(selectColumn.map { it(this.mainEntity) });
+    fun select(selectColumn: (M) -> SqlColumnName): SqlQueryClip<M, T> {
+        this.columns.add(selectColumn(this.mainEntity));
         return this;
     }
 
