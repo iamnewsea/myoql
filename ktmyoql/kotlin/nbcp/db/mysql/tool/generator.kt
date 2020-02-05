@@ -304,22 +304,22 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
             if (keys.size == 1) {
                 idMethods.add("""
     fun queryBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${javaType2KotlinType(entType.AllFields.first { f -> it == f.name }.type)}" }.joinToString(",")} ): SqlQueryClip<${entityTypeName}, ${tableName}> {
-        return this.query().where{ ${keys.map { "(it.${it} match_equal ${it})" }.joinToString(" and ")} }
+        return this.query().where{ ${keys.map { "(it.${it} match ${it})" }.joinToString(" and ")} }
     }
 """);
             }
 
             idMethods.add("""
     fun findBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${javaType2KotlinType(entType.AllFields.first { f -> it == f.name }.type)}" }.joinToString(",")} ): ${tableName}? {
-        return this.query().where{ ${keys.map { "(it.${it} match_equal ${it})" }.joinToString(" and ")} }.limit(0,1).toEntity()
+        return this.query().where{ ${keys.map { "(it.${it} match ${it})" }.joinToString(" and ")} }.limit(0,1).toEntity()
     }
 
     fun deleteBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${javaType2KotlinType(entType.AllFields.first { f -> it == f.name }.type)}" }.joinToString(",")} ): SqlDeleteClip<${entityTypeName},${tableName}> {
-        return this.delete().where{ ${keys.map { "(it.${it} match_equal ${it})" }.joinToString(" and ")} }
+        return this.delete().where{ ${keys.map { "(it.${it} match ${it})" }.joinToString(" and ")} }
     }
 
     fun updateBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${javaType2KotlinType(entType.AllFields.first { f -> it == f.name }.type)}" }.joinToString(",")} ): SqlUpdateClip<${entityTypeName},${tableName}> {
-        return this.update().where{ ${keys.map { "(it.${it} match_equal ${it})" }.joinToString(" and ")} }
+        return this.update().where{ ${keys.map { "(it.${it} match ${it})" }.joinToString(" and ")} }
     }
 """)
         }

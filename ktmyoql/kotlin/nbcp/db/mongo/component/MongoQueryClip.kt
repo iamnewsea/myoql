@@ -27,7 +27,7 @@ import java.lang.RuntimeException
 /**
  * MongoQuery
  */
-class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity: M) :  MongoBaseQueryClip(moerEntity.tableName) {
+class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity: M) : MongoBaseQueryClip(moerEntity.tableName) {
 
 
     fun limit(skip: Int, take: Int): MongoQueryClip<M, E> {
@@ -36,16 +36,29 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
         return this;
     }
 
-    fun orderBy(sortFunc: (M) -> MongoOrderBy): MongoQueryClip<M, E> {
-        var sort = sortFunc(this.moerEntity)
-        var sortName = sort.orderBy.toString()
+    /**
+     * 升序
+     */
+    fun orderByAsc(sortFunc: (M) -> MongoColumnName): MongoQueryClip<M, E> {
+        return this.orderBy(true, sortFunc(this.moerEntity))
+    }
+
+    /**
+     * 降序
+     */
+    fun orderByDesc(sortFunc: (M) -> MongoColumnName): MongoQueryClip<M, E> {
+        return this.orderBy(false, sortFunc(this.moerEntity))
+    }
+
+    private fun orderBy(asc: Boolean, field: MongoColumnName): MongoQueryClip<M, E> {
+        var sortName = field.toString()
         if (sortName == "id") {
             sortName = "_id"
         } else if (sortName.endsWith(".id")) {
             sortName = sortName.slice(0..sortName.length - 3) + "._id";
         }
 
-        this.sort.put(sortName, if (sort.Asc) 1 else -1)
+        this.sort.put(sortName, if (asc) 1 else -1)
         return this;
     }
 
@@ -109,7 +122,6 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
             return@lazy LoggerFactory.getLogger(this::class.java)
         }
     }
-
 
 
     fun toList(mapFunc: ((Document) -> Unit)? = null): MutableList<E> {

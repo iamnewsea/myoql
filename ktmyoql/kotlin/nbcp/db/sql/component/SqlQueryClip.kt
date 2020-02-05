@@ -40,13 +40,19 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
         return this;
     }
 
-    fun select(selectColumn: (M) -> SqlColumnNames): SqlQueryClip<M, T> {
+    /**
+     * 选择某些列
+     */
+    fun selectSome(selectColumn: (M) -> SqlColumnNames): SqlQueryClip<M, T> {
         this.columns.addAll(selectColumn(this.mainEntity))
         return this;
     }
 
-    fun selectOne(selectColumn: (M) -> SqlColumnName): SqlQueryClip<M, T> {
-        this.columns.add(selectColumn(this.mainEntity))
+    /**
+     * 选择某些列，也可以选单列
+     */
+    fun select(vararg selectColumn: (M) -> SqlColumnName): SqlQueryClip<M, T> {
+        this.columns.addAll(selectColumn.map { it(this.mainEntity) });
         return this;
     }
 
@@ -113,7 +119,7 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
     }
 
 
-    fun orderBy(order: (M) -> SqlColumnName): SqlQueryClip<M, T> {
+    fun orderByAsc(order: (M) -> SqlColumnName): SqlQueryClip<M, T> {
         this.orders.add(order(this.mainEntity).asc)
         return this
     }

@@ -109,19 +109,6 @@ cursor: {} } """;
         return ret.toTypedArray()
     }
 
-
-    fun doInsertAll(entities: Collection<T>): Int {
-        entities.forEach {
-            if (it.id.isEmpty()) {
-                it.id = ObjectId().toString()
-            }
-        }
-        mongoTemplate.insertAll(entities)
-        db.affectRowCount = entities.size
-        return db.affectRowCount
-    }
-
-
 //    fun save(entity: Any) {
 //        this.template.save(entity);
 //    }

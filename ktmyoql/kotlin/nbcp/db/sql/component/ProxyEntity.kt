@@ -49,7 +49,7 @@ fun <M : SqlBaseTable<out T>, T : IBaseDbEntity> M.insertIfNotExists(entity: T, 
         if (value == null) {
             query.where { key.isNullOrEmpty() }
         } else {
-            query.where { key match_equal value as Serializable }
+            query.where { key match value as Serializable }
         }
     }
 
@@ -72,7 +72,7 @@ fun <M : SqlBaseTable<out T>, T : IBaseDbEntity> M.save(entity: T, unionKey: ((M
         if (value == null) {
             update.where { key.isNullOrEmpty() }
         } else {
-            update.where { key match_equal value as Serializable }
+            update.where { key match value as Serializable }
         }
     }
 

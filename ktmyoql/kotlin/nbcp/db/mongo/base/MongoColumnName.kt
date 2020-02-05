@@ -7,11 +7,11 @@ import nbcp.base.extend.MyString
  */
 open class MongoColumnName(value: String = "") : MyString(value) {
 
-    val asc: MongoOrderBy
-        get() = MongoOrderBy(true, this)
-
-    val desc: MongoOrderBy
-        get() = MongoOrderBy(false, this)
+//    val asc: MongoOrderBy
+//        get() = MongoOrderBy(true, this)
+//
+//    val desc: MongoOrderBy
+//        get() = MongoOrderBy(false, this)
 
     operator fun plus(value: String): MongoColumnName {
         return MongoColumnName(this.toString() + value)

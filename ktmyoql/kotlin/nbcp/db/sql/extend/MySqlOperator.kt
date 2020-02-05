@@ -53,13 +53,13 @@ private fun SqlColumnName.column_match_value(op: String, value: Serializable): W
 
 infix fun SqlColumnName.like(value: String): WhereData = this.column_match_value("like", value)
 
-//infix fun SqlColumnName.match_equal(value: Serializable): WhereData = this.column_match_value("=", value)
-//infix fun SqlColumnName.match_equal(value: String): WhereData = this.column_match_value("=", value)
-//infix fun SqlColumnName.match_equal(value: Boolean): WhereData = this.column_match_value("=", value)
-//infix fun SqlColumnName.match_equal(value: LocalDate): WhereData = this.column_match_value("=", value)
-//infix fun SqlColumnName.match_equal(value: LocalDateTime): WhereData = this.column_match_value("=", value)
+//infix fun SqlColumnName.match(value: Serializable): WhereData = this.column_match_value("=", value)
+//infix fun SqlColumnName.match(value: String): WhereData = this.column_match_value("=", value)
+//infix fun SqlColumnName.match(value: Boolean): WhereData = this.column_match_value("=", value)
+//infix fun SqlColumnName.match(value: LocalDate): WhereData = this.column_match_value("=", value)
+//infix fun SqlColumnName.match(value: LocalDateTime): WhereData = this.column_match_value("=", value)
 
-infix fun SqlColumnName.match_equal(value: Serializable): WhereData {
+infix fun SqlColumnName.match(value: Serializable): WhereData {
     if( value is SqlColumnName) {
         return WhereData("${this.fullName} = ${value.fullName}")
     }
@@ -141,6 +141,9 @@ private fun SqlColumnName.column_match_between(min: Any, max: Any): WhereData {
 //fun SqlColumnName.match_between(min: LocalDate, max: LocalDate): WhereData = this.column_match_between(min, max)
 //fun SqlColumnName.match_between(min: LocalDateTime, max: LocalDateTime): WhereData = this.column_match_between(min, max)
 
+/**
+ * 大于等于，并且 小于
+ */
 fun<T : Serializable> SqlColumnName.match_between(min: T, max: T): WhereData {
     if( min is SqlColumnName && max is SqlColumnName) {
         return WhereData("${this.fullName} >= ${min.fullName} and ${this.fullName} < ${max.fullName}")

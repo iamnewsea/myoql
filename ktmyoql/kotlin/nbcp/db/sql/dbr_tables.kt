@@ -46,20 +46,20 @@ class BaseGroup : IDataGroup{
     
     
         fun queryById (id: String ): SqlQueryClip<s_annex_table, s_annex> {
-            return this.query().where{ (it.id match_equal id) }
+            return this.query().where{ (it.id match id) }
         }
     
     
         fun findById (id: String ): s_annex? {
-            return this.query().where{ (it.id match_equal id) }.limit(0,1).toEntity()
+            return this.query().where{ (it.id match id) }.limit(0,1).toEntity()
         }
     
         fun deleteById (id: String ): SqlDeleteClip<s_annex_table,s_annex> {
-            return this.delete().where{ (it.id match_equal id) }
+            return this.delete().where{ (it.id match id) }
         }
     
         fun updateById (id: String ): SqlUpdateClip<s_annex_table,s_annex> {
-            return this.update().where{ (it.id match_equal id) }
+            return this.update().where{ (it.id match id) }
         }
     
     }
@@ -80,20 +80,20 @@ class BaseGroup : IDataGroup{
     
     
         fun queryById (id: String ): SqlQueryClip<s_dustbin_table, s_dustbin> {
-            return this.query().where{ (it.id match_equal id) }
+            return this.query().where{ (it.id match id) }
         }
     
     
         fun findById (id: String ): s_dustbin? {
-            return this.query().where{ (it.id match_equal id) }.limit(0,1).toEntity()
+            return this.query().where{ (it.id match id) }.limit(0,1).toEntity()
         }
     
         fun deleteById (id: String ): SqlDeleteClip<s_dustbin_table,s_dustbin> {
-            return this.delete().where{ (it.id match_equal id) }
+            return this.delete().where{ (it.id match id) }
         }
     
         fun updateById (id: String ): SqlUpdateClip<s_dustbin_table,s_dustbin> {
-            return this.update().where{ (it.id match_equal id) }
+            return this.update().where{ (it.id match id) }
         }
     
     }
@@ -117,20 +117,20 @@ class BaseGroup : IDataGroup{
     
     
         fun queryById (id: String ): SqlQueryClip<s_log_table, s_log> {
-            return this.query().where{ (it.id match_equal id) }
+            return this.query().where{ (it.id match id) }
         }
     
     
         fun findById (id: String ): s_log? {
-            return this.query().where{ (it.id match_equal id) }.limit(0,1).toEntity()
+            return this.query().where{ (it.id match id) }.limit(0,1).toEntity()
         }
     
         fun deleteById (id: String ): SqlDeleteClip<s_log_table,s_log> {
-            return this.delete().where{ (it.id match_equal id) }
+            return this.delete().where{ (it.id match id) }
         }
     
         fun updateById (id: String ): SqlUpdateClip<s_log_table,s_log> {
-            return this.update().where{ (it.id match_equal id) }
+            return this.update().where{ (it.id match id) }
         }
     
     }

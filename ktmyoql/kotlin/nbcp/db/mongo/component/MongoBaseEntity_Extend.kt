@@ -33,6 +33,11 @@ fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.updateWithEntity(entity:E): M
     return MongoSetEntityUpdateClip(this,entity);
 }
 
+fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.insert(): MongoInsertClip<M,E> {
+    return MongoInsertClip(this);
+}
+
+
 //
 //data class MongoSaveClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity: M, var entity: E) {
 //    private var whereColumns = MongoColumns()
