@@ -15,7 +15,7 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import java.lang.Exception
 
-open class MongoBaseQueryClip (tableName:String ): MongoClipBase(tableName), IMongoWhereable {
+open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMongoWhereable {
     var whereData = mutableListOf<Criteria>()
     protected var skip: Int = 0;
     protected var take: Int = -1;
@@ -25,7 +25,7 @@ open class MongoBaseQueryClip (tableName:String ): MongoClipBase(tableName), IMo
     //    private var selectDbObjects = mutableSetOf<String>();
     protected var unSelectColumns = mutableSetOf<String>()
 
-    fun selectField(column:String){
+    fun selectField(column: String) {
         this.selectColumns.add(column);
     }
 
@@ -109,6 +109,13 @@ open class MongoBaseQueryClip (tableName:String ): MongoClipBase(tableName), IMo
 
         var ret = mutableListOf<R>();
         var lastKey = selectColumns.lastOrNull() ?: ""
+
+        if (lastKey == "_id") {
+            lastKey = "id"
+        } else if (lastKey.endsWith("._id")) {
+            lastKey = lastKey.Slice(0, -3) + "id";
+        }
+
         var error = false;
         try {
             db.procResultData_id2Id(cursor);
@@ -166,7 +173,7 @@ open class MongoBaseQueryClip (tableName:String ): MongoClipBase(tableName), IMo
                 return msgs.joinToString(line_break);
             }
 
-             logger.InfoError(error) { getMsgs() }
+            logger.InfoError(error) { getMsgs() }
         }
 
 
