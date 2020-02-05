@@ -13,6 +13,7 @@ import nbcp.comm.*
 import nbcp.base.extend.*
 import nbcp.base.line_break
 import nbcp.base.utils.Md5Util
+import nbcp.base.utils.RecursionUtil
 import nbcp.db.db
 import nbcp.db.mongo.*
 import org.slf4j.LoggerFactory
@@ -160,8 +161,14 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
         var pipeLineExpression = "[" + pipeLines.map {
             var key = it.first;
             var value = it.second;
-            if (value is Criteria) {
-                return@map """{$key:${value.criteriaObject.ToJsonWithNull()}}"""
+            if( value is ObjectId){
+                return@map """{$key:${value.toString().toOIdJson().ToJsonValue()}}"""
+            }
+            else if (value is Criteria) {
+
+                var c_value = value.criteriaObject.procWithMongoScript();
+
+                return@map """{$key:${c_value.ToJsonWithNull()}}"""
             } else if (value is Number) {
                 return@map "{$key:$value}";
             } else if (value is String) {
@@ -170,7 +177,7 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
 //                }
                 return@map """{$key:"${value}"}"""
             } else if (value is Map<*, *>) {
-                return@map "{$key:${value.ToJsonWithNull()}}"
+                return@map "{$key:${value.procWithMongoScript().ToJsonWithNull()}}"
             }
 
             logger.warn("不识别的类型：${value::class.java.name}")

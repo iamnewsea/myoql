@@ -106,55 +106,6 @@ fun <T : Any> Document.ReadAs(value: T): T {
     return ret;
 }
 
-/**
- * 根据路径查找值.
- */
-fun Document.GetComplexPropertyValue(property: String): String {
-    var sects = property.split(".");
-
-    if (sects.size == 0) return "";
-
-
-    return this.GetComplexPropertyValue(*sects.toTypedArray()).AsString()
-}
-
-/**
- * 根据路径查找值.
- */
-fun Document.GetComplexPropertyValue(vararg eachProperty: String): Any? {
-    if (eachProperty.size == 0) return null;
-
-    var key = eachProperty[0];
-
-    if (key == "id") {
-        key = "_id";
-    }
-
-    var retVal: Any? = null;
-    var aryIndex = key.indexOf('[');
-
-    if (aryIndex > 0) {
-        var aryPropertys = key.Slice(aryIndex).Slice(1, -1).split("][").map { it.AsInt() };
-        key = key.Slice(0, aryIndex);
-
-        var aryValue = (this.get(key) as ArrayList<*>);
-
-        aryPropertys.take(aryPropertys.size - 1).forEach {
-            aryValue = aryValue[it] as ArrayList<*>;
-        }
-
-        retVal = aryValue[aryPropertys.last()]
-    } else {
-        retVal = this.get(key);
-    }
-
-    if (eachProperty.size == 1) {
-        return retVal;
-    }
-
-    return (retVal as Document).GetComplexPropertyValue(*eachProperty.takeLast(eachProperty.size - 1).toTypedArray());
-}
-
 
 //fun Criteria.toDBObject(): BasicDBObject {
 //    var ret = BasicDBObject();
