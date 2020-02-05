@@ -56,7 +56,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
     /*
     过滤掉是 null 的列.
      */
-    fun insert(entity: T): SqlInsertClip<M, T> {
+    fun add(entity: T): SqlInsertClip<M, T> {
         this.ori_entities.add(entity)
 
         var ent = JsonMap.loadFromEntity(entity)
@@ -81,10 +81,10 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
     /**
      * 不过滤列.
      */
-    fun insert(entity: List<T>): SqlInsertClip<M, T> {
+    fun addAll(entity: List<T>): SqlInsertClip<M, T> {
         if (entity.size == 0) return this
         entity.forEach {
-            insert(it)
+            add(it)
         }
         return this
     }

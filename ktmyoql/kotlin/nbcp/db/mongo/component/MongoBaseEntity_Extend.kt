@@ -33,7 +33,7 @@ fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.updateWithEntity(entity:E): M
     return MongoSetEntityUpdateClip(this,entity);
 }
 
-fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.insert(): MongoInsertClip<M,E> {
+fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.batchInsert(): MongoInsertClip<M,E> {
     return MongoInsertClip(this);
 }
 

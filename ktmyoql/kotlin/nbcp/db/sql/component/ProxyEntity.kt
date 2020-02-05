@@ -30,10 +30,10 @@ fun <M : SqlBaseTable<out T>, T : IBaseDbEntity> M.update(): SqlUpdateClip<M, T>
 //自增主键 ,返回到 entity 实体上. 以及 dbr.lastAutoId
 //返回 影响行数
 fun <M : SqlBaseTable<out T>, T : IBaseDbEntity> M.doInsert(entity: T): Int {
-    return SqlInsertClip(this).insert(entity).exec()
+    return SqlInsertClip(this).add(entity).exec()
 }
 
-fun <M : SqlBaseTable<out T>, T : IBaseDbEntity> M.insert(): SqlInsertClip<M, T> {
+fun <M : SqlBaseTable<out T>, T : IBaseDbEntity> M.batchInsert(): SqlInsertClip<M, T> {
     return SqlInsertClip(this)
 }
 
@@ -56,7 +56,7 @@ fun <M : SqlBaseTable<out T>, T : IBaseDbEntity> M.insertIfNotExists(entity: T, 
     if (query.exists()) {
         return 0;
     }
-    return SqlInsertClip(this).insert(entity).exec()
+    return SqlInsertClip(this).add(entity).exec()
 }
 
 
@@ -87,6 +87,6 @@ fun <M : SqlBaseTable<out T>, T : IBaseDbEntity> M.save(entity: T, unionKey: ((M
     if (db.affectRowCount > 0) {
         return db.affectRowCount;
     }
-    return SqlInsertClip(this).insert(entity).exec()
+    return SqlInsertClip(this).add(entity).exec()
 }
 

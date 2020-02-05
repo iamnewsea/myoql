@@ -164,9 +164,9 @@ data class SysCity(
 
      var n = mor.组件.实体名.doInsert( 实体 ) 
      
-     var n = mor.组件.实体名.insert()
-        .insert( 实体1 )
-        .insert( 实体2 )
+     var n = mor.组件.实体名.batchInsert()
+        .add( 实体1 )
+        .add( 实体2 )
         .exec()
 其中：
 
@@ -279,9 +279,9 @@ data class s_user(
 
      var n = mor.组件.实体名.doInsert(实体) 
      
-     var n = mor.组件.实体名.insert()
-        .insert( 实体1 )
-        .insert( 实体2 )
+     var n = mor.组件.实体名.batchInsert()
+        .add( 实体1 )
+        .add( 实体2 )
         .exec()
 其中：
 

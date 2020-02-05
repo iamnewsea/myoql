@@ -27,7 +27,7 @@ class MongoInsertClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity
 
     private var entities = mutableListOf<E>()
 
-    fun insert(entity: E): MongoInsertClip<M, E> {
+    fun add(entity: E): MongoInsertClip<M, E> {
         this.entities.add(entity);
         return this;
     }

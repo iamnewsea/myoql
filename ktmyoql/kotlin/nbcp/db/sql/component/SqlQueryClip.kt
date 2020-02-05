@@ -120,12 +120,12 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
 
 
     fun orderByAsc(order: (M) -> SqlColumnName): SqlQueryClip<M, T> {
-        this.orders.add(order(this.mainEntity).asc)
+        this.orders.add( SqlOrderBy(true, SingleSqlData(order(this.mainEntity).fullName)))
         return this
     }
 
     fun orderByDesc(order: (M) -> SqlColumnName): SqlQueryClip<M, T> {
-        this.orders.add(order(this.mainEntity).desc)
+        this.orders.add( SqlOrderBy(false, SingleSqlData(order(this.mainEntity).fullName)))
         return this
     }
 

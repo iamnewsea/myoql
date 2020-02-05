@@ -36,11 +36,11 @@ infix fun SqlColumnNames.and(next: SqlColumnName): SqlColumnNames {
     return this;
 }
 
-val SqlColumnName.asc: SqlOrderBy
-    get() = SqlOrderBy(true, SingleSqlData(this.fullName));// this.toSingleSqlData())
-
-val SqlColumnName.desc: SqlOrderBy
-    get() = SqlOrderBy(false, SingleSqlData(this.fullName))
+//val SqlColumnName.asc: SqlOrderBy
+//    get() = SqlOrderBy(true, SingleSqlData(this.fullName));// this.toSingleSqlData())
+//
+//val SqlColumnName.desc: SqlOrderBy
+//    get() = SqlOrderBy(false, SingleSqlData(this.fullName))
 
 
 fun SqlColumnName.sum(alias: String = ""): SingleSqlData {
