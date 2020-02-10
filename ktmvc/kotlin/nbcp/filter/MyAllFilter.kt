@@ -27,10 +27,12 @@ import javax.servlet.http.HttpServletResponse
 
 /**
  * Created by udi on 2017.3.11.
- * 不拦截 GET,HEAD,OPTIONS 请求
+ * 拦截所有请求，过滤普通的GET及上传下载。
  * 需要配置 ：
+ * 0. 标注 @SpringBootApplication 的启动类，还需要添加 @ServletComponentScan 注解。
  * 1. server.filter.allowOrigins
  * 2. server.filter.ignore-log-urls
+ * 3. server.filter.headers
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 //@Configuration
