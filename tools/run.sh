@@ -1,0 +1,1 @@
+kill-grep.py $*  && java -Xmx350m   -Dfile.encoding=utf-8 -jar $*
