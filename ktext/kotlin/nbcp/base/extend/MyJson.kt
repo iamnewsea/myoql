@@ -90,9 +90,26 @@ fun <T> String.FromJson(collectionClass: Class<T>, getSetStyle: Boolean = false,
         return null;
     }
 
+    var mapper:JsonBaseObjectMapper;
+
+    if( getSetStyle ){
+        if( withNull){
+            mapper = GetSetWithNullTypeJsonMapper.instance;
+        }
+        else {
+            mapper = GetSetTypeJsonMapper.instance;
+        }
+    }
+    else if( withNull){
+        mapper = FieldWithNullTypeJsonMapper.instance;
+    }
+    else{
+        mapper = FieldTypeJsonMapper.instance;
+    }
+
     var ret: T? = null
     try {
-        ret = FieldTypeJsonMapper.instance.readValue(jsonString, collectionClass)
+        ret = mapper.readValue(jsonString, collectionClass)
     } catch (e: Exception) {
         var msg = "Json转换出错！Json数据：${jsonString}\n 类型:${collectionClass.name} \n 错误消息:" + e.message;
         logger.error(msg)

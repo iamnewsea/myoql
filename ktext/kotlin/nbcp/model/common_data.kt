@@ -15,7 +15,7 @@ open class CodeName(var code: String = "", var name: String = "") : java.io.Seri
 
 open class CodeValue(var code: String = "", var value: String = "") : java.io.Serializable {}
 
-open class IdCodeName(var id: String = "", code: String = "", name: String = "") : CodeName(id, name) {}
+open class IdCodeName(var id: String = "", code: String = "", name: String = "") : CodeName(code, name) {}
 
 open class KeyValueString(var key: String = "", var value: String = "") : java.io.Serializable {}
 
@@ -46,7 +46,7 @@ open class IdUrl(var id: String = "", var url: String = "") : java.io.Serializab
         }
 }
 
-open class IdNameUrl(id: String = "", var name: String = "", url: String = "") : IdUrl()
+open class IdNameUrl(id: String = "", var name: String = "", url: String = "") : IdUrl(id, url)
 
 
 /**
