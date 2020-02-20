@@ -19,11 +19,13 @@ open class JsonResult(var msg: String = "", var cause: String = "") {}
 
 open class ApiResult<T>(msg: String = "", cause: String = "") : JsonResult(msg, cause) {
     var data: T? = null
+    var value: Any? = null
 
     companion object {
-        fun<T> of(data: T?): ApiResult<T> {
+        fun <T> of(data: T?, value: Any? = null): ApiResult<T> {
             var ret = ApiResult<T>();
             ret.data = data;
+            ret.value = value;
             return ret;
         }
     }
@@ -55,7 +57,7 @@ class ListResult<T>(msg: String = "",
                     var value: Any? = null
 ) : JsonResult(msg) {
     companion object {
-        fun<T> of(data:List<T>):ListResult<T>{
+        fun <T> of(data: List<T>): ListResult<T> {
             var ret = ListResult<T>();
             ret.data = data;
             ret.total = data.size;
