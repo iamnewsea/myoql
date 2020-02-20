@@ -20,14 +20,24 @@ open class JsonResult(var msg: String = "", var cause: String = "") {}
 open class ApiResult<T>(msg: String = "", cause: String = "") : JsonResult(msg, cause) {
     var data: T? = null
     var value: Any? = null
+    var valueRemark: String = ""
 
     companion object {
-        fun <T> of(data: T?, value: Any? = null): ApiResult<T> {
+        fun <T> of(data: T?): ApiResult<T> {
             var ret = ApiResult<T>();
             ret.data = data;
-            ret.value = value;
             return ret;
         }
+    }
+
+    /** 设置额外value的值。
+     * @param valueRemark value值的含义
+     * @param value value的值
+     */
+    fun setValue(valueRemark: String, value: Any): ApiResult<T> {
+        this.valueRemark = valueRemark;
+        this.value = value;
+        return this;
     }
 }
 
@@ -53,9 +63,11 @@ open class ListQueryModel {
  */
 class ListResult<T>(msg: String = "",
                     var total: Int = -1,
-                    var data: List<T> = listOf(),
-                    var value: Any? = null
+                    var data: List<T> = listOf()
 ) : JsonResult(msg) {
+    var value: Any? = null
+    var valueRemark: String = ""
+
     companion object {
         fun <T> of(data: List<T>): ListResult<T> {
             var ret = ListResult<T>();
@@ -63,6 +75,16 @@ class ListResult<T>(msg: String = "",
             ret.total = data.size;
             return ret;
         }
+    }
+
+    /** 设置额外value的值。
+     * @param valueRemark value值的含义
+     * @param value value的值
+     */
+    fun setValue(valueRemark: String, value: Any): ListResult<T> {
+        this.valueRemark = valueRemark;
+        this.value = value;
+        return this;
     }
 }
 
