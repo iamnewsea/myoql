@@ -10,10 +10,13 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import org.w3c.dom.DocumentType
 import nbcp.comm.*
+import org.w3c.dom.Node
+import org.w3c.dom.NodeList
 import java.io.ByteArrayInputStream
 import java.util.regex.Pattern
 import javax.xml.parsers.DocumentBuilderFactory
-
+import org.w3c.dom.Element
+import kotlin.collections.LinkedHashMap
 
 /**
  * Created by udi on 17-4-3.
@@ -507,37 +510,70 @@ fun String.ToTab(deepth: Int): String {
 }
 
 
-private fun xmlNodeHasTextNode(item: org.w3c.dom.Node): Boolean {
+//private fun xmlNodeHasTextNode(item: org.w3c.dom.Node): Boolean {
+//
+//    if (item.nodeType != DocumentType.ELEMENT_NODE) return false;
+//    if (item.childNodes.length < 1) return false;
+//
+//    for (index in 0..item.childNodes.length - 1) {
+//        var subItem = item.childNodes.item(index);
+//        if (subItem.nodeType == DocumentType.CDATA_SECTION_NODE) return true;
+//        if (subItem.nodeType == DocumentType.TEXT_NODE) return true;
+//    }
+//    return false;
+//}
 
-    if (item.nodeType != DocumentType.ELEMENT_NODE) return false;
-    if (item.childNodes.length < 1) return false;
+fun Element.Xml2Json(): Map<String, Any> {
+    var retList = mutableListOf<Pair<String, Any>>()
+    if (this is NodeList && (this.length > 0)) {
+        for (index in 0..this.length - 1) {
+            var item = this.item(index)
+            if (item.nodeType != Node.ELEMENT_NODE) {
+                continue;
+            }
+            retList.addAll((item as Element).Xml2Json().toList())
+            continue;
+        }
+        var jsonMap = LinkedHashMap<String, Any>();
+        if (retList.count() != retList.map { it.first }.toSet().count()) {
+            jsonMap.put(this.nodeName, retList.map { JsonMap(it) });
+            return jsonMap;
+        }
 
-    for (index in 0..item.childNodes.length - 1) {
-        var subItem = item.childNodes.item(index);
-        if (subItem.nodeType == DocumentType.CDATA_SECTION_NODE) return true;
-        if (subItem.nodeType == DocumentType.TEXT_NODE) return true;
+        jsonMap.put(this.nodeName, retList.toMap())
+        return jsonMap;
+    } else {
+        var jsonMap = LinkedHashMap<String, Any>();
+        var childNode = this.childNodes;
+        if (childNode.length == 0) {
+            return jsonMap
+        }
+
+        var firstChildNode = this.firstChild
+
+        if (childNode.length == 1 && firstChildNode.nodeType == Node.TEXT_NODE) {
+            if (firstChildNode.textContent.isEmpty()) return jsonMap
+            jsonMap.put(this.nodeName, firstChildNode.textContent)
+            return jsonMap;
+        }
+
+        jsonMap.put(this.nodeName, (this.childNodes as Element).Xml2Json())
+        return jsonMap
     }
-    return false;
 }
 
-fun String.Xml2Json(): StringMap {
-    var ret = StringMap();
-    if (this.isEmpty()) return ret;
-
+/**
+ * 把Xml转为 JsonMap
+ */
+fun String.Xml2Json(): JsonMap {
+    if (this.isEmpty()) return JsonMap();
 
     val db = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-
     val input = ByteArrayInputStream(this.toByteArray())
-
     val document = db.parse(input)
+    var nodes = document.documentElement.childNodes as Element;
 
-    var nodes = document.documentElement.childNodes;
-    for (index in 0..nodes.length - 1) {
-        var item = nodes.item(index)
-        if (xmlNodeHasTextNode(item) == false) continue;
-        ret.put(item.nodeName, item.textContent)
-    }
-    return ret;
+    return JsonMap(nodes.Xml2Json())
 }
 
 
@@ -545,7 +581,6 @@ fun String.Xml2Json(): StringMap {
 //    var bytes = this.toByteArray(utf8)
 //    return CharArray(bytes.size, { bytes[it].toChar() });
 //}
-
 
 
 class MatchPatternTokenItem(value: String) : MyString(value) {
