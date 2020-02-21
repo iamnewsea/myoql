@@ -30,6 +30,13 @@ annotation class MongoEntitySysDustbin()
 
 
 /**
+ * 记录当更新某些字段时,记录到日志表
+ */
+@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class DbEntityLogHistory(vararg val fields: String)
+
+/**
  * 标注 实体更新的 Bean，需要实现  IDbEntityUpdate
  */
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)

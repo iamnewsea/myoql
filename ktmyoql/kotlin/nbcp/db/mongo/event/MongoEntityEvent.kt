@@ -14,6 +14,7 @@ class MongoEntityEvent : BeanPostProcessor {
         val groups = mutableSetOf<IDataGroup>()
         //需要删 除后放入垃圾箱的实体
         val dustbinEntitys = mutableSetOf<Class<*>>()  //mongo entity class
+        val logHistoryMap = linkedMapOf<Class<*>, Array<String>>()
         // 冗余字段的引用。如 user.corp.name 引用的是  corp.name
         val refsMap = mutableListOf<DbEntityFieldRefData>()
         //注册的 Update Bean
@@ -33,7 +34,7 @@ class MongoEntityEvent : BeanPostProcessor {
 
                     addDustbin(entityClass)
                     addRef(entityClass)
-
+                    addLogHistory(entityClass);
                 }
             }
         }
@@ -53,6 +54,13 @@ class MongoEntityEvent : BeanPostProcessor {
         }
 
         return super.postProcessAfterInitialization(bean, beanName)
+    }
+
+    private fun addLogHistory(entityClass: Class<out IMongoDocument>) {
+        var logHistory = entityClass.getAnnotation(DbEntityLogHistory::class.java)
+        if (logHistory != null) {
+            logHistoryMap.put(entityClass, logHistory.fields.map { it }.toTypedArray());
+        }
     }
 
 
@@ -98,7 +106,7 @@ class MongoEntityEvent : BeanPostProcessor {
         var list = mutableListOf<Pair<IMongoEntityDelete, DbEntityEventResult>>()
         deleteEvent.ForEachExt { it, index ->
             var ret = it.beforeDelete(delete);
-            if ( ret.result == false) {
+            if (ret.result == false) {
                 return@ForEachExt false;
             }
             list.add(it to ret)

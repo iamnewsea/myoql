@@ -86,12 +86,12 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
 
 
         ret.forEach { ref ->
-            var update = MongoBaseUpdateClip(MyUtil.getSmallCamelCase(ref.ref.entityClass.simpleName))
-            update.whereData.add(MongoColumnName(ref.ref.idField) match_in ref.masterIdValues)
-            update.setValue(ref.ref.nameField, ref.masterNameValue)
+            var update2 = MongoBaseUpdateClip(MyUtil.getSmallCamelCase(ref.ref.entityClass.simpleName))
+            update2.whereData.add(MongoColumnName(ref.ref.idField) match_in ref.masterIdValues)
+            update2.setValue(ref.ref.nameField, ref.masterNameValue)
 
             using(NoAffectRowCount()) {
-                update.exec();
+                update2.exec();
             }
         }
     }

@@ -8,7 +8,7 @@ import nbcp.db.mongo.*
 
 //系统附件表
 @Document
-@DbEntityGroup ("base")
+@DbEntityGroup("base")
 open class SysAnnex(
         var name: String = "",          //显示的名字,友好的名称
         var tags: List<String> = listOf(),
@@ -31,12 +31,13 @@ open class SysAnnex(
 @DbEntityGroup("base")
 open class SysLog(
         var msg: String = "",
-        var creatAt: LocalDateTime = LocalDateTime.now(),
-        var createBy: String = "",
         var type: String = "",
         var clientIp: String = "",
         var module: String = "",
-        var remark: String = ""
+        var remark: String = "",
+        var data: Any? = null,
+        var creatAt: LocalDateTime = LocalDateTime.now(),
+        var createBy: String = ""
 ) : IMongoDocument() {
 }
 
