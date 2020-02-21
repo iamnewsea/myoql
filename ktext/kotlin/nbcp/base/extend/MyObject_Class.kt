@@ -100,11 +100,18 @@ fun <T> Class<T>.GetEnumStringField(): Field? {
 val Class<*>.AllFields: List<Field>
     get() {
         var ret = mutableListOf<Field>();
-        ret.addAll(this.declaredFields.filter {
+
+        var fields = this.declaredFields.filter {
             if (it.modifiers and Modifier.STATIC > 0) return@filter false;
             if (it.modifiers and Modifier.TRANSIENT > 0) return@filter false;
             true
-        })
+        };
+
+        fields.forEach {
+            it.isAccessible = true;
+        }
+
+        ret.addAll(fields);
 
         if (this.superclass == null || this.superclass == Any::class.java) {
             return ret;

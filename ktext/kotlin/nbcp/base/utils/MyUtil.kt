@@ -114,16 +114,31 @@ object MyUtil {
     }
 
     /**
+     * 判断是否是 Jar包启动。
+     */
+    fun isJarStarting(): Boolean {
+        return Thread.currentThread().contextClassLoader.getResource("/") != null;
+    }
+
+    /**
      * 获取启动Jar所的路径
      * 调试时，会返回 target/classes/nbcp/base/utils
      * @param clazz: 启动Jar所任意类
      */
-    fun getStartingJarFile(clazz: Class<*>): File {
+    fun getStartingJarFile(): File {
         /**
         file:/opt/edu_report/admin-api-1.0.1.jar!/BOOT-INF/classes!/
         /D:/code/edu_report/server/admin/target/classes/
          */
-        var file = clazz.protectionDomain.codeSource.location.path
+        /**
+         * 还有一种办法获取 file
+         * var file = Thread.currentThread().contextClassLoader.getResource("/").path
+         */
+//        var file = clazz.protectionDomain.codeSource.location.path
+        var jarFile = Thread.currentThread().contextClassLoader.getResource("/")
+                ?: Thread.currentThread().contextClassLoader.getResource("")
+
+        var file = jarFile.path
         print(file)
         var startIndex = 0
         if (file.startsWith("//file:/")) {

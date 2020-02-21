@@ -1,27 +1,28 @@
 package nbcp.web.config
 
+import nbcp.base.extend.*
+import nbcp.base.line_break
+import nbcp.base.utf8
+import nbcp.base.utils.Md5Util
+import nbcp.base.utils.MyUtil
+import nbcp.comm.JsonMap
+import nbcp.comm.StringMap
+import nbcp.web.*
 import org.slf4j.LoggerFactory
+import org.slf4j.MDC
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
+import org.springframework.http.MediaType
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
-import nbcp.base.extend.*
-import nbcp.base.*
-
-import nbcp.base.utils.CodeUtil
-import nbcp.base.utils.Md5Util
-import nbcp.comm.JsonMap
-import nbcp.web.*
-import org.slf4j.MDC
-import org.springframework.web.multipart.commons.CommonsMultipartResolver
-import java.lang.Exception
+import java.io.File
 import java.lang.reflect.UndeclaredThrowableException
-import java.nio.charset.Charset
-import java.util.concurrent.atomic.AtomicInteger
+import java.nio.file.Path
+import java.util.jar.JarFile
 import javax.servlet.*
 import javax.servlet.annotation.WebFilter
-import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -39,7 +40,7 @@ import javax.servlet.http.HttpServletResponse
 @WebFilter(urlPatterns = arrayOf("/*", "/**"))
 //@WebFilter(urlPatterns = arrayOf("/**"), filterName = "MyAllFilter")
 //@ConfigurationProperties(prefix = "nbcp.filter")
-open class MyAllFilter : Filter {
+open class MyAllFilter : Filter, InitializingBean {
     override fun destroy() {
         MDC.remove("request_id")
     }
@@ -54,11 +55,39 @@ open class MyAllFilter : Filter {
 
     @Value("\${server.filter.headers:}")
     var headers: List<String> = listOf()
+
+    @Value("\${server.filter.headers:public}")
+    var htmlPath: String = "public"
+
 //    @Value("\${server.session.cookie.name}")
 //    var cookieName = "";
 
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+
+        var htmlFiles = listOf<String>()
+        var isJarFile = true;
+        var jarFile = ""
+
+        val mimeLists = StringMap(
+                "css" to "text/css",
+                "html" to "text/html",
+                "js" to "application/javascript",
+                "xml" to "text/xml",
+                "gif" to "image/gif",
+                "jpg" to "image/jpeg",
+                "jpeg" to "image/jpeg",
+                "png" to "image/jpeg",
+                "json" to "application/json",
+                "txt" to "text/plain",
+                "mp4" to "video/mpeg4",
+                "doc" to "application/msword",
+                "docx" to "application/msword",
+                "pdf" to "application/pdf",
+                "xls" to "application/vnd.ms-excel",
+                "xlsx" to "application/vnd.ms-excel",
+                "ppt" to "application/vnd.ms-powerpoint"
+        )
     }
 
     override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
@@ -132,6 +161,25 @@ open class MyAllFilter : Filter {
 
                 afterComplete(myRequest, myResponse, queryMap.getStringValue("callback"), startAt, "");
             } else {
+                //是否是静态资源, 必须有后缀名。
+                var extention = FileExtentionInfo(request.requestURI)
+                if (extention.extName.HasValue) {
+                    var file = htmlFiles.firstOrNull { request.requestURI.startsWith(it) }
+                    if (file != null) {
+                        response.status = 200;
+
+                        var contentType = mimeLists.filter { it.key == extention.extName.toLowerCase() }.values.firstOrNull()
+                        if (contentType != null) {
+                            response.contentType = contentType
+                        }
+
+                        var prefix = if (isJarFile) "/" else "";
+
+                        Thread.currentThread().contextClassLoader.getResourceAsStream("${prefix}${htmlPath}${file}").copyTo(response.outputStream)
+                        return;
+                    }
+                }
+
                 chain?.doFilter(request, response)
 
 //                logNewSession(request, response);
@@ -403,5 +451,45 @@ open class MyAllFilter : Filter {
             return true;
         }
         return false;
+    }
+
+
+    private fun getAllFiles(file: File, filter: ((String) -> Boolean)): List<String> {
+        if (file.isDirectory) {
+            var ret = mutableListOf<String>()
+            file.listFiles().forEach {
+                ret.addAll(getAllFiles(it, filter));
+            }
+            return ret
+        } else {
+            if (filter.invoke(file.FullName) == false) {
+                return listOf()
+            }
+
+            return listOf(file.FullName)
+        }
+    }
+
+    //收集静态资源
+    override fun afterPropertiesSet() {
+        var file = MyUtil.getStartingJarFile();
+        if (file.exists() == false) {
+            return;
+        }
+        jarFile = file.FullName;
+
+        if (file.isFile) {
+            isJarFile = true;
+            var prefix = "BOOT-INF/classes/${htmlPath}/"
+            htmlFiles = JarFile(file).entries().toList()
+                    .filter { it.name.startsWith(prefix) }
+                    .filter { it.name.endsWith("/") == false }
+                    .map { "/" + it.name.Slice(prefix.length) }
+        } else {
+            isJarFile = false;
+            var file2 = File(file.FullName + File.separator + htmlPath);
+            htmlFiles = getAllFiles(file2) { it.startsWith(file2.FullName + File.separator) && (it.endsWith(File.separator) == false) }
+                    .map { "/" + it.Slice(file2.FullName.length + 1) }
+        }
     }
 }
