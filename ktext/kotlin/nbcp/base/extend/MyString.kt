@@ -523,15 +523,66 @@ fun String.ToTab(deepth: Int): String {
 //    return false;
 //}
 
+/**
+ * 如果仅有一个子元素，且子元素是 Text，CData，返回内容，或空字符串。
+ * 其它情况返回 null ,表示不是一个子元素。
+ */
+private fun getNodeText(node: Element): String? {
+    var childNode = node.childNodes;
+
+    //如果仅仅是 343
+    var hasNode = false;
+    var retValue: String = ""
+    for (index in 0..(childNode.length - 1)) {
+        var subItem = childNode.item(index);
+        if (subItem.nodeType != Node.TEXT_NODE &&
+                subItem.nodeType != Node.CDATA_SECTION_NODE) {
+            hasNode = true;
+            break;
+        }
+
+        retValue = subItem.textContent.trim()
+        if (retValue.HasValue) {
+            break;
+        }
+    }
+
+    if (hasNode) {
+        return null;
+    }
+
+    return retValue;
+}
+
 fun Element.Xml2Json(): Map<String, Any> {
     var retList = mutableListOf<Pair<String, Any>>()
+
+    var txt = getNodeText(this);
+    if (txt != null) {
+        if (txt.HasValue) {
+            return mapOf(this.nodeName to txt)
+        } else {
+            return mapOf();
+        }
+    }
+
     if (this is NodeList && (this.length > 0)) {
         for (index in 0..this.length - 1) {
-            var item = this.item(index)
-            if (item.nodeType != Node.ELEMENT_NODE) {
+            var node = this.item(index);
+            if (node is Element == false) {
                 continue;
             }
-            retList.addAll((item as Element).Xml2Json().toList())
+            var item = node as Element
+
+            var itemText = getNodeText(item);
+            if (itemText == null) {
+                retList.addAll(item.Xml2Json().toList())
+                continue;
+            }
+
+            if (itemText.HasValue) {
+                retList.add(item.nodeName to itemText)
+            }
             continue;
         }
         var jsonMap = LinkedHashMap<String, Any>();
@@ -543,22 +594,7 @@ fun Element.Xml2Json(): Map<String, Any> {
         jsonMap.put(this.nodeName, retList.toMap())
         return jsonMap;
     } else {
-        var jsonMap = LinkedHashMap<String, Any>();
-        var childNode = this.childNodes;
-        if (childNode.length == 0) {
-            return jsonMap
-        }
-
-        var firstChildNode = this.firstChild
-
-        if (childNode.length == 1 && firstChildNode.nodeType == Node.TEXT_NODE) {
-            if (firstChildNode.textContent.isEmpty()) return jsonMap
-            jsonMap.put(this.nodeName, firstChildNode.textContent)
-            return jsonMap;
-        }
-
-        jsonMap.put(this.nodeName, (this.childNodes as Element).Xml2Json())
-        return jsonMap
+        throw RuntimeException("什么情况!" + this.toString())
     }
 }
 
