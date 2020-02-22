@@ -30,7 +30,7 @@ class testa : TestBase() {
 """
 
         println(xml.Xml2Json().ToJson())
-        println("<a> <![CDATA[JSAPI]]> </a>".Xml2Json().ToJson())
+        println("".Xml2Json().ToJson())
 
 
     }
