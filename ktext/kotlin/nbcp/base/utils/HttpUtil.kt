@@ -3,6 +3,7 @@ package nbcp.base.utils
 /**
  * Created by udi on 17-4-30.
  */
+import com.sun.net.ssl.HttpsURLConnection
 import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import nbcp.comm.*
@@ -111,23 +112,52 @@ class HttpUtil(var url: String = "") {
         }
     }
 
-    var charset: String = "utf-8";
-    var requestHeader: StringMap = StringMap()
-    var responseHeader: StringMap = StringMap();
 
-    var status: Int = 0;
-    var msg: String = ""; //初始化失败的消息.用于对象传递
+    private val requestActions = mutableListOf<((HttpURLConnection) -> Unit)>()
+    private val responseActions = mutableListOf<((HttpURLConnection) -> Unit)>()
+    val requestHeader: StringMap = StringMap()
 
-    fun doGet(charsetCallback: ((HttpURLConnection) -> Charset)? = null): String {
-        var charset = utf8
-        var retData = doNet({ it.requestMethod = "GET" }
-                , {}, { conn ->
-            if (charsetCallback != null) {
-                charset = charsetCallback.invoke(conn);
-            }
-        })
 
-        return retData.toString(charset);
+    var responseCharset:String = "UTF-8"
+        private  set;
+
+    var responseHeader: StringMap = StringMap()
+        private set;
+
+    var status: Int = 0
+        private set;
+
+    var msg: String = ""  //初始化失败的消息.用于对象传递
+        private set;
+
+//    private var https = false;
+//
+//    fun setHttps(https:Boolean):HttpUtil{
+//        this.https = https;
+//        return this;
+//    }
+
+    fun setRequestHeader(key: String, value: String): HttpUtil {
+        this.requestHeader.set(key, value);
+        return this;
+    }
+
+    fun setRequest(action: ((HttpURLConnection) -> Unit)): HttpUtil {
+        this.requestActions.add(action)
+        return this;
+    }
+
+    fun setResponse(action: ((HttpURLConnection) -> Unit)): HttpUtil {
+        this.responseActions.add(action)
+        return this;
+    }
+
+    fun doGet( ): String {
+        this.setRequest { it.requestMethod = "GET" }
+
+        var retData = doNet({})
+
+        return retData.toString(Charset.forName(responseCharset));
     }
 
     fun doPost(postJson: JsonMap): String {
@@ -149,39 +179,37 @@ class HttpUtil(var url: String = "") {
         return doPost(requestBody);
     }
 
-    fun doPost(requestBody: String, charsetCallback: ((HttpURLConnection) -> Charset)? = null): String {
+    fun doPost(requestBody: String): String {
         logger.Info { "[post]\t${url}\n${requestHeader.map { it.key + ":" + it.value }.joinToString("\n")}" }
 
-        var charset = utf8
-//        var isTxt = false;
-        var ret = doNet({ it.requestMethod = "POST" }, {
+
+        this.setRequest { it.requestMethod = "POST" }
+
+
+        var ret = doNet { conn ->
             if (requestBody.HasValue) {
                 logger.Info { "\t[post_body]${requestBody}" }
                 //conn.setRequestProperty("Content-Length", requestBody.toByteArray().size.toString());
                 //POST请求
-                var out = OutputStreamWriter(it.outputStream);
+                var out = OutputStreamWriter(conn.outputStream);
                 out.write(requestBody);
 
                 out.flush();
                 out.close();
             }
         }
-                , { conn ->
-            if (charsetCallback != null) {
-                charset = charsetCallback.invoke(conn);
-            }
-        })
 
 //        if (isTxt) {
 //            logger.info(ret.Slice(0, 4096));
 //        }
 
-        return ret.toString(charset);
+
+        return ret.toString(Charset.forName(responseCharset));
     }
 
-    private fun doNet(preSet: ((HttpURLConnection) -> Unit), postBody: ((HttpURLConnection) -> Unit), postBack: ((HttpURLConnection) -> Unit)): ByteArray {
+    private fun doNet(postBody: ((HttpURLConnection) -> Unit)): ByteArray {
         var conn: HttpURLConnection? = null;
-        var lines = mutableListOf<String>()
+//        var lines = mutableListOf<String>()
         try {
             //建立连接
             conn = URL(url).openConnection() as HttpURLConnection;
@@ -196,7 +224,9 @@ class HttpUtil(var url: String = "") {
                 conn.setRequestProperty(it.key, it.value);
             }
 
-            preSet(conn);
+            this.requestActions.forEach {
+                it.invoke(conn)
+            }
 
             conn.connect();
 
@@ -225,7 +255,20 @@ class HttpUtil(var url: String = "") {
                 this.responseHeader[it.key] = value
             }
 
-            postBack(conn);
+            this.responseActions.forEach {
+                it.invoke(conn)
+            }
+
+
+            this.setResponse { conn ->
+                var char_parts = conn.contentType.AsString().split(";").last().split("=");
+                if (char_parts.size == 2) {
+                    if (char_parts[0].trim().VbSame("charset")) {
+                        responseCharset = char_parts[1];
+                    }
+                }
+            }
+
             try {
                 return toByteArray(conn.getInputStream());
             } catch (e: Exception) {
@@ -290,8 +333,9 @@ class HttpUtil(var url: String = "") {
             return ret;
         }
 
+        this.setRequest { it.requestMethod = "GET" }
 
-        var retData = doNet({ it.requestMethod = "GET" }, {}, {});
+        var retData = doNet({});
 
         destFilePath.appendBytes(retData);
 
@@ -334,20 +378,25 @@ Content-Type: application/octet-stream
 
         content.addAll("\r\n--${boundary}--".toByteArray().toList())
 
+        this.setRequest { it.requestMethod = "POST" }
+
         var isTxt = false;
-        var ret = this.doNet({ it.requestMethod = "POST" }, {
+        this.setResponse { conn ->
+            isTxt = conn.contentType.contains("json", true) || conn.contentType.contains("htm", true) || conn.contentType.contains("text", true)
+        }
+
+
+        var ret = this.doNet { conn ->
             if (content.size > 0) {
                 //conn.setRequestProperty("Content-Length", requestBody.toByteArray().size.toString());
                 //POST请求
-                var out = DataOutputStream(it.outputStream);
+                var out = DataOutputStream(conn.outputStream);
                 out.write(content.toByteArray());
 
                 out.flush();
                 out.close();
             }
-        }, { conn ->
-            isTxt = conn.contentType.contains("json", true) || conn.contentType.contains("htm", true) || conn.contentType.contains("text", true)
-        }).toString(utf8)
+        }.toString(Charset.forName(responseCharset))
 
         if (isTxt) {
             logger.info(ret.Slice(0, 4096))
