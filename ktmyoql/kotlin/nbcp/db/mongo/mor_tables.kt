@@ -9,7 +9,7 @@ import nbcp.db.mongo.*
 import nbcp.db.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-02-22 00:35:04
+//generate auto @2020-02-23 17:43:50
 
 class IdNameMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
@@ -72,12 +72,13 @@ class BaseGroup : IDataGroup{
     }
     
     class SysLogEntity(collectionName:String="sysLog"):MongoBaseEntity<SysLog>(SysLog::class.java,collectionName) {
-        val msg=MongoColumnName("msg")
-        val type=MongoColumnName("type")
-        val clientIp=MongoColumnName("clientIp")
         val module=MongoColumnName("module")
-        val remark=MongoColumnName("remark")
+        val type=MongoColumnName("type")
+        val key=MongoColumnName("key")
+        val msg=MongoColumnName("msg")
         val data=ObjectMeta("data")
+        val remark=MongoColumnName("remark")
+        val clientIp=MongoColumnName("clientIp")
         val creatAt=MongoColumnName("creatAt")
         val createBy=MongoColumnName("createBy")
         val id=MongoColumnName("_id")

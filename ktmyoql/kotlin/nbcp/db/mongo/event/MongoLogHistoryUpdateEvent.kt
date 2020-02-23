@@ -68,7 +68,8 @@ class MongoLogHistoryUpdateEvent : IMongoEntityUpdate {
 
             var log = SysLog()
             log.module = "DbEntityLogHistory"
-            log.type = "MyOql"
+            log.type = "info"
+            log.key = update.collectionName
             log.msg = "更新了关键字段值"
             log.data = it;
 

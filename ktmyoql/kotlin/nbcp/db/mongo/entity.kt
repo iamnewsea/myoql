@@ -30,12 +30,13 @@ open class SysAnnex(
 @Document
 @DbEntityGroup("base")
 open class SysLog(
-        var msg: String = "",
-        var type: String = "",
-        var clientIp: String = "",
-        var module: String = "",
-        var remark: String = "",
+        var module: String = "", //模块
+        var type: String = "",  //类型
+        var key: String = "",   //实体标志, 查询用： module + key
+        var msg: String = "",   //消息
         var data: Any? = null,
+        var remark: String = "",
+        var clientIp: String = "",
         var creatAt: LocalDateTime = LocalDateTime.now(),
         var createBy: String = ""
 ) : IMongoDocument() {
