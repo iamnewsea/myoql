@@ -12,6 +12,7 @@ import nbcp.comm.*
 import nbcp.base.extend.*
 import nbcp.base.utf8
 import nbcp.base.utils.MyUtil
+import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
 import java.lang.reflect.Method
 import javax.servlet.ServletRequest
@@ -29,6 +30,9 @@ import javax.servlet.http.HttpSession
  * 4. 只解析没有注解的参数,有任何注解,都不使用该方式.
  */
 class RequestParameterConverter() : HandlerMethodArgumentResolver {
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    }
 
 //    private val packages by lazy {
 //        return@lazy SpringUtil.context.environment.getProperty("shop.mvc-parameter-packages").AsString().split(",").filter { it.isNotEmpty() }
@@ -124,15 +128,17 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
             var require = parameter.getParameterAnnotation(Require::class.java)
             if (require != null) {
                 var caller = ""
-                if( parameter.executable is Method){
+                if (parameter.executable is Method) {
                     var method = parameter.executable as Method
-                    caller = "${method.name}(${method.parameters.map{it.toString()}.joinToString()}):${method.returnType.name}"
-                }
-                else{
+                    caller = "${method.name}(${method.parameters.map { it.toString() }.joinToString()}):${method.returnType.name}"
+                } else {
                     var method = parameter.executable
-                    caller = "${method.name}(${method.parameters.map{it.toString()}.joinToString()})"
+                    caller = "${method.name}(${method.parameters.map { it.toString() }.joinToString()})"
                 }
-                throw RuntimeException(require.value.AsString("请求:${webRequest.fullUrl} --> 方法:${caller} 中，找不到参数${parameter.parameterName}"))
+
+                var errorMsg = require.value.AsString("请求:${webRequest.fullUrl} --> 方法:${caller} 中，找不到参数${parameter.parameterName}")
+                logger.error(errorMsg);
+                throw RuntimeException("找不到参数${parameter.parameterName}")
             }
 
             if (parameter.parameterType == String::class.java) {
