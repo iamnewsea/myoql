@@ -192,8 +192,22 @@ object MyUtil {
         if (type == null) {
             return;
         }
-        type.isAccessible = true;
+//        type.isAccessible = true;
         type.set(entity, value)
+    }
+
+    /**
+     * 通过反射把 源对象值传输到目标对象
+     */
+    fun transportValueWithReflect(src: Any, target: Any) {
+        var srcFields = src::class.java.AllFields;
+        target::class.java.AllFields.forEach { targetField ->
+            var srcField = srcFields.firstOrNull { it.name == targetField.name }
+            if (srcField == null) {
+                return@forEach
+            }
+            targetField.set(target, srcField.get(src))
+        }
     }
 
     //简单类型，请参考 Class.IsSimpleType
