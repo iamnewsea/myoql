@@ -385,7 +385,7 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
         var entityTypeName = entTypeName + "Entity"
         var entityVarName = getEntityName(entTypeName)
 
-        var ent = """class ${entityTypeName}(collectionName:String="${MyUtil.getSmallCamelCase(entType.simpleName)}"):MongoBaseEntity<${entTypeName}>(${entTypeName}::class.java,collectionName) {
+        var ent = """class ${entityTypeName}(collectionName:String=""):MongoBaseEntity<${entTypeName}>(${entTypeName}::class.java,collectionName.AsString("${MyUtil.getSmallCamelCase(entType.simpleName)}")) {
 ${props.joinToString("\n")}
 }
 """

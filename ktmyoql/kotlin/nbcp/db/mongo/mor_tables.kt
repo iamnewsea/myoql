@@ -9,7 +9,7 @@ import nbcp.db.mongo.*
 import nbcp.db.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-02-23 17:43:50
+//generate auto @2020-02-24 11:14:50
 
 class IdNameMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
@@ -46,7 +46,7 @@ class BaseGroup : IDataGroup{
     fun sysLog(collectionName:String)=SysLogEntity(collectionName);
 
 
-    class SysAnnexEntity(collectionName:String="sysAnnex"):MongoBaseEntity<SysAnnex>(SysAnnex::class.java,collectionName) {
+    class SysAnnexEntity(collectionName:String=""):MongoBaseEntity<SysAnnex>(SysAnnex::class.java,collectionName.AsString("sysAnnex")) {
         val name=MongoColumnName("name")
         val tags=MongoColumnName("tags")
         val ext=MongoColumnName("ext")
@@ -62,7 +62,7 @@ class BaseGroup : IDataGroup{
         val id=MongoColumnName("_id")
     }
     
-    class SysDustbinEntity(collectionName:String="sysDustbin"):MongoBaseEntity<SysDustbin>(SysDustbin::class.java,collectionName) {
+    class SysDustbinEntity(collectionName:String=""):MongoBaseEntity<SysDustbin>(SysDustbin::class.java,collectionName.AsString("sysDustbin")) {
         val table=MongoColumnName("table")
         val remark=MongoColumnName("remark")
         val creator=IdNameMeta("creator")
@@ -71,7 +71,7 @@ class BaseGroup : IDataGroup{
         val id=MongoColumnName("_id")
     }
     
-    class SysLogEntity(collectionName:String="sysLog"):MongoBaseEntity<SysLog>(SysLog::class.java,collectionName) {
+    class SysLogEntity(collectionName:String=""):MongoBaseEntity<SysLog>(SysLog::class.java,collectionName.AsString("sysLog")) {
         val module=MongoColumnName("module")
         val type=MongoColumnName("type")
         val key=MongoColumnName("key")
