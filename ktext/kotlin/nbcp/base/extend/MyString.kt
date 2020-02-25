@@ -411,16 +411,13 @@ data class FileExtentionInfo(private var url: String) {
         if (extName.toLowerCase().IsIn("ico", "icon", "png", "jpg", "jpeg", "gif", "bmp", "ttf", "otf", "tiff")) {
             extType = FileExtentionTypeEnum.Image;
         }
-
-        if (extName.toLowerCase().IsIn("mp4", "mp3", "avi", "rm", "rmvb", "flv", "flash", "swf", "3gp", "wma", "m3u8", "ts", "hls", "mov")) {
+        else if (extName.toLowerCase().IsIn("mp4", "mp3", "avi", "rm", "rmvb", "flv", "flash", "swf", "3gp", "wma", "m3u8", "ts", "hls", "mov")) {
             extType = FileExtentionTypeEnum.Video
         }
-
-        if (extName.toLowerCase().IsIn("js", "css", "txt", "html", "htm", "xml", "xhtml", "json")) {
+        else if (extName.toLowerCase().IsIn("js", "css", "txt", "html", "htm", "xml", "xhtml", "json")) {
             extType = FileExtentionTypeEnum.Html
         }
-
-        if (extName.toLowerCase().IsIn("doc", "docx", "pdf", "xls", "xlsx", "ppt", "pptx", "rtf")) {
+        else if (extName.toLowerCase().IsIn("doc", "docx", "pdf", "xls", "xlsx", "ppt", "pptx", "rtf")) {
             extType = FileExtentionTypeEnum.Office;
         }
     }
