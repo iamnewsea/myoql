@@ -215,6 +215,20 @@ infix fun MongoColumnName.match_exists(value: Boolean): Criteria {
 }
 
 /**
+ * field match_hasValue true  => field exists  and field != null
+ * field match_hasValue false  => field not exists  or field == null
+ */
+infix fun MongoColumnName.match_hasValue(value: Boolean): Criteria {
+    var (key) = proc_mongo_match(this, null);
+    if (value) {
+        return this.match_exists(true).match_and(this.match_not_equal(null));
+    }
+
+    return return this.match_exists(false).match_or(this.match(null));
+}
+
+
+/**
  * 用于 match
  */
 infix fun MongoColumnName.match_elemMatch(value: Criteria): Criteria {
