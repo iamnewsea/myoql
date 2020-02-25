@@ -219,7 +219,6 @@ infix fun MongoColumnName.match_exists(value: Boolean): Criteria {
  * field match_hasValue false  => field not exists  or field == null
  */
 infix fun MongoColumnName.match_hasValue(value: Boolean): Criteria {
-    var (key) = proc_mongo_match(this, null);
     if (value) {
         return this.match_exists(true).match_and(this.match_not_equal(null));
     }
