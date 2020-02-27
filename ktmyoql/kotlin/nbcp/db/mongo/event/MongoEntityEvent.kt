@@ -21,6 +21,20 @@ class MongoEntityEvent : BeanPostProcessor {
         val updateEvent = mutableListOf<IMongoEntityUpdate>()
         //注册的 Delete Bean
         val deleteEvent = mutableListOf<IMongoEntityDelete>()
+
+        /**
+         * 根据名称查找定义的集合。
+         */
+        fun getCollection(collectionName: String): MongoBaseEntity<IMongoDocument>? {
+            var ret: BaseDbEntity? = null
+            groups.any { group ->
+                ret = group.getEntities().firstOrNull() { it.tableName == collectionName }
+
+                return@any ret != null
+            }
+
+            return ret as MongoBaseEntity<IMongoDocument>?
+        }
     }
 
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {

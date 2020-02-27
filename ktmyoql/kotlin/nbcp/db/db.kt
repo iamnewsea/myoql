@@ -19,6 +19,10 @@ import org.springframework.data.mongodb.core.convert.MappingMongoConverter
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext
 
 enum class DatabaseEnum {
+    Mongo,
+    Redis,
+    Hbase,
+
     Mysql,
     Oracle,
     Sqlite,
