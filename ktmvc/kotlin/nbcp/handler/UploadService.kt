@@ -24,6 +24,7 @@ import org.springframework.web.multipart.support.StandardMultipartHttpServletReq
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
+import java.lang.RuntimeException
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -83,7 +84,7 @@ open class UploadService {
     }
 
 
-    @Value("\${server.upload.path}")
+    @Value("\${server.upload.path:}")
     private var uploadPath = ""
 
     @Value("\${server.upload.saveCorp:true}")
@@ -284,7 +285,10 @@ open class UploadService {
 
     private lateinit var dbService: IUploadFileDbService;
 
-    fun initDbService() {
+    fun initDbServiceAndCheck() {
+        if( uploadPath.isEmpty()){
+            throw RuntimeException("需要定义 uploadPath！")
+        }
         if (this::dbService.isInitialized) return;
 
         if (this.dbType VbSame DatabaseEnum.Mongo.toString()) {
@@ -298,7 +302,7 @@ open class UploadService {
      * 按原始的Md5查询文件是否存在。
      */
     fun onFileMd5Check(md5: String, user: IdName, corpId: String): ApiResult<IdUrl> {
-        initDbService();
+        initDbServiceAndCheck();
 
         if (md5.isEmpty()) {
             return ApiResult<IdUrl>();
@@ -367,7 +371,7 @@ open class UploadService {
      * 文件上传
      */
     fun upload(request: HttpServletRequest, user: IdName, corpId: String, processFile: ((String, FileExtentionTypeEnum) -> Unit)? = null): ListResult<IdUrl> {
-        initDbService();
+        initDbServiceAndCheck();
 
         var ret = ListResult<IdUrl>();
         var list = mutableListOf<IdUrl>()
