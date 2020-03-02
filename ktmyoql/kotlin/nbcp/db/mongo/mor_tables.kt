@@ -9,7 +9,7 @@ import nbcp.db.mongo.*
 import nbcp.db.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-02-24 11:14:50
+//generate auto @2020-03-02 16:09:10
 
 class IdNameMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
@@ -32,11 +32,37 @@ class ObjectMeta (private val _pname:String):MongoColumnName() {
     }
 }
 
+class IdUrlMeta (private val _pname:String):MongoColumnName() {
+    constructor(_val:MongoColumnName):this(_val.toString()) {}
+
+    val id=join(this._pname, "_id")
+    val url=join(this._pname, "url")
+
+    override fun toString(): String {
+        return join(this._pname).toString()
+    }
+}
+
+class UserIdCardDataMeta (private val _pname:String):MongoColumnName() {
+    constructor(_val:MongoColumnName):this(_val.toString()) {}
+
+    val photo=IdUrlMeta(join(this._pname,"photo"))
+    val name=join(this._pname, "name")
+    val number=join(this._pname, "number")
+    val sex=join(this._pname, "sex")
+    val birthday=join(this._pname, "birthday")
+    val location=join(this._pname, "location")
+
+    override fun toString(): String {
+        return join(this._pname).toString()
+    }
+}
+
 
 @Component("mongo.base")
 @DataGroup("base")
 class BaseGroup : IDataGroup{
-    override fun getEntities():Set<BaseDbEntity> = setOf(sysAnnex,sysDustbin,sysLog)
+    override fun getEntities():Set<BaseDbEntity> = setOf(sysAnnex,sysDustbin,sysLog,sysLoginUser,sysUser)
 
     val sysAnnex=SysAnnexEntity();
     fun sysAnnex(collectionName:String)=SysAnnexEntity(collectionName);
@@ -44,6 +70,10 @@ class BaseGroup : IDataGroup{
     fun sysDustbin(collectionName:String)=SysDustbinEntity(collectionName);
     val sysLog=SysLogEntity();
     fun sysLog(collectionName:String)=SysLogEntity(collectionName);
+    val sysLoginUser=SysLoginUserEntity();
+    fun sysLoginUser(collectionName:String)=SysLoginUserEntity(collectionName);
+    val sysUser=SysUserEntity();
+    fun sysUser(collectionName:String)=SysUserEntity(collectionName);
 
 
     class SysAnnexEntity(collectionName:String=""):MongoBaseEntity<SysAnnex>(SysAnnex::class.java,collectionName.AsString("sysAnnex")) {
@@ -81,6 +111,32 @@ class BaseGroup : IDataGroup{
         val clientIp=MongoColumnName("clientIp")
         val creatAt=MongoColumnName("creatAt")
         val createBy=MongoColumnName("createBy")
+        val id=MongoColumnName("_id")
+    }
+    
+    class SysLoginUserEntity(collectionName:String=""):MongoBaseEntity<SysLoginUser>(SysLoginUser::class.java,collectionName.AsString("sysLoginUser")) {
+        val loginName=MongoColumnName("loginName")
+        val password=MongoColumnName("password")
+        val lastLoginAt=MongoColumnName("lastLoginAt")
+        val errorLoginTimes=MongoColumnName("errorLoginTimes")
+        val isLocked=MongoColumnName("isLocked")
+        val lockedRemark=MongoColumnName("lockedRemark")
+        val id=MongoColumnName("_id")
+    }
+    
+    class SysUserEntity(collectionName:String=""):MongoBaseEntity<SysUser>(SysUser::class.java,collectionName.AsString("sysUser")) {
+        val loginName=MongoColumnName("loginName")
+        val logo=IdUrlMeta("logo")
+        val mobile=MongoColumnName("mobile")
+        val email=MongoColumnName("email")
+        val idCard=UserIdCardDataMeta("idCard")
+        val workLocation=MongoColumnName("workLocation")
+        val liveLocation=MongoColumnName("liveLocation")
+        val corpName=MongoColumnName("corpName")
+        val job=MongoColumnName("job")
+        val token=MongoColumnName("token")
+        val createAt=MongoColumnName("createAt")
+        val updateAt=MongoColumnName("updateAt")
         val id=MongoColumnName("_id")
     }
     

@@ -2,9 +2,12 @@ package nbcp.db.mongo.entity
 
 import nbcp.db.DbEntityGroup
 import nbcp.db.IdName
+import nbcp.db.IdUrl
+import nbcp.db.MongoEntitySysDustbin
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
 import nbcp.db.mongo.*
+import java.time.LocalDate
 
 //系统附件表
 @Document
@@ -53,3 +56,38 @@ open class SysDustbin(
         var createAt: LocalDateTime = LocalDateTime.now()
 ) : IMongoDocument()
 
+
+
+//SSO用户
+@Document
+@DbEntityGroup("base")
+@MongoEntitySysDustbin
+open class SysUser(
+        var loginName: String = "",
+        var logo: IdUrl = IdUrl(), //头像.
+
+        var mobile: String = "",
+        var email: String = "",
+
+        var idCard: UserIdCardData = UserIdCardData(),
+
+        var workLocation: String = "",  //工作地
+        var liveLocation: String = "",  //常住地
+        var corpName: String = "",
+        var job: String = "",
+
+        var token: String = "",    //验证用户使用.实际保存的是 JsessionId
+        var createAt: LocalDateTime = LocalDateTime.now(),
+        var updateAt: LocalDateTime = LocalDateTime.now()
+) : IMongoDocument()
+
+@Document
+@DbEntityGroup("base")
+data class SysLoginUser(
+        var loginName: String = "",
+        var password: String =  "",  // Md5Util.getBase64Md5(pwd)
+        var lastLoginAt: LocalDateTime = LocalDateTime.now(),
+        var errorLoginTimes: Byte = 0,
+        var isLocked: Boolean = false,
+        var lockedRemark: String = ""
+) : IMongoDocument()

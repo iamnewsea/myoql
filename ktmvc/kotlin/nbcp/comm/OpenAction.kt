@@ -6,6 +6,7 @@ package nbcp.comm
 
 /**
  * 不需要权限的Action
+ * 定义配置类，继承HandlerInterceptorAdapter，判断是否有注解。
  */
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
