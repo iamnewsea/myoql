@@ -57,7 +57,6 @@ open class SysDustbin(
 ) : IMongoDocument()
 
 
-
 //SSO用户
 @Document
 @DbEntityGroup("base")
@@ -85,9 +84,39 @@ open class SysUser(
 @DbEntityGroup("base")
 data class SysLoginUser(
         var loginName: String = "",
-        var password: String =  "",  // Md5Util.getBase64Md5(pwd)
+        var password: String = "",  // Md5Util.getBase64Md5(pwd)
         var lastLoginAt: LocalDateTime = LocalDateTime.now(),
         var errorLoginTimes: Byte = 0,
+        var isLocked: Boolean = false,
+        var lockedRemark: String = ""
+) : IMongoDocument()
+
+
+data class PrivateSecretDataModel(
+        var name: String = "", //登记别名
+        var key: String = "",
+        var secret: String = "",
+        var type: String = "", //加密方式
+        var createAt: LocalDateTime = LocalDateTime.now()
+)
+
+/**
+ * 应用中心
+ */
+@Document
+@DbEntityGroup("base")
+data class SysApplication(
+        var name: String = "",
+        var key: String = "",           //应用Id，CodeUtil.getCode()
+        var secret: String = "",        // CodeUtil.getCode()
+        var privateSecrets: List<PrivateSecretDataModel> = listOf(), //私钥，客户端加密用
+        var slogan: String = "",        //广告语， 每次登录的时候显示
+        var loginedCallbackUrl: String = "",     //登录后回调。
+        var userUpdateHookCallbackUrl: String = "",   // 用户更新回调Url
+        var logoUrl: String = "",      //应用Logo
+        var siteUrl: String = "",
+        var remark: String = "",
+        var createAt: LocalDateTime = LocalDateTime.now(),
         var isLocked: Boolean = false,
         var lockedRemark: String = ""
 ) : IMongoDocument()

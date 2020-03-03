@@ -9,13 +9,27 @@ import nbcp.db.mongo.*
 import nbcp.db.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-03-02 16:09:10
+//generate auto @2020-03-03 19:04:55
 
 class IdNameMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
 
     val id=join(this._pname, "_id")
     val name=join(this._pname, "name")
+
+    override fun toString(): String {
+        return join(this._pname).toString()
+    }
+}
+
+class PrivateSecretDataModelMeta (private val _pname:String):MongoColumnName() {
+    constructor(_val:MongoColumnName):this(_val.toString()) {}
+
+    val name=join(this._pname, "name")
+    val key=join(this._pname, "key")
+    val secret=join(this._pname, "secret")
+    val type=join(this._pname, "type")
+    val createAt=join(this._pname, "createAt")
 
     override fun toString(): String {
         return join(this._pname).toString()
@@ -62,10 +76,12 @@ class UserIdCardDataMeta (private val _pname:String):MongoColumnName() {
 @Component("mongo.base")
 @DataGroup("base")
 class BaseGroup : IDataGroup{
-    override fun getEntities():Set<BaseDbEntity> = setOf(sysAnnex,sysDustbin,sysLog,sysLoginUser,sysUser)
+    override fun getEntities():Set<BaseDbEntity> = setOf(sysAnnex,sysApplication,sysDustbin,sysLog,sysLoginUser,sysUser)
 
     val sysAnnex=SysAnnexEntity();
     fun sysAnnex(collectionName:String)=SysAnnexEntity(collectionName);
+    val sysApplication=SysApplicationEntity();
+    fun sysApplication(collectionName:String)=SysApplicationEntity(collectionName);
     val sysDustbin=SysDustbinEntity();
     fun sysDustbin(collectionName:String)=SysDustbinEntity(collectionName);
     val sysLog=SysLogEntity();
@@ -89,6 +105,23 @@ class BaseGroup : IDataGroup{
         val corpId=MongoColumnName("corpId")
         val errorMsg=MongoColumnName("errorMsg")
         val createAt=MongoColumnName("createAt")
+        val id=MongoColumnName("_id")
+    }
+    
+    class SysApplicationEntity(collectionName:String=""):MongoBaseEntity<SysApplication>(SysApplication::class.java,collectionName.AsString("sysApplication")) {
+        val name=MongoColumnName("name")
+        val key=MongoColumnName("key")
+        val secret=MongoColumnName("secret")
+        val privateSecrets=PrivateSecretDataModelMeta("privateSecrets")
+        val slogan=MongoColumnName("slogan")
+        val loginedCallbackUrl=MongoColumnName("loginedCallbackUrl")
+        val userUpdateHookCallbackUrl=MongoColumnName("userUpdateHookCallbackUrl")
+        val logoUrl=MongoColumnName("logoUrl")
+        val siteUrl=MongoColumnName("siteUrl")
+        val remark=MongoColumnName("remark")
+        val createAt=MongoColumnName("createAt")
+        val isLocked=MongoColumnName("isLocked")
+        val lockedRemark=MongoColumnName("lockedRemark")
         val id=MongoColumnName("_id")
     }
     
