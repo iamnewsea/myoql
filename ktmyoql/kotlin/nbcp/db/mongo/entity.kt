@@ -113,7 +113,7 @@ data class SysApplication(
         var slogan: String = "",        //广告语， 每次登录的时候显示
         var loginedCallbackUrl: String = "",     //登录后回调。
         var userUpdateHookCallbackUrl: String = "",   // 用户更新回调Url
-        var logoUrl: String = "",      //应用Logo
+        var logo: IdUrl = IdUrl(),      //应用Logo
         var siteUrl: String = "",
         var remark: String = "",
         var createAt: LocalDateTime = LocalDateTime.now(),

@@ -9,7 +9,7 @@ import nbcp.db.mongo.*
 import nbcp.db.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-03-03 19:04:55
+//generate auto @2020-03-03 19:07:11
 
 class IdNameMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
@@ -36,21 +36,21 @@ class PrivateSecretDataModelMeta (private val _pname:String):MongoColumnName() {
     }
 }
 
-class ObjectMeta (private val _pname:String):MongoColumnName() {
+class IdUrlMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
 
-
+    val id=join(this._pname, "_id")
+    val url=join(this._pname, "url")
 
     override fun toString(): String {
         return join(this._pname).toString()
     }
 }
 
-class IdUrlMeta (private val _pname:String):MongoColumnName() {
+class ObjectMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
 
-    val id=join(this._pname, "_id")
-    val url=join(this._pname, "url")
+
 
     override fun toString(): String {
         return join(this._pname).toString()
@@ -116,7 +116,7 @@ class BaseGroup : IDataGroup{
         val slogan=MongoColumnName("slogan")
         val loginedCallbackUrl=MongoColumnName("loginedCallbackUrl")
         val userUpdateHookCallbackUrl=MongoColumnName("userUpdateHookCallbackUrl")
-        val logoUrl=MongoColumnName("logoUrl")
+        val logo=IdUrlMeta("logo")
         val siteUrl=MongoColumnName("siteUrl")
         val remark=MongoColumnName("remark")
         val createAt=MongoColumnName("createAt")
