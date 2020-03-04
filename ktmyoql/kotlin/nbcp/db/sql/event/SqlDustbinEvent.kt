@@ -4,7 +4,6 @@ import nbcp.base.extend.ToJson
 import nbcp.base.utils.CodeUtil
 import nbcp.db.*
 import nbcp.db.sql.entity.s_dustbin
-import nbcp.db.sql.table.BaseGroup
 import org.springframework.stereotype.Component
 
 @DbEntityDelete( )
@@ -32,6 +31,6 @@ class SqlDustbinEvent : ISqlEntityDelete {
         dustbin.table = delete.mainEntity.tableName
         dustbin.data = data.ToJson()
 
-        BaseGroup.s_dustbin_table().doInsert(dustbin)
+        db.sql_base.s_dustbin.doInsert(dustbin)
     }
 }

@@ -6,7 +6,7 @@ import nbcp.db.*
 import nbcp.db.mongo.MongoDeleteClip
 import nbcp.db.mongo.MongoEntityEvent
 import nbcp.db.mongo.entity.SysDustbin
-import nbcp.db.mongo.table.BaseGroup
+import nbcp.db.mongo.table.MongoBaseGroup
 import nbcp.db.mongo.toDocument
 import org.bson.Document
 import org.bson.types.ObjectId
@@ -18,7 +18,6 @@ import org.springframework.data.mongodb.core.query.BasicQuery
  */
 @DbEntityDelete()
 class MongoDustbinEvent : IMongoEntityDelete {
-
     override fun beforeDelete(delete: MongoDeleteClip<*>): DbEntityEventResult {
         var contains = MongoEntityEvent.dustbinEntitys.contains(delete.moerEntity.entityClass)
         if (contains == false) {
@@ -41,7 +40,7 @@ class MongoDustbinEvent : IMongoEntityDelete {
         dustbin.table = delete.collectionName
         dustbin.data = data;
         using(NoAffectRowCount()) {
-            BaseGroup.SysDustbinEntity().doInsert(dustbin)
+            db.mor_base.sysDustbin.doInsert(dustbin)
         }
     }
 }

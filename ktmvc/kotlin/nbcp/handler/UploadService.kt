@@ -16,7 +16,7 @@ import nbcp.db.db
 import nbcp.db.mongo.*
 import nbcp.db.mongo.entity.*
 import nbcp.db.mongo.service.UploadFileMongoService
-import nbcp.db.mongo.table.BaseGroup
+import nbcp.db.mongo.table.MongoBaseGroup
 import nbcp.db.mysql.service.UploadFileMysqlService
 import nbcp.model.IUploadFileDbService
 

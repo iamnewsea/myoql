@@ -5,7 +5,7 @@ import nbcp.db.IdName
 import java.time.LocalDateTime
 import nbcp.db.sql.*
 
-@DbEntityGroup("base")
+@DbEntityGroup("SqlBase")
 @SqlUks("id")
 @SqlRks("corp_id")
 data class s_annex(
@@ -29,7 +29,7 @@ data class s_annex(
 }
 
 
-@DbEntityGroup("base")
+@DbEntityGroup("SqlBase")
 @SqlUks("id")
 data class s_log(
 //        @SqlAutoIncrementKey
@@ -45,7 +45,7 @@ data class s_log(
         var remark: String = ""
 ) : IBaseDbEntity()
 
-@DbEntityGroup("base")
+@DbEntityGroup("SqlBase")
 @SqlUks("id")
 data class s_dustbin(
         var id: String = "",

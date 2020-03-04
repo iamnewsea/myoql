@@ -10,12 +10,12 @@ import nbcp.base.extend.*
 import nbcp.base.utils.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-01-17 16:17:32
+//generate auto @2020-03-04 16:44:00
 
 
-@Component("sql.base")
-@DataGroup("base")
-class BaseGroup : IDataGroup{
+@Component("sql.SqlBase")
+@DataGroup("SqlBase")
+class SqlBaseGroup : IDataGroup{
     override fun getEntities():Set<SqlBaseTable<*>> = setOf(s_annex,s_dustbin,s_log)
 
     val s_annex by lazy{ return@lazy s_annex_table(); }

@@ -11,7 +11,7 @@ import java.time.LocalDate
 
 //系统附件表
 @Document
-@DbEntityGroup("base")
+@DbEntityGroup("MongoBase")
 open class SysAnnex(
         var name: String = "",          //显示的名字,友好的名称
         var tags: List<String> = listOf(),
@@ -31,7 +31,7 @@ open class SysAnnex(
 
 
 @Document
-@DbEntityGroup("base")
+@DbEntityGroup("MongoBase")
 open class SysLog(
         var module: String = "", //模块
         var type: String = "",  //类型
@@ -47,7 +47,7 @@ open class SysLog(
 
 //存放删除的数据。
 @Document
-@DbEntityGroup("base")
+@DbEntityGroup("MongoBase")
 open class SysDustbin(
         var table: String = "",
         var remark: String = "",
@@ -59,7 +59,7 @@ open class SysDustbin(
 
 //SSO用户
 @Document
-@DbEntityGroup("base")
+@DbEntityGroup("MongoBase")
 @MongoEntitySysDustbin
 open class SysUser(
         var loginName: String = "",
@@ -81,7 +81,7 @@ open class SysUser(
 ) : IMongoDocument()
 
 @Document
-@DbEntityGroup("base")
+@DbEntityGroup("MongoBase")
 data class SysLoginUser(
         var loginName: String = "",
         var password: String = "",  // Md5Util.getBase64Md5(pwd)
@@ -104,18 +104,22 @@ data class PrivateSecretDataModel(
  * 应用中心
  */
 @Document
-@DbEntityGroup("base")
+@DbEntityGroup("MongoBase")
 data class SysApplication(
         var name: String = "",
-        var key: String = "",           //应用Id，CodeUtil.getCode()
+        var key: String = "",           // 应用Id，CodeUtil.getCode()
         var secret: String = "",        // CodeUtil.getCode()
         var privateSecrets: List<PrivateSecretDataModel> = listOf(), //私钥，客户端加密用
+        var authorizeCode: String = "",
+        var token: String = "",
+        var freshToken: String = "",
         var slogan: String = "",        //广告语， 每次登录的时候显示
         var loginedCallbackUrl: String = "",     //登录后回调。
         var userUpdateHookCallbackUrl: String = "",   // 用户更新回调Url
         var logo: IdUrl = IdUrl(),      //应用Logo
         var siteUrl: String = "",
         var remark: String = "",
+        var codeCreateAt: LocalDateTime = LocalDateTime.now(),
         var createAt: LocalDateTime = LocalDateTime.now(),
         var isLocked: Boolean = false,
         var lockedRemark: String = ""

@@ -9,7 +9,7 @@ import nbcp.db.mongo.*
 import nbcp.db.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-03-03 19:07:11
+//generate auto @2020-03-04 23:38:11
 
 class IdNameMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
@@ -73,9 +73,9 @@ class UserIdCardDataMeta (private val _pname:String):MongoColumnName() {
 }
 
 
-@Component("mongo.base")
-@DataGroup("base")
-class BaseGroup : IDataGroup{
+@Component("mongo.MongoBase")
+@DataGroup("MongoBase")
+class MongoBaseGroup : IDataGroup{
     override fun getEntities():Set<BaseDbEntity> = setOf(sysAnnex,sysApplication,sysDustbin,sysLog,sysLoginUser,sysUser)
 
     val sysAnnex=SysAnnexEntity();
@@ -113,12 +113,16 @@ class BaseGroup : IDataGroup{
         val key=MongoColumnName("key")
         val secret=MongoColumnName("secret")
         val privateSecrets=PrivateSecretDataModelMeta("privateSecrets")
+        val authorizeCode=MongoColumnName("authorizeCode")
+        val token=MongoColumnName("token")
+        val freshToken=MongoColumnName("freshToken")
         val slogan=MongoColumnName("slogan")
         val loginedCallbackUrl=MongoColumnName("loginedCallbackUrl")
         val userUpdateHookCallbackUrl=MongoColumnName("userUpdateHookCallbackUrl")
         val logo=IdUrlMeta("logo")
         val siteUrl=MongoColumnName("siteUrl")
         val remark=MongoColumnName("remark")
+        val codeCreateAt=MongoColumnName("codeCreateAt")
         val createAt=MongoColumnName("createAt")
         val isLocked=MongoColumnName("isLocked")
         val lockedRemark=MongoColumnName("lockedRemark")

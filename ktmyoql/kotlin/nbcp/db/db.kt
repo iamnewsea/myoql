@@ -7,7 +7,10 @@ import nbcp.comm.StringMap
 import nbcp.comm.StringTypedMap
 import nbcp.db.mongo.*
 import nbcp.db.mongo.MongoEntityEvent
+import nbcp.db.mongo.table.MongoBaseGroup
+import nbcp.db.redis.RedisBaseGroup
 import nbcp.db.sql.SqlBaseTable
+import nbcp.db.sql.table.SqlBaseGroup
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.core.convert.support.GenericConversionService
@@ -312,5 +315,17 @@ object db {
         })
     }
 
-    val mongo = db_mongo
+    val mongo = db_mongo;
+
+    val mor_base by lazy {
+        return@lazy MongoBaseGroup()
+    }
+
+    val rer_base by lazy {
+        return@lazy RedisBaseGroup()
+    }
+
+    val sql_base by lazy {
+        return@lazy SqlBaseGroup()
+    }
 }

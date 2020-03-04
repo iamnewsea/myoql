@@ -10,7 +10,7 @@ import nbcp.db.mongo.MongoEntityEvent
 import nbcp.db.mongo.component.MongoBaseUpdateClip
 import nbcp.db.mongo.entity.SysDustbin
 import nbcp.db.mongo.entity.SysLog
-import nbcp.db.mongo.table.BaseGroup
+import nbcp.db.mongo.table.MongoBaseGroup
 import nbcp.db.mongo.toDocument
 import org.bson.Document
 import org.bson.types.ObjectId
@@ -62,7 +62,7 @@ class MongoLogHistoryUpdateEvent : IMongoEntityUpdate {
 
 
         //批量记录到日志
-        var batchInsert = BaseGroup.SysLogEntity().batchInsert()
+        var batchInsert = db.mor_base.sysLog.batchInsert()
 
         ret.forEach {
 
