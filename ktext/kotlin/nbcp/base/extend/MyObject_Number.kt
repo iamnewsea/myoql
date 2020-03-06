@@ -1,6 +1,9 @@
 package nbcp.base.extend
 
 import java.text.DecimalFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 
 /*分 转化为 可读的金额。单位： 亿，万，元。
@@ -61,3 +64,23 @@ fun Long.ToBitPowerValue(): List<Int> {
     return ret;
 }
 
+/**
+ * 毫秒数转为 LocalDateTime
+ */
+fun Long.ToLocalDateTime(): LocalDateTime {
+    return LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
+}
+
+inline fun <reified T> Int.ToEnum(): T? {
+    return this.ToEnum(T::class.java)
+}
+
+//通过 int value 找.
+fun <T> Int.ToEnum(enumClazz: Class<T>): T? {
+    if (enumClazz.isEnum == false) return null;
+    var numberField = enumClazz.GetEnumNumberField();
+    if (numberField == null) return null;
+
+    numberField.isAccessible = true;
+    return enumClazz.GetEnumList().firstOrNull { numberField.get(it).AsInt() == this }
+}

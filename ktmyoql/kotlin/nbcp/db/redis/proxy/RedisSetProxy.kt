@@ -2,6 +2,7 @@ package nbcp.db.redis.proxy
 
 import io.lettuce.core.ScanArgs
 import nbcp.db.redis.BaseRedisProxy
+import nbcp.db.redis.RedisRenewalTypeEnum
 
 /**
  * Created by yuxh on 2018/6/7
@@ -9,37 +10,66 @@ import nbcp.db.redis.BaseRedisProxy
 
 open class RedisSetProxy(
         group: String,
-        dbOffset: Int = 0) : BaseRedisProxy(dbOffset, group) {
+        dbOffset: Int = 0,
+        defaultCacheSeconds: Int = 0,
+        renewalType: RedisRenewalTypeEnum = RedisRenewalTypeEnum.Write) :
+        BaseRedisProxy(dbOffset, group, defaultCacheSeconds, renewalType) {
 
 
-    fun sadd(vararg value: String) {
+    /**
+     * 添加
+     */
+    fun add(key: String, vararg value: String) {
         if (value.any() == false) return
-        redis.stringCommand(dbOffset) { it.sadd(group, *value) }
+        var cacheKey = getFullKey(key);
+        redis.stringCommand(dbOffset) { it.sadd(cacheKey, *value) }
+
+        writeRenewalEvent(key)
     }
 
-    fun scard(): Int {
-        return redis.stringCommand(dbOffset) { it.scard(group).toInt() }
+    /**
+     * 成员数量
+     */
+    fun scard(key: String): Int {
+        var cacheKey = getFullKey(key);
+        return redis.stringCommand(dbOffset) { it.scard(cacheKey).toInt() }
     }
 
-    fun sismember(member: String): Boolean {
-        return redis.stringCommand(dbOffset) { it.sismember(group, member) }
+    fun sismember(key: String, member: String): Boolean {
+        var cacheKey = getFullKey(key);
+        return redis.stringCommand(dbOffset) { it.sismember(cacheKey, member) }
     }
 
-    fun smembers(): Set<String> {
-        return redis.stringCommand(dbOffset) { it.smembers(group) }
+    /**
+     * 获取成员
+     */
+    fun getSet(key: String): Set<String> {
+        var cacheKey = getFullKey(key);
+        return redis.stringCommand(dbOffset) { it.smembers(cacheKey) }
     }
 
-    fun spop(): String {
-        return redis.stringCommand(dbOffset) { it.spop(group) ?: "" }
+    fun spop(key: String): String {
+        var cacheKey = getFullKey(key);
+        writeRenewalEvent(key)
+        return redis.stringCommand(dbOffset) { it.spop(cacheKey) ?: "" }
     }
 
-    fun sscan(member: String, limit: Int): List<String> {
+    fun sscan(key: String, member: String, limit: Int): List<String> {
+        var cacheKey = getFullKey(key);
         return redis.stringCommand(dbOffset) {
-            it.sscan(group, ScanArgs.Builder.matches(member).limit(limit.toLong())).values
+            it.sscan(cacheKey, ScanArgs.Builder.matches(member).limit(limit.toLong())).values
         }
     }
 
-    fun srem(vararg members: String): Long {
-        return redis.stringCommand(dbOffset) { it.srem(group, *members) }
+    /**
+     * 删除成员
+     * 返回删除的成员个数。
+     */
+    fun remove(key: String, vararg members: String): Long {
+        if( members.any()== false) return 0;
+        var cacheKey = getFullKey(key);
+        var ret = redis.stringCommand(dbOffset) { it.srem(cacheKey, *members) }
+        writeRenewalEvent(key)
+        return ret;
     }
 }

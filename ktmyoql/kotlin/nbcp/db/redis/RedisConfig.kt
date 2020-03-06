@@ -142,8 +142,6 @@ open class RedisConfig {
 
         try {
             return block(command!!)
-        } catch (e: Exception) {
-            throw e;
         } finally {
             connection.close();
         }

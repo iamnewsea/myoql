@@ -2,9 +2,8 @@ package nbcp.db.redis.proxy
 
 import nbcp.base.extend.ToMap
 import nbcp.base.extend.*
-import nbcp.comm.JsonMap
-import nbcp.comm.StringMap
 import nbcp.db.redis.BaseRedisProxy
+import nbcp.db.redis.RedisRenewalTypeEnum
 import java.io.Serializable
 
 /**
@@ -15,7 +14,9 @@ import java.io.Serializable
 class RedisHashProxy(
         group: String,
         dbOffset: Int = 0,
-        var defaultCacheSeconds: Int = 0) : BaseRedisProxy(dbOffset, group) {
+        defaultCacheSeconds: Int = 0,
+        renewalType: RedisRenewalTypeEnum = RedisRenewalTypeEnum.Write)
+    : BaseRedisProxy(dbOffset, group, defaultCacheSeconds, renewalType) {
 
 
     fun hkeys(key: String): List<String> {
@@ -24,39 +25,51 @@ class RedisHashProxy(
         }
     }
 
-    fun getMap(key: String): Map<String, String>? {
+    fun getMap(key: String): Map<String, Serializable>? {
         return redis.byteArrayCommand(dbOffset) {
-            it.hgetall(getKey(key)).mapValues { it.value.contentToString() }
+            var cacheKey = getFullKey(key)
+            readRenewalEvent(key)
+            return@byteArrayCommand it.hgetall(cacheKey).mapValues { it.value }
         }
     }
 
-    fun setMap(key: String, map: Map<String, String>) {
-        return redis.byteArrayCommand(dbOffset) { cmd ->
-            map.keys.forEach { k ->
-                cmd.hset(getKey(key), k, map.get(k)!!.toByteArray());
-            }
-        }
-    }
+//    fun setMap(key: String, map: Map<String, String>) {
+//        return redis.byteArrayCommand(dbOffset) { cmd ->
+//            var cacheKey = getKey(key)
+//            map.keys.forEach { k ->
+//                cmd.hset(cacheKey, k, map.get(k)!!.toByteArray());
+//            }
+//            writeRenewalEvent(key)
+//        }
+//    }
 
     inline fun <reified T> getJson(key: String): T? {
         return getMap(key)?.ConvertJson(T::class.java)
     }
 
 
-    fun get(token_value: String, field: String): ByteArray = redis.byteArrayCommand(dbOffset) {
-        it.hget(getKey(token_value), field);
+    fun get(key: String, field: String): ByteArray = redis.byteArrayCommand(dbOffset) {
+        var cacheKey = getFullKey(key)
+        readRenewalEvent(key)
+        return@byteArrayCommand it.hget(cacheKey, field);
     }
 
-    private fun get(token_value: String): Map<String, Serializable> {
-        var keys = redis.byteArrayCommand(dbOffset) { it.hkeys(token_value) }
-        if (keys.any() == false) return linkedMapOf();
-        var ret = redis.byteArrayCommand(dbOffset) { it.hmget(group + ":" + token_value, *keys.toTypedArray()) }
-        return ret.ToMap({ it.key }, { it.value.ToSerializableObject() })
-    }
+//    private fun get(token_value: String): Map<String, Serializable> {
+//        var cacheKey = getKey(token_value)
+//
+//        var keys = redis.byteArrayCommand(dbOffset) { it.hkeys(cacheKey) }
+//        if (keys.any() == false) return linkedMapOf();
+//        var ret = redis.byteArrayCommand(dbOffset) { it.hmget(cacheKey, *keys.toTypedArray()) }
+//        readRenewalEvent(key)
+//        return ret.ToMap({ it.key }, { it.value.ToSerializableObject() })
+//    }
 
-    fun set(token_value: String, value: Map<String, Serializable>): String {
+    fun setMap(key: String, value: Map<String, Serializable>): String {
         if (value.any() == false) return "";
+        var cacheKey = getFullKey(key)
 
-        return redis.byteArrayCommand(dbOffset) { it.hmset(group + ":" + token_value, value.ToMap({ it.key }, { it.value.ToSerializableByteArray() })) }
+        var ret = redis.byteArrayCommand(dbOffset) { it.hmset(cacheKey, value.ToMap({ it.key }, { it.value.ToSerializableByteArray() })) }
+        writeRenewalEvent(key)
+        return ret;
     }
 }

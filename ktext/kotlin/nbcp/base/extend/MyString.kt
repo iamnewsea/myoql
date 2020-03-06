@@ -686,3 +686,25 @@ fun String.MatchPattern(pattern: String): StringMap {
 
     return ret;
 }
+
+inline fun <reified T> String.ToEnum(): T? {
+    return this.ToEnum(T::class.java)
+}
+
+
+//通过 String name 找. 如果找不到,再通过 Numberic 找.
+fun <T> String.ToEnum(enumClazz: Class<T>): T? {
+    if (enumClazz.isEnum == false) return null;
+    var strValue = this.trim();
+    if (strValue.isEmpty()) return null;
+
+    var finded = enumClazz.declaredFields.firstOrNull { it.name == strValue }
+    if (finded == null) {
+        if (this.IsNumberic()) {
+            return this.AsInt().ToEnum(enumClazz)
+        }
+        return null;
+    }
+    return finded.get(null) as T?;
+}
+

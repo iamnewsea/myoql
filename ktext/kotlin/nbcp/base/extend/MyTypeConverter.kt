@@ -183,13 +183,6 @@ fun Any?.AsString(defaultValue: String = ""): String {
     return ret
 }
 
-fun LocalDate.format(pattern: String): String {
-    return this.format(java.time.format.DateTimeFormatter.ofPattern(pattern));
-}
-
-fun LocalDateTime.format(pattern: String): String {
-    return this.format(java.time.format.DateTimeFormatter.ofPattern(pattern));
-}
 
 fun Any?.AsBoolean(defaultValue: Boolean = false): Boolean {
     return this.AsBooleanWithNull() ?: defaultValue
@@ -319,39 +312,7 @@ fun Any?.AsFloat(defaultValue: Float = 0F): Float {
     }
 }
 
-inline fun <reified T> String.ToEnum(): T? {
-    return this.ToEnum(T::class.java)
-}
 
-inline fun <reified T> Int.ToEnum(): T? {
-    return this.ToEnum(T::class.java)
-}
-
-//通过 String name 找. 如果找不到,再通过 Numberic 找.
-fun <T> String.ToEnum(enumClazz: Class<T>): T? {
-    if (enumClazz.isEnum == false) return null;
-    var strValue = this.trim();
-    if (strValue.isEmpty()) return null;
-
-    var finded = enumClazz.declaredFields.firstOrNull { it.name == strValue }
-    if (finded == null) {
-        if (this.IsNumberic()) {
-            return this.AsInt().ToEnum(enumClazz)
-        }
-        return null;
-    }
-    return finded.get(null) as T?;
-}
-
-//通过 int value 找.
-fun <T> Int.ToEnum(enumClazz: Class<T>): T? {
-    if (enumClazz.isEnum == false) return null;
-    var numberField = enumClazz.GetEnumNumberField();
-    if (numberField == null) return null;
-
-    numberField.isAccessible = true;
-    return enumClazz.GetEnumList().firstOrNull { numberField.get(it).AsInt() == this }
-}
 
 fun Any?.AsLocalDate(): LocalDate? {
     return this.AsLocalDateTime()?.toLocalDate();
@@ -582,34 +543,6 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
 }
 
 
-fun LocalDate.atEndOfDay(): LocalDateTime {
-    return this.atTime(23, 59, 59, 999_999_999);
-}
-
-fun LocalDate.isBefore(value: LocalDateTime): Boolean {
-    return this.atEndOfDay().isBefore(value);
-}
-
-fun LocalDateTime.plusSeconds(value: Int): LocalDateTime {
-    return this.plusSeconds(value.toLong());
-}
-
-infix fun LocalDate.min(other: LocalDate): LocalDate {
-    if (this <= other) return this;
-    return other;
-}
-
-infix fun LocalDate.max(other: LocalDate): LocalDate {
-    if (this <= other) return other;
-    return this;
-}
-
-
-fun LocalDateTime.AsDate(defaultValue: Date = Date(0)): Date {
-    if (this.year < 0) return defaultValue
-    return Date.from(this.atZone(ZoneId.systemDefault()).toInstant());
-}
-
 
 fun Any?.AsDate(defaultValue: Date = Date(0)): Date {
     if (this is Date) {
@@ -643,40 +576,4 @@ fun Any?.AsDate(defaultValue: Date = Date(0)): Date {
 }
 
 
-/**
- * 通过 path 获取 value,每级返回的值必须是 Map<String,V> 否则返回 null
- * @param key:
- */
-fun <V> Map<String, V>.getPathValue(vararg keys: String): Any? {
-    if (keys.any() == false) return null;
-    var key = keys.first();
-    var v = this.get(key)
-    if (v == null) return null;
-
-    var left_keys = keys.Slice(1);
-    if (left_keys.any() == false) return v;
-
-    if (v is Map<*, *>) {
-        return (v as Map<String, V>).getPathValue(*left_keys.toTypedArray())
-    }
-    return v.toString()
-}
-
-fun <V> Map<String, V>.getStringValue(vararg keys: String): String {
-    var v = this.getPathValue(*keys)
-    if (v == null) return "";
-    var v_type = v::class.java;
-    if (v_type.isArray) {
-        return (v as Array<String>).joinToString(",")
-    } else if (List::class.java.isAssignableFrom(v_type)) {
-        return (v as List<String>).joinToString(",")
-    }
-    return v.toString()
-}
-
-fun <V> Map<String, V>.getIntValue(vararg keys: String): Int {
-    var v = getPathValue(*keys)
-    if (v == null) return 0;
-    return v.AsInt()
-}
 
