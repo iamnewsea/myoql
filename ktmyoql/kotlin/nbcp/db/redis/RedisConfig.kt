@@ -7,30 +7,26 @@ import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisURI
 import io.lettuce.core.api.StatefulRedisConnection
 import io.lettuce.core.api.sync.RedisCommands
-import io.lettuce.core.codec.ByteArrayCodec
-import io.lettuce.core.codec.RedisCodec
-import io.lettuce.core.codec.StringCodec
 import io.lettuce.core.support.ConnectionPoolSupport
+import nbcp.base.extend.HasValue
 import org.apache.commons.pool2.impl.GenericObjectPool
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import nbcp.base.extend.HasValue
-import java.nio.ByteBuffer
+import org.springframework.stereotype.Component
 import java.time.Duration
 
 
 //@Suppress("SpringKotlinAutowiring")
-@Configuration
+@Component
 @Lazy
 //@EnableCaching
 open class RedisConfig {
     //: CachingConfigurerSupport() {
     companion object {
         internal val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
-        protected var pool_string = linkedMapOf<String, GenericObjectPool<StatefulRedisConnection<String, String>>>()
+        protected var pool_string  = linkedMapOf<String, GenericObjectPool<StatefulRedisConnection<String, String>>>()
         protected var pool_byteArray = linkedMapOf<String, GenericObjectPool<StatefulRedisConnection<String, ByteArray>>>()
     }
 

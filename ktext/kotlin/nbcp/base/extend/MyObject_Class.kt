@@ -1,7 +1,10 @@
 package nbcp.base.extend
 
+import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.WildcardType
 
 
 fun Class<*>.IsSimpleType(): Boolean {
@@ -134,3 +137,13 @@ fun Class<*>.FindField(fieldName: String): Field? {
     return this.superclass.FindField(fieldName);
 }
 
+fun ParameterizedType.GetActualClass(index: Int): Class<*> {
+    var a1 = this.actualTypeArguments[index];
+    if (a1 is Class<*>) {
+        return a1 as Class<*>
+    } else if (a1 is WildcardType) {
+        //类型是 List<枚举> 时，返回
+        return a1.upperBounds[0] as Class<*>
+    }
+    throw RuntimeException("不识别的类型:${a1.typeName}")
+}

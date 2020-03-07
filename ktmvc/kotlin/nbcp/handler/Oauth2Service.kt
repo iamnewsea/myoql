@@ -1,23 +1,21 @@
 //package nbcp.handler
 //
+//import nbcp.base.extend.ConvertJson
+//import nbcp.base.extend.ToLong
 //import nbcp.base.utils.CodeUtil
 //import nbcp.base.utils.Md5Util
 //import nbcp.comm.ApiResult
 //import nbcp.comm.OpenAction
 //import nbcp.comm.Require
 //import nbcp.db.db
+//import nbcp.db.mongo.*
 //import nbcp.db.mongo.entity.SysApplication
-//import nbcp.db.mongo.entity.SysLoginUser
-//import nbcp.db.mongo.match
-//import nbcp.db.mongo.query
-//import nbcp.db.mongo.table.MongoBaseGroup
-//import nbcp.db.mongo.updateById
-//import nbcp.db.redis.RedisBaseGroup
+//import nbcp.db.mongo.entity.SysUser
 //import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 //import org.springframework.web.bind.annotation.RequestMapping
 //import org.springframework.web.bind.annotation.RequestMethod
 //import org.springframework.web.bind.annotation.RestController
-//import java.lang.RuntimeException
+//import java.io.Serializable
 //import java.time.LocalDateTime
 //
 ///**
@@ -58,48 +56,15 @@
 //     * 第一步，前端加载时，先请求接口，用于显示登录到应用的信息。
 //     */
 //    @RequestMapping("/oauth2/app-info", method = arrayOf(RequestMethod.POST))
-//    fun getAppInfo(@Require appKey: String ): ApiResult<SysApplication> {
+//    fun getAppInfo(@Require key: String): ApiResult<SysApplication> {
 //        var app = db.mor_base.sysApplication.query()
-//                .where { it.key match appKey }
+//                .where { it.key match key }
 //                .unSelect { it.secretInfo }
 //                .toEntity()
 //
 //        if (app == null) {
 //            return ApiResult("找不到应用")
 //        }
-//
-//        return ApiResult.of(app)
-//    }
-//
-//    /**
-//     * 第二步，登录成功，获取Code
-//     */
-//    @RequestMapping("/oauth2/authorizeCode", method = arrayOf(RequestMethod.POST))
-//    fun authorizeCode(@Require appKey: String, @Require callback: String,authorizes:List<String>): ApiResult<SysApplication> {
-//        var app = db.mor_base.sysApplication.query()
-//                .where { it.key match appKey }
-//                .unSelect { it.secretInfo }
-//                .toEntity()
-//
-//        if (app == null) {
-//            return ApiResult("找不到应用")
-//        }
-//
-//        if (callback.startsWith(app.hostDomainName) == false) {
-//            return ApiResult("回调地址和安全域名不一致")
-//        }
-//
-//        var authorizeCode = CodeUtil.getCode()
-//        app.secretInfo.authorizeCode = authorizeCode;
-//
-//        db.mor_base.sysApplication.updateById(app.id)
-//                .set { it.secretInfo.authorizeCode to authorizeCode }
-//                .set { it.secretInfo.token to CodeUtil.getCode() }
-//                .set { it.secretInfo.freshToken to CodeUtil.getCode() }
-//                .set { it.secretInfo.codeCreateAt to LocalDateTime.now() }
-//                .exec();
-//
-//        db.rer_base.oauth2.authorizeCode.set(appKey, authorizeCode);
 //
 //        return ApiResult.of(app)
 //    }
@@ -108,7 +73,20 @@
 //     * 第二步，用户点击登录授权。
 //     */
 //    @RequestMapping("/oauth2/login", method = arrayOf(RequestMethod.POST))
-//    fun login(@Require loginName: String, @Require password: String, @Require authorizeCode: String): ApiResult<String> {
+//    fun login(
+//            @Require key: String,
+//            @Require loginName: String,
+//            @Require password: String): ApiResult<String> {
+//
+//        var app = db.mor_base.sysApplication.query()
+//                .where { it.key match key }
+//                .unSelect { it.secretInfo }
+//                .toEntity()
+//
+//        if (app == null) {
+//            return ApiResult("找不到应用")
+//        }
+//
 //        var users = db.mor_base.sysLoginUser.query()
 //                .whereOr({ it.loginName match loginName },
 //                        { it.mobile match loginName },
@@ -127,73 +105,172 @@
 //
 //        var db_pwd = Md5Util.getBase64Md5(password);
 //
-//        users.firstOrNull{ user-> user.password == db_pwd };
+//        var loginUser = users.firstOrNull { user -> user.password == db_pwd };
 //
+//        if (loginUser == null) {
+//            return ApiResult("登录失败")
+//        }
+//
+//        var authorizeCode = CodeUtil.getCode()
+//        var token = CodeUtil.getCode()
+//        loginUser.authorizeCode = authorizeCode;
+//
+//        db.mor_base.sysLoginUser.updateById(loginUser.id)
+//                .set { it.authorizeCode to authorizeCode }
+//                .set { it.token to token }
+//                .set { it.freshToken to CodeUtil.getCode() }
+//                .set { it.codeCreateAt to LocalDateTime.now() }
+//                .exec();
+//
+//        db.mor_base.sysUser.update()
+//                .where { it.loginName match loginUser.loginName }
+//                .set { it.token to token }
+//                .exec();
+//
+//        db.rer_base.oauth2.authorizeCode.set(key + "-" + loginUser.loginName, authorizeCode);
+//
+//        //返回 token 是为了自动登录。此时还没有设置授权范围。
+//        return ApiResult.of(token)
 //    }
 //
 //
 //    data class TokenResultData(
+//            var userId: String = "",
 //            var token: String = "",
 //            var freshToken: String = "",
 //            var expireTime: Int = 0 //秒
 //    )
 //
+//    /**
+//     * 第四步，App-Server拿 code 换 token
+//     * @param sign: 规则：md5(key=${应用Key}&time=${1970年毫秒数}&secret=${密钥}) ， 时间误差3分钟
+//     */
 //    @RequestMapping("/oauth2/token", method = arrayOf(RequestMethod.POST))
-//    fun token(@Require appKey: String, @Require authorizeCode: String): ApiResult<TokenResultData> {
+//    fun token(
+//            @Require key: String,
+//            @Require time: Long,  //1970年到现在的毫秒数
+//            @Require sign: String, //为了安全，不传递secret。
+//            @Require authorizeCode: String): ApiResult<TokenResultData> {
 //
+//        var now = LocalDateTime.now().ToLong();
+//        if (Math.abs(now - time) > 180000) {
+//            return ApiResult("时间差异太大")
+//        }
 //
 //        var app = db.mor_base.sysApplication.query()
-//                .where { it.key match appKey }
+//                .where { it.key match key }
 //                .toEntity()
 //
 //        if (app == null) {
 //            return ApiResult("找不到应用")
 //        }
 //
-//        if (app.authorizeCode != authorizeCode) {
+//        var loginUser = db.mor_base.sysLoginUser.query()
+//                .where { it.authorizeCode match authorizeCode }
+//                .toEntity()
+//
+//        if (loginUser == null) {
+//            return ApiResult("找不到用户信息")
+//        }
+//        if (loginUser.authorizeCode != authorizeCode) {
 //            return ApiResult("授权码不正确")
 //        }
 //
+//        var user = db.mor_base.sysUser.query()
+//                .where { it.loginName match loginUser.loginName }
+//                .toEntity()
+//
+//        if (user == null) {
+//            return ApiResult("找不到用户")
+//        }
+//
+//
 //        var ret = TokenResultData();
-//        ret.token = app.token;
-//        ret.freshToken = app.freshToken;
+//        ret.userId = user.id;
+//        ret.token = loginUser.token;
+//        ret.freshToken = loginUser.freshToken;
 //        ret.expireTime = 7200;
 //
-//        db.rer_base.oauth2.authorize.deleteWithKey(appKey)
-//        db.mor_base.sysApplication.updateById(app.id)
+//        db.rer_base.oauth2.authorizeCode.deleteWithKey(key + "-" + loginUser.loginName)
+////        db.rer_base.oauth2.token.setMap(key + "-" + loginUser.token, ret.ConvertJson(linkedMapOf<String, Serializable>()::class.java))
+//
+//        db.mor_base.sysLoginUser.updateById(loginUser.id)
 //                .unset { it.authorizeCode }
 //                .exec();
 //
 //        return ApiResult.of(ret)
 //    }
 //
+//    /**
+//     * 第五步，刷新token
+//     */
 //    @RequestMapping("/oauth2/fresh", method = arrayOf(RequestMethod.POST))
-//    fun fresh(@Require appKey: String, @Require freshToken: String): ApiResult<TokenResultData> {
+//    fun fresh(@Require key: String, @Require freshToken: String): ApiResult<TokenResultData> {
 //        var app = db.mor_base.sysApplication.query()
-//                .where { it.key match appKey }
+//                .where { it.key match key }
 //                .toEntity()
 //
 //        if (app == null) {
 //            return ApiResult("找不到应用")
 //        }
 //
-//        if (app.freshToken != freshToken) {
+//        var loginUser = db.mor_base.sysLoginUser.query()
+//                .where { it.freshToken match freshToken }
+//                .toEntity();
+//
+//        if (loginUser == null) {
+//            return ApiResult("找不到用户信息")
+//        }
+//
+//        if (loginUser.freshToken != freshToken) {
 //            return ApiResult("刷新码不正确")
 //        }
 //
-//        app.freshToken = CodeUtil.getCode();
-//        app.token = CodeUtil.getCode();
+//        loginUser.freshToken = CodeUtil.getCode();
+//        loginUser.token = CodeUtil.getCode();
 //
-//        db.mor_base.sysApplication.updateById(app.id)
-//                .set { it.token to app.token }
-//                .set { it.freshToken to app.freshToken }
+//        db.mor_base.sysLoginUser.updateById(loginUser.id)
+//                .set { it.token to loginUser.token }
+//                .set { it.freshToken to loginUser.freshToken }
 //                .set { it.codeCreateAt to LocalDateTime.now() }
 //                .exec();
 //
+//        db.mor_base.sysUser.update()
+//                .where { it.loginName match loginUser.loginName }
+//                .set { it.token to loginUser.token }
+//                .exec()
+//
+//
 //        var ret = TokenResultData();
-//        ret.token = app.token;
-//        ret.freshToken = app.freshToken;
+//        ret.userId = loginUser.userId;
+//        ret.token = loginUser.token;
+//        ret.freshToken = loginUser.freshToken;
 //        ret.expireTime = 7200;
+//
+////        db.rer_base.oauth2.token.setMap(key + "-" + loginUser.token, ret.ConvertJson(linkedMapOf<String, Serializable>()::class.java))
 //        return ApiResult.of(ret)
+//    }
+//
+//
+//    /**
+//     * 第六步，获取用户信息
+//     */
+//    fun getUserInfo(@Require key: String, @Require userId: String, @Require token: String): ApiResult<SysUser> {
+//        var loginUser = db.mor_base.sysLoginUser.query()
+//                .where { it.userId match userId }
+//                .where { it.token match token }
+//                .toEntity();
+//
+//        if (loginUser == null) {
+//            return ApiResult("找不到用户信息")
+//        }
+//
+//        var user = db.mor_base.sysUser.queryById(loginUser.userId).toEntity()
+//
+//        if (user == null) {
+//            return ApiResult("找不到用户信息")
+//        }
+//
+//        return ApiResult.of(user);
 //    }
 //}

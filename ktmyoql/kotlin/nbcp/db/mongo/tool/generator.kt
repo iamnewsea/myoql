@@ -8,8 +8,10 @@ import nbcp.db.DbEntityGroup
 
 import java.io.File
 import java.io.FileWriter
+import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
+import java.lang.reflect.WildcardType
 import java.time.LocalDateTime
 
 /**
@@ -24,7 +26,7 @@ class generator {
              basePackage: String,   //实体的包名
              anyEntityClass: Class<*>,  //任意实体的类名
              nameMapping: StringMap = StringMap(), // 名称转换
-             ignoreGroups: List<String> = listOf("base")  //忽略的包名
+             ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
     ) {
         this.nameMapping = nameMapping;
 
@@ -169,8 +171,7 @@ data class moer_map(val _pname:String)
                         return@map it.type.componentType;
                     }
                     if (List::class.java.isAssignableFrom(it.type)) {
-                        var actType = (it.genericType as ParameterizedType).actualTypeArguments[0] as Class<*>;
-                        return@map actType;
+                        return@map (it.genericType as ParameterizedType).GetActualClass(0)
                     }
                     return@map it.type;
                 }.filter {
@@ -256,7 +257,7 @@ data class moer_map(val _pname:String)
 
 
         if (List::class.java.isAssignableFrom(field.type)) {
-            var actType = (field.genericType as ParameterizedType).actualTypeArguments[0] as Class<*>;
+            var actType = (field.genericType as ParameterizedType).GetActualClass(0)
 
 
             var ret = getMetaValue(field.name, actType, parentTypeName);
@@ -299,7 +300,7 @@ data class moer_map(val _pname:String)
 
 
         if (List::class.java.isAssignableFrom(field.type)) {
-            var actType = (field.genericType as ParameterizedType).actualTypeArguments[0] as Class<*>;
+            var actType = (field.genericType as ParameterizedType).GetActualClass(0);
 
             var (ret2, retTypeIsBasicType2) = getEntityValue(field.name, actType);
             if (ret2.HasValue) return ret2 to retTypeIsBasicType2;

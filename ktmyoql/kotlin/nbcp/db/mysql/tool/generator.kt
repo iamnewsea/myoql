@@ -36,7 +36,7 @@ class generator {
              basePackage: String,    //实体的包名
              anyEntityClass: Class<*>, //任意实体的类名
              nameMapping: StringMap = StringMap(), // 名称转换
-             ignoreGroups: List<String> = listOf("base")  //忽略的包名
+             ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
     ) {
         this.nameMapping = nameMapping
         var p = System.getProperty("file.separator");
