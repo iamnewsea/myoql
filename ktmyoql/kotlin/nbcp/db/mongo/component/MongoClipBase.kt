@@ -24,7 +24,7 @@ open class MongoClipBase(var collectionName: String): Serializable {
 
     val mongoTemplate: MongoTemplate
         get() {
-            return db.getDynamicMongoTemplateByCollectionName(collectionName) ?: scopes.getLatest<MongoTemplate>() ?: SpringUtil.getBean<MongoTemplate>()
+            return db.mongo.getDynamicMongoTemplateByCollectionName(collectionName) ?: scopes.getLatest<MongoTemplate>() ?: SpringUtil.getBean<MongoTemplate>()
         }
 
 

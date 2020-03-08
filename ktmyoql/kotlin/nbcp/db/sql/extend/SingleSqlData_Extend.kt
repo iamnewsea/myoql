@@ -1,14 +1,11 @@
 package nbcp.db.sql
 
-import nbcp.comm.*
 import nbcp.base.extend.*
 import nbcp.db.db
 import java.io.Serializable
 import java.sql.Date
 import java.sql.PreparedStatement
 import java.time.*
-import nbcp.db.sql.*
-
 
 
 fun SingleSqlData.toWhereData(): WhereData {
@@ -23,7 +20,7 @@ fun SqlColumnNames.toSelectSql(): String =
         this.map {
             if (it.getAliasName() == it.name) it.fullName
             else
-                it.fullName + " as " + db.getQuoteName(it.getAliasName())
+                it.fullName + " as " + db.sql.getSqlQuoteName(it.getAliasName())
         }.joinToString(",")
 
 
@@ -197,7 +194,7 @@ fun PreparedStatement.setValue(index: Int, param: SqlParameterData) {
 
 
 val SqlBaseTable<out IBaseDbEntity>.quoteTableName: String
-    get() = "${db.getQuoteName(this.tableName)}"
+    get() = "${db.sql.getSqlQuoteName(this.tableName)}"
 
 /**
  * 如果有别名，返回： table as t
@@ -205,9 +202,9 @@ val SqlBaseTable<out IBaseDbEntity>.quoteTableName: String
  */
 val SqlBaseTable<out IBaseDbEntity>.fromTableName: String
     get() {
-        var ret = "${db.getQuoteName(this.tableName)}"
+        var ret = "${db.sql.getSqlQuoteName(this.tableName)}"
         if (this.getAliaTableName().HasValue && (this.getAliaTableName() != this.tableName)) {
-            ret += " as " + db.getQuoteName(this.getAliaTableName());
+            ret += " as " + db.sql.getSqlQuoteName(this.getAliaTableName());
         }
         return ret;
     }

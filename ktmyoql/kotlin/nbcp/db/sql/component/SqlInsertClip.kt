@@ -9,7 +9,6 @@ import nbcp.base.extend.*
 import nbcp.base.line_break
 import nbcp.base.utils.MyUtil
 import nbcp.db.db
-import nbcp.db.sql.*
 import java.sql.PreparedStatement
 import java.sql.Statement
 
@@ -119,7 +118,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
                 insertColumns = insertColumns.Intersect(columns, { a, b -> a.name == b.name })
             }
 
-            var exp = "insert into ${mainEntity.quoteTableName} (${insertColumns.map { "${db.getQuoteName(it.name)}" }.joinToString(",")}) values (${insertColumns.map { "#${it.name}@" }.joinToString(",")})";
+            var exp = "insert into ${mainEntity.quoteTableName} (${insertColumns.map { "${db.sql.getSqlQuoteName(it.name)}" }.joinToString(",")}) values (${insertColumns.map { "#${it.name}@" }.joinToString(",")})";
 
             var executeSql = SingleSqlData(exp, entity)
 
@@ -147,6 +146,11 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
 //                }
 //            }
 //        }
+
+        var settings = db.sql.sqlEvents.onInserting(this)
+        if( settings.any { it.second != null && it.second!!.result == false }) {
+            return 0;
+        }
 
         var n = 0;
         if (this.entities.size == 1) {
@@ -197,13 +201,17 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
             return n
         }
 
+        settings.forEach {
+            it.first.insert(this,it.second);
+        }
+
         return 0
     }
 
 
     private fun doBatch_EachItem(insertColumns: List<SqlColumnName>): IntArray {
         db.affectRowCount = -1;
-        var exp = "insert into ${mainEntity.quoteTableName} (${insertColumns.map { "${db.getQuoteName(it.name)}" }.joinToString(",")}) values (${insertColumns.map { "?" }.joinToString(",")})";
+        var exp = "insert into ${mainEntity.quoteTableName} (${insertColumns.map { "${db.sql.getSqlQuoteName(it.name)}" }.joinToString(",")}) values (${insertColumns.map { "?" }.joinToString(",")})";
 
         var startAt = System.currentTimeMillis();
 
@@ -262,7 +270,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
         if (take < 0) {
             result = doBatch_EachItem(insertColumns).size;
         } else {
-            var executeSql = "insert into ${mainEntity.quoteTableName} (${insertColumns.map { "${db.getQuoteName(it.name)}" }.joinToString(",")}) values " +
+            var executeSql = "insert into ${mainEntity.quoteTableName} (${insertColumns.map { "${db.sql.getSqlQuoteName(it.name)}" }.joinToString(",")}) values " +
 
                     IntRange(1, take).map each_entity@{
                         return@each_entity "(" + insertColumns.map { "?" }.joinToString(",") + ")"

@@ -118,7 +118,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
 
         var error = false;
         try {
-            db.procResultData_id2Id(cursor);
+            db.mongo.procResultData_id2Id(cursor);
             cursor.forEach {
                 //            if( it.containsField("_id")){
 //                it.put("id",it.get("_id").toString())

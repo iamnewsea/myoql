@@ -242,7 +242,7 @@ cursor: {} } """
         list.forEach {
             //            db.change_id2Id(it);
             //value 可能会是： Document{{answerRole=Patriarch}}
-            db.procResultDocumentJsonData(it);
+            db.mongo.procResultDocumentJsonData(it);
             if (itemFunc != null) {
                 itemFunc(it);
             }

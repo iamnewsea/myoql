@@ -2,7 +2,6 @@ package nbcp.db.mongo
 
 import nbcp.base.extend.ForEachExt
 import nbcp.db.*
-import nbcp.db.mongo.*
 import nbcp.db.mongo.component.MongoBaseInsertClip
 import nbcp.db.mongo.component.MongoBaseUpdateClip
 import org.springframework.beans.factory.config.BeanPostProcessor
@@ -57,25 +56,15 @@ class MongoEntityEvent : BeanPostProcessor {
         }
 
         if (bean is IMongoEntityInsert) {
-            var ann = bean::class.java.getAnnotation(DbEntityInsert::class.java)
-            if (ann != null) {
-                insertEvent.add(bean)
-            }
+            insertEvent.add(bean)
         }
 
         if (bean is IMongoEntityUpdate) {
-            var ann = bean::class.java.getAnnotation(DbEntityUpdate::class.java)
-            if (ann != null) {
-                updateEvent.add(bean)
-            }
+            updateEvent.add(bean)
         }
 
-
         if (bean is IMongoEntityDelete) {
-            var ann = bean::class.java.getAnnotation(DbEntityDelete::class.java)
-            if (ann != null) {
-                deleteEvent.add(bean)
-            }
+            deleteEvent.add(bean)
         }
 
         return super.postProcessAfterInitialization(bean, beanName)
@@ -104,11 +93,12 @@ class MongoEntityEvent : BeanPostProcessor {
     }
 
     private fun addDustbin(entityClass: Class<out IMongoDocument>) {
-        var dustbin = entityClass.getAnnotation(MongoEntitySysDustbin::class.java)
+        var dustbin = entityClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dustbin != null) {
             dustbinEntitys.add(entityClass)
         }
     }
+
     fun onInserting(insert: MongoBaseInsertClip): Array<Pair<IMongoEntityInsert, DbEntityEventResult>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityInsert, DbEntityEventResult>>()

@@ -14,6 +14,7 @@ import nbcp.db.mongo.toDocument
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.BasicQuery
+import org.springframework.stereotype.Component
 
 /**
  * 同步处理，更新的实体，级联更新引用的冗余字段。
@@ -25,7 +26,7 @@ data class CascadeUpdateEventDataModel(
         var masterNameValue: String
 )
 
-@DbEntityUpdate()
+@Component
 class MongoCascadeUpdateEvent : IMongoEntityUpdate {
     override fun beforeUpdate(update: MongoBaseUpdateClip): DbEntityEventResult {
         var refs = MongoEntityEvent.refsMap.filter { MyUtil.getSmallCamelCase(it.masterEntityClass.simpleName) == update.collectionName }

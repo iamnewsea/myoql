@@ -34,7 +34,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
         db.affectRowCount = -1;
         var ret = 0;
 
-        var settingResult = db.mongoEvents.onInserting(this)
+        var settingResult = db.mongo.mongoEvents.onInserting(this)
         if (settingResult.any { it.second.result == false }) {
             return 0;
         }

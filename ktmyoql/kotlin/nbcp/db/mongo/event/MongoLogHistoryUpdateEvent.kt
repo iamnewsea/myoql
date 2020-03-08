@@ -15,12 +15,13 @@ import nbcp.db.mongo.toDocument
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.BasicQuery
+import org.springframework.stereotype.Component
 
 /**
  * 处理 @DbEntityLogHistory
  */
 
-@DbEntityUpdate()
+@Component
 class MongoLogHistoryUpdateEvent : IMongoEntityUpdate {
     override fun beforeUpdate(update: MongoBaseUpdateClip): DbEntityEventResult {
         var logs = MongoEntityEvent.logHistoryMap.filter { MyUtil.getSmallCamelCase(it.key.simpleName) == update.collectionName }

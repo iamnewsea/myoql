@@ -6,11 +6,11 @@ import nbcp.db.*
 import nbcp.db.sql.entity.s_dustbin
 import org.springframework.stereotype.Component
 
-@DbEntityDelete( )
+@Component
 class SqlDustbinEvent : ISqlEntityDelete {
 
     override fun beforeDelete(delete: SqlDeleteClip<*, *>): DbEntityEventResult? {
-        var dust = delete.mainEntity.tableClass.getAnnotation(MongoEntitySysDustbin::class.java)
+        var dust = delete.mainEntity.tableClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dust != null) {
             //找出数据
             var where = delete.whereDatas.toSingleData()

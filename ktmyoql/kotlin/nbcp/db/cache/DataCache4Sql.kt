@@ -185,7 +185,7 @@ class ProxyDataCache4Sql : IProxyCache4Sql {
             return ret;
         }
 
-        var dbEntity = db.getSqlEntity?.invoke(tableName)
+        var dbEntity = db.sql.getSqlEntity?.invoke(tableName)
         if (dbEntity == null) {
             return ret
         }
@@ -388,7 +388,7 @@ class ProxyDataCache4Sql : IProxyCache4Sql {
 
 
 
-        var dbEntity = db.getSqlEntity?.invoke(tableName)
+        var dbEntity = db.sql.getSqlEntity?.invoke(tableName)
         if (dbEntity == null) {
             return
         }
@@ -427,7 +427,7 @@ class ProxyDataCache4Sql : IProxyCache4Sql {
         var tableName =  delete.tableName;
         var tableAlias = delete.alias;
 
-        var dbEntity = db.getSqlEntity?.invoke(tableName)
+        var dbEntity = db.sql.getSqlEntity?.invoke(tableName)
         if (dbEntity == null) {
             return
         }
@@ -466,7 +466,7 @@ class ProxyDataCache4Sql : IProxyCache4Sql {
         var where = (analysor.first { it.key == SqlKeyEnum.Where } as WhereSqlSect);
         var tableName =  insert.tableName;
 
-        var dbEntity = db.getSqlEntity?.invoke(tableName)
+        var dbEntity = db.sql.getSqlEntity?.invoke(tableName)
         if (dbEntity == null) {
             return
         }

@@ -92,7 +92,7 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
         }
 
         var fk = fks.first()
-        return WhereData("${db.getQuoteName(fk.table)}.${db.getQuoteName(fk.column)} = ${db.getQuoteName(fk.refTable)}.${db.getQuoteName(fk.refColumn)}")
+        return WhereData("${db.sql.getSqlQuoteName(fk.table)}.${db.sql.getSqlQuoteName(fk.column)} = ${db.sql.getSqlQuoteName(fk.refTable)}.${db.sql.getSqlQuoteName(fk.refColumn)}")
     }
 
     fun <M2 : SqlBaseTable<out T2>, T2 : IBaseDbEntity> join(joinTable: M2, onWhere: (M, M2) -> WhereData, select: ((M2) -> SqlColumnNames)? = null): SqlQueryClip<M, T> {
@@ -141,24 +141,24 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
                 if (this.subSelect!!.columns.any() == false) {
                     ret.expression += this.subSelectAlias + ".*"
                 } else {
-                    ret.expression += this.subSelect!!.columns.map { this.subSelectAlias + "." + db.getQuoteName(it.getAliasName()) }.joinToString(",")
+                    ret.expression += this.subSelect!!.columns.map { this.subSelectAlias + "." + db.sql.getSqlQuoteName(it.getAliasName()) }.joinToString(",")
                 }
             } else {
-                var selectColumn = columns.map { this.subSelectAlias + "." + db.getQuoteName(it.getAliasName()) }.joinToString(",")
+                var selectColumn = columns.map { this.subSelectAlias + "." + db.sql.getSqlQuoteName(it.getAliasName()) }.joinToString(",")
 
                 ret.expression += selectColumn
             }
 
             joins.forEach {
                 if (it.select.any()) {
-                    ret.expression += "," + it.select.map { this.subSelectAlias + "." + db.getQuoteName(it.getAliasName()) }.joinToString(",")
+                    ret.expression += "," + it.select.map { this.subSelectAlias + "." + db.sql.getSqlQuoteName(it.getAliasName()) }.joinToString(",")
                 }
             }
 
             ret.expression += "from ("
             ret += selectSql
 
-            ret.expression += ")" + (if (this.subSelectAlias.HasValue) " as " + db.getQuoteName(this.subSelectAlias) else "")
+            ret.expression += ")" + (if (this.subSelectAlias.HasValue) " as " + db.sql.getSqlQuoteName(this.subSelectAlias) else "")
 
         } else {
             ret.expression += "select "
@@ -324,7 +324,7 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
             throw RuntimeException("插入 select 语句时,发现多余的列: ${surplusColumns.joinToString(",")}")
         }
 
-        var exp = "insert into ${insertTable.quoteTableName} (${select.columns.map { "${db.getQuoteName(it.getAliasName())}" }.joinToString(",")}) ";
+        var exp = "insert into ${insertTable.quoteTableName} (${select.columns.map { "${db.sql.getSqlQuoteName(it.getAliasName())}" }.joinToString(",")}) ";
 
         var sql = select.toSql().toExecuteSqlAndParameters()
 

@@ -1,14 +1,10 @@
 package nbcp.db.mongo.entity
 
-import nbcp.base.utils.CodeUtil
 import nbcp.db.DbEntityGroup
 import nbcp.db.IdName
-import nbcp.db.IdUrl
-import nbcp.db.MongoEntitySysDustbin
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
 import nbcp.db.mongo.*
-import java.time.LocalDate
 
 //--------------------------------------------------------
 

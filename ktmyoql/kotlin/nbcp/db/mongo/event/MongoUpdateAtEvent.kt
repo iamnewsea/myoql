@@ -14,12 +14,13 @@ import nbcp.db.mongo.toDocument
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.BasicQuery
+import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
 /**
  * 同步处理，更新的实体，添加 updateAt 字段。
  */
-@DbEntityUpdate()
+@Component
 class MongoUpdateAtEvent : IMongoEntityUpdate {
     override fun beforeUpdate(update: MongoBaseUpdateClip): DbEntityEventResult {
         update.setValue("updateAt", LocalDateTime.now())

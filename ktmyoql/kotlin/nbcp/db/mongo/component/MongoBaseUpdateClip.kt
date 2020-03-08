@@ -77,7 +77,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         for (kv in setData) {
             var value = kv.value;
             if (value != null) {
-                value = db.procSetDocumentData(kv.value!!)
+                value = db.mongo.procSetDocumentData(kv.value!!)
                 update = update.set(kv.key, value);
             } else {
                 update = update.unset(kv.key);
@@ -89,7 +89,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         }
 
         for (kv in pushData) {
-            var value = db.procSetDocumentData(kv.value)
+            var value = db.mongo.procSetDocumentData(kv.value)
             update = update.push(kv.key, value);
         }
 
@@ -133,7 +133,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             update.filterArray(it)
         }
 
-        var settingResult = db.mongoEvents.onUpdating(this)
+        var settingResult = db.mongo.mongoEvents.onUpdating(this)
         if (settingResult.any { it.second.result == false }) {
             return 0;
         }

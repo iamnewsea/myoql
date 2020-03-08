@@ -46,6 +46,11 @@ class SqlDeleteClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
 
     override fun exec(): Int {
         db.affectRowCount = -1;
+        var settings = db.sql.sqlEvents.onDeleting(this);
+        if( settings.any{it.second != null && it.second!!.result ==false}){
+            return 0;
+        }
+
         var sql = toSql()
         var executeData = sql.toExecuteSqlAndParameters();
         var startAt = System.currentTimeMillis();
@@ -64,6 +69,10 @@ class SqlDeleteClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
                 msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
                 return@InfoError msg_log.joinToString(line_break)
             }
+        }
+
+        settings.forEach {
+            it.first.delete(this,it.second)
         }
 
         db.affectRowCount = n
