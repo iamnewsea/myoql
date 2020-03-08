@@ -10,6 +10,7 @@ import nbcp.base.utils.SpringUtil
 import nbcp.db.db
 
 import nbcp.db.mongo.*
+import nbcp.db.mongo.component.MongoBaseInsertClip
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 
@@ -36,51 +37,58 @@ abstract class MongoBaseEntity<T : IMongoDocument>(val entityClass: Class<T>, en
      * @param entity 实体
      * @return 返回Id
      */
-    fun doInsert(entity: Map<String, *>): String {
-        db.affectRowCount = -1;
-        var entity = entity.toMutableMap()
-        if (entity.containsKey("id") == false) {
-            entity.set("id", ObjectId().toString())
-        }
-
-        var retId = "";
-        var error = false;
-        try {
-            mongoTemplate.insert(db.procSetDocumentData(entity), tableName);
-            db.affectRowCount = 1;
-            retId = entity.get("id").toString()
-        } catch (e: Exception) {
-            error = true;
-            throw e;
-        } finally {
-            logger.InfoError(error) { "insert:[" + this.tableName + "],data:" + entity.ToJson() + ",_id:" + retId }
-        }
-
-        return retId
-    }
+//    fun doInsert(entity: Map<String, *>): String {
+//        db.affectRowCount = -1;
+//        var entity = entity.toMutableMap()
+//        if (entity.containsKey("id") == false) {
+//            entity.set("id", ObjectId().toString())
+//        }
+//
+//        var retId = "";
+//        var error = false;
+//        try {
+//            mongoTemplate.insert(db.procSetDocumentData(entity), tableName);
+//            db.affectRowCount = 1;
+//            retId = entity.get("id").toString()
+//        } catch (e: Exception) {
+//            error = true;
+//            throw e;
+//        } finally {
+//            logger.InfoError(error) { "insert:[" + this.tableName + "],data:" + entity.ToJson() + ",_id:" + retId }
+//        }
+//
+//        return retId
+//    }
 
     /**
      * @param entity 实体
      * @return 返回Id
      */
+//    fun doInsert(entity: T): String {
+//        if (entity.id.isEmpty()) {
+//            entity.id = ObjectId().toString();
+//        }
+//
+//        var error = false;
+//        try {
+//            mongoTemplate.insert(entity, tableName);
+//            db.affectRowCount = 1;
+//        } catch (e: Exception) {
+//            error = true;
+//            throw e;
+//        } finally {
+//            logger.InfoError(error) { "insert:[" + this.tableName + "],data:" + entity.ToJson() + ",_id:" + entity.id }
+//        }
+//
+//
+//        return entity.id;
+//    }
+
     fun doInsert(entity: T): String {
-        if (entity.id.isEmpty()) {
-            entity.id = ObjectId().toString();
-        }
-
-        var error = false;
-        try {
-            mongoTemplate.insert(entity, tableName);
-            db.affectRowCount = 1;
-        } catch (e: Exception) {
-            error = true;
-            throw e;
-        } finally {
-            logger.InfoError(error) { "insert:[" + this.tableName + "],data:" + entity.ToJson() + ",_id:" + entity.id }
-        }
-
-
-        return entity.id;
+        var batchInsert = MongoBaseInsertClip(this.tableName)
+        batchInsert.addEntity(entity)
+        batchInsert.exec();
+        return entity.id
     }
 
     /**

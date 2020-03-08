@@ -1,7 +1,14 @@
 package nbcp.db.mongo
 
 import nbcp.db.DbEntityEventResult
+import nbcp.db.mongo.component.MongoBaseInsertClip
 import nbcp.db.mongo.component.MongoBaseUpdateClip
+
+interface IMongoEntityInsert {
+    fun beforeInsert(insert: MongoBaseInsertClip): DbEntityEventResult
+
+    fun insert(insert: MongoBaseInsertClip, eventData: DbEntityEventResult)
+}
 
 /**
  * 实体Update接口，标记 DbEntityUpdate 注解的类使用。

@@ -3,6 +3,7 @@ package nbcp.db.mongo
 import nbcp.base.extend.ForEachExt
 import nbcp.db.*
 import nbcp.db.mongo.*
+import nbcp.db.mongo.component.MongoBaseInsertClip
 import nbcp.db.mongo.component.MongoBaseUpdateClip
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component
@@ -17,6 +18,8 @@ class MongoEntityEvent : BeanPostProcessor {
         val logHistoryMap = linkedMapOf<Class<*>, Array<String>>()
         // 冗余字段的引用。如 user.corp.name 引用的是  corp.name
         val refsMap = mutableListOf<DbEntityFieldRefData>()
+        //注册的 Update Bean
+        val insertEvent = mutableListOf<IMongoEntityInsert>()
         //注册的 Update Bean
         val updateEvent = mutableListOf<IMongoEntityUpdate>()
         //注册的 Delete Bean
@@ -52,6 +55,14 @@ class MongoEntityEvent : BeanPostProcessor {
                 }
             }
         }
+
+        if (bean is IMongoEntityInsert) {
+            var ann = bean::class.java.getAnnotation(DbEntityInsert::class.java)
+            if (ann != null) {
+                insertEvent.add(bean)
+            }
+        }
+
         if (bean is IMongoEntityUpdate) {
             var ann = bean::class.java.getAnnotation(DbEntityUpdate::class.java)
             if (ann != null) {
@@ -98,7 +109,19 @@ class MongoEntityEvent : BeanPostProcessor {
             dustbinEntitys.add(entityClass)
         }
     }
-
+    fun onInserting(insert: MongoBaseInsertClip): Array<Pair<IMongoEntityInsert, DbEntityEventResult>> {
+        //先判断是否进行了类拦截.
+        var list = mutableListOf<Pair<IMongoEntityInsert, DbEntityEventResult>>()
+        insertEvent.ForEachExt { it, index ->
+            var ret = it.beforeInsert(insert);
+            if (ret.result == false) {
+                return@ForEachExt false;
+            }
+            list.add(it to ret)
+            return@ForEachExt true
+        }
+        return list.toTypedArray()
+    }
 
     fun onUpdating(update: MongoBaseUpdateClip): Array<Pair<IMongoEntityUpdate, DbEntityEventResult>> {
         //先判断是否进行了类拦截.

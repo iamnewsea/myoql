@@ -9,6 +9,8 @@ import nbcp.comm.JsonMap
 import nbcp.comm.StringMap
 import nbcp.db.db
 import nbcp.db.mongo.*
+import nbcp.db.mongo.component.MongoBaseInsertClip
+import nbcp.db.mongo.component.MongoBaseUpdateClip
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.Criteria
 
@@ -21,15 +23,12 @@ import org.springframework.data.mongodb.core.query.Criteria
 /**
  * MongoUpdate
  */
-class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M, var entity: IMongoDocument) : MongoClipBase(moerEntity.tableName), IMongoWhereable {
+class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M, var entity: IMongoDocument) : MongoBaseUpdateClip(moerEntity.tableName)  {
     companion object {
         private val logger by lazy {
             return@lazy LoggerFactory.getLogger(this::class.java)
         }
     }
-
-    private var whereData = mutableListOf<Criteria>()
-    private var setData = LinkedHashMap<String, Any?>()
     private var whereColumns = mutableSetOf<String>()
     private var setColumns = mutableSetOf<String>()
     private var unsetColumns = mutableSetOf<String>()
@@ -78,7 +77,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
     }
 
 
-    fun exec(): Int {
+    override fun exec(): Int {
         if (whereColumns.any() == false) {
             whereColumns.add("_id")
         }
@@ -141,12 +140,19 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
      */
     fun updateOrAdd(): String {
         var ret = "";
-        if (this.exec() == 0) {
-            if (entity.id.isEmpty()) {
-                entity.id = ObjectId().toString();
-            }
 
-            mongoTemplate.insert(entity, this.moerEntity.tableName);
+        //有一个问题，可能是阻止更新了。所以导致是0。
+        if (this.exec() == 0) {
+            var batchInsert = MongoBaseInsertClip(moerEntity.tableName)
+            batchInsert.addEntity(entity);
+
+            db.affectRowCount =batchInsert.exec();
+
+//            if (entity.id.isEmpty()) {
+//                entity.id = ObjectId().toString();
+//            }
+//
+//            mongoTemplate.insert(entity, this.moerEntity.tableName);
             db.affectRowCount = 1;
             ret = entity.id;
         }

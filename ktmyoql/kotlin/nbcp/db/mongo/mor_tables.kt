@@ -9,7 +9,7 @@ import nbcp.db.mongo.*
 import nbcp.db.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-03-07 10:49:38
+//generate auto @2020-03-08 13:24:02
 
 class IdNameMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
@@ -58,8 +58,9 @@ class MongoBaseGroup : IDataGroup{
         val createBy=IdNameMeta("createBy")
         val corpId=MongoColumnName("corpId")
         val errorMsg=MongoColumnName("errorMsg")
-        val createAt=MongoColumnName("createAt")
         val id=MongoColumnName("_id")
+        val createAt=MongoColumnName("createAt")
+        val updateAt=MongoColumnName("updateAt")
     }
     
     class SysDustbinEntity(collectionName:String=""):MongoBaseEntity<SysDustbin>(SysDustbin::class.java,collectionName.AsString("sysDustbin")) {
@@ -67,8 +68,9 @@ class MongoBaseGroup : IDataGroup{
         val remark=MongoColumnName("remark")
         val creator=IdNameMeta("creator")
         val data=ObjectMeta("data")
-        val createAt=MongoColumnName("createAt")
         val id=MongoColumnName("_id")
+        val createAt=MongoColumnName("createAt")
+        val updateAt=MongoColumnName("updateAt")
     }
     
     class SysLogEntity(collectionName:String=""):MongoBaseEntity<SysLog>(SysLog::class.java,collectionName.AsString("sysLog")) {
@@ -82,6 +84,8 @@ class MongoBaseGroup : IDataGroup{
         val creatAt=MongoColumnName("creatAt")
         val createBy=MongoColumnName("createBy")
         val id=MongoColumnName("_id")
+        val createAt=MongoColumnName("createAt")
+        val updateAt=MongoColumnName("updateAt")
     }
     
 }

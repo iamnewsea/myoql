@@ -8,6 +8,7 @@ import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import nbcp.db.mongo.*
+import nbcp.db.mongo.component.MongoBaseInsertClip
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 
@@ -15,41 +16,18 @@ import java.lang.Exception
  * Created by udi on 17-4-17.
  */
 
+
 /**
- * MongoDelete
+ * MongoInsert
  */
-class MongoInsertClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity: M) : MongoClipBase(moerEntity.tableName), IMongoWhereable {
-    val whereData = mutableListOf<Criteria>()
+class MongoInsertClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity: M) : MongoBaseInsertClip(moerEntity.tableName)  {
 
     companion object {
         private var logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    private var entities = mutableListOf<E>()
-
     fun add(entity: E): MongoInsertClip<M, E> {
-        if( entity.id.isEmpty()){
-            entity.id = ObjectId.get().toString()
-        }
-        this.entities.add(entity);
+        super.addEntity(entity)
         return this;
-    }
-
-    fun exec(): Int {
-        db.affectRowCount = -1;
-        var ret = 0;
-        try {
-            mongoTemplate.insertAll(entities)
-            ret = entities.size;
-            db.affectRowCount = entities.size
-            return db.affectRowCount
-        } catch (e: Exception) {
-            ret = -1;
-            throw e;
-        } finally {
-            logger.InfoError(ret < 0) { "insert ${entities.size} enities：[" + this.collectionName + "] " + ",result:${ret}" };
-        }
-
-        return ret;
     }
 }

@@ -44,6 +44,10 @@ annotation class DbEntityLogHistory(vararg val fields: String)
 @Component
 annotation class DbEntityUpdate(@get:AliasFor(annotation = Component::class) val value: String = "")
 
+@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+@Component
+annotation class DbEntityInsert(@get:AliasFor(annotation = Component::class) val value: String = "")
 
 /**
  * 标注 实体删除的 Bean，需要实现  IDbEntityDelete

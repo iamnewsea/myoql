@@ -27,8 +27,7 @@ open class SysAnnex(
 
         var createBy: IdName = IdName(), //创建者
         var corpId: String = "",    //创建所属企业,如果是 admin,则 id = "admin" , name = "admin 即可
-        var errorMsg: String = "",      //文件处理时的错误消息
-        var createAt: LocalDateTime = LocalDateTime.now()
+        var errorMsg: String = ""      //文件处理时的错误消息
 ) : IMongoDocument() {
 }
 
@@ -55,8 +54,7 @@ open class SysDustbin(
         var table: String = "",
         var remark: String = "",
         var creator: IdName = IdName(),
-        var data: Any = Object(),
-        var createAt: LocalDateTime = LocalDateTime.now()
+        var data: Any = Object()
 ) : IMongoDocument()
 
 

@@ -28,7 +28,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
     /**保存 arrayFilters
      * https://docs.mongodb.com/manual/reference/method/db.collection.update/index.html#update-arrayfilters
      */
-    protected val arrayFilters:MutableList<CriteriaDefinition> = mutableListOf()
+    protected val arrayFilters: MutableList<CriteriaDefinition> = mutableListOf()
 
     protected val setData = LinkedHashMap<String, Any?>()
     protected val unsetData = mutableListOf<String>()
@@ -54,7 +54,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
     /**
      * 更新条件不能为空。
      */
-    fun exec(): Int {
+    open fun exec(): Int {
         if (whereData.size == 0) {
             throw RuntimeException("更新条件为空，不允许更新")
             return 0;
@@ -67,7 +67,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
     /**
      * 更新条件可以为空。
      */
-    fun execAll(): Int {
+    protected fun execAll(): Int {
         db.affectRowCount = -1;
 
         var criteria = this.getMongoCriteria(*whereData.toTypedArray());
@@ -129,13 +129,13 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
 //        }
 
 
+        this.arrayFilters.forEach {
+            update.filterArray(it)
+        }
+
         var settingResult = db.mongoEvents.onUpdating(this)
         if (settingResult.any { it.second.result == false }) {
             return 0;
-        }
-
-        this.arrayFilters.forEach {
-            update.filterArray(it)
         }
 
         var ret = 0;
