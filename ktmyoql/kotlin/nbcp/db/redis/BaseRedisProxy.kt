@@ -5,6 +5,8 @@ import io.lettuce.core.ScanCursor
 import nbcp.base.extend.AsInt
 import nbcp.base.utils.SpringUtil
 import nbcp.base.extend.*
+import org.springframework.data.redis.connection.StringRedisConnection
+import org.springframework.data.redis.core.StringRedisTemplate
 
 enum class RedisRenewalTypeEnum {
     None, //不续期
@@ -16,23 +18,34 @@ enum class RedisRenewalTypeEnum {
 /**
  * @param autoRenewal: 续期，当有访问的时候
  */
-abstract class BaseRedisProxy(protected val dbOffset: Int, val group: String, val defaultCacheSeconds: Int, val renewalType: RedisRenewalTypeEnum = RedisRenewalTypeEnum.Write) {
+abstract class BaseRedisProxy(val group: String, val defaultCacheSeconds: Int, val renewalType: RedisRenewalTypeEnum = RedisRenewalTypeEnum.Write) {
     companion object {
-        val redis by lazy {
-            return@lazy SpringUtil.getBean<RedisConfig>()
-        }
+
+    }
+
+    protected val keyCommand: StringRedisConnection by lazy {
+        return@lazy anyTypeCommand.connectionFactory.connection as StringRedisConnection
+    }
+
+
+    protected val stringCommand: StringRedisTemplate by lazy {
+        return@lazy SpringUtil.getBean<StringRedisTemplate>()
+    }
+
+    protected val anyTypeCommand: AnyTypeRedisTemplate by lazy {
+        return@lazy SpringUtil.getBean<AnyTypeRedisTemplate>()
     }
 
     protected fun readRenewalEvent(key: String) {
         if (renewalType == RedisRenewalTypeEnum.Read ||
                 renewalType == RedisRenewalTypeEnum.Write) {
-            return RedisTask.setExpireKey(key, dbOffset, defaultCacheSeconds);
+            return RedisTask.setExpireKey(key, defaultCacheSeconds);
         }
     }
 
     protected fun writeRenewalEvent(key: String) {
         if (renewalType == RedisRenewalTypeEnum.Write) {
-            return RedisTask.setExpireKey(getFullKey(key), dbOffset, defaultCacheSeconds);
+            return RedisTask.setExpireKey(getFullKey(key), defaultCacheSeconds);
         }
     }
 
@@ -58,32 +71,33 @@ abstract class BaseRedisProxy(protected val dbOffset: Int, val group: String, va
     }
 
 
-    fun scan(pattern: String, limit: Int = 999): Set<String> {
-        var list = mutableSetOf<String>()
-        var batch = Math.min(limit, 20).AsLong();
-        var prevCusor = "0";
-        redis.stringCommand(dbOffset) {
-            while (true) {
-                var result = it.scan(ScanCursor(prevCusor, false), ScanArgs.Builder.matches(group + pattern).limit(batch))
-
-                if (result.keys.any()) {
-                    list.addAll(result.keys)
-                }
-
-
-                if (result.cursor == "0") {
-                    break;
-                }
-
-                if (list.size >= limit) {
-                    break;
-                }
-
-                prevCusor = result.cursor
-            }
-        }
-        return list;
-    }
+//    fun scan(pattern: String, limit: Int = 999): Set<String> {
+//        var list = mutableSetOf<String>()
+//        var batch = Math.min(limit, 20).AsLong();
+//        var prevCusor = "0";
+//
+//
+//            while (true) {
+//                var result = keyCommand.scan(ScanCursor(prevCusor, false), ScanArgs.Builder.matches(group + pattern).limit(batch))
+//
+//                if (result.keys.any()) {
+//                    list.addAll(result.keys)
+//                }
+//
+//
+//                if (result.cursor == "0") {
+//                    break;
+//                }
+//
+//                if (list.size >= limit) {
+//                    break;
+//                }
+//
+//                prevCusor = result.cursor
+//            }
+//
+//        return list;
+//    }
 
     /**
      * 服务器会禁用 keys
@@ -103,18 +117,14 @@ abstract class BaseRedisProxy(protected val dbOffset: Int, val group: String, va
             return;
         }
 
-        RedisTask.setExpireKey(getFullKey(key), dbOffset, cs);
+        RedisTask.setExpireKey(getFullKey(key), cs);
     }
 
-    fun deleteWithKey(key: String): Long = redis.stringCommand(dbOffset) {
-        it.del(getFullKey(key));
-    }
+    fun deleteWithKey(key: String): Long = keyCommand.del(getFullKey(key));
 
 
     /**
      * 判断是否存在该Key
      */
-    fun existsWithKey(key: String): Boolean = redis.stringCommand(dbOffset) {
-        it.exists(getFullKey(key)).toInt() == 1;
-    }
+    fun existsWithKey(key: String): Boolean = keyCommand.exists(getFullKey(key));
 }

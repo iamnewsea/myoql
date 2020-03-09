@@ -4,6 +4,8 @@ import nbcp.base.extend.AsInt
 import nbcp.base.extend.AsLong
 import nbcp.base.utils.SpringUtil
 import org.slf4j.LoggerFactory
+import org.springframework.data.redis.connection.RedisConnectionFactory
+import org.springframework.data.redis.connection.StringRedisConnection
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.lang.Exception
@@ -17,22 +19,21 @@ class RedisTask {
          * 续期的 keys，value=过期时间，单位秒
          */
         private var masterWording = false;
-        private val renewalKeys = linkedMapOf<String, String>()
-        private val renewalKeys_alternate = linkedMapOf<String, String>()
+        private val renewalKeys = linkedMapOf<String, Int>()
+        private val renewalKeys_alternate = linkedMapOf<String, Int>()
 
-
-        protected val redis by lazy {
-            return@lazy SpringUtil.getBean<RedisConfig>()
+        private val keyCommand: StringRedisConnection by lazy {
+            return@lazy SpringUtil.getBean<StringRedisConnection>()
         }
 
         /**
          * 定时任务，使键续期。
          */
-        fun setExpireKey(key: String, dbOffset: Int, cacheSecond: Int) {
+        fun setExpireKey(key: String, cacheSecond: Int) {
             if (masterWording) {
-                renewalKeys_alternate.put(key, "${dbOffset - cacheSecond}");
+                renewalKeys_alternate.put(key, cacheSecond);
             } else {
-                renewalKeys.put(key, "${dbOffset - cacheSecond}");
+                renewalKeys.put(key, cacheSecond);
             }
         }
     }
@@ -42,7 +43,7 @@ class RedisTask {
         masterWording = !masterWording;
         Thread.sleep(100);
         try {
-            var rKeys = linkedMapOf<String, String>();
+            var rKeys = linkedMapOf<String, Int>();
 
             if (masterWording) {
                 rKeys = renewalKeys
@@ -51,17 +52,18 @@ class RedisTask {
             }
 
             rKeys.keys.forEach { key ->
-                var sects = rKeys[key]!!.split("-");
-                var dbOffset = sects[0].AsInt();
-                var cacheSecond = sects[1].AsInt();
+                var cacheSecond = rKeys[key] ;
 
-                if (cacheSecond <= 0) {
+                if (cacheSecond == null || cacheSecond <= 0) {
                     return@forEach
                 }
-                redis.byteArrayCommand(dbOffset) {
-                    //是否需要判断键存在呢？
-                    it.expire(key, cacheSecond.AsLong())
-                }
+
+                keyCommand.expire(key, cacheSecond.AsLong())
+
+//                redis.byteArrayCommand(dbOffset) {
+//                    //是否需要判断键存在呢？
+//                    it.expire(key, cacheSecond.AsLong())
+//                }
             }
 
             if (masterWording) {

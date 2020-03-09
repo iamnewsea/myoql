@@ -3,8 +3,12 @@ package nbcp.db.redis.proxy
 import io.lettuce.core.Limit
 import io.lettuce.core.Range
 import io.lettuce.core.ScanArgs
+import nbcp.base.extend.AsString
 import nbcp.db.redis.BaseRedisProxy
 import nbcp.db.redis.RedisRenewalTypeEnum
+import org.springframework.data.redis.core.DefaultTypedTuple
+import org.springframework.data.redis.core.ScanOptions
+import org.springframework.data.redis.core.ZSetOperations
 
 /**
  * Created by yuxh on 2018/6/7
@@ -15,45 +19,40 @@ open class RedisSortedSetProxy(
         dbOffset: Int = 0,
         defaultCacheSeconds: Int = 0,
         renewalType: RedisRenewalTypeEnum = RedisRenewalTypeEnum.Write) :
-        BaseRedisProxy(dbOffset, group, defaultCacheSeconds, renewalType) {
+        BaseRedisProxy(group, defaultCacheSeconds, renewalType) {
 
     fun add(key: String, member: String, score: Double) {
         var cacheKey = getFullKey(key);
-        redis.stringCommand(dbOffset) { it.zadd(cacheKey, score, member) }
+        anyTypeCommand.opsForZSet().add(cacheKey, member, score)
         writeRenewalEvent(key)
     }
 
     fun add(key: String, vararg value: Pair<String, Double>) {
+        if (value.any() == false) return
         var cacheKey = getFullKey(key);
-        var list = mutableListOf<Any>()
-        value.forEach {
-            list.add(it.second)
-            list.add(it.first)
-        }
-        if (list.any() == false) return
 
-        redis.stringCommand(dbOffset) { it.zadd(group, *list.toTypedArray()) }
+        var set = value.map { DefaultTypedTuple(it.first, it.second) as ZSetOperations.TypedTuple<Any> }.toSet()
+        anyTypeCommand.opsForZSet().add(cacheKey, set)
         writeRenewalEvent(key)
     }
 
     /**
      *
      */
-    fun getItem(key: String, minScore: Long, maxScore: Long): String {
+    fun getItem(key: String, minScore: Double, maxScore: Double): String {
         var cacheKey = getFullKey(key);
         readRenewalEvent(key)
-        return redis.stringCommand(dbOffset) {
-            it.zrangebyscore(cacheKey, Range.create(minScore, maxScore), Limit.create(0, 1)).firstOrNull() ?: ""
-        }
+        return anyTypeCommand.opsForZSet().rangeByScore(cacheKey, minScore, maxScore, 0L, 1L).firstOrNull().AsString()
+
     }
 
     /**
      * 按分值获取区间
      */
-    fun getListByScore(key: String, minScore: Long, maxScore: Long): List<String> {
+    fun getListByScore(key: String, minScore: Double, maxScore: Double): List<String> {
         var cacheKey = getFullKey(key);
         readRenewalEvent(key)
-        return redis.stringCommand(dbOffset) { it.zrangebyscore(cacheKey, Range.create(minScore, maxScore)) }
+        return anyTypeCommand.opsForZSet().rangeByScore(cacheKey, minScore, maxScore).map { it.AsString() }
     }
 
     /**
@@ -62,7 +61,7 @@ open class RedisSortedSetProxy(
     fun getListByIndex(key: String, start: Int, end: Int): List<String> {
         var cacheKey = getFullKey(key);
         readRenewalEvent(key)
-        return redis.stringCommand(dbOffset) { it.zrange(cacheKey, start.toLong(), end.toLong()) }
+        return anyTypeCommand.opsForZSet().range(cacheKey, start.toLong(), end.toLong()).map { it.AsString() }
     }
 
     /**
@@ -71,7 +70,7 @@ open class RedisSortedSetProxy(
     fun getItem(key: String): String {
         var cacheKey = getFullKey(key);
         readRenewalEvent(key)
-        return redis.stringCommand(dbOffset) { it.zrange(cacheKey, 0, 0).firstOrNull() ?: "" }
+        return anyTypeCommand.opsForZSet().range(cacheKey, 0L, 0L).firstOrNull().AsString()
     }
 
     /**
@@ -80,15 +79,17 @@ open class RedisSortedSetProxy(
     fun getScore(key: String, member: String): Double {
         var cacheKey = getFullKey(key);
         readRenewalEvent(key)
-        return redis.stringCommand(dbOffset) { it.zscore(cacheKey, member) ?: 0.toDouble() }
+        return anyTypeCommand.opsForZSet().score(cacheKey, member)
     }
 
-    fun zscan(key: String, member: String, limit: Int): List<String> {
-        var cacheKey = getFullKey(key);
-        return redis.stringCommand(dbOffset) {
-            it.zscan(cacheKey, ScanArgs.Builder.matches(member).limit(limit.toLong())).values.map { it.value }
-        }
-    }
+//    fun zscan(key: String, member: String, limit: Int): List<String> {
+//        var cacheKey = getFullKey(key);
+//        return anyTypeCommand.opsForZSet()
+//                .scan(cacheKey, ScanOptions.scanOptions().match(member).count(limit).build())
+//                .
+//            it.zscan(cacheKey, ScanArgs.Builder.matches(member).limit(limit.toLong())).values.map { it.value }
+//        }
+//    }
 
 //    fun existMember(member: String) = zscore(member) != 0.toDouble()
 
@@ -97,7 +98,7 @@ open class RedisSortedSetProxy(
      */
     fun remove(key: String, vararg members: String): Long {
         var cacheKey = getFullKey(key);
-        var ret = redis.stringCommand(dbOffset) { it.zrem(cacheKey, *members) }
+        var ret = anyTypeCommand.opsForZSet().remove(cacheKey, *members)
         writeRenewalEvent(key)
         return ret;
     }

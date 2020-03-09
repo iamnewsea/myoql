@@ -13,7 +13,7 @@ open class RedisSetProxy(
         dbOffset: Int = 0,
         defaultCacheSeconds: Int = 0,
         renewalType: RedisRenewalTypeEnum = RedisRenewalTypeEnum.Write) :
-        BaseRedisProxy(dbOffset, group, defaultCacheSeconds, renewalType) {
+        BaseRedisProxy(  group, defaultCacheSeconds, renewalType) {
 
 
     /**
@@ -22,7 +22,7 @@ open class RedisSetProxy(
     fun add(key: String, vararg value: String) {
         if (value.any() == false) return
         var cacheKey = getFullKey(key);
-        redis.stringCommand(dbOffset) { it.sadd(cacheKey, *value) }
+        anyTypeCommand.opsForSet().add(cacheKey, *value)
 
         writeRenewalEvent(key)
     }
@@ -32,12 +32,12 @@ open class RedisSetProxy(
      */
     fun scard(key: String): Int {
         var cacheKey = getFullKey(key);
-        return redis.stringCommand(dbOffset) { it.scard(cacheKey).toInt() }
+        return anyTypeCommand.opsForSet().size(cacheKey).toInt()
     }
 
-    fun sismember(key: String, member: String): Boolean {
+    fun isMember(key: String, member: String): Boolean {
         var cacheKey = getFullKey(key);
-        return redis.stringCommand(dbOffset) { it.sismember(cacheKey, member) }
+        return anyTypeCommand.opsForSet().isMember(cacheKey, member)
     }
 
     /**
