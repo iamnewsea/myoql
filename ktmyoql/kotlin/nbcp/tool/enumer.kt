@@ -62,6 +62,7 @@ object enumer {
         try {
             remark = jsonEnumClass.getDeclaredField("remark");
         } catch (e: Exception) {
+            println("${jsonEnumClass.name} 没有 remark 字段，跳过")
             return result;
         }
 
