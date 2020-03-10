@@ -83,7 +83,7 @@ open class RedisDataCacheService : IDataCache4Sql {
         if (getCacheSeconds(cacheKey.tableName) <= 0) return ""
 
         //如果正在删除依赖表中的任何一个,都不要再返回了.
-        if (cacheKey.dependencies.any { rer_base.cache.brokeKeys(it).scard("") > 0 }) {
+        if (cacheKey.dependencies.any { rer_base.cache.brokeKeys(it).size("") > 0 }) {
             return "";
         }
         var ret = rer_base.cache.cacheSqlData.get(cacheKey.getExpression());
@@ -112,8 +112,8 @@ open class RedisDataCacheService : IDataCache4Sql {
     }
 
     override fun brokeCache(tableName: String, keys: Set<String>) {
-        rer_base.cache.brokeKeys(tableName).add("",*keys.toTypedArray())
-        rer_base.cache.borkeKeysChangedVersion.incr()
+        rer_base.cache.brokeKeys(tableName).add("", *keys.toTypedArray())
+        rer_base.cache.borkeKeysChangedVersion.increment("")
     }
 
     override fun clear(tableName: String) {

@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.lang.Exception
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 
 @Service
 class RedisTask {
@@ -22,8 +23,8 @@ class RedisTask {
         private val renewalKeys = linkedMapOf<String, Int>()
         private val renewalKeys_alternate = linkedMapOf<String, Int>()
 
-        private val keyCommand: StringRedisConnection by lazy {
-            return@lazy SpringUtil.getBean<StringRedisConnection>()
+        private val keyCommand: AnyTypeRedisTemplate by lazy {
+            return@lazy SpringUtil.getBean<AnyTypeRedisTemplate>()
         }
 
         /**
@@ -52,13 +53,13 @@ class RedisTask {
             }
 
             rKeys.keys.forEach { key ->
-                var cacheSecond = rKeys[key] ;
+                var cacheSecond = rKeys[key];
 
                 if (cacheSecond == null || cacheSecond <= 0) {
                     return@forEach
                 }
 
-                keyCommand.expire(key, cacheSecond.AsLong())
+                keyCommand.expire(key, cacheSecond.AsLong(), TimeUnit.SECONDS)
 
 //                redis.byteArrayCommand(dbOffset) {
 //                    //是否需要判断键存在呢？

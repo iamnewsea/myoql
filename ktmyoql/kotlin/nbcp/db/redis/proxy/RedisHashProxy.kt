@@ -13,24 +13,18 @@ import java.io.Serializable
 
 class RedisHashProxy(
         group: String,
-        dbOffset: Int = 0,
-        defaultCacheSeconds: Int = 0,
-        renewalType: RedisRenewalTypeEnum = RedisRenewalTypeEnum.Write)
-    : BaseRedisProxy(dbOffset, group, defaultCacheSeconds, renewalType) {
+        defaultCacheSeconds: Int = 0)
+    : BaseRedisProxy(group, defaultCacheSeconds) {
 
 
-    fun hkeys(key: String): List<String> {
-        return redis.byteArrayCommand(dbOffset) {
-            return@byteArrayCommand it.hkeys(key)
-        }
+    fun keys(key: String): Set<String> {
+        var cacheKey = getFullKey(key)
+        return anyTypeCommand.opsForHash<String, Any>().keys(cacheKey)
     }
 
-    fun getMap(key: String): Map<String, Serializable>? {
-        return redis.byteArrayCommand(dbOffset) {
-            var cacheKey = getFullKey(key)
-            readRenewalEvent(key)
-            return@byteArrayCommand it.hgetall(cacheKey).mapValues { it.value }
-        }
+    fun getMap(key: String): Map<String, Any> {
+        var cacheKey = getFullKey(key)
+        return anyTypeCommand.opsForHash<String, Any>().entries(cacheKey)
     }
 
 //    fun setMap(key: String, map: Map<String, String>) {
@@ -48,10 +42,10 @@ class RedisHashProxy(
     }
 
 
-    fun get(key: String, field: String): ByteArray = redis.byteArrayCommand(dbOffset) {
+    fun getItem(key: String, field: String): Any? {
         var cacheKey = getFullKey(key)
-        readRenewalEvent(key)
-        return@byteArrayCommand it.hget(cacheKey, field);
+
+        return anyTypeCommand.opsForHash<String, Any>().get(cacheKey, field)
     }
 
 //    private fun get(token_value: String): Map<String, Serializable> {
@@ -64,12 +58,16 @@ class RedisHashProxy(
 //        return ret.ToMap({ it.key }, { it.value.ToSerializableObject() })
 //    }
 
-    fun setMap(key: String, value: Map<String, Serializable>): String {
-        if (value.any() == false) return "";
+    /**
+     * 设置对象。 如果map为空，则删除。
+     */
+    fun setMap(key: String, value: Map<String, Any>) {
+        if (value.any() == false) {
+            super.deleteKeys(key);
+            return;
+        }
         var cacheKey = getFullKey(key)
 
-        var ret = redis.byteArrayCommand(dbOffset) { it.hmset(cacheKey, value.ToMap({ it.key }, { it.value.ToSerializableByteArray() })) }
-        writeRenewalEvent(key)
-        return ret;
+        anyTypeCommand.opsForHash<String, Any>().putAll(cacheKey, value)
     }
 }

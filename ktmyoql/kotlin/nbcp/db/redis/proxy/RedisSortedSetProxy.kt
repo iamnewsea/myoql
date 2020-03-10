@@ -3,6 +3,7 @@ package nbcp.db.redis.proxy
 import io.lettuce.core.Limit
 import io.lettuce.core.Range
 import io.lettuce.core.ScanArgs
+import nbcp.base.extend.AsInt
 import nbcp.base.extend.AsString
 import nbcp.db.redis.BaseRedisProxy
 import nbcp.db.redis.RedisRenewalTypeEnum
@@ -11,20 +12,16 @@ import org.springframework.data.redis.core.ScanOptions
 import org.springframework.data.redis.core.ZSetOperations
 
 /**
- * Created by yuxh on 2018/6/7
+ * 有序集合，是按 分值排序。
  */
-
 open class RedisSortedSetProxy(
         group: String,
-        dbOffset: Int = 0,
-        defaultCacheSeconds: Int = 0,
-        renewalType: RedisRenewalTypeEnum = RedisRenewalTypeEnum.Write) :
-        BaseRedisProxy(group, defaultCacheSeconds, renewalType) {
+        defaultCacheSeconds: Int = 0) :
+        BaseRedisProxy(group, defaultCacheSeconds) {
 
     fun add(key: String, member: String, score: Double) {
         var cacheKey = getFullKey(key);
         anyTypeCommand.opsForZSet().add(cacheKey, member, score)
-        writeRenewalEvent(key)
     }
 
     fun add(key: String, vararg value: Pair<String, Double>) {
@@ -33,7 +30,16 @@ open class RedisSortedSetProxy(
 
         var set = value.map { DefaultTypedTuple(it.first, it.second) as ZSetOperations.TypedTuple<Any> }.toSet()
         anyTypeCommand.opsForZSet().add(cacheKey, set)
-        writeRenewalEvent(key)
+    }
+
+    fun size(key: String, member: String): Int {
+        var cacheKey = getFullKey(key);
+        return anyTypeCommand.opsForZSet().size(cacheKey).AsInt();
+    }
+
+    fun isMember(key: String, member: String): Boolean {
+        var cacheKey = getFullKey(key);
+        return anyTypeCommand.opsForZSet().score(cacheKey, member) != null
     }
 
     /**
@@ -41,7 +47,6 @@ open class RedisSortedSetProxy(
      */
     fun getItem(key: String, minScore: Double, maxScore: Double): String {
         var cacheKey = getFullKey(key);
-        readRenewalEvent(key)
         return anyTypeCommand.opsForZSet().rangeByScore(cacheKey, minScore, maxScore, 0L, 1L).firstOrNull().AsString()
 
     }
@@ -51,7 +56,6 @@ open class RedisSortedSetProxy(
      */
     fun getListByScore(key: String, minScore: Double, maxScore: Double): List<String> {
         var cacheKey = getFullKey(key);
-        readRenewalEvent(key)
         return anyTypeCommand.opsForZSet().rangeByScore(cacheKey, minScore, maxScore).map { it.AsString() }
     }
 
@@ -60,7 +64,6 @@ open class RedisSortedSetProxy(
      */
     fun getListByIndex(key: String, start: Int, end: Int): List<String> {
         var cacheKey = getFullKey(key);
-        readRenewalEvent(key)
         return anyTypeCommand.opsForZSet().range(cacheKey, start.toLong(), end.toLong()).map { it.AsString() }
     }
 
@@ -69,7 +72,6 @@ open class RedisSortedSetProxy(
      */
     fun getItem(key: String): String {
         var cacheKey = getFullKey(key);
-        readRenewalEvent(key)
         return anyTypeCommand.opsForZSet().range(cacheKey, 0L, 0L).firstOrNull().AsString()
     }
 
@@ -78,7 +80,6 @@ open class RedisSortedSetProxy(
      */
     fun getScore(key: String, member: String): Double {
         var cacheKey = getFullKey(key);
-        readRenewalEvent(key)
         return anyTypeCommand.opsForZSet().score(cacheKey, member)
     }
 
@@ -96,10 +97,9 @@ open class RedisSortedSetProxy(
     /**
      * 移除
      */
-    fun remove(key: String, vararg members: String): Long {
+    fun removeMember(key: String, vararg members: String): Long {
         var cacheKey = getFullKey(key);
         var ret = anyTypeCommand.opsForZSet().remove(cacheKey, *members)
-        writeRenewalEvent(key)
         return ret;
     }
 }

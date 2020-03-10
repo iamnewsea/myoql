@@ -1,8 +1,11 @@
 package nbcp.db.redis.proxy
 
 import io.lettuce.core.ScanArgs
+import nbcp.base.extend.AsInt
+import nbcp.base.extend.AsLong
 import nbcp.db.redis.BaseRedisProxy
 import nbcp.db.redis.RedisRenewalTypeEnum
+import org.springframework.data.redis.core.ScanOptions
 
 /**
  * Created by yuxh on 2018/6/7
@@ -10,10 +13,33 @@ import nbcp.db.redis.RedisRenewalTypeEnum
 
 open class RedisSetProxy(
         group: String,
-        dbOffset: Int = 0,
-        defaultCacheSeconds: Int = 0,
-        renewalType: RedisRenewalTypeEnum = RedisRenewalTypeEnum.Write) :
-        BaseRedisProxy(  group, defaultCacheSeconds, renewalType) {
+        defaultCacheSeconds: Int = 0) :
+        BaseRedisProxy(group, defaultCacheSeconds) {
+
+
+    /**
+     * 成员数量
+     */
+    fun size(key: String): Int {
+        var cacheKey = getFullKey(key);
+        return anyTypeCommand.opsForSet().size(cacheKey).toInt().AsInt()
+    }
+
+    fun isMember(key: String, member: String): Boolean {
+        var cacheKey = getFullKey(key);
+        return anyTypeCommand.opsForSet().isMember(cacheKey, member)
+    }
+
+    /**
+     * 删除成员
+     * 返回删除的成员个数。
+     */
+    fun remove(key: String, vararg members: String): Long {
+        if (members.any() == false) return 0;
+        var cacheKey = getFullKey(key);
+        var ret = anyTypeCommand.opsForSet().remove(cacheKey, *members);
+        return ret;
+    }
 
 
     /**
@@ -23,53 +49,38 @@ open class RedisSetProxy(
         if (value.any() == false) return
         var cacheKey = getFullKey(key);
         anyTypeCommand.opsForSet().add(cacheKey, *value)
-
-        writeRenewalEvent(key)
-    }
-
-    /**
-     * 成员数量
-     */
-    fun scard(key: String): Int {
-        var cacheKey = getFullKey(key);
-        return anyTypeCommand.opsForSet().size(cacheKey).toInt()
-    }
-
-    fun isMember(key: String, member: String): Boolean {
-        var cacheKey = getFullKey(key);
-        return anyTypeCommand.opsForSet().isMember(cacheKey, member)
     }
 
     /**
      * 获取成员
      */
-    fun getSet(key: String): Set<String> {
+    fun getListString(key: String): List<String> {
         var cacheKey = getFullKey(key);
-        return redis.stringCommand(dbOffset) { it.smembers(cacheKey) }
-    }
-
-    fun spop(key: String): String {
-        var cacheKey = getFullKey(key);
-        writeRenewalEvent(key)
-        return redis.stringCommand(dbOffset) { it.spop(cacheKey) ?: "" }
-    }
-
-    fun sscan(key: String, member: String, limit: Int): List<String> {
-        var cacheKey = getFullKey(key);
-        return redis.stringCommand(dbOffset) {
-            it.sscan(cacheKey, ScanArgs.Builder.matches(member).limit(limit.toLong())).values
-        }
+        return anyTypeCommand.opsForSet().members(cacheKey).map { it.toString() }
     }
 
     /**
-     * 删除成员
-     * 返回删除的成员个数。
+     * 移除并返回一个随机元素
      */
-    fun remove(key: String, vararg members: String): Long {
-        if( members.any()== false) return 0;
+    fun spop(key: String): String? {
         var cacheKey = getFullKey(key);
-        var ret = redis.stringCommand(dbOffset) { it.srem(cacheKey, *members) }
-        writeRenewalEvent(key)
-        return ret;
+        return anyTypeCommand.opsForSet().pop(cacheKey)?.toString()
     }
+
+    fun sscan(key: String, pattern: String, limit: Int = 999): Set<String> {
+        var list = mutableSetOf<String>()
+        var cacheKey = getFullKey(key);
+
+        var result = anyTypeCommand.opsForSet()
+                .scan(cacheKey, ScanOptions.scanOptions().match(group + pattern).count(limit.AsLong()).build())
+
+        while (result.hasNext()) {
+            list.add(result.next().toString())
+        }
+
+        result.close()
+        return list;
+    }
+
+
 }
