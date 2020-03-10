@@ -18,12 +18,14 @@ enum class RedisRenewalTypeEnum {
 /**
  * @param autoRenewal: 续期，当有访问的时候
  */
-abstract class BaseRedisProxy(val group: String, val defaultCacheSeconds: Int, val renewalType: RedisRenewalTypeEnum = RedisRenewalTypeEnum.Write) {
+abstract class BaseRedisProxy(val group: String, val defaultCacheSeconds: Int ) {
     companion object {
-
     }
 
-    protected val keyCommand: StringRedisConnection by lazy {
+    /**
+     * 操作 key
+     */
+    val connection: StringRedisConnection by lazy {
         return@lazy anyTypeCommand.connectionFactory.connection as StringRedisConnection
     }
 
@@ -36,18 +38,18 @@ abstract class BaseRedisProxy(val group: String, val defaultCacheSeconds: Int, v
         return@lazy SpringUtil.getBean<AnyTypeRedisTemplate>()
     }
 
-    protected fun readRenewalEvent(key: String) {
-        if (renewalType == RedisRenewalTypeEnum.Read ||
-                renewalType == RedisRenewalTypeEnum.Write) {
-            return RedisTask.setExpireKey(key, defaultCacheSeconds);
-        }
-    }
-
-    protected fun writeRenewalEvent(key: String) {
-        if (renewalType == RedisRenewalTypeEnum.Write) {
-            return RedisTask.setExpireKey(getFullKey(key), defaultCacheSeconds);
-        }
-    }
+//    protected fun readRenewalEvent(key: String) {
+//        if (renewalType == RedisRenewalTypeEnum.Read ||
+//                renewalType == RedisRenewalTypeEnum.Write) {
+//            return RedisTask.setExpireKey(key, defaultCacheSeconds);
+//        }
+//    }
+//
+//    protected fun writeRenewalEvent(key: String) {
+//        if (renewalType == RedisRenewalTypeEnum.Write) {
+//            return RedisTask.setExpireKey(key, defaultCacheSeconds);
+//        }
+//    }
 
 
 //    companion object {
@@ -120,11 +122,11 @@ abstract class BaseRedisProxy(val group: String, val defaultCacheSeconds: Int, v
         RedisTask.setExpireKey(getFullKey(key), cs);
     }
 
-    fun deleteWithKey(key: String): Long = keyCommand.del(getFullKey(key));
-
-
-    /**
-     * 判断是否存在该Key
-     */
-    fun existsWithKey(key: String): Boolean = keyCommand.exists(getFullKey(key));
+//    fun deleteWithKey(key: String): Long = connection.del(getFullKey(key));
+//
+//
+//    /**
+//     * 判断是否存在该Key
+//     */
+//    fun existsWithKey(key: String): Boolean = connection.exists(getFullKey(key));
 }

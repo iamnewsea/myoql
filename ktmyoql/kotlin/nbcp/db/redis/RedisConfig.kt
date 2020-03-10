@@ -24,7 +24,6 @@ import org.springframework.data.redis.connection.DefaultStringRedisConnection
 import org.springframework.data.redis.connection.RedisConnection
 import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.data.redis.connection.StringRedisConnection
-import org.springframework.data.redis.core.DefaultSetOperations
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.SetOperations
 import org.springframework.data.redis.core.StringRedisTemplate
@@ -187,10 +186,6 @@ class AnyTypeRedisTemplate() : RedisTemplate<String, Any>() {
     }
 }
 
-
-class MySetOperations: DefaultSetOperations<String,Any>(template:RedisTemplate<String, Any>) {
-
-}
 
 @Configuration
 @AutoConfigureAfter(RedisAutoConfiguration::class)

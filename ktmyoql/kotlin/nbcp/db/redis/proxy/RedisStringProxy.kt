@@ -14,29 +14,30 @@ import java.time.Duration
  */
 class RedisStringProxy(
         group: String,
-        dbOffset: Int = 0,
-        defaultCacheSeconds: Int = 0,
-        renewalType: RedisRenewalTypeEnum = RedisRenewalTypeEnum.Write) :
-        BaseRedisProxy( group, defaultCacheSeconds, renewalType) {
+        defaultCacheSeconds: Int = 0 ) :
+        BaseRedisProxy( group, defaultCacheSeconds) {
 
-
-    fun get(key: String = ""): String {
-        var cacheKey = getFullKey(key)
-        var value = stringCommand.opsForValue().get(cacheKey)
-        if (value == null) return "";
-        readRenewalEvent(key)
-        return value
+    val ops : ValueOperations<String,String> by lazy {
+        return@lazy stringCommand.opsForValue()
     }
 
-    fun set(key: String, value: String, cacheSecond: Int = defaultCacheSeconds)  {
-        var cacheKey = getFullKey(key)
-
-        if (cacheSecond <= 0) {
-              stringCommand.opsForValue().set(cacheKey, value)
-        } else {
-             stringCommand.opsForValue().set(cacheKey, value, Duration.ofSeconds(cacheSecond.AsLong()))
-        }
-    }
+//    fun get(key: String = ""): String {
+//        var cacheKey = getFullKey(key)
+//        var value = stringCommand.opsForValue().get(cacheKey)
+//        if (value == null) return "";
+//        readRenewalEvent(key)
+//        return value
+//    }
+//
+//    fun set(key: String, value: String, cacheSecond: Int = defaultCacheSeconds)  {
+//        var cacheKey = getFullKey(key)
+//
+//        if (cacheSecond <= 0) {
+//              stringCommand.opsForValue().set(cacheKey, value)
+//        } else {
+//             stringCommand.opsForValue().set(cacheKey, value, Duration.ofSeconds(cacheSecond.AsLong()))
+//        }
+//    }
 }
 
 
