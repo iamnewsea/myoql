@@ -70,4 +70,10 @@ class RedisHashProxy(
 
         anyTypeCommand.opsForHash<String, Any>().putAll(cacheKey, value)
     }
+
+    fun removeItems(key: String, vararg members: String) {
+        var cacheKey = getFullKey(key)
+
+        anyTypeCommand.opsForHash<String, Any>().delete(cacheKey, *members)
+    }
 }

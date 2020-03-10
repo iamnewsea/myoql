@@ -30,7 +30,7 @@ class RedisListProxy(
      * 删除成员
      * 返回删除的成员个数。
      */
-    fun remove(key: String, member: String): Int {
+    fun removeItems(key: String, member: String): Int {
         var cacheKey = getFullKey(key);
         return anyTypeCommand.opsForList().remove(cacheKey, 0, member).AsInt()
     }

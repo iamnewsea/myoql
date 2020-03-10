@@ -23,7 +23,6 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.data.redis.connection.DefaultStringRedisConnection
 import org.springframework.data.redis.connection.RedisConnection
 import org.springframework.data.redis.connection.RedisConnectionFactory
-import org.springframework.data.redis.connection.StringRedisConnection
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.SetOperations
 import org.springframework.data.redis.core.StringRedisTemplate
@@ -191,8 +190,11 @@ class AnyTypeRedisTemplate() : RedisTemplate<String, Any>() {
 @AutoConfigureAfter(RedisAutoConfiguration::class)
 class RedisConfig {
     @Bean
-    fun redisKeyCommand(connectionFactory: RedisConnectionFactory): StringRedisConnection {
-        return connectionFactory.connection.keyCommands() as StringRedisConnection
+    fun redisKeyCommand(connectionFactory: RedisConnectionFactory): AnyTypeRedisTemplate {
+        var template  = AnyTypeRedisTemplate()
+        template.connectionFactory = connectionFactory;
+        template.afterPropertiesSet();
+        return template;
     }
 }
 

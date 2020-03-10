@@ -34,7 +34,7 @@ open class RedisSetProxy(
      * 删除成员
      * 返回删除的成员个数。
      */
-    fun remove(key: String, vararg members: String): Long {
+    fun removeItems(key: String, vararg members: String): Long {
         if (members.any() == false) return 0;
         var cacheKey = getFullKey(key);
         var ret = anyTypeCommand.opsForSet().remove(cacheKey, *members);

@@ -4,8 +4,6 @@ import nbcp.base.extend.AsInt
 import nbcp.base.extend.AsLong
 import nbcp.base.utils.SpringUtil
 import org.slf4j.LoggerFactory
-import org.springframework.data.redis.connection.RedisConnectionFactory
-import org.springframework.data.redis.connection.StringRedisConnection
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.lang.Exception

@@ -97,7 +97,7 @@ open class RedisSortedSetProxy(
     /**
      * 移除
      */
-    fun removeMember(key: String, vararg members: String): Long {
+    fun removeItems(key: String, vararg members: String): Long {
         var cacheKey = getFullKey(key);
         var ret = anyTypeCommand.opsForZSet().remove(cacheKey, *members)
         return ret;
