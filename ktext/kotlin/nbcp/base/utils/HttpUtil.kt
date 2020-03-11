@@ -118,8 +118,8 @@ class HttpUtil(var url: String = "") {
     val requestHeader: StringMap = StringMap()
 
 
-    var responseCharset:String = "UTF-8"
-        private  set;
+    var responseCharset: String = "UTF-8"
+        private set;
 
     var responseHeader: StringMap = StringMap()
         private set;
@@ -152,7 +152,7 @@ class HttpUtil(var url: String = "") {
         return this;
     }
 
-    fun doGet( ): String {
+    fun doGet(): String {
         this.setRequest { it.requestMethod = "GET" }
 
         var retData = doNet({})
@@ -272,10 +272,12 @@ class HttpUtil(var url: String = "") {
             try {
                 return toByteArray(conn.getInputStream());
             } catch (e: Exception) {
-                return (e.message ?: "").toByteArray(utf8);
+                msg = e.message ?: "服务器错误"
+                return "".toByteArray(utf8);
             }
             //读取响应
         } catch (e: Exception) {
+            msg = e.message ?: "请求错误"
             throw e;
         } finally {
             if (conn != null) {
