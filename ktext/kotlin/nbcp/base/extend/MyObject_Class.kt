@@ -137,6 +137,9 @@ fun Class<*>.FindField(fieldName: String): Field? {
     return this.superclass.FindField(fieldName);
 }
 
+/**
+ * 获取泛型参数的实际类型，兼容枚举类型
+ */
 fun ParameterizedType.GetActualClass(index: Int): Class<*> {
     var a1 = this.actualTypeArguments[index];
     if (a1 is Class<*>) {

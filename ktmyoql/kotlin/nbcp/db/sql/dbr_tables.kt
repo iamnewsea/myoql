@@ -10,7 +10,7 @@ import nbcp.base.extend.*
 import nbcp.base.utils.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-03-04 16:44:00
+//generate auto @2020-03-11 17:16:18
 
 
 @Component("sql.SqlBase")
@@ -24,7 +24,7 @@ class SqlBaseGroup : IDataGroup{
 
 
     
-    class s_annex_table(datasource:String=""):SqlBaseTable<s_annex>(s_annex::class.java,"s_annex",datasource) {
+    class s_annex_table(datasource:String=""):SqlBaseTable<s_annex>(s_annex::class.java,"s_annex") {
         val id=SqlColumnName(DbType.String,this.getAliaTableName(),"id")
         val name=SqlColumnName(DbType.String,this.getAliaTableName(),"name")
         val ext=SqlColumnName(DbType.String,this.getAliaTableName(),"ext")
@@ -64,7 +64,7 @@ class SqlBaseGroup : IDataGroup{
     
     }
     
-    class s_dustbin_table(datasource:String=""):SqlBaseTable<s_dustbin>(s_dustbin::class.java,"s_dustbin",datasource) {
+    class s_dustbin_table(datasource:String=""):SqlBaseTable<s_dustbin>(s_dustbin::class.java,"s_dustbin") {
         val id=SqlColumnName(DbType.String,this.getAliaTableName(),"id")
         val table=SqlColumnName(DbType.String,this.getAliaTableName(),"table")
         val remark=SqlColumnName(DbType.String,this.getAliaTableName(),"remark")
@@ -98,7 +98,7 @@ class SqlBaseGroup : IDataGroup{
     
     }
     
-    class s_log_table(datasource:String=""):SqlBaseTable<s_log>(s_log::class.java,"s_log",datasource) {
+    class s_log_table(datasource:String=""):SqlBaseTable<s_log>(s_log::class.java,"s_log") {
         val id=SqlColumnName(DbType.String,this.getAliaTableName(),"id")
         val msg=SqlColumnName(DbType.String,this.getAliaTableName(),"msg")
         val creatAt=SqlColumnName(DbType.DateTime,this.getAliaTableName(),"creatAt")

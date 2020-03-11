@@ -332,7 +332,7 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
 
         var n = -1;
         try {
-            n = SqlBaseClip.getJdbcTemplateByDatasrouce(insertTable.datasourceName).update(executeSql.executeSql, *executeSql.executeParameters)
+            n = jdbcTemplate.update(executeSql.executeSql, *executeSql.executeParameters)
             if (n > 0) {
                 cacheService.insertSelect4BrokeCache(insertTable.tableName)
             }

@@ -15,62 +15,93 @@ import java.io.Serializable
 import javax.sql.DataSource
 import nbcp.db.sql.*
 
-/*
- ORM解决80%的问题即可. 对于 自连接,复杂的查询, 直接写Sql吧.
- */
+/**
+ * ORM解决80%的问题即可. 对于 自连接,复杂的查询, 直接写Sql吧.
+ *
+ * 1. 读写分离
+ * https://www.jianshu.com/p/f728e8c131a9
+ * 配置： spring.datasource 是主库的数据库连接。
+ * 额外增加： spring.datasource.slave 表示是从库连接。参数继承 spring.datasource
+ * 额外增加： spring.datasource.slave.hikari 表示是从库连接池。参数继承 spring.datasource.hikari
+ * 这样的好处是，当没有配置spring.datasource.slave，可当单库使用。
+ *
+ * 2. 切数据源
+ *
+ * using(db.getJdbcTemplate("primary")){
+ *
+ * }
+ *
+ * 3. 事务使用方式：
+transTemplate.execute(new TransactionCallback<Object>() {
+    @Override
+    public Object doInTransaction(TransactionStatus transactionStatus) {
+        // DML执行
+        jdbcTemplate.update("Delete from actor_new where actor_id=?", 11);
 
-abstract class SqlBaseClip(var datasourceName: String) : Serializable {
+        // 回滚
+        transactionStatus.setRollbackOnly();
+        return null;
+    }
+});
+ */
+abstract class SqlBaseClip() : Serializable {
     init {
         db.affectRowCount = -1
         db.lastAutoId = -1
     }
 
     companion object {
-        private val defaultJdbcTemplate: JdbcTemplate = SpringUtil.getBean<JdbcTemplate>()
+//        private val defaultJdbcTemplate by lazy {
+//            return@lazy SpringUtil.getBean<JdbcTemplate>()
+//        }
 
         val jsonMapMapper = SpringUtil.getBean<JsonMapRowMapper>()
 
-        private val jdbcMap = linkedMapOf<String, JdbcTemplate>()
+//        private val jdbcMap = linkedMapOf<String, JdbcTemplate>()
 
         // orm bean 代理 RequestCache 及 Redis Cache
-        val cacheService = SpringUtil.getBean<IProxyCache4Sql>();
-
-
-        fun getJdbcTemplateByDatasrouce(datasourceName: String): JdbcTemplate {
-            if (datasourceName.HasValue) {
-                var ret = jdbcMap.get(datasourceName)
-                if (ret == null) {
-                    jdbcMap.set(datasourceName, JdbcTemplate(SpringUtil.getBeanByName<DataSource>(datasourceName)))
-                    ret = jdbcMap.get(datasourceName)
-                }
-
-                return ret!!
-            } else return defaultJdbcTemplate
+        val cacheService by lazy {
+            return@lazy SpringUtil.getBean<IProxyCache4Sql>();
         }
+
+
+//        fun getJdbcTemplateByDatasrouce(datasourceName: String): JdbcTemplate {
+//            if (datasourceName.HasValue) {
+//                var ret = jdbcMap.get(datasourceName)
+//                if (ret == null) {
+//                    jdbcMap.set(datasourceName, JdbcTemplate(SpringUtil.getBeanByName<DataSource>(datasourceName)))
+//                    ret = jdbcMap.get(datasourceName)
+//                }
+//
+//                return ret!!
+//            } else return defaultJdbcTemplate
+//        }
     }
 
+    /**
+     * 通过 using 作用域 切换数据源。
+     */
     val jdbcTemplate: JdbcTemplate
-        get() = getJdbcTemplateByDatasrouce(datasourceName)
+        get() = scopes.getLatest<JdbcTemplate>() ?: SpringUtil.getBean<JdbcTemplate>()
 
 
-    val transactionTemplate: TransactionTemplate
-        get() {
-            if (datasourceName.HasValue) {
-                var dataSource = SpringUtil.getBeanByName<DataSource>(datasourceName)
-                var tx = DataSourceTransactionManager(dataSource)
-                return TransactionTemplate(tx)
-            }
-
-            return TransactionTemplate(DataSourceTransactionManager(SpringUtil.getBean<DataSource>()))
-        }
+//    val transactionTemplate: TransactionTemplate
+//        get() {
+//            if (datasourceName.HasValue) {
+//                var dataSource = SpringUtil.getBeanByName<DataSource>(datasourceName)
+//                var tx = DataSourceTransactionManager(dataSource)
+//                return TransactionTemplate(tx)
+//            }
+//
+//            return TransactionTemplate(DataSourceTransactionManager(SpringUtil.getBean<DataSource>()))
+//        }
 
 
     abstract fun toSql(): SingleSqlData
 }
 
 
-abstract class SqlBaseQueryClip(private var mainEntity: SqlBaseTable<*>? = null) : SqlBaseClip(mainEntity?.datasourceName
-        ?: "") {
+abstract class SqlBaseQueryClip(private var mainEntity: SqlBaseTable<*>? = null) : SqlBaseClip() {
     protected var skip = 0;
     protected var take = -1;
     protected var distinct = false;
@@ -103,7 +134,7 @@ abstract class SqlBaseQueryClip(private var mainEntity: SqlBaseTable<*>? = null)
         if (Map::class.java.isAssignableFrom(clazz)) {
 
             //types[0] 必须是 String
-            var valueType = (clazz.genericSuperclass as ParameterizedTypeImpl).actualTypeArguments[1] as Class<*>
+            var valueType = (clazz.genericSuperclass as ParameterizedTypeImpl).GetActualClass(1);
 
             var entMap = entity as MutableMap<String, Any?>
 
@@ -230,8 +261,7 @@ abstract class SqlBaseQueryClip(private var mainEntity: SqlBaseTable<*>? = null)
     }
 }
 
-abstract class SqlBaseExecuteClip(private var mainEntity: SqlBaseTable<*>? = null) : SqlBaseClip(mainEntity?.datasourceName
-        ?: "") {
+abstract class SqlBaseExecuteClip(private var mainEntity: SqlBaseTable<*>? = null) : SqlBaseClip() {
     abstract fun exec(): Int
 }
 

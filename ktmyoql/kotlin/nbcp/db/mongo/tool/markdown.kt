@@ -216,8 +216,8 @@ body table thead th{
                         return@map it.type.componentType;
                     }
                     if (List::class.java.isAssignableFrom(it.type)) {
-                        var actType = (it.genericType as ParameterizedType).actualTypeArguments[0] as Class<*>;
-                        return@map actType;
+                        return@map (it.genericType as ParameterizedType).GetActualClass(0);
+
                     }
                     return@map it.type;
                 }.filter {
@@ -314,7 +314,7 @@ body table thead th{
 
 
         if (List::class.java.isAssignableFrom(field.type)) {
-            var actType = (field.genericType as ParameterizedType).actualTypeArguments[0] as Class<*>;
+            var actType = (field.genericType as ParameterizedType).GetActualClass(0);
 
 
             var ret = getMetaValue(field.name, actType, parentTypeName);
@@ -357,7 +357,7 @@ body table thead th{
 
 
         if (List::class.java.isAssignableFrom(field.type)) {
-            var actType = (field.genericType as ParameterizedType).actualTypeArguments[0] as Class<*>;
+            var actType = (field.genericType as ParameterizedType).GetActualClass(0);
 
             var (ret2, retTypeIsBasicType2) = getEntityValue(field.name, actType);
             if (ret2.HasValue) return ret2 to retTypeIsBasicType2;

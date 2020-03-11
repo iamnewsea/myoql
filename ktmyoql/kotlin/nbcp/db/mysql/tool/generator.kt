@@ -152,8 +152,7 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                 return@map it.type.componentType;
             }
             if (List::class.java.isAssignableFrom(it.type)) {
-                var actType = (it.genericType as ParameterizedType).actualTypeArguments[0] as Class<*>;
-                return@map actType;
+                return@map  (it.genericType as ParameterizedType).GetActualClass(0);
             }
             return@map it.type;
         }.filter {
@@ -327,7 +326,7 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 
 
         return """
-class ${entityTypeName}(datasource:String=""):SqlBaseTable<${tableName}>(${tableName}::class.java,"${tableName}",datasource) {
+class ${entityTypeName}(datasource:String=""):SqlBaseTable<${tableName}>(${tableName}::class.java,"${tableName}") {
 ${props.joinToString("\n")}
 
     override fun getAutoIncrementKey(): String { return "${autoIncrementKey}"}

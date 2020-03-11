@@ -88,7 +88,7 @@ fun <T : Any> Document.ReadAs(value: T): T {
                 return@forEach;
             }
         } else if (Collection::class.java.isAssignableFrom(it.type)) {
-            var elementType = (it.genericType as ParameterizedType).actualTypeArguments[0] as Class<*>
+            var elementType = (it.genericType as ParameterizedType).GetActualClass(0);
             if (fieldValue is ArrayList<*>) {
                 //List 里有两种情况: DBObject , simpleClass  . BasicDBList 的情况不处理.
                 it.set(ret, fieldValue.map {

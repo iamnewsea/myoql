@@ -11,11 +11,10 @@ import io.lettuce.core.api.sync.RedisCommands
 import io.lettuce.core.support.ConnectionPoolSupport
 import nbcp.base.extend.FieldTypeJsonMapper
 import nbcp.base.extend.HasValue
-import org.apache.commons.pool2.impl.GenericObjectPool
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 import org.springframework.context.annotation.Bean
@@ -189,7 +188,8 @@ class AnyTypeRedisTemplate() : RedisTemplate<String, Any>() {
 
 @Configuration
 @AutoConfigureAfter(RedisAutoConfiguration::class)
-@ConditionalOnProperty("spring.redis.host")
+//@ConditionalOnProperty("spring.redis.host")
+@ConditionalOnBean(RedisConnectionFactory::class)
 class RedisConfig {
     @Bean
     fun redisKeyCommand(connectionFactory: RedisConnectionFactory): AnyTypeRedisTemplate {

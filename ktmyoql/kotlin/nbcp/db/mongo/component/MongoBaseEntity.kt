@@ -27,6 +27,9 @@ abstract class MongoBaseEntity<T : IMongoDocument>(val entityClass: Class<T>, en
         }
     }
 
+    /**
+     * 通过 using 作用域 切换数据源。
+     */
     val mongoTemplate: MongoTemplate
         get() {
             return scopes.getLatest<MongoTemplate>() ?: SpringUtil.getBean<MongoTemplate>()
