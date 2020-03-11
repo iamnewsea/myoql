@@ -87,16 +87,18 @@ fun <T> T.IsIn(equalFunc: ((T, T) -> Boolean)? = null, vararg values: T): Boolea
 
 
 /**
- * 查找最近添加的。
+ * 查找最近添加的。如果是 IUsingScope，则判断传染性。
  * @param func : 查找要返回的对象，返回true即是查找的对象。
  * func:((T)->Boolean)
  */
-inline fun <reified R> Stack<*>.getLatest(): R? {
+inline fun <reified R> Stack<*>.getLatestScope(): R? {
     if (this.size == 0) return null
 
     for (i in this.indices.reversed()) {
         var item = this[i];
-        if (item is R) return item
+        if (item is R) {
+            return item
+        }
     }
     return null;
 }
@@ -106,6 +108,12 @@ interface IDisposeable {
     fun dispose();
 }
 
+//interface IUsingScope {
+//    /**
+//     * 是否向下传递
+//     */
+//    fun infect(): Boolean;
+//}
 
 enum class LogScope : IDisposeable {
     TaskLog, //分组到 task 里.
@@ -116,7 +124,7 @@ enum class LogScope : IDisposeable {
     }
 }
 
-class NoAffectRowCount{} //不记录到 affectRows里。用于拦截事件
+class NoAffectRowCount {} //不记录到 affectRows里。用于拦截事件
 
 private val _scopes = ThreadLocal.withInitial { Stack<Any>() }
 

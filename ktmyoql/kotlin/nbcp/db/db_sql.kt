@@ -1,10 +1,15 @@
 package nbcp.db
 
 import nbcp.base.utils.SpringUtil
+import nbcp.comm.StringMap
+import nbcp.comm.StringTypedMap
 import nbcp.db.sql.SqlBaseTable
 import nbcp.db.sql.SqlEntityEvent
+import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.jdbc.core.JdbcTemplate
+import javax.sql.DataSource
 
-object db_sql{
+object db_sql {
 
     var getSqlEntity: ((tableName: String) -> SqlBaseTable<*>)? = null
 
@@ -23,5 +28,23 @@ object db_sql{
         }
     }
 
+
+    private var dynamicTableDataSource = StringTypedMap<DataSource>();
+    /**
+     * 指派集合到数据库
+     */
+    fun assignTableName2Database(tableName: String, data: DataSource) {
+        this.dynamicTableDataSource.set(tableName, data)
+    }
+
+    /**
+     * 根据集合定义，获取 MongoTemplate
+     */
+    fun getJdbcTemplateByTableName(tableName: String): JdbcTemplate? {
+        var dataSource = dynamicTableDataSource.get(tableName);
+        if (dataSource == null) return null;
+
+        return JdbcTemplate(dataSource, true)
+    }
 
 }

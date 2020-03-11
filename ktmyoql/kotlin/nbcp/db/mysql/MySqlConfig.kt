@@ -5,6 +5,7 @@ import nbcp.base.extend.AsString
 import nbcp.base.utils.SpringUtil
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
@@ -12,32 +13,35 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.context.annotation.*
 import org.springframework.core.type.AnnotatedTypeMetadata
+import org.springframework.jdbc.core.JdbcTemplate
 import javax.sql.DataSource
 
 class ExistsSlaveDataSourceConfigCondition : Condition {
     override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata): Boolean {
-        return context.environment.getProperty("spring.datasource.slave") != null
+        return context.environment.getProperty("spring.datasource.slave.url") != null ||
+                context.environment.getProperty("spring.datasource.slave.hikari.jdbc-url") != null
+    }
+}
+
+class ExistsDataSourceConfigCondition : Condition {
+    override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata): Boolean {
+        return context.environment.getProperty("spring.datasource.url") != null ||
+                context.environment.getProperty("spring.datasource.hikari.jdbc-url") != null
     }
 }
 
 @Configuration
 @AutoConfigureAfter(DataSourceAutoConfiguration::class)
-//@ConditionalOnBean(DataSource::class)
+@Conditional(ExistsDataSourceConfigCondition::class)
 class MySqlConfig {
     @Bean()
     @Primary
     @ConfigurationProperties("spring.datasource.hikari")
-    fun primaryDataSource(): DataSource? {
-        var ret = DataSourceBuilder.create().build() as HikariDataSource?
-        if (ret == null) {
-            return null;
-        }
+    fun primaryDataSource(): DataSource {
+        var ret = DataSourceBuilder.create().build() as HikariDataSource
 
         if (ret.jdbcUrl == null) {
             ret.jdbcUrl = SpringUtil.context.environment.getProperty("spring.datasource.url")
-        }
-        if( ret.jdbcUrl == null){
-            return null;
         }
 
         if (ret.driverClassName == null) {
@@ -55,23 +59,17 @@ class MySqlConfig {
         return ret;
     }
 
+
     @Bean("slave")
     @ConfigurationProperties("spring.datasource.slave.hikari")
-//    @Conditional(ExistsSlaveDataSourceConfigCondition::class)
+    @Conditional(ExistsSlaveDataSourceConfigCondition::class)
 //    @ConditionalOnExpression("\${spring.datasource.slave}")
-    fun slaveDataSource(): DataSource? {
-        var ret = DataSourceBuilder.create().build() as HikariDataSource?
+    fun slaveDataSource(): DataSource {
+        var ret = DataSourceBuilder.create().build() as HikariDataSource
 
-        if (ret == null) {
-            return null;
-        }
 
         if (ret.jdbcUrl == null) {
             ret.jdbcUrl = SpringUtil.context.environment.getProperty("spring.datasource.slave.url")
-        }
-
-        if( ret.jdbcUrl == null){
-            return null;
         }
 
         if (ret.driverClassName == null) {
@@ -89,5 +87,20 @@ class MySqlConfig {
         }
 
         return ret;
+    }
+
+
+
+    @Bean()
+    @Primary
+    fun primaryJdbcTemplate():JdbcTemplate
+    {
+        return JdbcTemplate(SpringUtil.getBean<DataSource>(),true)
+    }
+
+    @Bean("slaveJdbcTemplate")
+    @Conditional(ExistsSlaveDataSourceConfigCondition::class)
+    fun slaveJdbcTemplate():JdbcTemplate{
+        return JdbcTemplate(SpringUtil.getBeanByName<DataSource>("slave"),true)
     }
 }

@@ -1,15 +1,10 @@
 package nbcp.db.mongo
 
-import com.mongodb.DBCollection
-import com.mongodb.client.MongoCollection
-import nbcp.base.extend.Slice
-import nbcp.base.extend.getLatest
+import nbcp.base.extend.getLatestScope
 import nbcp.base.extend.scopes
 import org.springframework.data.mongodb.core.MongoTemplate
 import nbcp.base.utils.SpringUtil
 import nbcp.db.db
-import nbcp.db.mongo.*
-import org.bson.Document
 import org.springframework.data.mongodb.core.query.Criteria
 import java.io.Serializable
 
@@ -24,7 +19,7 @@ open class MongoClipBase(var collectionName: String): Serializable {
 
     val mongoTemplate: MongoTemplate
         get() {
-            return db.mongo.getDynamicMongoTemplateByCollectionName(collectionName) ?: scopes.getLatest<MongoTemplate>() ?: SpringUtil.getBean<MongoTemplate>()
+            return db.mongo.getMongoTemplateByCollectionName(collectionName) ?: scopes.getLatestScope<MongoTemplate>() ?: SpringUtil.getBean<MongoTemplate>()
         }
 
 

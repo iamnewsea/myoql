@@ -32,7 +32,7 @@ abstract class MongoBaseEntity<T : IMongoDocument>(val entityClass: Class<T>, en
      */
     val mongoTemplate: MongoTemplate
         get() {
-            return scopes.getLatest<MongoTemplate>() ?: SpringUtil.getBean<MongoTemplate>()
+            return scopes.getLatestScope<MongoTemplate>() ?: SpringUtil.getBean<MongoTemplate>()
         }
 
 

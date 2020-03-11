@@ -79,7 +79,7 @@ object db {
             return _affectRowCount.get()
         }
         set(value) {
-            if (scopes.getLatest<NoAffectRowCount>() != null) {
+            if (scopes.getLatestScope<NoAffectRowCount>() != null) {
                 return;
             }
             _affectRowCount.set(value);

@@ -26,27 +26,25 @@ object db_mongo {
         return@lazy SpringUtil.getBean<MongoEntityEvent>();
     }
 
-
-
-
-
     private var dynamicMongoMap = StringMap();
-    fun setDynamicMongo(collectionName: String, connectionUri: String) {
+    private var dynamicMongoTemplate = StringTypedMap<MongoTemplate>();
+
+    /**
+     * 指派集合到数据库
+     */
+    fun assignCollection2Database(collectionName: String, connectionUri: String) {
         this.dynamicMongoMap.set(collectionName, connectionUri)
     }
 
-    private var dynamicMongoTemplate = StringTypedMap<MongoTemplate>();
-    fun getDynamicMongoTemplateByCollectionName(collectionName: String): MongoTemplate? {
+
+    /**
+     * 根据集合定义，获取 MongoTemplate
+     */
+    fun getMongoTemplateByCollectionName(collectionName: String): MongoTemplate? {
         var uri = dynamicMongoMap.get(collectionName);
         if (uri == null) return null;
 
-        return getDynamicMongoTemplateByUri(uri)
-    }
 
-    /**
-     * 根据Uri获取 MongoTemplate，会缓存
-     */
-    fun getDynamicMongoTemplateByUri(uri: String): MongoTemplate? {
         return dynamicMongoTemplate.getOrPut(uri, {
 
             var dbFactory = SimpleMongoClientDbFactory(uri);
@@ -116,7 +114,6 @@ object db_mongo {
     fun accumulate(operator: PipeLineAccumulatorOperatorEnum, rawValue: Double): MongoExpression {
         return MongoExpression("$" + operator.toString() to rawValue)
     }
-
 
 
     /**
@@ -271,5 +268,4 @@ object db_mongo {
             return@recursionJson true
         })
     }
-
 }

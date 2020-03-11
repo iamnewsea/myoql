@@ -33,18 +33,18 @@ import nbcp.db.sql.*
  *
  * 3. 事务使用方式：
 transTemplate.execute(new TransactionCallback<Object>() {
-    @Override
-    public Object doInTransaction(TransactionStatus transactionStatus) {
-        // DML执行
-        jdbcTemplate.update("Delete from actor_new where actor_id=?", 11);
+@Override
+public Object doInTransaction(TransactionStatus transactionStatus) {
+// DML执行
+jdbcTemplate.update("Delete from actor_new where actor_id=?", 11);
 
-        // 回滚
-        transactionStatus.setRollbackOnly();
-        return null;
-    }
+// 回滚
+transactionStatus.setRollbackOnly();
+return null;
+}
 });
  */
-abstract class SqlBaseClip() : Serializable {
+abstract class SqlBaseClip(var tableName: String) : Serializable {
     init {
         db.affectRowCount = -1
         db.lastAutoId = -1
@@ -62,6 +62,10 @@ abstract class SqlBaseClip() : Serializable {
         // orm bean 代理 RequestCache 及 Redis Cache
         val cacheService by lazy {
             return@lazy SpringUtil.getBean<IProxyCache4Sql>();
+        }
+
+        val hasSlave by lazy {
+            return@lazy SpringUtil.context.containsBean("slave");
         }
 
 
@@ -82,7 +86,19 @@ abstract class SqlBaseClip() : Serializable {
      * 通过 using 作用域 切换数据源。
      */
     val jdbcTemplate: JdbcTemplate
-        get() = scopes.getLatest<JdbcTemplate>() ?: SpringUtil.getBean<JdbcTemplate>()
+        get() {
+            var ret = db.sql.getJdbcTemplateByTableName(tableName) ?: scopes.getLatestScope<JdbcTemplate>();
+            if (ret != null) ret;
+
+
+            if (this is SqlBaseQueryClip) {
+                if (hasSlave) {
+                    return SpringUtil.getBeanByName<JdbcTemplate>("slaveJdbcTemplate")
+                }
+            }
+
+            return SpringUtil.getBean<JdbcTemplate>()
+        }
 
 
 //    val transactionTemplate: TransactionTemplate
@@ -101,7 +117,7 @@ abstract class SqlBaseClip() : Serializable {
 }
 
 
-abstract class SqlBaseQueryClip(private var mainEntity: SqlBaseTable<*>? = null) : SqlBaseClip() {
+abstract class SqlBaseQueryClip(private var mainEntity: SqlBaseTable<*>) : SqlBaseClip(mainEntity.tableName) {
     protected var skip = 0;
     protected var take = -1;
     protected var distinct = false;
@@ -261,7 +277,7 @@ abstract class SqlBaseQueryClip(private var mainEntity: SqlBaseTable<*>? = null)
     }
 }
 
-abstract class SqlBaseExecuteClip(private var mainEntity: SqlBaseTable<*>? = null) : SqlBaseClip() {
+abstract class SqlBaseExecuteClip(private var mainEntity: SqlBaseTable<*>) : SqlBaseClip(mainEntity.tableName) {
     abstract fun exec(): Int
 }
 
