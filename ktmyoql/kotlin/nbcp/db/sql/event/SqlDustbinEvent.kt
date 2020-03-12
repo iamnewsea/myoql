@@ -15,7 +15,7 @@ class SqlDustbinEvent : ISqlEntityDelete {
             //找出数据
             var where = delete.whereDatas.toSingleData()
             where.expression = "select * from " + delete.mainEntity.fromTableName + " where " + where.expression
-            var cursor = RawQuerySqlClip(where, delete.mainEntity).toMapList()
+            var cursor = RawQuerySqlClip(where, delete.mainEntity.tableName).toMapList()
             return DbEntityEventResult(true, cursor)
         }
 

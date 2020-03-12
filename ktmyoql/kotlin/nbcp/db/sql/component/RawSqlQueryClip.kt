@@ -8,7 +8,7 @@ import nbcp.db.db
 import nbcp.db.sql.*
 
 //查询原生表。
-class RawQuerySqlClip(var sql: SingleSqlData, var mainEntity: SqlBaseTable<*> ) : SqlBaseQueryClip(mainEntity) {
+class RawQuerySqlClip(var sql: SingleSqlData, tableName: String) : SqlBaseQueryClip(tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -19,7 +19,7 @@ class RawQuerySqlClip(var sql: SingleSqlData, var mainEntity: SqlBaseTable<*> ) 
 }
 
 
-class RawExecuteSqlClip(var sql: SingleSqlData, var mainEntity: SqlBaseTable<*> ) : SqlBaseExecuteClip(mainEntity) {
+class RawExecuteSqlClip(var sql: SingleSqlData, tableName: String) : SqlBaseExecuteClip(tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

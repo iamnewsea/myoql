@@ -16,7 +16,7 @@ import java.sql.Statement
 /**
  * Created by yuxh on 2018/7/2
  */
-class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity) {
+class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
 
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

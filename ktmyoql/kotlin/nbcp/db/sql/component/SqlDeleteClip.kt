@@ -14,7 +14,7 @@ import nbcp.db.sql.*
  * Created by yuxh on 2018/7/2
  */
 
-class SqlDeleteClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity) {
+class SqlDeleteClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

@@ -8,7 +8,7 @@ import nbcp.db.*
 import kotlin.reflect.full.memberProperties
 
 
-class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M) : SqlBaseQueryClip(mainEntity) {
+class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M) : SqlBaseQueryClip(mainEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

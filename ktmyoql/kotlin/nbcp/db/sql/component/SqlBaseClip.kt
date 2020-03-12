@@ -117,7 +117,7 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
 }
 
 
-abstract class SqlBaseQueryClip(private var mainEntity: SqlBaseTable<*>) : SqlBaseClip(mainEntity.tableName) {
+abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
     protected var skip = 0;
     protected var take = -1;
     protected var distinct = false;
@@ -277,7 +277,7 @@ abstract class SqlBaseQueryClip(private var mainEntity: SqlBaseTable<*>) : SqlBa
     }
 }
 
-abstract class SqlBaseExecuteClip(private var mainEntity: SqlBaseTable<*>) : SqlBaseClip(mainEntity.tableName) {
+abstract class SqlBaseExecuteClip(tableName: String) : SqlBaseClip(tableName) {
     abstract fun exec(): Int
 }
 
