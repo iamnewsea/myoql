@@ -27,15 +27,18 @@ object db_mongo {
     }
 
     private var dynamicMongoMap = StringMap();
-    private var dynamicMongoTemplate = StringTypedMap<MongoTemplate>();
+//    private var dynamicMongoTemplate = StringTypedMap<MongoTemplate>();
 
     /**
      * 指派集合到数据库
      */
-    fun assignCollection2Database(collectionName: String, connectionUri: String) {
+    fun bindCollection2Database(collectionName: String, connectionUri: String) {
         this.dynamicMongoMap.set(collectionName, connectionUri)
     }
 
+    fun unbindCollection(collectionName: String) {
+        this.dynamicMongoMap.remove(collectionName)
+    }
 
     /**
      * 根据集合定义，获取 MongoTemplate
@@ -45,15 +48,12 @@ object db_mongo {
         if (uri == null) return null;
 
 
-        return dynamicMongoTemplate.getOrPut(uri, {
+        var dbFactory = SimpleMongoClientDbFactory(uri);
+        val converter = MappingMongoConverter(DefaultDbRefResolver(dbFactory), MongoMappingContext())
+        converter.setTypeMapper(DefaultMongoTypeMapper(null));
+        (converter.conversionService as GenericConversionService).addConverter(Date2LocalDateTimeConverter())
 
-            var dbFactory = SimpleMongoClientDbFactory(uri);
-            val converter = MappingMongoConverter(DefaultDbRefResolver(dbFactory), MongoMappingContext())
-            converter.setTypeMapper(DefaultMongoTypeMapper(null));
-            (converter.conversionService as GenericConversionService).addConverter(Date2LocalDateTimeConverter())
-
-            return@getOrPut MongoTemplate(dbFactory, converter);
-        })
+        return MongoTemplate(dbFactory, converter);
     }
 
     //----------------mongo expression-------------
