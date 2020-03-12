@@ -118,7 +118,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
                 insertColumns = insertColumns.Intersect(columns, { a, b -> a.name == b.name })
             }
 
-            var exp = "insert into ${mainEntity.quoteTableName} (${insertColumns.map { "${db.sql.getSqlQuoteName(it.name)}" }.joinToString(",")}) values (${insertColumns.map { "#${it.name}@" }.joinToString(",")})";
+            var exp = "insert into ${mainEntity.quoteTableName} (${insertColumns.map { "${db.sql.getSqlQuoteName(it.name)}" }.joinToString(",")}) values (${insertColumns.map { "{${it.name}}" }.joinToString(",")})";
 
             var executeSql = SingleSqlData(exp, entity)
 

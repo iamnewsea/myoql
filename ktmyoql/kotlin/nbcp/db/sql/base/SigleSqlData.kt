@@ -8,7 +8,7 @@ import java.io.Serializable
 import java.util.LinkedHashSet
 
 data class SingleSqlData(
-        // 使用 #corp_id@ 表示 变量
+        // 使用 {变量名} 表示 变量
         var expression: String = "",
 
         // JsonMap 的 key = corp_id
@@ -18,7 +18,7 @@ data class SingleSqlData(
     private fun getJsonKeysFromExpression(): Set<String> {
         var set = LinkedHashSet<String>();
 
-        return """#([^@]+)@""".toRegex(RegexOption.DOT_MATCHES_ALL)
+        return """\{([^@]+)}""".toRegex(RegexOption.DOT_MATCHES_ALL)
                 .findAll(this.expression)
                 .map { it.groupValues.last() }
                 .toSet()
@@ -34,7 +34,7 @@ data class SingleSqlData(
         var exp = this.expression;
         var parameters = mutableListOf<SqlParameterData>()
 
-        """#([^@]+)@""".toRegex(RegexOption.DOT_MATCHES_ALL)
+        """\{([^@]+)}""".toRegex(RegexOption.DOT_MATCHES_ALL)
                 .findAll(this.expression)
                 .sortedByDescending { it.range.start }
                 .forEach {
@@ -66,7 +66,7 @@ data class SingleSqlData(
 
         sameKeys.forEachIndexed { index, sameKey ->
             var key = sameKey + "_" + (index + 1);
-            other2.expression = other2.expression.replace("#${sameKey}@", "#${key}@");
+            other2.expression = other2.expression.replace("{${sameKey}}", "{${key}}");
             other2.values.set(key, other2.values.get(sameKey));
             other2.values.remove(sameKey)
         }

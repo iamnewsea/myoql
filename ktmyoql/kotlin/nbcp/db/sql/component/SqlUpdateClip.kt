@@ -54,7 +54,7 @@ class SqlUpdateClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
         whereColumns.forEach { column ->
             var value = MyUtil.getPrivatePropertyValue(entity, column.name)
 
-            where.and(WhereData("${column.fullName} = #${column.jsonKeyName}@", JsonMap(column.jsonKeyName to value)))
+            where.and(WhereData("${column.fullName} = {${column.jsonKeyName}}", JsonMap(column.jsonKeyName to value)))
         }
 
         //自增 id 不能更新。
@@ -131,7 +131,7 @@ class SqlUpdateClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
 //                    setValue = tab_converter.get(setKey.name)?.convert(setValue.toString()) ?: setValue
 //                }
 
-                ret += SingleSqlData(setKey.fullName + " = #${setKey.jsonKeyName}@", JsonMap(setKey.jsonKeyName to setValue))
+                ret += SingleSqlData(setKey.fullName + " = {${setKey.jsonKeyName}}", JsonMap(setKey.jsonKeyName to setValue))
             }
         }
 

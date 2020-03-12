@@ -47,6 +47,12 @@ object db_mongo {
         var uri = dynamicMongoMap.get(collectionName);
         if (uri == null) return null;
 
+        return getMongoTemplateByUri(uri)
+    }
+
+    fun getMongoTemplateByUri(uri: String): MongoTemplate? {
+        if (uri.isEmpty()) return null;
+
 
         var dbFactory = SimpleMongoClientDbFactory(uri);
         val converter = MappingMongoConverter(DefaultDbRefResolver(dbFactory), MongoMappingContext())
@@ -55,7 +61,6 @@ object db_mongo {
 
         return MongoTemplate(dbFactory, converter);
     }
-
     //----------------mongo expression-------------
 
 //    fun times(rawValue: String):PipeLineExpression{

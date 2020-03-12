@@ -31,7 +31,7 @@ data class SqlColumnName(val dbType: DbType, var tableName: String, var name: St
         }
 
     //用于 json 中的 key
-    //变量，必须是  #s_corp_name@
+    //变量，必须是  {s_corp_name}
     open val jsonKeyName: String
         get() {
             if (columnAliaValue.HasValue) return this.columnAliaValue
