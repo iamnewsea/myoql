@@ -152,7 +152,7 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                 return@map it.type.componentType;
             }
             if (List::class.java.isAssignableFrom(it.type)) {
-                return@map  (it.genericType as ParameterizedType).GetActualClass(0);
+                return@map (it.genericType as ParameterizedType).GetActualClass(0);
             }
             return@map it.type;
         }.filter {
@@ -297,8 +297,8 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
         var fks_exp_string = fks.map { """FkDefine("${it.table}","${it.column}","${it.refTable}","${it.refColumn}") """ }.toTypedArray()
 
         var idMethods = mutableListOf<String>()
-        uks.forEach {
-            var keys = it.split(",")
+        uks.forEach { uk ->
+            var keys = uk.split(",")
 
             if (keys.size == 1) {
                 idMethods.add("""

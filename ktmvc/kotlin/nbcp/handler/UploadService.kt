@@ -19,6 +19,7 @@ import nbcp.db.mongo.service.UploadFileMongoService
 import nbcp.db.mongo.table.MongoBaseGroup
 import nbcp.db.mysql.service.UploadFileMysqlService
 import nbcp.model.IUploadFileDbService
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
 import java.io.File
@@ -35,6 +36,7 @@ import javax.servlet.http.HttpServletRequest
  * 参数传递过程中,都没有 uploadPath 部分.
  */
 @Service
+@ConditionalOnProperty("server.upload.path")
 open class UploadService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -92,6 +94,10 @@ open class UploadService {
 
     @Value("\${server.upload.dbType:Mongo}")
     private var dbType = "Mongo"
+
+//小图，在上传时不生成。 在请求时在内存中压缩即时生成。
+//    @Value("\${server.upload.logoSize:0}")
+//    private var logoSize = 0
 
     /**
      * checkCode 生成方式，md5,mymd5,两种
@@ -201,7 +207,7 @@ open class UploadService {
         annexInfo.ext = extInfo.extName
         annexInfo.size = vFile.length().AsInt()
         annexInfo.checkCode = oriMd5
-        annexInfo.createBy = user
+        annexInfo.creator = user
 
 
         if (extInfo.extType == FileExtentionTypeEnum.Image) {
@@ -219,8 +225,8 @@ open class UploadService {
 
         annexInfo.url = renameFile(vTempFile, targetFileName)
 
-//        if (fileData.extType == FileExtentionTypeEnum.Image) {
-//            ImageUtil.zoomImageScale(uploadPath + annexInfo.url, uploadPath + annexInfo.url + "-var" + File.separator + "256." + fileData.extName, 256, 256)
+//        if (fileData.extType == FileExtentionTypeEnum.Image && logoSize > 0) {
+//            ImageUtil.zoomImageScale(uploadPath + annexInfo.url, uploadPath + annexInfo.url + ".${logoSize}." + fileData.extName, logoSize, logoSize)
 //        }
 
         annexInfo.url = annexInfo.url.replace("\\", "/");
@@ -242,8 +248,8 @@ open class UploadService {
      * 2. 第二级目录,按 企业Id 归档.
      *      2.1.如果是后台, 企业Id = admin
      *      2.2.如果是商城用户,企业Id = shop
-     * 3. 第三级目录,如果是非图片是 extType , 如果是图片是 宽-高
-     * 4. 第四级是,如果是图片,是256宽度像素大小的缩略图.
+     * 3. 第三级目录,是 后缀名
+     * 4. 如果是图片，第四级目录是原图片的像素数/万 ，如 800*600 = 480000,则文件夹名为 48 。 忽略小数部分。这样对大部分图片大体归类。
      */
     private fun renameFile(tempPath: String, targetPath: String): String {
         if (tempPath == targetPath) {
@@ -283,27 +289,19 @@ open class UploadService {
         }
     }
 
-    private lateinit var dbService: IUploadFileDbService;
-
-    fun initDbServiceAndCheck() {
-        if( uploadPath.isEmpty()){
-            throw RuntimeException("需要定义 uploadPath！")
-        }
-        if (this::dbService.isInitialized) return;
-
+    private val dbService by lazy {
         if (this.dbType VbSame DatabaseEnum.Mongo.toString()) {
-            dbService = SpringUtil.context.getBean(UploadFileMongoService::class.java)
+            return@lazy SpringUtil.context.getBean(UploadFileMongoService::class.java)
         } else {
-            dbService = SpringUtil.context.getBean(UploadFileMysqlService::class.java)
+            return@lazy SpringUtil.context.getBean(UploadFileMysqlService::class.java)
         }
     }
+
 
     /**
      * 按原始的Md5查询文件是否存在。
      */
     fun onFileMd5Check(md5: String, user: IdName, corpId: String): ApiResult<IdUrl> {
-        initDbServiceAndCheck();
-
         if (md5.isEmpty()) {
             return ApiResult<IdUrl>();
         }
@@ -371,7 +369,6 @@ open class UploadService {
      * 文件上传
      */
     fun upload(request: HttpServletRequest, user: IdName, corpId: String, processFile: ((String, FileExtentionTypeEnum) -> Unit)? = null): ListResult<IdUrl> {
-        initDbServiceAndCheck();
 
         var ret = ListResult<IdUrl>();
         var list = mutableListOf<IdUrl>()

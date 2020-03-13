@@ -11,6 +11,11 @@ import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+/**
+ * 在中英环境下，返回多语言信息， 使用字典是比较麻烦的， 使用如下方式
+ *
+ * "服务器错误" lang "server error"
+ */
 infix fun String.lang(englishMessage: String): String {
     var lang = HttpContext.request.getAttribute("lang")?.toString() ?: "cn"
     if (lang == "en") return englishMessage;
@@ -55,24 +60,27 @@ private val String.ContentTypeIsOctetContent: Boolean
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types
         // https://www.iana.org/assignments/media-types/media-types.xhtml
 
-        /**
-        application
-        audio
-        font
-        example
-        image
-        message
-        model
-        multipart
-        text
-        video
-         */
+
         for (c in arrayOf<String>("application/", "audio/", "font/", "example/", "image/", "message/", "model/", "multipart/", "video/")) {
             if (this.startsWith(c, 0, true)) return true;
         }
         return false;
     }
 
+/**
+ * 判断是否是八进制类型：
+ * 如果是 json,text,xml,form 则为普通类型。
+ * 检测contentType就否包含以下内容：
+application
+audio
+font
+example
+image
+message
+model
+multipart
+video
+ */
 val HttpServletResponse.IsOctetContent: Boolean
     get() {
         if (this.contentType == null) {
@@ -82,6 +90,20 @@ val HttpServletResponse.IsOctetContent: Boolean
         return this.contentType.ContentTypeIsOctetContent
     }
 
+/**
+ * 判断是否是八进制类型：
+ * 如果是 json,text,xml,form 则为普通类型。
+ * 检测contentType就否包含以下内容：
+application
+audio
+font
+example
+image
+message
+model
+multipart
+video
+ */
 val HttpServletRequest.IsOctetContent: Boolean
     get() {
         if (this.contentType == null) {
@@ -191,6 +213,7 @@ var Request_Id: UInt = 0U;
 
 /**
  * 高并发系统不应该有Session。使用token即可。
+ * 设置 Attribute("(LoginUser)") ,需要通过 HandlerInterceptorAdapter.preHandle 通过 token 设置 LoginUser，来保持登录信息，比 RedisSession 简单
  */
 var HttpServletRequest.LoginUser: LoginUserModel
     get() {
@@ -217,6 +240,9 @@ val HttpServletRequest.UserName: String
         return this.LoginUser.name;
     }
 
+/**
+ * 把 queryString 加载为 Json
+ */
 val HttpServletRequest.queryJson: JsonMap
     get() {
         var queryJson_key = "_Request_Query_Json_"
@@ -231,7 +257,7 @@ val HttpServletRequest.queryJson: JsonMap
     }
 
 /**
- * 从request属性，Form表单， URL ， Header，Cookie中查找参数
+ * 从request属性， URL ， Form表单，Header，Cookie中查找参数
  */
 fun HttpServletRequest.findParameterValue(key: String): String? {
     var ret = this.getAttribute(key)?.toString()
@@ -239,14 +265,17 @@ fun HttpServletRequest.findParameterValue(key: String): String? {
         return ret;
     }
 
-    ret = this.getParameter(key)
+    ret = this.queryJson.get(key)?.toString();
     if (ret != null) {
         return ret;
     }
 
-    ret = this.queryJson.get(key)?.toString();
-    if (ret != null) {
-        return ret;
+    //读取表单内容
+    if (this.contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
+        ret = this.getParameter(key)
+        if (ret != null) {
+            return ret;
+        }
     }
 
     ret = this.getHeader(key)
@@ -270,7 +299,14 @@ val HttpServletRequest.fullUrl: String
         return this.requestURI + (if (this.queryString.isNullOrEmpty()) "" else ("?" + this.queryString))
     }
 
-//呼叫父窗口，弹出消息
+/**
+ * 输出 javascript 呼叫父窗口，弹出消息 用于前端下载时处理消息。
+ * 前端下载，
+ * 前端使用： jv.download() 函数，在页面添加一个 iframe ,设置url 即可使用 ajax + open 的方式下载了。
+ * 在出错的时候，通过 postMessage 呼叫父窗口弹出消息
+ * @param msg: 错误消息
+ * @param title: 消息标题
+ */
 fun HttpServletResponse.parentAlert(msg: String, title: String = "", targetOrigin: String = "*") {
     this.WriteTextValue("<script>window.parent.postMessage({event:'error',arguments:['${msg}','${title}']},'${targetOrigin}')</script>")
 }

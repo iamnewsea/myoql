@@ -9,4 +9,5 @@ interface IUploadFileDbService {
     fun getByMd5(md5: String, corpId: String = ""): SysAnnex?
     fun insert(annex: SysAnnex): Int
     fun clearMd5ById(id: String)
+    fun queryById(id:String):SysAnnex?
 }

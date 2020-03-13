@@ -10,7 +10,7 @@ import nbcp.base.extend.*
 import nbcp.base.utils.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-03-11 17:16:18
+//generate auto @2020-03-13 14:30:07
 
 
 @Component("sql.SqlBase")
@@ -27,21 +27,22 @@ class SqlBaseGroup : IDataGroup{
     class s_annex_table(datasource:String=""):SqlBaseTable<s_annex>(s_annex::class.java,"s_annex") {
         val id=SqlColumnName(DbType.String,this.getAliaTableName(),"id")
         val name=SqlColumnName(DbType.String,this.getAliaTableName(),"name")
+        val tags=SqlColumnName(DbType.String,this.getAliaTableName(),"tags")
         val ext=SqlColumnName(DbType.String,this.getAliaTableName(),"ext")
         val size=SqlColumnName(DbType.Int,this.getAliaTableName(),"size")
         val checkCode=SqlColumnName(DbType.String,this.getAliaTableName(),"checkCode")
         val imgWidth=SqlColumnName(DbType.Int,this.getAliaTableName(),"imgWidth")
         val imgHeight=SqlColumnName(DbType.Int,this.getAliaTableName(),"imgHeight")
         val url=SqlColumnName(DbType.String,this.getAliaTableName(),"url")
-        val createby_id=SqlColumnName(DbType.Int,this.getAliaTableName(),"createby_id")
-        val createby_name=SqlColumnName(DbType.String,this.getAliaTableName(),"createby_name")
-        val corp_id=SqlColumnName(DbType.String,this.getAliaTableName(),"corp_id")
+        val creator_id=SqlColumnName(DbType.Int,this.getAliaTableName(),"creator_id")
+        val creator_name=SqlColumnName(DbType.String,this.getAliaTableName(),"creator_name")
+        val corpId=SqlColumnName(DbType.String,this.getAliaTableName(),"corpId")
         val errorMsg=SqlColumnName(DbType.String,this.getAliaTableName(),"errorMsg")
         val createAt=SqlColumnName(DbType.DateTime,this.getAliaTableName(),"createAt")
     
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}
-        override fun getRks(): Array<Array<String>>{ return arrayOf( arrayOf("corp_id")  )}
+        override fun getRks(): Array<Array<String>>{ return arrayOf( arrayOf("corpId")  )}
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
     
     
@@ -100,15 +101,15 @@ class SqlBaseGroup : IDataGroup{
     
     class s_log_table(datasource:String=""):SqlBaseTable<s_log>(s_log::class.java,"s_log") {
         val id=SqlColumnName(DbType.String,this.getAliaTableName(),"id")
-        val msg=SqlColumnName(DbType.String,this.getAliaTableName(),"msg")
-        val creatAt=SqlColumnName(DbType.DateTime,this.getAliaTableName(),"creatAt")
-        val createBy_id=SqlColumnName(DbType.String,this.getAliaTableName(),"createBy_id")
-        val createBy_name=SqlColumnName(DbType.String,this.getAliaTableName(),"createBy_name")
-        val corp_id=SqlColumnName(DbType.String,this.getAliaTableName(),"corp_id")
-        val type=SqlColumnName(DbType.String,this.getAliaTableName(),"type")
-        val clientIp=SqlColumnName(DbType.String,this.getAliaTableName(),"clientIp")
         val module=SqlColumnName(DbType.String,this.getAliaTableName(),"module")
+        val type=SqlColumnName(DbType.String,this.getAliaTableName(),"type")
+        val key=SqlColumnName(DbType.String,this.getAliaTableName(),"key")
+        val msg=SqlColumnName(DbType.String,this.getAliaTableName(),"msg")
+        val data=SqlColumnName(DbType.String,this.getAliaTableName(),"data")
         val remark=SqlColumnName(DbType.String,this.getAliaTableName(),"remark")
+        val clientIp=SqlColumnName(DbType.String,this.getAliaTableName(),"clientIp")
+        val creatAt=SqlColumnName(DbType.DateTime,this.getAliaTableName(),"creatAt")
+        val creatorId=SqlColumnName(DbType.String,this.getAliaTableName(),"creatorId")
     
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}

@@ -21,7 +21,7 @@ open class SysAnnex(
         var imgHeight: Int = 0,         // 图像宽度值。
         var url: String = "",           //下载的路径。没有 host
 
-        var createBy: IdName = IdName(), //创建者
+        var creator: IdName = IdName(), //创建者
         var corpId: String = "",    //创建所属企业,如果是 admin,则 id = "admin" , name = "admin 即可
         var errorMsg: String = ""      //文件处理时的错误消息
 ) : IMongoDocument() {
@@ -39,7 +39,7 @@ open class SysLog(
         var remark: String = "",
         var clientIp: String = "",
         var creatAt: LocalDateTime = LocalDateTime.now(),
-        var createBy: String = ""
+        var creatorId: String = ""
 ) : IMongoDocument() {
 }
 

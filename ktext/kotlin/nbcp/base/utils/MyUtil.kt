@@ -29,6 +29,7 @@ object MyUtil {
     val SystemTimeZoneOffsetTotalSeconds = ZoneId.systemDefault().rules.getStandardOffset(Date().toInstant()).totalSeconds  //系统时区相差的秒数
     @JvmStatic
     private val random = Random();
+
     //    /**
 //     * 北京时间的今天凌晨。
 //     */
@@ -36,6 +37,78 @@ object MyUtil {
         get() {
             return LocalDate.now();
         }
+
+
+    val mimeLists = StringMap(
+            "css" to "text/css",
+            "html" to "text/html",
+            "js" to "application/javascript",
+            "xml" to "text/xml",
+            "gif" to "image/gif",
+            "jpg" to "image/jpeg",
+            "jpeg" to "image/jpeg",
+            "png" to "image/jpeg",
+            "json" to "application/json",
+            "txt" to "text/plain",
+            "mp4" to "video/mpeg4",
+            "doc" to "application/msword",
+            "docx" to "application/msword",
+            "pdf" to "application/pdf",
+            "xls" to "application/vnd.ms-excel",
+            "xlsx" to "application/vnd.ms-excel",
+            "ppt" to "application/vnd.ms-powerpoint"
+    )
+
+
+    /**
+     * 最好传前8个字节，判断文件类型。
+     */
+    fun getFileType(byteArray8: ByteArray): String {
+        //https://blog.csdn.net/hch15112345824/article/details/86640092
+        //https://blog.csdn.net/gagapencil/article/details/40392363
+
+        //小于4个字节，返回空。
+        if (byteArray8.size < 4) {
+            return "";
+        }
+
+        var value = byteArray8.ToHexLowerString()
+        var map = mapOf(
+                "4D546864" to "mid",
+                "FFD8FF" to "jpg",
+                "89504E47" to "png",
+                "47494638" to "gif",
+                "49492A00" to "tif",
+                "424D" to "bmp",
+                "41433130" to "dwg",
+                "38425053" to "psd",
+                "7B5C727466" to "rtf",
+                "3C3F786D6C" to "xml",
+                "68746D6C3E" to "html",
+//                "44656C69766572792D646174653A" to "eml",
+//                "CFAD12FEC5FD746F" to "dbx",
+//                "2142444E" to "pst",
+                "D0CF11E0" to "doc",
+//                "5374616E64617264204A" to "mdb",
+                "FF575043" to "wpd",
+//                "252150532D41646F6265" to "ps",
+                "255044462D312E" to "pdf",
+                "AC9EBD8F" to "qdf",
+                "E3828596" to "pwl",
+                "504B0304" to "zip",
+                "52617221" to "rar",
+                "57415645" to "wav",
+                "41564920" to "avi",
+                "2E7261FD" to "ram",
+                "2E524D46" to "rm",
+                "000001BA" to "mpg",
+                "000001B3" to "mpg",
+                "6D6F6F76" to "mov",
+                "3026B2758E66CF11" to "asf"
+        );
+
+        return map.filterKeys { value.startsWith(it) }.values.firstOrNull() ?: ""
+    }
 
     fun isLocalIp(Ip: String): Boolean {
         return Ip.isEmpty() || Ip.startsWith("192.168.") || Ip.startsWith("10.") || Ip.startsWith("172.") || Ip.startsWith("127.") || Ip.startsWith("0.") || Ip.startsWith("0:")

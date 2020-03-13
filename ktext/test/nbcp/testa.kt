@@ -1,10 +1,7 @@
 package nbcp
 
+import nbcp.base.extend.*
 import nbcp.comm.*
-import nbcp.base.extend.FieldTypeJsonMapper
-import nbcp.base.extend.GetSetTypeJsonMapper
-import nbcp.base.extend.ToJson
-import nbcp.base.extend.Xml2Json
 import nbcp.base.utils.RecursionUtil
 import nbcp.db.IdName
 import nbcp.db.IdUrl
@@ -33,5 +30,10 @@ class testa : TestBase() {
         println("".Xml2Json().ToJson())
 
 
+    }
+
+    @Test
+    fun abcd(){
+        println("abcd".toByteArray().ToHexLowerString())
     }
 }

@@ -9,7 +9,7 @@ import nbcp.db.mongo.*
 import nbcp.db.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-03-08 13:24:02
+//generate auto @2020-03-13 14:19:55
 
 class IdNameMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
@@ -55,7 +55,7 @@ class MongoBaseGroup : IDataGroup{
         val imgWidth=MongoColumnName("imgWidth")
         val imgHeight=MongoColumnName("imgHeight")
         val url=MongoColumnName("url")
-        val createBy=IdNameMeta("createBy")
+        val creator=IdNameMeta("creator")
         val corpId=MongoColumnName("corpId")
         val errorMsg=MongoColumnName("errorMsg")
         val id=MongoColumnName("_id")
@@ -82,7 +82,7 @@ class MongoBaseGroup : IDataGroup{
         val remark=MongoColumnName("remark")
         val clientIp=MongoColumnName("clientIp")
         val creatAt=MongoColumnName("creatAt")
-        val createBy=MongoColumnName("createBy")
+        val creatorId=MongoColumnName("creatorId")
         val id=MongoColumnName("_id")
         val createAt=MongoColumnName("createAt")
         val updateAt=MongoColumnName("updateAt")

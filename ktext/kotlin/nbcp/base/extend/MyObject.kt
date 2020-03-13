@@ -611,5 +611,10 @@ fun Logger.Info(infoFunc: (() -> String)) = this.Log(Level.INFO, infoFunc)
 fun Logger.Warn(infoFunc: (() -> String)) = this.Log(Level.WARN, infoFunc)
 fun Logger.Error(infoFunc: (() -> String)) = this.Log(Level.ERROR, infoFunc)
 
-
+/**
+ * 输入16进制内容。
+ */
+fun ByteArray.ToHexLowerString():String{
+    return this.map { it.toString(16) }.joinToString("")
+}
 

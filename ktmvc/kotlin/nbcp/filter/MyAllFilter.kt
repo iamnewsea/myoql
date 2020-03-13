@@ -68,26 +68,6 @@ open class MyAllFilter : Filter, InitializingBean {
         var htmlFiles = listOf<String>()
         var isJarFile = true;
         var jarFile = ""
-
-        val mimeLists = StringMap(
-                "css" to "text/css",
-                "html" to "text/html",
-                "js" to "application/javascript",
-                "xml" to "text/xml",
-                "gif" to "image/gif",
-                "jpg" to "image/jpeg",
-                "jpeg" to "image/jpeg",
-                "png" to "image/jpeg",
-                "json" to "application/json",
-                "txt" to "text/plain",
-                "mp4" to "video/mpeg4",
-                "doc" to "application/msword",
-                "docx" to "application/msword",
-                "pdf" to "application/pdf",
-                "xls" to "application/vnd.ms-excel",
-                "xlsx" to "application/vnd.ms-excel",
-                "ppt" to "application/vnd.ms-powerpoint"
-        )
     }
 
     override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
@@ -168,7 +148,7 @@ open class MyAllFilter : Filter, InitializingBean {
                     if (file != null) {
                         response.status = 200;
 
-                        var contentType = mimeLists.filter { it.key == extention.extName.toLowerCase() }.values.firstOrNull()
+                        var contentType = MyUtil.mimeLists.filter { it.key == extention.extName.toLowerCase() }.values.firstOrNull()
                         if (contentType != null) {
                             response.contentType = contentType
                         }

@@ -32,18 +32,18 @@ open class IdUrl(var id: String = "", var url: String = "") : java.io.Serializab
             return url.PatchHostUrl(host)
         }
 
-    //Logo图大小
-    val logoSize: Int
-        get() {
-            var extInfo = FileExtentionInfo(url);
-            if (extInfo.extType != FileExtentionTypeEnum.Image) {
-                return 0;
-            }
-
-
-            var size = SpringUtil.context.environment.getProperty("server.upload.logoSize") ?: "0"
-            return size.AsInt()
-        }
+//Logo图大小
+//    val logoSize: Int
+//        get() {
+//            var extInfo = FileExtentionInfo(url);
+//            if (extInfo.extType != FileExtentionTypeEnum.Image) {
+//                return 0;
+//            }
+//
+//
+//            var size = SpringUtil.context.environment.getProperty("server.upload.logoSize") ?: "0"
+//            return size.AsInt()
+//        }
 }
 
 open class IdNameUrl(id: String = "", var name: String = "", url: String = "") : IdUrl(id, url)

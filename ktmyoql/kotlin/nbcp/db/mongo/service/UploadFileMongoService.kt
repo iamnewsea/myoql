@@ -5,6 +5,7 @@ import nbcp.db.db
 import nbcp.db.mongo.entity.SysAnnex
 import nbcp.db.mongo.match
 import nbcp.db.mongo.query
+import nbcp.db.mongo.queryById
 import nbcp.db.mongo.table.MongoBaseGroup
 import nbcp.db.mongo.updateById
 import nbcp.model.IUploadFileDbService
@@ -35,4 +36,7 @@ class UploadFileMongoService :IUploadFileDbService{
                 .exec();
     }
 
+    override fun queryById(id: String): SysAnnex? {
+        return db.mor_base.sysAnnex.queryById(id).toEntity()
+    }
 }
