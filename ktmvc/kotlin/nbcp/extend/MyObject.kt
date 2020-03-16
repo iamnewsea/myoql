@@ -271,7 +271,7 @@ fun HttpServletRequest.findParameterValue(key: String): String? {
     }
 
     //读取表单内容
-    if (this.contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
+    if (this.contentType != null && this.contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
         ret = this.getParameter(key)
         if (ret != null) {
             return ret;
