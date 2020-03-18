@@ -78,5 +78,46 @@
         <!--</dependency>-->
     </dependencies>
 
+<!--    <build>-->
+<!--        <plugins>-->
+<!--            <plugin>-->
+<!--                <groupId>org.jetbrains.dokka</groupId>-->
+<!--                <artifactId>dokka-maven-plugin</artifactId>-->
+<!--                <version>0.9.18</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>javadoc</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+
+<!--                <configuration>-->
+<!--                    <outputDir>${project.basedir}/target/apidocs</outputDir>-->
+<!--                    &lt;!&ndash;                            <moduleName></moduleName>&ndash;&gt;-->
+<!--                    &lt;!&ndash; Used for linking to JDK, default: 6 &ndash;&gt;-->
+<!--                    <jdkVersion>8</jdkVersion>-->
+
+
+<!--                    &lt;!&ndash; Short form list of sourceRoots, by default, set to ${project.compileSourceRoots} &ndash;&gt;-->
+<!--                    <sourceDirectories>-->
+<!--                        <dir>kotlin</dir>-->
+<!--                    </sourceDirectories>-->
+
+<!--                    &lt;!&ndash; Full form list of sourceRoots &ndash;&gt;-->
+<!--                    <sourceRoots>-->
+<!--                        <root>-->
+<!--                            <path>kotlin</path>-->
+<!--                            &lt;!&ndash; See platforms section of documentation &ndash;&gt;-->
+<!--                            <platforms>JVM</platforms>-->
+<!--                        </root>-->
+<!--                    </sourceRoots>-->
+
+<!--                </configuration>-->
+<!--            </plugin>-->
+<!--        </plugins>-->
+<!--    </build>-->
+
 
 </project>

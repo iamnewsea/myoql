@@ -21,18 +21,22 @@ def setWorkPath():
 
 def getArgument():
     file = ""
+    profile = ""
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"hf:",["file="])
+        opts, args = getopt.getopt(sys.argv[1:],"hf:P:",["file=","profile="])
     except getopt.GetoptError:
-        print ('install_jar.py -f 目标项目pom.xml所在的文件夹')
+        print ('install_jar.py -f 目标项目pom.xml所在的文件夹 ')
         sys.exit(2)
+
     for opt, arg in opts:
         if opt == '-h':
             print ('install_jar.py -f 目标项目pom.xml所在的文件夹')
             sys.exit()
+        elif opt in ('-P','--profile') :
+            profile = arg
         elif opt in ("-f", "--file"):
             file = arg
-    return file
+    return (file,profile)
 
 def getJavaFiles():
     dom = xml.dom.minidom.parse('pom.xml')
@@ -58,7 +62,7 @@ def getJavaFiles():
 
 if __name__=='__main__':
 
-    file = getArgument()
+    file,profile = getArgument()
 
     setWorkPath();
     if file :
@@ -79,6 +83,9 @@ if __name__=='__main__':
             err("clean")
 
     if installCMD:
+        if profile:
+            installCMD = installCMD + " -P " + profile
+
         print(os.linesep)
         print(installCMD)
         returnCode = os.system(installCMD)
@@ -86,6 +93,9 @@ if __name__=='__main__':
             err("install")
 
     if installJavaDoc:
+        if profile:
+            installJavaDoc = installJavaDoc + " -P " + profile
+
         print(os.linesep)
         print(installJavaDoc)
         returnCode = os.system(installJavaDoc)
@@ -93,6 +103,9 @@ if __name__=='__main__':
             err("install")
 
     if installSource:
+        if profile:
+            installSource = installSource + " -P " + profile
+
         print(os.linesep)
         print(installSource)
         returnCode = os.system(installSource)
