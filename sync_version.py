@@ -95,10 +95,10 @@ if __name__ == '__main__':
     print("-------------------------------------------------------------------------------")
     print(os.linesep)
 
-    resetVersion("", "pom_component.xml", groupId, artifactId, version)
+    # resetVersion("", "pom_component.xml", groupId, artifactId, version)
 
     for module in modules:
-        resetVersion(module, "pom.xml", groupId, "myoql_component", version)
+        resetVersion(module, "pom.xml", groupId, artifactId, version)
         os.chdir("../")
 
     print("")
