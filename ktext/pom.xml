@@ -38,9 +38,9 @@
 
     <parent>
         <groupId>cn.dev8</groupId>
-        <artifactId>kotlin</artifactId>
+        <artifactId>myoql_component</artifactId>
         <version>0.1.30</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../pom_component.xml</relativePath>
     </parent>
 
 
@@ -78,33 +78,5 @@
         <!--<scope>provided</scope>-->
         <!--</dependency>-->
     </dependencies>
-
-    <profiles>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-assembly-plugin</artifactId>
-
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <appendAssemblyId>true</appendAssemblyId>
-                            <finalName>${project.artifactId}-${project.version}</finalName>
-                            <descriptors>../javadoc.xml</descriptors>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
 </project>
