@@ -30,7 +30,7 @@ def getArgument():
 
     for opt, arg in opts:
         if opt == '-h':
-            print ('install_jar.py -f 目标项目pom.xml所在的文件夹')
+            print ('install_jar.py -f 目标项目pom.xml所在的文件夹 -P profile')
             sys.exit()
         elif opt in ('-P','--profile') :
             profile = arg
@@ -38,75 +38,32 @@ def getArgument():
             file = arg
     return (file,profile)
 
-def getJavaFiles(profile):
-    dom = xml.dom.minidom.parse('pom.xml')
-    root = dom.documentElement
-    groupId = root.getElementsByTagName('groupId')[0].childNodes[0].data;
-    artifactId = root.getElementsByTagName('artifactId')[0].childNodes[0].data;
-    version = root.getElementsByTagName('version')[0].childNodes[0].data;
-    type = root.getElementsByTagName('packaging')[0].childNodes[0].data;
-
-    profileValue = ""
-    if profile:
-        profileValue = " -P " + profile
-
-    jarFile = ("target/%s-%s{}.jar" % (artifactId,version)).replace("/",os.sep)
-    install="mvn install:install-file -Dfile={} -DgroupId=%s -DartifactId=%s -Dversion=%s -Dpackaging=%s %s {}" %(groupId,artifactId,version,type,profileValue)
-
-
-    if type == "pom":
-        return "",install.format("pom.xml",""),"",""
-
-    package="mvn clean package -Dmaven.test.skip=true %s" %(profileValue)
-
-    return package.format(""), \
-           install.format(jarFile.format(""),""), \
-           install.format(jarFile.format("-javadoc"),"-Dclassifier=javadoc"), \
-           install.format(jarFile.format("-sources"),"-Dclassifier=sources")
-
 
 if __name__=='__main__':
 
+    setWorkPath()
     file,profile = getArgument()
 
-    setWorkPath();
-    if file :
-        os.chdir(file);
 
-    package,installCMD,installJavaDoc,installSource = getJavaFiles(profile)
+    profileValue = ""
+    if profile:
+        profileValue =  " -P "+ profile
+
+    fileValue = ""
+    if file:
+        fileValue = " -f " + file
+
+    install ="mvn clean install -Dmaven.test.skip=true %s %s" %(fileValue, profileValue)
 
     print("-------------------------------------------------------------------------------")
     print("")
     print("正在打包 %s 并安装实体jar ..."%(file))
     print("")
 
-    if package :
-        print(os.linesep)
-        print(package)
-        returnCode = os.system(package)
-        if(returnCode !=0 ):
-            err("package")
-
-    if installCMD:
-        print(os.linesep)
-        print(installCMD)
-        returnCode = os.system(installCMD)
-        if (returnCode != 0):
-            err("install")
-
-    if installJavaDoc:
-        print(os.linesep)
-        print(installJavaDoc)
-        returnCode = os.system(installJavaDoc)
-        if (returnCode != 0):
-            err("install")
-
-    if installSource:
-        print(os.linesep)
-        print(installSource)
-        returnCode = os.system(installSource)
-        if (returnCode != 0):
-            err("install")
+    print(install)
+    returnCode = os.system(install)
+    if(returnCode !=0 ):
+        err("install")
 
     print("")
     print("%s 安装完成！"%(file))

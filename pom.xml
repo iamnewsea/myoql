@@ -1,6 +1,4 @@
-<?xml version="1.0" ?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" ?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cn.dev8</groupId>
@@ -212,25 +210,6 @@
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-assembly-plugin</artifactId>
-
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <basedir>${project.build.directory}/apidocs</basedir>
-                            <finalName>${project.artifactId}-${project.version}-javadoc</finalName>
-                            <descriptors>../javadoc.xml</descriptors>
-                        </configuration>
                     </plugin>
                     <!-- Javadoc 使用 dokka 就不用 javadoc了。-->
                     <!--                    <plugin>-->

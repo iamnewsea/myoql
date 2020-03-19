@@ -30,17 +30,9 @@ if __name__=='__main__':
     if(returnCode !=0 ):
         err("sync_version")
 
-    returnCode = os.system("python install_jar.py -f ktext")
+    returnCode = os.system("python all_jar.py -P release")
     if(returnCode !=0 ):
-        err("ktext")
-
-    returnCode = os.system("python install_jar.py -f ktmyoql")
-    if(returnCode !=0 ):
-        err("ktmyoql")
-
-    returnCode = os.system("python install_jar.py -f ktmvc")
-    if(returnCode !=0 ):
-        err("ktmvc")
+        err("build")
 
     print(os.linesep)
 

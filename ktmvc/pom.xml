@@ -77,35 +77,33 @@
 <!--        </dependency>-->
 
     </dependencies>
-<!--    <build>-->
-<!--        <sourceDirectory>kotlin</sourceDirectory>-->
-<!--        <plugins>-->
-<!--            <plugin>-->
-<!--                <artifactId>kotlin-maven-plugin</artifactId>-->
-<!--                <version>${kotlin.version}</version>-->
-<!--                <groupId>org.jetbrains.kotlin</groupId>-->
-<!--                <configuration>-->
-<!--                    <jvmTarget>1.8</jvmTarget>-->
-<!--                    <compilerPlugins>-->
-<!--                        <plugin>spring</plugin>-->
-<!--                    </compilerPlugins>-->
-<!--                </configuration>-->
-<!--                <dependencies>-->
-<!--                    <dependency>-->
-<!--                        <groupId>org.jetbrains.kotlin</groupId>-->
-<!--                        <artifactId>kotlin-maven-allopen</artifactId>-->
-<!--                        <version>${kotlin.version}</version>-->
-<!--                    </dependency>-->
-<!--                </dependencies>-->
-<!--            </plugin>-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-compiler-plugin</artifactId>-->
-<!--                <configuration>-->
-<!--                    <source>1.8</source>-->
-<!--                    <target>1.8</target>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
-<!--        </plugins>-->
-<!--    </build>-->
+
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <appendAssemblyId>true</appendAssemblyId>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
+                            <descriptors>../javadoc.xml</descriptors>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
