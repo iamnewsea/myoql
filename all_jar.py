@@ -23,17 +23,17 @@ if __name__=='__main__':
 
     print(os.linesep)
 
-    returnCode = os.system("python install_jar.py -f ktext")
+    returnCode = os.system("python install_jar.py -f ktext -P release")
     if(returnCode !=0 ):
         err("install_jar ktext")
 
     print(os.linesep)
 
-    returnCode = os.system("python install_jar.py -f ktmyoql")
+    returnCode = os.system("python install_jar.py -f ktmyoql -P release")
     if(returnCode !=0 ):
         err("install_jar ktmyoql")
 
-    returnCode = os.system("python install_jar.py -f ktmvc")
+    returnCode = os.system("python install_jar.py -f ktmvc -P release")
     if(returnCode !=0 ):
         err("install_jar ktmvc")
 

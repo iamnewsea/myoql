@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cn.dev8</groupId>
@@ -179,47 +181,29 @@
             <id>release</id>
             <build>
                 <plugins>
-<!--                    <plugin>-->
-<!--                        <groupId>org.jetbrains.dokka</groupId>-->
-<!--                        <artifactId>dokka-maven-plugin</artifactId>-->
-<!--                        <version>0.9.18</version>-->
-<!--                        <executions>-->
-<!--                            <execution>-->
-<!--                                <phase>package</phase>-->
-<!--                                <goals>-->
-<!--                                    <goal>dokka</goal>-->
-<!--                                </goals>-->
-<!--                            </execution>-->
-<!--                        </executions>-->
+                    <plugin>
+                        <groupId>org.jetbrains.dokka</groupId>
+                        <artifactId>dokka-maven-plugin</artifactId>
+                        <version>0.9.18</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>dokka</goal>
+                                </goals>
+                            </execution>
+                        </executions>
 
-<!--                        <configuration>-->
-<!--                            <outputDir>${project.basedir}/target/apidocs</outputDir>-->
-
-<!--                            &lt;!&ndash; Used for linking to JDK, default: 6 &ndash;&gt;-->
-<!--                            <jdkVersion>8</jdkVersion>-->
-
-
-<!--                            &lt;!&ndash; Short form list of sourceRoots, by default, set to ${project.compileSourceRoots} &ndash;&gt;-->
-<!--                            <sourceDirectories>-->
-<!--                                <dir>kotlin</dir>-->
-<!--                            </sourceDirectories>-->
-
-<!--                            &lt;!&ndash; Full form list of sourceRoots &ndash;&gt;-->
-<!--                            <sourceRoots>-->
-<!--                                <root>-->
-<!--                                    <path>kotlin</path>-->
-<!--                                    &lt;!&ndash; See platforms section of documentation &ndash;&gt;-->
-<!--                                    <platforms>JVM</platforms>-->
-<!--                                </root>-->
-<!--                            </sourceRoots>-->
-
-<!--                        </configuration>-->
-<!--                    </plugin>-->
+                        <configuration>
+                            <outputDir>${project.build.directory}/apidocs</outputDir>
+                        </configuration>
+                    </plugin>
 
                     <!-- Source -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
+                        <version>3.2.0</version>
                         <executions>
                             <execution>
                                 <phase>package</phase>
@@ -229,30 +213,54 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- Javadoc 使用 dokka 就不用 javadoc了。-->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <configuration>
-                            <encoding>UTF-8</encoding>
-                            <charset>UTF-8</charset>
-                            <docencoding>UTF-8</docencoding>
-                        </configuration>
+                        <artifactId>maven-assembly-plugin</artifactId>
+
                         <executions>
                             <execution>
                                 <phase>package</phase>
                                 <goals>
-                                    <goal>jar</goal>
+                                    <goal>single</goal>
                                 </goals>
                             </execution>
                         </executions>
+                        <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <basedir>${project.build.directory}/apidocs</basedir>
+                            <finalName>${project.artifactId}-${project.version}-javadoc</finalName>
+                            <descriptors>../javadoc.xml</descriptors>
+                        </configuration>
                     </plugin>
+                    <!-- Javadoc 使用 dokka 就不用 javadoc了。-->
+                    <!--                    <plugin>-->
+                    <!--                        <groupId>org.apache.maven.plugins</groupId>-->
+                    <!--                        <artifactId>maven-javadoc-plugin</artifactId>-->
+                    <!--                        <configuration>-->
+                    <!--                            <encoding>UTF-8</encoding>-->
+                    <!--                            <charset>UTF-8</charset>-->
+                    <!--                            <docencoding>UTF-8</docencoding>-->
+                    <!--                            <failOnError>false</failOnError>-->
+                    <!--                            <debug>true</debug>-->
+                    <!--                            <javadocDirectory>${basedir}/doc</javadocDirectory>-->
+                    <!--                            <doclint>none</doclint>-->
+                    <!--                        </configuration>-->
+                    <!--                        <executions>-->
+                    <!--                            <execution>-->
+                    <!--                                <phase>package</phase>-->
+                    <!--                                <goals>-->
+                    <!--                                    <goal>jar</goal>-->
+                    <!--                                </goals>-->
+                    <!--                            </execution>-->
+                    <!--                        </executions>-->
+                    <!--                    </plugin>-->
 
 
                     <!-- GPG mvn clean deploy -P release -Dgpg.passphrase=YourPassphase-->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
