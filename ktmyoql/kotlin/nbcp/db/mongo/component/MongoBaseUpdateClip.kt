@@ -4,6 +4,7 @@ import nbcp.base.extend.InfoError
 import nbcp.base.extend.IsSimpleType
 import nbcp.base.extend.ToJson
 import nbcp.base.utils.RecursionUtil
+import nbcp.comm.minus
 import nbcp.db.db
 import nbcp.db.mongo.IMongoWhereable
 import nbcp.db.mongo.MongoClipBase
@@ -139,11 +140,14 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         }
 
         var ret = 0;
+        var startAt = LocalDateTime.now()
         try {
             var result = mongoTemplate.updateMulti(
                     Query.query(criteria),
                     update,
                     collectionName);
+
+            db.executeTime = LocalDateTime.now() - startAt
 
             if (result.modifiedCount > 0) {
                 settingResult.forEach {

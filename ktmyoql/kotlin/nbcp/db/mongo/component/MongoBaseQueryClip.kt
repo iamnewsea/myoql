@@ -1,10 +1,9 @@
 package nbcp.db.mongo
 
 import nbcp.base.extend.*
-import nbcp.base.line_break
+
 import nbcp.base.utils.Md5Util
-import nbcp.comm.JsonMap
-import nbcp.comm.ListResult
+import nbcp.comm.*
 import nbcp.db.db
 import nbcp.db.mongo.IMongoWhereable
 import nbcp.db.mongo.MongoClipBase
@@ -14,6 +13,7 @@ import org.springframework.data.mongodb.core.query.BasicQuery
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import java.lang.Exception
+import java.time.LocalDateTime
 
 open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMongoWhereable {
     var whereData = mutableListOf<Criteria>()
@@ -97,8 +97,9 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             query.sortObject = sort
         }
 
+        var startAt = LocalDateTime.now();
         var cursor = mongoTemplate.find(query, Document::class.java, this.collectionName)
-
+        db.executeTime = LocalDateTime.now() - startAt
 //        var cacheValue = MyCache.find(this.collectionName, this.getCacheKey())
 //        if (cacheValue.HasValue) {
 //            return cacheValue.FromJson<MutableList<R>>()
@@ -193,11 +194,17 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
      * 将忽略 skip , take
      */
     fun count(): Int {
-        return mongoTemplate.count(Query.query(this.getMongoCriteria(*whereData.toTypedArray())), collectionName).toInt()
+        var startAt = LocalDateTime.now();
+        var ret = mongoTemplate.count(Query.query(this.getMongoCriteria(*whereData.toTypedArray())), collectionName).toInt()
+        db.executeTime = LocalDateTime.now() - startAt
+        return ret;
     }
 
     fun exists(): Boolean {
-        return mongoTemplate.exists(Query.query(this.getMongoCriteria(*whereData.toTypedArray())), collectionName);
+        var startAt = LocalDateTime.now();
+        var ret= mongoTemplate.exists(Query.query(this.getMongoCriteria(*whereData.toTypedArray())), collectionName);
+        db.executeTime = LocalDateTime.now() - startAt
+        return ret;
     }
 
 
@@ -209,7 +216,9 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             if (ret.data.size < this.take) {
                 ret.total = ret.data.size;
             } else {
-                ret.total = count()
+                using(LogScope.ExecuteTimeNoLog) {
+                    ret.total = count()
+                }
             }
         }
         return ret;
@@ -219,6 +228,4 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     fun toMapListResult(): ListResult<JsonMap> {
         return toListResult(JsonMap::class.java);
     }
-
-
 }

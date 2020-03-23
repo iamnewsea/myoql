@@ -1,6 +1,7 @@
 package nbcp.db.mongo.component
 
 import nbcp.base.extend.InfoError
+import nbcp.comm.minus
 import nbcp.db.db
 import nbcp.db.mongo.IMongoDocument
 import nbcp.db.mongo.IMongoWhereable
@@ -39,8 +40,10 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
             return 0;
         }
 
+        var startAt = LocalDateTime.now()
         try {
             mongoTemplate.insertAll(entities)
+            db.executeTime = LocalDateTime.now() - startAt
 
             settingResult.forEach {
                 it.first.insert(this, it.second)

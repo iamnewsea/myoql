@@ -4,9 +4,10 @@ import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import nbcp.db.*
 import nbcp.base.extend.*
-import nbcp.base.line_break
+
 import nbcp.base.utils.MyUtil
 import java.io.Serializable
+import java.time.LocalDateTime
 
 
 /**
@@ -153,12 +154,12 @@ class SqlUpdateClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
         var sql = toSql()
         var executeData = sql.toExecuteSqlAndParameters();
 
-        var startAt = System.currentTimeMillis();
+        var startAt = LocalDateTime.now();
 
         var n = -1;
         try {
             n = jdbcTemplate.update(executeData.executeSql, *executeData.executeParameters)
-
+            db.executeTime = LocalDateTime.now() - startAt
             if (n > 0) {
                 cacheService.updated4BrokeCache(sql)
             }
@@ -167,7 +168,7 @@ class SqlUpdateClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
         } finally {
             logger.InfoError(n < 0) {
                 var msg_log = mutableListOf("[sql] ${executeData.executeSql}", "[参数] ${executeData.executeParameters.joinToString(",")}")
-                msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
+                msg_log.add("[耗时] ${db.executeTime}")
                 return@InfoError msg_log.joinToString(line_break)
             }
         }

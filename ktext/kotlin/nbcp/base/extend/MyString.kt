@@ -37,55 +37,68 @@ open class MyString(private val value: String) : Comparable<String>, CharSequenc
     override fun toString(): String = this.value;
 }
 
-//不区分大小写格式的比较。
+/**
+ * 不区分大小写格式的比较。
+ * "abc" VbSame "aBc" is true
+ */
 infix inline fun String.VbSame(other: String?): Boolean {
     if (other == null) return false;
     return this.compareTo(other, true) == 0;
 }
 
+/**
+ * 判断是否有内容：非空且有长度
+ */
 val String?.HasValue: Boolean
     get() {
         return !this.isNullOrEmpty()
     }
 
-//如果有值 ， 返回计算表达式。 否则返回空。
+/**
+ * 如果有值 ， 返回计算表达式。 否则返回空。
+ */
 fun String?.IfHasValue(action: ((String) -> String)): String {
     if (this.isNullOrEmpty()) return "";
     return action(this!!)
 }
 
+/**
+ * 是否是数字格式，只能有一个小数点，最前面有一个正负号。
+ */
 fun String.IsNumberic(): Boolean {
     if (this.length == 0) return false;
 
+    var self = this;
+    var first = self[0];
+    if (first == '+' || first == '-') {
+        self = self.Slice(1);
+        if (self.length == 0) return false;
+    }
+
     var hasDot = false;
-    var hasSigne = false;
-    this.all {
-        if (it == '.') {
-            if (hasDot == false) {
-                hasDot = true;
-                return@all true;
-            }
-            return false;
-        }
-        if (it == '+' || it == '-') {
-            if (hasSigne == false) {
-                hasSigne = true;
-                return@all true;
-            }
-            return false;
-        }
+    if (self.all {
+                if (it == '.') {
+                    if (hasDot == false) {
+                        hasDot = true;
+                        return@all true;
+                    }
+                    return@all false;
+                }
 
-        if (it.isDigit()) {
-            return@all true;
-        }
+                if (it.isDigit()) {
+                    return@all true;
+                }
+                return@all false;
+            } == false) {
         return false;
-
-        return@all true;
     }
 
     return true;
 }
 
+/**
+ * 使用指定字符，初始化字符串
+ */
 fun Char.NewString(count: Int): String {
     var chrs = StringBuilder();
 
@@ -146,7 +159,9 @@ private fun _getNextChar(html: String, index: Int, findChar: Char): Int {
     return -1;
 }
 
-
+/**
+ * 定义引用定义，开始符号，结束符号，逃逸符号。
+ */
 data class TokenQuoteDefine(
         var start: String,
         var end: String = "",
@@ -375,64 +390,6 @@ fun String.RemoveComment(): String {
 }
 
 
-enum class FileExtentionTypeEnum {
-    Image,
-    Video,
-    Html,
-    Office,
-    Other
-}
-
-data class FileExtentionInfo(private var url: String) {
-    var name: String = "";  //不带扩展名
-    var extName: String = ""; //不带.的扩展名
-    var extType: FileExtentionTypeEnum = FileExtentionTypeEnum.Other;
-
-    init {
-        var tailIndex = url.indexOfAny("?#".toCharArray());
-        if (tailIndex > -1) {
-            url = url.substring(0..tailIndex);
-        }
-
-        tailIndex = url.lastIndexOfAny("./\\".toCharArray());
-        if (tailIndex > -1) {
-            if (url[tailIndex] == '.') {
-                extName = url.substring(tailIndex + 1);
-                name = url.substring(url.lastIndexOfAny("/\\".toCharArray()) + 1, tailIndex);
-            } else {
-                name = url.substring(tailIndex + 1);
-            }
-        } else {
-            name = url;
-        }
-
-        name = name.Remove('>', '<', '*', '|', ':', '?', '"', '\'');
-
-        if (extName.toLowerCase().IsIn("ico", "icon", "png", "jpg", "jpeg", "gif", "bmp", "ttf", "otf", "tiff")) {
-            extType = FileExtentionTypeEnum.Image;
-        }
-        else if (extName.toLowerCase().IsIn("mp4", "mp3", "avi", "rm", "rmvb", "flv", "flash", "swf", "3gp", "wma", "m3u8", "ts", "hls", "mov")) {
-            extType = FileExtentionTypeEnum.Video
-        }
-        else if (extName.toLowerCase().IsIn("js", "css", "txt", "html", "htm", "xml", "xhtml", "json")) {
-            extType = FileExtentionTypeEnum.Html
-        }
-        else if (extName.toLowerCase().IsIn("doc", "docx", "pdf", "xls", "xlsx", "ppt", "pptx", "rtf")) {
-            extType = FileExtentionTypeEnum.Office;
-        }
-    }
-
-    override fun toString(): String {
-        return this.extName;
-    }
-
-//    val isStaticURI: Boolean
-//        get() {
-//            return extType != FileExtentionTypeEnum.Other;
-//        }
-}
-
-
 fun String.Repeat(count: Int): String {
     var list = mutableListOf<String>();
     for (i in 1..count) {
@@ -452,6 +409,9 @@ fun String.PatchHostUrl(host: String): String {
     return host + this;
 }
 
+/**
+ * 移除查找到的部分字符串。
+ */
 fun String.Remove(vararg value: String): String {
     var ret = this;
     for (v in value) {
@@ -460,7 +420,9 @@ fun String.Remove(vararg value: String): String {
     return ret;
 }
 
-
+/**
+ * 移除查找到的部分字符。
+ */
 fun String.Remove(vararg removeChars: Char): String {
     var ret = this;
     removeChars.forEach {
@@ -629,7 +591,7 @@ class MatchPatternTokenItem(value: String) : MyString(value) {
 }
 
 /**
- * 用正则表达式, 把内容匹配出来.
+ * 用正则表达式, 把内容匹配出来. 使用非字母分隔。
  * 如： "2019-01-01 12:00:00".matchPattern("yyyy-mm-dd HH:MM:ss")
  */
 fun String.MatchPattern(pattern: String): StringMap {
@@ -687,12 +649,17 @@ fun String.MatchPattern(pattern: String): StringMap {
     return ret;
 }
 
+/**
+ * 字符串转化为枚举，通过 String name 找. 如果找不到,再通过 numeric 找.
+ */
 inline fun <reified T> String.ToEnum(): T? {
     return this.ToEnum(T::class.java)
 }
 
 
-//通过 String name 找. 如果找不到,再通过 Numberic 找.
+/**
+ * 字符串转化为枚举，通过 String name 找. 如果找不到,再通过 numeric 找.
+ */
 fun <T> String.ToEnum(enumClazz: Class<T>): T? {
     if (enumClazz.isEnum == false) return null;
     var strValue = this.trim();

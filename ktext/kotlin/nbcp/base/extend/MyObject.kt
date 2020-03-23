@@ -2,7 +2,7 @@ package nbcp.base.extend
 
 import org.slf4j.Logger
 import nbcp.comm.*
-import nbcp.base.utf8
+
 import nbcp.base.utils.BufferTailReader
 import java.util.*
 import java.text.DecimalFormat
@@ -87,26 +87,30 @@ fun <T> T.IsIn(equalFunc: ((T, T) -> Boolean)? = null, vararg values: T): Boolea
 
 
 /**
- * 查找最近添加的。如果是 IUsingScope，则判断传染性。
- * @param func : 查找要返回的对象，返回true即是查找的对象。
- * func:((T)->Boolean)
+ * 查找最近添加的。
+ * @param enumValue: 如果有值，则精确查找该值进行返回。
  */
-inline fun <reified R> Stack<*>.getLatestScope(): R? {
+inline fun <reified R> Stack<*>.getLatestScope(enumValue:R? = null ): R? {
     if (this.size == 0) return null
 
     for (i in this.indices.reversed()) {
         var item = this[i];
         if (item is R) {
-            return item
+            if( enumValue != null){
+                if(item == enumValue){
+                    return item;
+                }
+                continue;
+            }
+            else {
+                return item
+            }
         }
     }
     return null;
 }
 
 
-interface IDisposeable {
-    fun dispose();
-}
 
 //interface IUsingScope {
 //    /**
@@ -114,17 +118,6 @@ interface IDisposeable {
 //     */
 //    fun infect(): Boolean;
 //}
-
-enum class LogScope : IDisposeable {
-    TaskLog, //分组到 task 里.
-    NoInfo,  //不记录 INFO
-    NoLog;   //不记录任务日志
-
-    override fun dispose() {
-    }
-}
-
-class NoAffectRowCount {} //不记录到 affectRows里。用于拦截事件
 
 private val _scopes = ThreadLocal.withInitial { Stack<Any>() }
 

@@ -22,7 +22,7 @@ open class KeyValueString(var key: String = "", var value: String = "") : java.i
 
 /**
  * 表示Mongo数据库里 Id，Url 的附件实体引用。
- * 需要配置 server.upload.host
+ * fullUrl 需要配置 server.upload.host
  */
 open class IdUrl(var id: String = "", var url: String = "") : java.io.Serializable {
     //全路径

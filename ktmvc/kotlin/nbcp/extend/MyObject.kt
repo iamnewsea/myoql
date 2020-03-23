@@ -3,7 +3,6 @@ package nbcp.web
 import nbcp.comm.*
 import nbcp.base.extend.*
 import org.springframework.http.MediaType
-import nbcp.base.utf8
 import nbcp.base.utils.JsUtil
 import nbcp.base.utils.MyUtil
 import nbcp.db.LoginUserModel

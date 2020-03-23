@@ -3,7 +3,7 @@ package nbcp.handler
 import nbcp.db.IdUrl
 import nbcp.comm.*
 import nbcp.base.extend.*
-import nbcp.base.utf8
+
 import nbcp.db.mongo.imageSet
 import nbcp.db.mongo.*
 import nbcp.web.MyHttpRequestWrapper

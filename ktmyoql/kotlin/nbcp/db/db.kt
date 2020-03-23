@@ -5,6 +5,7 @@ import nbcp.base.utils.RecursionUtil
 import nbcp.base.utils.SpringUtil
 import nbcp.comm.StringMap
 import nbcp.comm.StringTypedMap
+import nbcp.comm.TimeSpan
 import nbcp.db.mongo.*
 import nbcp.db.mongo.MongoEntityEvent
 import nbcp.db.mongo.table.MongoBaseGroup
@@ -33,6 +34,9 @@ enum class DatabaseEnum {
     Mssql
 }
 
+/**
+ * 数据库上下文，及操作类。
+ */
 object db {
 //    private val logger by lazy {
 //        return@lazy LoggerFactory.getLogger(this::class.java)
@@ -72,14 +76,16 @@ object db {
 
     private val _affectRowCount: ThreadLocal<Int> = ThreadLocal.withInitial { return@withInitial -1 }
 
-    //最后执行的影响行数
+    /**
+     * 最后执行的影响行数，mongo,sql
+     */
     @JvmStatic
     var affectRowCount: Int
         get() {
             return _affectRowCount.get()
         }
         set(value) {
-            if (scopes.getLatestScope<NoAffectRowCount>() != null) {
+            if (scopes.getLatestScope(LogScope.AffectRowNoLog) != null) {
                 return;
             }
             _affectRowCount.set(value);
@@ -88,7 +94,9 @@ object db {
 
     private val _lastAutoId: ThreadLocal<Int> = ThreadLocal.withInitial { return@withInitial -1; }
 
-    //对sql数据来说，记录最后一条插入数据的自增Id
+    /**
+     * 对sql数据来说，记录最后一条插入数据的自增Id
+     */
     @JvmStatic
     var lastAutoId: Int
         get() {
@@ -98,9 +106,22 @@ object db {
             _lastAutoId.set(value);
         }
 
+    private val _executeTime: ThreadLocal<TimeSpan> = ThreadLocal.withInitial { return@withInitial TimeSpan(0); }
 
-
-
+    /**
+     * 记录最后一次操作的执行时间，单位毫秒
+     */
+    @JvmStatic
+    var executeTime: TimeSpan
+        get() {
+            return _executeTime.get()
+        }
+        set(value) {
+            if (scopes.getLatestScope(LogScope.ExecuteTimeNoLog) != null) {
+                return;
+            }
+            _executeTime.set(value);
+        }
 
 
 //    fun change_id2Id(value: DBObject, remove_id: Boolean = true) {

@@ -9,6 +9,9 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.jdbc.core.JdbcTemplate
 import javax.sql.DataSource
 
+/**
+ * 请使用 db.sql
+ */
 object db_sql {
 
     var getSqlEntity: ((tableName: String) -> SqlBaseTable<*>)? = null

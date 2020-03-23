@@ -1,6 +1,8 @@
 package nbcp
 
+import nbcp.base.extend.clazzesIsSimpleDefine
 import nbcp.db.mongo.MongoEntityEvent
+import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationListener
 import org.springframework.context.event.ContextRefreshedEvent
@@ -13,6 +15,7 @@ class MyOqlInit : ApplicationListener<ContextRefreshedEvent> {
     }
 
     override fun onApplicationEvent(p0: ContextRefreshedEvent) {
+        clazzesIsSimpleDefine.add(ObjectId::class.java)
         logger.warn("MongoEntityEvent.groups:" + MongoEntityEvent.groups.map { it::class.java.simpleName }.joinToString())
     }
 }

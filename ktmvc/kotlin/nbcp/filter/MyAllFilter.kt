@@ -1,12 +1,12 @@
 package nbcp.web.config
 
 import nbcp.base.extend.*
-import nbcp.base.line_break
-import nbcp.base.utf8
+
+
 import nbcp.base.utils.Md5Util
 import nbcp.base.utils.MyUtil
 import nbcp.comm.JsonMap
-import nbcp.comm.StringMap
+import nbcp.comm.*
 import nbcp.web.*
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
@@ -99,7 +99,7 @@ open class MyAllFilter : Filter, InitializingBean {
         }
 
         if (ignoreLog) {
-            using(LogScope.NoInfo) {
+            using(LogScope.FilterNoLog) {
                 next(httpRequest, httpResponse, chain);
             }
         } else {
@@ -113,7 +113,7 @@ open class MyAllFilter : Filter, InitializingBean {
 //        httpRequest.requestCache = ctx.getBean("request", IDataCache4Sql::class.java);
 //        httpRequest.requestCache?.clear();
 
-        var startAt = System.currentTimeMillis()
+        var startAt = LocalDateTime.now()
 
         //仅接收 c 端口的 token
 //        var token = request.getHeader("token");

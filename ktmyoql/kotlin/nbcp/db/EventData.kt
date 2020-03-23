@@ -2,7 +2,7 @@ package nbcp.db
 
 
 /**
- * 保存收集 DbEntityFieldRef 的Bean。
+ * 保存收集 DbEntityFieldRef 的 Bean。
  * 冗余字段的引用。如 user.corp.name 引用的是  corp.name
  * 更新规则：
  * 如更新了引用实体，corp.id = 1 ,corp.name = 'a'
@@ -11,7 +11,6 @@ package nbcp.db
  *  .where { it.corp.id match 1 }
  *  .set { it.corp.name to 'a' }
  *  .exec()
- *
  */
 data class DbEntityFieldRefData(
         //实体，entity 如 SysUser

@@ -6,7 +6,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
 import nbcp.comm.*
 import nbcp.base.extend.*
-import nbcp.base.line_break
+
 import nbcp.base.utils.SpringUtil
 import nbcp.db.*
 import nbcp.db.sql.component.JsonMapRowMapper
@@ -14,6 +14,7 @@ import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
 import java.io.Serializable
 import javax.sql.DataSource
 import nbcp.db.sql.*
+import java.time.LocalDateTime
 
 /**
  * ORM解决80%的问题即可. 对于 自连接,复杂的查询, 直接写Sql吧.
@@ -217,15 +218,15 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
             var executeData = sql.toExecuteSqlAndParameters()
 
 //            logger.info(executeData.executeSql +"  [" + executeData.parameters.map { it.value.AsString() }.joinToString(",") +"]");
-            var startAt = System.currentTimeMillis();
+            var startAt = LocalDateTime.now();
 
             var error = false;
             try {
                 retJsons = jdbcTemplate.queryForList(executeData.executeSql, *executeData.executeParameters).toMutableList()
+                db.executeTime = LocalDateTime.now() - startAt
 
                 if (retJsons.size > 0) {
                     //setCache
-
                     cacheService.setCacheJson(cacheKey, retJsons.ToJson())
                 }
 
@@ -235,7 +236,7 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
             } finally {
                 logger.InfoError(error) {
                     var msg_log = mutableListOf("[sql] ${executeData.executeSql}", "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}")
-                    msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
+                    msg_log.add("[耗时] ${db.executeTime}")
                     return@InfoError msg_log.joinToString(line_break)
                 }
             }

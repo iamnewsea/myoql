@@ -1,4 +1,4 @@
-package nbcp.base.extend
+package nbcp.comm
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
@@ -8,10 +8,12 @@ import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.module.SimpleModule
-import org.springframework.beans.factory.InitializingBean
+import nbcp.base.extend.AsDate
+import nbcp.base.extend.AsLocalDate
+import nbcp.base.extend.AsLocalDateTime
+import nbcp.base.extend.AsString
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component
-import java.lang.reflect.Type
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.time.LocalDate

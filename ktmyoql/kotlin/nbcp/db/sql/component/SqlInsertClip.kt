@@ -6,11 +6,12 @@ import org.springframework.jdbc.core.PreparedStatementCreator
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import nbcp.comm.*
 import nbcp.base.extend.*
-import nbcp.base.line_break
+
 import nbcp.base.utils.MyUtil
 import nbcp.db.db
 import java.sql.PreparedStatement
 import java.sql.Statement
+import java.time.LocalDateTime
 
 
 /**
@@ -213,7 +214,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
         db.affectRowCount = -1;
         var exp = "insert into ${mainEntity.quoteTableName} (${insertColumns.map { "${db.sql.getSqlQuoteName(it.name)}" }.joinToString(",")}) values (${insertColumns.map { "?" }.joinToString(",")})";
 
-        var startAt = System.currentTimeMillis();
+        var startAt = LocalDateTime.now();
 
         var error = false
         var n = intArrayOf();
@@ -237,6 +238,8 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
                     }
                 }
             });
+            db.executeTime = LocalDateTime.now() - startAt
+
             db.affectRowCount = n.sum()
         } catch (e: Exception) {
             error = true;
@@ -244,7 +247,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
         } finally {
             logger.InfoError(error) {
                 var msg_log = mutableListOf("[sql] ${exp}", "[参数]\n${entities.map { ent -> insertColumns.map { column -> ent.getStringValue(column.name) }.joinToString(",") }.joinToString("\t\n")}")
-                msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
+                msg_log.add("[耗时] ${db.executeTime}")
                 return@InfoError msg_log.joinToString(line_break)
             }
         }
@@ -277,7 +280,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
                     }.joinToString(",")
 
             var msg_log = mutableListOf("[sql] ${executeSql}")
-            var startAt = System.currentTimeMillis();
+            var startAt = LocalDateTime.now();
 
             var error = false;
             var index = 1;
@@ -295,6 +298,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
                     msg_log.add("[参数]\n${entities.map { ent -> insertColumns.map { column -> ent.getStringValue(column.name) }.joinToString(",") }.joinToString("\n")}")
                     return@PreparedStatementCreator ps
                 })
+                db.executeTime = LocalDateTime.now() - startAt
 
                 logger.info("批量插入完成 ${result} 条!")
             } catch (e: Exception) {
@@ -302,7 +306,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
                 throw e;
             } finally {
                 logger.InfoError(error) {
-                    msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
+                    msg_log.add("[耗时] ${db.executeTime}")
                     return@InfoError msg_log.joinToString(line_break)
                 }
             }
@@ -323,7 +327,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
         var executeData = sql.toExecuteSqlAndParameters();
 
 
-        var startAt = System.currentTimeMillis();
+        var startAt = LocalDateTime.now();
 
 
         var error = false;
@@ -340,6 +344,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
                     return@PreparedStatementCreator ps
                 }, idKey)
 
+                db.executeTime = LocalDateTime.now() - startAt
             } catch (e: Exception) {
                 error = true
                 throw e;
@@ -347,7 +352,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
                 logger.InfoError(error) {
                     var msg_log = mutableListOf("[sql] ${executeData.executeSql}")
                     msg_log.add("[参数] ${executeData.executeParameters.joinToString(",")}")
-                    msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
+                    msg_log.add("[耗时] ${db.executeTime}")
                     return@InfoError msg_log.joinToString(line_break)
                 }
             }
@@ -370,6 +375,8 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
 
                     return@PreparedStatementCreator ps
                 })
+                db.executeTime = LocalDateTime.now() - startAt
+
             } catch (e: Exception) {
                 error = true
                 throw e;
@@ -377,7 +384,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
                 logger.InfoError(error) {
                     var msg_log = mutableListOf("[sql] ${executeData.executeSql}")
                     msg_log.add("[参数] ${executeData.executeParameters.joinToString(",")}")
-                    msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
+                    msg_log.add("[耗时] ${db.executeTime}")
                     return@InfoError msg_log.joinToString(line_break)
                 }
             }

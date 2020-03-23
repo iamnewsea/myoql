@@ -3,8 +3,9 @@ package nbcp.db.sql
 import org.slf4j.LoggerFactory
 import nbcp.comm.*
 import nbcp.base.extend.*
-import nbcp.base.line_break
+
 import nbcp.db.*
+import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
 
@@ -100,7 +101,9 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
         return this
     }
 
-    //根据外键自动 onWhere
+    /**
+     * 根据外键自动 onWhere
+     */
     fun <M2 : SqlBaseTable<out T2>, T2 : IBaseDbEntity> join(joinTable: M2, select: ((M2) -> SqlColumnNames)? = null): SqlQueryClip<M, T> {
         this.join(joinTable, { a, b -> getJoinOnWhere(joinTable) }, select)
         return this
@@ -112,7 +115,9 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
         return this
     }
 
-    //根据外键自动 onWhere
+    /**
+     * 根据外键自动 onWhere
+     */
     fun <M2 : SqlBaseTable<out T2>, T2 : IBaseDbEntity> left_join(joinTable: M2, select: ((M2) -> SqlColumnNames)? = null): SqlQueryClip<M, T> {
         this.left_join(joinTable, { a, b -> getJoinOnWhere(joinTable) }, select)
         return this
@@ -328,11 +333,14 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
 
         var sql = select.toSql().toExecuteSqlAndParameters()
 
-        var executeSql = SqlExecuteData(exp + sql.executeSql, sql.parameters)
+        var executeData = SqlExecuteData(exp + sql.executeSql, sql.parameters)
 
         var n = -1;
+        var startAt = LocalDateTime.now()
         try {
-            n = jdbcTemplate.update(executeSql.executeSql, *executeSql.executeParameters)
+            n = jdbcTemplate.update(executeData.executeSql, *executeData.executeParameters)
+            db.executeTime = LocalDateTime.now() - startAt
+
             if (n > 0) {
                 cacheService.insertSelect4BrokeCache(insertTable.tableName)
             }
@@ -340,7 +348,9 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
             throw e;
         } finally {
             logger.InfoError(n < 0) {
-                executeSql.executeSql + line_break + "\t" + executeSql.parameters.ToJson()
+                var msg_log = mutableListOf("[sql] ${executeData.executeSql}", "[参数] ${executeData.executeParameters.joinToString(",")}")
+                msg_log.add("[耗时] ${db.executeTime}")
+                return@InfoError msg_log.joinToString(line_break)
             }
         }
 

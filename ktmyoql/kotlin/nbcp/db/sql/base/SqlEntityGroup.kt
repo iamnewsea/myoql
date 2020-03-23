@@ -21,28 +21,34 @@ import kotlin.reflect.KClass
 @Retention(AnnotationRetention.RUNTIME)
 annotation class SqlUks(vararg val ukColumns: String) //多个逗号隔开,多组。
 
-
+/**
+ * 实体字段上定义自增列，一个实体只能有一个自增列
+ */
 @Target(AnnotationTarget.TYPE, AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class SqlAutoIncrementKey() //多个逗号隔开
+annotation class SqlAutoIncrementKey()
 
 /**
- * 隔离分区键 ,(目前仅一组有效.)
+ * 实体上定义的隔离分区键 ,它的维度要适中，起到隔离一批数据的作用。 (目前仅一组有效.),如 @SqlUks("city_id")
  */
 @Repeatable
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class SqlRks(vararg val rkColumns: String)//多个逗号隔开
 
-
+/**
+ * 实体字段上定义的外键关系，如： @SqlFk("s_user", "id")
+ */
 @Repeatable
 @Target(AnnotationTarget.TYPE, AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class SqlFk(val refTable: String, val refTableColumn: String)
 
 
-
-
+/**
+ * 插入，或更新某个字段前，进行数据转换。
+ * 使用方式，如在实体字段上定义 @ConverterValueToDb(TrimUppercaseConverter::class)
+ */
 @Repeatable
 @Target(AnnotationTarget.TYPE, AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)

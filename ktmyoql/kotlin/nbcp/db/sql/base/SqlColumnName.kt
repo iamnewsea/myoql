@@ -55,7 +55,9 @@ data class SqlColumnName(val dbType: DbType, var tableName: String, var name: St
         return ret;
     }
 
-    //返回 columnAliaValue.AsString( name )
+    /**
+     * 返回 columnAliaValue.AsString( name )
+     */
     fun getAliasName(): String = this.columnAliaValue.AsString(this.name)
 
     override fun toString(): String {

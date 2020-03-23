@@ -10,7 +10,6 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.method.support.ModelAndViewContainer
 import nbcp.comm.*
 import nbcp.base.extend.*
-import nbcp.base.utf8
 import nbcp.base.utils.MyUtil
 import org.slf4j.LoggerFactory
 import java.lang.RuntimeException

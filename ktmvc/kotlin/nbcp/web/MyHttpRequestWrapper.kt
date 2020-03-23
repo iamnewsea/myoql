@@ -17,7 +17,6 @@ import java.io.*
 import java.util.*
 import javax.servlet.ServletContext
 import javax.servlet.http.*
-import nbcp.base.utf8
 import nbcp.db.IdName
 import java.lang.RuntimeException
 

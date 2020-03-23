@@ -1,6 +1,8 @@
 package nbcp.db.mongo
 
 import nbcp.base.extend.ForEachExt
+import nbcp.base.extend.LogScope
+import nbcp.base.extend.using
 import nbcp.db.*
 import nbcp.db.mongo.component.MongoBaseInsertClip
 import nbcp.db.mongo.component.MongoBaseUpdateClip
@@ -102,13 +104,17 @@ class MongoEntityEvent : BeanPostProcessor {
     fun onInserting(insert: MongoBaseInsertClip): Array<Pair<IMongoEntityInsert, DbEntityEventResult>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityInsert, DbEntityEventResult>>()
-        insertEvent.ForEachExt { it, index ->
-            var ret = it.beforeInsert(insert);
-            if (ret.result == false) {
-                return@ForEachExt false;
+        using(LogScope.ExecuteTimeNoLog) {
+            using(LogScope.AffectRowNoLog) {
+                insertEvent.ForEachExt { it, index ->
+                    var ret = it.beforeInsert(insert);
+                    if (ret.result == false) {
+                        return@ForEachExt false;
+                    }
+                    list.add(it to ret)
+                    return@ForEachExt true
+                }
             }
-            list.add(it to ret)
-            return@ForEachExt true
         }
         return list.toTypedArray()
     }
@@ -116,13 +122,17 @@ class MongoEntityEvent : BeanPostProcessor {
     fun onUpdating(update: MongoBaseUpdateClip): Array<Pair<IMongoEntityUpdate, DbEntityEventResult>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityUpdate, DbEntityEventResult>>()
-        updateEvent.ForEachExt { it, index ->
-            var ret = it.beforeUpdate(update);
-            if (ret.result == false) {
-                return@ForEachExt false;
+        using(LogScope.ExecuteTimeNoLog) {
+            using(LogScope.AffectRowNoLog) {
+                updateEvent.ForEachExt { it, index ->
+                    var ret = it.beforeUpdate(update);
+                    if (ret.result == false) {
+                        return@ForEachExt false;
+                    }
+                    list.add(it to ret)
+                    return@ForEachExt true
+                }
             }
-            list.add(it to ret)
-            return@ForEachExt true
         }
         return list.toTypedArray()
     }
@@ -131,13 +141,17 @@ class MongoEntityEvent : BeanPostProcessor {
 
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityDelete, DbEntityEventResult>>()
-        deleteEvent.ForEachExt { it, index ->
-            var ret = it.beforeDelete(delete);
-            if (ret.result == false) {
-                return@ForEachExt false;
+        using(LogScope.ExecuteTimeNoLog) {
+            using(LogScope.AffectRowNoLog) {
+                deleteEvent.ForEachExt { it, index ->
+                    var ret = it.beforeDelete(delete);
+                    if (ret.result == false) {
+                        return@ForEachExt false;
+                    }
+                    list.add(it to ret)
+                    return@ForEachExt true
+                }
             }
-            list.add(it to ret)
-            return@ForEachExt true
         }
         return list.toTypedArray()
     }

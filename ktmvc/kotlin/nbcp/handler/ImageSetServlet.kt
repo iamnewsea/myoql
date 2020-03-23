@@ -3,7 +3,7 @@ package nbcp.handler
 import nbcp.db.IdUrl
 import nbcp.comm.*
 import nbcp.base.extend.*
-import nbcp.base.utf8
+
 import nbcp.base.utils.ImageUtil
 import nbcp.base.utils.JsUtil
 import nbcp.base.utils.MyUtil

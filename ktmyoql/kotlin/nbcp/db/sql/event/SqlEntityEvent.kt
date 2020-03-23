@@ -5,6 +5,9 @@ import nbcp.db.*
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component
 
+/**
+ * 事件处理中心
+ */
 @Component
 class SqlEntityEvent : BeanPostProcessor {
     companion object {

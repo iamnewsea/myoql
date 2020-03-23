@@ -1,6 +1,6 @@
 package nbcp.db.mongo
 
-import nbcp.base.extend.NoAffectRowCount
+import nbcp.base.extend.LogScope
 import nbcp.base.extend.getStringValue
 import nbcp.base.extend.using
 import nbcp.base.utils.MyUtil
@@ -90,10 +90,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
             var update2 = MongoBaseUpdateClip(MyUtil.getSmallCamelCase(ref.ref.entityClass.simpleName))
             update2.whereData.add(MongoColumnName(ref.ref.idField) match_in ref.masterIdValues)
             update2.setValue(ref.ref.nameField, ref.masterNameValue)
-
-            using(NoAffectRowCount()) {
-                update2.exec();
-            }
+            update2.exec();
         }
     }
 

@@ -9,7 +9,7 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.test.web.servlet.MockMvc
-import nbcp.base.toSummary
+import nbcp.comm.toSummary
 import nbcp.base.utils.SpringUtil
 import org.springframework.boot.Banner
 import org.springframework.boot.SpringApplication
@@ -60,7 +60,7 @@ abstract class TestBase {
 
     fun execTimes(name: String, times: Int, func: (Int) -> String) {
         println("${name} 执行1000次:")
-        var startAt = System.currentTimeMillis()
+        var startAt = LocalDateTime.now()
         for (i in 1..times) {
             var ret = func(i)
             if (ret.isEmpty()) continue

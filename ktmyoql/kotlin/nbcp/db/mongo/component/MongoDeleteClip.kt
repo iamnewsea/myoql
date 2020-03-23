@@ -2,7 +2,8 @@ package nbcp.db.mongo
 
 
 import nbcp.base.extend.*
-import nbcp.base.line_break
+import nbcp.comm.minus
+
 import nbcp.db.db
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
@@ -10,6 +11,7 @@ import org.springframework.data.mongodb.core.query.Query
 import nbcp.db.mongo.*
 import org.slf4j.LoggerFactory
 import java.lang.Exception
+import java.time.LocalDateTime
 
 /**
  * Created by udi on 17-4-17.
@@ -57,10 +59,12 @@ class MongoDeleteClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
         }
 
         var ret = 0;
+        var startAt = LocalDateTime.now();
         try {
             var result = mongoTemplate.remove(
                     Query.query(criteria),
                     collectionName);
+            db.executeTime = LocalDateTime.now() - startAt
 
             ret = result.deletedCount.toInt()
             db.affectRowCount = ret;

@@ -1,23 +1,17 @@
 package nbcp.db.mongo
 
-import com.mongodb.DBCursor
-import com.mongodb.DBObject
-import com.mongodb.client.model.DBCollectionFindOptions
 import nbcp.comm.*
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
-import org.springframework.data.mongodb.core.query.Query
-import nbcp.comm.*
-//import nbcp.comm.*
 import nbcp.base.extend.*
-import nbcp.base.line_break
+import nbcp.comm.*
 import nbcp.base.utils.Md5Util
-import nbcp.base.utils.RecursionUtil
 import nbcp.db.db
 import nbcp.db.mongo.*
 import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
+import java.time.LocalDateTime
 
 /**
  * Created by Cy on 17-4-7.
@@ -214,8 +208,10 @@ cursor: {} } """
         db.affectRowCount = -1;
         var queryJson = toExpression();
         var result: Document? = null
+        var startAt = LocalDateTime.now();
         try {
             result = mongoTemplate.executeCommand(queryJson)
+            db.executeTime = LocalDateTime.now() - startAt
         } catch (e: Exception) {
             throw e;
         } finally {

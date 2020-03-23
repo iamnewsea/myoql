@@ -15,10 +15,9 @@ import java.lang.annotation.ElementType
 annotation class JsonModel
 
 
-
-
-//表示该字段必须有值。可以通过反射，遍历字段，进行验证。
-//参数 Group 表示分组，用途等。可以重复使用该注解
+/**
+ * 必传字段，用于Mvc请求参数的注解，标记了该注解，表示该参数不能为空字符串，不能为空值。
+ */
 @java.lang.annotation.Target(ElementType.FIELD, ElementType.PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
 //@Repeatable

@@ -3,9 +3,11 @@ package nbcp.db.sql
 import org.slf4j.LoggerFactory
 import nbcp.base.extend.AsString
 import nbcp.base.extend.InfoError
-import nbcp.base.line_break
+import nbcp.comm.*
+
 import nbcp.db.db
 import nbcp.db.sql.*
+import java.time.LocalDateTime
 
 //查询原生表。
 class RawQuerySqlClip(var sql: SingleSqlData, tableName: String) : SqlBaseQueryClip(tableName) {
@@ -33,17 +35,18 @@ class RawExecuteSqlClip(var sql: SingleSqlData, tableName: String) : SqlBaseExec
         var sql = toSql()
         var executeData = sql.toExecuteSqlAndParameters();
 
-        var startAt = System.currentTimeMillis();
+        var startAt = LocalDateTime.now()
 
         var n = -1;
         try {
             n = jdbcTemplate.update(executeData.executeSql, *executeData.executeParameters)
+            db.executeTime = LocalDateTime.now() - startAt
         } catch (e: Exception) {
             throw e;
         } finally {
             logger.InfoError(n < 0) {
                 var msg_log = mutableListOf("[sql] ${executeData.executeSql}", "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}")
-                msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
+                msg_log.add("[耗时] ${db.executeTime}")
 
                 return@InfoError msg_log.joinToString(line_break)
             }

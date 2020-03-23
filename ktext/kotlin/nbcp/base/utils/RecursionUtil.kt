@@ -94,7 +94,9 @@ object RecursionUtil {
         return
     }
 
-    //合并树,把 subTree 添加到 root 中去
+    /**
+     * 合并树,把 subTree 添加到 root 中去
+     */
     fun <T> unionTree(root: MutableList<T>, subTree: T, subs: (T) -> MutableList<T>, compare: (T, T) -> Boolean) {
 
         for (subItem in root) {

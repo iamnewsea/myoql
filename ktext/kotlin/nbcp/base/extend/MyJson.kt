@@ -1,30 +1,17 @@
 package nbcp.base.extend
 
-import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.core.json.PackageVersion
 import com.fasterxml.jackson.databind.*
-import com.fasterxml.jackson.databind.module.SimpleModule
+import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import nbcp.base.extend.FieldTypeJsonMapper.Companion.logger
-import nbcp.base.utils.CodeUtil
-import nbcp.base.utils.SpringUtil
-import java.io.IOException
-import java.text.DateFormat
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.*
+import java.lang.RuntimeException
 
 
 /**
  * Created by udi on 17-5-23.
  */
+
 
 class RawJsonObject(value: String) : MyString(value) {}
 
@@ -90,20 +77,17 @@ fun <T> String.FromJson(collectionClass: Class<T>, getSetStyle: Boolean = false,
         return null;
     }
 
-    var mapper:JsonBaseObjectMapper;
+    var mapper: JsonBaseObjectMapper;
 
-    if( getSetStyle ){
-        if( withNull){
+    if (getSetStyle) {
+        if (withNull) {
             mapper = GetSetWithNullTypeJsonMapper.instance;
-        }
-        else {
+        } else {
             mapper = GetSetTypeJsonMapper.instance;
         }
-    }
-    else if( withNull){
+    } else if (withNull) {
         mapper = FieldWithNullTypeJsonMapper.instance;
-    }
-    else{
+    } else {
         mapper = FieldTypeJsonMapper.instance;
     }
 
@@ -112,8 +96,7 @@ fun <T> String.FromJson(collectionClass: Class<T>, getSetStyle: Boolean = false,
         ret = mapper.readValue(jsonString, collectionClass)
     } catch (e: Exception) {
         var msg = "Json转换出错！Json数据：${jsonString}\n 类型:${collectionClass.name} \n 错误消息:" + e.message;
-        logger.error(msg)
-        throw e;
+        throw RuntimeException(msg, e);
     }
     return ret!!;
 }

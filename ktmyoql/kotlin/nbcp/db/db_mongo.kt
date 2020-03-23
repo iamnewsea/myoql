@@ -1,13 +1,10 @@
 package nbcp.db
 
 
-import nbcp.base.extend.IsStringType
-import nbcp.base.extend.Slice
+import nbcp.base.extend.*
 import nbcp.base.utils.RecursionUtil
 import nbcp.base.utils.SpringUtil
-import nbcp.comm.JsonMap
-import nbcp.comm.StringMap
-import nbcp.comm.StringTypedMap
+import nbcp.comm.*
 import nbcp.db.mongo.*
 import org.bson.Document
 import org.bson.types.ObjectId
@@ -20,6 +17,9 @@ import org.springframework.data.mongodb.core.convert.MappingMongoConverter
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext
 import org.springframework.data.mongodb.core.query.Criteria
 
+/**
+ * 请使用 db.mongo
+ */
 object db_mongo {
     //     val sqlEvents = SpringUtil.getBean<SqlEventConfig>();
     val mongoEvents by lazy {
@@ -241,7 +241,7 @@ object db_mongo {
 
         RecursionUtil.recursionJson(value, { json, type ->
             if (type.isArray) {
-                (json as Array<Any>).forEachIndexed { index, it ->
+                (json as Array<Any?>).forEachIndexed { index, it ->
                     if (it == null || !test(it)) {
                         return@forEachIndexed
                     }

@@ -1,6 +1,6 @@
 package nbcp.db.mongo
 
-import nbcp.base.extend.NoAffectRowCount
+import nbcp.base.extend.LogScope
 import nbcp.base.extend.getStringValue
 import nbcp.base.extend.using
 import nbcp.base.utils.MyUtil
@@ -77,7 +77,7 @@ class MongoLogHistoryUpdateEvent : IMongoEntityUpdate {
             batchInsert.add(log);
         }
 
-        using(NoAffectRowCount()) {
+        using(LogScope.AffectRowNoLog) {
             batchInsert.exec();
         }
     }

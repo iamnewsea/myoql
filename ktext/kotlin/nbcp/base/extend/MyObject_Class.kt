@@ -6,7 +6,19 @@ import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.WildcardType
 
+val clazzesIsSimpleDefine = mutableSetOf<Class<*>>()
 
+/**
+ * 判断是否是简单类型：
+ * 基元类型
+ * 枚举类型
+ * 字符串,MyString
+ * 字符
+ * 布尔
+ * 数字
+ * LocalDate,LocalTime,LocalDateTime,Date.
+ * clazzesIsSimpleDefine 中的类型
+ */
 fun Class<*>.IsSimpleType(): Boolean {
     if (this.isPrimitive) return true;
     if (this.isEnum) return true;
@@ -18,30 +30,49 @@ fun Class<*>.IsSimpleType(): Boolean {
         return true;
     }
 
+    if( MyString::class.java.isAssignableFrom(this)){
+        return true;
+    }
+
     if (this.name == "java.time.LocalDate") return true;
     if (this.name == "java.time.LocalTime") return true;
     if (this.name == "java.time.LocalDateTime") return true;
     if (this.name == "java.util.Date") return true;
-    if (this.name == "org.bson.types.ObjectId") {
+//    if (this.name == "org.bson.types.ObjectId") {
+//        return true;
+//    }
+    if (clazzesIsSimpleDefine.any { it.isAssignableFrom(this) }) {
         return true;
     }
     return false;
 }
 
+/**
+ * 类型是否是布尔： boolean,java.lang.Boolean
+ */
 fun Class<*>.IsBooleanType(): Boolean {
     if (this.name == "java.lang.Boolean") return true;
     if (this.name == "boolean") return true;
     return false;
 }
 
+/**
+ * 类型是否是List： Collection
+ */
 fun Class<*>.IsListType(): Boolean {
     return Collection::class.java.isAssignableFrom(this)
 }
 
+/**
+ * 类型是否是字符串：String,MyString
+ */
 fun Class<*>.IsStringType(): Boolean {
     return this.name == "java.lang.String" || MyString::class.java.isAssignableFrom(this)
 }
 
+/**
+ * 类型是否是数字：int,float,double,long,short,byte,Number
+ */
 fun Class<*>.IsNumberType(): Boolean {
     if (this.isPrimitive) {
         if (this.name == "int") return true;
@@ -59,6 +90,9 @@ fun Class<*>.IsNumberType(): Boolean {
     return false;
 }
 
+/**
+ * 获取枚举类的所有成员
+ */
 fun <T> Class<T>.GetEnumList(): List<T> {
     if (this.isEnum == false) return listOf()
 
@@ -68,6 +102,9 @@ fun <T> Class<T>.GetEnumList(): List<T> {
     return (values.get(null) as Array<T>).toList();
 }
 
+/**
+ * 获取枚举类的数字类型的字段。
+ */
 fun <T> Class<T>.GetEnumNumberField(): Field? {
     if (this.isEnum == false) return null
 
@@ -83,6 +120,9 @@ fun <T> Class<T>.GetEnumNumberField(): Field? {
     return null;
 }
 
+/**
+ * 获取枚举类的String类型的字段。
+ */
 fun <T> Class<T>.GetEnumStringField(): Field? {
     if (this.isEnum == false) return null
 
@@ -99,7 +139,9 @@ fun <T> Class<T>.GetEnumStringField(): Field? {
 }
 
 
-//如果父类与子类有相同的字段，返回子类字段。
+/** 获取该类以及基类的所有字段。 并设置为可写。
+ * 如果父类与子类有相同的字段，返回子类字段。
+ */
 val Class<*>.AllFields: List<Field>
     get() {
         var ret = mutableListOf<Field>();
@@ -123,7 +165,9 @@ val Class<*>.AllFields: List<Field>
         return ret;
     }
 
-//所有可写的字段。
+/**
+ * 递归向父类查找字段。
+ */
 fun Class<*>.FindField(fieldName: String): Field? {
     var ret: Field? = null
     ret = this.declaredFields.find { it.name == fieldName };

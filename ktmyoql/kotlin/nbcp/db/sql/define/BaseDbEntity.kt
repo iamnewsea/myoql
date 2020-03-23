@@ -12,11 +12,16 @@ abstract class BaseDbEntity(val tableName: String) : java.io.Serializable {
     protected var tableAliaValue: String = ""
 
 
+    /**
+     * this.tableAliaValue.AsString(this.tableName)
+     */
     fun getAliaTableName(): String {
         return this.tableAliaValue.AsString(this.tableName);
     }
 
-    //请调用 setAlias
+    /**
+     * 调用扩展方法 alias
+     */
     fun oriSetAlias(alias: String) {
         if (alias == this.tableAliaValue) {
             return;
@@ -25,6 +30,9 @@ abstract class BaseDbEntity(val tableName: String) : java.io.Serializable {
     }
 }
 
+/**
+ * 设置别名。
+ */
 fun <T : BaseDbEntity> T.alias(alias: String): T {
     var type = this::class.java;
     var ret = type.newInstance()
@@ -41,7 +49,7 @@ fun <T : BaseDbEntity> T.alias(alias: String): T {
 
     ret.oriSetAlias(alias);
 
-    if( ret is SqlBaseTable<*>){
+    if (ret is SqlBaseTable<*>) {
         ret.getColumns().forEach {
             it.tableName = alias;
         }

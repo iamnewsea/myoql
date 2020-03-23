@@ -1,6 +1,6 @@
 package nbcp.db.mongo
 
-import nbcp.base.extend.NoAffectRowCount
+import nbcp.base.extend.LogScope
 import nbcp.base.extend.using
 import nbcp.db.*
 import nbcp.db.mongo.MongoDeleteClip
@@ -40,8 +40,6 @@ class MongoDustbinEvent : IMongoEntityDelete {
         dustbin.id = ObjectId().toString()
         dustbin.table = delete.collectionName
         dustbin.data = data;
-        using(NoAffectRowCount()) {
-            db.mor_base.sysDustbin.doInsert(dustbin)
-        }
+        db.mor_base.sysDustbin.doInsert(dustbin)
     }
 }

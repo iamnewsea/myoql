@@ -1,7 +1,8 @@
 package nbcp.base.utils
 
 import nbcp.base.extend.AsInt
-import nbcp.base.utf8
+import nbcp.comm.*
+
 import java.io.File
 import java.io.RandomAccessFile
 import java.io.Reader

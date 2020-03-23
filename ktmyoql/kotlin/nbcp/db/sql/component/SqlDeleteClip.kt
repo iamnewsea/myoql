@@ -6,9 +6,10 @@ import nbcp.base.extend.AsString
 import nbcp.base.extend.Error
 import nbcp.base.extend.Info
 import nbcp.base.extend.InfoError
-import nbcp.base.line_break
+
 import nbcp.db.db
 import nbcp.db.sql.*
+import java.time.LocalDateTime
 
 /**
  * Created by yuxh on 2018/7/2
@@ -53,11 +54,13 @@ class SqlDeleteClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
 
         var sql = toSql()
         var executeData = sql.toExecuteSqlAndParameters();
-        var startAt = System.currentTimeMillis();
+        var startAt = LocalDateTime.now();
 
         var n = -1;
         try {
             n = jdbcTemplate.update(executeData.executeSql, *executeData.executeParameters)
+            db.executeTime = LocalDateTime.now() - startAt
+
             if (n > 0) {
                 cacheService.delete4BrokeCache(sql)
             }
@@ -66,7 +69,7 @@ class SqlDeleteClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
         } finally {
             logger.InfoError(n < 0) {
                 var msg_log = mutableListOf("[sql] ${executeData.executeSql}", "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}")
-                msg_log.add("[耗时] ${System.currentTimeMillis() - startAt} ms")
+                msg_log.add("[耗时] ${db.executeTime}")
                 return@InfoError msg_log.joinToString(line_break)
             }
         }

@@ -6,6 +6,9 @@ import nbcp.db.*
 import nbcp.db.sql.entity.s_dustbin
 import org.springframework.stereotype.Component
 
+/**
+ * 处理删除数据后转移到垃圾箱功能
+ */
 @Component
 class SqlDustbinEvent : ISqlEntityDelete {
 

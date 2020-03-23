@@ -8,8 +8,6 @@ import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import nbcp.comm.*
 import nbcp.base.extend.*
-import nbcp.base.line_break
-import nbcp.base.utf8
 import java.awt.image.BufferedImage
 import java.io.*
 import java.net.HttpURLConnection
@@ -20,9 +18,6 @@ import java.util.*
 import javax.imageio.ImageIO
 
 
-/*
- * 利用HttpClient进行post请求的工具类
- */
 
 data class FileMessage(
         var fullPath: String = "",
@@ -37,13 +32,15 @@ data class FileMessage(
 //        var header: StringMap = StringMap(),
 //        var data: ByteArray = byteArrayOf()
 //)
-
+/*
+ * 利用HttpClient进行post请求的工具类
+ */
 class HttpUtil(var url: String = "") {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
-        //远程下载图片,并压缩
-        /**
-         * @param imagePath :图片的目录,系统下载后, 会先尝试 remoteImage名字进行保存,如果失败,则使用唯一Id进行保存.
+
+        /**远程下载图片,并压缩
+         * @param imagePath :图片的目录,系统下载后, 会先尝试 remoteImage 名字进行保存,如果失败,则使用唯一Id进行保存.
          */
         fun getImage(remoteImage: String, imagePath: String, maxWidth: Int = 1200): FileMessage {
             var imagePathFile = File(imagePath)
@@ -118,15 +115,27 @@ class HttpUtil(var url: String = "") {
     val requestHeader: StringMap = StringMap()
 
 
+    /**
+     * 回发的编码，只读，默认为 utf-8
+     */
     var responseCharset: String = "UTF-8"
         private set;
 
+    /**
+     * 该次回发Header，只读
+     */
     var responseHeader: StringMap = StringMap()
         private set;
 
+    /**
+     * 该次回发的状态码，只读
+     */
     var status: Int = 0
         private set;
 
+    /**
+     * 该次回发过程中的错误消息，只读
+     */
     var msg: String = ""  //初始化失败的消息.用于对象传递
         private set;
 
@@ -160,6 +169,9 @@ class HttpUtil(var url: String = "") {
         return retData.toString(Charset.forName(responseCharset));
     }
 
+    /**
+     * Post请求
+     */
     fun doPost(postJson: JsonMap): String {
         if (requestHeader.containsKey("Accept") == false) {
             requestHeader["Accept"] = "application/json";
@@ -179,6 +191,9 @@ class HttpUtil(var url: String = "") {
         return doPost(requestBody);
     }
 
+    /**
+     * Post请求
+     */
     fun doPost(requestBody: String): String {
         logger.Info { "[post]\t${url}\n${requestHeader.map { it.key + ":" + it.value }.joinToString("\n")}" }
 
@@ -301,8 +316,11 @@ class HttpUtil(var url: String = "") {
         return output.toByteArray()
     }
 
-    //返回错误信息
-    fun doGetFile(filePath: String): FileMessage {
+    /**
+     * 下载文件
+     * @param filePath:保存位置，优先使用Url中的文件名，如果存在，则用唯一Code命名。
+     */
+    fun doDownloadFile(filePath: String): FileMessage {
         var remoteImage = url;
         var ret = FileMessage();
         var extInfo = FileExtentionInfo(remoteImage);
@@ -352,6 +370,10 @@ class HttpUtil(var url: String = "") {
     }
 
 
+    /**
+     * 上传文件
+     * @param filePath: 要上传的文件。
+     */
     fun uploadFile(filePath: String): String {
         var file = File(filePath);
         if (file.exists() == false) {

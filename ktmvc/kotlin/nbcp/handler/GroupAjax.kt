@@ -4,7 +4,7 @@
 //import nbcp.comm.*
 //import nbcp.comm.*
 //import nbcp.base.extend.*
-//import nbcp.base.utf8
+//
 //import nbcp.base.utils.HttpUtil
 //import nbcp.web.MyHttpRequestWrapper
 //import java.nio.charset.Charset

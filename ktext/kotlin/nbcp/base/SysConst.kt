@@ -1,4 +1,4 @@
-package nbcp.base
+package nbcp.comm
 
 import java.nio.charset.Charset
 

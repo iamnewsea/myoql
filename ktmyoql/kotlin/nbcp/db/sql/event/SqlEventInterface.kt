@@ -3,6 +3,9 @@ package nbcp.db.sql
 import nbcp.db.DbEntityEventResult
 import nbcp.db.mongo.component.MongoBaseInsertClip
 
+/**
+ * 处理 Insert 的 Bean 接口。
+ */
 interface ISqlEntityInsert {
     fun beforeInsert(update: SqlInsertClip<*,*>): DbEntityEventResult?
 
@@ -11,7 +14,7 @@ interface ISqlEntityInsert {
 
 
 /**
- * 实体Update接口，标记 DbEntityUpdate 注解的类使用。
+ * 处理 Update 的 Bean 接口。
  */
 interface ISqlEntityUpdate {
     fun beforeUpdate(update: SqlUpdateClip<*,*>): DbEntityEventResult?
@@ -20,7 +23,7 @@ interface ISqlEntityUpdate {
 }
 
 /**
- * 实体 Delete 接口，标记 DbEntityDelete 注解的类使用。
+ * 处理 Delete 的 Bean 接口。
  */
 interface ISqlEntityDelete {
     fun beforeDelete(delete: SqlDeleteClip<*,*>): DbEntityEventResult?
