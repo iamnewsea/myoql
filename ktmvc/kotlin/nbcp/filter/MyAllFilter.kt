@@ -20,6 +20,7 @@ import org.springframework.web.context.request.ServletRequestAttributes
 import java.io.File
 import java.lang.reflect.UndeclaredThrowableException
 import java.nio.file.Path
+import java.time.LocalDateTime
 import java.util.jar.JarFile
 import javax.servlet.*
 import javax.servlet.annotation.WebFilter
@@ -165,10 +166,12 @@ open class MyAllFilter : Filter, InitializingBean {
 //                logNewSession(request, response);
             }
 
+            var endAt = LocalDateTime.now()
+
             logger.Info {
                 var msgs = mutableListOf<String>()
                 msgs.add("[[----> ${loginName} ${request.ClientIp} ${request.method} ${request.fullUrl}")
-                msgs.add("[response] ${response.status} ${System.currentTimeMillis() - startAt}毫秒")
+                msgs.add("[response] ${response.status} ${endAt - startAt}")
 
                 var cookie = response.getHeader("Set-Cookie")
                 if (cookie.HasValue) {
@@ -212,7 +215,7 @@ open class MyAllFilter : Filter, InitializingBean {
 //        }
 //    }
 
-    private fun procFilter(request: MyHttpRequestWrapper, response: MyHttpResponseWrapper, chain: FilterChain?, startAt: Long, loginName: String) {
+    private fun procFilter(request: MyHttpRequestWrapper, response: MyHttpResponseWrapper, chain: FilterChain?, startAt: LocalDateTime, loginName: String) {
         RequestContextHolder.setRequestAttributes(ServletRequestAttributes(request, response))
 
         beforeRequest(request, loginName)
@@ -360,7 +363,7 @@ open class MyAllFilter : Filter, InitializingBean {
         }
     }
 
-    fun afterComplete(request: MyHttpRequestWrapper, response: MyHttpResponseWrapper, callback: String, startAt: Long, errorMsg: String) {
+    fun afterComplete(request: MyHttpRequestWrapper, response: MyHttpResponseWrapper, callback: String, startAt: LocalDateTime, errorMsg: String) {
 //设置 Set-Cookie:PZXTK=59160c3a-5443-490f-a94f-db1e83f041fd; Path=/; HttpOnly
 //        var setCookieValue = myResponse.getHeader("Set-Cookie")
 //        if (setCookieValue.HasValue) {
@@ -397,11 +400,10 @@ open class MyAllFilter : Filter, InitializingBean {
             }
         }
 
+        var endAt = LocalDateTime.now();
         logger.Info {
-
-
             var msg = mutableListOf<String>()
-            msg.add("[response] ${request.requestURI} ${response.status} ${System.currentTimeMillis() - startAt}毫秒")
+            msg.add("[response] ${request.requestURI} ${response.status} ${endAt - startAt}")
 
             for (h in response.headerNames) {
                 msg.add("\t${h}:${response.getHeader(h)}")
