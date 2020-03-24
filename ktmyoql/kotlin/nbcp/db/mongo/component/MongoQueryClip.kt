@@ -154,123 +154,126 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
     }
 
 
-    fun ForEach(batchSize: Int, initSkip: Int = 0, func: (E?, Int) -> Int?) {
-        var skip = initSkip;
-        while (true) {
-            var ents = this.limit(skip, batchSize).toList()
-            var ret: Int? = null
-
-
-            var len = ents.size;
-            if (len == 0) {
-                ret = func(null, skip)
-                if (ret == null) {
-                    break
-                } else {
-                    skip += ret
-                    continue
-                }
-            } else {
-                if (ents.ForEachExt { item, index ->
-                            ret = func(item, skip + index)
-                            if (ret == null) {
-                                return
-                            }
-
-                            if (ret == 0) {
-                                return@ForEachExt true
-                            } else {
-                                skip += (1 + index + ret!!)
-                                return@ForEachExt false
-                            }
-                        }) {
-                    skip += len;
-                } else {
-                    continue
-                }
-            }
-        }
-    }
-
-    fun readStreamEntity(initSkip: Int = 0, batchSize: Int = 20): DbReader<E> {
-        return readStreamEntity(this.moerEntity.entityClass, null, initSkip, batchSize);
-    }
-
-    /**
-     * 不是一次查询出来，而是分批查。适用于大数据遍历,导出
-     * 该方法会忽略 query.limit。
-     * @param initSkip: 先跳过多少条。
-     * @param batchSize: 每次取的条数。
-     * @param func : 每条数据的回调，返回Int,表示在下一条数据的基础上跳过多少行，默认为0，可以是负数。
-     * @return 执行回调的总条数
-     */
-    fun <R> readStreamEntity(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null, initSkip: Int = 0, batchSize: Int = 20): DbReader<R> {
-
-        var skip = initSkip;
-
-        var currentData = this.limit(skip, batchSize).toList(clazz, mapFunc);
-
-        var current = 0;
-
-        var nextFunc = abc@{
-            if (currentData.any() == false) {
-                return@abc null;
-            }
-
-            if (current in currentData.indices) {
-                var ret = currentData[current];
-                current++;
-                return@abc ret;
-            }
-
-            if (currentData.size < batchSize) {
-                return@abc null;
-            }
-
-            current = 0;
-
-            skip += batchSize;
-
-            currentData = this.limit(skip, batchSize).toList(clazz, mapFunc);
-            if (currentData.any() == false) {
-                return@abc null;
-            }
-
-            if (current in currentData.indices) {
-                var ret = currentData[current];
-                current++;
-                return@abc ret;
-            }
-
-            return@abc null;
-        }
-
-        return DbReader(nextFunc)
-    }
+//    /**
+//     * 流式遍历数据库
+//     */
+//    fun ForEach(batchSize: Int, initSkip: Int = 0, func: (E?, Int) -> Int?) {
+//        var skip = initSkip;
+//        while (true) {
+//            var ents = this.limit(skip, batchSize).toList()
+//            var ret: Int? = null
+//
+//
+//            var len = ents.size;
+//            if (len == 0) {
+//                ret = func(null, skip)
+//                if (ret == null) {
+//                    break
+//                } else {
+//                    skip += ret
+//                    continue
+//                }
+//            } else {
+//                if (ents.ForEachExt { item, index ->
+//                            ret = func(item, skip + index)
+//                            if (ret == null) {
+//                                return
+//                            }
+//
+//                            if (ret == 0) {
+//                                return@ForEachExt true
+//                            } else {
+//                                skip += (1 + index + ret!!)
+//                                return@ForEachExt false
+//                            }
+//                        }) {
+//                    skip += len;
+//                } else {
+//                    continue
+//                }
+//            }
+//        }
+//    }
+//
+//    fun readStreamEntity(initSkip: Int = 0, batchSize: Int = 20): DbReader<E> {
+//        return readStreamEntity(this.moerEntity.entityClass, null, initSkip, batchSize);
+//    }
+//
+//    /**
+//     * 不是一次查询出来，而是分批查。适用于大数据遍历,导出
+//     * 该方法会忽略 query.limit。
+//     * @param initSkip: 先跳过多少条。
+//     * @param batchSize: 每次取的条数。
+//     * @param func : 每条数据的回调，返回Int,表示在下一条数据的基础上跳过多少行，默认为0，可以是负数。
+//     * @return 执行回调的总条数
+//     */
+//    fun <R> readStreamEntity(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null, initSkip: Int = 0, batchSize: Int = 20): DbReader<R> {
+//
+//        var skip = initSkip;
+//
+//        var currentData = this.limit(skip, batchSize).toList(clazz, mapFunc);
+//
+//        var current = 0;
+//
+//        var nextFunc = abc@{
+//            if (currentData.any() == false) {
+//                return@abc null;
+//            }
+//
+//            if (current in currentData.indices) {
+//                var ret = currentData[current];
+//                current++;
+//                return@abc ret;
+//            }
+//
+//            if (currentData.size < batchSize) {
+//                return@abc null;
+//            }
+//
+//            current = 0;
+//
+//            skip += batchSize;
+//
+//            currentData = this.limit(skip, batchSize).toList(clazz, mapFunc);
+//            if (currentData.any() == false) {
+//                return@abc null;
+//            }
+//
+//            if (current in currentData.indices) {
+//                var ret = currentData[current];
+//                current++;
+//                return@abc ret;
+//            }
+//
+//            return@abc null;
+//        }
+//
+//        return DbReader(nextFunc)
+//    }
 }
 
-
-class DbReader<T>(private val nextFunc: () -> T?) : Iterator<T> {
-    private var nextEntity: T? = null
-
-    init {
-        nextEntity = nextFunc();
-    }
-
-    override fun hasNext(): Boolean {
-        return nextEntity != null
-    }
-
-    override fun next(): T {
-        var nextValue = nextEntity
-        if (nextValue == null) {
-            throw RuntimeException("null")
-        }
-
-        this.nextEntity = nextFunc();
-        return nextValue;
-    }
-
-}
+//
+//class DbReader<T>(private val nextFunc: () -> T?) : Iterator<T> {
+//    private var nextEntity: T? = null
+//
+//    init {
+//        nextEntity = nextFunc();
+//    }
+//
+//    override fun hasNext(): Boolean {
+//        return nextEntity != null
+//    }
+//
+//    override fun next(): T {
+//        var nextValue = nextEntity
+//        if (nextValue == null) {
+//            throw RuntimeException("null")
+//        }
+//
+//        this.nextEntity = nextFunc();
+//        return nextValue;
+//    }
+//
+//}
 
 

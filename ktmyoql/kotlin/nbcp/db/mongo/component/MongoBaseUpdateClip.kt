@@ -162,7 +162,11 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             throw e;
         } finally {
             logger.InfoError(ret < 0) {
-                "update:[" + this.collectionName + "],where:" + criteria.criteriaObject.ToJson() + ",set:" + update.updateObject.ToJson() + " ,result:" + ret
+                """[update] ${this.collectionName}
+[where] ${criteria.criteriaObject.ToJson()}
+[set] ${update.updateObject.ToJson()}
+[result] ${ret}
+[耗时] ${db.executeTime}"""
             }
         }
 

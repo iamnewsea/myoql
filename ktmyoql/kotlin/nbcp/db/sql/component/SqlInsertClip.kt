@@ -149,7 +149,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
 //        }
 
         var settings = db.sql.sqlEvents.onInserting(this)
-        if( settings.any { it.second != null && it.second!!.result == false }) {
+        if (settings.any { it.second != null && it.second!!.result == false }) {
             return 0;
         }
 
@@ -203,7 +203,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
         }
 
         settings.forEach {
-            it.first.insert(this,it.second);
+            it.first.insert(this, it.second);
         }
 
         return 0
@@ -295,12 +295,14 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
                         }
                     }
 
-                    msg_log.add("[参数]\n${entities.map { ent -> insertColumns.map { column -> ent.getStringValue(column.name) }.joinToString(",") }.joinToString("\n")}")
+                    if (db.debug) {
+                        msg_log.add("[参数]\n${entities.map { ent -> insertColumns.map { column -> ent.getStringValue(column.name) }.joinToString(",") }.joinToString("\n")}")
+                    }
                     return@PreparedStatementCreator ps
                 })
                 db.executeTime = LocalDateTime.now() - startAt
 
-                logger.info("批量插入完成 ${result} 条!")
+                msg_log.add("批量插入完成 ${result} 条!")
             } catch (e: Exception) {
                 error = true
                 throw e;
@@ -332,6 +334,8 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
 
         var error = false;
         var n = 0;
+
+        //有自增Id的情况。
         if (autoIncrmentKey.HasValue) {
             var idKey = GeneratedKeyHolder()
             try {
@@ -345,26 +349,28 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
                 }, idKey)
 
                 db.executeTime = LocalDateTime.now() - startAt
+                db.lastAutoId = idKey.key.toInt()
             } catch (e: Exception) {
                 error = true
                 throw e;
             } finally {
                 logger.InfoError(error) {
                     var msg_log = mutableListOf("[sql] ${executeData.executeSql}")
-                    msg_log.add("[参数] ${executeData.executeParameters.joinToString(",")}")
+                    if (db.debug) {
+                        msg_log.add("[参数] ${executeData.executeParameters.joinToString(",")}")
+                    }
+                    msg_log.add("[id] ${db.lastAutoId}")
+                    msg_log.add("[result] ${n}")
                     msg_log.add("[耗时] ${db.executeTime}")
                     return@InfoError msg_log.joinToString(line_break)
                 }
             }
 
-            var idValue = idKey.key.toInt()
-
             if (this.ori_entities.any()) {
-                MyUtil.setPrivatePropertyValue(this.ori_entities.first(), autoIncrmentKey, idValue)
+                MyUtil.setPrivatePropertyValue(this.ori_entities.first(), autoIncrmentKey, db.lastAutoId)
             }
-
-            db.lastAutoId = idValue
         } else {
+            //没有自增Id的情况
             try {
                 n = jdbcTemplate.update(PreparedStatementCreator {
                     var ps = it.prepareStatement(executeData.executeSql)
@@ -383,7 +389,11 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
             } finally {
                 logger.InfoError(error) {
                     var msg_log = mutableListOf("[sql] ${executeData.executeSql}")
-                    msg_log.add("[参数] ${executeData.executeParameters.joinToString(",")}")
+
+                    if (db.debug) {
+                        msg_log.add("[参数] ${executeData.executeParameters.joinToString(",")}")
+                    }
+                    msg_log.add("[result] ${n}")
                     msg_log.add("[耗时] ${db.executeTime}")
                     return@InfoError msg_log.joinToString(line_break)
                 }

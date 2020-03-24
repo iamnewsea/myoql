@@ -56,7 +56,7 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
 //            return@lazy SpringUtil.getBean<JdbcTemplate>()
 //        }
 
-        val jsonMapMapper = SpringUtil.getBean<JsonMapRowMapper>()
+//        val jsonMapMapper = SpringUtil.getBean<JsonMapRowMapper>()
 
 //        private val jdbcMap = linkedMapOf<String, JdbcTemplate>()
 
@@ -127,6 +127,10 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
+    /**
+     * 请使用 ConvertJson 方法
+     */
+    @Deprecated("请使用 ConvertJson 方法")
     fun <T3 : Any> mapToEntity(retJson: Map<String, Any?>, entityFunc: () -> T3): T3 {
         var entity = entityFunc()
 
@@ -195,6 +199,9 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
         return toMapList(toSql());
     }
 
+    /**
+     * 返回第一列值的集合。
+     */
     fun toScalarList(): List<Any?> {
         var ret = mutableListOf<Any?>()
         toMapList().forEach {
@@ -235,7 +242,17 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
                 throw e;
             } finally {
                 logger.InfoError(error) {
-                    var msg_log = mutableListOf("[sql] ${executeData.executeSql}", "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}")
+                    var msg_log = mutableListOf("" +
+                            "[sql] ${executeData.executeSql}",
+                            "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}"
+                    )
+
+                    if (db.debug) {
+                        msg_log.add("[result] ${retJsons.ToJson()}")
+                    } else {
+                        msg_log.add("[result.size] ${retJsons.size}")
+                    }
+
                     msg_log.add("[耗时] ${db.executeTime}")
                     return@InfoError msg_log.joinToString(line_break)
                 }
@@ -265,12 +282,18 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
         return toMapList().firstOrNull()
     }
 
+    /**
+     * 返回第一列的值
+     */
     fun toScalar(): Any? {
         var ret = toMap()
         if (ret == null) return null;
         return ret.values.firstOrNull()
     }
 
+    /**
+     * 判断是否存在，判断第一条记录是否为空
+     */
     open fun exists(): Boolean {
         var ret = toMap()
         if (ret == null) return false;

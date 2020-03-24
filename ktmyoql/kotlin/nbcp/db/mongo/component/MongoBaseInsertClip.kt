@@ -1,6 +1,7 @@
 package nbcp.db.mongo.component
 
 import nbcp.base.extend.InfoError
+import nbcp.base.extend.ToJson
 import nbcp.comm.minus
 import nbcp.db.db
 import nbcp.db.mongo.IMongoDocument
@@ -21,6 +22,9 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
 
     var entities = mutableListOf<Any>()
 
+    /**
+     * 批量添加中的添加实体。
+     */
     fun addEntity(entity: Any) {
         if (entity is IMongoDocument) {
             if (entity.id.isEmpty()) {
@@ -56,7 +60,13 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
             ret = -1;
             throw e;
         } finally {
-            logger.InfoError(ret < 0) { "insert ${entities.size} enities：[" + this.collectionName + "] " + ",result:${ret}" };
+            logger.InfoError(ret < 0) {
+                """[insert] ${this.collectionName}
+${if (db.debug) "[enities.size] ${entities.size}" else "[entities] ${entities.ToJson()}"}
+[result] ${ret}
+[耗时] ${db.executeTime}
+"""
+            };
         }
 
         return ret;

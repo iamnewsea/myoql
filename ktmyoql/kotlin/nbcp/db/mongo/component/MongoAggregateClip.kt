@@ -155,10 +155,9 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
         var pipeLineExpression = "[" + pipeLines.map {
             var key = it.first;
             var value = it.second;
-            if( value is ObjectId){
+            if (value is ObjectId) {
                 return@map """{$key:${value.toString().toOIdJson().ToJsonValue()}}"""
-            }
-            else if (value is Criteria) {
+            } else if (value is Criteria) {
 
                 var c_value = value.criteriaObject.procWithMongoScript();
 
@@ -215,7 +214,12 @@ cursor: {} } """
         } catch (e: Exception) {
             throw e;
         } finally {
-            logger.InfoError(result == null) { queryJson + " result:" + (result?.ToJson() ?: "") }
+            logger.InfoError(result == null) {
+                """[aggregate] ${this.moerEntity.tableName}
+[语句] ${queryJson}
+${if (db.debug) "[result] ${result?.ToJson()}" else "[result.size] ${result?.size}"}
+[耗时] ${db.executeTime}"""
+            }
         }
 
         if (result == null) {

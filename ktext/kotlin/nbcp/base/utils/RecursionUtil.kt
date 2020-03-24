@@ -1,21 +1,22 @@
 package nbcp.base.utils
 
-import nbcp.base.extend.AsString
 import nbcp.base.extend.ForEachExt
 import nbcp.base.extend.IsListType
 import nbcp.base.extend.IsSimpleType
 import java.lang.reflect.Modifier
-import java.util.*
 
 /**
  * Created by udi on 17-4-10.
  */
 
+/**
+ * 递归的返回状态
+ */
 enum class RecursionReturnEnum private constructor(val Value: Int) {
     None(0),
     Go(1),
     StopSub(2),
-    Abord(6),
+    Abord(6), // 6 = 2 + 4  , Abord 包含了 StopSub
     Remove(8);
 }
 
@@ -25,20 +26,25 @@ enum class RecursionReturnEnum private constructor(val Value: Int) {
 //
 //}
 
+/**
+ * 递归执行工具类。
+ */
 object RecursionUtil {
 
-    /* 递归执行
-    * @param Exec 传入的是子项
-    */
-    fun <T> execute(Container: MutableList<T>, Subs: (T) -> MutableList<T>, Exec: (T, MutableList<T>, Int) -> RecursionReturnEnum): Int {
-        if (Container.size == 0) return 0
+    /** 递归执行
+     * @param container:递归的集合。
+     * @param producer: 生产者，获取下级集合。
+     * @param consumer: 生产者，参数：当前对象，父对象，当前对象的索引。
+     */
+    fun <T> execute(container: MutableList<T>, producer: (T) -> MutableList<T>, consumer: (T, MutableList<T>, Int) -> RecursionReturnEnum): Int {
+        if (container.size == 0) return 0
         var counted = 0;
         var removeIndeies = mutableListOf<Int>();
 
-        for (i in Container.indices) {
-            val item = Container[i]
+        for (i in container.indices) {
+            val item = container[i]
             counted++;
-            val ret = Exec(item, Container, i)
+            val ret = consumer(item, container, i)
 
             if (ret == RecursionReturnEnum.StopSub)
                 continue
@@ -48,23 +54,28 @@ object RecursionUtil {
                 continue;
             }
 
-            counted += execute(Subs(item), Subs, Exec);
+            counted += execute(producer(item), producer, consumer);
         }
 
         for (i in removeIndeies.reversed()) {
-            Container.removeAt(i);
+            container.removeAt(i);
         }
 
         return counted;
     }
 
 
-    fun <T> getOne(Container: List<T>, Subs: (T) -> List<T>, Exec: (T) -> Boolean): T? {
-        for (i in Container.indices) {
-            val item = Container[i]
-            var retVal = Exec(item)
+    /** 递归查找
+     * @param container:递归的集合。
+     * @param producer: 生产者，获取下级集合。
+     * @param consumer: 生产者
+     */
+    fun <T> findOne(container: List<T>, producer: (T) -> List<T>, consumer: (T) -> Boolean): T? {
+        for (i in container.indices) {
+            val item = container[i]
+            var retVal = consumer(item)
             if (retVal == true) return item;
-            var subVal = getOne(Subs(item), Subs, Exec)
+            var subVal = findOne(producer(item), producer, consumer)
             if (subVal != null)
                 return subVal;
         }
@@ -72,55 +83,60 @@ object RecursionUtil {
     }
 
 
-    fun <T> remove(Container: MutableList<T>, Subs: (T) -> MutableList<T>, Exec: (T) -> Boolean) {
-        var index = -1;
-        while (true) {
-            index++;
-
-            if (index == Container.size) {
-                break;
-            }
-
-            val item = Container[index]
-            var retVal = Exec(item)
-            if (retVal == true) {
-                Container.removeAt(index);
-                index--;
-                continue;
-            }
-
-            remove(Subs(item), Subs, Exec)
-        }
-        return
-    }
+//    fun <T> remove(Container: MutableList<T>, Subs: (T) -> MutableList<T>, Exec: (T) -> Boolean) {
+//        var index = -1;
+//        while (true) {
+//            index++;
+//
+//            if (index == Container.size) {
+//                break;
+//            }
+//
+//            val item = Container[index]
+//            var retVal = Exec(item)
+//            if (retVal == true) {
+//                Container.removeAt(index);
+//                index--;
+//                continue;
+//            }
+//
+//            remove(Subs(item), Subs, Exec)
+//        }
+//        return
+//    }
 
     /**
      * 合并树,把 subTree 添加到 root 中去
+     * @param root: 树节点的元素列表。上一级是空的根节点。
+     * @param outcomer: 外来者，把它附加到树结构中去。 如果不匹配，则按新节点增加。
      */
-    fun <T> unionTree(root: MutableList<T>, subTree: T, subs: (T) -> MutableList<T>, compare: (T, T) -> Boolean) {
+    fun <T> unionTree(root: MutableList<T>, outcomer: T, producer: (T) -> MutableList<T>, compare: (T, T) -> Boolean) {
 
-        for (subItem in root) {
-            if (compare(subItem, subTree)) {
-                subs(subTree).forEach {
-                    unionTree(subs(subItem), it, subs, compare);
+        for (rootItem in root) {
+            if (compare(rootItem, outcomer)) {
+                producer(outcomer).forEach { outItem ->
+                    unionTree(producer(rootItem), outItem, producer, compare);
                 }
                 return;
             }
         }
-        root.add(subTree);
+
+        //如果没找到，则插入
+        root.add(outcomer);
     }
 
     /**
      * 遍历对象 ,包括 Map,Array,List,Object， 应该拿到对象后，对象属性值及子属性操作，而不能增减父对象。
-     * @param eachJsonItemCallback: value 参数
+     * @param json: 递归对象
+     * @param consumer:  消费每一个Json
      */
-    fun recursionJson(json: Any, eachJsonItemCallback: (Any,Class<*>) -> Boolean, deepth: Int = 0): Boolean {
+    fun recursionJson(json: Any, consumer: (Any, Class<*>) -> Boolean, deepth: Int = 0): Boolean {
         var type = json::class.java;
         if (type.IsSimpleType()) {
             return true;
         }
 
-        if(eachJsonItemCallback(json,type) == false){
+        if (consumer(json, type) == false) {
             return false;
         }
 
@@ -129,7 +145,7 @@ object RecursionUtil {
                 if (it == null) {
                     return@ForEachExt true
                 }
-                if(recursionJson(it, eachJsonItemCallback, deepth + 1) == false){
+                if (recursionJson(it, consumer, deepth + 1) == false) {
                     return@ForEachExt false;
                 }
                 return@ForEachExt true
@@ -140,7 +156,7 @@ object RecursionUtil {
                     return@ForEachExt true
                 }
 
-                if(recursionJson(it, eachJsonItemCallback, deepth + 1) == false){
+                if (recursionJson(it, consumer, deepth + 1) == false) {
                     return@ForEachExt false;
                 }
 
@@ -149,17 +165,15 @@ object RecursionUtil {
         }
 
 
-
-
         //判断对象是否是 Map
         if (json is Map<*, *>) {
             return json.keys.toTypedArray().ForEachExt { key, index ->
                 var value = json.get(key);
-                if( value == null){
+                if (value == null) {
                     return@ForEachExt true;
                 }
 
-                if (recursionJson(value, eachJsonItemCallback, deepth + 1) === false) {
+                if (recursionJson(value, consumer, deepth + 1) === false) {
                     return@ForEachExt false;
                 }
                 return@ForEachExt true;
@@ -180,11 +194,11 @@ object RecursionUtil {
             var key = it.name;
             var value = it.get(json);
 
-            if( value == null){
+            if (value == null) {
                 return@ForEachExt true;
             }
 
-            if (recursionJson(value, eachJsonItemCallback, deepth + 1) === false) {
+            if (recursionJson(value, consumer, deepth + 1) === false) {
                 return@ForEachExt false;
             }
             return@ForEachExt true

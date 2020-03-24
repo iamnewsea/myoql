@@ -155,22 +155,28 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         } finally {
             fun getMsgs(): String {
                 var msgs = mutableListOf<String>()
-                msgs.add("query:[" + this.collectionName + "] ");
-                msgs.add(" where:" + criteria.criteriaObject.ToJson())
+                msgs.add("[query] " + this.collectionName);
+                msgs.add("[where] " + criteria.criteriaObject.ToJson())
                 if (selectColumns.any()) {
-                    msgs.add(" select:" + selectColumns.joinToString(","))
+                    msgs.add("[select] " + selectColumns.joinToString(","))
                 }
                 if (unSelectColumns.any()) {
-                    msgs.add(" unselect:" + unSelectColumns.joinToString(","))
+                    msgs.add("[unselect] " + unSelectColumns.joinToString(","))
                 }
                 if (sort.any()) {
-                    msgs.add(" sort:" + sort.ToJson())
+                    msgs.add("[sort] " + sort.ToJson())
                 }
                 if (skip > 0 || take > 0) {
-                    msgs.add(" limit:${skip},${take}")
+                    msgs.add("[limit] ${skip},${take}")
                 }
 
-                msgs.add(" result_count:" + cursor.size.toString())
+                if (db.debug) {
+                    msgs.add("[result] ${cursor.ToJson()}")
+                } else {
+                    msgs.add("[result.size] " + cursor.size.toString())
+                }
+
+                msgs.add("[耗时] ${db.executeTime}")
                 return msgs.joinToString(line_break);
             }
 
@@ -195,16 +201,44 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
      */
     fun count(): Int {
         var startAt = LocalDateTime.now();
-        var ret = mongoTemplate.count(Query.query(this.getMongoCriteria(*whereData.toTypedArray())), collectionName).toInt()
-        db.executeTime = LocalDateTime.now() - startAt
+        var ret = 0;
+        var query = Query.query(this.getMongoCriteria(*whereData.toTypedArray()));
+        try {
+            ret = mongoTemplate.count(query, collectionName).toInt()
+            db.executeTime = LocalDateTime.now() - startAt
+        } catch (e: Exception) {
+            ret = -1;
+            throw e;
+        } finally {
+            logger.InfoError(ret < 0) {
+                return@InfoError """[count] ${this.collectionName}
+[query] ${query.queryObject.ToJson()}
+[result] ${ret}
+[耗时] ${db.executeTime}"""
+            }
+        }
         return ret;
     }
 
     fun exists(): Boolean {
         var startAt = LocalDateTime.now();
-        var ret= mongoTemplate.exists(Query.query(this.getMongoCriteria(*whereData.toTypedArray())), collectionName);
-        db.executeTime = LocalDateTime.now() - startAt
-        return ret;
+        var ret: Boolean? = null;
+        var query = Query.query(this.getMongoCriteria(*whereData.toTypedArray()));
+        try {
+            ret = mongoTemplate.exists(query, collectionName);
+            db.executeTime = LocalDateTime.now() - startAt
+        } catch (e: Exception) {
+            ret = null;
+            throw e;
+        } finally {
+            logger.InfoError(ret == null) {
+                return@InfoError """[exists] ${this.collectionName}
+[query] ${query.queryObject.ToJson()}
+[result] ${ret}
+[耗时] ${db.executeTime}"""
+            }
+        }
+        return ret ?: false;
     }
 
 

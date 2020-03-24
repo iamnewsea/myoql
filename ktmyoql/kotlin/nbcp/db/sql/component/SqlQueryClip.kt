@@ -125,12 +125,12 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
 
 
     fun orderByAsc(order: (M) -> SqlColumnName): SqlQueryClip<M, T> {
-        this.orders.add( SqlOrderBy(true, SingleSqlData(order(this.mainEntity).fullName)))
+        this.orders.add(SqlOrderBy(true, SingleSqlData(order(this.mainEntity).fullName)))
         return this
     }
 
     fun orderByDesc(order: (M) -> SqlColumnName): SqlQueryClip<M, T> {
-        this.orders.add( SqlOrderBy(false, SingleSqlData(order(this.mainEntity).fullName)))
+        this.orders.add(SqlOrderBy(false, SingleSqlData(order(this.mainEntity).fullName)))
         return this
     }
 
@@ -281,7 +281,9 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
             if (itemFunc != null) {
                 itemFunc(it);
             }
-            return@map mapToEntity(it, { entityClass.newInstance() })
+
+//            return@map mapToEntity(it, { entityClass.newInstance() })
+            return@map it.ConvertJson(entityClass)
         }.toMutableList()
 
         return ret
@@ -295,7 +297,8 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
         this.take = 1
         return toMapList().map {
             mapFunc?.invoke(it)
-            mapToEntity(it, { entityClass.newInstance() })
+            it.ConvertJson(entityClass)
+//            mapToEntity(it, { entityClass.newInstance() })
         }
                 .firstOrNull()
     }
@@ -348,8 +351,12 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
             throw e;
         } finally {
             logger.InfoError(n < 0) {
-                var msg_log = mutableListOf("[sql] ${executeData.executeSql}", "[参数] ${executeData.executeParameters.joinToString(",")}")
-                msg_log.add("[耗时] ${db.executeTime}")
+                var msg_log = mutableListOf(
+                        "[sql] ${executeData.executeSql}",
+                        "[参数] ${executeData.executeParameters.joinToString(",")}",
+                        "[result] ${n}",
+                        "[耗时] ${db.executeTime}")
+
                 return@InfoError msg_log.joinToString(line_break)
             }
         }
@@ -372,7 +379,9 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
             if (data.size < this.take) {
                 ret.total = data.size;
             } else {
-                ret.total = count()
+                using(LogScope.ExecuteTimeNoLog) {
+                    ret.total = count()
+                }
             }
         }
 

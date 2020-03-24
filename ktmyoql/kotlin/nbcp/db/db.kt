@@ -123,7 +123,6 @@ object db {
             _executeTime.set(value);
         }
 
-
 //    fun change_id2Id(value: DBObject, remove_id: Boolean = true) {
 //        var keys = value.keySet().toTypedArray();
 //        var needReplace = keys.contains("_id") && !keys.contains("id")
@@ -158,5 +157,13 @@ object db {
 
     val sql_base by lazy {
         return@lazy SqlBaseGroup()
+    }
+
+
+    /**
+     * 获取参数 debug，如果是调试模式，那么查询日志显示结果集，会显示插入数据
+     */
+    val debug by lazy {
+        return@lazy SpringUtil.context.environment.getProperty("debug").AsBoolean()
     }
 }

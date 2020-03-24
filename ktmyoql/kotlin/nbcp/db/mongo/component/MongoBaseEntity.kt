@@ -17,7 +17,7 @@ import java.lang.Exception
 typealias mongoQuery = org.springframework.data.mongodb.core.query.Query
 
 /**
- * mongo 的操作的基类
+ * mongo 元数据实体的基类
  */
 abstract class MongoBaseEntity<T : IMongoDocument>(val entityClass: Class<T>, entityName: String) : BaseDbEntity(entityName) {
     //    abstract fun getColumns(): Array<String>;
@@ -27,19 +27,19 @@ abstract class MongoBaseEntity<T : IMongoDocument>(val entityClass: Class<T>, en
         }
     }
 
-    /**
-     * 通过 using 作用域 切换数据源。
-     */
-    val mongoTemplate: MongoTemplate
-        get() {
-            return scopes.getLatestScope<MongoTemplate>() ?: SpringUtil.getBean<MongoTemplate>()
-        }
+//    /**
+//     * 通过 using 作用域 切换数据源。
+//     */
+//    val mongoTemplate: MongoTemplate
+//        get() {
+//            return scopes.getLatestScope<MongoTemplate>() ?: SpringUtil.getBean<MongoTemplate>()
+//        }
 
 
-    /**
-     * @param entity 实体
-     * @return 返回Id
-     */
+//    /**
+//     * @param entity 实体
+//     * @return 返回Id
+//     */
 //    fun doInsert(entity: Map<String, *>): String {
 //        db.affectRowCount = -1;
 //        var entity = entity.toMutableMap()
@@ -63,10 +63,10 @@ abstract class MongoBaseEntity<T : IMongoDocument>(val entityClass: Class<T>, en
 //        return retId
 //    }
 
-    /**
-     * @param entity 实体
-     * @return 返回Id
-     */
+//    /**
+//     * @param entity 实体
+//     * @return 返回Id
+//     */
 //    fun doInsert(entity: T): String {
 //        if (entity.id.isEmpty()) {
 //            entity.id = ObjectId().toString();
@@ -87,6 +87,9 @@ abstract class MongoBaseEntity<T : IMongoDocument>(val entityClass: Class<T>, en
 //        return entity.id;
 //    }
 
+    /**
+     * 插入单条实体
+     */
     fun doInsert(entity: T): String {
         var batchInsert = MongoBaseInsertClip(this.tableName)
         batchInsert.addEntity(entity)
@@ -94,31 +97,31 @@ abstract class MongoBaseEntity<T : IMongoDocument>(val entityClass: Class<T>, en
         return entity.id
     }
 
-    /**
-     * 扩展的aggregate
-     * @param collectionClazz 集合类型
-     * @param pipelines 是指 aggregate命令中 pipeline部分。
-     * @return 返回结果集中  result 集合部分。
-     */
-    fun aggregatePipelineEx(vararg pipelines: String): Array<Document> {
-        var queryJson = """{ aggregate: "${this.tableName}",pipeline: [
-${pipelines.joinToString(",\n")}
-] ,
-cursor: {} } """;
-
-        var result = mongoTemplate.executeCommand(queryJson)
-
-        var ret = mutableListOf<Document>()
-        if (result.getDouble("ok") != 1.0) {
-            return ret.toTypedArray()
-        }
-
-        ((result.get("cursor") as Document).get("firstBatch") as ArrayList<Document>).forEach {
-            ret.add(it)
-        }
-
-        return ret.toTypedArray()
-    }
+//    /**
+//     * 扩展的aggregate
+//     * @param collectionClazz 集合类型
+//     * @param pipelines 是指 aggregate命令中 pipeline部分。
+//     * @return 返回结果集中  result 集合部分。
+//     */
+//    fun aggregatePipelineEx(vararg pipelines: String): Array<Document> {
+//        var queryJson = """{ aggregate: "${this.tableName}",pipeline: [
+//${pipelines.joinToString(",\n")}
+//] ,
+//cursor: {} } """;
+//
+//        var result = mongoTemplate.executeCommand(queryJson)
+//
+//        var ret = mutableListOf<Document>()
+//        if (result.getDouble("ok") != 1.0) {
+//            return ret.toTypedArray()
+//        }
+//
+//        ((result.get("cursor") as Document).get("firstBatch") as ArrayList<Document>).forEach {
+//            ret.add(it)
+//        }
+//
+//        return ret.toTypedArray()
+//    }
 
 //    fun save(entity: Any) {
 //        this.template.save(entity);

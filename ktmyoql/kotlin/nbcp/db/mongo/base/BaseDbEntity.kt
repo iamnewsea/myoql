@@ -2,7 +2,7 @@ package nbcp.db.mongo
 
 
 /**
- * mongo 的的操作的基类的基类
+ * mongo 元数据实体的基类， MongoBaseEntity的基类
  */
 abstract class BaseDbEntity(val tableName: String) : java.io.Serializable {
 }
