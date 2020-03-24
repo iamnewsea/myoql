@@ -30,7 +30,7 @@ if __name__=='__main__':
     if(returnCode !=0 ):
         err("sync_version")
 
-    returnCode = os.system("python all_jar.py -P release")
+    returnCode = os.system("python install_jar.py -P release")
     if(returnCode !=0 ):
         err("build")
 

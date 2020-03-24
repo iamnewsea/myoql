@@ -124,7 +124,7 @@
 <dependency>
     <groupId>cn.dev8</groupId>
     <artifactId>ktext</artifactId>
-    <version>${version}</version>
+    <version>${project.version}</version>
 </dependency>
 ```
 

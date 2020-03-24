@@ -3,7 +3,7 @@
 
 - 修改 /pom.xml version
 - python sync_version.py
-- 本地安装： python all_jar.py 
+- 本地安装： python install_jar.py  
 - 安装到远程仓库：python publish ${version}
 - 本发安装单个Jar包： python install_jar.py -f ktext
 
