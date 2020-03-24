@@ -246,7 +246,13 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
             throw e;
         } finally {
             logger.InfoError(error) {
-                var msg_log = mutableListOf("[sql] ${exp}", "[参数]\n${entities.map { ent -> insertColumns.map { column -> ent.getStringValue(column.name) }.joinToString(",") }.joinToString("\t\n")}")
+                var msg_log = mutableListOf("[insert] ${exp}")
+                if( db.debug){
+                    msg_log.add("[参数] ${entities.map { ent -> insertColumns.map { column -> column to  ent.getStringValue(column.name) }.toMap() }.ToJson()}")
+                }
+                else{
+                    msg_log.add("[参数] ${entities.map { ent -> insertColumns.map { column -> ent.getStringValue(column.name) }.joinToString(",") }.joinToString("\t\n")}")
+                }
                 msg_log.add("[耗时] ${db.executeTime}")
                 return@InfoError msg_log.joinToString(line_break)
             }

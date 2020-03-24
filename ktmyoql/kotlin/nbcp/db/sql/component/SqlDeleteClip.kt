@@ -69,7 +69,7 @@ class SqlDeleteClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
         } finally {
             logger.InfoError(n < 0) {
                 var msg_log = mutableListOf("" +
-                        "[sql] ${executeData.executeSql}",
+                        "[delete] ${executeData.executeSql}",
                         "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}",
                         "[result] ${n}",
                         "[耗时] ${db.executeTime}")

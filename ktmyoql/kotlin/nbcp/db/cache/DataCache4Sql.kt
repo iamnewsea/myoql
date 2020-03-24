@@ -12,22 +12,18 @@ import nbcp.base.extend.*
 import nbcp.base.utils.Md5Util
 import nbcp.base.utils.SpringUtil
 import nbcp.db.mysql.*
-
+import nbcp.db.*;
 
 @Service
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
 class ProxyDataCache4Sql : IProxyCache4Sql {
-
-    private val requestCache by lazy {
-        return@lazy SpringUtil.getBeanByName<IDataCache4Sql>("request")
-    }
     private val redisCache by lazy {
         return@lazy SpringUtil.getBeanByName<IDataCache4Sql>("redis")
     }
 
 
     override fun isEnable(): Boolean {
-        return false; //(requestCache?.isEnable() ?: false) || (redisCache?.isEnable() ?: false)
+        return false; //(requestCache?.isEnable() ?: false) || (redisCache.isEnable() ?: false)
     }
 
 
@@ -227,20 +223,14 @@ class ProxyDataCache4Sql : IProxyCache4Sql {
 //    }
 
     override fun getCacheJson(cacheKey: CacheKey): String {
-        var ret = requestCache?.getCacheJson(cacheKey) ?: "";
-        if (ret.HasValue) return ret;
-
-
-
-        ret = redisCache?.getCacheJson(cacheKey) ?: "";
+        var ret = redisCache.getCacheJson(cacheKey) ?: "";
         if (ret.HasValue) return ret;
 
         return "";
     }
 
     override fun setCacheJson(cacheKey: CacheKey, cacheJson: String) {
-        requestCache?.setCacheJson(cacheKey, cacheJson);
-        redisCache?.setCacheJson(cacheKey, cacheJson);
+        redisCache.setCacheJson(cacheKey, cacheJson);
     }
 
 
@@ -378,14 +368,13 @@ class ProxyDataCache4Sql : IProxyCache4Sql {
         //由于 update from join 会出错， 暂时先返回空。
         if (isEnable() == false) return;
 
-        var analysor= SqlTokenAnalysor().analyse(sql.expression)
+        var analysor = SqlTokenAnalysor().analyse(sql.expression)
         var update = (analysor.first { it.key == SqlKeyEnum.Update } as UpdateSqlSect);
         var where = (analysor.first { it.key == SqlKeyEnum.Where } as WhereSqlSect);
-        var tableName =  update.tableName;
+        var tableName = update.tableName;
 
 
-        var tableAlias =   update.alias;
-
+        var tableAlias = update.alias;
 
 
         var dbEntity = db.sql.getSqlEntity?.invoke(tableName)
@@ -411,20 +400,19 @@ class ProxyDataCache4Sql : IProxyCache4Sql {
             set = getUpdateDelete_BrokeCache(tableName)
         }
 
-        requestCache?.brokeCache(tableName, set);
 
-        var cacheSeconds = this.redisCache?.getCacheSeconds(tableName) ?: 0
+        var cacheSeconds = this.redisCache.getCacheSeconds(tableName) ?: 0
         if (cacheSeconds > 0) {
-            redisCache?.brokeCache(tableName, set);
+            redisCache.brokeCache(tableName, set);
         }
     }
 
     override fun delete4BrokeCache(sql: SingleSqlData) {
         if (isEnable() == false) return;
-        var analysor= SqlTokenAnalysor().analyse(sql.expression)
+        var analysor = SqlTokenAnalysor().analyse(sql.expression)
         var delete = (analysor.first { it.key == SqlKeyEnum.Delete } as DeleteSqlSect);
         var where = (analysor.first { it.key == SqlKeyEnum.Where } as WhereSqlSect);
-        var tableName =  delete.tableName;
+        var tableName = delete.tableName;
         var tableAlias = delete.alias;
 
         var dbEntity = db.sql.getSqlEntity?.invoke(tableName)
@@ -450,21 +438,19 @@ class ProxyDataCache4Sql : IProxyCache4Sql {
         }
 
 
-        requestCache?.brokeCache(tableName, set);
-
-        var cacheSeconds = this.redisCache?.getCacheSeconds(tableName) ?: 0
+        var cacheSeconds = this.redisCache.getCacheSeconds(tableName) ?: 0
         if (cacheSeconds > 0) {
-            redisCache?.brokeCache(tableName, set);
+            redisCache.brokeCache(tableName, set);
         }
     }
 
     override fun insert4BrokeCache(sql: SingleSqlData) {
         if (isEnable() == false) return;
 
-        var analysor= SqlTokenAnalysor().analyse(sql.expression)
+        var analysor = SqlTokenAnalysor().analyse(sql.expression)
         var insert = (analysor.first { it.key == SqlKeyEnum.Insert } as InsertSqlSect);
         var where = (analysor.first { it.key == SqlKeyEnum.Where } as WhereSqlSect);
-        var tableName =  insert.tableName;
+        var tableName = insert.tableName;
 
         var dbEntity = db.sql.getSqlEntity?.invoke(tableName)
         if (dbEntity == null) {
@@ -493,11 +479,9 @@ class ProxyDataCache4Sql : IProxyCache4Sql {
         set.add("sql*-${tableName}-*")
 
 
-        requestCache?.brokeCache(tableName, set);
-
-        var cacheSeconds = this.redisCache?.getCacheSeconds(tableName) ?: 0
+        var cacheSeconds = this.redisCache.getCacheSeconds(tableName) ?: 0
         if (cacheSeconds > 0) {
-            redisCache?.brokeCache(tableName, set);
+            redisCache.brokeCache(tableName, set);
         }
     }
 
@@ -508,11 +492,9 @@ class ProxyDataCache4Sql : IProxyCache4Sql {
         set.add("sql*-${tableName}-*")
 
 
-        requestCache?.brokeCache(tableName, set);
-
-        var cacheSeconds = this.redisCache?.getCacheSeconds(tableName) ?: 0
+        var cacheSeconds = this.redisCache.getCacheSeconds(tableName) ?: 0
         if (cacheSeconds > 0) {
-            redisCache?.brokeCache(tableName, set);
+            redisCache.brokeCache(tableName, set);
         }
     }
 
@@ -520,17 +502,14 @@ class ProxyDataCache4Sql : IProxyCache4Sql {
         if (isEnable() == false) return;
         var set = setOf("rk*-${tableName}-*", "sql*-${tableName}-*")
 
-        requestCache?.brokeCache(tableName, set);
-
-        var cacheSeconds = this.redisCache?.getCacheSeconds(tableName) ?: 0
+        var cacheSeconds = this.redisCache.getCacheSeconds(tableName) ?: 0
         if (cacheSeconds > 0) {
-            redisCache?.brokeCache(tableName, set);
+            redisCache.brokeCache(tableName, set);
         }
     }
 
     override fun clear(tableName: String) {
-        requestCache?.clear(tableName);
-        redisCache?.clear(tableName);
+        redisCache.clear(tableName);
     }
 
 }

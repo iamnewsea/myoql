@@ -15,7 +15,8 @@ import java.io.Serializable
 import javax.sql.DataSource
 import nbcp.db.sql.*
 import java.time.LocalDateTime
-
+import nbcp.db.*;
+import nbcp.db.cache.*;
 /**
  * ORM解决80%的问题即可. 对于 自连接,复杂的查询, 直接写Sql吧.
  *
@@ -243,7 +244,7 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
             } finally {
                 logger.InfoError(error) {
                     var msg_log = mutableListOf("" +
-                            "[sql] ${executeData.executeSql}",
+                            "[select] ${executeData.executeSql}",
                             "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}"
                     )
 

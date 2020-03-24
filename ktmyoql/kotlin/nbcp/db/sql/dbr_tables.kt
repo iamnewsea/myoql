@@ -10,7 +10,7 @@ import nbcp.base.extend.*
 import nbcp.base.utils.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-03-13 14:30:07
+//generate auto @2020-03-24 14:37:51
 
 
 @Component("sql.SqlBase")
@@ -34,7 +34,7 @@ class SqlBaseGroup : IDataGroup{
         val imgWidth=SqlColumnName(DbType.Int,this.getAliaTableName(),"imgWidth")
         val imgHeight=SqlColumnName(DbType.Int,this.getAliaTableName(),"imgHeight")
         val url=SqlColumnName(DbType.String,this.getAliaTableName(),"url")
-        val creator_id=SqlColumnName(DbType.Int,this.getAliaTableName(),"creator_id")
+        val creator_id=SqlColumnName(DbType.String,this.getAliaTableName(),"creator_id")
         val creator_name=SqlColumnName(DbType.String,this.getAliaTableName(),"creator_name")
         val corpId=SqlColumnName(DbType.String,this.getAliaTableName(),"corpId")
         val errorMsg=SqlColumnName(DbType.String,this.getAliaTableName(),"errorMsg")

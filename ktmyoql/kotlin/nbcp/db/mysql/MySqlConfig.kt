@@ -30,6 +30,22 @@ class ExistsDataSourceConfigCondition : Condition {
     }
 }
 
+/**
+ * Mysql 连接配置，依赖配置 spring.datasource.url，默认驱动：com.mysql.cj.jdbc.Driver
+ * 主配置
+ * spring.datasource.hikari
+ *      jdbcUrl,如果不存在取 spring.datasource.url
+ *      driverClassName,如果不存在取 spring.datasource.driverClassName
+ *      username,如果不存在取 spring.datasource.username
+ *      password,如果不存在取 spring.datasource.password
+ *
+ * 从配置：
+ * spring.datasource.slave.hikari
+ *      jdbcUrl,如果不存在取 spring.datasource.slave.url
+ *      driverClassName,如果不存在取 spring.datasource.slave.driverClassName
+ *      username,如果不存在取 spring.datasource.slave.username
+ *      password,如果不存在取 spring.datasource.slave.password
+ */
 @Configuration
 @AutoConfigureAfter(DataSourceAutoConfiguration::class)
 @Conditional(ExistsDataSourceConfigCondition::class)

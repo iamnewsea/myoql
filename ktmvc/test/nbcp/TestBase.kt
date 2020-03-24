@@ -9,9 +9,10 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.test.web.servlet.MockMvc
-import nbcp.comm.toSummary
+import nbcp.comm.*
 import nbcp.base.utils.SpringUtil
 import java.time.Duration
+import java.time.LocalDateTime
 
 /**
  * Created by udi on 17-3-27.
@@ -43,8 +44,8 @@ abstract class TestBase {
 
             println(ret)
         }
-        var endAt = System.currentTimeMillis()
+        var endAt = LocalDateTime.now()
 
-        println(Duration.ofMillis(endAt - startAt).toSummary())
+        println( (endAt - startAt).toString())
     }
 }

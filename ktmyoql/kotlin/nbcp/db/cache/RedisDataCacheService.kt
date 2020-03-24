@@ -1,27 +1,22 @@
-package nbcp.db.redis
+package nbcp.db.cache
 
 import nbcp.db.*
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.core.Ordered
-import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Service
-import nbcp.comm.*
 import nbcp.base.extend.*
-import nbcp.base.utils.Md5Util
 import nbcp.base.utils.SpringUtil
 import nbcp.db.CacheKey
 import nbcp.db.CacheKeyTypeEnum
-import nbcp.db.sql.*
-import nbcp.db.mysql.*
-import nbcp.db.sql.*
-import org.springframework.beans.factory.annotation.Value
-import java.io.StringReader
+import nbcp.db.redis.RedisBaseGroup
 import javax.annotation.PostConstruct
-
 
 /**
  * Created by yuxh on 2018/7/18
+ */
+
+/**
+ * Redis处理缓存组件
  */
 @Service("redis")
 @ConfigurationProperties(prefix = "sql-orm")

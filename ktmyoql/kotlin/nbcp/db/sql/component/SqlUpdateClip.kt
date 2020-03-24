@@ -168,7 +168,7 @@ class SqlUpdateClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
         } finally {
             logger.InfoError(n < 0) {
                 var msg_log = mutableListOf(
-                        "[sql] ${executeData.executeSql}",
+                        "[update] ${executeData.executeSql}",
                         "[参数] ${executeData.executeParameters.joinToString(",")}",
                         "[result] ${n}",
                         "[耗时] ${db.executeTime}")

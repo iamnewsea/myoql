@@ -26,17 +26,25 @@ class SqlTokenAnalysor() {
                 prevIndex = 0;
             }
 
+            if (prevIndex >= index) {
+                return@forEach
+            }
+
             list.add(getSect(expressions.Slice(prevIndex, index)))
             prevIndex = index;
         }
 
-        list.add(getSect(expressions.Slice(prevIndex, expressions.size)))
+        if (prevIndex < expressions.size) {
+            list.add(getSect(expressions.Slice(prevIndex, expressions.size)))
+        }
 
         return list;
     }
 
     private fun getSect(sqls: List<String>): SqlBaseSect {
-        var type = sqls.first()
+//        if( sqls.isEmpty()){
+//        }
+        var type = sqls.first().toLowerCase()
         var exps = sqls.Slice(1)
         when (type) {
             "select" -> return toSelect(exps);
