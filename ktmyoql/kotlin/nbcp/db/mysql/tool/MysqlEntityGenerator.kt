@@ -28,7 +28,7 @@ order by table_name , ordinal_position
 """, JsonMap("db" to db)), "COLUMNS").toMapList()
 
         var indexes_map = RawQuerySqlClip(SingleSqlData("""
-SELECT TABLE_NAME ,index_name,seq_in_index,column_name 
+SELECT table_name ,index_name,seq_in_index,column_name 
 FROM INFORMATION_SCHEMA.STATISTICS
 where table_schema = {db} AND non_unique = 0 AND INDEX_name != 'PRIMARY' ${if (tableLike.HasValue) " and table_name like '${tableLike}'" else ""}  ${if (tables.any()) " and table_name in (${tables.map { "'" + it + "'" }.joinToString(",")})" else ""}
 ORDER BY TABLE_NAME , index_name , seq_in_index
