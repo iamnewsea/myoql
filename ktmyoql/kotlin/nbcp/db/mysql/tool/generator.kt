@@ -25,6 +25,7 @@ fun <T : SqlColumnName> T.and(vararg value: String): T {
 
 /**
  * Created by udi on 17-6-11.
+ * MySql 代码生成器
  */
 class generator {
 

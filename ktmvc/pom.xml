@@ -80,6 +80,7 @@
     </dependencies>
 
     <build>
+        <testResources>test/resources</testResources>
         <plugins>
             <plugin>
                 <groupId>org.jetbrains.dokka</groupId>

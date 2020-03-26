@@ -19,13 +19,16 @@ import javax.sql.DataSource
 class ExistsSlaveDataSourceConfigCondition : Condition {
     override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata): Boolean {
         return context.environment.getProperty("spring.datasource.slave.url") != null ||
+                context.environment.getProperty("spring.datasource.slave.hikari.url") != null ||
                 context.environment.getProperty("spring.datasource.slave.hikari.jdbc-url") != null
+
     }
 }
 
 class ExistsDataSourceConfigCondition : Condition {
     override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata): Boolean {
         return context.environment.getProperty("spring.datasource.url") != null ||
+                context.environment.getProperty("spring.datasource.hikari.url") != null ||
                 context.environment.getProperty("spring.datasource.hikari.jdbc-url") != null
     }
 }
@@ -34,14 +37,14 @@ class ExistsDataSourceConfigCondition : Condition {
  * Mysql 连接配置，依赖配置 spring.datasource.url，默认驱动：com.mysql.cj.jdbc.Driver
  * 主配置
  * spring.datasource.hikari
- *      jdbcUrl,如果不存在取 spring.datasource.url
+ *      jdbcUrl,如果不存在取 spring.datasource.hikari.url,spring.datasource.url
  *      driverClassName,如果不存在取 spring.datasource.driverClassName
  *      username,如果不存在取 spring.datasource.username
  *      password,如果不存在取 spring.datasource.password
  *
  * 从配置：
  * spring.datasource.slave.hikari
- *      jdbcUrl,如果不存在取 spring.datasource.slave.url
+ *      jdbcUrl,如果不存在取 spring.datasource.slave.hikari.url,spring.datasource.slave.url
  *      driverClassName,如果不存在取 spring.datasource.slave.driverClassName
  *      username,如果不存在取 spring.datasource.slave.username
  *      password,如果不存在取 spring.datasource.slave.password
@@ -56,11 +59,15 @@ class MySqlConfig {
     fun primaryDataSource(): DataSource {
         var ret = DataSourceBuilder.create().build() as HikariDataSource
 
-        if (ret.jdbcUrl == null) {
-            ret.jdbcUrl = SpringUtil.context.environment.getProperty("spring.datasource.url")
+        if (ret.jdbcUrl.isNullOrEmpty()) {
+            ret.jdbcUrl = SpringUtil.context.environment.getProperty("spring.datasource.hikari.url")
+
+            if (ret.jdbcUrl.isNullOrEmpty()) {
+                ret.jdbcUrl = SpringUtil.context.environment.getProperty("spring.datasource.url")
+            }
         }
 
-        if (ret.driverClassName == null) {
+        if (ret.driverClassName.isNullOrEmpty()) {
             ret.driverClassName = SpringUtil.context.environment.getProperty("spring.datasource.driverClassName").AsString("com.mysql.cj.jdbc.Driver")
         }
 
@@ -84,11 +91,14 @@ class MySqlConfig {
         var ret = DataSourceBuilder.create().build() as HikariDataSource
 
 
-        if (ret.jdbcUrl == null) {
-            ret.jdbcUrl = SpringUtil.context.environment.getProperty("spring.datasource.slave.url")
+        if (ret.jdbcUrl.isNullOrEmpty()) {
+            ret.jdbcUrl = SpringUtil.context.environment.getProperty("spring.datasource.slave.hikari.url")
+            if(ret.jdbcUrl.isNullOrEmpty()){
+                ret.jdbcUrl = SpringUtil.context.environment.getProperty("spring.datasource.slave.url")
+            }
         }
 
-        if (ret.driverClassName == null) {
+        if (ret.driverClassName.isNullOrEmpty()) {
             ret.driverClassName = SpringUtil.context.environment.getProperty("spring.datasource.slave.driverClassName").AsString("com.mysql.cj.jdbc.Driver")
         }
 
@@ -106,17 +116,15 @@ class MySqlConfig {
     }
 
 
-
     @Bean()
     @Primary
-    fun primaryJdbcTemplate():JdbcTemplate
-    {
-        return JdbcTemplate(SpringUtil.getBean<DataSource>(),true)
+    fun primaryJdbcTemplate(): JdbcTemplate {
+        return JdbcTemplate(SpringUtil.getBean<DataSource>(), true)
     }
 
     @Bean("slaveJdbcTemplate")
     @Conditional(ExistsSlaveDataSourceConfigCondition::class)
-    fun slaveJdbcTemplate():JdbcTemplate{
-        return JdbcTemplate(SpringUtil.getBeanByName<DataSource>("slave"),true)
+    fun slaveJdbcTemplate(): JdbcTemplate {
+        return JdbcTemplate(SpringUtil.getBeanByName<DataSource>("slave"), true)
     }
 }
