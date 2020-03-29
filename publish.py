@@ -36,7 +36,7 @@ if __name__=='__main__':
 
     print(os.linesep)
 
-    returnCode = os.system("mvn clean deploy -P release")
+    returnCode = os.system("mvn clean deploy -Dmaven.test.skip=true -P release")
     if (returnCode != 0):
         err("deploy")
 

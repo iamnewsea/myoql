@@ -7,6 +7,13 @@
 - 安装到远程仓库：python publish ${version}
 - 本发安装单个Jar包： python install_jar.py -f ktext
 
+
+## 版本
+
+Major.Minor.Fix
+稳定版本=Major.Minor.Max
+
+
 # 使用包需要配置的变量
 
 - server.upload.host 表示上传文件的文件服务 Host

@@ -3,7 +3,7 @@
 
     <groupId>cn.dev8</groupId>
     <artifactId>ktext</artifactId>
-    <version>0.1.31</version>
+    <version>0.1.32</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
@@ -37,7 +37,7 @@
     <parent>
         <groupId>cn.dev8</groupId>
         <artifactId>kotlin</artifactId>
-        <version>0.1.31</version>
+        <version>0.1.32</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
