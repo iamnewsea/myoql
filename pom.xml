@@ -3,7 +3,7 @@
 
     <groupId>cn.dev8</groupId>
     <artifactId>kotlin</artifactId>
-    <version>0.1.32</version>
+    <version>0.2.0</version>
     <packaging>pom</packaging>
     <name>kotlin-myoql-component</name>
 
@@ -119,6 +119,12 @@
             <version>${kotlin.version}</version>
         </dependency>
 
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

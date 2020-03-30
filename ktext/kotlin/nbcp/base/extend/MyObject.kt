@@ -1,6 +1,5 @@
 package nbcp.base.extend
 
-import org.slf4j.Logger
 import nbcp.comm.*
 
 import nbcp.base.utils.BufferTailReader
@@ -9,6 +8,7 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import kotlin.collections.LinkedHashMap
 import nbcp.base.utils.MyUtil
+import org.slf4j.Logger
 import org.slf4j.event.Level
 import java.lang.reflect.Field
 import java.nio.charset.Charset
@@ -611,3 +611,26 @@ fun ByteArray.ToHexLowerString():String{
     return this.map { it.toString(16) }.joinToString("")
 }
 
+
+fun Exception.toLogger(logger: org.slf4j.Logger, module: String = "") {
+    try {
+        logger.error("""[${module}] ${this.message}
+${this.stackTrace.map { it.toString() }.joinToString("\n")}
+    """.trimMargin())
+    } catch (e: Exception) {
+        e.printStackTrace();
+    }
+}
+
+
+fun ch.qos.logback.classic.Logger.getLoggerFile(configName: String): String {
+    var appenderList = this.iteratorForAppenders();
+    if (appenderList.hasNext()) {
+        var fileAppender = (appenderList.Filter { it.name == configName }.first() as ch.qos.logback.core.rolling.RollingFileAppender)
+        return (MyUtil.getPrivatePropertyValue(fileAppender, "currentlyActiveFile") as File).absolutePath
+    }
+
+    var parent = MyUtil.getPrivatePropertyValue(this, "parent") as ch.qos.logback.classic.Logger?
+    if (parent == null) return "";
+    return parent.getLoggerFile(configName);
+}

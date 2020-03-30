@@ -18,7 +18,6 @@ import java.util.*
 import javax.imageio.ImageIO
 
 
-
 data class FileMessage(
         var fullPath: String = "",
         var name: String = "",
@@ -110,10 +109,10 @@ class HttpUtil(var url: String = "") {
     }
 
 
-    private val requestActions = mutableListOf<((HttpURLConnection) -> Unit)>()
-    private val responseActions = mutableListOf<((HttpURLConnection) -> Unit)>()
+    private var requestAction: ((HttpURLConnection) -> Unit)? = null
+    private var responseAction: ((HttpURLConnection) -> Unit)? = null
     val requestHeader: StringMap = StringMap()
-
+    private var postBody = byteArrayOf()
 
     /**
      * 回发的编码，只读，默认为 utf-8
@@ -139,6 +138,15 @@ class HttpUtil(var url: String = "") {
     var msg: String = ""  //初始化失败的消息.用于对象传递
         private set;
 
+    fun setPostBody(postBody: ByteArray): HttpUtil {
+        this.postBody = postBody;
+        return this;
+    }
+
+    fun setPostBody(postBody: String): HttpUtil {
+        logger.Info { "\t[post_body]${postBody}" }
+        return this.setPostBody(postBody.toByteArray(utf8))
+    }
 //    private var https = false;
 //
 //    fun setHttps(https:Boolean):HttpUtil{
@@ -152,19 +160,19 @@ class HttpUtil(var url: String = "") {
     }
 
     fun setRequest(action: ((HttpURLConnection) -> Unit)): HttpUtil {
-        this.requestActions.add(action)
+        this.requestAction = action
         return this;
     }
 
     fun setResponse(action: ((HttpURLConnection) -> Unit)): HttpUtil {
-        this.responseActions.add(action)
+        this.responseAction = action
         return this;
     }
 
     fun doGet(): String {
         this.setRequest { it.requestMethod = "GET" }
 
-        var retData = doNet({})
+        var retData = doNet()
 
         return retData.toString(Charset.forName(responseCharset));
     }
@@ -200,19 +208,21 @@ class HttpUtil(var url: String = "") {
 
         this.setRequest { it.requestMethod = "POST" }
 
+        this.setPostBody(requestBody)
 
-        var ret = doNet { conn ->
-            if (requestBody.HasValue) {
-                logger.Info { "\t[post_body]${requestBody}" }
-                //conn.setRequestProperty("Content-Length", requestBody.toByteArray().size.toString());
-                //POST请求
-                var out = OutputStreamWriter(conn.outputStream);
-                out.write(requestBody);
-
-                out.flush();
-                out.close();
-            }
-        }
+        var ret = doNet()
+//        { conn ->
+//            if (requestBody.HasValue) {
+//                logger.Info { "\t[post_body]${requestBody}" }
+//                //conn.setRequestProperty("Content-Length", requestBody.toByteArray().size.toString());
+//                //POST请求
+//                var out = OutputStreamWriter(conn.outputStream);
+//                out.write(requestBody);
+//
+//                out.flush();
+//                out.close();
+//            }
+//        }
 
 //        if (isTxt) {
 //            logger.info(ret.Slice(0, 4096));
@@ -222,7 +232,7 @@ class HttpUtil(var url: String = "") {
         return ret.toString(Charset.forName(responseCharset));
     }
 
-    private fun doNet(postBody: ((HttpURLConnection) -> Unit)): ByteArray {
+    fun doNet(): ByteArray {
         var conn: HttpURLConnection? = null;
 //        var lines = mutableListOf<String>()
         try {
@@ -239,13 +249,20 @@ class HttpUtil(var url: String = "") {
                 conn.setRequestProperty(it.key, it.value);
             }
 
-            this.requestActions.forEach {
-                it.invoke(conn)
+            if (this.requestAction != null) {
+                this.requestAction!!.invoke(conn)
             }
 
             conn.connect();
 
-            postBody(conn)
+            if (this.postBody.any()) {
+                //POST数据
+                var out = DataOutputStream(conn.outputStream);
+                out.write(this.postBody);
+
+                out.flush();
+                out.close();
+            }
 
             this.status = conn.responseCode
 
@@ -270,8 +287,8 @@ class HttpUtil(var url: String = "") {
                 this.responseHeader[it.key] = value
             }
 
-            this.responseActions.forEach {
-                it.invoke(conn)
+            if (this.responseAction != null) {
+                this.responseAction!!.invoke(conn)
             }
 
 
@@ -355,7 +372,7 @@ class HttpUtil(var url: String = "") {
 
         this.setRequest { it.requestMethod = "GET" }
 
-        var retData = doNet({});
+        var retData = doNet();
 
         destFilePath.appendBytes(retData);
 
@@ -409,18 +426,22 @@ Content-Type: application/octet-stream
             isTxt = conn.contentType.contains("json", true) || conn.contentType.contains("htm", true) || conn.contentType.contains("text", true)
         }
 
+        this.setPostBody(content.toByteArray())
 
-        var ret = this.doNet { conn ->
-            if (content.size > 0) {
-                //conn.setRequestProperty("Content-Length", requestBody.toByteArray().size.toString());
-                //POST请求
-                var out = DataOutputStream(conn.outputStream);
-                out.write(content.toByteArray());
+        var ret = this.doNet()
+//        { conn ->
 
-                out.flush();
-                out.close();
-            }
-        }.toString(Charset.forName(responseCharset))
+//            if (content.size > 0) {
+//                //conn.setRequestProperty("Content-Length", requestBody.toByteArray().size.toString());
+//                //POST请求
+//                var out = DataOutputStream(conn.outputStream);
+//                out.write();
+//
+//                out.flush();
+//                out.close();
+//            }
+//        }
+                .toString(Charset.forName(responseCharset))
 
         if (isTxt) {
             logger.info(ret.Slice(0, 4096))
