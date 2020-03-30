@@ -113,4 +113,5 @@ object wx {
 
     val sys = WxSystemGroup
 
+    val h5 = H5Group
 }

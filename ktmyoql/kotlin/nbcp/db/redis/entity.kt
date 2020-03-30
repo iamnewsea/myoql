@@ -14,6 +14,7 @@ class RedisBaseGroup {
 
     open class WxGroup {
         private val access_token = RedisStringProxy("access_token", 300)
+        private val jsapi_ticket = RedisStringProxy("jsapi_ticket", 300)
 
         fun getAccessToken(appId: String, appSecret: String): ApiResult<wx_access_token> {
             var token = access_token.get(appId).FromJson<wx_access_token>()
@@ -63,6 +64,33 @@ class RedisBaseGroup {
 
             jscode2session.set(code, data.ToJson());
             return ApiResult.of(data)
+        }
+
+
+        fun getJsapiTicket(appId: String, appSecret: String):ApiResult<String>{
+            var tokenResult = getAccessToken(appId,appSecret);
+
+            var ret = ApiResult<String>();
+            ret.msg = tokenResult.msg
+            if( ret.msg.isNotEmpty()) return ret;
+
+            var token = tokenResult.data!!
+
+            var url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=${token}&type=jsapi"
+            val ajax = HttpUtil(url);
+            val res = ajax.doGet().FromJson<StringMap>() ?: StringMap();
+
+            if( res.get("errcode").AsInt() != 0) {
+                ret.msg = res["errmsg"].AsString();
+                if (ret.msg.HasValue) {
+                    return ret;
+                }
+            }
+
+            ret.data =  res["ticket"].AsString()
+
+            jsapi_ticket.set(appId, ret.data!!)
+            return ret;
         }
     }
 
