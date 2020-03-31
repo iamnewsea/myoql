@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletRequest
  * 参数传递过程中,都没有 uploadPath 部分.
  */
 @Service
-@ConditionalOnProperty("server.upload.path")
+@ConditionalOnProperty("app.upload.path")
 open class UploadService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -86,13 +86,13 @@ open class UploadService {
     }
 
 
-    @Value("\${server.upload.path:}")
+    @Value("\${app.upload.path:}")
     private var uploadPath = ""
 
-    @Value("\${server.upload.saveCorp:true}")
+    @Value("\${app.upload.saveCorp:true}")
     private var saveCorp = false
 
-    @Value("\${server.upload.dbType:Mongo}")
+    @Value("\${app.upload.dbType:Mongo}")
     private var dbType = "Mongo"
 
 //小图，在上传时不生成。 在请求时在内存中压缩即时生成。
@@ -102,7 +102,7 @@ open class UploadService {
     /**
      * checkCode 生成方式，md5,mymd5,两种
      */
-    @Value("\${server.upload.checkType:md5}")
+    @Value("\${app.upload.checkType:md5}")
     private var checkType = "md5"
 
     fun downloadImage(url: String, corp: IdName, user: IdName, maxWidth: Int = 1200): ApiResult<IdUrl> {

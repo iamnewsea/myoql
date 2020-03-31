@@ -29,10 +29,12 @@ import javax.annotation.Resource
 import javax.sql.DataSource
 
 
+/**
+ * 依赖配置 app.mybatis.package
+ */
 @Configuration
-//加上这个注解，使得支持事务
 @EnableTransactionManagement
-@ConditionalOnProperty("server.mybatis.package")
+@ConditionalOnProperty("app.mybatis.package")
 @ConditionalOnClass(MapperScannerConfigurer::class)
 open class MyBatisConfig : TransactionManagementConfigurer {
     lateinit var dataSource: DataSource
@@ -47,7 +49,7 @@ open class MyBatisConfig : TransactionManagementConfigurer {
         //获取之前注入的beanName为sqlSessionFactory的对象
         mapperScannerConfigurer.setSqlSessionFactoryBeanName("sqlSessionFactory")
         //指定xml配置文件的路径
-        mapperScannerConfigurer.setBasePackage(SpringUtil.context.environment.getProperty("server.mybatis.package"))
+        mapperScannerConfigurer.setBasePackage(SpringUtil.context.environment.getProperty("app.mybatis.package"))
         return mapperScannerConfigurer
     }
 

@@ -45,7 +45,7 @@ class DockerController {
         return execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd);
     }
 
-    @Value("\${server.upload.path}")
+    @Value("\${app.upload.path}")
     lateinit var uploadPath: String
 
 

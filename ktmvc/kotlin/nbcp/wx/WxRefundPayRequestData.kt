@@ -30,8 +30,8 @@ data class WxRefundPayRequestData(
         var refund_desc: String = ""   //退款原因   否
 
 ) {
-    var appid: String = SpringUtil.context.environment.getProperty("server.wx.appId")
-    var mch_id: String = SpringUtil.context.environment.getProperty("server.wx.mchId")
+    var appid: String = SpringUtil.context.environment.getProperty("app.wx.appId")
+    var mch_id: String = SpringUtil.context.environment.getProperty("app.wx.mchId")
 
     var notify_url: String = ""   //退款结果通知url   否
     var refund_fee_type: String = ""     //退款货币种类   否

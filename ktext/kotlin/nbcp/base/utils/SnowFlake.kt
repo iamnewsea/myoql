@@ -7,21 +7,21 @@ import org.springframework.stereotype.Component
 /**
  * Twitter的分布式自增ID雪花算法snowflake
  * 需要配置：
- * server.dataCenterId , 默认为1，范围：1 - 31
- * server.machineId ， 默认为1 ， 范围：1 - 31
+ * app.dataCenter-id , 默认为1，范围：1 - 31
+ * app.machine-id ， 默认为1 ， 范围：1 - 31
  */
 @Component
 class SnowFlake : InitializingBean {
     /**
      * 数据中心Id, 默认为1，范围：1 - 31
      */
-    @Value("\${server.dataCenterId:1}")
+    @Value("\${app.datacenter-id:1}")
     var dataCenterId: Int = 1
 
     /**
      * 机器标识Id, 默认为1 ， 范围：1 - 31
      */
-    @Value("\${server.machineId:1}")
+    @Value("\${app.machine-id:1}")
     var machineId: Int = 1
 
     private var sequence = 0L //序列号

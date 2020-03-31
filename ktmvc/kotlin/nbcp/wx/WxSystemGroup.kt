@@ -29,7 +29,7 @@ object WxSystemGroup {
      * https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/qr-code/wxacode.getUnlimited.html
      */
     fun getMiniCode(appSecret: String, scene: String, page: String, width: Int = 0): ApiResult<ByteArray> {
-        var appId = SpringUtil.context.environment.getProperty("server.wx.appId")
+        var appId = SpringUtil.context.environment.getProperty("app.wx.appId")
 
         //获取token
         val tokenData = db.rer_base.wx.getAccessToken(appId, appSecret)
@@ -141,7 +141,7 @@ object WxSystemGroup {
     fun pushMessage(data: wx_msg_data, appSecret: String): ApiResult<String> {
         var wx_url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=";
 
-        var appId = SpringUtil.context.environment.getProperty("server.wx.appId")
+        var appId = SpringUtil.context.environment.getProperty("app.wx.appId")
         var tokenData = db.rer_base.wx.getAccessToken(appId, appSecret)
 
         var url = HttpUtil();

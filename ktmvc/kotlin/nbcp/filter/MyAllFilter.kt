@@ -32,9 +32,9 @@ import javax.servlet.http.HttpServletResponse
  * 拦截所有请求，过滤普通的GET及上传下载。
  * 需要配置 ：
  * 0. 标注 @SpringBootApplication 的启动类，还需要添加 @ServletComponentScan 注解。
- * 1. server.filter.allowOrigins
- * 2. server.filter.ignore-log-urls
- * 3. server.filter.headers
+ * 1. app.filter.allowOrigins
+ * 2. app.filter.ignore-log-urls
+ * 3. app.filter.headers
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 //@Configuration
@@ -49,15 +49,15 @@ open class MyAllFilter : Filter, InitializingBean {
     override fun init(p0: FilterConfig?) {
     }
 
-    @Value("\${server.filter.allowOrigins:}")
+    @Value("\${app.filter.allow-origins:}")
     var allowOrigins: String = "";
-    @Value("\${server.filter.ignore-log-urls:}")
+    @Value("\${app.filter.ignore-log-urls:}")
     var ignoreLogUrls: List<String> = listOf()
 
-    @Value("\${server.filter.headers:}")
+    @Value("\${app.filter.headers:}")
     var headers: List<String> = listOf()
 
-    @Value("\${server.filter.headers:public}")
+    @Value("\${app.filter.html-path:public}")
     var htmlPath: String = "public"
 
 //    @Value("\${server.session.cookie.name}")

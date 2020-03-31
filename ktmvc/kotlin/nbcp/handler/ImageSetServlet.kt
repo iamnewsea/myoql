@@ -28,10 +28,10 @@ import javax.servlet.http.HttpServletResponse
 @OpenAction
 @WebServlet(urlPatterns = arrayOf("/image/dynamic"))
 open class ImageSetServlet : HttpServlet() {
-    @Value("\${server.upload.path:}")
+    @Value("\${app.upload.path:}")
     private var uploadPath = ""
 
-    @Value("\${server.upload.dbType:Mongo}")
+    @Value("\${app.upload.dbType:Mongo}")
     private var dbType = "Mongo"
 
     private val dbService by lazy {

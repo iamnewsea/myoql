@@ -16,12 +16,13 @@ Major.Minor.Fix
 
 # 使用包需要配置的变量
 
-- server.upload.host 表示上传文件的文件服务 Host
-- server.upload.logoSize 表示上传图片自动压缩的最大大小。
-- server.filter.allowOrigins 表示跨域允许的域名。
-- server.filter.ignore-log-urls 表示哪些URL在请求过程中添加 UsingScope.NoInfo 作用域。
-- server.dataCenterId 表示服务所在的数据中心Id，生成雪花算法时使用。
-- server.machineId 表示数据中心下属的服务器Id，生成雪花算法时使用。
+- app.upload.host 表示上传文件的文件服务 Host
+- app.filter.allow-origins 表示跨域允许的域名。
+- app.filter.ignore-log-urls 表示哪些URL在请求过程中添加 UsingScope.NoInfo 作用域。
+- app.filter.headers 表示跨域允许的 headers
+- app.filter.html-path 表示可以访问的静态内容，不做任何模板解析。
+- app.dataCenter-id 表示服务所在的数据中心Id，生成雪花算法时使用。
+- app.machine-id 表示数据中心下属的服务器Id，生成雪花算法时使用。
 
 # nginx 代理：
 

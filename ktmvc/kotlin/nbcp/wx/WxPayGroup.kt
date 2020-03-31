@@ -67,8 +67,8 @@ object WxPayGroup {
             var attach: String = "", // 附加数据
             var detail: String = ""  // 商品详情
     ) {
-        var appid: String = SpringUtil.context.environment.getProperty("server.wx.appId")
-        var mch_id: String = SpringUtil.context.environment.getProperty("server.wx.mchId")
+        var appid: String = SpringUtil.context.environment.getProperty("app.wx.appId")
+        var mch_id: String = SpringUtil.context.environment.getProperty("app.wx.mchId")
 
         var spbill_create_ip: String = HttpContext.request.ClientIp  // 终端IP
         private var sign_type: String = "MD5"
@@ -146,7 +146,7 @@ object WxPayGroup {
  * https://pay.weixin.qq.com/wiki/doc/api/wxa/wxa_api.php?chapter=7_7&index=5
  */
 class WxRequestPaymentServerSignData(prepay_id: String) {
-    var appId: String = SpringUtil.context.environment.getProperty("server.wx.appId")
+    var appId: String = SpringUtil.context.environment.getProperty("app.wx.appId")
     var timeStamp: Long = Duration.between("1970-01-01".AsLocalDateTime(), LocalDateTime.now()).seconds
     var signType: String = "MD5"
     var nonceStr: String = CodeUtil.getCode().Slice(0, 32)

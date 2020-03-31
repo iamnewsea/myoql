@@ -4,6 +4,20 @@ logging:
   levels:
     root: WARN
 
+app:
+  wx:
+    appId: wxd5f2957442fc2d0b
+    appSecret: 778c9a9c19a8da17506f95e24749ea2c
+    mchId: 1575431351
+    mchSecret: om2b8pug6c46kbhocmlqyc1k84odxcy1
+  filter:
+    allowOrigins: dev8.cn
+    ignore-log-urls: /open/log,/log,/favicon.ico,/index.html,/webjars/,/swagger-resources/,/v2/api-docs,/swagger-ui.html
+  upload:
+    uploadPath: /opt/upload
+  order:
+    cancelTime: 15
+    receiveTime: 21600
 
 management:
   security:
@@ -37,13 +51,6 @@ server:
       cookie:
         http-only: false
         max-age: P3D  #3天
-
-  filter:
-    allowOrigins: dev8.cn
-    ignore-log-urls: /open/log,/log,/favicon.ico,/index.html,/webjars/,/swagger-resources/,/v2/api-docs,/swagger-ui.html
-  upload:
-    uploadPath: /opt/upload
-
 
 
 spring:
@@ -99,15 +106,8 @@ security:
       port: 8500
       discovery:
         instance-id: ${spring.application.name}
-shop:
-  order:
-    cancelTime: 15
-    receiveTime: 21600
-  wx:
-    appId: wxd5f2957442fc2d0b
-    appSecret: 778c9a9c19a8da17506f95e24749ea2c
-    mchId: 1575431351
-    mchSecret: om2b8pug6c46kbhocmlqyc1k84odxcy1
+
+
 #    pay:
 #      app:
 #        id: wxd5f2957442fc2d0b

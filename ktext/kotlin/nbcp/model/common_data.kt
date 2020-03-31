@@ -22,13 +22,13 @@ open class KeyValueString(var key: String = "", var value: String = "") : java.i
 
 /**
  * 表示Mongo数据库里 Id，Url 的附件实体引用。
- * fullUrl 需要配置 server.upload.host
+ * fullUrl 需要配置 app.upload.host
  */
 open class IdUrl(var id: String = "", var url: String = "") : java.io.Serializable {
     //全路径
     val fullUrl: String
         get() {
-            var host = SpringUtil.context.environment.getProperty("server.upload.host") ?: ""
+            var host = SpringUtil.context.environment.getProperty("app.upload.host") ?: ""
             return url.PatchHostUrl(host)
         }
 

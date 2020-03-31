@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 object H5Group {
-    @Value("\${server.wx.appId}")
+    @Value("\${app.wx.appId}")
     lateinit var appId: String
 
     /**
