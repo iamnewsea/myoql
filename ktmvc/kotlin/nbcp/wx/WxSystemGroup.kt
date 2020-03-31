@@ -46,7 +46,7 @@ object WxSystemGroup {
         var postBody = JsonMap();
         postBody["scene"] = scene;
         postBody["page"] = page;
-        if (width >= 0) {
+        if (width > 0) {
             postBody["width"] = width;
         }
 
