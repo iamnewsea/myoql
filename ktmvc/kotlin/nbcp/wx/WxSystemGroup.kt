@@ -1,5 +1,6 @@
 package nbcp.wx
 
+import nbcp.base.extend.AsString
 import nbcp.base.extend.FromJson
 import nbcp.base.extend.HasValue
 import nbcp.base.extend.ToJson
@@ -8,6 +9,7 @@ import nbcp.base.utils.SpringUtil
 import nbcp.comm.ApiResult
 import nbcp.comm.JsonMap
 import nbcp.comm.StringMap
+import nbcp.comm.utf8
 import nbcp.db.db
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
@@ -19,6 +21,7 @@ import java.io.PrintWriter
 import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL
+import java.nio.charset.Charset
 
 
 object WxSystemGroup {
@@ -50,12 +53,14 @@ object WxSystemGroup {
             postBody["width"] = width;
         }
 
-        return ApiResult.of(
-                HttpUtil(requestUrl)
-                        .setRequest { it.requestMethod == "POST" }
-                        .setPostBody(postBody.ToJson())
-                        .doNet()
-        )
+        var http = HttpUtil(requestUrl)
+                .setRequest { it.requestMethod == "POST" }
+                .setPostBody(postBody.ToJson());
+        var bytes = http.doNet();
+        if (http.status != 200 || http.responseHeader.getKeyIgnoreCase("content-type").AsString().contains("json")) {
+            return ApiResult(bytes.toString(Charset.forName(http.responseCharset.AsString("UTF-8"))))
+        }
+        return ApiResult.of(bytes)
 
 //        // 请求返回来的流接收到这里,然后转换
 //        val outStream = ByteArrayOutputStream()

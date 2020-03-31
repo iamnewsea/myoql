@@ -1,27 +1,11 @@
 package nbcp.db
 
 import nbcp.base.extend.*
-import nbcp.base.utils.RecursionUtil
 import nbcp.base.utils.SpringUtil
-import nbcp.comm.StringMap
-import nbcp.comm.StringTypedMap
 import nbcp.comm.TimeSpan
-import nbcp.db.mongo.*
-import nbcp.db.mongo.MongoEntityEvent
 import nbcp.db.mongo.table.MongoBaseGroup
 import nbcp.db.redis.RedisBaseGroup
-import nbcp.db.sql.SqlBaseTable
-import nbcp.db.sql.SqlEntityEvent
 import nbcp.db.sql.table.SqlBaseGroup
-import org.bson.Document
-import org.bson.types.ObjectId
-import org.springframework.core.convert.support.GenericConversionService
-import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory
-import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver
-import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper
-import org.springframework.data.mongodb.core.convert.MappingMongoConverter
-import org.springframework.data.mongodb.core.mapping.MongoMappingContext
 
 enum class DatabaseEnum {
     Mongo,

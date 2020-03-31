@@ -1,11 +1,9 @@
 package nbcp.db
 
 import nbcp.base.utils.SpringUtil
-import nbcp.comm.StringMap
-import nbcp.comm.StringTypedMap
+import nbcp.comm.StringKeyMap
 import nbcp.db.sql.SqlBaseTable
 import nbcp.db.sql.SqlEntityEvent
-import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.jdbc.core.JdbcTemplate
 import javax.sql.DataSource
 
@@ -32,7 +30,7 @@ object db_sql {
     }
 
 
-    private var dynamicTableDataSource = StringTypedMap<DataSource>();
+    private var dynamicTableDataSource = StringKeyMap<DataSource>();
     /**
      * 指派集合到数据库
      */

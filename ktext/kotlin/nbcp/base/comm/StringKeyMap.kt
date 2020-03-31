@@ -2,9 +2,8 @@ package nbcp.comm
 
 import org.slf4j.LoggerFactory
 import nbcp.base.extend.*
-import java.util.concurrent.ConcurrentHashMap
 
-open class StringTypedMap<T> : LinkedHashMap<String, T> {
+open class StringKeyMap<T> : LinkedHashMap<String, T> {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -27,6 +26,17 @@ open class StringTypedMap<T> : LinkedHashMap<String, T> {
         }
     }
 
+    /**
+     * 忽略大小写获取键值
+     */
+    fun getKeyIgnoreCase(key: String): T? {
+        var key2 = this.keys.firstOrNull { it.VbSame(key) };
+        if (key2 == null) {
+            return null
+        }
+        return this[key2];
+    }
+
 //    operator fun plus(other: StringTypedMap<T>): StringTypedMap<T> {
 //        var ret = StringTypedMap<T>()
 //        ret.putAll(this)
@@ -41,7 +51,7 @@ open class StringTypedMap<T> : LinkedHashMap<String, T> {
         }
     }
 
-    fun findByKey(KeyPath: String): Array<StringTypedMap<T>> {
+    fun findByKey(KeyPath: String): Array<StringKeyMap<T>> {
         if (KeyPath.isEmpty()) {
             return arrayOf();
         }
@@ -49,7 +59,7 @@ open class StringTypedMap<T> : LinkedHashMap<String, T> {
         if (path.size == 0) {
             return arrayOf();
         }
-        var source = mutableListOf<StringTypedMap<T>>()
+        var source = mutableListOf<StringKeyMap<T>>()
 
 
         var key = path.first();
@@ -59,7 +69,7 @@ open class StringTypedMap<T> : LinkedHashMap<String, T> {
             key = key.Slice(0, index);
         }
 
-        var item = this[key] as StringTypedMap<T>;
+        var item = this[key] as StringKeyMap<T>;
         if (item != null) {
             source.add(item);
         } else {
@@ -68,7 +78,7 @@ open class StringTypedMap<T> : LinkedHashMap<String, T> {
                 for (num3 in 0..(objArray.size - 1)) {
                     if ((indexs.size <= 0) || indexs.contains(num3)) {
                         var obj2 = objArray[num3];
-                        var data2 = obj2 as StringTypedMap<T>;
+                        var data2 = obj2 as StringKeyMap<T>;
                         if (data2 != null) {
                             source.add(data2);
                         }
@@ -81,7 +91,7 @@ open class StringTypedMap<T> : LinkedHashMap<String, T> {
             return source.toTypedArray()
         }
 
-        var ret = mutableListOf<StringTypedMap<T>>();
+        var ret = mutableListOf<StringKeyMap<T>>();
         source.forEach { o ->
             ret.addAll(o.findByKey(path.Skip(1).joinToString("/")));
         }
@@ -128,7 +138,7 @@ open class StringTypedMap<T> : LinkedHashMap<String, T> {
                 return """"${value}""""
             }
         } else if (Map::class.java.isAssignableFrom(type)) {
-            return (value as StringTypedMap<*>).toJsonString()
+            return (value as StringKeyMap<*>).toJsonString()
         } else if (type.isArray) {
             return "[" + (value as Array<*>).map { toJsonValueString(it) }.joinToString(",") + "]"
         } else if (Collection::class.java.isAssignableFrom(type)) {

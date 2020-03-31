@@ -121,7 +121,7 @@ class HttpUtil(var url: String = "") {
         private set;
 
     /**
-     * 该次回发Header，只读
+     * 该次回发Header，只读 ,全小写
      */
     var responseHeader: StringMap = StringMap()
         private set;
@@ -284,7 +284,7 @@ class HttpUtil(var url: String = "") {
                     return@forEach
                 }
                 var value = it.value.joinToString(",")
-                this.responseHeader[it.key] = value
+                this.responseHeader[it.key.toLowerCase()] = value
             }
 
             if (this.responseAction != null) {

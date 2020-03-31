@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory
 import nbcp.base.extend.*
 import nbcp.base.utils.JsUtil
 
-open class JsonMap : StringTypedMap<Any?> {
+open class JsonMap : StringKeyMap<Any?> {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
         //分派口.

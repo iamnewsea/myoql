@@ -2,12 +2,11 @@ package nbcp.comm
 
 
 import org.apache.http.message.BasicNameValuePair
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Created by udi on 17-4-1.
  */
-open class StringMap : StringTypedMap<String> {
+open class StringMap : StringKeyMap<String> {
     constructor() : super() {
     }
 
