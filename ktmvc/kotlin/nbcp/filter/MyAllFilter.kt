@@ -51,6 +51,7 @@ open class MyAllFilter : Filter, InitializingBean {
 
     @Value("\${app.filter.allow-origins:}")
     var allowOrigins: String = "";
+
     @Value("\${app.filter.ignore-log-urls:}")
     var ignoreLogUrls: List<String> = listOf()
 
@@ -437,19 +438,15 @@ open class MyAllFilter : Filter, InitializingBean {
 
 
     private fun getAllFiles(file: File, filter: ((String) -> Boolean)): List<String> {
-        if (file.isDirectory) {
-            var ret = mutableListOf<String>()
-            file.listFiles().forEach {
-                ret.addAll(getAllFiles(it, filter));
-            }
-            return ret
-        } else {
+        if (file.isDirectory == false) {
             if (filter.invoke(file.FullName) == false) {
                 return listOf()
             }
 
             return listOf(file.FullName)
         }
+
+        return file.listFiles().map { getAllFiles(it, filter).toTypedArray() }.Unwind().toList()
     }
 
     //收集静态资源
