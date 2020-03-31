@@ -9,6 +9,10 @@ import nbcp.base.utils.SpringUtil
 
 class MyLogBackFilter : Filter<ILoggingEvent>() {
     override fun decide(event: ILoggingEvent?): FilterReply {
+        if( SpringUtil.isInited && SpringUtil.context.environment.getProperty("debug").AsBoolean()){
+            return FilterReply.ACCEPT
+        }
+
         if (scopes.getLatestScope(LogScope.ImportantLog) != null) {
             return FilterReply.ACCEPT
         }
