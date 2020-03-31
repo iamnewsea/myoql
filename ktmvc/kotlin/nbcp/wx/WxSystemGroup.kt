@@ -31,7 +31,7 @@ object WxSystemGroup {
      * 生成带参数二维码,C端展示  base64
      * https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/qr-code/wxacode.getUnlimited.html
      */
-    fun getMiniCode(appSecret: String, scene: String, page: String, width: Int = 0): ApiResult<ByteArray> {
+    fun getMiniCode(appSecret: String, scene: String, page: String, width: Int = 0): ApiResult<HttpUtil> {
         var appId = SpringUtil.context.environment.getProperty("app.wx.appId")
 
         //获取token
@@ -60,7 +60,8 @@ object WxSystemGroup {
         if (http.status != 200 || http.responseHeader.getKeyIgnoreCase("content-type").AsString().contains("json")) {
             return ApiResult(bytes.toString(Charset.forName(http.responseCharset.AsString("UTF-8"))))
         }
-        return ApiResult.of(bytes)
+
+        return ApiResult.of(http)
 
 //        // 请求返回来的流接收到这里,然后转换
 //        val outStream = ByteArrayOutputStream()

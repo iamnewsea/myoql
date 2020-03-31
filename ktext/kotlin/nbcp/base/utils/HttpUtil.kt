@@ -109,6 +109,7 @@ class HttpUtil(var url: String = "") {
     }
 
 
+    var responseResult: ByteArray = byteArrayOf(0)
     private var requestAction: ((HttpURLConnection) -> Unit)? = null
     private var responseAction: ((HttpURLConnection) -> Unit)? = null
     val requestHeader: StringMap = StringMap()
@@ -302,7 +303,8 @@ class HttpUtil(var url: String = "") {
             }
 
             try {
-                return toByteArray(conn.getInputStream());
+                this.responseResult = toByteArray(conn.getInputStream());
+                return this.responseResult;
             } catch (e: Exception) {
                 msg = e.message ?: "服务器错误"
                 return "".toByteArray(utf8);
