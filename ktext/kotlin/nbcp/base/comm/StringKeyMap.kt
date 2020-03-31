@@ -3,6 +3,9 @@ package nbcp.comm
 import org.slf4j.LoggerFactory
 import nbcp.base.extend.*
 
+/**
+ * 尽量使用 JsonMap
+ */
 open class StringKeyMap<T> : LinkedHashMap<String, T> {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
