@@ -12,8 +12,6 @@ import org.springframework.stereotype.Component
 @Component
 class MongoEntityEvent : BeanPostProcessor {
     companion object {
-        //所有的组。
-        val groups = mutableSetOf<IDataGroup>()
         //需要删 除后放入垃圾箱的实体
         val dustbinEntitys = mutableSetOf<Class<*>>()  //mongo entity class
         val logHistoryMap = linkedMapOf<Class<*>, Array<String>>()
@@ -31,7 +29,7 @@ class MongoEntityEvent : BeanPostProcessor {
          */
         fun getCollection(collectionName: String): MongoBaseEntity<IMongoDocument>? {
             var ret: BaseDbEntity? = null
-            groups.any { group ->
+            db.mongo.groups.any { group ->
                 ret = group.getEntities().firstOrNull() { it.tableName == collectionName }
 
                 return@any ret != null
@@ -44,7 +42,7 @@ class MongoEntityEvent : BeanPostProcessor {
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
 
         if (bean is IDataGroup) {
-            groups.add(bean)
+            db.mongo.groups.add(bean)
 
             bean.getEntities().forEach { moer ->
                 if (moer is MongoBaseEntity<*>) {

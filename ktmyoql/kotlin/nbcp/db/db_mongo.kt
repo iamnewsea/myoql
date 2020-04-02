@@ -21,6 +21,10 @@ import org.springframework.data.mongodb.core.query.Criteria
  * 请使用 db.mongo
  */
 object db_mongo {
+
+    //所有的组。
+    val groups = mutableSetOf<IDataGroup>()
+
     //     val sqlEvents = SpringUtil.getBean<SqlEventConfig>();
     val mongoEvents by lazy {
         return@lazy SpringUtil.getBean<MongoEntityEvent>();

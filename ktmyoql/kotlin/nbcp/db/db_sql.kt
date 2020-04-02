@@ -2,6 +2,7 @@ package nbcp.db
 
 import nbcp.base.utils.SpringUtil
 import nbcp.comm.StringKeyMap
+import nbcp.db.sql.IDataGroup
 import nbcp.db.sql.SqlBaseTable
 import nbcp.db.sql.SqlEntityEvent
 import org.springframework.jdbc.core.JdbcTemplate
@@ -11,6 +12,9 @@ import javax.sql.DataSource
  * 请使用 db.sql
  */
 object db_sql {
+
+    //所有的组。
+    val groups = mutableSetOf<IDataGroup>()
 
     var getSqlEntity: ((tableName: String) -> SqlBaseTable<*>)? = null
 

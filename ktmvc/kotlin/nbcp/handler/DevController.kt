@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController
 import nbcp.comm.*
 import nbcp.base.extend.*
 import nbcp.comm.JsonpMapping
+import nbcp.db.db
 import nbcp.db.mongo.MongoBaseEntity
 import nbcp.db.mongo.MongoEntityEvent
 import kotlin.reflect.full.memberProperties
@@ -26,7 +27,7 @@ class DevController {
 
     @GetMapping("/getGroups")
     fun getGroup(dbType: String): ListResult<String> {
-        MongoEntityEvent.groups.apply {
+        db.mongo.groups.apply {
             return ListResult.of(this.map {
                 var name = it::class.java.simpleName
                 return@map name[0].toLowerCase() + name.Slice(1, -5)
@@ -37,7 +38,7 @@ class DevController {
     @GetMapping("/getEntities")
     fun getEntities(dbType: String, group: String): ListResult<String> {
         var group = group[0].toUpperCase() + group.Slice(1) + "Group"
-        var groupObj = MongoEntityEvent.groups.firstOrNull { it::class.java.simpleName == group }
+        var groupObj = db.mongo.groups.firstOrNull { it::class.java.simpleName == group }
         if (groupObj == null) return ListResult("找不到group")
 
         groupObj.getEntities().map { it.tableName }.apply { return ListResult.of(this) }
@@ -54,7 +55,7 @@ class DevController {
     @GetMapping("/getFields")
     fun getEntity(dbType: String, group: String, entity: String): ListResult<FieldModel> {
         var group = group[0].toUpperCase() + group.Slice(1) + "Group"
-        var groupObj = MongoEntityEvent.groups.firstOrNull { it::class.java.simpleName == group }
+        var groupObj = db.mongo.groups.firstOrNull { it::class.java.simpleName == group }
         if (groupObj == null) return ListResult("找不到group")
 
         var entityObj = groupObj.getEntities().firstOrNull { it.tableName == entity };

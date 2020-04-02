@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component
 @Component
 class SqlEntityEvent : BeanPostProcessor {
     companion object {
-        //所有的组。
-        val groups = mutableSetOf<IDataGroup>()
         //需要删 除后放入垃圾箱的实体
         val dustbinEntitys = mutableSetOf<Class<*>>()  //mongo meta class
         // 冗余字段的引用。如 user.corp.name 引用的是  corp.name
@@ -29,7 +27,7 @@ class SqlEntityEvent : BeanPostProcessor {
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
 
         if (bean is IDataGroup) {
-            groups.add(bean)
+            db.sql.groups.add(bean)
 
             bean.getEntities().forEach { moer ->
                 if (moer is SqlBaseTable<*>) {
