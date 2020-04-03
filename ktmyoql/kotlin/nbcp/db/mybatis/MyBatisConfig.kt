@@ -2,6 +2,7 @@ package nbcp.db.mybatis
 
 import nbcp.base.utils.MyUtil
 import nbcp.base.utils.SpringUtil
+import nbcp.db.mysql.MysqlConfig
 import org.apache.ibatis.executor.Executor
 import org.apache.ibatis.executor.keygen.SelectKeyGenerator
 import org.apache.ibatis.mapping.MappedStatement
@@ -44,6 +45,7 @@ import kotlin.reflect.KClass
 @AutoConfigureAfter(value = arrayOf(DataSourceAutoConfiguration::class))
 @ConditionalOnProperty("app.mybatis.package")
 @DependsOn(value = arrayOf("mysqlConfig", "primary"))
+@ConditionalOnBean(value = arrayOf(MysqlConfig::class))
 @Lazy
 open class MyBatisConfig() : TransactionManagementConfigurer {
     val dataSource: DataSource by lazy {
