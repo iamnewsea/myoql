@@ -1,5 +1,6 @@
 package nbcp
 
+import nbcp.base.utils.SpringUtil
 import nbcp.comm.GetSetTypeJsonMapper
 import nbcp.comm.JavascriptDateModule
 import nbcp.comm.utf8
@@ -16,15 +17,14 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 @Configuration
 open class PzxMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
 
-    @Autowired
-    lateinit var handerAdapter: RequestMappingHandlerAdapter
+    val handerAdapter: RequestMappingHandlerAdapter by lazy {
+        return@lazy SpringUtil.getBean<RequestMappingHandlerAdapter>();
+    }
 
 
 //    @Autowired
 //    lateinit var converter: MappingJackson2HttpMessageConverter
 
-    @Autowired
-    private lateinit var jsonModule: JavascriptDateModule
 
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
         initMvcRequest()

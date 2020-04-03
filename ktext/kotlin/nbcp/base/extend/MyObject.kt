@@ -562,7 +562,7 @@ fun <T : Serializable> T.CloneObject(): T {
     return cloneObj;
 }
 
-fun Logger.Log(level: Level, msgFunc: (() -> String)) {
+inline fun Logger.Log(level: Level, msgFunc: (() -> String)) {
     try {
         if (level == Level.INFO) {
             if (this.isInfoEnabled) {
@@ -590,7 +590,7 @@ fun Logger.Log(level: Level, msgFunc: (() -> String)) {
     }
 }
 
-fun Logger.InfoError(error: Boolean, msgFunc: (() -> String)) {
+inline fun Logger.InfoError(error: Boolean, msgFunc: (() -> String)) {
     if (error) {
         this.Error(msgFunc)
     } else {
@@ -598,11 +598,11 @@ fun Logger.InfoError(error: Boolean, msgFunc: (() -> String)) {
     }
 }
 
-fun Logger.Trace(infoFunc: (() -> String)) = this.Log(Level.TRACE, infoFunc)
-fun Logger.Debug(infoFunc: (() -> String)) = this.Log(Level.DEBUG, infoFunc)
-fun Logger.Info(infoFunc: (() -> String)) = this.Log(Level.INFO, infoFunc)
-fun Logger.Warn(infoFunc: (() -> String)) = this.Log(Level.WARN, infoFunc)
-fun Logger.Error(infoFunc: (() -> String)) = this.Log(Level.ERROR, infoFunc)
+inline fun Logger.Trace(infoFunc: (() -> String)) = this.Log(Level.TRACE, infoFunc)
+inline fun Logger.Debug(infoFunc: (() -> String)) = this.Log(Level.DEBUG, infoFunc)
+inline fun Logger.Info(infoFunc: (() -> String)) = this.Log(Level.INFO, infoFunc)
+inline fun Logger.Warn(infoFunc: (() -> String)) = this.Log(Level.WARN, infoFunc)
+inline fun Logger.Error(infoFunc: (() -> String)) = this.Log(Level.ERROR, infoFunc)
 
 /**
  * 输入16进制内容。

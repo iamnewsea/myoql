@@ -13,6 +13,7 @@ import org.springframework.web.bind.support.ConfigurableWebBindingInitializer
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
 import nbcp.base.extend.AsLocalDateTime
 import nbcp.base.extend.AsString
+import nbcp.base.utils.SpringUtil
 import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -97,17 +98,13 @@ class StringToLocalDateTimeConverter : Converter<String, LocalDateTime> {
 
 @Configuration
 open class WebConfigBeans {
-    @Autowired
-    private val handlerAdapter: RequestMappingHandlerAdapter? = null
-
-
     /**
      * 增加字符串转日期的功能
      */
     @PostConstruct
     fun initEditableValidation() {
-
-        val initializer = handlerAdapter!!.webBindingInitializer as ConfigurableWebBindingInitializer
+        var handlerAdapter = SpringUtil.getBean<RequestMappingHandlerAdapter>()
+        val initializer = handlerAdapter.webBindingInitializer as ConfigurableWebBindingInitializer
         if (initializer.conversionService != null) {
             val genericConversionService = initializer.conversionService as GenericConversionService
             genericConversionService.addConverter(StringToDateConverter())

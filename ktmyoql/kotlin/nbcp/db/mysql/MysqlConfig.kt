@@ -3,6 +3,7 @@ package nbcp.db.mysql
 import com.zaxxer.hikari.HikariDataSource
 import nbcp.base.extend.AsString
 import nbcp.base.utils.SpringUtil
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -49,11 +50,13 @@ class ExistsDataSourceConfigCondition : Condition {
  *      username,如果不存在取 spring.datasource.slave.username
  *      password,如果不存在取 spring.datasource.slave.password
  */
-@Configuration
-@AutoConfigureAfter(DataSourceAutoConfiguration::class)
+@Configuration()
+@AutoConfigureAfter(value = arrayOf(DataSourceAutoConfiguration::class))
 @Conditional(ExistsDataSourceConfigCondition::class)
-class MySqlConfig {
-    @Bean()
+@DependsOn(value = arrayOf("springUtil"))
+class MysqlConfig() {
+
+    @Bean("primary")
     @Primary
     @ConfigurationProperties("spring.datasource.hikari")
     fun primaryDataSource(): DataSource {
@@ -93,7 +96,7 @@ class MySqlConfig {
 
         if (ret.jdbcUrl.isNullOrEmpty()) {
             ret.jdbcUrl = SpringUtil.context.environment.getProperty("spring.datasource.slave.hikari.url")
-            if(ret.jdbcUrl.isNullOrEmpty()){
+            if (ret.jdbcUrl.isNullOrEmpty()) {
                 ret.jdbcUrl = SpringUtil.context.environment.getProperty("spring.datasource.slave.url")
             }
         }

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import nbcp.base.utils.SpringUtil
+import org.springframework.context.annotation.DependsOn
 import org.springframework.context.annotation.Primary
 
 /**
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.Primary
  */
 @Primary
 @Component
+@DependsOn(value = arrayOf("javascriptDateModule"))
 open class FieldTypeJsonMapper : JsonBaseObjectMapper(), InitializingBean {
     init {
         this.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
@@ -37,11 +39,8 @@ open class FieldTypeJsonMapper : JsonBaseObjectMapper(), InitializingBean {
     }
 
 
-    @Autowired
-    lateinit var dateModule: JavascriptDateModule;
-
     override fun afterPropertiesSet() {
+        var dateModule = SpringUtil.getBean<JavascriptDateModule>();
         this.registerModule(dateModule);
     }
-
 }

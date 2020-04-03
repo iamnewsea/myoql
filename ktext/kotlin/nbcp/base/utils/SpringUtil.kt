@@ -48,11 +48,10 @@ open class SpringUtil : ApplicationContextAware {
 
 
         //通过class获取Bean.
-//        fun <T> getBean(collectionClass: Class<T>): T {
-//            var ret = getContext().getBean(collectionClass);
-//
-//            return ret;
-//        }
+        fun <T> getBean(clazz: Class<T>): T {
+            var ret = context.getBean(clazz);
+            return ret;
+        }
 
         inline fun <reified T> getBean(): T {
             return context.getBean(T::class.java);
@@ -68,6 +67,10 @@ open class SpringUtil : ApplicationContextAware {
 
         inline fun <reified T> getBeanByName(name: String): T {
             return context.getBean(name, T::class.java);
+        }
+
+        fun <T> getBeanByName(name: String, clazz: Class<T>): T {
+            return context.getBean(name, clazz);
         }
 
         //通过name,以及Clazz返回指定的Bean

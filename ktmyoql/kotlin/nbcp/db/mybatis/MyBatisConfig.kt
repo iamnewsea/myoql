@@ -15,10 +15,16 @@ import org.mybatis.spring.SqlSessionFactoryBean
 import org.mybatis.spring.SqlSessionTemplate
 import org.mybatis.spring.mapper.MapperScannerConfigurer
 import org.mybatis.spring.transaction.SpringManagedTransaction
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.AutoConfigureAfter
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.DependsOn
+import org.springframework.context.annotation.Lazy
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.EnableTransactionManagement
@@ -27,6 +33,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.util.*
 import javax.annotation.Resource
 import javax.sql.DataSource
+import kotlin.reflect.KClass
 
 
 /**
@@ -34,16 +41,21 @@ import javax.sql.DataSource
  */
 @Configuration
 @EnableTransactionManagement
+@AutoConfigureAfter(value = arrayOf(DataSourceAutoConfiguration::class))
 @ConditionalOnProperty("app.mybatis.package")
-@ConditionalOnClass(MapperScannerConfigurer::class)
-open class MyBatisConfig : TransactionManagementConfigurer {
-    lateinit var dataSource: DataSource
+@DependsOn(value = arrayOf("mysqlConfig", "primary"))
+@Lazy
+open class MyBatisConfig() : TransactionManagementConfigurer {
+    val dataSource: DataSource by lazy {
+        return@lazy SpringUtil.getBean<DataSource>()
+    }
 
     override fun annotationDrivenTransactionManager(): PlatformTransactionManager {
         return DataSourceTransactionManager(dataSource)
     }
 
     @Bean
+    @Lazy
     fun mapperScannerConfigurer(): MapperScannerConfigurer {
         val mapperScannerConfigurer = MapperScannerConfigurer()
         //获取之前注入的beanName为sqlSessionFactory的对象
@@ -54,6 +66,7 @@ open class MyBatisConfig : TransactionManagementConfigurer {
     }
 
     @Bean(name = arrayOf("sqlSessionFactory"))
+    @Lazy
     open fun sqlSessionFactoryBean(): SqlSessionFactory? {
         val bean = SqlSessionFactoryBean()
         bean.setDataSource(dataSource)
@@ -78,6 +91,7 @@ open class MyBatisConfig : TransactionManagementConfigurer {
     }
 
     @Bean
+    @Lazy
     open fun sqlSessionTemplate(sqlSessionFactory: SqlSessionFactory): SqlSessionTemplate {
         return SqlSessionTemplate(sqlSessionFactory)
     }

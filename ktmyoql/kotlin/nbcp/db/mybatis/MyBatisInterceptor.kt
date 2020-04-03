@@ -51,7 +51,7 @@ class MyBatisInterceptor : Interceptor {
 
 
     private fun setReadMode(executor: Executor) {
-        MyUtil.setPrivatePropertyValue(executor.transaction as SpringManagedTransaction, "dataSource", SpringUtil.getBeanByName<DataSource>("read"))
+        MyUtil.setPrivatePropertyValue(executor.transaction as SpringManagedTransaction, "dataSource", SpringUtil.getBeanByName<DataSource>("slave"))
     }
 
     //默认
