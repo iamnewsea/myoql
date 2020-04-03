@@ -128,6 +128,11 @@ class MysqlConfig() {
     @Bean("slaveJdbcTemplate")
     @Conditional(ExistsSlaveDataSourceConfigCondition::class)
     fun slaveJdbcTemplate(): JdbcTemplate {
-        return JdbcTemplate(SpringUtil.getBeanByName<DataSource>("slave"), true)
+        var slave = SpringUtil.getBeanByName<DataSource>("slave")
+        if( slave != null ) {
+            return JdbcTemplate(slave, true)
+        }
+
+        return primaryJdbcTemplate();
     }
 }
