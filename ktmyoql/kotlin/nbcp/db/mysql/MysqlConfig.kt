@@ -55,6 +55,11 @@ class ExistsDataSourceConfigCondition : Condition {
 @Conditional(ExistsDataSourceConfigCondition::class)
 @DependsOn(value = arrayOf("springUtil"))
 class MysqlConfig() {
+    companion object{
+        val hasSlave by lazy {
+            return@lazy SpringUtil.context.containsBean("slave");
+        }
+    }
 
     @Bean("primary")
     @Primary
@@ -128,9 +133,8 @@ class MysqlConfig() {
     @Bean("slaveJdbcTemplate")
     @Conditional(ExistsSlaveDataSourceConfigCondition::class)
     fun slaveJdbcTemplate(): JdbcTemplate {
-        var slave = SpringUtil.getBeanByName<DataSource>("slave")
-        if( slave != null ) {
-            return JdbcTemplate(slave, true)
+        if( MysqlConfig.hasSlave ) {
+            return JdbcTemplate(SpringUtil.getBeanByName<DataSource>("slave"), true)
         }
 
         return primaryJdbcTemplate();

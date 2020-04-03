@@ -2,6 +2,7 @@ package nbcp.db.mybatis
 
 import nbcp.base.utils.MyUtil
 import nbcp.base.utils.SpringUtil
+import nbcp.db.mysql.MysqlConfig
 import org.apache.ibatis.executor.Executor
 import org.apache.ibatis.executor.keygen.SelectKeyGenerator
 import org.apache.ibatis.mapping.MappedStatement
@@ -51,8 +52,8 @@ class MyBatisInterceptor : Interceptor {
 
 
     private fun setReadMode(executor: Executor) {
-        var slave = SpringUtil.context.getBean("slave", DataSource::class.java);
-        if (slave != null) {
+        if (MysqlConfig.hasSlave) {
+            var slave = SpringUtil.getBeanByName<DataSource>("slave");
             MyUtil.setPrivatePropertyValue(executor.transaction as SpringManagedTransaction, "dataSource", slave)
             return;
         }

@@ -17,6 +17,8 @@ import nbcp.db.sql.*
 import java.time.LocalDateTime
 import nbcp.db.*;
 import nbcp.db.cache.*;
+import nbcp.db.mysql.MysqlConfig
+
 /**
  * ORM解决80%的问题即可. 对于 自连接,复杂的查询, 直接写Sql吧.
  *
@@ -66,10 +68,6 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
             return@lazy SpringUtil.getBean<IProxyCache4Sql>();
         }
 
-        val hasSlave by lazy {
-            return@lazy SpringUtil.context.containsBean("slave");
-        }
-
 
 //        fun getJdbcTemplateByDatasrouce(datasourceName: String): JdbcTemplate {
 //            if (datasourceName.HasValue) {
@@ -94,7 +92,7 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
 
 
             if (this is SqlBaseQueryClip) {
-                if (hasSlave) {
+                if (MysqlConfig.hasSlave) {
                     return SpringUtil.getBeanByName<JdbcTemplate>("slaveJdbcTemplate")
                 }
             }
