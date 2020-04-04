@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import nbcp.base.extend.AsLocalDateTime
 import nbcp.base.extend.AsString
 import nbcp.base.utils.SpringUtil
+import org.springframework.context.annotation.DependsOn
 import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -97,6 +98,7 @@ class StringToLocalDateTimeConverter : Converter<String, LocalDateTime> {
 }
 
 @Configuration
+@DependsOn("springUtil")
 open class WebConfigBeans {
     /**
      * 增加字符串转日期的功能

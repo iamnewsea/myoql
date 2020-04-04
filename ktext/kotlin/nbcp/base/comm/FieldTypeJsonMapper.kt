@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Primary
  */
 @Primary
 @Component
-@DependsOn(value = arrayOf("javascriptDateModule"))
+@DependsOn(value = arrayOf("javascriptDateModule","springUtil"))
 open class FieldTypeJsonMapper : JsonBaseObjectMapper(), InitializingBean {
     init {
         this.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);

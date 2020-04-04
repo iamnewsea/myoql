@@ -9,12 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationListener
 import org.springframework.context.event.ContextRefreshedEvent
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.DependsOn
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
 
 @Configuration
+@DependsOn("springUtil")
 open class PzxMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
 
     val handerAdapter: RequestMappingHandlerAdapter by lazy {

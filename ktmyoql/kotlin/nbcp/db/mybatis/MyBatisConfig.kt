@@ -44,7 +44,7 @@ import kotlin.reflect.KClass
 @EnableTransactionManagement
 @AutoConfigureAfter(value = arrayOf(DataSourceAutoConfiguration::class))
 @ConditionalOnProperty("app.mybatis.package")
-@DependsOn(value = arrayOf("mysqlConfig", "primary"))
+@DependsOn(value = arrayOf("mysqlConfig", "primary","springUtil"))
 @ConditionalOnBean(value = arrayOf(MysqlConfig::class))
 @Lazy
 open class MyBatisConfig() : TransactionManagementConfigurer {

@@ -13,9 +13,11 @@ import nbcp.base.utils.Md5Util
 import nbcp.base.utils.SpringUtil
 import nbcp.db.mysql.*
 import nbcp.db.*;
+import org.springframework.context.annotation.DependsOn
 
 @Service
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
+@DependsOn("springUtil")
 class ProxyDataCache4Sql : IProxyCache4Sql {
     private val redisCache by lazy {
         return@lazy SpringUtil.getBeanByName<IDataCache4Sql>("redis")

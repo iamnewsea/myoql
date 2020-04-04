@@ -4,6 +4,7 @@ import nbcp.base.extend.AsInt
 import nbcp.base.extend.AsLong
 import nbcp.base.utils.SpringUtil
 import org.slf4j.LoggerFactory
+import org.springframework.context.annotation.DependsOn
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.lang.Exception
@@ -11,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
 @Service
+@DependsOn("springUtil")
 class RedisTask {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
