@@ -38,7 +38,6 @@ object WxSystemGroup {
         val tokenData = db.rer_base.wx.getAccessToken(appId, appSecret)
 
         if (tokenData.msg.HasValue) {
-            println(tokenData.msg)
             return ApiResult(tokenData.msg)
         }
 
