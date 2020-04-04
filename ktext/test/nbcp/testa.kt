@@ -6,11 +6,12 @@ import nbcp.base.utils.RecursionUtil
 import nbcp.db.IdName
 import nbcp.db.IdUrl
 import org.junit.Test
+import java.time.LocalDate
 
 class testa : TestBase() {
 
     @Test
-    fun abc() {
+    fun abcda() {
         var xml = """
 <xml>
     <return_code> <![CDATA[ SUCCESS ]]></return_code> 
@@ -33,7 +34,9 @@ class testa : TestBase() {
     }
 
     @Test
-    fun abcd(){
-        println("abcd".toByteArray().ToHexLowerString())
+    fun abcd() {
+        var b = LocalDate.now()
+        var e = b.ToJson()
+        println(e)
     }
 }

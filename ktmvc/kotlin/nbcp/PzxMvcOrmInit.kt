@@ -2,10 +2,8 @@ package nbcp
 
 import nbcp.base.utils.SpringUtil
 import nbcp.comm.GetSetTypeJsonMapper
-import nbcp.comm.JavascriptDateModule
 import nbcp.comm.utf8
 import nbcp.web.RequestParameterConverter
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationListener
 import org.springframework.context.event.ContextRefreshedEvent
 import org.springframework.context.annotation.Configuration
@@ -22,11 +20,6 @@ open class PzxMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
     val handerAdapter: RequestMappingHandlerAdapter by lazy {
         return@lazy SpringUtil.getBean<RequestMappingHandlerAdapter>();
     }
-
-
-//    @Autowired
-//    lateinit var converter: MappingJackson2HttpMessageConverter
-
 
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
         initMvcRequest()

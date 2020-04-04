@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Primary
  */
 @Primary
 @Component
-@DependsOn(value = arrayOf("javascriptDateModule","springUtil"))
+@DependsOn(value = arrayOf("myJsonModule","springUtil"))
 open class FieldTypeJsonMapper : JsonBaseObjectMapper(), InitializingBean {
     init {
         this.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
@@ -40,7 +40,7 @@ open class FieldTypeJsonMapper : JsonBaseObjectMapper(), InitializingBean {
 
 
     override fun afterPropertiesSet() {
-        var dateModule = SpringUtil.getBean<JavascriptDateModule>();
+        var dateModule = SpringUtil.getBean<MyJsonModule>();
         this.registerModule(dateModule);
     }
 }

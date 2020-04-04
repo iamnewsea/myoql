@@ -15,7 +15,7 @@ open class GetSetWithNullTypeJsonMapper : JsonBaseObjectMapper() {
         this.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.DEFAULT);
         this.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.NONE);
 
-        this.registerModule(SpringUtil.getBean<JavascriptDateModule>());
+        this.registerModule(SpringUtil.getBean<MyJsonModule>());
     }
 
     companion object {
