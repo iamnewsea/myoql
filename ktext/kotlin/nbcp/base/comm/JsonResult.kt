@@ -3,6 +3,7 @@ package nbcp.comm
 import org.slf4j.LoggerFactory
 import nbcp.base.extend.*
 import java.io.Serializable
+import java.lang.RuntimeException
 import java.lang.reflect.ParameterizedType
 import java.util.ArrayList
 
@@ -42,10 +43,7 @@ open class ApiResult<T>(msg: String = "", cause: String = "") : JsonResult(msg, 
 }
 
 
-class NoDataResult<T>() : ApiResult<T>("找不到数据") {
-    constructor(cause: String) : this() {
-        super.msg = "找不到" + cause + "的数据";
-    }
+class NoDataException(msg: String = "") : RuntimeException(msg.AsString("找不到数据")) {
 }
 
 
