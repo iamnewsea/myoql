@@ -22,22 +22,6 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
 
-class abc(var name: String = "")
-
-
-@Component
-@DependsOn("myJsonModule")
-class AJsonSerializer : JsonSerializer<abc>(), InitializingBean {
-    override fun serialize(p0: abc, generator: JsonGenerator, p2: SerializerProvider?) {
-        generator.writeString(p0.name + "!!!")
-    }
-
-    override fun afterPropertiesSet() {
-        SpringUtil.getBean<MyJsonModule>().addSerializer(abc::class.java, this)
-    }
-}
-
-
 //Jackson 输出的时候，进行自定义序列化格式。
 // http://www.jianshu.com/p/a0fb6559f56d
 @Component
