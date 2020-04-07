@@ -14,36 +14,36 @@ import kotlin.reflect.jvm.javaField
  * MySql 实体生成器
  */
 class MysqlEntityGenerator {
-    fun db2Entity(db:String) = DbEntityBuilder(db);
+    fun db2Entity(db: String) = DbEntityBuilder(db);
 
 
-    class DbEntityBuilder(var db :String ){
+    class DbEntityBuilder(var db: String) {
         var group = "";
         var tableLike = "";
-        var tables  = listOf<String>()
-        var excludes  = listOf<String>()
+        var tables = listOf<String>()
+        var excludes = listOf<String>()
 
-        fun group(group:String=""):DbEntityBuilder{
+        fun group(group: String = ""): DbEntityBuilder {
             this.group = group;
             return this;
         }
 
-        fun tableLike(tableLike:String = ""):DbEntityBuilder{
+        fun tableLike(tableLike: String = ""): DbEntityBuilder {
             this.tableLike = tableLike
             return this;
         }
 
-        fun tables(vararg tables:String):DbEntityBuilder{
+        fun tables(vararg tables: String): DbEntityBuilder {
             this.tables = tables.toList()
             return this
         }
 
-        fun excludes(vararg excludes:String):DbEntityBuilder{
+        fun excludes(vararg excludes: String): DbEntityBuilder {
             this.excludes = excludes.toList()
             return this
         }
 
-        fun done():List<String>{
+        fun done(): List<String> {
 
             var tables_map = RawQuerySqlClip(SingleSqlData("""
 SELECT table_name,table_comment
@@ -87,16 +87,27 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
 
                             var kotlinType = dataType
                             var defaultValue = "";
+                            var remark = "";
 
-                            if (dataType VbSame "varchar" || dataType VbSame "char" || dataType VbSame "text" || dataType VbSame "mediumtext" || dataType VbSame "longtext" || dataType VbSame "enum") {
+                            if (dataType VbSame "varchar"
+                                    || dataType VbSame "char"
+                                    || dataType VbSame "text"
+                                    || dataType VbSame "mediumtext"
+                                    || dataType VbSame "longtext"
+                                    || dataType VbSame "enum") {
+
+                                if (dataType VbSame "mediumtext" || dataType VbSame "longtext") {
+                                    remark = "warning sql data type: ${dataType}";
+                                }
+
                                 kotlinType = "String";
                                 defaultValue = "\"\"";
                             } else if (dataType VbSame "int") {
                                 kotlinType = "Int";
                                 defaultValue = "0";
                             } else if (dataType VbSame "bit") {
-                                kotlinType = "Boolean";
-                                defaultValue = "false";
+                                kotlinType = "Boolean?";
+                                defaultValue = "null";
                             } else if (dataType VbSame "datetime") {
                                 kotlinType = "LocalDateTime?"
                                 defaultValue = "null"
@@ -119,6 +130,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                                 kotlinType = "Long"
                                 defaultValue = "0L"
                             } else if (dataType VbSame "decimal") {
+                                remark = "warning sql data type: ${dataType}";
                                 kotlinType = "BigDecimal"
                                 defaultValue = "BigDecimal.ZERO"
                             }
@@ -136,7 +148,10 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                                 defs.add("@SqlAutoIncrementKey")
                             }
 
-                            defs.add("""var ${columnName}: ${kotlinType} = ${defaultValue}""")
+                            if (remark.HasValue) {
+                                remark = " /* ${remark}*/"
+                            }
+                            defs.add("""var ${columnName}: ${kotlinType} = ${defaultValue}${remark}""")
 
                             return@colMap defs.joinToString(line_break)
                         }
