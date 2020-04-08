@@ -8,6 +8,7 @@ import nbcp.db.mysql.*
 import nbcp.db.sql.*
 import java.io.File
 import java.io.FileWriter
+import java.lang.RuntimeException
 import java.lang.reflect.ParameterizedType
 import java.time.LocalDateTime
 
@@ -272,6 +273,9 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                     }
 
                     var dbType = DbType.of(it.type)
+                    if (dbType == DbType.Other) {
+                        throw RuntimeException("未识别的数据类型,表：${tableName},列:${db_column_name}")
+                    }
                     return@map """${ann_converter}val ${it.name}=SqlColumnName(DbType.${dbType.name},this.getAliaTableName(),"${db_column_name}")""".ToTab(1)
                 }
 

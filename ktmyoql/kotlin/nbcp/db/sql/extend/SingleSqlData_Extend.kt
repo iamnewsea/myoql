@@ -3,6 +3,8 @@ package nbcp.db.sql
 import nbcp.base.extend.*
 import nbcp.db.db
 import java.io.Serializable
+import java.lang.RuntimeException
+import java.math.BigDecimal
 import java.sql.Date
 import java.sql.PreparedStatement
 import java.time.*
@@ -112,43 +114,12 @@ fun <M : SqlBaseTable<out T>, T : IBaseDbEntity> M.case(): CaseWhenData<M, T> {
     return CaseWhenData(this)
 }
 
-fun Class<*>.ToSqlType(): Int {
-    if (this == String::class.java) {
-        return java.sql.Types.VARCHAR
-    } else if (this == Int::class.java || this.name == "java.lang.Integer") {
-        return java.sql.Types.INTEGER
-    } else if (this == Long::class.java || this.name == "java.lang.Long") {
-        return java.sql.Types.BIGINT
-    } else if (this == Short::class.java || this.name == "java.lang.Short") {
-        return java.sql.Types.SMALLINT
-    } else if (this == Byte::class.java || this.name == "java.lang.Byte") {
-        return java.sql.Types.TINYINT
-    } else if (this == Boolean::class.java || this.name == "java.lang.Boolean") {
-        return java.sql.Types.BIT
-    } else if (this == Date::class.java) {
-        return java.sql.Types.TIMESTAMP
-    } else if (this == LocalDateTime::class.java) {
-        return java.sql.Types.TIMESTAMP
-    } else if (this == LocalDate::class.java) {
-        return java.sql.Types.DATE
-    } else if (this == LocalTime::class.java) {
-        return java.sql.Types.TIME
-    } else if (this == Float::class.java || this.name == "java.lang.Float") {
-        return java.sql.Types.FLOAT
-    } else if (this == Double::class.java || this.name == "java.lang.Double") {
-        return java.sql.Types.DOUBLE
-    } else if (Number::class.java.isAssignableFrom(this)) {
-        return java.sql.Types.NUMERIC
-    }
-    throw RuntimeException("不识别的类型:${this.name}")
-    return java.sql.Types.OTHER
-}
 
 /**
  * @param index : 从1开始.
  */
 fun PreparedStatement.setValue(index: Int, param: SqlParameterData) {
-    var sqlType = param.type.ToSqlType()
+    var sqlType = DbType.of(param.type).sqlType
     if (param.value == null) {
         this.setNull(index, sqlType)
         return
@@ -189,7 +160,12 @@ fun PreparedStatement.setValue(index: Int, param: SqlParameterData) {
     } else if (sqlType == java.sql.Types.DOUBLE) {
         this.setDouble(index, param.value.AsDouble())
         return
+    } else if (sqlType == java.sql.Types.DECIMAL) {
+        this.setBigDecimal(index, param.value.AsBigDecimal())
+        return
     }
+
+    throw RuntimeException("不识别的数据类型:${index} , ${sqlType}")
 }
 
 

@@ -2,6 +2,7 @@
 
 package nbcp.base.extend
 
+import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -313,7 +314,6 @@ fun Any?.AsFloat(defaultValue: Float = 0F): Float {
 }
 
 
-
 fun Any?.AsLocalDate(): LocalDate? {
     return this.AsLocalDateTime()?.toLocalDate();
 }
@@ -543,7 +543,6 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
 }
 
 
-
 fun Any?.AsDate(defaultValue: Date = Date(0)): Date {
     if (this is Date) {
         return this
@@ -575,5 +574,19 @@ fun Any?.AsDate(defaultValue: Date = Date(0)): Date {
     return defaultValue
 }
 
+
+fun Any?.AsBigDecimal(): BigDecimal? {
+    if (this == null) return null;
+    if (this is BigDecimal) return this;
+
+    if (this is Number) {
+        return this.toDouble().toBigDecimal()
+    }
+    if (this is String) {
+        return this.toBigDecimal()
+    }
+
+    throw java.lang.RuntimeException("不识别的数据类型:${this::class.java}")
+}
 
 
