@@ -1,6 +1,7 @@
 package nbcp
 
 import nbcp.base.extend.*
+import nbcp.base.utils.CodeUtil
 import nbcp.comm.*
 import nbcp.base.utils.RecursionUtil
 import nbcp.db.IdName
@@ -38,5 +39,6 @@ class testa : TestBase() {
         var b = LocalDate.now()
         var e = b.ToJson()
         println(e)
+        println(CodeUtil.getCode())
     }
 }

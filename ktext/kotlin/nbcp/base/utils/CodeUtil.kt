@@ -16,9 +16,9 @@ import java.util.*
 
 object CodeUtil {
 
-    //系统启动时，需要设置。
-    val snowFlake: SnowFlake by lazy{
-        return@lazy  SpringUtil.getBean<SnowFlake>()
+    //系统启动时，需要设置参数。
+    val snowFlake: SnowFlake by lazy {
+        return@lazy SpringUtil.getBean<SnowFlake>()
     }
 
     /**
