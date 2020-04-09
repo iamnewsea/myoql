@@ -1,10 +1,10 @@
 package nbcp.handler
 
+import ch.qos.logback.classic.Level
 import com.wf.captcha.ArithmeticCaptcha
 import com.wf.captcha.utils.CaptchaUtil
 import nbcp.base.extend.AsInt
-import nbcp.comm.NoLog
-import nbcp.comm.OpenAction
+import nbcp.comm.*
 import nbcp.db.db
 import nbcp.web.queryJson
 import javax.servlet.annotation.WebServlet
@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServlet
  * 事实上， HandlerInterceptorAdapter 不会拦截 HttpServlet
  */
 @OpenAction
-@NoLog
+@MyLogLevel(Level.ERROR_INT)
 @WebServlet(urlPatterns = arrayOf("/open/validate-code-image"))
 open class AuthImageServlet : HttpServlet() {
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {

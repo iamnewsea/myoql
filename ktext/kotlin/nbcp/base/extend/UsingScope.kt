@@ -10,14 +10,7 @@ interface IDisposeable {
 /**
  * TRACE < DEBUG < INFO < WARN < ERROR
  */
-enum class LogScope(val level: Int) : IDisposeable {
-    LogAllLevel(Level.TRACE_INT),
-    LogDebugLevel(Level.DEBUG_INT),
-    LogInfoLevel(Level.INFO_INT),
-    LogWarnLevel(Level.WARN_INT),
-    LogErrorLevel(Level.ERROR_INT),
-    LogOff(Level.OFF_INT);
-
+class LogScope(val level: Int) : IDisposeable {
     override fun dispose() {
     }
 }

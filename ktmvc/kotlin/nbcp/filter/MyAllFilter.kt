@@ -1,5 +1,6 @@
 package nbcp.web.config
 
+import ch.qos.logback.classic.Level
 import nbcp.base.extend.*
 
 
@@ -101,7 +102,7 @@ open class MyAllFilter : Filter, InitializingBean {
         }
 
         if (ignoreLog) {
-            using(LogScope.LogErrorLevel) {
+            using(LogScope(Level.ERROR_INT)) {
                 next(httpRequest, httpResponse, chain);
             }
         } else {

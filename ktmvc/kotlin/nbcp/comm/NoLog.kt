@@ -7,6 +7,6 @@ package nbcp.comm
 /**
  * 不需要记录日志的注解
  */
-@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
+@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class NoLog
+annotation class MyLogLevel(val logLevel:Int)

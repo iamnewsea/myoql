@@ -1,6 +1,7 @@
 package nbcp
 
 
+import ch.qos.logback.classic.Level
 import nbcp.base.extend.LogScope
 import nbcp.base.extend.using
 import org.junit.Test
@@ -13,7 +14,7 @@ class testa : TestBase() {
 
     @Test
     fun abc() {
-        using(LogScope.LogDebugLevel) {
+        using(LogScope(Level.DEBUG_INT)) {
             logger.info("iii")
         }
         println("OK")

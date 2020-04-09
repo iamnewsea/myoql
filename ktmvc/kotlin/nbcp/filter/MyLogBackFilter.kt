@@ -72,7 +72,7 @@ class MyLogBackFilter : TurboFilter() {
             return FilterReply.DENY;
         }
 
-        using(LogScope.LogOff) {
+        using(LogScope(Level.OFF_INT)) {
             if (debug) {
                 return FilterReply.ACCEPT
             }
