@@ -88,7 +88,7 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
     val jdbcTemplate: JdbcTemplate
         get() {
             var ret = db.sql.getJdbcTemplateByTableName(tableName) ?: scopes.getLatestScope<JdbcTemplate>();
-            if (ret != null) ret;
+            if (ret != null) return ret;
 
 
             if (this is SqlBaseQueryClip) {

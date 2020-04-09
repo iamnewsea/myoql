@@ -9,6 +9,7 @@ import nbcp.base.extend.*
 
 import nbcp.base.utils.MyUtil
 import nbcp.db.db
+import java.lang.RuntimeException
 import java.sql.PreparedStatement
 import java.sql.Statement
 import java.time.LocalDateTime
@@ -26,7 +27,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
     private val columns = SqlColumnNames()
     private val entities = mutableListOf<JsonMap>()
     //    private var transaction = false;
-    private var multiBatchSize = 0;
+    private var multiBatchSize = 256;
 
     //回写自增Id用。
     private val ori_entities = mutableListOf<T>()
@@ -42,7 +43,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
     /**
      * 批量插入时， 指定每次插入的条数。 会分成多次任务插入。
      */
-    fun useMultiBatch(multiBatchSize: Int = 512): SqlInsertClip<M, T> {
+    fun useMultiBatch(multiBatchSize: Int = 256): SqlInsertClip<M, T> {
         this.multiBatchSize = multiBatchSize;
         return this;
     }
@@ -156,52 +157,27 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
         var n = 0;
         if (this.entities.size == 1) {
             n = insert1()
-
-            db.affectRowCount = n
-            return n
-        }
-
-        if (this.multiBatchSize > 0) {
+        } else if (this.multiBatchSize <= 0) {
+            n = insertMany(0,this.entities.size)
+        } else {
             var batchSize = this.multiBatchSize;
             var times = this.entities.size / batchSize;
             for (i in 0..(times - 1)) {
                 var batch_n = insertMany(batchSize * i, batchSize);
                 if (batch_n == 0) {
-                    db.affectRowCount = n
-
-                    if (n > 0) {
-                        cacheService.insertMany4BrokeCache(this.mainEntity.tableName);
-                    }
-                    return n
+                    throw RuntimeException("批量插入数据失败! 批次:${i}")
                 }
 
                 n += batch_n;
             }
 
             n += insertMany(batchSize * times, this.entities.size % batchSize);
-
-
-
-            if (n > 0) {
-                cacheService.insertMany4BrokeCache(this.mainEntity.tableName)
-            }
-
-            db.affectRowCount = n
-            return n
         }
 
-
-        if (this.entities.size > 1) {
-            n = insertMany()
-
-            if (n > 0) {
-                cacheService.insertMany4BrokeCache(this.mainEntity.tableName)
-            }
-
-            db.affectRowCount = n
-            return n
+        db.affectRowCount = n
+        if (n > 0) {
+            cacheService.insertMany4BrokeCache(this.mainEntity.tableName)
         }
-
         settings.forEach {
             it.first.insert(this, it.second);
         }
@@ -210,59 +186,58 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
     }
 
 
-    private fun doBatch_EachItem(insertColumns: List<SqlColumnName>): IntArray {
-        db.affectRowCount = -1;
-        var exp = "insert into ${mainEntity.quoteTableName} (${insertColumns.map { "${db.sql.getSqlQuoteName(it.name)}" }.joinToString(",")}) values (${insertColumns.map { "?" }.joinToString(",")})";
+//    private fun doBatch_EachItem(insertColumns: List<SqlColumnName>): IntArray {
+//        db.affectRowCount = -1;
+//        var exp = "insert into ${mainEntity.quoteTableName} (${insertColumns.map { "${db.sql.getSqlQuoteName(it.name)}" }.joinToString(",")}) values (${insertColumns.map { "?" }.joinToString(",")})";
+//
+//        var startAt = LocalDateTime.now();
+//
+//        var error = false
+//        var n = intArrayOf();
+//        try {
+//            n = jdbcTemplate.batchUpdate(exp, object : BatchPreparedStatementSetter {
+//                override fun getBatchSize(): Int {
+//                    return entities.size
+//                }
+//
+//                override fun setValues(ps: PreparedStatement, index: Int) {
+//                    var entity = entities[index]
+//
+//                    insertColumns.forEachIndexed { index, key ->
+//                        var item = entity.get(key.name)
+//                        if (key.dbType.isDateOrTime()) {
+//                            if (item != null && item is String && item.isEmpty()) {
+//                                item = null;
+//                            }
+//                        }
+//                        ps.setValue(index + 1, SqlParameterData(key.dbType.javaType, item))
+//                    }
+//                }
+//            });
+//            db.executeTime = LocalDateTime.now() - startAt
+//
+//            db.affectRowCount = n.sum()
+//        } catch (e: Exception) {
+//            error = true;
+//            throw e;
+//        } finally {
+//            logger.InfoError(error) {
+//                var msg_log = mutableListOf("[insert] ${exp}")
+//                if (db.debug) {
+//                    msg_log.add("[参数] ${entities.map { ent -> insertColumns.map { column -> column to ent.getStringValue(column.name) }.toMap() }.ToJson()}")
+//                } else {
+//                    msg_log.add("[参数] ${entities.map { ent -> insertColumns.map { column -> ent.getStringValue(column.name) }.joinToString(",") }.joinToString("\t\n")}")
+//                }
+//                msg_log.add("[耗时] ${db.executeTime}")
+//                return@InfoError msg_log.joinToString(line_break)
+//            }
+//        }
+//
+//        return n;
+//    }
 
-        var startAt = LocalDateTime.now();
-
-        var error = false
-        var n = intArrayOf();
-        try {
-            n = jdbcTemplate.batchUpdate(exp, object : BatchPreparedStatementSetter {
-                override fun getBatchSize(): Int {
-                    return entities.size
-                }
-
-                override fun setValues(ps: PreparedStatement, index: Int) {
-                    var entity = entities[index]
-
-                    insertColumns.forEachIndexed { index, key ->
-                        var item = entity.get(key.name)
-                        if (key.dbType.isDateOrTime()) {
-                            if (item != null && item is String && item.isEmpty()) {
-                                item = null;
-                            }
-                        }
-                        ps.setValue(index + 1, SqlParameterData(key.dbType.javaType, item))
-                    }
-                }
-            });
-            db.executeTime = LocalDateTime.now() - startAt
-
-            db.affectRowCount = n.sum()
-        } catch (e: Exception) {
-            error = true;
-            throw e;
-        } finally {
-            logger.InfoError(error) {
-                var msg_log = mutableListOf("[insert] ${exp}")
-                if( db.debug){
-                    msg_log.add("[参数] ${entities.map { ent -> insertColumns.map { column -> column to  ent.getStringValue(column.name) }.toMap() }.ToJson()}")
-                }
-                else{
-                    msg_log.add("[参数] ${entities.map { ent -> insertColumns.map { column -> ent.getStringValue(column.name) }.joinToString(",") }.joinToString("\t\n")}")
-                }
-                msg_log.add("[耗时] ${db.executeTime}")
-                return@InfoError msg_log.joinToString(line_break)
-            }
-        }
-
-        return n;
-    }
-
-    private fun insertMany(skip: Int = 0, take: Int = -1): Int {
-        if (take == 0) return 0;
+    private fun insertMany(skip: Int, take: Int): Int {
+        if (take <= 0) return 0;
 
         var autoIncrmentKey = this.mainEntity.getAutoIncrementKey();
 
@@ -276,51 +251,49 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
 
 
         var result = 0;
-        if (take < 0) {
-            result = doBatch_EachItem(insertColumns).size;
-        } else {
-            var executeSql = "insert into ${mainEntity.quoteTableName} (${insertColumns.map { "${db.sql.getSqlQuoteName(it.name)}" }.joinToString(",")}) values " +
+//        if (take < 0) {
+//            result = doBatch_EachItem(insertColumns).size;
+//        } else {
+        var executeSql = "insert into ${mainEntity.quoteTableName} (${insertColumns.map { "${db.sql.getSqlQuoteName(it.name)}" }.joinToString(",")}) values " +
 
-                    IntRange(1, take).map each_entity@{
-                        return@each_entity "(" + insertColumns.map { "?" }.joinToString(",") + ")"
-                    }.joinToString(",")
+                IntRange(1, take).map each_entity@{
+                    return@each_entity "(" + insertColumns.map { "?" }.joinToString(",") + ")"
+                }.joinToString(",")
 
-            var msg_log = mutableListOf("[sql] ${executeSql}")
-            var startAt = LocalDateTime.now();
+        var msg_log = mutableListOf("[sql] ${executeSql}")
+        var startAt = LocalDateTime.now();
 
-            var error = false;
-            var index = 1;
-            try {
-                result = jdbcTemplate.update(PreparedStatementCreator {
-                    var ps = it.prepareStatement(executeSql)
+        var error = false;
+        var index = 1;
+        try {
+            result = jdbcTemplate.update(PreparedStatementCreator {
+                var ps = it.prepareStatement(executeSql)
 
 
-                    entities.Skip(skip).take(take).forEach { ent ->
-                        insertColumns.forEach {
-                            ps.setValue(index++, SqlParameterData(it.dbType.javaType, ent.getOrDefault(it.name, null)))
-                        }
+                entities.Skip(skip).take(take).forEach { ent ->
+                    insertColumns.forEach {
+                        ps.setValue(index++, SqlParameterData(it.dbType.javaType, ent.getOrDefault(it.name, null)))
                     }
-
-                    if (db.debug) {
-                        msg_log.add("[参数]\n${entities.map { ent -> insertColumns.map { column -> ent.getStringValue(column.name) }.joinToString(",") }.joinToString("\n")}")
-                    }
-                    return@PreparedStatementCreator ps
-                })
-                db.executeTime = LocalDateTime.now() - startAt
-
-                msg_log.add("批量插入完成 ${result} 条!")
-            } catch (e: Exception) {
-                error = true
-                throw e;
-            } finally {
-                logger.InfoError(error) {
-                    msg_log.add("[耗时] ${db.executeTime}")
-                    return@InfoError msg_log.joinToString(line_break)
                 }
+
+                if (db.debug) {
+                    msg_log.add("[参数]\n${entities.map { ent -> insertColumns.map { column -> ent.getStringValue(column.name) }.joinToString(",") }.joinToString("\n")}")
+                }
+                return@PreparedStatementCreator ps
+            })
+            db.executeTime = LocalDateTime.now() - startAt
+
+            msg_log.add("批量插入完成 ${result} 条!")
+        } catch (e: Exception) {
+            error = true
+            throw e;
+        } finally {
+            logger.InfoError(error) {
+                msg_log.add("[耗时] ${db.executeTime}")
+                return@InfoError msg_log.joinToString(line_break)
             }
         }
-
-
+//        }
 
         return result
     }
@@ -406,9 +379,6 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
             }
         }
 
-        if (n > 0) {
-            cacheService.insert4BrokeCache(sql)
-        }
         return n
     }
 }
