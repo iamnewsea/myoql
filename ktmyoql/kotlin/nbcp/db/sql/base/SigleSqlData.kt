@@ -15,19 +15,17 @@ data class SingleSqlData(
         var values: JsonMap = JsonMap()
 ) : Serializable {
     //
-    private fun getJsonKeysFromExpression(): Set<String> {
-        var set = LinkedHashSet<String>();
-
-        return """\{([^@]+)}""".toRegex(RegexOption.DOT_MATCHES_ALL)
-                .findAll(this.expression)
-                .map { it.groupValues.last() }
-                .toSet()
-    }
+//    private fun getJsonKeysFromExpression(): Set<String> {
+//        return """\{([^}]+)}""".toRegex(RegexOption.DOT_MATCHES_ALL)
+//                .findAll(this.expression)
+//                .map { it.groupValues.last() }
+//                .toSet()
+//    }
 
 
     //瘦身
     init {
-        values.onlyHoldKeys(getJsonKeysFromExpression())
+//        values.onlyHoldKeys(getJsonKeysFromExpression())
     }
 
     fun toExecuteSqlAndParameters(): SqlExecuteData {
@@ -62,7 +60,7 @@ data class SingleSqlData(
 
 
         //去除 #@
-        var sameKeys = this.values.keys.intersect(other.values.keys)
+        var sameKeys = this.values.keys.intersect(other2.values.keys)
 
         sameKeys.forEachIndexed { index, sameKey ->
             var key = sameKey + "_" + (index + 1);
