@@ -34,7 +34,7 @@ data class SingleSqlData(
         var exp = this.expression;
         var parameters = mutableListOf<SqlParameterData>()
 
-        """\{([^@]+)}""".toRegex(RegexOption.DOT_MATCHES_ALL)
+        """\{([^}]+)}""".toRegex(RegexOption.DOT_MATCHES_ALL)
                 .findAll(this.expression)
                 .sortedByDescending { it.range.start }
                 .forEach {

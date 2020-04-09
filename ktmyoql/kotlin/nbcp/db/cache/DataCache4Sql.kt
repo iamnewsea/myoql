@@ -143,8 +143,8 @@ class ProxyDataCache4Sql : IProxyCache4Sql {
 
 
             if (value.HasValue) {
-                if (value.startsWith("#") &&
-                        value.endsWith("@")) {
+                if (value.startsWith("{") &&
+                        value.endsWith("}")) {
                     ret.data = StringMap(columnName to parameters.get(value.Slice(1, -1)).AsString())
                 } else {
                     ret.data = StringMap(columnName to value)
