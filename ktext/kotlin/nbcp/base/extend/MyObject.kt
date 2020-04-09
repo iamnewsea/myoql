@@ -557,47 +557,52 @@ fun <T : Serializable> T.CloneObject(): T {
     return cloneObj;
 }
 
-inline fun Logger.Log(level: Level, msgFunc: (() -> String)) {
-    try {
-        if (level == Level.INFO) {
-            if (this.isInfoEnabled) {
-                this.info(msgFunc())
-            }
-        } else if (level == Level.ERROR) {
-            if (this.isErrorEnabled) {
-                this.error(msgFunc())
-            }
-        } else if (level == Level.WARN) {
-            if (this.isWarnEnabled) {
-                this.warn(msgFunc())
-            }
-        } else if (level == Level.TRACE) {
-            if (this.isTraceEnabled) {
-                this.trace(msgFunc())
-            }
-        } else if (level == Level.DEBUG) {
-            if (this.isDebugEnabled) {
-                this.debug(msgFunc())
-            }
-        }
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-}
-
+//
+//inline fun Logger.Log(level: Level, msgFunc: (() -> String)) {
+//    try {
+//        if (level == Level.INFO) {
+//            if (this.isInfoEnabled) {
+//                this.info(msgFunc())
+//            }
+//        } else if (level == Level.ERROR) {
+//            if (this.isErrorEnabled) {
+//                this.error(msgFunc())
+//            }
+//        } else if (level == Level.WARN) {
+//            if (this.isWarnEnabled) {
+//                this.warn(msgFunc())
+//            }
+//        } else if (level == Level.TRACE) {
+//            if (this.isTraceEnabled) {
+//                this.trace(msgFunc())
+//            }
+//        } else if (level == Level.DEBUG) {
+//            if (this.isDebugEnabled) {
+//                this.debug(msgFunc())
+//            }
+//        }
+//    } catch (e: Exception) {
+//        e.printStackTrace()
+//    }
+//}
+//
 inline fun Logger.InfoError(error: Boolean, msgFunc: (() -> String)) {
     if (error) {
-        this.Error(msgFunc)
+        this.error(msgFunc())
     } else {
-        this.Info(msgFunc)
+        this.info(msgFunc())
     }
 }
 
-inline fun Logger.Trace(infoFunc: (() -> String)) = this.Log(Level.TRACE, infoFunc)
-inline fun Logger.Debug(infoFunc: (() -> String)) = this.Log(Level.DEBUG, infoFunc)
-inline fun Logger.Info(infoFunc: (() -> String)) = this.Log(Level.INFO, infoFunc)
-inline fun Logger.Warn(infoFunc: (() -> String)) = this.Log(Level.WARN, infoFunc)
-inline fun Logger.Error(infoFunc: (() -> String)) = this.Log(Level.ERROR, infoFunc)
+inline fun Logger.Info(msgFunc: (() -> String)) = this.info(msgFunc())
+inline fun Logger.Error(msgFunc: (() -> String)) = this.error(msgFunc())
+
+//
+//inline fun Logger.Trace(infoFunc: (() -> String)) = this.Log(Level.TRACE, infoFunc)
+//inline fun Logger.Debug(infoFunc: (() -> String)) = this.Log(Level.DEBUG, infoFunc)
+//inline fun Logger.Info(infoFunc: (() -> String)) = this.Log(Level.INFO, infoFunc)
+//inline fun Logger.Warn(infoFunc: (() -> String)) = this.Log(Level.WARN, infoFunc)
+//inline fun Logger.Error(infoFunc: (() -> String)) = this.Log(Level.ERROR, infoFunc)
 
 /**
  * 输入16进制内容。
@@ -607,15 +612,15 @@ fun ByteArray.ToHexLowerString(): String {
 }
 
 
-fun Exception.toLogger(logger: org.slf4j.Logger, module: String = "") {
-    try {
-        logger.error("""[${module}] ${this.message}
-${this.stackTrace.map { it.toString() }.joinToString("\n")}
-    """.trimMargin())
-    } catch (e: Exception) {
-        e.printStackTrace();
-    }
-}
+//fun Exception.toLogger(logger: org.slf4j.Logger, module: String = "") {
+//    try {
+//        logger.error("""[${module}] ${this.message}
+//${this.stackTrace.map { it.toString() }.joinToString("\n")}
+//    """.trimMargin())
+//    } catch (e: Exception) {
+//        e.printStackTrace();
+//    }
+//}
 
 
 fun ch.qos.logback.classic.Logger.getLoggerFile(configName: String): String {

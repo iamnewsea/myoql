@@ -14,7 +14,7 @@ app:
     allowOrigins: dev8.cn
     ignore-log-urls: /open/log,/log,/favicon.ico,/index.html,/webjars/,/swagger-resources/,/v2/api-docs,/swagger-ui.html
   upload:
-    uploadPath: /opt/upload
+    path: /opt/upload
   order:
     cancelTime: 15
     receiveTime: 21600
@@ -56,21 +56,21 @@ server:
 spring:
   aop:
     auto: true
-  data:
-    mongodb:
-      uri: mongodb://dev:123@${server.mongodbIp}:27017/album
-  rabbitmq:
-    addresses: ${server.rabbitmqIp}:5672
-    password: dev
-    username: dev
-    virtual-host: /
-  datasource:
-    hikari:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      password: 123
-      url: jdbc:mysql://127.0.0.1:3306/nbcp?serverTimezone=GMT%2B8&characterEncoding=utf8&useUnicode=true&useSSL=false
-      username: app
-      max-total: 1024
+#  data:
+#    mongodb:
+#      uri: mongodb://dev:123@${server.mongodbIp}:27017/album
+#  rabbitmq:
+#    addresses: ${server.rabbitmqIp}:5672
+#    password: dev
+#    username: dev
+#    virtual-host: /
+#  datasource:
+#    hikari:
+#      driver-class-name: com.mysql.cj.jdbc.Driver
+#      password: 123
+#      url: jdbc:mysql://127.0.0.1:3306/nbcp?serverTimezone=GMT%2B8&characterEncoding=utf8&useUnicode=true&useSSL=false
+#      username: app
+#      max-total: 1024
   http:
     encoding:
       charset: UTF-8

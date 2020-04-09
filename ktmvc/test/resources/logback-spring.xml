@@ -3,7 +3,7 @@
     <springProperty scope="context" name="logLevel" source="logging.levels.root"/>
     <springProperty scope="context" name="logPath" source="logging.path"/>
     <springProperty scope="context" name="name" source="spring.application.name"/>
-
+    <turboFilter class="nbcp.filter.MyLogBackFilter"></turboFilter>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -21,8 +21,6 @@
             <!-- 30 days -->
             <maxHistory>30</maxHistory>
         </rollingPolicy>
-        <filter class="nbcp.filter.MyLogBackFilter">
-        </filter>
     </appender>
     <appender name="ERROR-FILE-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logPath}/${name}-error.log</file>
@@ -40,8 +38,8 @@
         </filter>
     </appender>
     <root level="${logLevel}">
-        <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE-OUT" />
-        <appender-ref ref="ERROR-FILE-OUT" />
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE-OUT"/>
+        <appender-ref ref="ERROR-FILE-OUT"/>
     </root>
 </configuration>

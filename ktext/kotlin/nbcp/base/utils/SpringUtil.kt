@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component
 @Component
 open class SpringUtil : ApplicationContextAware {
     companion object {
-        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
         private var applicationContext: ApplicationContext? = null
 
         val context: ApplicationContext
@@ -84,7 +83,7 @@ open class SpringUtil : ApplicationContextAware {
         if (applicationContext != null) {
             SpringUtil.applicationContext = applicationContext
         } else {
-            logger.error("设置 ApplicationContext 出现了异常!")
+            throw RuntimeException("设置 ApplicationContext 出现了异常!")
         }
     }
 }
