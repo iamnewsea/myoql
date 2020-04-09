@@ -88,28 +88,23 @@ fun <T> T.IsIn(equalFunc: ((T, T) -> Boolean)? = null, vararg values: T): Boolea
 
 /**
  * 查找最近添加的。
- * @param enumValue: 如果有值，则精确查找该值进行返回。
+ * @param enumValues: 如果有值，则精确查找该值进行返回。
  */
-inline fun <reified R> Stack<*>.getLatestScope(enumValue:R? = null ): R? {
+inline fun <reified R> Stack<*>.getLatestScope(vararg enumValues: R): R? {
     if (this.size == 0) return null
 
     for (i in this.indices.reversed()) {
         var item = this[i];
         if (item is R) {
-            if( enumValue != null){
-                if(item == enumValue){
-                    return item;
-                }
+            if (enumValues.contains(item)) {
+                return item;
+            } else {
                 continue;
-            }
-            else {
-                return item
             }
         }
     }
     return null;
 }
-
 
 
 //interface IUsingScope {
@@ -607,7 +602,7 @@ inline fun Logger.Error(infoFunc: (() -> String)) = this.Log(Level.ERROR, infoFu
 /**
  * 输入16进制内容。
  */
-fun ByteArray.ToHexLowerString():String{
+fun ByteArray.ToHexLowerString(): String {
     return this.map { it.toString(16) }.joinToString("")
 }
 
