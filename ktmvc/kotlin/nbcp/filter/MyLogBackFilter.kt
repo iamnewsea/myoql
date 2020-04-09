@@ -48,6 +48,17 @@ import org.springframework.stereotype.Component
  * Filter<ILoggingEvent> 是后置过滤器
  */
 class MyLogBackFilter : TurboFilter() {
+    companion object {
+        private var _debug: Boolean? = null
+        private val debug: Boolean
+            get() {
+                if (_debug != null) return _debug!!;
+                if (SpringUtil.isInited == false) return false;
+                _debug = SpringUtil.context.environment.getProperty("debug").AsBoolean()
+                return _debug!!;
+            }
+    }
+
     override fun decide(marker: Marker?, logger: Logger?, level: Level?, format: String?, params: Array<out Any>?, t: Throwable?): FilterReply {
         if (level == null) {
             return FilterReply.NEUTRAL
@@ -62,7 +73,7 @@ class MyLogBackFilter : TurboFilter() {
         }
 
         using(LogScope.LogOff) {
-            if (SpringUtil.isInited && SpringUtil.context.environment.getProperty("debug").AsBoolean()) {
+            if (debug) {
                 return FilterReply.ACCEPT
             }
         }
