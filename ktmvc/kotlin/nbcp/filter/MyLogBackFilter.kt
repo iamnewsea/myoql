@@ -66,7 +66,7 @@ class MyLogBackFilter : TurboFilter() {
 
         var log = scopes.getLatestScope<LogScope>()
         if (log != null) {
-            if (log.level >= level.levelInt) {
+            if (level.levelInt >= log.level) {
                 return FilterReply.ACCEPT
             }
             return FilterReply.DENY;
