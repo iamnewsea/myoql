@@ -13,7 +13,7 @@ class testa : TestBase() {
 
     @Test
     fun abc() {
-        using(LogScope.ImportantLog) {
+        using(LogScope.LogDebugLevel) {
             logger.info("iii")
         }
         println("OK")

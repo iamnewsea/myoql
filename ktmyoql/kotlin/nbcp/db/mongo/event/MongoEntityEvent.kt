@@ -1,8 +1,6 @@
 package nbcp.db.mongo
 
-import nbcp.base.extend.ForEachExt
-import nbcp.base.extend.LogScope
-import nbcp.base.extend.using
+import nbcp.base.extend.*
 import nbcp.db.*
 import nbcp.db.mongo.component.MongoBaseInsertClip
 import nbcp.db.mongo.component.MongoBaseUpdateClip
@@ -102,8 +100,8 @@ class MongoEntityEvent : BeanPostProcessor {
     fun onInserting(insert: MongoBaseInsertClip): Array<Pair<IMongoEntityInsert, DbEntityEventResult>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityInsert, DbEntityEventResult>>()
-        using(LogScope.ExecuteTimeNoLog) {
-            using(LogScope.AffectRowNoLog) {
+        using(OrmLogScope.IgnoreAffectRow) {
+            using(OrmLogScope.IgnoreExecuteTime) {
                 insertEvent.ForEachExt { it, index ->
                     var ret = it.beforeInsert(insert);
                     if (ret.result == false) {
@@ -120,8 +118,8 @@ class MongoEntityEvent : BeanPostProcessor {
     fun onUpdating(update: MongoBaseUpdateClip): Array<Pair<IMongoEntityUpdate, DbEntityEventResult>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityUpdate, DbEntityEventResult>>()
-        using(LogScope.ExecuteTimeNoLog) {
-            using(LogScope.AffectRowNoLog) {
+        using(OrmLogScope.IgnoreAffectRow) {
+            using(OrmLogScope.IgnoreExecuteTime) {
                 updateEvent.ForEachExt { it, index ->
                     var ret = it.beforeUpdate(update);
                     if (ret.result == false) {
@@ -139,8 +137,8 @@ class MongoEntityEvent : BeanPostProcessor {
 
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityDelete, DbEntityEventResult>>()
-        using(LogScope.ExecuteTimeNoLog) {
-            using(LogScope.AffectRowNoLog) {
+        using(OrmLogScope.IgnoreAffectRow) {
+            using(OrmLogScope.IgnoreExecuteTime) {
                 deleteEvent.ForEachExt { it, index ->
                     var ret = it.beforeDelete(delete);
                     if (ret.result == false) {

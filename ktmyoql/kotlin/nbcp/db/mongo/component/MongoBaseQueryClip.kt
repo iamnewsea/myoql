@@ -250,8 +250,10 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             if (ret.data.size < this.take) {
                 ret.total = ret.data.size;
             } else {
-                using(LogScope.ExecuteTimeNoLog) {
-                    ret.total = count()
+                using(OrmLogScope.IgnoreExecuteTime) {
+                    using(OrmLogScope.IgnoreAffectRow) {
+                        ret.total = count()
+                    }
                 }
             }
         }

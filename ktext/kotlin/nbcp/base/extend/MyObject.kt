@@ -96,7 +96,7 @@ inline fun <reified R> Stack<*>.getLatestScope(vararg enumValues: R): R? {
     for (i in this.indices.reversed()) {
         var item = this[i];
         if (item is R) {
-            if (enumValues.contains(item)) {
+            if (enumValues.isEmpty() || enumValues.contains(item)) {
                 return item;
             } else {
                 continue;

@@ -101,7 +101,7 @@ open class MyAllFilter : Filter, InitializingBean {
         }
 
         if (ignoreLog) {
-            using(LogScope.FilterNoLog) {
+            using(LogScope.LogErrorLevel) {
                 next(httpRequest, httpResponse, chain);
             }
         } else {

@@ -1,7 +1,9 @@
 package nbcp.db.mongo.component
 
 import nbcp.base.extend.InfoError
+import nbcp.base.extend.OrmLogScope
 import nbcp.base.extend.ToJson
+import nbcp.base.extend.using
 import nbcp.comm.minus
 import nbcp.db.db
 import nbcp.db.mongo.IMongoDocument
@@ -49,8 +51,12 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
             mongoTemplate.insertAll(entities)
             db.executeTime = LocalDateTime.now() - startAt
 
-            settingResult.forEach {
-                it.first.insert(this, it.second)
+            using(OrmLogScope.IgnoreAffectRow) {
+                using(OrmLogScope.IgnoreExecuteTime) {
+                    settingResult.forEach {
+                        it.first.insert(this, it.second)
+                    }
+                }
             }
 
             ret = entities.size;

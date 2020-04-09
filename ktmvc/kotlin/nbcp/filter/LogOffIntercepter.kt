@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component
  */
 @Aspect
 @Component
-class NoLogIntercepter {
+class LogOffIntercepter {
     @Around("@within(nbcp.comm.NoLog) || @annotation(nbcp.comm.NoLog)")
     fun mongo(joinPoint: ProceedingJoinPoint): Any? {
-        return using(LogScope.NoLog) {
+        return using(LogScope.LogOff) {
             var args = joinPoint.args
             if (args.any()) {
                 return@using joinPoint.proceed(args)

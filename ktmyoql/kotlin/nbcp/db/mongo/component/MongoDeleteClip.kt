@@ -70,8 +70,12 @@ class MongoDeleteClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
             db.affectRowCount = ret;
 
             if (ret > 0) {
-                settingResult.forEach {
-                    it.first.delete(this, it.second)
+                using(OrmLogScope.IgnoreAffectRow) {
+                    using(OrmLogScope.IgnoreExecuteTime) {
+                        settingResult.forEach {
+                            it.first.delete(this, it.second)
+                        }
+                    }
                 }
             }
         } catch (e: Exception) {

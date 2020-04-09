@@ -1,8 +1,6 @@
 package nbcp.db.mongo.component
 
-import nbcp.base.extend.InfoError
-import nbcp.base.extend.IsSimpleType
-import nbcp.base.extend.ToJson
+import nbcp.base.extend.*
 import nbcp.base.utils.RecursionUtil
 import nbcp.comm.minus
 import nbcp.db.db
@@ -150,8 +148,12 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             db.executeTime = LocalDateTime.now() - startAt
 
             if (result.modifiedCount > 0) {
-                settingResult.forEach {
-                    it.first.update(this, it.second)
+                using(OrmLogScope.IgnoreAffectRow) {
+                    using(OrmLogScope.IgnoreExecuteTime) {
+                        settingResult.forEach {
+                            it.first.update(this, it.second)
+                        }
+                    }
                 }
             }
 

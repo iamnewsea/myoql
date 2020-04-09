@@ -49,21 +49,19 @@ import org.springframework.stereotype.Component
  */
 class MyLogBackFilter : TurboFilter() {
     override fun decide(marker: Marker?, logger: Logger?, level: Level?, format: String?, params: Array<out Any>?, t: Throwable?): FilterReply {
-
-        var log = scopes.getLatestScope(LogScope.ImportantLog, LogScope.NoLog)
-        if (log == LogScope.ImportantLog) {
-            return FilterReply.ACCEPT
+        if (level == null) {
+            return FilterReply.NEUTRAL
         }
 
-        if (level == Level.ERROR) {
-            return FilterReply.ACCEPT
+        var log = scopes.getLatestScope<LogScope>()
+        if (log != null) {
+            if (log.level >= level.levelInt) {
+                return FilterReply.ACCEPT
+            }
+            return FilterReply.DENY;
         }
 
-        if (log == LogScope.NoLog) {
-            return FilterReply.DENY
-        }
-
-        using(LogScope.NoLog) {
+        using(LogScope.LogOff) {
             if (SpringUtil.isInited && SpringUtil.context.environment.getProperty("debug").AsBoolean()) {
                 return FilterReply.ACCEPT
             }
