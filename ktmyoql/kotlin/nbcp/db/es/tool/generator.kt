@@ -15,7 +15,7 @@ import java.lang.reflect.WildcardType
 import java.time.LocalDateTime
 
 /**
- * Es代码生成器
+ * Es代码生成器,根据 Define 注解生成 Mapping 及 元数据
  */
 class generator {
     private var nameMapping: StringMap = StringMap();

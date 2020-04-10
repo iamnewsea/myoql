@@ -1,6 +1,7 @@
 package nbcp.comm
 
 import java.lang.annotation.ElementType
+import java.security.KeyPair
 
 /**
  * Created by udi on 17-3-30.
@@ -23,11 +24,20 @@ annotation class JsonModel
 //@Repeatable
 annotation class Require(val value: String = "")
 
-
+/**
+ * 忽略字段
+ */
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Ignore(val value: String = "")
 
+
+/**
+ * 字段定义，用于 Es实体 生成 Mapping
+ */
+@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS, AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Define(val value: String)
 
 //@Repeatable
 //@Target(AnnotationTarget.FIELD, AnnotationTarget.TYPE, AnnotationTarget.CLASS )
