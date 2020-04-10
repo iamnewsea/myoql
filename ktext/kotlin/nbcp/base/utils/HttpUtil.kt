@@ -116,9 +116,9 @@ class HttpUtil(var url: String = "") {
     private var postBody = byteArrayOf()
 
     /**
-     * 回发的编码，只读，默认为 utf-8
+     * 回发的编码，只读
      */
-    var responseCharset: String = "UTF-8"
+    var responseCharset: String = ""
         private set;
 
     /**
@@ -145,7 +145,6 @@ class HttpUtil(var url: String = "") {
     }
 
     fun setPostBody(postBody: String): HttpUtil {
-        logger.Info { "\t[post_body]${postBody}" }
         return this.setPostBody(postBody.toByteArray(utf8))
     }
 //    private var https = false;
@@ -175,7 +174,7 @@ class HttpUtil(var url: String = "") {
 
         var retData = doNet()
 
-        return retData.toString(Charset.forName(responseCharset));
+        return retData.toString(Charset.forName(responseCharset.AsString("UTF-8")));
     }
 
     /**
@@ -204,8 +203,7 @@ class HttpUtil(var url: String = "") {
      * Post请求
      */
     fun doPost(requestBody: String): String {
-        logger.Info { "[post]\t${url}\n${requestHeader.map { it.key + ":" + it.value }.joinToString("\n")}" }
-
+//        logger.Info { "[post]\t${url}\n${requestHeader.map { it.key + ":" + it.value }.joinToString("\n")}" }
 
         this.setRequest { it.requestMethod = "POST" }
 
@@ -230,7 +228,7 @@ class HttpUtil(var url: String = "") {
 //        }
 
 
-        return ret.toString(Charset.forName(responseCharset));
+        return ret.toString(Charset.forName(responseCharset.AsString("UTF-8")));
     }
 
     fun doNet(): ByteArray {
@@ -267,19 +265,6 @@ class HttpUtil(var url: String = "") {
 
             this.status = conn.responseCode
 
-            logger.InfoError(this.status != 200) {
-                "${conn.requestMethod} ${url}\t[status:${this.status}]"
-            }
-
-            logger.Info {
-                conn.headerFields.map {
-                    if (it.key == null) {
-                        return@map "\t${it.value.joinToString(",")}"
-                    }
-                    return@map "\t${it.key}:${it.value}"
-                }.joinToString(line_break)
-            }
-
             conn.headerFields.forEach {
                 if (it.key == null) {
                     return@forEach
@@ -314,6 +299,55 @@ class HttpUtil(var url: String = "") {
             msg = e.message ?: "请求错误"
             throw e;
         } finally {
+            try {
+                if (conn != null) {
+                    logger.InfoError(this.status != 200) {
+                        var msgs = mutableListOf<String>();
+                        msgs.add("${conn.requestMethod} ${url}\t[status:${this.status}]");
+
+                        this.requestHeader.map {
+                            if (it.key == null) {
+                                return@map "\t${it.value}"
+                            }
+                            return@map "\t${it.key}:${it.value}"
+                        }.joinToString(line_break)
+                                .apply {
+                                    if (this.HasValue) {
+                                        msgs.add(this);
+                                    }
+                                }
+
+                        //小于 10K
+                        if (postBody.any() && postBody.size < 10240) {
+                            msgs.add(postBody.toString(utf8))
+                        }
+
+                        msgs.add("---")
+
+                        this.responseHeader.map {
+                            if (it.key == null) {
+                                return@map "\t${it.value}"
+                            }
+                            return@map "\t${it.key}:${it.value}"
+                        }.joinToString(line_break)
+                                .apply {
+                                    if (this.HasValue) {
+                                        msgs.add(this);
+                                    }
+                                }
+
+                        //小于10K
+                        if (this.responseCharset.HasValue && this.responseResult.size < 10240) {
+                            msgs.add(this.responseResult.toString(Charset.forName(this.responseCharset)))
+                        }
+                        return@InfoError msgs.joinToString(line_break)
+                    }
+                }
+            } finally {
+
+            }
+
+
             if (conn != null) {
                 // 断开连接
                 conn.disconnect();
