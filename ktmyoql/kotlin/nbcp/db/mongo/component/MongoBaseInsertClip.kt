@@ -1,15 +1,9 @@
-package nbcp.db.mongo.component
+package nbcp.db.mongo
 
-import nbcp.base.extend.InfoError
-import nbcp.base.extend.OrmLogScope
-import nbcp.base.extend.ToJson
-import nbcp.base.extend.using
+import nbcp.base.extend.*
 import nbcp.comm.minus
 import nbcp.db.db
-import nbcp.db.mongo.IMongoDocument
-import nbcp.db.mongo.IMongoWhereable
-import nbcp.db.mongo.MongoClipBase
-import nbcp.db.mongo.MongoInsertClip
+import nbcp.db.mongo.*
 import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
 import java.lang.Exception

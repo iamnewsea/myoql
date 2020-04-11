@@ -1,4 +1,4 @@
-package nbcp.db.mongo.component
+package nbcp.db.mongo
 
 /**
  * Created by yuxh on 2019/1/31

@@ -11,7 +11,6 @@ import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
 import nbcp.db.db
 import nbcp.db.mongo.*
-import nbcp.db.mongo.component.MongoBaseUpdateClip
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.CriteriaDefinition
 import java.time.LocalDateTime

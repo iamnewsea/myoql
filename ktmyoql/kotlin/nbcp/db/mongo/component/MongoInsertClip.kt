@@ -8,7 +8,6 @@ import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import nbcp.db.mongo.*
-import nbcp.db.mongo.component.MongoBaseInsertClip
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 

@@ -9,8 +9,6 @@ import nbcp.comm.JsonMap
 import nbcp.comm.StringMap
 import nbcp.db.db
 import nbcp.db.mongo.*
-import nbcp.db.mongo.component.MongoBaseInsertClip
-import nbcp.db.mongo.component.MongoBaseUpdateClip
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.Criteria
 

@@ -1,4 +1,4 @@
-package nbcp.db.mongo.component
+package nbcp.db.mongo
 
 import nbcp.base.extend.*
 import nbcp.base.utils.RecursionUtil

@@ -10,7 +10,6 @@ import nbcp.base.utils.SpringUtil
 import nbcp.db.db
 
 import nbcp.db.mongo.*
-import nbcp.db.mongo.component.MongoBaseInsertClip
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 
