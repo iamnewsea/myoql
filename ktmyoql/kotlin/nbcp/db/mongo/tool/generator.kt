@@ -25,6 +25,7 @@ class generator {
     fun work(targetFileName: String,  //目标文件
              basePackage: String,   //实体的包名
              anyEntityClass: Class<*>,  //任意实体的类名
+             packages: Array<String> = arrayOf(),   //import 包名
              nameMapping: StringMap = StringMap(), // 名称转换
              ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
     ) {
@@ -50,13 +51,14 @@ class generator {
         writeToFile("""
 package nbcp.db.mongo.table
 
-import org.slf4j.LoggerFactory
-import nbcp.base.extend.*
-import nbcp.base.utils.*
-import nbcp.db.mongo.entity.*
-import nbcp.db.mongo.*
 import nbcp.db.*
+import nbcp.db.mongo.*
+import nbcp.base.utils.*
+import nbcp.base.extend.*
+import nbcp.db.mongo.entity.*
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+${packages.map { "import" + it }.joinToString(line_break)}
 
 //generate auto @${LocalDateTime.now().AsString()}
 """)

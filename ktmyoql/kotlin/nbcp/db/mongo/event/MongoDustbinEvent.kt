@@ -5,7 +5,7 @@ import nbcp.base.extend.using
 import nbcp.db.*
 import nbcp.db.mongo.MongoDeleteClip
 import nbcp.db.mongo.MongoEntityEvent
-import nbcp.db.mongo.entity.SysDustbin
+import nbcp.db.mongo.entity.*
 import nbcp.db.mongo.table.MongoBaseGroup
 import nbcp.db.mongo.toDocument
 import org.bson.Document

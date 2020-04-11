@@ -119,7 +119,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                         lastKey = it.keys.last()
                     }
 
-                    ret.add(it.GetComplexPropertyValue(lastKey) as R)
+                    ret.add(it.GetComplexPropertyValue(*lastKey.split(".").toTypedArray()) as R)
                 } else if (clazz.IsSimpleType()) {
                     if (lastKey.isEmpty()) {
                         lastKey = it.keys.last()

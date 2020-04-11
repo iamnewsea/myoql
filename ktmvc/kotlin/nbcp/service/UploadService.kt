@@ -9,10 +9,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver
 import nbcp.comm.*
 import nbcp.base.extend.*
 import nbcp.base.utils.*
-import nbcp.db.DatabaseEnum
-import nbcp.db.IdName
-import nbcp.db.IdUrl
-import nbcp.db.db
+import nbcp.db.*
 import nbcp.db.mongo.*
 import nbcp.db.mongo.entity.*
 import nbcp.db.mongo.service.UploadFileMongoService
@@ -31,6 +28,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.imageio.ImageIO
 import javax.servlet.http.HttpServletRequest
+import nbcp.db.mongo.entity.*
 
 /**
  * 参数传递过程中,都没有 uploadPath 部分.

@@ -48,85 +48,31 @@ open class StringKeyMap<T> : LinkedHashMap<String, T> {
 //    }
 
 
-    fun onlyHoldKeys(keys: Set<String>) {
-        this.keys.minus(keys.toTypedArray()).forEach {
-            this.remove(it)
-        }
-    }
-
-    fun findByKey(KeyPath: String): Array<StringKeyMap<T>> {
-        if (KeyPath.isEmpty()) {
-            return arrayOf();
-        }
-        var path = KeyPath.split('/');
-        if (path.size == 0) {
-            return arrayOf();
-        }
-        var source = mutableListOf<StringKeyMap<T>>()
-
-
-        var key = path.first();
-        var indexs = this.getIndexs(key);
-        var index = key.indexOf('[');
-        if (index >= 0) {
-            key = key.Slice(0, index);
-        }
-
-        var item = this[key] as StringKeyMap<T>;
-        if (item != null) {
-            source.add(item);
-        } else {
-            var objArray = this[key] as Array<*>
-            if (objArray != null) {
-                for (num3 in 0..(objArray.size - 1)) {
-                    if ((indexs.size <= 0) || indexs.contains(num3)) {
-                        var obj2 = objArray[num3];
-                        var data2 = obj2 as StringKeyMap<T>;
-                        if (data2 != null) {
-                            source.add(data2);
-                        }
-                    }
-                }
-            }
-        }
-
-        if (path.size == 1) {
-            return source.toTypedArray()
-        }
-
-        var ret = mutableListOf<StringKeyMap<T>>();
-        source.forEach { o ->
-            ret.addAll(o.findByKey(path.Skip(1).joinToString("/")));
-        }
-        return ret.toTypedArray()
-    }
-
-
-    private fun getIndexs(key: String): Array<Int> {
-        if (key.length < 0) {
-            return arrayOf()
-        }
-        var index = key.indexOf('[');
-        if (index < 0) {
-            return arrayOf()
-        }
-        if (key.last() != ']') {
-            return arrayOf()
-        }
-        var source = key.Slice(index + 1, -1);
-        var endIndex = source.indexOf("...", 0);
-        if (endIndex >= 0) {
-            var list = mutableListOf<Int>()
-            var item = source.Slice(0, endIndex).AsInt(0);
-            var num4 = source.Slice((endIndex + 3)).AsInt(0);
-            while (item <= num4) {
-                list.add(item);
-                item++;
-            }
-            return list.toTypedArray()
-        }
-        return source.split(',').map { it.AsInt() }.distinct().toTypedArray()
-    }
+//    private fun getIndexs(key: String): Array<Int> {
+//        if (key.length < 0) {
+//            return arrayOf()
+//        }
+//        var index = key.indexOf('[');
+//        if (index < 0) {
+//            return arrayOf()
+//        }
+//        if (key.last() != ']') {
+//            return arrayOf()
+//        }
+//        var source = key.Slice(index + 1, -1);
+//        var endIndex = source.indexOf("...", 0);
+//        if (endIndex >= 0) {
+//            var list = mutableListOf<Int>()
+//            var item = source.Slice(0, endIndex).AsInt(0);
+//            var num4 = source.Slice((endIndex + 3)).AsInt(0);
+//            while (item <= num4) {
+//                list.add(item);
+//                item++;
+//            }
+//            return list.toTypedArray()
+//        }
+//        return source.split(',').map { it.AsInt() }.distinct().toTypedArray()
+//    }
 
     private fun toJsonValueString(value: Any?): String {
         if (value == null) return "null"

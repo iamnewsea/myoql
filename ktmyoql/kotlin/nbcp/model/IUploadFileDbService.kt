@@ -1,6 +1,6 @@
 package nbcp.model
 
-import nbcp.db.mongo.entity.SysAnnex
+import nbcp.db.mongo.entity.*
 
 /**
  * 上传服务接口， 以Mongo为准

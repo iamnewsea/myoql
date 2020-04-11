@@ -11,6 +11,7 @@ enum class DatabaseEnum {
     Mongo,
     Redis,
     Hbase,
+    ElasticSearch,
 
     Mysql,
     Oracle,
@@ -30,6 +31,7 @@ object db {
 
     val sql = db_sql;
     val mongo = db_mongo;
+    val es = db_es;
 
 //    private val _beforeExecuteDbData: ThreadLocal<Any?> = ThreadLocal.withInitial { return@withInitial null }
 //

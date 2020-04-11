@@ -1,7 +1,7 @@
 package nbcp.db.mongo
 
 import nbcp.db.*
-import nbcp.db.mongo.component.MongoBaseUpdateClip
+import nbcp.db.mongo.*
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 

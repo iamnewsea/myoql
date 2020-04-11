@@ -1,7 +1,7 @@
 package nbcp.db.sql
 
 import nbcp.db.DbEntityEventResult
-import nbcp.db.mongo.component.MongoBaseInsertClip
+import nbcp.db.mongo.*
 
 /**
  * 处理 Insert 的 Bean 接口。

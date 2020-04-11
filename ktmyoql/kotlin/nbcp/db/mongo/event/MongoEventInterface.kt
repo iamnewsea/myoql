@@ -1,8 +1,7 @@
 package nbcp.db.mongo
 
 import nbcp.db.DbEntityEventResult
-import nbcp.db.mongo.component.MongoBaseInsertClip
-import nbcp.db.mongo.component.MongoBaseUpdateClip
+import nbcp.db.mongo.*
 
 interface IMongoEntityInsert {
     fun beforeInsert(insert: MongoBaseInsertClip): DbEntityEventResult

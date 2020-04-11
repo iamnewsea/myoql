@@ -1,48 +1,48 @@
-package nbcp.db.mongo
+package nbcp.db.es
 
 import nbcp.base.extend.*
 import nbcp.db.*
-import nbcp.db.mongo.*
+import nbcp.db.es.*
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component
 
 @Component
-class MongoEntityEvent : BeanPostProcessor {
+class EsEntityEvent : BeanPostProcessor {
     companion object {
         //需要删 除后放入垃圾箱的实体
-        val dustbinEntitys = mutableSetOf<Class<*>>()  //mongo entity class
+        val dustbinEntitys = mutableSetOf<Class<*>>()  //es entity class
         val logHistoryMap = linkedMapOf<Class<*>, Array<String>>()
         // 冗余字段的引用。如 user.corp.name 引用的是  corp.name
         val refsMap = mutableListOf<DbEntityFieldRefData>()
         //注册的 Update Bean
-        val insertEvent = mutableListOf<IMongoEntityInsert>()
+        val insertEvent = mutableListOf<IEsEntityInsert>()
         //注册的 Update Bean
-        val updateEvent = mutableListOf<IMongoEntityUpdate>()
+        val updateEvent = mutableListOf<IEsEntityUpdate>()
         //注册的 Delete Bean
-        val deleteEvent = mutableListOf<IMongoEntityDelete>()
+        val deleteEvent = mutableListOf<IEsEntityDelete>()
 
         /**
          * 根据名称查找定义的集合。
          */
-        fun getCollection(collectionName: String): MongoBaseEntity<IMongoDocument>? {
+        fun getCollection(collectionName: String): EsBaseEntity<IEsDocument>? {
             var ret: BaseDbEntity? = null
-            db.mongo.groups.any { group ->
+            db.es.groups.any { group ->
                 ret = group.getEntities().firstOrNull() { it.tableName == collectionName }
 
                 return@any ret != null
             }
 
-            return ret as MongoBaseEntity<IMongoDocument>?
+            return ret as EsBaseEntity<IEsDocument>?
         }
     }
 
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
 
         if (bean is IDataGroup) {
-            db.mongo.groups.add(bean)
+            db.es.groups.add(bean)
 
             bean.getEntities().forEach { moer ->
-                if (moer is MongoBaseEntity<*>) {
+                if (moer is EsBaseEntity<*>) {
                     var entityClass = moer.entityClass
 
                     addDustbin(entityClass)
@@ -52,22 +52,22 @@ class MongoEntityEvent : BeanPostProcessor {
             }
         }
 
-        if (bean is IMongoEntityInsert) {
+        if (bean is IEsEntityInsert) {
             insertEvent.add(bean)
         }
 
-        if (bean is IMongoEntityUpdate) {
+        if (bean is IEsEntityUpdate) {
             updateEvent.add(bean)
         }
 
-        if (bean is IMongoEntityDelete) {
+        if (bean is IEsEntityDelete) {
             deleteEvent.add(bean)
         }
 
         return super.postProcessAfterInitialization(bean, beanName)
     }
 
-    private fun addLogHistory(entityClass: Class<out IMongoDocument>) {
+    private fun addLogHistory(entityClass: Class<out IEsDocument>) {
         var logHistory = entityClass.getAnnotation(DbEntityLogHistory::class.java)
         if (logHistory != null) {
             logHistoryMap.put(entityClass, logHistory.fields.map { it }.toTypedArray());
@@ -75,7 +75,7 @@ class MongoEntityEvent : BeanPostProcessor {
     }
 
 
-    private fun addRef(entityClass: Class<out IMongoDocument>) {
+    private fun addRef(entityClass: Class<out IEsDocument>) {
         var refs = entityClass.getAnnotation(DbEntityFieldRefs::class.java)
         if (refs != null && refs.values.any()) {
             refs.values.forEach {
@@ -89,16 +89,16 @@ class MongoEntityEvent : BeanPostProcessor {
         }
     }
 
-    private fun addDustbin(entityClass: Class<out IMongoDocument>) {
+    private fun addDustbin(entityClass: Class<out IEsDocument>) {
         var dustbin = entityClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dustbin != null) {
             dustbinEntitys.add(entityClass)
         }
     }
 
-    fun onInserting(insert: MongoBaseInsertClip): Array<Pair<IMongoEntityInsert, DbEntityEventResult>> {
+    fun onInserting(insert: EsBaseInsertClip): Array<Pair<IEsEntityInsert, DbEntityEventResult>> {
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<IMongoEntityInsert, DbEntityEventResult>>()
+        var list = mutableListOf<Pair<IEsEntityInsert, DbEntityEventResult>>()
         using(OrmLogScope.IgnoreAffectRow) {
             using(OrmLogScope.IgnoreExecuteTime) {
                 insertEvent.ForEachExt { it, index ->
@@ -114,9 +114,9 @@ class MongoEntityEvent : BeanPostProcessor {
         return list.toTypedArray()
     }
 
-    fun onUpdating(update: MongoBaseUpdateClip): Array<Pair<IMongoEntityUpdate, DbEntityEventResult>> {
+    fun onUpdating(update: EsBaseUpdateClip): Array<Pair<IEsEntityUpdate, DbEntityEventResult>> {
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<IMongoEntityUpdate, DbEntityEventResult>>()
+        var list = mutableListOf<Pair<IEsEntityUpdate, DbEntityEventResult>>()
         using(OrmLogScope.IgnoreAffectRow) {
             using(OrmLogScope.IgnoreExecuteTime) {
                 updateEvent.ForEachExt { it, index ->
@@ -132,10 +132,10 @@ class MongoEntityEvent : BeanPostProcessor {
         return list.toTypedArray()
     }
 
-    fun onDeleting(delete: MongoDeleteClip<*>): Array<Pair<IMongoEntityDelete, DbEntityEventResult>> {
+    fun onDeleting(delete: EsDeleteClip<*>): Array<Pair<IEsEntityDelete, DbEntityEventResult>> {
 
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<IMongoEntityDelete, DbEntityEventResult>>()
+        var list = mutableListOf<Pair<IEsEntityDelete, DbEntityEventResult>>()
         using(OrmLogScope.IgnoreAffectRow) {
             using(OrmLogScope.IgnoreExecuteTime) {
                 deleteEvent.ForEachExt { it, index ->

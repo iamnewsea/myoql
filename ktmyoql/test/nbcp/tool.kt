@@ -32,7 +32,9 @@ class tool : TestBase() {
         nbcp.db.mongo.tool.generator().work(
                 File(path).parentFile.path + "/ktmyoql/kotlin/nbcp/db/mongo/mor_tables.kt",
                 "nbcp.db.mongo.entity.",
-                SysAnnex::class.java, StringMap(), listOf()
+                SysAnnex::class.java,
+                arrayOf(),
+                StringMap(), listOf()
         )
     }
 

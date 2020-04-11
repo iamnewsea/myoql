@@ -5,10 +5,8 @@ import nbcp.base.extend.getStringValue
 import nbcp.base.extend.using
 import nbcp.base.utils.MyUtil
 import nbcp.db.*
-import nbcp.db.mongo.MongoDeleteClip
-import nbcp.db.mongo.MongoEntityEvent
-import nbcp.db.mongo.component.MongoBaseUpdateClip
-import nbcp.db.mongo.entity.SysDustbin
+import nbcp.db.mongo.*
+import nbcp.db.mongo.base.*
 import nbcp.db.mongo.table.MongoBaseGroup
 import nbcp.db.mongo.toDocument
 import org.bson.Document

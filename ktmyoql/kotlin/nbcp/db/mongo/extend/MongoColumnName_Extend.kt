@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.query.Query
 import nbcp.db.IdName
 import nbcp.base.extend.*
 import nbcp.db.mongo.*
-import nbcp.db.mongo.component.MongoTypeEnum
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.regex.Pattern

@@ -56,7 +56,11 @@ inline fun <reified T, reified RK, reified RV> List<T>.ToMap(keyAct: ((T) -> RK)
 }
 
 
-
+fun <V> MutableMap<String, V>.onlyHoldKeys(keys: Set<String>) {
+    this.keys.minus(keys.toTypedArray()).forEach {
+        this.remove(it)
+    }
+}
 
 
 /**
@@ -83,9 +87,9 @@ fun <V> Map<String, V>.getStringValue(vararg keys: String): String {
     if (v == null) return "";
     var v_type = v::class.java;
     if (v_type.isArray) {
-        return (v as Array<String>).joinToString(",")
+        return (v as Array<Any>).map { it.AsString() }.joinToString(",")
     } else if (List::class.java.isAssignableFrom(v_type)) {
-        return (v as List<String>).joinToString(",")
+        return (v as List<Any>).map { it.AsString() }.joinToString(",")
     }
     return v.toString()
 }
