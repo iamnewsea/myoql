@@ -11,18 +11,9 @@ import nbcp.comm.*
 //import nbcp.comm.*
 import nbcp.base.extend.*
 
-import nbcp.base.utils.Md5Util
-import nbcp.base.utils.MyUtil
-import nbcp.db.db
+
 import nbcp.db.mongo.*
 import org.slf4j.LoggerFactory
-import org.springframework.data.mongodb.core.query.BasicQuery
-import java.lang.Exception
-import java.lang.RuntimeException
-
-/**
- * Created by Cy on 17-4-7.
- */
 
 /**
  * MongoQuery

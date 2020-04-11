@@ -13,9 +13,6 @@ import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
 import java.time.LocalDateTime
 
-/**
- * Created by Cy on 17-4-7.
- */
 /** https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline/ */
 
 /**
