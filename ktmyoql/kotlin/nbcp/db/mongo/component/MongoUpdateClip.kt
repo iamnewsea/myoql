@@ -75,26 +75,11 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
         return set { MongoColumnName(key) to value }
     }
 
-//    fun set(key: MongoColumnName, value: Any?): MongoUpdateClip<M> {
-//        this.setData.put(key.toString(), value);
-//        return this;
-//    }
-//    fun set(func: (M) -> MongoColumnName, value: Any?): MongoUpdateClip<M> {
-//        var p = func(moerEntity);
-//        this.setData.put(p.toString(), value);
-//        return this;
-//    }
-
     fun set(func: (M) -> Pair<MongoColumnName, Any?>): MongoUpdateClip<M> {
         var p = func(moerEntity);
         this.setData.put(p.first.toString(), p.second);
         return this;
     }
-
-    //判断是否设置了某个值.
-//    fun setted(key: String, value: Any): Boolean {
-//        return this.setData.get(key) == value;
-//    }
 
     fun unset(key: String): MongoUpdateClip<M> {
         this.unsetData.add(key);
@@ -106,15 +91,6 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
         return this;
     }
 
-//    fun set(actionIf: () -> Pair<String, Any?>?): MongoUpdateClip<T> {
-//        var setData = actionIf();
-//
-//        if (setData != null) {
-//            this.setData.put(setData.first, setData.second);
-//        }
-//        return this;
-//    }
-
     /**
      * 数据加法
      * .inc{ it.incField to 1 }
@@ -124,16 +100,6 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
         this.incData.put(kv.first.toString(), kv.second);
         return this;
     }
-
-    /**
-     * 向数组中添加一条。
-     * key:是实体的属性，内容是数组，如 roles。
-     * pushItem是要插入实体的各个值。如： _id pair "ab" , name pair "def"
-     */
-    //    fun push(key: String, vararg pushItem: Pair<String, Any?>): MongoUpdateClip<T> {
-//        this.pushData.put(key, LinkedHashMap<String, Any?>(pushItem.toMap()));
-//        return this;
-//    }
 
     /**
      * 向数组中添加一条。

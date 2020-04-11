@@ -38,56 +38,6 @@ fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.batchInsert(): MongoInsertCli
 }
 
 
-//
-//data class MongoSaveClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity: M, var entity: E) {
-//    private var whereColumns = MongoColumns()
-//    private var unsetColumns = MongoColumns()
-//    private var setColumns: MongoColumns? = null
-//
-//    fun where(where: (M) -> MongoColumnName): MongoSaveClip<M, E> {
-//        this.whereColumns.add(where(moerEntity));
-//        return this;
-//    }
-//
-//    //仅更新有效
-//    fun unset(column: (M) -> MongoColumnName): MongoSaveClip<M, E> {
-//        this.unsetColumns.add(column(moerEntity));
-//        return this;
-//    }
-//
-//    fun set(column: (M) -> MongoColumnName): MongoSaveClip<M, E> {
-//        if( this.setColumns == null){
-//            this.setColumns = MongoColumns();
-//        }
-//        this.setColumns!!.add(column(moerEntity));
-//        return this;
-//    }
-//
-//    fun exec(): Int {
-//        if (whereColumns.any() == false) {
-//            whereColumns.add(MongoColumnName("id"))
-//        }
-//
-//        if (whereColumns.map { it.toString() }.contains("id") && !entity.id.HasValue) {
-//            this.moerEntity.insert(entity);
-//            return db.affectRowCount;
-//        }
-//
-//        var update = this.moerEntity.update()
-//        update.setEntity(entity, { this.whereColumns }, { this.unsetColumns });
-//        if (update.exec() == 0) {
-//            entity.id = "";
-//            this.moerEntity.insert(entity);
-//        }
-//        return db.affectRowCount;
-//    }
-//}
-
-//如果存在，就Update，否则 Insert
-//fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.save(entity: E): MongoSaveClip<M, E> {
-//    return MongoSaveClip<M, E>(this, entity);
-//}
-
 fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.updateById(id: ObjectId): MongoUpdateClip<M> {
     var ret = this.update();
     ret.where("id" match id);

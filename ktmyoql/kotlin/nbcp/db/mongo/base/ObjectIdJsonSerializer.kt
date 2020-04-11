@@ -3,11 +3,16 @@ package nbcp.db.mongo
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
+import nbcp.base.utils.SpringUtil
+import nbcp.comm.MyJsonModule
 import org.bson.types.ObjectId
+import org.springframework.beans.factory.InitializingBean
+import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Component
 
 @Component
-class ObjectIdJsonSerializer : JsonSerializer<ObjectId>() {
+@DependsOn("myJsonModule")
+class ObjectIdJsonSerializer : JsonSerializer<ObjectId>(),InitializingBean {
     override fun serialize(o: ObjectId?, j: JsonGenerator, s: SerializerProvider) {
         if (o == null) {
             j.writeNull()
@@ -16,7 +21,7 @@ class ObjectIdJsonSerializer : JsonSerializer<ObjectId>() {
         }
     }
 
-    override fun handledType(): Class<ObjectId> {
-        return ObjectId::class.java
+    override fun afterPropertiesSet() {
+        SpringUtil.getBean<MyJsonModule>().addSerializer(ObjectId::class.java, this)
     }
 }

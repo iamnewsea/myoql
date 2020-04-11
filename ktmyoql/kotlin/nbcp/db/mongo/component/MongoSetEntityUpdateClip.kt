@@ -23,24 +23,16 @@ import org.springframework.data.mongodb.core.query.Criteria
 /**
  * MongoUpdate
  */
-class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M, var entity: IMongoDocument) : MongoBaseUpdateClip(moerEntity.tableName)  {
+class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M, var entity: IMongoDocument) : MongoBaseUpdateClip(moerEntity.tableName) {
     companion object {
         private val logger by lazy {
             return@lazy LoggerFactory.getLogger(this::class.java)
         }
     }
+
     private var whereColumns = mutableSetOf<String>()
     private var setColumns = mutableSetOf<String>()
     private var unsetColumns = mutableSetOf<String>()
-    /**
-     * @param entity 要更新的实体
-     * @param whereColumnsFunc where 列。
-     * @param unsetColumnsFunc 排除要更新的列。
-     */
-//    fun setEntity(entity: IMongoDocument): MongoSetEntityUpdateClip<M> {
-//        this.entity = entity;
-//        return this;
-//    }
 
     fun withColumn(setFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M> {
         this.setColumns.add(setFunc(this.moerEntity).toString())
@@ -146,14 +138,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
             var batchInsert = MongoBaseInsertClip(moerEntity.tableName)
             batchInsert.addEntity(entity);
 
-            db.affectRowCount =batchInsert.exec();
-
-//            if (entity.id.isEmpty()) {
-//                entity.id = ObjectId().toString();
-//            }
-//
-//            mongoTemplate.insert(entity, this.moerEntity.tableName);
-            db.affectRowCount = 1;
+            db.affectRowCount = batchInsert.exec();
             ret = entity.id;
         }
         return ret;

@@ -2,10 +2,14 @@ package nbcp.base.extend
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.*
+import nbcp.base.utils.SpringUtil
 import nbcp.comm.*
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.InitializingBean
+import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Component
 import java.lang.RuntimeException
+import java.sql.Timestamp
 
 
 /**
@@ -16,7 +20,8 @@ import java.lang.RuntimeException
 class RawJsonObject(value: String) : MyString(value) {}
 
 @Component
-class RawJsonSerializer : JsonSerializer<RawJsonObject>() {
+@DependsOn("myJsonModule")
+class RawJsonSerializer : JsonSerializer<RawJsonObject>(), InitializingBean {
     override fun serialize(o: RawJsonObject?, j: JsonGenerator, s: SerializerProvider) {
         if (o == null) {
             j.writeNull()
@@ -25,8 +30,8 @@ class RawJsonSerializer : JsonSerializer<RawJsonObject>() {
         }
     }
 
-    override fun handledType(): Class<RawJsonObject> {
-        return RawJsonObject::class.java
+    override fun afterPropertiesSet() {
+        SpringUtil.getBean<MyJsonModule>().addSerializer(RawJsonObject::class.java, this)
     }
 }
 

@@ -61,23 +61,12 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         if (clazz.IsSimpleType()) {
             isString = clazz.name == "java.lang.String";
         }
-//        else if (selectColumns.any() == false) {
-//            if (Map::class.java.isAssignableFrom(clazz) == false) {
-//                select(*clazz.fields.map { it.name }.toTypedArray())
-//            }
-//        }
 
         var criteria = this.getMongoCriteria(*whereData.toTypedArray());
         var projection = Document();
         selectColumns.forEach {
             projection.put(it, 1)
         }
-
-//        selectDbObjects.forEach {
-////            it.keys.forEach { key ->
-////                projection.put(key, it.get(key))
-////            }
-////        }
 
         unSelectColumns.forEach {
             projection.put(it, 0)

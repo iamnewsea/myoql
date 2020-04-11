@@ -22,11 +22,6 @@ open class MongoClipBase(var collectionName: String): Serializable {
             return db.mongo.getMongoTemplateByCollectionName(collectionName) ?: scopes.getLatestScope<MongoTemplate>() ?: SpringUtil.getBean<MongoTemplate>()
         }
 
-
-//    fun getCollection(): MongoCollection<Document> {
-//        return mongoTemplate.mongoDbFactory.db.getCollection(this.collectionName)
-//    }
-
     fun getMongoCriteria(vararg where: Criteria): Criteria {
         if (where.size == 0) return Criteria();
         if (where.size == 1) return where[0];
@@ -37,10 +32,3 @@ open class MongoClipBase(var collectionName: String): Serializable {
 interface IMongoWhereable {
 
 }
-
-
-
-//fun <T:MongoClipBase> T.useTemplate(template: MongoTemplate):T{
-//    this.mongoTemplate = template;
-//    return this;
-//}
