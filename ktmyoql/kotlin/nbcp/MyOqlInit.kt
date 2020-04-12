@@ -1,7 +1,7 @@
 package nbcp
 
-import nbcp.base.extend.clazzesIsSimpleDefine
-import nbcp.base.utils.SpringUtil
+import nbcp.comm.clazzesIsSimpleDefine
+import nbcp.utils.*
 import nbcp.db.db
 import nbcp.db.mongo.MongoEntityEvent
 import org.bson.types.ObjectId

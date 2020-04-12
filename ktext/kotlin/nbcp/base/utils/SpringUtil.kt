@@ -1,4 +1,4 @@
-package nbcp.base.utils
+package nbcp.utils
 
 import org.slf4j.LoggerFactory
 import org.springframework.beans.BeansException

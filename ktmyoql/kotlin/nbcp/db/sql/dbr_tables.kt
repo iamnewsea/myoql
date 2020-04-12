@@ -6,8 +6,8 @@ import nbcp.db.sql.*
 import nbcp.db.sql.entity.*
 import nbcp.db.mysql.*
 import nbcp.db.mysql.entity.*
-import nbcp.base.extend.*
-import nbcp.base.utils.*
+import nbcp.comm.*
+import nbcp.utils.*
 import org.springframework.stereotype.Component
 
 //generate auto @2020-03-24 14:37:51

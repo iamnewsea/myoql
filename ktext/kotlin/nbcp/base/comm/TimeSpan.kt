@@ -1,6 +1,6 @@
 package nbcp.comm
 
-import nbcp.base.extend.AsInt
+import nbcp.comm.AsInt
 import java.time.Duration
 import java.time.LocalDateTime
 

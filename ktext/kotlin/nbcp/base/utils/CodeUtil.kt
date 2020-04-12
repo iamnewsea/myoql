@@ -1,7 +1,7 @@
-package nbcp.base.utils
+package nbcp.utils
 
 import org.slf4j.LoggerFactory
-import nbcp.base.extend.Lock
+import nbcp.comm.Lock
 import java.math.BigInteger
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime

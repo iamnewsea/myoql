@@ -1,8 +1,8 @@
 package nbcp.db.redis
 
-import nbcp.base.extend.AsInt
-import nbcp.base.extend.AsLong
-import nbcp.base.utils.SpringUtil
+import nbcp.comm.AsInt
+import nbcp.comm.AsLong
+import nbcp.utils.*
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.DependsOn
 import org.springframework.scheduling.annotation.Scheduled

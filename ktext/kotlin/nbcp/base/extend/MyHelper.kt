@@ -1,6 +1,6 @@
-package nbcp.base.extend
+package nbcp.comm
 
-import nbcp.base.utils.MyUtil
+import nbcp.utils.*
 import java.util.*
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock

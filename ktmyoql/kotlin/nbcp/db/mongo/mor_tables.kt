@@ -2,8 +2,8 @@
 package nbcp.db.mongo.table
 
 import org.slf4j.LoggerFactory
-import nbcp.base.extend.*
-import nbcp.base.utils.*
+import nbcp.comm.*
+import nbcp.utils.*
 import nbcp.db.mongo.base.*
 import nbcp.db.mongo.entity.*
 import nbcp.db.mongo.*

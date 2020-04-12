@@ -1,6 +1,5 @@
-package nbcp.base.utils
+package nbcp.utils
 
-import nbcp.base.extend.AsInt
 import nbcp.comm.*
 
 import java.io.File

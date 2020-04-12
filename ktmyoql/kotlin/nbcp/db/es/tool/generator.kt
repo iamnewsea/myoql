@@ -1,9 +1,7 @@
 package nbcp.db.es.tool
 
 import nbcp.comm.*
-import nbcp.base.extend.*
-
-import nbcp.base.utils.MyUtil
+import nbcp.utils.*
 import nbcp.db.DbEntityGroup
 
 import java.io.File
@@ -53,8 +51,8 @@ package nbcp.db.es.table
 
 import nbcp.db.*
 import nbcp.db.mongo.*
-import nbcp.base.utils.*
-import nbcp.base.extend.*
+import nbcp.utils.*
+import nbcp.comm.*
 import nbcp.db.mongo.entity.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component

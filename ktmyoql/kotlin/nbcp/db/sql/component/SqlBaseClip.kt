@@ -5,9 +5,8 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
 import nbcp.comm.*
-import nbcp.base.extend.*
 
-import nbcp.base.utils.SpringUtil
+import nbcp.utils.*
 import nbcp.db.*
 import nbcp.db.sql.component.JsonMapRowMapper
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl

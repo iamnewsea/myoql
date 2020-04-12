@@ -2,7 +2,7 @@
 //
 //
 ////import com.esdb.DBObject
-//import nbcp.base.extend.*
+//import nbcp.comm.*
 //import nbcp.db.*
 //import java.lang.reflect.ParameterizedType
 //

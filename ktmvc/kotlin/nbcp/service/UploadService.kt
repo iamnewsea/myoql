@@ -7,8 +7,7 @@ import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.commons.CommonsMultipartResolver
 import nbcp.comm.*
-import nbcp.base.extend.*
-import nbcp.base.utils.*
+import nbcp.utils.*
 import nbcp.db.*
 import nbcp.db.mongo.*
 import nbcp.db.mongo.entity.*

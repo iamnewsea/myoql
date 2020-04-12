@@ -2,9 +2,9 @@ package nbcp.db.redis
 
 import io.lettuce.core.ScanArgs
 import io.lettuce.core.ScanCursor
-import nbcp.base.extend.AsInt
-import nbcp.base.utils.SpringUtil
-import nbcp.base.extend.*
+import nbcp.comm.AsInt
+import nbcp.utils.*
+import nbcp.comm.*
 import org.springframework.data.redis.connection.StringRedisConnection
 import org.springframework.data.redis.core.ScanOptions
 import org.springframework.data.redis.core.StringRedisTemplate

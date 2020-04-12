@@ -1,8 +1,8 @@
 package nbcp.db.es
 
-import nbcp.base.extend.getLatestScope
-import nbcp.base.extend.scopes
-import nbcp.base.utils.SpringUtil
+import nbcp.comm.getLatestScope
+import nbcp.comm.scopes
+import nbcp.utils.*
 import nbcp.db.db
 import org.elasticsearch.client.RestClient
 import java.io.Serializable

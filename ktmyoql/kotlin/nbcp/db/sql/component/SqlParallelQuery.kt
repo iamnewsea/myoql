@@ -1,7 +1,7 @@
 //package nbcp.db.sql.component
 //
 //import nbcp.comm.*
-//import nbcp.base.extend.AsString
+//import nbcp.comm.AsString
 //import nbcp.db.mysql.*
 //import java.util.concurrent.Executors
 //import java.util.concurrent.Future

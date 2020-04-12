@@ -1,6 +1,6 @@
 package nbcp.db
 
-import nbcp.base.utils.SpringUtil
+import nbcp.utils.*
 import nbcp.comm.StringKeyMap
 import nbcp.db.sql.IDataGroup
 import nbcp.db.sql.SqlBaseTable

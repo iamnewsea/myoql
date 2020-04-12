@@ -2,7 +2,7 @@ package nbcp.comm
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
-import nbcp.base.utils.SpringUtil
+import nbcp.utils.*
 
 /**
  * 使用 字段值 方式序列化JSON，应用在数据库的场景中。

@@ -1,11 +1,10 @@
 package nbcp.web.config
 
 import ch.qos.logback.classic.Level
-import nbcp.base.extend.*
+import nbcp.comm.*
 
 
-import nbcp.base.utils.Md5Util
-import nbcp.base.utils.MyUtil
+import nbcp.utils.*
 import nbcp.comm.JsonMap
 import nbcp.comm.*
 import nbcp.web.*

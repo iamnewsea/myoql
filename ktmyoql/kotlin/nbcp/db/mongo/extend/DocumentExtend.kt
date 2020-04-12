@@ -1,9 +1,9 @@
 package nbcp.db.mongo
 
-import nbcp.base.extend.AsInt
-import nbcp.base.extend.AsString
-import nbcp.base.extend.Slice
-import nbcp.base.utils.RecursionUtil
+import nbcp.comm.AsInt
+import nbcp.comm.AsString
+import nbcp.comm.Slice
+import nbcp.utils.*
 import org.bson.Document
 import org.bson.types.ObjectId
 

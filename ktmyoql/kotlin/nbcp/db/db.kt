@@ -1,7 +1,7 @@
 package nbcp.db
 
-import nbcp.base.extend.*
-import nbcp.base.utils.SpringUtil
+import nbcp.comm.*
+import nbcp.utils.*
 import nbcp.comm.TimeSpan
 import nbcp.db.mongo.table.MongoBaseGroup
 import nbcp.db.redis.RedisBaseGroup

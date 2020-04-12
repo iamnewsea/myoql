@@ -2,7 +2,7 @@ package nbcp.db.mongo
 
 
 //import com.mongodb.DBObject
-import nbcp.base.extend.*
+import nbcp.comm.*
 import nbcp.db.IdName
 import org.bson.BSONObject
 import org.bson.BsonString

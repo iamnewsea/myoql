@@ -1,6 +1,6 @@
 package nbcp
 
-import nbcp.base.utils.SpringUtil
+import nbcp.utils.*
 import nbcp.comm.GetSetTypeJsonMapper
 import nbcp.comm.utf8
 import nbcp.web.RequestParameterConverter

@@ -1,11 +1,10 @@
 package nbcp.wx
 
-import nbcp.base.extend.AsString
-import nbcp.base.extend.FromJson
-import nbcp.base.extend.HasValue
-import nbcp.base.extend.ToJson
-import nbcp.base.utils.HttpUtil
-import nbcp.base.utils.SpringUtil
+import nbcp.comm.AsString
+import nbcp.comm.FromJson
+import nbcp.comm.HasValue
+import nbcp.comm.ToJson
+import nbcp.utils.*
 import nbcp.comm.ApiResult
 import nbcp.comm.JsonMap
 import nbcp.comm.StringMap

@@ -1,7 +1,7 @@
 package nbcp.wx
 
-import nbcp.base.extend.AllFields
-import nbcp.base.utils.Md5Util
+import nbcp.comm.AllFields
+import nbcp.utils.*
 import nbcp.comm.Ignore
 import nbcp.comm.Require
 import java.lang.RuntimeException

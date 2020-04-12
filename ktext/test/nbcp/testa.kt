@@ -1,9 +1,9 @@
 package nbcp
 
-import nbcp.base.extend.*
-import nbcp.base.utils.CodeUtil
 import nbcp.comm.*
-import nbcp.base.utils.RecursionUtil
+import nbcp.utils.*
+import nbcp.comm.*
+import nbcp.utils.*
 import nbcp.db.IdName
 import nbcp.db.IdUrl
 import org.junit.Test

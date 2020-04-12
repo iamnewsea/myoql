@@ -1,8 +1,7 @@
 package nbcp.db.mongo.tool
 
 import nbcp.comm.*
-import nbcp.base.extend.*
-import nbcp.base.utils.MyUtil
+import nbcp.utils.*
 import nbcp.db.DbEntityGroup
 import java.io.File
 import java.io.FileWriter

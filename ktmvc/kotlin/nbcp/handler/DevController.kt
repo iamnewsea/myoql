@@ -5,8 +5,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import nbcp.comm.*
-import nbcp.base.extend.*
-import nbcp.comm.JsonpMapping
 import nbcp.db.db
 import nbcp.db.mongo.MongoBaseEntity
 import nbcp.db.mongo.MongoEntityEvent

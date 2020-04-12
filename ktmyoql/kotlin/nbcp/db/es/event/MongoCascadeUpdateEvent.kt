@@ -1,7 +1,7 @@
 //package nbcp.db.es
 //
-//import nbcp.base.extend.getStringValue
-//import nbcp.base.utils.MyUtil
+//import nbcp.comm.getStringValue
+//import nbcp.utils.*
 //import nbcp.db.DbEntityEventResult
 //import nbcp.db.DbEntityFieldRefData
 //import org.springframework.stereotype.Component

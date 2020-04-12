@@ -1,7 +1,6 @@
 package nbcp.db.es
 
-import nbcp.base.extend.*
-import nbcp.comm.minus
+import nbcp.comm.*
 import nbcp.db.*
 import nbcp.db.es.*
 import org.bson.types.ObjectId

@@ -1,7 +1,6 @@
-package nbcp.base.utils
+package nbcp.utils
 
 import nbcp.comm.*
-import nbcp.base.extend.*
 import nbcp.db.CodeName
 import java.io.File
 import java.io.FileInputStream
@@ -9,9 +8,6 @@ import java.net.JarURLConnection
 import java.net.URL
 import java.time.*
 import java.util.*
-import java.util.jar.JarEntry
-import java.util.Enumeration
-import java.util.jar.JarFile
 
 
 /**

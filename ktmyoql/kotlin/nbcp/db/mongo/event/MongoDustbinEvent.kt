@@ -1,7 +1,7 @@
 package nbcp.db.mongo
 
-import nbcp.base.extend.LogScope
-import nbcp.base.extend.using
+import nbcp.comm.LogScope
+import nbcp.comm.using
 import nbcp.db.*
 import nbcp.db.mongo.MongoDeleteClip
 import nbcp.db.mongo.MongoEntityEvent

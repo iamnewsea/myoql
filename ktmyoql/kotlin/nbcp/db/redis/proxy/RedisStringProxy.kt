@@ -1,7 +1,7 @@
 package nbcp.db.redis.proxy
 
-import nbcp.base.extend.*
-import nbcp.base.utils.SpringUtil
+import nbcp.comm.*
+import nbcp.utils.*
 import nbcp.db.redis.BaseRedisProxy
 import nbcp.db.redis.RedisRenewalTypeEnum
 import org.springframework.data.redis.core.RedisTemplate

@@ -1,9 +1,9 @@
 //package nbcp.base.comm
 //
-//import nbcp.base.extend.HasValue
-//import nbcp.base.extend.IsIn
-//import nbcp.base.extend.Lock
-//import nbcp.base.extend.RemoveRange
+//import nbcp.comm.HasValue
+//import nbcp.comm.IsIn
+//import nbcp.comm.Lock
+//import nbcp.comm.RemoveRange
 //import nbcp.db.mongo.*
 //import java.util.concurrent.CopyOnWriteArrayList
 //import java.util.concurrent.locks.ReentrantLock

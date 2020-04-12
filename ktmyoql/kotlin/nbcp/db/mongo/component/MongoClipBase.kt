@@ -1,9 +1,9 @@
 package nbcp.db.mongo
 
-import nbcp.base.extend.getLatestScope
-import nbcp.base.extend.scopes
+import nbcp.comm.getLatestScope
+import nbcp.comm.scopes
 import org.springframework.data.mongodb.core.MongoTemplate
-import nbcp.base.utils.SpringUtil
+import nbcp.utils.*
 import nbcp.db.db
 import org.springframework.data.mongodb.core.query.Criteria
 import java.io.Serializable

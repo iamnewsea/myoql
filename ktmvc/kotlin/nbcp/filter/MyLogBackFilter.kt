@@ -6,8 +6,8 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.classic.turbo.TurboFilter
 import ch.qos.logback.core.filter.Filter
 import ch.qos.logback.core.spi.FilterReply
-import nbcp.base.extend.*
-import nbcp.base.utils.SpringUtil
+import nbcp.comm.*
+import nbcp.utils.*
 import org.slf4j.Marker
 import org.springframework.stereotype.Component
 

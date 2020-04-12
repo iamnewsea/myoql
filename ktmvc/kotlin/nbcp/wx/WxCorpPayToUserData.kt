@@ -1,12 +1,10 @@
 package nbcp.wx
 
-import nbcp.base.extend.AsString
-import nbcp.base.extend.ConvertJson
-import nbcp.base.extend.Slice
-import nbcp.base.extend.Xml2Json
-import nbcp.base.utils.CodeUtil
-import nbcp.base.utils.HttpUtil
-import nbcp.base.utils.SpringUtil
+import nbcp.comm.AsString
+import nbcp.comm.ConvertJson
+import nbcp.comm.Slice
+import nbcp.comm.Xml2Json
+import nbcp.utils.*
 import nbcp.comm.Ignore
 import nbcp.comm.JsonResult
 import nbcp.web.ClientIp

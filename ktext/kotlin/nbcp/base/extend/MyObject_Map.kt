@@ -1,4 +1,4 @@
-package nbcp.base.extend
+package nbcp.comm
 
 
 //顺序会变

@@ -1,7 +1,7 @@
 package nbcp.db.es
 
 
-import nbcp.base.extend.*
+import nbcp.comm.*
 
 import nbcp.db.db
 import org.slf4j.LoggerFactory

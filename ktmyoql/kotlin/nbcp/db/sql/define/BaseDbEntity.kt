@@ -1,7 +1,7 @@
 package nbcp.db.sql
 
-import nbcp.base.extend.AsString
-import nbcp.base.extend.AllFields
+import nbcp.comm.AsString
+import nbcp.comm.AllFields
 import nbcp.db.sql.SqlBaseTable
 import java.lang.reflect.Modifier
 

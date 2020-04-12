@@ -1,8 +1,8 @@
 package nbcp.db.redis.proxy
 
 import io.lettuce.core.ScanArgs
-import nbcp.base.extend.AsInt
-import nbcp.base.extend.AsLong
+import nbcp.comm.AsInt
+import nbcp.comm.AsLong
 import nbcp.db.redis.BaseRedisProxy
 import nbcp.db.redis.RedisRenewalTypeEnum
 import org.springframework.data.redis.core.ScanOptions

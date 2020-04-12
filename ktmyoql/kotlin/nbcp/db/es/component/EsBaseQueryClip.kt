@@ -1,9 +1,7 @@
 package nbcp.db.es
 
-import nbcp.base.extend.*
-
-import nbcp.base.utils.Md5Util
 import nbcp.comm.*
+import nbcp.utils.*
 import nbcp.db.db
 import nbcp.db.es.*
 import org.bson.Document
@@ -17,7 +15,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
     var search = SearchBodyClip()
 
     fun selectField(column: String) {
-        search.selectColumns.add(column);
+        search.fields.add(column);
     }
 
     companion object {
@@ -64,7 +62,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
         var responseBody = response.entity.content.readBytes().toString(utf8)
         var result = responseBody.FromJson<JsonMap>()!!;
         var hits = result.get("hits") as JsonMap
-        this.total = hits.getIntValue("total", "value")
+        this.total = result.getIntValue("_shards","total")
         if( this.total <=0 ){
             return ret;
         }
@@ -74,7 +72,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
 
         db.affectRowCount = list.size
 
-        var lastKey = this.search.selectColumns.lastOrNull() ?: ""
+        var lastKey = this.search.fields.lastOrNull() ?: ""
         var error = false;
         try {
             list.forEach {

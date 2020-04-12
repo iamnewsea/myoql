@@ -4,11 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import nbcp.comm.*
-import nbcp.base.extend.*
-import nbcp.comm.*
-import nbcp.comm.JsonpMapping
-import nbcp.db.IdName
-import nbcp.db.IdUrl
+import nbcp.db.*
 import nbcp.service.UploadService
 import nbcp.web.*
 import javax.servlet.http.HttpServletRequest

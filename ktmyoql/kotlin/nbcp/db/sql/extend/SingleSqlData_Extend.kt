@@ -1,6 +1,6 @@
 package nbcp.db.sql
 
-import nbcp.base.extend.*
+import nbcp.comm.*
 import nbcp.db.db
 import java.io.Serializable
 import java.lang.RuntimeException

@@ -3,8 +3,6 @@ package nbcp
 import nbcp.TestBase
 import org.junit.Test
 import nbcp.comm.*
-import nbcp.comm.*
-import nbcp.base.extend.*
 import nbcp.db.mongo.entity.*
 import nbcp.db.sql.entity.*
 import java.io.File

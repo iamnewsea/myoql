@@ -5,8 +5,8 @@ import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
-import nbcp.base.extend.*
-import nbcp.base.utils.SpringUtil
+import nbcp.comm.*
+import nbcp.utils.*
 import nbcp.db.db
 
 import nbcp.db.mongo.*

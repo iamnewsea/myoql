@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.module.SimpleModule
-import nbcp.base.extend.GetActualClass
-import nbcp.base.utils.SpringUtil
+import nbcp.comm.GetActualClass
+import nbcp.utils.*
 import nbcp.comm.*
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.config.BeanPostProcessor

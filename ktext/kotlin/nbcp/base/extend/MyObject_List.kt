@@ -1,4 +1,4 @@
-package nbcp.base.extend
+package nbcp.comm
 
 import nbcp.comm.*
 

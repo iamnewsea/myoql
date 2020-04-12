@@ -2,7 +2,7 @@
 //
 //import nbcp.comm.*
 //import nbcp.db.IdName
-//import nbcp.base.extend.*
+//import nbcp.comm.*
 //import nbcp.db.es.*
 //import java.time.LocalDate
 //import java.time.LocalDateTime

@@ -3,9 +3,9 @@
 //import org.springframework.context.ApplicationListener
 //import org.springframework.context.event.ContextRefreshedEvent
 //import org.springframework.stereotype.Component
-//import nbcp.base.extend.*
-//import nbcp.base.utils.JarClassUtil
-//import nbcp.base.utils.MyUtil
+//import nbcp.comm.*
+//import nbcp.utils.*
+//import nbcp.utils.*
 //import nbcp.db.db
 //import nbcp.db.mongo.*
 //import org.slf4j.LoggerFactory

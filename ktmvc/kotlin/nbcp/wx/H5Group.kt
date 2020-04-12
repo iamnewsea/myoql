@@ -1,9 +1,9 @@
 package nbcp.wx
 
-import nbcp.base.extend.AsLocalDateTime
-import nbcp.base.extend.HasValue
-import nbcp.base.extend.Slice
-import nbcp.base.utils.CodeUtil
+import nbcp.comm.AsLocalDateTime
+import nbcp.comm.HasValue
+import nbcp.comm.Slice
+import nbcp.utils.*
 import nbcp.comm.ApiResult
 import nbcp.comm.utf8
 import nbcp.db.db

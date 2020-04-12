@@ -1,7 +1,6 @@
 package nbcp.db.mybatis
 
-import nbcp.base.utils.MyUtil
-import nbcp.base.utils.SpringUtil
+import nbcp.utils.*
 import nbcp.db.mysql.MysqlConfig
 import org.apache.ibatis.executor.Executor
 import org.apache.ibatis.executor.keygen.SelectKeyGenerator

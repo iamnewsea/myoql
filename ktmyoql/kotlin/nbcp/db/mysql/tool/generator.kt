@@ -1,8 +1,7 @@
 package nbcp.db.mysql.tool
 
 import nbcp.comm.*
-import nbcp.base.extend.*
-import nbcp.base.utils.MyUtil
+import nbcp.utils.*
 import nbcp.db.DbEntityGroup
 import nbcp.db.mysql.*
 import nbcp.db.sql.*
@@ -64,8 +63,8 @@ import nbcp.db.sql.*
 import nbcp.db.sql.entity.*
 import nbcp.db.mysql.*
 import nbcp.db.mysql.entity.*
-import nbcp.base.extend.*
-import nbcp.base.utils.*
+import nbcp.comm.*
+import nbcp.utils.*
 import org.springframework.stereotype.Component
 
 //generate auto @${LocalDateTime.now().AsString()}

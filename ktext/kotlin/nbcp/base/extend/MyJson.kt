@@ -1,8 +1,8 @@
-package nbcp.base.extend
+package nbcp.comm
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.*
-import nbcp.base.utils.SpringUtil
+import nbcp.utils.*
 import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean

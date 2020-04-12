@@ -1,14 +1,7 @@
 package nbcp.wx
 
-import nbcp.base.extend.*
-import nbcp.base.utils.CodeUtil
-import nbcp.base.utils.HttpUtil
-import nbcp.base.utils.Md5Util
-import nbcp.base.utils.SpringUtil
-import nbcp.comm.ApiResult
-import nbcp.comm.Ignore
-import nbcp.comm.JsonResult
-import nbcp.comm.Require
+import nbcp.comm.*
+import nbcp.utils.*
 import nbcp.web.ClientIp
 import nbcp.web.HttpContext
 import org.apache.http.ssl.SSLContexts

@@ -3,9 +3,9 @@
 //import nbcp.comm.*
 //import nbcp.comm.*
 //import nbcp.comm.*
-//import nbcp.base.extend.*
+//import nbcp.comm.*
 //
-//import nbcp.base.utils.HttpUtil
+//import nbcp.utils.*
 //import nbcp.web.MyHttpRequestWrapper
 //import java.nio.charset.Charset
 //import java.util.LinkedHashMap

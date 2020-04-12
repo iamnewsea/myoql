@@ -3,7 +3,6 @@ package nbcp.handler
 import ch.qos.logback.classic.Level
 import com.wf.captcha.ArithmeticCaptcha
 import com.wf.captcha.utils.CaptchaUtil
-import nbcp.base.extend.AsInt
 import nbcp.comm.*
 import nbcp.db.db
 import nbcp.web.queryJson

@@ -3,7 +3,7 @@ package nbcp.db.mongo
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
-import nbcp.base.utils.SpringUtil
+import nbcp.utils.*
 import nbcp.comm.MyJsonModule
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.InitializingBean

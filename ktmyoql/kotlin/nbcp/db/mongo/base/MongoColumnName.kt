@@ -1,6 +1,6 @@
 package nbcp.db.mongo
 
-import nbcp.base.extend.MyString
+import nbcp.comm.MyString
 
 /**
  * Mongo列

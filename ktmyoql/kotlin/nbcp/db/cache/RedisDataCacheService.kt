@@ -4,8 +4,8 @@ import nbcp.db.*
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Service
-import nbcp.base.extend.*
-import nbcp.base.utils.SpringUtil
+import nbcp.comm.*
+import nbcp.utils.*
 import nbcp.db.CacheKey
 import nbcp.db.CacheKeyTypeEnum
 import nbcp.db.redis.RedisBaseGroup

@@ -1,10 +1,8 @@
 package nbcp.model
 
 import nbcp.comm.*
-import nbcp.comm.*
-import nbcp.comm.*
-import nbcp.base.extend.AsString
-import nbcp.base.extend.IsIn
+import nbcp.comm.AsString
+import nbcp.comm.IsIn
 import java.io.Serializable
 import java.lang.reflect.ParameterizedType
 

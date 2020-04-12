@@ -1,9 +1,9 @@
 package nbcp.db.mongo
 
-import nbcp.base.extend.LogScope
-import nbcp.base.extend.getStringValue
-import nbcp.base.extend.using
-import nbcp.base.utils.MyUtil
+import nbcp.comm.LogScope
+import nbcp.comm.getStringValue
+import nbcp.comm.using
+import nbcp.utils.*
 import nbcp.db.*
 import nbcp.db.mongo.*
 import nbcp.db.mongo.base.*

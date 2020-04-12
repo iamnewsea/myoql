@@ -1,8 +1,7 @@
 package nbcp.handler
 
-import nbcp.base.extend.*
-import nbcp.base.utils.CodeUtil
 import nbcp.comm.*
+import nbcp.utils.*
 import nbcp.db.IdUrl
 import nbcp.web.setDownloadFileName
 import org.slf4j.LoggerFactory

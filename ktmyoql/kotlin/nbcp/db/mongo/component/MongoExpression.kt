@@ -1,7 +1,7 @@
 package nbcp.db.mongo
 
 
-import nbcp.base.extend.ToJson
+import nbcp.comm.ToJson
 import nbcp.comm.JsonMap
 import org.springframework.data.mongodb.core.query.Criteria
 import java.lang.RuntimeException

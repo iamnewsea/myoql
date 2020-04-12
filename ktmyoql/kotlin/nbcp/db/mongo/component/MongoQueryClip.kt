@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import nbcp.comm.*
 //import nbcp.comm.*
-import nbcp.base.extend.*
 
 
 import nbcp.db.mongo.*

@@ -2,10 +2,6 @@ package nbcp.db.sql
 
 import org.slf4j.LoggerFactory
 import nbcp.comm.*
-import nbcp.base.extend.AsString
-import nbcp.base.extend.Error
-import nbcp.base.extend.Info
-import nbcp.base.extend.InfoError
 
 import nbcp.db.db
 import nbcp.db.sql.*

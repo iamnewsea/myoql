@@ -1,7 +1,7 @@
 package nbcp.comm
 
-import nbcp.base.extend.IsIn
-import nbcp.base.extend.Remove
+import nbcp.comm.IsIn
+import nbcp.comm.Remove
 
 
 enum class FileExtentionTypeEnum {

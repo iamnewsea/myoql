@@ -6,7 +6,7 @@ import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import nbcp.db.IdName
-import nbcp.base.extend.*
+import nbcp.comm.*
 import nbcp.db.mongo.*
 import java.time.LocalDate
 import java.time.LocalDateTime

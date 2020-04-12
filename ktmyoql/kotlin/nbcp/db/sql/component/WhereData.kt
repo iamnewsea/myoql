@@ -1,10 +1,8 @@
 package nbcp.db.sql
 
 import nbcp.comm.*
-import nbcp.base.extend.CloneObject
 import nbcp.db.sql.*
 import nbcp.db.*
-import nbcp.base.extend.HasValue
 import java.io.Serializable
 import java.util.LinkedHashSet
 

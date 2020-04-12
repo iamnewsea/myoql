@@ -1,8 +1,8 @@
 package nbcp.db.es
 
 
-import nbcp.base.extend.*
-import nbcp.base.utils.SpringUtil
+import nbcp.comm.*
+import nbcp.utils.*
 import nbcp.db.db
 
 import org.slf4j.LoggerFactory

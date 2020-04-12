@@ -3,8 +3,8 @@ package nbcp.db.redis.proxy
 import io.lettuce.core.Limit
 import io.lettuce.core.Range
 import io.lettuce.core.ScanArgs
-import nbcp.base.extend.AsInt
-import nbcp.base.extend.AsString
+import nbcp.comm.AsInt
+import nbcp.comm.AsString
 import nbcp.db.redis.BaseRedisProxy
 import nbcp.db.redis.RedisRenewalTypeEnum
 import org.springframework.data.redis.core.DefaultTypedTuple

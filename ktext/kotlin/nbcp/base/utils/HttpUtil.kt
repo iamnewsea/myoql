@@ -1,4 +1,4 @@
-package nbcp.base.utils
+package nbcp.utils
 
 /**
  * Created by udi on 17-4-30.
@@ -6,8 +6,6 @@ package nbcp.base.utils
 import com.sun.net.ssl.HttpsURLConnection
 import nbcp.comm.*
 import org.slf4j.LoggerFactory
-import nbcp.comm.*
-import nbcp.base.extend.*
 import java.awt.image.BufferedImage
 import java.io.*
 import java.net.HttpURLConnection

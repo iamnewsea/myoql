@@ -1,7 +1,7 @@
 package nbcp.comm
 
 import org.slf4j.LoggerFactory
-import nbcp.base.extend.*
+import nbcp.comm.*
 
 /**
  * 尽量使用 JsonMap

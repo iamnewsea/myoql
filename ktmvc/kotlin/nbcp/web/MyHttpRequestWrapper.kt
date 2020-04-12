@@ -1,18 +1,17 @@
 package nbcp.web
 
 
-import nbcp.base.extend.*
+import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import nbcp.comm.*
-import nbcp.comm.*
 
 import java.nio.charset.Charset
 import javax.servlet.ReadListener
 import javax.servlet.ServletInputStream
-import nbcp.base.utils.SpringUtil
+import nbcp.utils.*
 import java.io.*
 import java.util.*
 import javax.servlet.ServletContext

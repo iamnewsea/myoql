@@ -1,12 +1,8 @@
 package nbcp.db.mongo
 
-import nbcp.base.extend.*
-
-import nbcp.base.utils.Md5Util
 import nbcp.comm.*
-import nbcp.db.db
-import nbcp.db.mongo.IMongoWhereable
-import nbcp.db.mongo.MongoClipBase
+import nbcp.utils.*
+import nbcp.db.*
 import org.bson.Document
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.BasicQuery

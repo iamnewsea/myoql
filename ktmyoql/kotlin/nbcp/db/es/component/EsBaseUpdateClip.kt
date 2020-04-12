@@ -1,8 +1,7 @@
 package nbcp.db.es
 
-import nbcp.base.extend.*
-import nbcp.base.utils.RecursionUtil
 import nbcp.comm.*
+import nbcp.utils.*
 import nbcp.db.db
 import nbcp.db.es.*
 import org.elasticsearch.client.Request

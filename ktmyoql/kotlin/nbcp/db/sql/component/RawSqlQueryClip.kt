@@ -1,8 +1,8 @@
 package nbcp.db.sql
 
 import org.slf4j.LoggerFactory
-import nbcp.base.extend.AsString
-import nbcp.base.extend.InfoError
+import nbcp.comm.AsString
+import nbcp.comm.InfoError
 import nbcp.comm.*
 
 import nbcp.db.db

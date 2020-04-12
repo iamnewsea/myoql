@@ -1,7 +1,7 @@
 //package nbcp.db.es
 //
 //
-//import nbcp.base.extend.ToJson
+//import nbcp.comm.ToJson
 //import nbcp.comm.JsonMap
 //import java.lang.RuntimeException
 //

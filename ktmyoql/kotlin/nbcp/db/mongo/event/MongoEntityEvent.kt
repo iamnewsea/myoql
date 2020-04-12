@@ -1,6 +1,6 @@
 package nbcp.db.mongo
 
-import nbcp.base.extend.*
+import nbcp.comm.*
 import nbcp.db.*
 import nbcp.db.mongo.*
 import org.springframework.beans.factory.config.BeanPostProcessor

@@ -1,4 +1,4 @@
-package nbcp.base.utils
+package nbcp.utils
 
 import org.apache.commons.codec.digest.DigestUtils
 import java.math.BigInteger

@@ -1,8 +1,7 @@
 package nbcp.db.sql
 
 import nbcp.comm.*
-import nbcp.base.extend.*
-import nbcp.base.utils.MyUtil
+import nbcp.utils.*
 import nbcp.db.db
 import nbcp.db.sql.*
 import java.io.Serializable

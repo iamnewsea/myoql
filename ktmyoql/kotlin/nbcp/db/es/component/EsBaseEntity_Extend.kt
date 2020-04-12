@@ -1,6 +1,6 @@
 package nbcp.db.es
 
-import nbcp.base.extend.*
+import nbcp.comm.*
 import nbcp.db.db
 
 fun <M : EsBaseEntity<T>, T : IEsDocument> M.query(): EsQueryClip<M, T> = EsQueryClip(this);

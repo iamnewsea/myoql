@@ -2,7 +2,6 @@ package nbcp.db.sql
 
 import org.slf4j.LoggerFactory
 import nbcp.comm.*
-import nbcp.base.extend.*
 
 import nbcp.db.*
 import java.time.LocalDateTime

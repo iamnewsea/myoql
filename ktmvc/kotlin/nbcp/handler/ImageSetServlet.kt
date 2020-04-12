@@ -2,14 +2,8 @@ package nbcp.handler
 
 import nbcp.db.IdUrl
 import nbcp.comm.*
-import nbcp.base.extend.*
-
-import nbcp.base.utils.ImageUtil
-import nbcp.base.utils.JsUtil
-import nbcp.base.utils.MyUtil
-import nbcp.base.utils.SpringUtil
+import nbcp.utils.*
 import nbcp.db.DatabaseEnum
-import nbcp.db.mongo.imageSet
 import nbcp.db.mongo.*
 import nbcp.db.mongo.service.UploadFileMongoService
 import nbcp.db.mysql.service.UploadFileMysqlService

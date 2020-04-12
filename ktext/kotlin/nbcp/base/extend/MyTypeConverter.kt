@@ -1,6 +1,6 @@
 @file:JvmName("MyTypeConverter")
 
-package nbcp.base.extend
+package nbcp.comm
 
 import java.math.BigDecimal
 import java.text.SimpleDateFormat

@@ -1,9 +1,7 @@
 package nbcp.db.redis
 
-import nbcp.base.extend.*
-import nbcp.base.utils.HttpUtil
-import nbcp.comm.ApiResult
-import nbcp.comm.StringMap
+import nbcp.comm.*
+import nbcp.utils.*
 import nbcp.db.redis.proxy.*
 import java.time.LocalDateTime
 import java.time.ZoneOffset

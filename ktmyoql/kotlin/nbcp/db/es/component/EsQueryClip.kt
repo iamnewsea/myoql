@@ -1,16 +1,8 @@
 package nbcp.db.es
 
 import nbcp.comm.*
-import nbcp.base.extend.*
 
-import nbcp.base.utils.Md5Util
-import nbcp.base.utils.MyUtil
-import nbcp.db.db
-import nbcp.db.es.*
 import org.slf4j.LoggerFactory
-import java.lang.Exception
-import java.lang.RuntimeException
-
 
 
 /**
@@ -20,8 +12,8 @@ class EsQueryClip<M : EsBaseEntity<E>, E : IEsDocument>(var moerEntity: M) : EsB
 
 
     fun limit(skip: Long, take: Int): EsQueryClip<M, E> {
-        this.search.skip = skip;
-        this.search.take = take;
+        this.search.from = skip;
+        this.search.size = take;
         return this;
     }
 
@@ -39,16 +31,16 @@ class EsQueryClip<M : EsBaseEntity<E>, E : IEsDocument>(var moerEntity: M) : EsB
         return this.orderBy(false, sortFunc(this.moerEntity))
     }
 
-    private fun orderBy(asc: Boolean, field: EsColumnName): EsQueryClip<M, E> {
-        var sortName = field.toString()
-        if (sortName == "id") {
-            sortName = "_id"
-        } else if (sortName.endsWith(".id")) {
-            sortName = sortName.slice(0..sortName.length - 3) + "._id";
+    private fun orderBy(asc: Boolean, column: EsColumnName): EsQueryClip<M, E> {
+        var order_str = "";
+        if (asc) {
+            order_str = "asc"
+        } else {
+            order_str = "desc"
         }
 
-        this.search.sortObject.put(sortName, if (asc) 1 else -1)
-        return this;
+        this.search.sort.add(JsonMap(column.toString() to JsonMap("order" to order_str)))
+        return this
     }
 
     fun where(whereData: SearchBodyClip): EsQueryClip<M, E> {
@@ -58,7 +50,7 @@ class EsQueryClip<M : EsBaseEntity<E>, E : IEsDocument>(var moerEntity: M) : EsB
 
 
     fun where(where: (M) -> SearchBodyClip): EsQueryClip<M, E> {
-        this.search =  where(this.moerEntity)
+        this.search = where(this.moerEntity)
         return this;
     }
 
@@ -107,22 +99,22 @@ class EsQueryClip<M : EsBaseEntity<E>, E : IEsDocument>(var moerEntity: M) : EsB
     }
 
 
-    fun toList(mapFunc: ((Map<String,Any?>) -> Unit)? = null): MutableList<E> {
+    fun toList(mapFunc: ((Map<String, Any?>) -> Unit)? = null): MutableList<E> {
         return toList(moerEntity.entityClass, mapFunc)
     }
 
-    fun toEntity(mapFunc: ((Map<String,Any?>) -> Unit)? = null): E? {
-        this.search.take = 1;
+    fun toEntity(mapFunc: ((Map<String, Any?>) -> Unit)? = null): E? {
+        this.search.size = 1;
         return toList(moerEntity.entityClass, mapFunc).firstOrNull();
     }
 
-    fun <R> toEntity(clazz: Class<R>, mapFunc: ((Map<String,Any?>) -> Unit)? = null): R? {
-        this.search.take = 1;
+    fun <R> toEntity(clazz: Class<R>, mapFunc: ((Map<String, Any?>) -> Unit)? = null): R? {
+        this.search.size = 1;
         return toList(clazz, mapFunc).firstOrNull();
     }
 
 
-    fun toListResult(mapFunc: ((Map<String,Any?>) -> Unit)? = null): ListResult<E> {
+    fun toListResult(mapFunc: ((Map<String, Any?>) -> Unit)? = null): ListResult<E> {
         return toListResult(this.moerEntity.entityClass, mapFunc);
     }
 }

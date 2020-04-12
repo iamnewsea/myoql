@@ -1,14 +1,8 @@
 package nbcp.wx
 
 import jdk.nashorn.internal.ir.annotations.Ignore
-import nbcp.base.extend.AsString
-import nbcp.base.extend.ConvertJson
 import nbcp.comm.*
-import nbcp.base.extend.Slice
-import nbcp.base.extend.Xml2Json
-import nbcp.base.utils.CodeUtil
-import nbcp.base.utils.HttpUtil
-import nbcp.base.utils.SpringUtil
+import nbcp.utils.*
 import org.apache.http.ssl.SSLContexts
 import org.springframework.core.io.ClassPathResource
 import java.security.KeyStore

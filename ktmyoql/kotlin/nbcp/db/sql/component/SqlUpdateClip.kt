@@ -3,9 +3,8 @@ package nbcp.db.sql
 import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import nbcp.db.*
-import nbcp.base.extend.*
 
-import nbcp.base.utils.MyUtil
+import nbcp.utils.*
 import java.io.Serializable
 import java.time.LocalDateTime
 

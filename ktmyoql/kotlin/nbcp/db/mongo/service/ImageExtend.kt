@@ -2,7 +2,6 @@ package nbcp.db.mongo
 
 import nbcp.db.IdUrl
 import nbcp.comm.*
-import nbcp.base.extend.*
 import nbcp.db.db
 import nbcp.db.mongo.*
 import org.bson.Document

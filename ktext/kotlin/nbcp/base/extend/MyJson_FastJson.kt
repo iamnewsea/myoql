@@ -1,4 +1,4 @@
-//package nbcp.base.extend
+//package nbcp.comm
 //
 //import com.alibaba.fastjson.JSON
 //import com.alibaba.fastjson.parser.DefaultJSONParser

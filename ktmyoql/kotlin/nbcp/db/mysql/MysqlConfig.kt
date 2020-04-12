@@ -1,8 +1,8 @@
 package nbcp.db.mysql
 
 import com.zaxxer.hikari.HikariDataSource
-import nbcp.base.extend.AsString
-import nbcp.base.utils.SpringUtil
+import nbcp.comm.AsString
+import nbcp.utils.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean

@@ -1,7 +1,7 @@
 package nbcp.filter
 
-import nbcp.base.extend.LogScope
-import nbcp.base.extend.using
+import nbcp.comm.LogScope
+import nbcp.comm.using
 import nbcp.comm.MyLogLevel
 import nbcp.web.HttpContext
 import nbcp.web.findParameterValue

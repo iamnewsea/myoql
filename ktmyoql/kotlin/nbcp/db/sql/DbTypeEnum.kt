@@ -1,6 +1,6 @@
 package nbcp.db.sql
 
-import nbcp.base.extend.*
+import nbcp.comm.*
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime

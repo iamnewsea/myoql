@@ -1,6 +1,6 @@
 package nbcp.db.redis.proxy
 
-import nbcp.base.extend.*
+import nbcp.comm.*
 import nbcp.db.redis.BaseRedisProxy
 import nbcp.db.redis.RedisRenewalTypeEnum
 import java.io.Serializable

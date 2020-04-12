@@ -1,6 +1,6 @@
 package nbcp.db.sql
 
-import nbcp.base.extend.HasValue
+import nbcp.comm.HasValue
 import nbcp.db.sql.SqlColumnNames
 import java.io.Serializable
 

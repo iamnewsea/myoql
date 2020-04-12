@@ -5,9 +5,8 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter
 import org.springframework.jdbc.core.PreparedStatementCreator
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import nbcp.comm.*
-import nbcp.base.extend.*
 
-import nbcp.base.utils.MyUtil
+import nbcp.utils.*
 import nbcp.db.db
 import java.lang.RuntimeException
 import java.sql.PreparedStatement

@@ -1,6 +1,6 @@
 //package nbcp.db.es
 //
-//import nbcp.base.utils.MyUtil
+//import nbcp.utils.*
 //import nbcp.db.DbEntityEventResult
 //import nbcp.db.db
 //import nbcp.db.es.*

@@ -1,8 +1,7 @@
 package nbcp.db.sql
 
 import nbcp.comm.*
-import nbcp.comm.*
-import nbcp.base.extend.Slice
+import nbcp.comm.Slice
 import nbcp.db.mysql.*
 import java.io.Serializable
 import java.util.LinkedHashSet

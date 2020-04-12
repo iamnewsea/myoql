@@ -1,8 +1,8 @@
 package nbcp.comm
 
 import org.slf4j.LoggerFactory
-import nbcp.base.extend.*
-import nbcp.base.utils.JsUtil
+import nbcp.comm.*
+import nbcp.utils.*
 
 open class JsonMap : StringKeyMap<Any?> {
     companion object {

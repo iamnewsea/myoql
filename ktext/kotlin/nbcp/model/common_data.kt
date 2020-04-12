@@ -1,7 +1,7 @@
 package nbcp.db
 
-import nbcp.base.extend.*
-import nbcp.base.utils.SpringUtil
+import nbcp.comm.*
+import nbcp.utils.*
 
 /**
  * Created by yuxh on 2018/11/13

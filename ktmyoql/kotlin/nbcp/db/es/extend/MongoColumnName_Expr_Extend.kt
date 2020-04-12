@@ -2,7 +2,7 @@
 //
 //import nbcp.comm.*
 //import nbcp.db.*
-//import nbcp.base.extend.*
+//import nbcp.comm.*
 //import java.lang.reflect.ParameterizedType
 //import java.time.LocalDate
 //import java.time.LocalDateTime

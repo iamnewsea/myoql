@@ -1,7 +1,7 @@
 package nbcp.db.sql
 
-import nbcp.base.extend.Tokenizer
-import nbcp.base.extend.Slice
+import nbcp.comm.Tokenizer
+import nbcp.comm.Slice
 import nbcp.db.*
 import java.lang.Exception
 

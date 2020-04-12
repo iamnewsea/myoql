@@ -2,8 +2,8 @@ package nbcp
 
 
 import ch.qos.logback.classic.Level
-import nbcp.base.extend.LogScope
-import nbcp.base.extend.using
+import nbcp.comm.LogScope
+import nbcp.comm.using
 import org.junit.Test
 import org.slf4j.LoggerFactory
 

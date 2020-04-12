@@ -1,6 +1,6 @@
 package nbcp.db.es
 
-import nbcp.base.extend.*
+import nbcp.comm.*
 import nbcp.db.*
 import nbcp.db.es.*
 import org.springframework.beans.factory.config.BeanPostProcessor

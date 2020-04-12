@@ -4,11 +4,8 @@ import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.repository.MongoRepository
-import nbcp.base.extend.HasValue
-import nbcp.base.extend.IsSimpleType
-import nbcp.base.extend.ToJson
-import nbcp.base.extend.*
-import nbcp.base.utils.MyUtil
+import nbcp.comm.*
+import nbcp.utils.*
 import nbcp.db.db
 import nbcp.db.mongo.*
 import org.slf4j.LoggerFactory

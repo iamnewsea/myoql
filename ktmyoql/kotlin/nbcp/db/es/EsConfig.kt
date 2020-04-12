@@ -1,10 +1,10 @@
 //package nbcp.db.es.tool
 //
-//import nbcp.base.extend.AsInt
-//import nbcp.base.extend.AsString
-//import nbcp.base.extend.HasValue
-//import nbcp.base.extend.Slice
-//import nbcp.base.utils.SpringUtil
+//import nbcp.comm.AsInt
+//import nbcp.comm.AsString
+//import nbcp.comm.HasValue
+//import nbcp.comm.Slice
+//import nbcp.utils.*
 //import org.apache.http.Header
 //import org.apache.http.HttpHost
 //import org.apache.http.message.BasicHeader

@@ -1,12 +1,11 @@
-package nbcp.base.utils
+package nbcp.utils
 
-import nbcp.base.extend.*
+import nbcp.comm.*
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 import java.awt.Image.SCALE_AREA_AVERAGING
 import java.awt.Transparency
 import java.awt.Graphics2D
-import nbcp.comm.ApiResult
 import java.awt.Image
 import java.io.*
 

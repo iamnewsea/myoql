@@ -1,6 +1,6 @@
 package nbcp.db.mongo.service
 
-import nbcp.base.extend.HasValue
+import nbcp.comm.HasValue
 import nbcp.db.db
 import nbcp.db.mongo.entity.*
 import nbcp.db.mongo.*

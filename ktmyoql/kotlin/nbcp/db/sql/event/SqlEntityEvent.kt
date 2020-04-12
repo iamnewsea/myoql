@@ -1,6 +1,6 @@
 package nbcp.db.sql
 
-import nbcp.base.extend.ForEachExt
+import nbcp.comm.ForEachExt
 import nbcp.db.*
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component

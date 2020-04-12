@@ -1,6 +1,6 @@
 package nbcp.db.es
 
-import nbcp.base.extend.MyString
+import nbcp.comm.MyString
 
 /**
  * es 列

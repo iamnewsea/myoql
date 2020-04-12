@@ -1,7 +1,7 @@
 package nbcp.db.sql
 
-import nbcp.base.extend.AsString
-import nbcp.base.extend.HasValue
+import nbcp.comm.AsString
+import nbcp.comm.HasValue
 import nbcp.db.*
 import nbcp.db.sql.*
 import java.io.Serializable

@@ -1,7 +1,6 @@
 package nbcp.db.mongo
 
-import nbcp.base.extend.*
-import nbcp.comm.minus
+import nbcp.comm.*
 import nbcp.db.db
 import nbcp.db.mongo.*
 import org.bson.types.ObjectId

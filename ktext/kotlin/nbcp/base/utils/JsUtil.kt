@@ -1,4 +1,4 @@
-package nbcp.base.utils
+package nbcp.utils
 
 import java.net.URLDecoder
 import java.net.URLEncoder

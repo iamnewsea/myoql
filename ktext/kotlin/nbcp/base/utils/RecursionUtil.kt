@@ -1,8 +1,8 @@
-package nbcp.base.utils
+package nbcp.utils
 
-import nbcp.base.extend.ForEachExt
-import nbcp.base.extend.IsListType
-import nbcp.base.extend.IsSimpleType
+import nbcp.comm.ForEachExt
+import nbcp.comm.IsListType
+import nbcp.comm.IsSimpleType
 import java.lang.reflect.Modifier
 
 /**

@@ -1,13 +1,13 @@
-package nbcp.base.extend
+package nbcp.comm
 
 import nbcp.comm.*
 
-import nbcp.base.utils.BufferTailReader
+import nbcp.utils.*
 import java.util.*
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import kotlin.collections.LinkedHashMap
-import nbcp.base.utils.MyUtil
+import nbcp.utils.*
 import org.slf4j.Logger
 import org.slf4j.event.Level
 import java.lang.reflect.Field
