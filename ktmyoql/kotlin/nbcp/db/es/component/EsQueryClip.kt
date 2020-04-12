@@ -12,8 +12,8 @@ class EsQueryClip<M : EsBaseEntity<E>, E : IEsDocument>(var moerEntity: M) : EsB
 
 
     fun limit(skip: Long, take: Int): EsQueryClip<M, E> {
-        this.search.from = skip;
-        this.search.size = take;
+        this.search.skip = skip;
+        this.search.take = take;
         return this;
     }
 
@@ -104,12 +104,12 @@ class EsQueryClip<M : EsBaseEntity<E>, E : IEsDocument>(var moerEntity: M) : EsB
     }
 
     fun toEntity(mapFunc: ((Map<String, Any?>) -> Unit)? = null): E? {
-        this.search.size = 1;
+        this.search.take = 1;
         return toList(moerEntity.entityClass, mapFunc).firstOrNull();
     }
 
     fun <R> toEntity(clazz: Class<R>, mapFunc: ((Map<String, Any?>) -> Unit)? = null): R? {
-        this.search.size = 1;
+        this.search.take = 1;
         return toList(clazz, mapFunc).firstOrNull();
     }
 

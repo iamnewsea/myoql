@@ -16,8 +16,8 @@ import nbcp.comm.*
 //}
 
 class SearchBodyClip {
-    var from = 0L;
-    var size = -1;
+    var skip = 0L;
+    var take = -1;
     /**
     "query": {
     "bool": {
@@ -36,27 +36,7 @@ class SearchBodyClip {
     }
     },
      */
-    var query: JsonMap? = null
-    /*
-"aggs":{
-  "avg_fees":{"avg":{"field":"fees"}}
-}
-     */
-    var aggs: JsonMap? = null
-    val fields = mutableListOf<String>()
-
-    /**
-    "sort": [
-    {
-    "publish_date": {
-    "order": "asc"
-    }
-    },
-    "_score"
-    ],
-     */
-    val sort = mutableListOf<JsonMap>()
-
+    var query: JsonMap = JsonMap()
 
     /**
     "filter": {
@@ -71,6 +51,22 @@ class SearchBodyClip {
     }
      */
     val filter = JsonMap()
+
+
+    val fields = mutableListOf<String>()
+
+    /**
+    "sort": [
+    {
+    "publish_date": {
+    "order": "asc"
+    }
+    },
+    "_score"
+    ],
+     */
+    val sort = mutableListOf<JsonMap>()
+
 
     /*
  "highlight": {
@@ -101,9 +97,46 @@ class SearchBodyClip {
      */
     val facets = JsonMap();
 
+    /*
+"aggs":{
+  "avg_fees":{"avg":{"field":"fees"}}
+}
+     */
+    var aggs: JsonMap = JsonMap()
 
     override fun toString(): String {
-        return this.ToJson()
+        var json = JsonMap();
+        if (this.skip > 0) {
+            json["from"] = this.skip
+        }
+        if (this.take > 0) {
+            json["size"] = this.take
+        }
+        if (this.query.isNotEmpty()) {
+            json["query"] = this.query
+        }
+
+
+        if (this.filter.isNotEmpty()) {
+            json["filter"] = this.filter
+        }
+        if (this.fields.isNotEmpty()) {
+            json["fields"] = this.fields
+        }
+        if (this.sort.isNotEmpty()) {
+            json["sort"] = this.sort
+        }
+        if (this.highlight.isNotEmpty()) {
+            json["highlight"] = this.highlight
+        }
+        if (this.facets.isNotEmpty()) {
+            json["facets"] = this.facets
+        }
+        if (this.aggs.isNotEmpty()) {
+            json["aggs"] = this.aggs
+        }
+
+        return json.ToJson()
     }
 
     fun isEmpty(): Boolean {

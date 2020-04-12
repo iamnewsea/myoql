@@ -60,8 +60,8 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
             return ret;
         }
         var responseBody = response.entity.content.readBytes().toString(utf8)
-        var result = responseBody.FromJson<JsonMap>()!!;
-        var hits = result.get("hits") as JsonMap
+        var result = responseBody.FromJson<Map<String,Any>>()!!;
+        var hits = result.get("hits") as Map<String,Any>
         this.total = result.getIntValue("_shards","total")
         if( this.total <=0 ){
             return ret;
