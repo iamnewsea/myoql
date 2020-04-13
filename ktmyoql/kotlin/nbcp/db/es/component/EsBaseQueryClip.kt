@@ -42,11 +42,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
      */
     fun <R> toList(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): MutableList<R> {
         db.affectRowCount = 0;
-        var isString = false;
-        if (clazz.IsSimpleType()) {
-            isString = clazz.name == "java.lang.String";
-        }
-
+        var isString = clazz.IsStringType();
 
         var request = Request("POST", "/${collectionName}/_search")
         request.setJsonEntity(this.search.toString())

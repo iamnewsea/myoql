@@ -75,7 +75,7 @@ import org.springframework.stereotype.Component
 
             writeToFile("""
 @Component("sql.${group.key}")
-@DataGroup("${group.key}")
+@MetaDataGroup("${group.key}")
 class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
     override fun getEntities():Set<SqlBaseTable<*>> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
 """)

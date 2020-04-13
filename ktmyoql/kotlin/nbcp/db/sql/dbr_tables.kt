@@ -4,17 +4,13 @@ package nbcp.db.sql.table
 import nbcp.db.*
 import nbcp.db.sql.*
 import nbcp.db.sql.entity.*
-import nbcp.db.mysql.*
-import nbcp.db.mysql.entity.*
-import nbcp.comm.*
-import nbcp.utils.*
 import org.springframework.stereotype.Component
 
 //generate auto @2020-03-24 14:37:51
 
 
 @Component("sql.SqlBase")
-@DataGroup("SqlBase")
+@MetaDataGroup("SqlBase")
 class SqlBaseGroup : IDataGroup{
     override fun getEntities():Set<SqlBaseTable<*>> = setOf(s_annex,s_dustbin,s_log)
 

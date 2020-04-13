@@ -53,10 +53,10 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
      */
     fun <R> toList(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): MutableList<R> {
         db.affectRowCount = -1;
-        var isString = false;
-        if (clazz.IsSimpleType()) {
-            isString = clazz.name == "java.lang.String";
-        }
+        var isString = clazz.IsStringType();
+//        if (clazz.IsSimpleType()) {
+//            isString = clazz.name == "java.lang.String";
+//        }
 
         var criteria = this.getMongoCriteria(*whereData.toTypedArray());
         var projection = Document();

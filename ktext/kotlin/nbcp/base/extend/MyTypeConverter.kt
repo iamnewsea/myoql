@@ -20,32 +20,32 @@ fun Any.ConvertType(clazz: Class<*>): Any? {
 
     var className = clazz.name;
 
-    if (clazz == Boolean::class.java || className == "java.lang.Boolean") {
+    if (clazz == Boolean::class.java || clazz == java.lang.Boolean::class.java) {
         return this.AsBooleanWithNull()
     }
-    if (clazz == Character::class.java || className == "Char::class.java") {
+    if (clazz == Character::class.java || clazz == Char::class.java) {
         return this.toString()[0]
     }
-    if (clazz == Byte::class.java || className == "java.lang.Byte") {
+    if (clazz == Byte::class.java || clazz == java.lang.Byte::class.java) {
         return this.AsInt().toByte()
     }
-    if (clazz == Short::class.java || className == "java.lang.Short") {
+    if (clazz == Short::class.java || clazz == java.lang.Short::class.java) {
         return this.AsInt().toShort()
     }
     if (clazz == Int::class.java ||
             clazz == java.lang.Integer::class.java) {
         return this.AsInt()
     }
-    if (clazz == Long::class.java || className == "java.lang.Long") {
+    if (clazz == Long::class.java || clazz == java.lang.Long::class.java) {
         return this.AsLong()
     }
-    if (clazz == Float::class.java || className == "java.lang.Float") {
+    if (clazz == Float::class.java || clazz == java.lang.Float::class.java) {
         return this.AsFloat()
     }
-    if (clazz == Double::class.java || className == "java.lang.Double") {
+    if (clazz == Double::class.java || clazz == java.lang.Double::class.java) {
         return this.AsDouble()
     }
-    if (clazz == String::class.java) {
+    if (CharSequence::class.java.isAssignableFrom(clazz) || clazz == java.lang.String::class.java ) {
         return this.AsString()
     }
 
@@ -77,10 +77,6 @@ fun Any.ConvertType(clazz: Class<*>): Any? {
         } else {
             return null;
         }
-    }
-
-    if (theClass.name == "java.lang.String" && this.AsString() == "") {
-        return null;
     }
 
     if (clazz == LocalDate::class.java) {

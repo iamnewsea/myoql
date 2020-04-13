@@ -19,7 +19,7 @@ annotation class DbEntityGroup(val group: String)
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @Component
-annotation class DataGroup(val group: String)
+annotation class MetaDataGroup(val group: String)
 
 /**
  * 标记实体删除之前是否保存到垃圾箱

@@ -194,7 +194,7 @@ data class ${tableName}(
             if (property.javaField!!.type == String::class.java) {
                 type = "varchar(50)"
             }
-            if (propertyType == Int::class.java || propertyType.name == "java.lang.Integer") {
+            if (propertyType == Int::class.java || propertyType == java.lang.Integer::class.java) {
                 type = "int"
             }
 
@@ -202,7 +202,7 @@ data class ${tableName}(
                 type = "DateTime"
             }
 
-            if (propertyType == Boolean::class.java || propertyType.name == "java.lang.Boolean") {
+            if (propertyType == Boolean::class.java || propertyType == java.lang.Boolean::class.java) {
                 type = "bit"
             }
 

@@ -1,10 +1,7 @@
 
 package nbcp.db.mongo.table
 
-import org.slf4j.LoggerFactory
 import nbcp.comm.*
-import nbcp.utils.*
-import nbcp.db.mongo.base.*
 import nbcp.db.mongo.entity.*
 import nbcp.db.mongo.*
 import nbcp.db.*
@@ -35,7 +32,7 @@ class ObjectMeta (private val _pname:String):MongoColumnName() {
 
 
 @Component("mongo.MongoBase")
-@DataGroup("MongoBase")
+@MetaDataGroup("MongoBase")
 class MongoBaseGroup : IDataGroup{
     override fun getEntities():Set<BaseDbEntity> = setOf(sysAnnex,sysDustbin,sysLog)
 

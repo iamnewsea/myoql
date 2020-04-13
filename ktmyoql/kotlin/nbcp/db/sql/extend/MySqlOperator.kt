@@ -21,7 +21,7 @@ fun proc_value(value: Any): Any {
         return value.toString();
     } else if (type == UUID::class.java) {
         return value.toString()
-    } else if (type == Boolean::class.java || type.name == "java.lang.Boolean") {
+    } else if (type == Boolean::class.java || type == java.lang.Boolean::class.java) {
         if (value.AsBoolean()) return 1;
         else return 0;
     }

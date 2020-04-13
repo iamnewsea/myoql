@@ -70,7 +70,7 @@ ${packages.map { "import" + it }.joinToString(line_break)}
 
             writeToFile("""
 @Component("mongo.${groupName}")
-@DataGroup("${groupName}")
+@MetaDataGroup("${groupName}")
 class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
     override fun getEntities():Set<BaseDbEntity> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
 """)
@@ -118,15 +118,6 @@ data class moer_map(val _pname:String)
     fun writeToFile(msg: String) {
         moer_File.appendln(msg)
         moer_File.flush()
-//        println(msg)
-    }
-
-    fun getEntityName(name: String): String {
-        var name = name;
-        nameMapping.forEach {
-            name = name.replace(it.key, it.value)
-        }
-        return name[0].toLowerCase() + name.substring(1);
     }
 
     fun getGroups(basePackage: String, anyEntityClass: Class<*>): HashMap<String, MutableList<Class<*>>> {
@@ -326,7 +317,6 @@ data class moer_map(val _pname:String)
                 }
 
         var entityTypeName = entTypeName;
-        var entityVarName = getEntityName(entTypeName);
 
         var ent = """class ${entityTypeName}Meta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
@@ -347,7 +337,7 @@ ${props.joinToString("\n")}
             return "";
         }
 
-        return getEntityName(entTypeName);
+        return entTypeName;
     }
 
     private fun genVarEntity(entType: Class<*>): String {
@@ -357,10 +347,9 @@ ${props.joinToString("\n")}
         }
 
         var entityTypeName = entTypeName + "Entity";
-        var entityVarName = getEntityName(entTypeName);
 
-        return """val ${entityVarName}=${entityTypeName}();
-fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""";
+        return """val ${entTypeName}=${entityTypeName}();
+fun ${entTypeName}(collectionName:String)=${entityTypeName}(collectionName);""";
     }
 
 
@@ -383,7 +372,6 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
                 }
 
         var entityTypeName = entTypeName + "Entity"
-        var entityVarName = getEntityName(entTypeName)
 
         var ent = """class ${entityTypeName}(collectionName:String=""):MongoBaseEntity<${entTypeName}>(${entTypeName}::class.java,collectionName.AsString("${MyUtil.getSmallCamelCase(entType.simpleName)}")) {
 ${props.joinToString("\n")}

@@ -71,7 +71,7 @@ ${packages.map { "import" + it }.joinToString(line_break)}
 
             writeToFile("""
 @Component("mongo.${groupName}")
-@DataGroup("${groupName}")
+@MetaDataGroup("${groupName}")
 class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
     override fun getEntities():Set<BaseDbEntity> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
 """)

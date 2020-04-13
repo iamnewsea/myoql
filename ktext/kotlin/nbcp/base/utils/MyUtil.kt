@@ -304,29 +304,29 @@ object MyUtil {
     fun <T> getSimpleClassDefaultValue(clazz: Class<T>): Any? {
 
         var className = clazz.name;
-        if (clazz == Boolean::class.java || className == "java.lang.Boolean") {
+        if (clazz == Boolean::class.java || clazz == java.lang.Boolean::class.java) {
             return false;
         }
-        if (clazz == Character::class.java || clazz == Char::class.java) {
+        if (clazz == java.lang.Character::class.java || clazz == Char::class.java) {
             return '\u0000';
         }
 
-        if (clazz == Byte::class.java || className == "java.lang.Byte") {
+        if (clazz == Byte::class.java || clazz == java.lang.Byte::class.java) {
             return 0;
         }
-        if (clazz == Short::class.java || className == "java.lang.Short") {
+        if (clazz == Short::class.java || clazz == java.lang.Short::class.java) {
             return 0;
         }
-        if (clazz == Integer::class.java || clazz == Int::class.java) {
+        if (clazz == java.lang.Integer::class.java || clazz == Int::class.java) {
             return 0;
         }
-        if (clazz == Long::class.java || className == "java.lang.Long") {
+        if (clazz == Long::class.java || clazz == java.lang.Long::class.java) {
             return 0L;
         }
-        if (clazz == Float::class.java || className == "java.lang.Float") {
+        if (clazz == Float::class.java || clazz == java.lang.Float::class.java) {
             return 0F;
         }
-        if (clazz == Double::class.java || className == "java.lang.Double") {
+        if (clazz == Double::class.java || clazz == java.lang.Double::class.java) {
             return 0.0;
         }
 

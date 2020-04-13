@@ -22,22 +22,22 @@ val clazzesIsSimpleDefine = mutableSetOf<Class<*>>()
 fun Class<*>.IsSimpleType(): Boolean {
     if (this.isPrimitive) return true;
     if (this.isEnum) return true;
-    if (this.name == "java.lang.String") return true;
-    if (this.name == "java.lang.Character") return true;
-    if (this.name == "java.lang.Boolean") return true;
 
     if (Number::class.java.isAssignableFrom(this)) {
         return true;
     }
 
-    if( MyString::class.java.isAssignableFrom(this)){
+    if (CharSequence::class.java.isAssignableFrom(this)) {
         return true;
     }
 
-    if (this.name == "java.time.LocalDate") return true;
-    if (this.name == "java.time.LocalTime") return true;
-    if (this.name == "java.time.LocalDateTime") return true;
-    if (this.name == "java.util.Date") return true;
+    if (this == java.lang.String::class.java) return true;
+    if (this == java.lang.Character::class.java) return true;
+    if (this == java.lang.Boolean::class.java) return true;
+    if (this == java.time.LocalDate::class.java) return true;
+    if (this == java.time.LocalTime::class.java) return true;
+    if (this == java.time.LocalDateTime::class.java) return true;
+    if (this == java.util.Date::class.java) return true;
 //    if (this.name == "org.bson.types.ObjectId") {
 //        return true;
 //    }
@@ -51,8 +51,8 @@ fun Class<*>.IsSimpleType(): Boolean {
  * 类型是否是布尔： boolean,java.lang.Boolean
  */
 fun Class<*>.IsBooleanType(): Boolean {
-    if (this.name == "java.lang.Boolean") return true;
-    if (this.name == "boolean") return true;
+    if (this == Boolean::class.java) return true;
+    if (this == java.lang.Boolean::class.java) return true;
     return false;
 }
 
@@ -67,7 +67,7 @@ fun Class<*>.IsListType(): Boolean {
  * 类型是否是字符串：String,MyString
  */
 fun Class<*>.IsStringType(): Boolean {
-    return this.name == "java.lang.String" || MyString::class.java.isAssignableFrom(this)
+    return CharSequence::class.java.isAssignableFrom(this) || this == java.lang.String::class.java
 }
 
 /**
@@ -75,12 +75,12 @@ fun Class<*>.IsStringType(): Boolean {
  */
 fun Class<*>.IsNumberType(): Boolean {
     if (this.isPrimitive) {
-        if (this.name == "int") return true;
-        if (this.name == "float") return true;
-        if (this.name == "double") return true;
-        if (this.name == "long") return true;
-        if (this.name == "short") return true;
-        if (this.name == "byte") return true;
+        if (this == Int::class.java) return true;
+        if (this == Float::class.java) return true;
+        if (this == Double::class.java) return true;
+        if (this == Long::class.java) return true;
+        if (this == Short::class.java) return true;
+        if (this == Byte::class.java) return true;
     }
 
     if (Number::class.java.isAssignableFrom(this)) {
