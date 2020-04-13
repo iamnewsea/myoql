@@ -120,6 +120,14 @@ data class moer_map(val _pname:String)
         moer_File.flush()
     }
 
+    fun getEntityName(name: String): String {
+        var name = name;
+        nameMapping.forEach {
+            name = name.replace(it.key, it.value)
+        }
+        return name[0] + name.substring(1);
+    }
+
     fun getGroups(basePackage: String, anyEntityClass: Class<*>): HashMap<String, MutableList<Class<*>>> {
         var ret = HashMap<String, MutableList<Class<*>>>();
 
@@ -337,7 +345,7 @@ ${props.joinToString("\n")}
             return "";
         }
 
-        return entTypeName;
+        return getEntityName(entTypeName);
     }
 
     private fun genVarEntity(entType: Class<*>): String {
@@ -347,9 +355,10 @@ ${props.joinToString("\n")}
         }
 
         var entityTypeName = entTypeName + "Entity";
+        var entityVarName = getEntityName(entTypeName);
 
-        return """val ${entTypeName}=${entityTypeName}();
-fun ${entTypeName}(collectionName:String)=${entityTypeName}(collectionName);""";
+        return """val ${entityVarName}=${entityTypeName}();
+fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""";
     }
 
 
