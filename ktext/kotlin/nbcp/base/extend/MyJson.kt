@@ -49,15 +49,21 @@ private fun getJsonInstance(getSetStyle: Boolean = false, withNull: Boolean = fa
  * @param getSetStyle 使用 Field 还是 GetSet 序列化。默认使用 Field
  * @param withNull: 序列化时，是否序列化 null 值 。 默认不序列化
  */
-fun <T> T.ToJson(getSetStyle: Boolean = false, withNull: Boolean = false): String {
+fun <T> T.ToJson(getSetStyle: Boolean = false, withNull: Boolean = false, pretty: Boolean = false): String {
     if (this is String) return this;
 
+    if (pretty) {
+        return getJsonInstance(getSetStyle, withNull).writerWithDefaultPrettyPrinter().writeValueAsString(this) ?: ""
+    }
     return getJsonInstance(getSetStyle, withNull).writeValueAsString(this) ?: ""
 }
 
-fun <T> T.ToJsonWithNull(getSetStyle: Boolean = false): String {
+fun <T> T.ToJsonWithNull(getSetStyle: Boolean = false, pretty: Boolean = false): String {
     if (this is String) return this;
 
+    if (pretty) {
+        return getJsonInstance(getSetStyle, true).writerWithDefaultPrettyPrinter().writeValueAsString(this) ?: ""
+    }
     return getJsonInstance(getSetStyle, true).writeValueAsString(this) ?: ""
 }
 

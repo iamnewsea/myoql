@@ -5,15 +5,24 @@ import nbcp.db.*
 import nbcp.db.es.IEsDocument
 import nbcp.db.es.tool.generator_mapping
 import org.junit.Test
+import java.time.LocalDateTime
 
 @DbEntityGroup("sys")
-class e_test: IEsDocument() {
-    @Define("")
-    var name: String = ""
-    var value: Int = 0
-    var user: IdName = IdName()
-    var corp: IdName = IdName()
-}
+class e_test(
+    var module: String = "", //模块
+    var type: String = "",  //类型
+    @Define("""{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}""")
+    var key: String = "",   //实体标志, 查询用： module + key
+    @Define("""{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}""")
+    var msg: String = "",   //消息
+    @Define("""{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}""")
+    var data: String = "",
+    @Define("""{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}""")
+    var remark: String = "",
+    var clientIp: String = "",
+    var creatAt: LocalDateTime = LocalDateTime.now(),
+    var creatorId: String = ""
+): IEsDocument()
 
 class testa : TestBase() {
     @Test

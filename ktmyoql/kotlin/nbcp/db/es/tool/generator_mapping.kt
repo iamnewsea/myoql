@@ -60,23 +60,26 @@ class generator_mapping {
 
                 var json = genEntity(it)
 
-                var mappings = JsonMap(
-                        it.simpleName to JsonMap(
-                                "_id" to JsonMap("path" to "id"),
-                                "properties" to json
-                        ))
+                var mappings = JsonMap("mappings" to
+                        JsonMap(
+                                it.simpleName to JsonMap(
+                                        "_id" to JsonMap("path" to "id"),
+                                        "properties" to json
+                                )))
 
 
                 var moer_File = FileWriter(path + p + it.simpleName + ".txt", false);
-                moer_File.appendln(mappings.ToJson())
+                moer_File.appendln(mappings.ToJson(false,false,true))
                 moer_File.flush()
             }
         }
 
-        println("生成 mor 完成!")
+        println("生成 mapping 完成!")
+        println("使用 curl -X PUT '/index/_mapping' -d '{json}' ")
     }
 
     var maxLevel = 9;
+
 
     fun getGroups(basePackage: String, anyEntityClass: Class<*>): HashMap<String, MutableList<Class<*>>> {
         var ret = HashMap<String, MutableList<Class<*>>>();
