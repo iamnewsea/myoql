@@ -7,7 +7,7 @@ import java.time.LocalDateTime
  */
 abstract class IEsDocument : java.io.Serializable {
     /**
-     * 使用mapping "_id":{"path":"id"}，指定主键是 id
+     * 最新版本不支持指定其它字段，只能是 _id , 进库出库注意转换。
      */
     var id: String = "";
     var createAt: LocalDateTime = LocalDateTime.now()

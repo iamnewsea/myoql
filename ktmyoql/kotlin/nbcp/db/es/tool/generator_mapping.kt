@@ -60,22 +60,24 @@ class generator_mapping {
 
                 var json = genEntity(it)
 
-                var mappings = JsonMap("mappings" to
-                        JsonMap(
-                                it.simpleName to JsonMap(
-                                        "_id" to JsonMap("path" to "id"),
-                                        "properties" to json
-                                )))
+                var mappings = JsonMap("properties" to json)
 
 
                 var moer_File = FileWriter(path + p + it.simpleName + ".txt", false);
-                moer_File.appendln(mappings.ToJson(false,false,true))
+                moer_File.appendln(mappings.ToJson(false, false, true))
                 moer_File.flush()
             }
         }
 
+        println("")
         println("生成 mapping 完成!")
-        println("使用 curl -X PUT '/index/_mapping' -d '{json}' ")
+        println("创建 mapping:")
+        println("https://www.elastic.co/guide/en/elasticsearch/reference/7.6/indices-put-mapping.html")
+        println("https://www.elastic.co/guide/en/elasticsearch/reference/7.6/mapping.html")
+        println("使用 rest index:")
+        println("https://www.elastic.co/guide/en/elasticsearch/reference/7.6/rest-apis.html")
+        println("https://www.elastic.co/guide/en/elasticsearch/reference/7.6/indices.html")
+        println("使用 curl -X PUT '/{index}/_mapping' -d '{json}' ")
     }
 
     var maxLevel = 9;
