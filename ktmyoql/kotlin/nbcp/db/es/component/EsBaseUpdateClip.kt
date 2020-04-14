@@ -18,7 +18,6 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
     var search = SearchBodyClip()
 
 
-
     /**
      * 更新条件不能为空。
      */
@@ -48,6 +47,7 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
         request.setJsonEntity(this.search.toString())
         var ret = 0;
         var startAt = LocalDateTime.now()
+        var responseBody = "";
         try {
             var response = esTemplate.performRequest(request)
 
@@ -57,8 +57,8 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
             if (response.statusLine.statusCode != 200) {
                 return 0;
             }
-            var responseBody = response.entity.content.readBytes().toString(utf8)
-            var result = responseBody.FromJson<JsonMap>()!!;
+            responseBody = response.entity.content.readBytes().toString(utf8)
+//            var result = responseBody.FromJson<JsonMap>()!!;
 
             ret = 0
             db.affectRowCount = ret
@@ -68,8 +68,9 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
         } finally {
             logger.InfoError(ret < 0) {
                 """[index] ${this.collectionName}
-[body] ${search.toString()} 
-[result] ${ret}
+[url] ${request.method} ${request.endpoint} 
+[body] ${search} 
+[result] ${if (db.debug) responseBody else ret}
 [耗时] ${db.executeTime}"""
             }
         }
