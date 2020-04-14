@@ -77,7 +77,9 @@ class generator_mapping {
         println("使用 rest index:")
         println("https://www.elastic.co/guide/en/elasticsearch/reference/7.6/rest-apis.html")
         println("https://www.elastic.co/guide/en/elasticsearch/reference/7.6/indices.html")
-        println("使用 curl -X PUT '/{index}/_mapping' -d '{json}' ")
+        println()
+        println("创建空的 index: curl -X PUT /{index}")
+        println("更新Mapping： curl -X PUT '/{index}/_mapping' -d '{json}' ")
     }
 
     var maxLevel = 9;
@@ -126,7 +128,18 @@ class generator_mapping {
         return field.type
     }
 
-    fun genEntity(entType: Class<*>): JsonMap {
+    fun getDefines(field: Field): Map<String, String> {
+        var defines = field.getAnnotation(Defines::class.java)
+        if (defines != null) {
+            return defines.values.map { it.key to it.value }.toMap()
+        }
+
+        var define = field.getAnnotation(Define::class.java)
+        if (define != null) return mapOf(define.key to define.value)
+        return mapOf()
+    }
+
+    fun genEntity(entType: Class<*>, parentDefines: Map<String, String> = mapOf()): JsonMap {
         var json = JsonMap();
 
         entType.AllFields
@@ -134,22 +147,62 @@ class generator_mapping {
                 .forEach {
                     var type = getActType(it);
 
-                    var define = JsonMap();
-                    if (type.IsSimpleType()) {
-                        define = (it.getAnnotationsByType(Define::class.java).firstOrNull()?.value
-                                ?: "").FromJson<JsonMap>() ?: JsonMap();
+                    var defines = getDefines(it);
+                    var defineJson = JsonMap();
 
-                        if (define.containsKey("type") == false) {
-                            define.put("type", getJsType(it.type))
+                    if (type.IsSimpleType()) {
+                        if (defines.filter { it.key.HasValue }.any()) {
+                            throw RuntimeException("简单类型不允许指定key：${it.name},:${defines.filter { it.key.HasValue }.map { it.key }.joinToString(",")}")
+                        }
+
+                        var define = defines.filter { it.key.isNullOrEmpty() }.entries.firstOrNull()
+
+                        defineJson = (define?.value ?: "").FromJson<JsonMap>() ?: JsonMap();
+
+                        if (parentDefines.containsKey(it.name)) {
+                            if (defineJson.any()) {
+                                throw RuntimeException("重复定义key:" + it.name)
+                            }
+                            defineJson = (parentDefines.get(it.name) ?: "").FromJson<JsonMap>() ?: JsonMap();
+                        }
+
+
+                        if (defineJson.containsKey("type") == false) {
+                            defineJson.put("type", getJsType(it.type))
                         }
                     } else {
-                        define.put("type", "nested")
-                        define.put("properties", genEntity(type))
+                        var define = defines.filter { it.key.isNullOrEmpty() }.entries.firstOrNull()
+
+                        if (define != null) {
+                            defineJson = (define?.value ?: "").FromJson<JsonMap>() ?: JsonMap();
+                        }
+
+                        var theDefines = StringMap(parentDefines
+                                .filter { d -> d.key == it.name || d.key.startsWith(it.name + ".") }
+                                .map { d -> d.key.Slice(it.name.length + 1) to d.value }
+                                .toMap())
+
+                        if (theDefines.filter { it.key.isNullOrEmpty() }.any()) {
+                            if (defineJson.any()) {
+                                throw RuntimeException("重复定义key:" + it.name)
+                            }
+
+                            defineJson = JsonMap(theDefines.filter { it.key.isNullOrEmpty() })
+                        }
+
+                        if (defineJson.containsKey("type") == false) {
+                            defineJson.put("type", "nested")
+                        }
+
+                        defineJson.put("properties", genEntity(type, defines
+                                .filter { it.key.isNotEmpty() }
+                                +
+                                theDefines.filter { it.key.isNotEmpty() }
+                        ))
                     }
 
 
-
-                    json.put(it.name, define)
+                    json.put(it.name, defineJson)
                 }
 
         return json;
@@ -158,6 +211,8 @@ class generator_mapping {
     private fun getJsType(type: Class<*>): String {
         /*文本有两种： text,keyword*/
         if (type.IsStringType()) return "keyword"
+        if (type.isEnum) return "keyword"
+
         //long、integer、short、byte、double、float
         if (type.IsNumberType()) {
             if (type == Long::class.java || type == java.lang.Long::class.java) {

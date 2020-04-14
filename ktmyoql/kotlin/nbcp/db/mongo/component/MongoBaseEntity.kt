@@ -21,9 +21,7 @@ typealias mongoQuery = org.springframework.data.mongodb.core.query.Query
 abstract class MongoBaseEntity<T : IMongoDocument>(val entityClass: Class<T>, entityName: String) : BaseDbEntity(entityName) {
     //    abstract fun getColumns(): Array<String>;
     companion object {
-        private val logger by lazy {
-            return@lazy LoggerFactory.getLogger(this::class.java)
-        }
+        private val logger = LoggerFactory.getLogger(this::class.java)
     }
 
 

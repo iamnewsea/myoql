@@ -55,8 +55,7 @@ class generator {
 
         println("---------------生成 dbr---------------")
 
-        writeToFile("""
-package nbcp.db.sql.table
+        writeToFile("""package nbcp.db.sql.table
 
 import nbcp.db.*
 import nbcp.db.sql.*
@@ -76,7 +75,7 @@ import org.springframework.stereotype.Component
             writeToFile("""
 @Component("sql.${group.key}")
 @MetaDataGroup("${group.key}")
-class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
+object ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
     override fun getEntities():Set<SqlBaseTable<*>> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
 """)
             println("${group.key}:")

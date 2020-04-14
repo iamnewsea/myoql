@@ -25,14 +25,14 @@ class generator {
              anyEntityClass: Class<*>,  //任意实体的类名
              packages: Array<String> = arrayOf(),   //import 包名
              nameMapping: StringMap = StringMap(), // 名称转换
-             ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
+             ignoreGroups: List<String> = listOf("EsBase")  //忽略的包名
     ) {
         this.nameMapping = nameMapping;
 
         var p = System.getProperty("file.separator");
 
 //        var path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0]
-//        var moer_Path = File(path).parentFile.path + "/shop-orm/kotlin/nbcp/db/mongo/mor_tables.kt".replace("/", p);
+//        var moer_Path = File(path).parentFile.path + "/shop-orm/kotlin/nbcp/db/es/mor_tables.kt".replace("/", p);
         var moer_Path = targetFileName.replace("/", p);
 
 
@@ -44,16 +44,15 @@ class generator {
         var groups = getGroups(basePackage, anyEntityClass).filter { ignoreGroups.contains(it.key) == false };
         var embClasses = getEmbClasses(groups);
 
-        println("开始生成 mor...")
+        println("开始生成 esr...")
 
-        writeToFile("""
-package nbcp.db.es.table
+        writeToFile("""package nbcp.db.es.table
 
 import nbcp.db.*
-import nbcp.db.mongo.*
+import nbcp.db.es.*
 import nbcp.utils.*
 import nbcp.comm.*
-import nbcp.db.mongo.entity.*
+import nbcp.db.es.entity.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 ${packages.map { "import" + it }.joinToString(line_break)}
@@ -70,9 +69,9 @@ ${packages.map { "import" + it }.joinToString(line_break)}
             var groupEntities = group.value
 
             writeToFile("""
-@Component("mongo.${groupName}")
+@Component("es.${groupName}")
 @MetaDataGroup("${groupName}")
-class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
+object ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
     override fun getEntities():Set<BaseDbEntity> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
 """)
             println("${groupName}:")
@@ -93,8 +92,8 @@ class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
         writeToFile("""
 
 
-private fun join(vararg args:String): MongoColumnName{
-    return MongoColumnName( args.toList().filter{it.HasValue}.joinToString (".") )
+private fun join(vararg args:String): EsColumnName{
+    return EsColumnName( args.toList().filter{it.HasValue}.joinToString (".") )
 }
 
 private fun join_map(vararg args:String):moer_map{
@@ -329,8 +328,8 @@ data class moer_map(val _pname:String)
         var entityTypeName = entTypeName;
         var entityVarName = getEntityName(entTypeName);
 
-        var ent = """class ${entityTypeName}Meta (private val _pname:String):MongoColumnName() {
-    constructor(_val:MongoColumnName):this(_val.toString()) {}
+        var ent = """class ${entityTypeName}Meta (private val _pname:String):EsColumnName() {
+    constructor(_val:EsColumnName):this(_val.toString()) {}
 
 ${props.joinToString("\n")}
 
@@ -377,7 +376,7 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
                 .map {
                     var (retValue, retTypeIsBasicType) = getEntityValue(it)
                     if (retTypeIsBasicType) {
-                        return@map "val ${it.name}=MongoColumnName(${retValue})".ToTab(1)
+                        return@map "val ${it.name}=EsColumnName(${retValue})".ToTab(1)
                     } else {
                         return@map "val ${it.name}=${retValue}".ToTab(1)
                     }
@@ -386,7 +385,7 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
         var entityTypeName = entTypeName + "Entity"
         var entityVarName = getEntityName(entTypeName)
 
-        var ent = """class ${entityTypeName}(collectionName:String=""):MongoBaseEntity<${entTypeName}>(${entTypeName}::class.java,collectionName.AsString("${MyUtil.getSmallCamelCase(entType.simpleName)}")) {
+        var ent = """class ${entityTypeName}(collectionName:String=""):EsBaseEntity<${entTypeName}>(${entTypeName}::class.java,collectionName.AsString("${MyUtil.getSmallCamelCase(entType.simpleName)}")) {
 ${props.joinToString("\n")}
 }
 """

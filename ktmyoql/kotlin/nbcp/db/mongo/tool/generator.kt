@@ -45,8 +45,7 @@ class generator {
 
         println("开始生成 mor...")
 
-        writeToFile("""
-package nbcp.db.mongo.table
+        writeToFile("""package nbcp.db.mongo.table
 
 import nbcp.db.*
 import nbcp.db.mongo.*
@@ -71,7 +70,7 @@ ${packages.map { "import" + it }.joinToString(line_break)}
             writeToFile("""
 @Component("mongo.${groupName}")
 @MetaDataGroup("${groupName}")
-class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
+object ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
     override fun getEntities():Set<BaseDbEntity> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
 """)
             println("${groupName}:")

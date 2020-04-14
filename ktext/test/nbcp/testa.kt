@@ -34,11 +34,20 @@ class testa : TestBase() {
 
     }
 
+
+    class abd() {
+        init {
+            println("OK")
+        }
+
+        fun a() {}
+    }
+
+    val abc by lazy { return@lazy  abd() }
+
     @Test
     fun abcd() {
-        var b = LocalDate.now()
-        var e = b.ToJson()
-        println(e)
-        println(CodeUtil.getCode())
+        println("----")
+        abc.a()
     }
 }

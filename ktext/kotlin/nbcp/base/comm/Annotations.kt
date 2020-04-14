@@ -1,6 +1,8 @@
 package nbcp.comm
 
+import org.springframework.stereotype.Component
 import java.lang.annotation.ElementType
+import java.lang.annotation.Inherited
 import java.security.KeyPair
 
 /**
@@ -32,12 +34,20 @@ annotation class Require(val value: String = "")
 annotation class Ignore(val value: String = "")
 
 
+@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS, AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Defines(val values: Array<Define>)
+
 /**
  * 字段定义，用于 Es实体 生成 Mapping
  */
+@java.lang.annotation.Repeatable(Defines::class)
+@Repeatable
+@Component
+@Inherited
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS, AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Define(val value: String)
+annotation class Define(val value: String, val key: String = "")
 
 //@Repeatable
 //@Target(AnnotationTarget.FIELD, AnnotationTarget.TYPE, AnnotationTarget.CLASS )

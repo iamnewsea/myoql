@@ -71,9 +71,10 @@ annotation class DbEntityFieldRefs(val values: Array<DbEntityFieldRef>)
  * DbEntityFieldRef("corp.id","corp.name","SysCorporation","id","name")
  * 当 SysCorporation.name 发生变化后， 该表自动更新。
  */
-@java.lang.annotation.Repeatable(DbEntityFieldRefs::class)
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
+@java.lang.annotation.Repeatable(DbEntityFieldRefs::class)
+@Repeatable
 @Component
 @Inherited
 annotation class DbEntityFieldRef(val idField: String, val nameField: String, val masterEntityClass: KClass<*>, val masterIdField: String, val masterNameField: String)
