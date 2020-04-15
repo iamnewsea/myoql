@@ -69,7 +69,10 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
             data.add(it)
         }
 
-        var requestBody = data.map { it.ToJson() + line_break }.joinToString("")
+        var requestBody = "";
+        using(JsonStyleEnumScope.DateUtcStyle) {
+            requestBody = data.map { it.ToJson() + line_break }.joinToString("")
+        }
         request.setJsonEntity(requestBody)
 
         var responseBody = "";
