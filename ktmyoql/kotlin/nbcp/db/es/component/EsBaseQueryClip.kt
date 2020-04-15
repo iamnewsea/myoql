@@ -98,7 +98,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
                 msgs.add("[index] " + this.collectionName);
                 msgs.add("[search] " + this.search.toString())
 
-                if (db.debug) {
+                if (logger.debug) {
                     msgs.add("[result] ${responseBody}")
                 } else {
                     msgs.add("[result.size] " + list.size.toString())

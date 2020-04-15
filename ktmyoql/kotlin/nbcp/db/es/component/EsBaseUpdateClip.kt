@@ -70,7 +70,7 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
                 """[index] ${this.collectionName}
 [url] ${request.method} ${request.endpoint} 
 [body] ${search} 
-[result] ${if (db.debug) responseBody else ret}
+[result] ${if (logger.debug) responseBody else ret}
 [耗时] ${db.executeTime}"""
             }
         }

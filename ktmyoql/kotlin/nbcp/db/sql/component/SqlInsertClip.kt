@@ -275,7 +275,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
                     }
                 }
 
-                if (db.debug) {
+                if (logger.debug) {
                     msg_log.add("[参数]\n${entities.map { ent -> insertColumns.map { column -> ent.getStringValue(column.name) }.joinToString(",") }.joinToString("\n")}")
                 }
                 return@PreparedStatementCreator ps
@@ -334,7 +334,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
             } finally {
                 logger.InfoError(error) {
                     var msg_log = mutableListOf("[sql] ${executeData.executeSql}")
-                    if (db.debug) {
+                    if (logger.debug) {
                         msg_log.add("[参数] ${executeData.executeParameters.joinToString(",")}")
                     }
                     msg_log.add("[id] ${db.lastAutoId}")
@@ -368,7 +368,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
                 logger.InfoError(error) {
                     var msg_log = mutableListOf("[sql] ${executeData.executeSql}")
 
-                    if (db.debug) {
+                    if (logger.debug) {
                         msg_log.add("[参数] ${executeData.executeParameters.joinToString(",")}")
                     }
                     msg_log.add("[result] ${n}")

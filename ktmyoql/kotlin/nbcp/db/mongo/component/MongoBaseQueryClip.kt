@@ -155,7 +155,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                     msgs.add("[limit] ${skip},${take}")
                 }
 
-                if (db.debug) {
+                if (logger.debug) {
                     msgs.add("[result] ${cursor.ToJson()}")
                 } else {
                     msgs.add("[result.size] " + cursor.size.toString())

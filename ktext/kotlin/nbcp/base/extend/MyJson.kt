@@ -35,42 +35,45 @@ class RawJsonSerializer : JsonSerializer<RawJsonObject>(), InitializingBean {
     }
 }
 
-private fun getJsonInstance(getSetStyle: Boolean = false, withNull: Boolean = false): ObjectMapper {
-    return if (getSetStyle && withNull)
-        GetSetWithNullTypeJsonMapper.instance
-    else if (getSetStyle && !withNull)
-        GetSetTypeJsonMapper.instance
-    else if (!getSetStyle && withNull)
-        FieldWithNullTypeJsonMapper.instance
-    else FieldTypeJsonMapper.instance
-}
+//private fun getJsonInstance(getSetStyle: Boolean = false, withNull: Boolean = false): ObjectMapper {
+//    return if (getSetStyle && withNull)
+//        GetSetWithNullTypeJsonMapper.instance
+//    else if (getSetStyle && !withNull)
+//        GetSetTypeJsonMapper.instance
+//    else if (!getSetStyle && withNull)
+//        FieldWithNullTypeJsonMapper.instance
+//    else FieldTypeJsonMapper.instance
+//}
+
 
 /**
- * @param getSetStyle 使用 Field 还是 GetSet 序列化。默认使用 Field
- * @param withNull: 序列化时，是否序列化 null 值 。 默认不序列化
+ * 样式请使用 using(listOf(JsonStyleEnum.FieldStyle)){}
  */
-fun <T> T.ToJson(getSetStyle: Boolean = false, withNull: Boolean = false, pretty: Boolean = false): String {
+fun <T> T.ToJson(): String {
     if (this is String) return this;
 
-    if (pretty) {
-        return getJsonInstance(getSetStyle, withNull).writerWithDefaultPrettyPrinter().writeValueAsString(this) ?: ""
+    var styles = scopes.getScopeTypes<JsonStyleEnumScope>()
+    var mapper = DefaultMyJsonMapper.get(*styles.toTypedArray())
+    if( styles.contains(JsonStyleEnumScope.Pretty)){
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this) ?: ""
     }
-    return getJsonInstance(getSetStyle, withNull).writeValueAsString(this) ?: ""
+
+    return mapper.writeValueAsString(this) ?: ""
 }
 
-fun <T> T.ToJsonWithNull(getSetStyle: Boolean = false, pretty: Boolean = false): String {
-    if (this is String) return this;
-
-    if (pretty) {
-        return getJsonInstance(getSetStyle, true).writerWithDefaultPrettyPrinter().writeValueAsString(this) ?: ""
-    }
-    return getJsonInstance(getSetStyle, true).writeValueAsString(this) ?: ""
-}
+//fun <T> T.ToJsonWithNull(getSetStyle: Boolean = false, pretty: Boolean = false): String {
+//    if (this is String) return this;
+//
+//    if (pretty) {
+//        return getJsonInstance(getSetStyle, true).writerWithDefaultPrettyPrinter().writeValueAsString(this) ?: ""
+//    }
+//    return getJsonInstance(getSetStyle, true).writeValueAsString(this) ?: ""
+//}
 
 //如果是 string , 会返回： "123" 这样， 用于 返回的 Json Value
-fun <T> T.ToJsonValue(getSetStyle: Boolean = false, withNull: Boolean = false): String {
-    return getJsonInstance(getSetStyle, withNull).writeValueAsString(this) ?: "null"
-}
+//fun <T> T.ToJsonValue(getSetStyle: Boolean = false, withNull: Boolean = false): String {
+//    return getJsonInstance(getSetStyle, withNull).writeValueAsString(this) ?: "null"
+//}
 
 fun <T> String.FromJsonWithDefaultValue(collectionClass: Class<T>, getSetStyle: Boolean = false, withNull: Boolean = false): T {
     return this.FromJson<T>(collectionClass, getSetStyle, withNull) ?: collectionClass.newInstance()
@@ -88,23 +91,9 @@ fun <T> String.FromJson(collectionClass: Class<T>, getSetStyle: Boolean = false,
         return null;
     }
 
-    var mapper: JsonBaseObjectMapper;
-
-    if (getSetStyle) {
-        if (withNull) {
-            mapper = GetSetWithNullTypeJsonMapper.instance;
-        } else {
-            mapper = GetSetTypeJsonMapper.instance;
-        }
-    } else if (withNull) {
-        mapper = FieldWithNullTypeJsonMapper.instance;
-    } else {
-        mapper = FieldTypeJsonMapper.instance;
-    }
-
     var ret: T? = null
     try {
-        ret = mapper.readValue(jsonString, collectionClass)
+        ret = DefaultMyJsonMapper.get().readValue(jsonString, collectionClass)
     } catch (e: Exception) {
         var msg = "Json转换出错！Json数据：${jsonString}\n 类型:${collectionClass.name} \n 错误消息:" + e.message;
         throw RuntimeException(msg, e);
@@ -117,7 +106,7 @@ fun <T> Any.ConvertJson(clazz: Class<T>): T {
     if (clazz.isAssignableFrom(this::class.java)) {
         return this as T;
     }
-    return FieldTypeJsonMapper.instance.convertValue(this, clazz)
+    return DefaultMyJsonMapper.get().convertValue(this, clazz)
 }
 
 inline fun <reified T> String.FromJson(): T? {

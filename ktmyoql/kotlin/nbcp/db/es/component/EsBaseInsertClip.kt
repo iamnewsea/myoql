@@ -25,7 +25,7 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
     fun addEntity(entity: IEsDocument) {
 
         if (entity.id.isEmpty()) {
-            entity.id = ObjectId().toString()
+            entity.id = CodeUtil.getCode()
         }
         entity.createAt = LocalDateTime.now()
 
@@ -69,7 +69,8 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
             data.add(it)
         }
 
-        request.setJsonEntity(data.ToJson())
+        var requestBody = data.map { it.ToJson() }.joinToString(line_break)
+        request.setJsonEntity(requestBody)
 
         var responseBody = "";
         var startAt = LocalDateTime.now()
@@ -82,11 +83,9 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
             db.executeTime = LocalDateTime.now() - startAt
             responseBody = response.entity.content.readBytes().toString(utf8)
 
-            using(OrmLogScope.IgnoreAffectRow) {
-                using(OrmLogScope.IgnoreExecuteTime) {
-                    settingResult.forEach {
-                        it.first.insert(this, it.second)
-                    }
+            using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+                settingResult.forEach {
+                    it.first.insert(this, it.second)
                 }
             }
 
@@ -100,8 +99,8 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
             logger.InfoError(ret < 0) {
                 """[insert] ${this.collectionName}
 [url] ${request.method} ${request.endpoint}
-${if (db.debug) "[enities.size] ${entities.size}" else "[entities] ${entities.ToJson()}"}
-[result] ${if (db.debug) responseBody else ret}
+${if (logger.debug) "[body] ${requestBody}" else "[enities.size] ${entities.size}"}
+[result] ${if (logger.debug) responseBody else ret}
 [耗时] ${db.executeTime}
 """
             };

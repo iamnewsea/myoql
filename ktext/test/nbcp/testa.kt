@@ -35,19 +35,21 @@ class testa : TestBase() {
     }
 
 
-    class abd() {
-        init {
-            println("OK")
-        }
-
-        fun a() {}
+    class abd(
+            var msg: String = "",
+            var value: Int = 0,
+            var www: String? = null
+    ) {
+        fun getAbcd(): String = "II"
     }
-
-    val abc by lazy { return@lazy  abd() }
 
     @Test
     fun abcd() {
-        println("----")
-        abc.a()
+        using(arrayOf(JsonStyleEnumScope.Pretty, JsonStyleEnumScope.GetSetStyle, JsonStyleEnumScope.WithNull)) {
+            println(abd("a", 33).ToJson())
+        }
+
+        println(abd("a", 33).ToJson())
+
     }
 }

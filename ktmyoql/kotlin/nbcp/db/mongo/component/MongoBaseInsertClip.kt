@@ -44,11 +44,9 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
             mongoTemplate.insertAll(entities)
             db.executeTime = LocalDateTime.now() - startAt
 
-            using(OrmLogScope.IgnoreAffectRow) {
-                using(OrmLogScope.IgnoreExecuteTime) {
-                    settingResult.forEach {
-                        it.first.insert(this, it.second)
-                    }
+            using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+                settingResult.forEach {
+                    it.first.insert(this, it.second)
                 }
             }
 
@@ -61,7 +59,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
         } finally {
             logger.InfoError(ret < 0) {
                 """[insert] ${this.collectionName}
-${if (db.debug) "[enities.size] ${entities.size}" else "[entities] ${entities.ToJson()}"}
+${if (logger.debug) "[entities] ${entities.ToJson()}" else "[enities.size] ${entities.size}"}
 [result] ${ret}
 [耗时] ${db.executeTime}
 """

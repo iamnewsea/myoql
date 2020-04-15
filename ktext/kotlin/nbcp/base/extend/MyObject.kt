@@ -3,12 +3,12 @@ package nbcp.comm
 import nbcp.comm.*
 
 import nbcp.utils.*
-import java.util.*
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import kotlin.collections.LinkedHashMap
 import nbcp.utils.*
 import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
 import java.lang.reflect.Field
 import java.nio.charset.Charset
@@ -16,6 +16,7 @@ import java.time.*
 import java.time.temporal.Temporal
 import java.io.*
 import java.lang.reflect.Modifier
+import java.util.*
 
 
 /**
@@ -107,12 +108,28 @@ inline fun <reified R> Stack<*>.getLatestScope(vararg enumValues: R): R? {
 }
 
 
+inline fun <reified R> Stack<*>.getScopeTypes(): Set<R> {
+    if (this.size == 0) return setOf()
+
+    var list = mutableSetOf<R>()
+    for (i in this.indices.reversed()) {
+        var item = this[i];
+        if (item is R) {
+            list.add(item);
+        }
+    }
+    return list;
+}
+
+
 //interface IUsingScope {
 //    /**
 //     * 是否向下传递
 //     */
 //    fun infect(): Boolean;
 //}
+
+val logger = LoggerFactory.getLogger(MyString::class.java)
 
 private val _scopes = ThreadLocal.withInitial { Stack<Any>() }
 
@@ -125,39 +142,45 @@ val scopes: Stack<Any>
  *
  * }
  *
- * using(
+ * @param initObjects: 可以是 array, list,IDisposeable,any , 如果是 array,list，则依次添加到作用域栈中。
  */
-inline fun <T> using(init: Any, body: () -> T): T {
-    scopes.push(init);
-    try {
-        var ret = body();
-
-        if (init is IDisposeable) {
-            init.dispose();
-        }
-
-        return ret;
-    } finally {
-        if (scopes.isEmpty() == false) {
-            scopes.pop()
-        }
-    }
+inline fun <T> using(initObjects: Any, body: () -> T): T {
+    return using(initObjects, body, {})
 }
 
 
-inline fun <T> using(init: Any, body: () -> T, finally: (() -> Unit)): T {
-    scopes.push(init);
+inline fun <T> using(initObjects: Any, body: () -> T, finally: (() -> Unit)): T {
+    var init_list = mutableListOf<Any>()
+
+    if (initObjects is List<*>) {
+        init_list.addAll(initObjects as Collection<Any>)
+    } else if (initObjects is Array<*>) {
+        init_list.addAll(initObjects.map { it!! })
+    } else {
+        init_list.add(initObjects)
+    }
+
+    init_list.forEach {
+        scopes.push(it);
+    }
+
     try {
         var ret = body();
 
-        if (init is IDisposeable) {
-            init.dispose();
+        init_list.forEach {
+            if (it is IDisposeable) {
+                it.dispose();
+            }
         }
         finally()
         return ret;
     } finally {
-        if (scopes.isEmpty() == false) {
-            scopes.pop()
+        for (i in 1..init_list.size) {
+            if (scopes.isEmpty() == false) {
+                scopes.pop()
+            } else {
+                logger.error("scopes isEmpty!")
+            }
         }
     }
 }
@@ -586,6 +609,21 @@ fun <T : Serializable> T.CloneObject(): T {
 //    }
 //}
 //
+
+private var debug_value: Boolean? = null
+
+/**
+ * 获取参数 debug，如果是调试模式，那么查询日志显示结果集，会显示插入数据
+ */
+val Logger.debug: Boolean
+    get() {
+        if (debug_value == null && SpringUtil.isInited) {
+            debug_value = SpringUtil.context.environment.getProperty("debug").AsBoolean();
+        }
+
+        return (debug_value ?: false) || this.isDebugEnabled
+    }
+
 inline fun Logger.InfoError(error: Boolean, msgFunc: (() -> String)) {
     if (error) {
         this.error(msgFunc())

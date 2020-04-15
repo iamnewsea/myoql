@@ -245,7 +245,7 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
                             "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}"
                     )
 
-                    if (db.debug) {
+                    if (logger.debug) {
                         msg_log.add("[result] ${retJsons.ToJson()}")
                     } else {
                         msg_log.add("[result.size] ${retJsons.size}")

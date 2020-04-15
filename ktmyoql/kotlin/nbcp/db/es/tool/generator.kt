@@ -77,7 +77,14 @@ object ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
             println("${groupName}:")
             groupEntities.forEach {
                 count++;
-                println("${count.toString().padStart(2, ' ')} 生成实体：${groupName}.${it.simpleName}".ToTab(1))
+
+                var dbName = it.getAnnotation(DbName::class.java)?.name ?: ""
+
+                if( dbName.isEmpty()) {
+                    dbName = MyUtil.splitWithBigChar(it.simpleName).map{it.toLowerCase()}.joinToString("_")
+                }
+
+                println("${count.toString().padStart(2, ' ')} 生成实体：${groupName}.${dbName}".ToTab(1))
                 writeToFile(genVarEntity(it).ToTab(1))
             }
 
@@ -388,7 +395,7 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
         var dbName = entType.getAnnotation(DbName::class.java)?.name ?: ""
 
         if( dbName.isEmpty()) {
-            dbName = MyUtil.getSmallCamelCase(entType.simpleName)
+            dbName = MyUtil.splitWithBigChar(entType.simpleName).map{it.toLowerCase()}.joinToString("_")
         }
 
         var ent = """class ${entityTypeName}(collectionName:String="")

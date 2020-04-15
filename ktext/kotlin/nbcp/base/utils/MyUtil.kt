@@ -35,6 +35,27 @@ object MyUtil {
         }
 
     /**
+     * 按大写字母拆分
+     */
+    fun splitWithBigChar(value:String):List<String>{
+        var ret = mutableListOf<String>()
+
+        var prevIndex = 0;
+        for(index in 1 until value.length){
+            var item = value[index];
+
+            if( item.isUpperCase()){
+                ret.add(value.Slice(prevIndex,index))
+                prevIndex = index;
+            }
+        }
+
+        ret.add( value.Slice(prevIndex));
+
+        return ret.filter { it.HasValue };
+    }
+
+    /**
      * 流式批量读取，适用于分批遍历数据库的场景。
      * MyUtil.batchStream<String>({->
      *     //返回空集合，停止。

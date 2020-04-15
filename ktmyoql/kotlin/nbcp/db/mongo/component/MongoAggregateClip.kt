@@ -151,12 +151,12 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
             var key = it.first;
             var value = it.second;
             if (value is ObjectId) {
-                return@map """{$key:${value.toString().toOIdJson().ToJsonValue()}}"""
+                return@map """{$key:${value.toString().toOIdJson().ToJson().AsString("null")}}"""
             } else if (value is Criteria) {
 
                 var c_value = value.criteriaObject.procWithMongoScript();
 
-                return@map """{$key:${c_value.ToJsonWithNull()}}"""
+                return@map """{$key:${c_value.ToJson().AsString("null")}}"""
             } else if (value is Number) {
                 return@map "{$key:$value}";
             } else if (value is String) {
@@ -165,11 +165,11 @@ class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEnt
 //                }
                 return@map """{$key:"${value}"}"""
             } else if (value is Map<*, *>) {
-                return@map "{$key:${value.procWithMongoScript().ToJsonWithNull()}}"
+                return@map "{$key:${value.procWithMongoScript().ToJson().AsString("null")}}"
             }
 
             logger.warn("不识别的类型：${value::class.java.name}")
-            return@map "{$key:${value.ToJsonWithNull()}}"
+            return@map "{$key:${value.ToJson().AsString("null")}}"
         }.joinToString(",") + "]"
 
         var exp = """{
@@ -212,7 +212,7 @@ cursor: {} } """
             logger.InfoError(result == null) {
                 """[aggregate] ${this.moerEntity.tableName}
 [语句] ${queryJson}
-${if (db.debug) "[result] ${result?.ToJson()}" else "[result.size] ${result?.size}"}
+${if (logger.debug) "[result] ${result?.ToJson()}" else "[result.size] ${result?.size}"}
 [耗时] ${db.executeTime}"""
             }
         }

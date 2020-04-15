@@ -99,16 +99,14 @@ class MongoEntityEvent : BeanPostProcessor {
     fun onInserting(insert: MongoBaseInsertClip): Array<Pair<IMongoEntityInsert, DbEntityEventResult>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityInsert, DbEntityEventResult>>()
-        using(OrmLogScope.IgnoreAffectRow) {
-            using(OrmLogScope.IgnoreExecuteTime) {
-                insertEvent.ForEachExt { it, index ->
-                    var ret = it.beforeInsert(insert);
-                    if (ret.result == false) {
-                        return@ForEachExt false;
-                    }
-                    list.add(it to ret)
-                    return@ForEachExt true
+        using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+            insertEvent.ForEachExt { it, index ->
+                var ret = it.beforeInsert(insert);
+                if (ret.result == false) {
+                    return@ForEachExt false;
                 }
+                list.add(it to ret)
+                return@ForEachExt true
             }
         }
         return list.toTypedArray()
@@ -117,16 +115,14 @@ class MongoEntityEvent : BeanPostProcessor {
     fun onUpdating(update: MongoBaseUpdateClip): Array<Pair<IMongoEntityUpdate, DbEntityEventResult>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityUpdate, DbEntityEventResult>>()
-        using(OrmLogScope.IgnoreAffectRow) {
-            using(OrmLogScope.IgnoreExecuteTime) {
-                updateEvent.ForEachExt { it, index ->
-                    var ret = it.beforeUpdate(update);
-                    if (ret.result == false) {
-                        return@ForEachExt false;
-                    }
-                    list.add(it to ret)
-                    return@ForEachExt true
+        using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+            updateEvent.ForEachExt { it, index ->
+                var ret = it.beforeUpdate(update);
+                if (ret.result == false) {
+                    return@ForEachExt false;
                 }
+                list.add(it to ret)
+                return@ForEachExt true
             }
         }
         return list.toTypedArray()
@@ -136,16 +132,14 @@ class MongoEntityEvent : BeanPostProcessor {
 
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityDelete, DbEntityEventResult>>()
-        using(OrmLogScope.IgnoreAffectRow) {
-            using(OrmLogScope.IgnoreExecuteTime) {
-                deleteEvent.ForEachExt { it, index ->
-                    var ret = it.beforeDelete(delete);
-                    if (ret.result == false) {
-                        return@ForEachExt false;
-                    }
-                    list.add(it to ret)
-                    return@ForEachExt true
+        using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+            deleteEvent.ForEachExt { it, index ->
+                var ret = it.beforeDelete(delete);
+                if (ret.result == false) {
+                    return@ForEachExt false;
                 }
+                list.add(it to ret)
+                return@ForEachExt true
             }
         }
         return list.toTypedArray()

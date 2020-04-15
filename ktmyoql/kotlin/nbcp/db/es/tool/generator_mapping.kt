@@ -9,7 +9,6 @@ import java.io.FileWriter
 import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
-import java.lang.reflect.WildcardType
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -45,33 +44,35 @@ class generator_mapping {
 
         println("开始生成 es mapping ...")
 
-        var count = 0;
-        groups.forEach { group ->
-            var groupName = group.key
-            var groupEntities = group.value
+        using(JsonStyleEnumScope.Pretty) {
+            var count = 0;
+            groups.forEach { group ->
+                var groupName = group.key
+                var groupEntities = group.value
 
-            var path = moer_Path + p + group.key;
-            File(path).mkdirs();
+                var path = moer_Path + p + group.key;
+                File(path).mkdirs();
 
-            println("${groupName}:")
-            groupEntities.forEach {
-                count++;
-                var entType = it;
-                var dbName = entType.getAnnotation(DbName::class.java)?.name ?: ""
+                println("${groupName}:")
+                groupEntities.forEach {
+                    count++;
+                    var entType = it;
+                    var dbName = entType.getAnnotation(DbName::class.java)?.name ?: ""
 
-                if (dbName.isEmpty()) {
-                    dbName = MyUtil.getSmallCamelCase(entType.simpleName)
+                    if (dbName.isEmpty()) {
+                        dbName = MyUtil.getSmallCamelCase(entType.simpleName)
+                    }
+                    println("${count.toString().padStart(2, ' ')} 生成Mapping：${groupName}.${dbName}".ToTab(1))
+
+                    var json = genEntity(it)
+
+                    var mappings = JsonMap("properties" to json)
+
+
+                    var moer_File = FileWriter(path + p + dbName + ".txt", false);
+                    moer_File.appendln(mappings.ToJson())
+                    moer_File.flush()
                 }
-                println("${count.toString().padStart(2, ' ')} 生成Mapping：${groupName}.${dbName}".ToTab(1))
-
-                var json = genEntity(it)
-
-                var mappings = JsonMap("properties" to json)
-
-
-                var moer_File = FileWriter(path + p + dbName + ".txt", false);
-                moer_File.appendln(mappings.ToJson(false, false, true))
-                moer_File.flush()
             }
         }
 

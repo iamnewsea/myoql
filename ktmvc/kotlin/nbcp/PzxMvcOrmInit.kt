@@ -1,7 +1,9 @@
 package nbcp
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import nbcp.comm.JsonStyleEnumScope
+import nbcp.comm.setStyle
 import nbcp.utils.*
-import nbcp.comm.GetSetTypeJsonMapper
 import nbcp.comm.utf8
 import nbcp.web.RequestParameterConverter
 import org.springframework.context.ApplicationListener
@@ -43,7 +45,7 @@ open class PzxMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
     private fun initMvcResponse() {
         //注册返回的消息体。
         handerAdapter.messageConverters.filter { it is MappingJackson2HttpMessageConverter }.map { it as MappingJackson2HttpMessageConverter }.forEach {
-            it.objectMapper = GetSetTypeJsonMapper.instance
+            it.objectMapper = ObjectMapper().setStyle(JsonStyleEnumScope.GetSetStyle)
         }
 
         //设置 StringHttpMessageConverter 的字符集

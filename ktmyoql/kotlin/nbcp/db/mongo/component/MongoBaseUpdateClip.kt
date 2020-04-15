@@ -147,11 +147,9 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             db.executeTime = LocalDateTime.now() - startAt
 
             if (result.modifiedCount > 0) {
-                using(OrmLogScope.IgnoreAffectRow) {
-                    using(OrmLogScope.IgnoreExecuteTime) {
-                        settingResult.forEach {
-                            it.first.update(this, it.second)
-                        }
+                using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+                    settingResult.forEach {
+                        it.first.update(this, it.second)
                     }
                 }
             }

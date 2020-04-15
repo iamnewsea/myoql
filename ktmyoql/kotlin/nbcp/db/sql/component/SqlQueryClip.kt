@@ -378,10 +378,8 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
             if (data.size < this.take) {
                 ret.total = data.size;
             } else {
-                using(OrmLogScope.IgnoreExecuteTime) {
-                    using(OrmLogScope.IgnoreAffectRow) {
-                        ret.total = count()
-                    }
+                using(arrayOf(OrmLogScope.IgnoreExecuteTime, OrmLogScope.IgnoreAffectRow)) {
+                    ret.total = count()
                 }
             }
         }

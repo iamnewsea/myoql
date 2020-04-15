@@ -49,12 +49,14 @@ class FileUploadController {
         var ids = ret.data;
 
         response.contentType = "application/json;charset=UTF-8"
-        if (ids.size == 0) {
-            response.outputStream.write(JsonResult("上传失败").ToJson().toByteArray(utf8));
-        } else if (ids.size == 1) {
-            response.outputStream.write(ApiResult.of(ids[0]).ToJson(true).toByteArray(utf8));
-        } else {
-            response.outputStream.write(ListResult.of(ids).ToJson(true).toByteArray(utf8));
+        using(JsonStyleEnumScope.GetSetStyle) {
+            if (ids.size == 0) {
+                response.outputStream.write(JsonResult("上传失败").ToJson().toByteArray(utf8));
+            } else if (ids.size == 1) {
+                response.outputStream.write(ApiResult.of(ids[0]).ToJson().toByteArray(utf8));
+            } else {
+                response.outputStream.write(ListResult.of(ids).ToJson().toByteArray(utf8));
+            }
         }
         return
     }
