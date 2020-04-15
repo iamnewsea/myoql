@@ -69,7 +69,7 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
             data.add(it)
         }
 
-        var requestBody = data.map { it.ToJson() }.joinToString(line_break)
+        var requestBody = data.map { it.ToJson() + line_break }.joinToString("")
         request.setJsonEntity(requestBody)
 
         var responseBody = "";

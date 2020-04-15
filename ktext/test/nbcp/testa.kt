@@ -8,6 +8,9 @@ import nbcp.db.IdName
 import nbcp.db.IdUrl
 import org.junit.Test
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 class testa : TestBase() {
 
@@ -38,18 +41,22 @@ class testa : TestBase() {
     class abd(
             var msg: String = "",
             var value: Int = 0,
-            var www: String? = null
+            var www: LocalDateTime = LocalDateTime.now()
     ) {
         fun getAbcd(): String = "II"
     }
 
     @Test
     fun abcd() {
-        using(arrayOf(JsonStyleEnumScope.Pretty, JsonStyleEnumScope.GetSetStyle, JsonStyleEnumScope.WithNull)) {
+        using(arrayOf(JsonStyleEnumScope.Pretty, JsonStyleEnumScope.DateUtcStyle)) {
             println(abd("a", 33).ToJson())
         }
 
         println(abd("a", 33).ToJson())
 
+
+        var now = LocalDateTime.now()
+        println(now.format(DateTimeFormatter.ofPattern("HH", Locale.ENGLISH)))
+        println(now.format(DateTimeFormatter.ofPattern("HH", Locale.CHINA)))
     }
 }

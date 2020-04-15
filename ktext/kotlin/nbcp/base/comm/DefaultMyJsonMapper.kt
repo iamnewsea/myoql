@@ -76,7 +76,7 @@ fun ObjectMapper.setStyle(vararg styles: JsonStyleEnumScope): ObjectMapper {
     // 设置时区
     this.setTimeZone(TimeZone.getTimeZone("GMT+:08:00"))
     if (styles.contains(JsonStyleEnumScope.DateUtcStyle)) {
-        this.dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.UK)
+        this.dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH)
     } else if (styles.contains(JsonStyleEnumScope.DateLocalStyle)) {
         this.dateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
     } else {

@@ -45,7 +45,7 @@ fun Any.ConvertType(clazz: Class<*>): Any? {
     if (clazz == Double::class.java || clazz == java.lang.Double::class.java) {
         return this.AsDouble()
     }
-    if (CharSequence::class.java.isAssignableFrom(clazz) || clazz == java.lang.String::class.java ) {
+    if (CharSequence::class.java.isAssignableFrom(clazz) || clazz == java.lang.String::class.java) {
         return this.AsString()
     }
 
@@ -143,7 +143,7 @@ fun Any?.AsInt(defaultValue: Int = 0): Int {
 }
 
 
-fun Any?.AsString(defaultValue: String = ""): String {
+fun Any?.AsString(defaultValue: String = "", format: String = ""): String {
     if (this == null) return defaultValue;
     if (this is String) {
         if (this.isEmpty()) return defaultValue
@@ -155,24 +155,24 @@ fun Any?.AsString(defaultValue: String = ""): String {
             return "";
         }
         if (this.hour == 0 && this.minute == 0 && this.second == 0) {
-            return this.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            return this.format(java.time.format.DateTimeFormatter.ofPattern(format.AsString("yyyy-MM-dd")));
         }
-        return this.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        return this.format(java.time.format.DateTimeFormatter.ofPattern(format.AsString("yyyy-MM-dd HH:mm:ss")));
     } else if (this is LocalDate) {
         if (this == LocalDate.MIN) {
             return "";
         }
-        return this.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        return this.format(java.time.format.DateTimeFormatter.ofPattern(format.AsString("yyyy-MM-dd")));
     } else if (this is LocalTime) {
         if (this == LocalTime.MIN) {
             return "";
         }
-        return this.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));
+        return this.format(java.time.format.DateTimeFormatter.ofPattern(format.AsString("HH:mm:ss")));
     } else if (this is Date) {
         if (this.time == 0L) {
             return "";
         }
-        return SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(this);
+        return SimpleDateFormat(format.AsString("yyyy-MM-dd HH:mm:ss")).format(this);
     }
 
     var ret = this.toString()

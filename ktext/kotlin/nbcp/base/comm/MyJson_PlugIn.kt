@@ -38,7 +38,7 @@ class DateJsonSerializer : JsonSerializer<Date>(), InitializingBean {
         if (value == null) {
             generator.writeNull()
         } else {
-            generator.writeString(SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(value))
+            generator.writeString(value.AsString("", (serializers.config.dateFormat as SimpleDateFormat).toPattern()))
         }
     }
 
@@ -55,7 +55,7 @@ class LocalDateJsonSerializer : JsonSerializer<LocalDate>(), InitializingBean {
         if (value == null) {
             generator.writeNull()
         } else {
-            generator.writeString(value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+            generator.writeString(value.AsString("", (serializers.config.dateFormat as SimpleDateFormat).toPattern()))
         }
     }
 
@@ -71,7 +71,7 @@ class LocalTimeJsonSerializer : JsonSerializer<LocalTime>(), InitializingBean {
         if (value == null) {
             generator.writeNull()
         } else {
-            generator.writeString(value.format(DateTimeFormatter.ofPattern("HH:mm:ss")))
+            generator.writeString(value.AsString("", (serializers.config.dateFormat as SimpleDateFormat).toPattern()))
         }
     }
 
@@ -88,7 +88,7 @@ class LocalDateTimeJsonSerializer : JsonSerializer<LocalDateTime>(), Initializin
             generator.writeNull()
         } else {
             //想办法在输出的时候，表示该字段是一个时间类型。 客户端收到后，统一转换。添加 _res
-            generator.writeString(value.AsString())
+            generator.writeString(value.AsString("", (serializers.config.dateFormat as SimpleDateFormat).toPattern()))
         }
     }
 
@@ -104,7 +104,7 @@ class TimestampJsonSerializer : JsonSerializer<Timestamp>(), InitializingBean {
         if (value == null) {
             generator.writeNull()
         } else {
-            generator.writeString(value.toLocalDateTime().AsString())
+            generator.writeString(value.toLocalDateTime().AsString("", (serializers.config.dateFormat as SimpleDateFormat).toPattern()))
         }
     }
 
@@ -122,9 +122,9 @@ class DateJsonDeserializer : JsonDeserializer<Date>(), InitializingBean {
         if (json == null) {
             return null;
         }
-
-        if (json.valueAsString.contains("-")) {
-            return json.valueAsString.AsDate();
+        var stringValue = json.valueAsString
+        if (stringValue.contains("-") || stringValue.contains("/")) {
+            return stringValue.AsDate();
         }
 
         return Date(json.longValue);
