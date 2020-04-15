@@ -2,7 +2,7 @@ package nbcp.db.mysql.tool
 
 import nbcp.comm.*
 import nbcp.utils.*
-import nbcp.db.DbEntityGroup
+import nbcp.db.*
 import nbcp.db.mysql.*
 import nbcp.db.sql.*
 import java.io.File
@@ -305,31 +305,37 @@ object ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 
             if (keys.size == 1) {
                 idMethods.add("""
-    fun queryBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${javaType2KotlinType(entType.AllFields.first { f -> it == f.name }.type)}" }.joinToString(",")} ): SqlQueryClip<${entityTypeName}, ${tableName}> {
+    fun queryBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${javaType2KotlinType(entType.AllFields.first { f -> it == f.name }.type)}" }.joinToString(",")} ): SqlQueryClip<${entityTypeName}, ${entType.name}> {
         return this.query().where{ ${keys.map { "(it.${it} match ${it})" }.joinToString(" and ")} }
     }
 """);
             }
 
             idMethods.add("""
-    fun findBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${javaType2KotlinType(entType.AllFields.first { f -> it == f.name }.type)}" }.joinToString(",")} ): ${tableName}? {
+    fun findBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${javaType2KotlinType(entType.AllFields.first { f -> it == f.name }.type)}" }.joinToString(",")} ): ${entType.name}? {
         return this.query().where{ ${keys.map { "(it.${it} match ${it})" }.joinToString(" and ")} }.limit(0,1).toEntity()
     }
 
-    fun deleteBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${javaType2KotlinType(entType.AllFields.first { f -> it == f.name }.type)}" }.joinToString(",")} ): SqlDeleteClip<${entityTypeName},${tableName}> {
+    fun deleteBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${javaType2KotlinType(entType.AllFields.first { f -> it == f.name }.type)}" }.joinToString(",")} ): SqlDeleteClip<${entityTypeName},${entType.name}> {
         return this.delete().where{ ${keys.map { "(it.${it} match ${it})" }.joinToString(" and ")} }
     }
 
-    fun updateBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${javaType2KotlinType(entType.AllFields.first { f -> it == f.name }.type)}" }.joinToString(",")} ): SqlUpdateClip<${entityTypeName},${tableName}> {
+    fun updateBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${javaType2KotlinType(entType.AllFields.first { f -> it == f.name }.type)}" }.joinToString(",")} ): SqlUpdateClip<${entityTypeName},${entType.name}> {
         return this.update().where{ ${keys.map { "(it.${it} match ${it})" }.joinToString(" and ")} }
     }
 """)
         }
 
+        var dbName = entType.getAnnotation(DbName::class.java)?.name ?: ""
+
+        if( dbName.isEmpty()) {
+            dbName = tableName
+        }
 
 
         return """
-class ${entityTypeName}(datasource:String=""):SqlBaseTable<${tableName}>(${tableName}::class.java,"${tableName}") {
+class ${entityTypeName}(datasource:String="")
+    :SqlBaseTable<${entType.name}>(${entType.name}::class.java,"${dbName}") {
 ${props.joinToString("\n")}
 
     override fun getAutoIncrementKey(): String { return "${autoIncrementKey}"}

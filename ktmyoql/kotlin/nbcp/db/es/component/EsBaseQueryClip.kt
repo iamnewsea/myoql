@@ -3,7 +3,6 @@ package nbcp.db.es
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.db
-import nbcp.db.es.*
 import org.bson.Document
 import org.elasticsearch.client.Request
 import org.slf4j.LoggerFactory
@@ -15,7 +14,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
     var search = SearchBodyClip()
 
     fun selectField(column: String) {
-        search.fields.add(column);
+        search._source.add(column);
     }
 
     companion object {
@@ -68,7 +67,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
 
         db.affectRowCount = list.size
 
-        var lastKey = this.search.fields.lastOrNull() ?: ""
+        var lastKey = this.search._source.lastOrNull() ?: ""
         var error = false;
         try {
             list.forEach {

@@ -2,7 +2,7 @@ package nbcp.db.es.tool
 
 import nbcp.comm.*
 import nbcp.utils.*
-import nbcp.db.DbEntityGroup
+import nbcp.db.*
 
 import java.io.File
 import java.io.FileWriter
@@ -126,7 +126,7 @@ data class moer_map(val _pname:String)
         nameMapping.forEach {
             name = name.replace(it.key, it.value)
         }
-        return name;
+        return name[0].toLowerCase() + name.Slice(1);
     }
 
     fun getGroups(basePackage: String, anyEntityClass: Class<*>): HashMap<String, MutableList<Class<*>>> {
@@ -326,7 +326,7 @@ data class moer_map(val _pname:String)
                 }
 
         var entityTypeName = entTypeName;
-        var entityVarName = getEntityName(entTypeName);
+//        var entityVarName = getEntityName(entTypeName);
 
         var ent = """class ${entityTypeName}Meta (private val _pname:String):EsColumnName() {
     constructor(_val:EsColumnName):this(_val.toString()) {}
@@ -383,9 +383,16 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
                 }
 
         var entityTypeName = entTypeName + "Entity"
-        var entityVarName = getEntityName(entTypeName)
+//        var entityVarName = getEntityName(entTypeName)
 
-        var ent = """class ${entityTypeName}(collectionName:String=""):EsBaseEntity<${entTypeName}>(${entTypeName}::class.java,collectionName.AsString("${MyUtil.getSmallCamelCase(entType.simpleName)}")) {
+        var dbName = entType.getAnnotation(DbName::class.java)?.name ?: ""
+
+        if( dbName.isEmpty()) {
+            dbName = MyUtil.getSmallCamelCase(entType.simpleName)
+        }
+
+        var ent = """class ${entityTypeName}(collectionName:String="")
+    :EsBaseEntity<${entType.name}>(${entType.name}::class.java,collectionName.AsString("${dbName}")) {
 ${props.joinToString("\n")}
 }
 """

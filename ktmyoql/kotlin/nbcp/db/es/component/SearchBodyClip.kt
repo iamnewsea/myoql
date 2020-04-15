@@ -15,6 +15,9 @@ import nbcp.comm.*
 //
 //}
 
+/**
+ * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/search-search.html
+ */
 class SearchBodyClip {
     var skip = 0L;
     var take = -1;
@@ -53,7 +56,10 @@ class SearchBodyClip {
     val filter = JsonMap()
 
 
-    val fields = mutableListOf<String>()
+    /**
+     * _source
+     */
+    val _source = mutableListOf<String>()
 
     /**
     "sort": [
@@ -120,8 +126,8 @@ class SearchBodyClip {
         if (this.filter.isNotEmpty()) {
             json["filter"] = this.filter
         }
-        if (this.fields.isNotEmpty()) {
-            json["fields"] = this.fields
+        if (this._source.isNotEmpty()) {
+            json["_source"] = this._source
         }
         if (this.sort.isNotEmpty()) {
             json["sort"] = this.sort

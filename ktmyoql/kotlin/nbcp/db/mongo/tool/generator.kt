@@ -2,7 +2,7 @@ package nbcp.db.mongo.tool
 
 import nbcp.comm.*
 import nbcp.utils.*
-import nbcp.db.DbEntityGroup
+import nbcp.db.*
 import java.io.File
 import java.io.FileWriter
 import java.lang.RuntimeException
@@ -380,8 +380,14 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
                 }
 
         var entityTypeName = entTypeName + "Entity"
+        var dbName = entType.getAnnotation(DbName::class.java)?.name ?: ""
 
-        var ent = """class ${entityTypeName}(collectionName:String=""):MongoBaseEntity<${entTypeName}>(${entTypeName}::class.java,collectionName.AsString("${MyUtil.getSmallCamelCase(entType.simpleName)}")) {
+        if( dbName.isEmpty()) {
+            dbName = MyUtil.getSmallCamelCase(entType.simpleName)
+        }
+
+        var ent = """class ${entityTypeName}(collectionName:String="")
+    :MongoBaseEntity<${entType.name}>(${entType.name}::class.java,collectionName.AsString("${dbName}")) {
 ${props.joinToString("\n")}
 }
 """

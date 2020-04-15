@@ -2,7 +2,7 @@ package nbcp.db.mongo.tool
 
 import nbcp.comm.*
 import nbcp.utils.*
-import nbcp.db.DbEntityGroup
+import nbcp.db.*
 import java.io.File
 import java.io.FileWriter
 import java.lang.reflect.Field
@@ -393,7 +393,7 @@ body table thead th{
                 }
 
         var entityTypeName = entTypeName;
-        var entityVarName = getEntityName(entTypeName);
+//        var entityVarName = getEntityName(entTypeName);
 
         var ent = """#### ${entityTypeName}
 ${props.joinToString("\n")}
@@ -417,7 +417,7 @@ ${props.joinToString("\n")}
                 }
 
         var entityTypeName = entTypeName;
-        var entityVarName = getEntityName(entTypeName);
+//        var entityVarName = getEntityName(entTypeName);
 
         var ent = """#### ${entityTypeName}
 | 字段名  | 数据类型 | 备注  |
@@ -450,10 +450,15 @@ ${props.joinToString("\n")}
                     return@map "| ${it.name} | ${it.type.simpleName} |   |"
                 }
 
-        var entityTypeName = entTypeName + "Entity"
-        var entityVarName = getEntityName(entTypeName)
+//        var entityTypeName = entTypeName + "Entity"
+//        var entityVarName = getEntityName(entTypeName)
+        var dbName = entType.getAnnotation(DbName::class.java)?.name ?: ""
 
-        var ent = """#### 集合 ${MyUtil.getSmallCamelCase(entType.simpleName)}
+        if( dbName.isEmpty()) {
+            dbName = MyUtil.getSmallCamelCase(entType.simpleName)
+        }
+
+        var ent = """#### 集合 ${dbName}
 
 | 字段名  | 数据类型 | 备注  |
 | --- | --- | --- |

@@ -2,7 +2,7 @@ package nbcp.db.es.tool
 
 import nbcp.comm.*
 import nbcp.utils.*
-import nbcp.db.DbEntityGroup
+import nbcp.db.*
 
 import java.io.File
 import java.io.FileWriter
@@ -56,14 +56,20 @@ class generator_mapping {
             println("${groupName}:")
             groupEntities.forEach {
                 count++;
-                println("${count.toString().padStart(2, ' ')} 生成Mapping：${groupName}.${it.simpleName}".ToTab(1))
+                var entType = it;
+                var dbName = entType.getAnnotation(DbName::class.java)?.name ?: ""
+
+                if (dbName.isEmpty()) {
+                    dbName = MyUtil.getSmallCamelCase(entType.simpleName)
+                }
+                println("${count.toString().padStart(2, ' ')} 生成Mapping：${groupName}.${dbName}".ToTab(1))
 
                 var json = genEntity(it)
 
                 var mappings = JsonMap("properties" to json)
 
 
-                var moer_File = FileWriter(path + p + it.simpleName + ".txt", false);
+                var moer_File = FileWriter(path + p + dbName + ".txt", false);
                 moer_File.appendln(mappings.ToJson(false, false, true))
                 moer_File.flush()
             }
@@ -71,13 +77,14 @@ class generator_mapping {
 
         println("")
         println("生成 mapping 完成!")
+        println("---")
         println("创建 mapping:")
         println("https://www.elastic.co/guide/en/elasticsearch/reference/7.6/indices-put-mapping.html")
         println("https://www.elastic.co/guide/en/elasticsearch/reference/7.6/mapping.html")
         println("使用 rest index:")
         println("https://www.elastic.co/guide/en/elasticsearch/reference/7.6/rest-apis.html")
         println("https://www.elastic.co/guide/en/elasticsearch/reference/7.6/indices.html")
-        println()
+        println("---")
         println("创建空的 index: curl -X PUT /{index}")
         println("更新Mapping： curl -X PUT '/{index}/_mapping' -d '{json}' ")
     }

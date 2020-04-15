@@ -6,6 +6,14 @@ import java.lang.annotation.Documented
 import java.lang.annotation.Inherited
 import kotlin.reflect.KClass
 
+
+/**
+ * 指定数据库中表的名字
+ */
+@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class DbName(val name: String)
+
 /**
  *  Mongo实体的组
  */
