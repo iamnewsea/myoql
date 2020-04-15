@@ -17,6 +17,7 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
         }
     }
 
+    var routing = ""
     var entities = mutableListOf<Any>()
 
     /**
@@ -40,6 +41,10 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
         entity.put("createAt", LocalDateTime.now());
 
         this.entities.add(entity)
+    }
+
+    fun withRouting(routeing:String){
+        this.routing = routeing;
     }
 
     /**

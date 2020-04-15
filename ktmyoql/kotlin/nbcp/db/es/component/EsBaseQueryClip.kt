@@ -11,10 +11,15 @@ import java.time.LocalDateTime
 
 open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWhereable {
 
+    var routing = "";
     var search = SearchBodyClip()
 
     fun selectField(column: String) {
         search._source.add(column);
+    }
+
+    fun withRouting(routing:String = ""){
+        this.routing = routing;
     }
 
     companion object {
@@ -22,6 +27,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
             return@lazy LoggerFactory.getLogger(this::class.java)
         }
     }
+
 
     /**
      * 返回该对象的 Md5。

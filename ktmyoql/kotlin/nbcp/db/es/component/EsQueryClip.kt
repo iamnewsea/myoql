@@ -7,9 +7,14 @@ import org.slf4j.LoggerFactory
 
 /**
  * EsQuery
+ * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/search.html
  */
 class EsQueryClip<M : EsBaseEntity<E>, E : IEsDocument>(var moerEntity: M) : EsBaseQueryClip(moerEntity.tableName) {
 
+    fun routing(routing: String = ""): EsQueryClip<M, E> {
+        this.routing = routing;
+        return this;
+    }
 
     fun limit(skip: Long, take: Int): EsQueryClip<M, E> {
         this.search.skip = skip;
@@ -43,14 +48,12 @@ class EsQueryClip<M : EsBaseEntity<E>, E : IEsDocument>(var moerEntity: M) : EsB
         return this
     }
 
-    fun where(whereData: SearchBodyClip): EsQueryClip<M, E> {
-        this.search = whereData
+    fun where(where:WhereData): EsQueryClip<M, E> {
         return this;
     }
 
 
-    fun where(where: (M) -> SearchBodyClip): EsQueryClip<M, E> {
-        this.search = where(this.moerEntity)
+    fun where(where: (M) -> WhereData): EsQueryClip<M, E> {
         return this;
     }
 

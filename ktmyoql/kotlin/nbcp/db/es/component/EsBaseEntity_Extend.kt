@@ -7,7 +7,7 @@ fun <M : EsBaseEntity<T>, T : IEsDocument> M.query(): EsQueryClip<M, T> = EsQuer
 
 
 fun <M : EsBaseEntity<T>, T : IEsDocument> M.queryById(id: String): EsQueryClip<M, T> = this.query()
-        //.where("id" to id);
+        .where("id" match id);
 
 
 fun <M : EsBaseEntity<E>, E : IEsDocument> M.updateById(id: String): EsUpdateClip<M> {

@@ -14,10 +14,8 @@ import java.util.LinkedHashSet
 
 class WhereData : Serializable {
     var expression: String = ""
-        get() = field
-        private set(value) {
-            field = value
-        }
+        private set;
+
     val values: JsonMap = JsonMap()
 
     constructor(expression: String = "", values: JsonMap = JsonMap()) {

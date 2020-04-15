@@ -14,6 +14,7 @@ import java.time.LocalDateTime
 
 /**
  * EsUpdate
+ * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/docs-update-by-query.html
  */
 class EsUpdateClip<M : EsBaseEntity<out IEsDocument>>(var moerEntity: M) : EsBaseUpdateClip(moerEntity.tableName) {
 

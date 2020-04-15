@@ -25,4 +25,9 @@ class EsInsertClip<M : EsBaseEntity<E>, E : IEsDocument>(var moerEntity: M) : Es
         super.addEntity(entity)
         return this;
     }
+
+    fun routing(routing:String = ""):  EsInsertClip<M, E> {
+        this.withRouting(routing)
+        return this;
+    }
 }
