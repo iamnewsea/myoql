@@ -9,7 +9,8 @@ import org.slf4j.LoggerFactory
  * EsQuery
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/search.html
  */
-class EsQueryClip<M : EsBaseEntity<E>, E : IEsDocument>(var moerEntity: M) : EsBaseQueryClip(moerEntity.tableName) {
+class EsQueryClip<M : EsBaseEntity<E>, E : IEsDocument>(var moerEntity: M)
+    : EsBaseQueryClip(moerEntity.tableName) {
 
     fun routing(routing: String = ""): EsQueryClip<M, E> {
         this.routing = routing;
@@ -48,50 +49,50 @@ class EsQueryClip<M : EsBaseEntity<E>, E : IEsDocument>(var moerEntity: M) : EsB
         return this
     }
 
-    fun where(where:WhereData): EsQueryClip<M, E> {
+    fun where(where: WhereData): EsQueryClip<M, E> {
+        this.search.query.putAll(where)
         return this;
     }
 
 
     fun where(where: (M) -> WhereData): EsQueryClip<M, E> {
-        return this;
+        return this.where(where(this.moerEntity));
     }
 
-    fun whereOr(vararg wheres: (M) -> SearchBodyClip): EsQueryClip<M, E> {
-        return whereOr(*wheres.map { it(moerEntity) }.toTypedArray())
-    }
+//    fun whereOr(vararg wheres: (M) -> SearchBodyClip): EsQueryClip<M, E> {
+//        return whereOr(*wheres.map { it(moerEntity) }.toTypedArray())
+//    }
+//
+//    fun whereOr(vararg wheres: SearchBodyClip): EsQueryClip<M, E> {
+//        if (wheres.any() == false) return this;
+//
+//        return this;
+//    }
 
-    fun whereOr(vararg wheres: SearchBodyClip): EsQueryClip<M, E> {
-        if (wheres.any() == false) return this;
-
-        return this;
-    }
-
-    fun whereIf(whereIf: Boolean, whereData: ((M) -> SearchBodyClip)): EsQueryClip<M, E> {
+    fun whereIf(whereIf: Boolean, whereData: ((M) -> WhereData)): EsQueryClip<M, E> {
         if (whereIf == false) return this;
 
 
-        return this;
+        return this.where(whereData)
     }
 
     fun select(vararg columns: EsColumnName): EsQueryClip<M, E> {
-
+        this.search._source.addAll(columns.map { it.toString() })
         return this;
     }
 
 
     fun select(vararg columns: String): EsQueryClip<M, E> {
-
+        this.search._source.addAll(columns)
         return this;
     }
 
     fun select(column: (M) -> EsColumnName): EsQueryClip<M, E> {
-
+        this.search._source.add(column(this.moerEntity).toString())
         return this;
     }
 
     fun unSelect(column: (M) -> EsColumnName): EsQueryClip<M, E> {
-
         return this;
     }
 

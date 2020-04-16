@@ -4,8 +4,11 @@ import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.db
 import nbcp.db.es.*
+import org.apache.http.entity.ContentType
+import org.apache.http.nio.entity.NStringEntity
 import org.elasticsearch.client.Request
 import org.slf4j.LoggerFactory
+import java.lang.RuntimeException
 import java.time.LocalDateTime
 
 open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhereable {
@@ -92,16 +95,22 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
             } else if (it is Map<*, *>) {
                 id = it.get("id").AsString()
             }
+
+            if( id.isNullOrEmpty()){
+                throw RuntimeException("更新实体缺少 id值")
+            }
+
             data.add(JsonMap("update" to JsonMap("_index" to this.collectionName, "_id" to id)))
 
-            data.add(it)
+            data.add(JsonMap("doc" to it, "_source" to true))
         }
 
         var requestBody = "";
         using(JsonStyleEnumScope.DateUtcStyle) {
             requestBody = data.map { it.ToJson() + line_break }.joinToString("")
         }
-        request.setJsonEntity(requestBody)
+
+        request.entity = NStringEntity(requestBody, ContentType.create("application/x-ndjson", utf8))
 
         var responseBody = "";
         var startAt = LocalDateTime.now()

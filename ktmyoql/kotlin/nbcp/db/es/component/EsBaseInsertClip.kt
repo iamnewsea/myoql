@@ -4,6 +4,9 @@ import nbcp.comm.*
 import nbcp.db.*
 import nbcp.db.es.*
 import nbcp.utils.CodeUtil
+import org.apache.http.entity.ContentType
+import org.apache.http.message.BasicHeader
+import org.apache.http.nio.entity.NStringEntity
 import org.bson.types.ObjectId
 import org.elasticsearch.client.Request
 import org.slf4j.LoggerFactory
@@ -105,7 +108,7 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
         using(JsonStyleEnumScope.DateUtcStyle) {
             requestBody = data.map { it.ToJson() + line_break }.joinToString("")
         }
-        request.setJsonEntity(requestBody)
+        request.entity = NStringEntity(requestBody, ContentType.create("application/x-ndjson", utf8))
 
         var responseBody = "";
         var startAt = LocalDateTime.now()

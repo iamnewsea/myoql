@@ -21,10 +21,10 @@ class WhereData : JsonMap {
     constructor(data: List<Pair<String, Any?>>) : super(data) {
     }
 
-    companion object{
-        fun eq(key:String, value:Any?):WhereData{
-            var ret = WhereData("bool" to JsonMap(
-                    "must" to JsonMap()
+    companion object {
+        fun eq(key: String, value: Any?): WhereData {
+            var ret = WhereData("term" to JsonMap(
+                    key to value
             ));
 
             return ret;
