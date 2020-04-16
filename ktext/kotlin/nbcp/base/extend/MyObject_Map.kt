@@ -1,5 +1,7 @@
 package nbcp.comm
 
+import nbcp.utils.JsUtil
+
 
 //顺序会变
 fun <V> LinkedHashMap<String, V>.RenameKey(oldKey: String, newKey: String) {
@@ -10,7 +12,7 @@ fun <V> LinkedHashMap<String, V>.RenameKey(oldKey: String, newKey: String) {
 
     var value = this.get(oldKey)!!;
     this.remove(oldKey);
-    this.put(newKey,value);
+    this.put(newKey, value);
 
 //    var other = LinkedHashMap<String, V>();
 //
@@ -100,3 +102,78 @@ fun <V> Map<String, V>.getIntValue(vararg keys: String): Int {
     return v.AsInt()
 }
 
+//------------------
+
+
+private fun get_array_querys(list: List<Any?>): List<String> {
+    return list.map { value ->
+        if (value == null) return@map arrayOf<String>();
+
+        var type = value::class.java;
+        if (type.IsSimpleType() == false) {
+            if (type.isArray) {
+                return@map get_array_querys((value as Array<*>).toList())
+                        .map { "[]=" + it }
+                        .toTypedArray()
+            } else if (type.IsListType()) {
+                return@map get_array_querys((value as List<*>))
+                        .map { "[]=" + it }
+                        .toTypedArray()
+            } else if (type.IsMapType()) {
+                return@map get_map_querys((value as Map<String, *>))
+                        .map { "[]=" + it }
+                        .toTypedArray()
+            }
+            return@map get_map_querys(value.ConvertJson(JsonMap::class.java))
+                    .map { "[]=" + it }
+                    .toTypedArray()
+        }
+
+        return@map arrayOf(JsUtil.encodeURIComponent(value.toString()))
+    }
+            .Unwind()
+            .filter { it.HasValue }
+}
+
+private fun get_map_querys(map: Map<String, *>): List<String> {
+    return map.map {
+        var key = it.key;
+        var value = it.value;
+        if (value == null) {
+            return@map arrayOf<String>();
+        }
+
+        var type = value::class.java;
+
+        if (type.IsSimpleType() == false) {
+            if (type.isArray) {
+                return@map get_array_querys((value as Array<*>).toList())
+                        .map { key + it }
+                        .toTypedArray()
+            } else if (type.IsListType()) {
+                return@map get_array_querys((value as List<*>))
+                        .map { key + it }
+                        .toTypedArray()
+            } else if (type.IsMapType()) {
+                return@map get_map_querys((value as Map<String, *>))
+                        .map { key + "." + it }
+                        .toTypedArray()
+            }
+            return@map get_map_querys(value.ConvertJson(JsonMap::class.java))
+                    .map { key + "." + it }
+                    .toTypedArray()
+        }
+
+        return@map arrayOf(key + "=" + JsUtil.encodeURIComponent(value.toString()))
+    }
+            .Unwind()
+            .filter { it.HasValue }
+}
+
+
+/**
+ * 返回Url中参数,不带问号, 复杂情况可能会出错。 慎用！
+ */
+fun Map<String, *>.toUrlQuery(): String {
+    return get_map_querys(this).joinToString("&")
+}

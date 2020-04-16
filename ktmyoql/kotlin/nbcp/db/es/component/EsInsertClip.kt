@@ -30,4 +30,9 @@ class EsInsertClip<M : EsBaseEntity<E>, E : IEsDocument>(var moerEntity: M) : Es
         this.withRouting(routing)
         return this;
     }
+
+    fun pipeline(pipeline:String = ""): EsInsertClip<M, E> {
+        this.withPipeLine(pipeline)
+        return this;
+    }
 }

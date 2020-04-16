@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.time.LocalDateTime
 
+/**
+ * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html
+ */
 open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhereable {
     companion object {
         private val logger by lazy {
@@ -18,6 +21,8 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
     }
 
     var routing = ""
+    var pipeline = ""
+    var refresh:EsPutRefreshEnum? = null
     var entities = mutableListOf<Any>()
 
     /**
@@ -47,6 +52,9 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
         this.routing = routeing;
     }
 
+    fun withPipeLine(pipeline:String){
+        this.pipeline = pipeline;
+    }
     /**
      * 批量插入
      * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/docs-bulk.html

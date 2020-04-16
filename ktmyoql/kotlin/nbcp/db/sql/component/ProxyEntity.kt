@@ -38,7 +38,7 @@ fun <M : SqlBaseTable<out T>, T : IBaseDbEntity> M.batchInsert(): SqlInsertClip<
 
 
 fun <M : SqlBaseTable<out T>, T : IBaseDbEntity> M.insertIfNotExists(entity: T, unionKey: ((M) -> SqlColumnNames)): Int {
-    var map = JsonMap.loadFromEntity(entity)
+    var map = entity.ConvertJson(JsonMap::class.java)
 
     var query = this.query();
     var uks = unionKey(this);
@@ -61,7 +61,7 @@ fun <M : SqlBaseTable<out T>, T : IBaseDbEntity> M.insertIfNotExists(entity: T, 
 
 //自动保存.: 先更新, 再插入
 fun <M : SqlBaseTable<out T>, T : IBaseDbEntity> M.save(entity: T, unionKey: ((M) -> SqlColumnNames)): Int {
-    var map = JsonMap.loadFromEntity(entity)
+    var map = entity.ConvertJson(JsonMap::class.java)
 
     var update = this.update();
     var uks = unionKey(this);

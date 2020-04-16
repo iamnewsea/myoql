@@ -18,7 +18,6 @@ open class EsClipBase(var collectionName: String) : Serializable {
     val esTemplate: RestClient by lazy {
         return@lazy SpringUtil.getBean<RestClient>()
     }
-
 }
 
 interface IEsWhereable {

@@ -12,7 +12,7 @@ import java.lang.reflect.Modifier
 /**
  * 递归的返回状态
  */
-enum class RecursionReturnEnum private constructor(val Value: Int) {
+enum class RecursionReturnEnum private constructor(val value: Int) {
     None(0),
     Go(1),
     StopSub(2),

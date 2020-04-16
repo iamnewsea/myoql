@@ -64,6 +64,13 @@ fun Class<*>.IsListType(): Boolean {
 }
 
 /**
+ * 类型是否是 Map
+ */
+fun Class<*>.IsMapType(): Boolean {
+    return Map::class.java.isAssignableFrom(this)
+}
+
+/**
  * 类型是否是字符串：String,MyString
  */
 fun Class<*>.IsStringType(): Boolean {

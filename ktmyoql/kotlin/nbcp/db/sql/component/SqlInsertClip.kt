@@ -59,7 +59,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
     fun add(entity: T): SqlInsertClip<M, T> {
         this.ori_entities.add(entity)
 
-        var ent = JsonMap.loadFromEntity(entity)
+        var ent = entity.ConvertJson(JsonMap::class.java)
 
         //把 布尔值 改为 1,0
         entity::class.java.AllFields

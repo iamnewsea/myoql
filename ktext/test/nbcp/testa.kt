@@ -1,5 +1,6 @@
 package nbcp
 
+import ch.qos.logback.classic.Level
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.comm.*
@@ -15,7 +16,7 @@ import java.util.*
 class testa : TestBase() {
 
     @Test
-    fun abcda() {
+    fun ww() {
         var xml = """
 <xml>
     <return_code> <![CDATA[ SUCCESS ]]></return_code> 
@@ -48,15 +49,14 @@ class testa : TestBase() {
 
     @Test
     fun abcd() {
-        using(arrayOf(JsonStyleEnumScope.Pretty, JsonStyleEnumScope.DateUtcStyle)) {
-            println(abd("a", 33).ToJson())
+        using(arrayOf(LogScope(Level.DEBUG_INT))) {
+            println(JsonMap(
+                    "user" to JsonMap("name" to "b"),
+                    "corp" to JsonMap("name" to "c", "id" to 1)
+            ).toUrlQuery())
+
+            println(JsonMap.loadFromUrl("user.name=b&corp.name=c&corp.id=1").ToJson())
         }
 
-        println(abd("a", 33).ToJson())
-
-
-        var now = LocalDateTime.now()
-        println(now.format(DateTimeFormatter.ofPattern("HH", Locale.ENGLISH)))
-        println(now.format(DateTimeFormatter.ofPattern("HH", Locale.CHINA)))
     }
 }
