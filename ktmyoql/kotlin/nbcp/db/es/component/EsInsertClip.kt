@@ -15,7 +15,8 @@ import java.lang.Exception
 /**
  * EsInsert
  */
-class EsInsertClip<M : EsBaseEntity<E>, E : IEsDocument>(var moerEntity: M) : EsBaseInsertClip(moerEntity.tableName)  {
+class EsInsertClip<M : EsBaseEntity<E>, E : IEsDocument>(var moerEntity: M)
+    : EsBaseInsertClip(moerEntity.tableName)  {
 
     companion object {
         private var logger = LoggerFactory.getLogger(this::class.java.declaringClass)

@@ -15,68 +15,128 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
         }
     }
 
-    var search = SearchBodyClip()
 
+    var routing = ""
+    var pipeline = ""
+    var refresh: EsPutRefreshEnum? = null
+    var entities = mutableListOf<Any>()
 
     /**
-     * 更新条件不能为空。
+     * 批量添加中的添加实体。
      */
-    open fun exec(): Int {
-        if (search.isEmpty()) {
-            throw RuntimeException("更新条件为空，不允许更新")
-            return 0;
-        }
+    fun addEntity(entity: IEsDocument) {
 
-        return execAll();
+        if (entity.id.isEmpty()) {
+            entity.id = CodeUtil.getCode()
+        }
+        entity.createAt = LocalDateTime.now()
+
+        this.entities.add(entity)
     }
 
+    fun addEntity(entity: JsonMap) {
+        if (entity.getStringValue("id").isEmpty()) {
+            entity.put("id", CodeUtil.getCode())
+        }
+
+        entity.put("createAt", LocalDateTime.now());
+
+        this.entities.add(entity)
+    }
+
+    fun withRouting(routeing: String) {
+        this.routing = routeing;
+    }
+
+    fun withPipeLine(pipeline: String) {
+        this.pipeline = pipeline;
+    }
+
+    fun withRefresh(refresh: EsPutRefreshEnum) {
+        this.refresh = refresh;
+    }
 
     /**
-     * 更新条件可以为空。
+     * 批量插入
+     * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/docs-bulk.html
      */
-    protected fun execAll(): Int {
+    fun exec(): Int {
         db.affectRowCount = -1;
-
+        var ret = 0;
 
         var settingResult = db.es.esEvents.onUpdating(this)
         if (settingResult.any { it.second.result == false }) {
             return 0;
         }
 
-        var request = Request("POST", "/${collectionName}/_search")
-        request.setJsonEntity(this.search.toString())
-        var ret = 0;
-        var startAt = LocalDateTime.now()
+        var search = JsonMap();
+        if (this.refresh != null) {
+            search.put("refresh", this.refresh.toString())
+        }
+        if (this.pipeline.HasValue) {
+            search.put("pipeline", this.pipeline)
+        }
+        if (this.routing.HasValue) {
+            search.put("routing", this.routing)
+        }
+
+        var request = Request("POST", "/_bulk" +
+                search.toUrlQuery().IfHasValue { "?" + it }
+        )
+
+        var data = mutableListOf<Any>()
+        this.entities.forEach {
+            var id = "";
+            if (it is IEsDocument) {
+                id = it.id;
+            } else if (it is Map<*, *>) {
+                id = it.get("id").AsString()
+            }
+            data.add(JsonMap("update" to JsonMap("_index" to this.collectionName, "_id" to id)))
+
+            data.add(it)
+        }
+
+        var requestBody = "";
+        using(JsonStyleEnumScope.DateUtcStyle) {
+            requestBody = data.map { it.ToJson() + line_break }.joinToString("")
+        }
+        request.setJsonEntity(requestBody)
+
         var responseBody = "";
+        var startAt = LocalDateTime.now()
         try {
             var response = esTemplate.performRequest(request)
+            if (response.statusLine.statusCode != 200) {
+                return ret;
+            }
 
             db.executeTime = LocalDateTime.now() - startAt
-
-
-            if (response.statusLine.statusCode != 200) {
-                return 0;
-            }
             responseBody = response.entity.content.readBytes().toString(utf8)
-//            var result = responseBody.FromJson<JsonMap>()!!;
 
-            ret = 0
-            db.affectRowCount = ret
+            using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+                settingResult.forEach {
+                    it.first.update(this, it.second)
+                }
+            }
+
+            ret = entities.size;
+            db.affectRowCount = entities.size
+            return db.affectRowCount
         } catch (e: Exception) {
             ret = -1;
             throw e;
         } finally {
             logger.InfoError(ret < 0) {
-                """[index] ${this.collectionName}
-[url] ${request.method} ${request.endpoint} 
-[body] ${search} 
+                """[insert] ${this.collectionName}
+[url] ${request.method} ${request.endpoint}
+${if (logger.debug) "[body] ${requestBody}" else "[enities.size] ${entities.size}"}
 [result] ${if (logger.debug) responseBody else ret}
-[耗时] ${db.executeTime}"""
-            }
+[耗时] ${db.executeTime}
+"""
+            };
         }
-
 
         return ret;
     }
-
 }
