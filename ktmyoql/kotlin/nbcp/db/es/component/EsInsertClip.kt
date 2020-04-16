@@ -35,4 +35,9 @@ class EsInsertClip<M : EsBaseEntity<E>, E : IEsDocument>(var moerEntity: M) : Es
         this.withPipeLine(pipeline)
         return this;
     }
+
+    fun refresh(refresh:EsPutRefreshEnum): EsInsertClip<M, E> {
+        this.withRefresh(refresh)
+        return this;
+    }
 }

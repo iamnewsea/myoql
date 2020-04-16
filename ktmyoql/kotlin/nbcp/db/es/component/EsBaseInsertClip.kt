@@ -22,7 +22,7 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
 
     var routing = ""
     var pipeline = ""
-    var refresh:EsPutRefreshEnum? = null
+    var refresh: EsPutRefreshEnum? = null
     var entities = mutableListOf<Any>()
 
     /**
@@ -48,13 +48,18 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
         this.entities.add(entity)
     }
 
-    fun withRouting(routeing:String){
+    fun withRouting(routeing: String) {
         this.routing = routeing;
     }
 
-    fun withPipeLine(pipeline:String){
+    fun withPipeLine(pipeline: String) {
         this.pipeline = pipeline;
     }
+
+    fun withRefresh(refresh: EsPutRefreshEnum) {
+        this.refresh = refresh;
+    }
+
     /**
      * 批量插入
      * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/docs-bulk.html
@@ -68,7 +73,21 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
             return 0;
         }
 
-        var request = Request("POST", "/_bulk")
+        var search = JsonMap();
+        if (this.refresh != null) {
+            search.put("refresh", this.refresh.toString())
+        }
+        if (this.pipeline.HasValue) {
+            search.put("pipeline", this.pipeline)
+        }
+        if (this.routing.HasValue) {
+            search.put("routing", this.routing)
+        }
+
+        var request = Request("POST", "/_bulk" +
+                search.toUrlQuery().IfHasValue { "?" + it }
+        )
+
         var data = mutableListOf<Any>()
         this.entities.forEach {
             var id = "";

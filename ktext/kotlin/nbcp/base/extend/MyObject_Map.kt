@@ -174,6 +174,6 @@ private fun get_map_querys(map: Map<String, *>): List<String> {
 /**
  * 返回Url中参数,不带问号, 复杂情况可能会出错。 慎用！
  */
-fun Map<String, *>.toUrlQuery(): String {
+fun Map<String, *>.toUrlQuery( ): String {
     return get_map_querys(this).joinToString("&")
 }
