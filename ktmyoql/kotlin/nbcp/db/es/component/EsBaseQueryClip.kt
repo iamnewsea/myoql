@@ -63,7 +63,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
         using(JsonStyleEnumScope.DateUtcStyle) {
             requestBody = this.search.toString()
         }
-        request.options.headers.add(BasicHeader("content-type", "application/x-ndjson"));
+//        request.options.headers.add(BasicHeader("content-type", "application/x-ndjson"));
         request.setJsonEntity(requestBody)
 
         var responseBody = "";
