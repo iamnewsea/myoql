@@ -2,7 +2,9 @@ package nbcp.comm
 
 import ch.qos.logback.classic.Level
 
-
+/**
+ * 提供析构的接口
+ */
 interface IDisposeable {
     fun dispose();
 }

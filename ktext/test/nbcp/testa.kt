@@ -50,12 +50,15 @@ class testa : TestBase() {
     @Test
     fun abcd() {
         using(arrayOf(LogScope(Level.DEBUG_INT))) {
-            println(JsonMap(
-                    "user" to JsonMap("name" to "b"),
-                    "corp" to JsonMap("name" to "c", "id" to 1)
-            ).toUrlQuery())
+             var set = mutableSetOf<String>();
+            set.add("c")
+            set.add("a")
+            set.add("b")
+            set.add("c")
+            set.add("a")
+            set.add("b")
 
-            println(JsonMap.loadFromUrl("user.name=b&corp.name=c&corp.id=1").ToJson())
+            println(set.elementAt(1))
         }
 
     }

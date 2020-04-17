@@ -104,10 +104,15 @@ inline fun <reified R> Stack<*>.getLatestScope(vararg enumValues: R): R? {
             }
         }
     }
+
+
     return null;
 }
 
 
+/**
+ * 按类型获取当前域 ,  互斥枚举类型：枚举有 mutexGroup:String 属性。
+ */
 inline fun <reified R> Stack<*>.getScopeTypes(): Set<R> {
     if (this.size == 0) return setOf()
 
@@ -116,6 +121,29 @@ inline fun <reified R> Stack<*>.getScopeTypes(): Set<R> {
         var item = this[i];
         if (item is R) {
             list.add(item);
+        }
+    }
+
+
+    var retType = R::class.java;
+    if (retType.isEnum) {
+        var mutexGroupField = retType.getDeclaredField("mutexGroup")
+        if (mutexGroupField != null && mutexGroupField.type.IsStringType()) {
+            var groups = mutableSetOf<String>()
+            var removeItems = mutableSetOf<R>()
+            for (i in list.indices.reversed()) {
+                var item = list.elementAt(i);
+                var group = mutexGroupField.get(item).toString();
+                if (groups.contains(group)) {
+                    removeItems.add(item);
+                } else {
+                    groups.add(group)
+                }
+            }
+
+            for (item in removeItems) {
+                list.remove(item)
+            }
         }
     }
     return list;

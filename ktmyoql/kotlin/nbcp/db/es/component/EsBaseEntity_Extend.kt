@@ -35,11 +35,11 @@ fun <M : EsBaseEntity<E>, E : IEsDocument> M.update(): EsUpdateClip<M,E> {
 
 fun <M : EsBaseEntity<E>, E : IEsDocument> M.delete(): EsDeleteClip<M> = EsDeleteClip(this)
 
-fun <M : EsBaseEntity<E>, E : IEsDocument> M.deleteById(id: String): EsDeleteClip<M> {
-    var ret = EsDeleteClip(this);
-    ret.where("id" to id)
-    return ret;
-}
+//fun <M : EsBaseEntity<E>, E : IEsDocument> M.deleteById(id: String): EsDeleteClip<M> {
+//    var ret = EsDeleteClip(this);
+//    ret.where("id" to id)
+//    return ret;
+//}
 
 
 fun <M : EsBaseEntity<E>, E : IEsDocument> M.aggregate(): EsAggregateClip<M, E> {

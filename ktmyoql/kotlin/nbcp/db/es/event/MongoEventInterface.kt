@@ -22,7 +22,7 @@ interface IEsEntityUpdate {
  * 实体 Delete 接口，标记 DbEntityDelete 注解的类使用。
  */
 interface IEsEntityDelete {
-    fun beforeDelete(delete: EsDeleteClip<*>): DbEntityEventResult
+    fun beforeDelete(delete: EsBaseDeleteClip): DbEntityEventResult
 
-    fun delete(delete: EsDeleteClip<*>, eventData: DbEntityEventResult)
+    fun delete(delete: EsBaseDeleteClip, eventData: DbEntityEventResult)
 }

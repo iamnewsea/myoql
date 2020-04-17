@@ -28,21 +28,21 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
      * 批量添加中的添加实体。
      */
     fun addEntity(entity: IEsDocument) {
-
         if (entity.id.isEmpty()) {
-            entity.id = CodeUtil.getCode()
+            throw RuntimeException("批量更新时需要指定Id")
         }
-        entity.createAt = LocalDateTime.now()
+
+        entity.updateAt = LocalDateTime.now()
 
         this.entities.add(entity)
     }
 
     fun addEntity(entity: JsonMap) {
         if (entity.getStringValue("id").isEmpty()) {
-            entity.put("id", CodeUtil.getCode())
+            throw RuntimeException("批量更新时需要指定Id")
         }
 
-        entity.put("createAt", LocalDateTime.now());
+        entity.put("updateAt", LocalDateTime.now());
 
         this.entities.add(entity)
     }
@@ -96,7 +96,7 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
                 id = it.get("id").AsString()
             }
 
-            if( id.isNullOrEmpty()){
+            if (id.isNullOrEmpty()) {
                 throw RuntimeException("更新实体缺少 id值")
             }
 
@@ -106,7 +106,7 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
         }
 
         var requestBody = "";
-        using(JsonStyleEnumScope.DateUtcStyle) {
+        using(arrayOf(JsonStyleEnumScope.DateUtcStyle,JsonStyleEnumScope.Compress)) {
             requestBody = data.map { it.ToJson() + line_break }.joinToString("")
         }
 

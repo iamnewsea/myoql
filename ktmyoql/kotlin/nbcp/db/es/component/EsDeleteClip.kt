@@ -15,70 +15,29 @@ import java.time.LocalDateTime
 /**
  * EsDelete
  */
-class EsDeleteClip<M : EsBaseEntity<out IEsDocument>>(var eserEntity: M) : EsClipBase(eserEntity.tableName), IEsWhereable {
-    val whereData = mutableListOf<Any>()
-
+class EsDeleteClip<M : EsBaseEntity<out IEsDocument>>(var eserEntity: M) : EsBaseDeleteClip(eserEntity.tableName), IEsWhereable {
     companion object {
         private var logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    fun where(whereData: Any): EsDeleteClip<M> {
-        this.whereData.add(whereData);
+
+    fun add(id:String): EsDeleteClip<M> {
+        super.addId(id)
         return this;
     }
 
-    fun where(where: (M) -> Any): EsDeleteClip<M> {
-        this.whereData.add(where(eserEntity));
+    fun routing(routing:String = ""):  EsDeleteClip<M> {
+        this.withRouting(routing)
         return this;
     }
 
-    fun whereOr(vararg wheres: (M) -> Any): EsDeleteClip<M> {
-        return whereOr(*wheres.map { it(eserEntity) }.toTypedArray())
-    }
-
-    fun whereOr(vararg wheres: Any): EsDeleteClip<M> {
-        if (wheres.any() == false) return this;
-
+    fun pipeline(pipeline:String = ""): EsDeleteClip<M> {
+        this.withPipeLine(pipeline)
         return this;
     }
 
-    fun exec(): Int {
-        db.affectRowCount = -1;
-        var criteria = ""
-
-        var settingResult = db.es.esEvents.onDeleting(this)
-        if (settingResult.any { it.second.result == false }) {
-            return 0;
-        }
-
-        var ret = 0;
-        var startAt = LocalDateTime.now();
-        try {
-//            var result = esTemplate.remove(
-//                    Query.query(criteria),
-//                    collectionName);
-//            db.executeTime = LocalDateTime.now() - startAt
-//
-//            ret = result.deletedCount.toInt()
-//            db.affectRowCount = ret;
-//
-//            if (ret > 0) {
-//                using(OrmLogScope.IgnoreAffectRow) {
-//                    using(OrmLogScope.IgnoreExecuteTime) {
-//                        settingResult.forEach {
-//                            it.first.delete(this, it.second)
-//                        }
-//                    }
-//                }
-//            }
-        } catch (e: Exception) {
-            ret = -1;
-            throw e;
-        } finally {
-            logger.InfoError(ret < 0) { "delete:[" + this.collectionName + "] " + criteria   + ",result:${ret}" };
-        }
-
-
-        return ret;
+    fun refresh(refresh:EsPutRefreshEnum): EsDeleteClip<M> {
+        this.withRefresh(refresh)
+        return this;
     }
 }

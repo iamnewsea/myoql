@@ -128,7 +128,7 @@ class EsEntityEvent : BeanPostProcessor {
         return list.toTypedArray()
     }
 
-    fun onDeleting(delete: EsDeleteClip<*>): Array<Pair<IEsEntityDelete, DbEntityEventResult>> {
+    fun onDeleting(delete: EsBaseDeleteClip): Array<Pair<IEsEntityDelete, DbEntityEventResult>> {
 
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IEsEntityDelete, DbEntityEventResult>>()
