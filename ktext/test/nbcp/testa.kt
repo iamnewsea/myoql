@@ -48,9 +48,20 @@ class testa : TestBase() {
     }
 
     @Test
+    fun abee() {
+        using(JsonStyleEnumScope.Pretty) {
+            using(JsonStyleEnumScope.Compress) {
+                using(JsonStyleEnumScope.Pretty) {
+                    println(scopes.getScopeTypes<JsonStyleEnumScope>().ToJson())
+                }
+            }
+        }
+    }
+
+    @Test
     fun abcd() {
         using(arrayOf(LogScope(Level.DEBUG_INT))) {
-             var set = mutableSetOf<String>();
+            var set = mutableSetOf<String>();
             set.add("c")
             set.add("a")
             set.add("b")

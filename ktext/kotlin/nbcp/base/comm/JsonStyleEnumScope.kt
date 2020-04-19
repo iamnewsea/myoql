@@ -4,7 +4,7 @@ package nbcp.comm
 /**
  * 默认：FieldStyle，IgnoreNull，Compress，DateStandardStyle
  */
-enum class JsonStyleEnumScope private constructor(mutexGroup: String) {
+enum class JsonStyleEnumScope private constructor(val mutexGroup: String) {
     GetSetStyle("item"),
     FieldStyle("item"),
     WithNull("null"),

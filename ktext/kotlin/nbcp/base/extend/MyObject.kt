@@ -127,11 +127,11 @@ inline fun <reified R> Stack<*>.getScopeTypes(): Set<R> {
 
     var retType = R::class.java;
     if (retType.isEnum) {
-        var mutexGroupField = retType.getDeclaredField("mutexGroup")
-        if (mutexGroupField != null && mutexGroupField.type.IsStringType()) {
+        var mutexGroupField = retType.GetEnumStringField()
+        if (mutexGroupField != null && mutexGroupField.name == "mutexGroup") {
             var groups = mutableSetOf<String>()
             var removeItems = mutableSetOf<R>()
-            for (i in list.indices.reversed()) {
+            for (i in list.indices) {
                 var item = list.elementAt(i);
                 var group = mutexGroupField.get(item).toString();
                 if (groups.contains(group)) {
@@ -141,9 +141,7 @@ inline fun <reified R> Stack<*>.getScopeTypes(): Set<R> {
                 }
             }
 
-            for (item in removeItems) {
-                list.remove(item)
-            }
+            list.removeAll(removeItems);
         }
     }
     return list;

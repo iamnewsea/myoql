@@ -116,13 +116,15 @@ fun <T> Class<T>.GetEnumNumberField(): Field? {
     if (this.isEnum == false) return null
 
 
-    var ret = this.declaredFields.filter {
-        it.modifiers and Modifier.PRIVATE > 0 &&
+    var ret_fields = this.declaredFields.filter {
+        (it.modifiers and Modifier.PRIVATE) > 0 &&
                 (it.modifiers and Modifier.STATIC == 0) &&
                 it.type.IsNumberType()
     }
-    if (ret.size == 1) {
-        return ret.firstOrNull();
+    if (ret_fields.size == 1) {
+        var ret = ret_fields.first();
+        ret.isAccessible = true;
+        return ret;
     }
     return null;
 }
@@ -134,13 +136,15 @@ fun <T> Class<T>.GetEnumStringField(): Field? {
     if (this.isEnum == false) return null
 
 
-    var ret = this.declaredFields.filter {
-        it.modifiers and Modifier.PRIVATE == Modifier.PRIVATE &&
+    var ret_fields = this.declaredFields.filter {
+        (it.modifiers and Modifier.PRIVATE) > 0 &&
                 it.modifiers and Modifier.STATIC == 0 &&
                 it.type.IsStringType()
     }
-    if (ret.size == 1) {
-        return ret.firstOrNull();
+    if (ret_fields.size == 1) {
+        var ret = ret_fields.first();
+        ret.isAccessible = true;
+        return ret;
     }
     return null;
 }
