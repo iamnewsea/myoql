@@ -43,45 +43,48 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
 
     var total: Int = -1;
 
-    /**
-     * 核心功能，查询列表，原始数据对象是 Document
-     */
-    fun <R> toList(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): MutableList<R> {
+    private fun getRestResult(url: String, requestBody: String): String {
         db.affectRowCount = 0;
-        var isString = clazz.IsStringType();
 
-        var search = JsonMap();
-        if (this.routing.HasValue) {
-            search.put("routing", this.routing)
-        }
-
-
-        var url = "/${collectionName}/_search" + search.toUrlQuery().IfHasValue { "?" + it }
         var request = Request("POST", url);
-
-        var requestBody = ""
-        using(arrayOf(JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.Compress)) {
-            requestBody = this.search.toString()
-        }
-//        request.options.headers.add(BasicHeader("content-type", "application/x-ndjson"));
         request.setJsonEntity(requestBody)
 
-        var responseBody = "";
-        var error = false;
         var startAt = LocalDateTime.now();
-        var list: List<Map<String, Any>> = listOf()
-
-        var ret = mutableListOf<R>();
         try {
             var response = esTemplate.performRequest(request)
             db.executeTime = LocalDateTime.now() - startAt
 
             if (response.statusLine.statusCode != 200) {
-                return ret;
+                return "";
             }
-            responseBody = response.entity.content.readBytes().toString(utf8)
+            return response.entity.content.readBytes().toString(utf8)
 
-            var lastKey = this.search._source.lastOrNull() ?: ""
+        } catch (e: Exception) {
+            throw e;
+        }
+    }
+
+    /**
+     * 核心功能，查询列表，原始数据对象是 Document
+     */
+    fun <R> toList(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): MutableList<R> {
+        var isString = clazz.IsStringType();
+
+        var error = false;
+        var list: List<Map<String, Any>> = listOf()
+
+        var ret = mutableListOf<R>();
+        var responseBody = "";
+        var url = getUrl()
+
+        var requestBody = ""
+        using(arrayOf(JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.Compress)) {
+            requestBody = this.search.toString()
+        }
+
+        try {
+            responseBody = getRestResult(url, requestBody)
+
             var result = responseBody.FromJson<Map<String, Any>>()!!;
 
             var hits = result.getTypeValue<Map<String, *>>("hits");
@@ -101,6 +104,8 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
 
 
             db.affectRowCount = list.size
+
+            var lastKey = this.search._source.lastOrNull() ?: ""
 
             list.forEach {
                 if (isString) {
@@ -158,5 +163,70 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
 
     fun toMapListResult(): ListResult<JsonMap> {
         return toListResult(JsonMap::class.java);
+    }
+
+    /**
+     * 获取 aggregations 部分
+     */
+    fun getAggregationResult(): Map<String, *> {
+        var error = false;
+        var ret = JsonMap()
+        var responseBody = "";
+        var url = getUrl()
+
+        var requestBody = ""
+        using(arrayOf(JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.Compress)) {
+            requestBody = this.search.toString()
+        }
+
+        try {
+            responseBody = getRestResult(url, requestBody)
+
+            var result = responseBody.FromJson<Map<String, Any>>()!!;
+
+            var hits = result.getTypeValue<Map<String, *>>("hits");
+            if (hits == null) {
+                return ret;
+            }
+
+            this.total = hits.getIntValue("total", "value");
+            if (this.total <= 0) {
+                return ret;
+            }
+
+            return result.getTypeValue<Map<String, *>>("aggregations") ?: JsonMap()
+        } catch (e: Exception) {
+            error = true;
+            throw e;
+        } finally {
+            fun getMsgs(): String {
+                var msgs = mutableListOf<String>()
+                msgs.add("[index] " + this.collectionName);
+                msgs.add("[url] " + url);
+                msgs.add("[search] " + requestBody)
+
+
+                msgs.add("[result] ${responseBody}")
+
+
+                msgs.add("[耗时] ${db.executeTime}")
+                return msgs.joinToString(line_break);
+            }
+
+            logger.InfoError(error) { getMsgs() }
+        }
+
+        return ret
+    }
+
+    private fun getUrl(): String {
+        var search = JsonMap();
+        if (this.routing.HasValue) {
+            search.put("routing", this.routing)
+        }
+
+
+        var url = "/${collectionName}/_search" + search.toUrlQuery().IfHasValue { "?" + it }
+        return url
     }
 }
