@@ -60,7 +60,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
         var request = Request("POST", url);
 
         var requestBody = ""
-        using(arrayOf(JsonStyleEnumScope.DateUtcStyle,JsonStyleEnumScope.Compress)) {
+        using(arrayOf(JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.Compress)) {
             requestBody = this.search.toString()
         }
 //        request.options.headers.add(BasicHeader("content-type", "application/x-ndjson"));
@@ -84,14 +84,21 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
             var lastKey = this.search._source.lastOrNull() ?: ""
             var result = responseBody.FromJson<Map<String, Any>>()!!;
 
-            this.total = result.getIntValue("_shards", "total")
+            var hits = result.getTypeValue<Map<String, *>>("hits");
+            if (hits == null) {
+                return ret;
+            }
+
+            this.total = hits.getIntValue("total", "value");
             if (this.total <= 0) {
                 return ret;
             }
 
-            var hits = result.get("hits") as Map<String, Any>
-            list = (hits.get("hits") as List<*>)
-                    .map { (it as Map<String, Any>).get("_source") as Map<String, Any> };
+            list = (hits.getTypeValue<List<*>>("hits") ?: listOf<Any>())
+                    .map { (it as Map<String, *>).getTypeValue<Map<String, Any>>("_source") }
+                    .filter { it != null }
+                    .map { it!! }
+
 
             db.affectRowCount = list.size
 

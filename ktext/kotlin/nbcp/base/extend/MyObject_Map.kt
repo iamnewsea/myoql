@@ -64,12 +64,18 @@ fun <V> MutableMap<String, V>.onlyHoldKeys(keys: Set<String>) {
     }
 }
 
+inline fun <reified T> Map<String, *>.getTypeValue(vararg keys: String): T? {
+    var ret = this.getPathValue(*keys);
+    if (ret === null) return null;
+    if (ret is T) return ret;
+    return null;
+}
 
 /**
  * 通过 path 获取 value,每级返回的值必须是 Map<String,V> 否则返回 null
  * @param key:
  */
-fun <V> Map<String, V>.getPathValue(vararg keys: String): Any? {
+fun Map<String, *>.getPathValue(vararg keys: String): Any? {
     if (keys.any() == false) return null;
     var key = keys.first();
     var v = this.get(key)
@@ -79,12 +85,12 @@ fun <V> Map<String, V>.getPathValue(vararg keys: String): Any? {
     if (left_keys.any() == false) return v;
 
     if (v is Map<*, *>) {
-        return (v as Map<String, V>).getPathValue(*left_keys.toTypedArray())
+        return (v as Map<String, *>).getPathValue(*left_keys.toTypedArray())
     }
     return v.toString()
 }
 
-fun <V> Map<String, V>.getStringValue(vararg keys: String): String {
+fun Map<String, *>.getStringValue(vararg keys: String): String {
     var v = this.getPathValue(*keys)
     if (v == null) return "";
     var v_type = v::class.java;
@@ -96,7 +102,7 @@ fun <V> Map<String, V>.getStringValue(vararg keys: String): String {
     return v.toString()
 }
 
-fun <V> Map<String, V>.getIntValue(vararg keys: String): Int {
+fun Map<String, *>.getIntValue(vararg keys: String): Int {
     var v = getPathValue(*keys)
     if (v == null) return 0;
     return v.AsInt()
@@ -174,6 +180,6 @@ private fun get_map_querys(map: Map<String, *>): List<String> {
 /**
  * 返回Url中参数,不带问号, 复杂情况可能会出错。 慎用！
  */
-fun Map<String, *>.toUrlQuery( ): String {
+fun Map<String, *>.toUrlQuery(): String {
     return get_map_querys(this).joinToString("&")
 }
