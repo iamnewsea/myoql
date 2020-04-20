@@ -166,6 +166,53 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
     }
 
     /**
+     * 获取总条数
+     * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/search-count.html
+     */
+    fun count(): Int {
+        var error = false;
+        var count = 0;
+        var responseBody = "";
+        var url = getUrl()
+
+        var requestBody = ""
+        using(arrayOf(JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.Compress)) {
+            requestBody = this.search.toString()
+        }
+
+        try {
+            responseBody = getRestResult(url, requestBody)
+
+            var result = responseBody.FromJson<Map<String, Any>>()!!;
+
+            count = result.getIntValue("count")
+        } catch (e: Exception) {
+            error = true;
+            throw e;
+        } finally {
+            fun getMsgs(): String {
+                var msgs = mutableListOf<String>()
+                msgs.add("[index] " + this.collectionName);
+                msgs.add("[url] " + url);
+                msgs.add("[search] " + requestBody)
+
+                if (logger.debug) {
+                    msgs.add("[result] ${responseBody}")
+                } else {
+                    msgs.add("[count] " + count)
+                }
+
+                msgs.add("[耗时] ${db.executeTime}")
+                return msgs.joinToString(line_break);
+            }
+
+            logger.InfoError(error) { getMsgs() }
+        }
+
+        return count
+    }
+
+    /**
      * 获取 aggregations 部分
      */
     fun getAggregationResult(): Map<String, *> {
