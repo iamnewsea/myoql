@@ -17,3 +17,24 @@
 </dependency>
 
 ```
+
+
+## 通过Json快速生成 Es 实体
+```js
+var p = {};
+
+Object.keys(p).map(it=>{ 
+var ret = [];
+var value = p[it];
+if( value.Type == "string") value = '""';
+else if ( value.Type == "array") {
+    ret.push('@Define("""{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}""")');
+    value = 'arrayOf<String>()';
+}
+
+ret.push( "var " + it + "=" + value) ;
+return ret.join("\n");
+
+}).join("\n")
+```
+
