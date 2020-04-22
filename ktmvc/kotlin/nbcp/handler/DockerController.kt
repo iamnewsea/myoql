@@ -6,6 +6,7 @@ import nbcp.db.IdUrl
 import nbcp.web.setDownloadFileName
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.DependsOn
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
@@ -19,6 +20,8 @@ import javax.servlet.http.HttpServletResponse
  * 三个固定参数： token,container,work_path,bash是可选
  */
 @RestController
+@OpenAction
+@DependsOn("server.dev")
 class DockerController {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

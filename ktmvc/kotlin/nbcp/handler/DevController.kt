@@ -8,6 +8,7 @@ import nbcp.comm.*
 import nbcp.db.db
 import nbcp.db.mongo.MongoBaseEntity
 import nbcp.db.mongo.MongoEntityEvent
+import org.springframework.context.annotation.DependsOn
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaType
 
@@ -17,6 +18,7 @@ import kotlin.reflect.jvm.javaType
  */
 @OpenAction
 @RestController
+@DependsOn("server.dev")
 @JsonpMapping("/dev/mongo")
 class DevController {
     companion object {

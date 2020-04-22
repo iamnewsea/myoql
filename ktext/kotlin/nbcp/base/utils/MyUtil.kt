@@ -55,30 +55,6 @@ object MyUtil {
         return ret.filter { it.HasValue };
     }
 
-    /**
-     * 流式批量读取，适用于分批遍历数据库的场景。
-     * MyUtil.batchStream<String>({->
-     *     //返回空集合，停止。
-     *     return listOf("abc");
-     * }){ item, ->
-     *   //返回false 停止
-     *   return@batchStream true;
-     * }
-     */
-    fun <T> batchStreamRead(producer: (() -> List<T>), consumer: ((T, Int) -> Boolean)): Int {
-        var count = -1;
-        while (true) {
-            count++;
-            var list = producer();
-            if (list.isEmpty()) break;
-
-            if (list.all { consumer(it, count) } == false) {
-                break;
-            }
-        }
-        return count;
-    }
-
 
     val mimeLists = StringMap(
             "css" to "text/css",
