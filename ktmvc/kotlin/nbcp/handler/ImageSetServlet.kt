@@ -64,8 +64,8 @@ open class ImageSetServlet : HttpServlet() {
         }
 
 
-        var contentType = MyUtil.mimeLists.filter { it.key == ret.data!!.toLowerCase() }.values.firstOrNull()
-        if (contentType != null) {
+        var contentType = MyUtil.getMimeType(ret.data!!)
+        if (contentType.HasValue) {
             response.contentType = contentType
         }
         response.outputStream.write(ret.ToJson().toByteArray(utf8));

@@ -52,7 +52,7 @@ class DockerController {
 
 
     @GetMapping("/docker/file")
-    fun file(@Require container: String, @Require file: String, response: HttpServletResponse) {
+    fun file(@Require container: String, @Require file: String, view: Boolean?, response: HttpServletResponse) {
         var targetPathName = uploadPath + LocalDate.now().format("YYYY-MM-dd");
         var targetPath = File(targetPathName);
         var fileName = file.split("/").last();
@@ -63,7 +63,14 @@ class DockerController {
 
         var target = targetPathName + "/" + CodeUtil.getCode() + "-" + fileName;
         execCmd("docker", "cp", "${container}:${file}", target);
-        response.setDownloadFileName(fileName)
+
+        var view = view ?: false;
+        if (view) {
+            var fileInfo = FileExtentionInfo(fileName);
+            response.contentType = MyUtil.getMimeType(fileInfo.extName).AsString("text/plain")
+        } else {
+            response.setDownloadFileName(fileName)
+        }
         response.outputStream.write(File(target).readBytes())
     }
 

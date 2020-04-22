@@ -150,8 +150,8 @@ open class MyAllFilter : Filter, InitializingBean {
                     if (file != null) {
                         response.status = 200;
 
-                        var contentType = MyUtil.mimeLists.filter { it.key == extention.extName.toLowerCase() }.values.firstOrNull()
-                        if (contentType != null) {
+                        var contentType = MyUtil.getMimeType(extention.extName)
+                        if (contentType.HasValue) {
                             response.contentType = contentType
                         }
 

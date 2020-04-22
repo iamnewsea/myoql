@@ -37,27 +37,32 @@ object MyUtil {
     /**
      * 按大写字母拆分
      */
-    fun splitWithBigChar(value:String):List<String>{
+    fun splitWithBigChar(value: String): List<String> {
         var ret = mutableListOf<String>()
 
         var prevIndex = 0;
-        for(index in 1 until value.length){
+        for (index in 1 until value.length) {
             var item = value[index];
 
-            if( item.isUpperCase()){
-                ret.add(value.Slice(prevIndex,index))
+            if (item.isUpperCase()) {
+                ret.add(value.Slice(prevIndex, index))
                 prevIndex = index;
             }
         }
 
-        ret.add( value.Slice(prevIndex));
+        ret.add(value.Slice(prevIndex));
 
         return ret.filter { it.HasValue };
     }
 
 
-    val mimeLists = StringMap(
+    /**
+     * https://www.w3school.com.cn/media/media_mimeref.asp
+     */
+    private val mimeLists = StringMap(
+            "" to "application/octet-stream",
             "css" to "text/css",
+            "htm" to "text/html",
             "html" to "text/html",
             "js" to "application/javascript",
             "xml" to "text/xml",
@@ -65,22 +70,36 @@ object MyUtil {
             "jpg" to "image/jpeg",
             "jpeg" to "image/jpeg",
             "png" to "image/jpeg",
+            "tiff" to "image/tiff",
             "json" to "application/json",
             "txt" to "text/plain",
+            "mp3" to "audio/mpeg",
+            "avi" to "video/x-msvideo",
             "mp4" to "video/mpeg4",
             "doc" to "application/msword",
             "docx" to "application/msword",
             "pdf" to "application/pdf",
             "xls" to "application/vnd.ms-excel",
             "xlsx" to "application/vnd.ms-excel",
-            "ppt" to "application/vnd.ms-powerpoint"
+            "ppt" to "application/vnd.ms-powerpoint",
+            "exe" to "application/octet-stream",
+            "zip" to "application/zip",
+            "m3u" to "audio/x-mpegurl",
+            "svg" to "image/svg+xml",
+            "h" to "text/plain",
+            "c" to "text/plain",
+            "dll" to "application/x-msdownload"
     )
+
+    fun getMimeType(extName: String): String {
+        return mimeLists.getStringValue(extName.toLowerCase())
+    }
 
 
     /**
      * 最好传前8个字节，判断文件类型。
      */
-    fun getFileType(byteArray8: ByteArray): String {
+    fun getFileTypeWithBom(byteArray8: ByteArray): String {
         //https://blog.csdn.net/hch15112345824/article/details/86640092
         //https://blog.csdn.net/gagapencil/article/details/40392363
 
