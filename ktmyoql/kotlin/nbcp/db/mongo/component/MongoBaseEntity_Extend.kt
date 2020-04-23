@@ -29,11 +29,11 @@ fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.updateById(id: String): Mongo
 /**
  * 按实体单条更新。 默认使用Id更新。
  */
-fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.updateWithEntity(entity:E): MongoSetEntityUpdateClip<M> {
-    return MongoSetEntityUpdateClip(this,entity);
+fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.updateWithEntity(entity: E): MongoSetEntityUpdateClip<M> {
+    return MongoSetEntityUpdateClip(this, entity);
 }
 
-fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.batchInsert(): MongoInsertClip<M,E> {
+fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.batchInsert(): MongoInsertClip<M, E> {
     return MongoInsertClip(this);
 }
 
@@ -63,3 +63,13 @@ fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.aggregate(): MongoAggregateCl
 }
 
 
+/**
+ * 如果存在，就Update，否则 Insert
+ */
+fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.save(entity: E, unionKey: ((M) -> MongoColumnName)): Int {
+    var ret = this.updateWithEntity(entity).whereColumn(unionKey).exec()
+    if (ret > 0) return ret;
+    this.doInsert(entity);
+    ret = db.affectRowCount;
+    return ret;
+}

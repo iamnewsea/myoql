@@ -59,7 +59,9 @@ fun <M : SqlBaseTable<out T>, T : IBaseDbEntity> M.insertIfNotExists(entity: T, 
 }
 
 
-//自动保存.: 先更新, 再插入
+/**
+ * 自动保存.: 先更新, 再插入
+ */
 fun <M : SqlBaseTable<out T>, T : IBaseDbEntity> M.save(entity: T, unionKey: ((M) -> SqlColumnNames)): Int {
     var map = entity.ConvertJson(JsonMap::class.java)
 
