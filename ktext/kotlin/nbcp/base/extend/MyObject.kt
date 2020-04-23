@@ -650,6 +650,9 @@ val Logger.debug: Boolean
         return (debug_value ?: false) || this.isDebugEnabled
     }
 
+/**
+ * inline 内联方式可以拿到调用栈信息
+ */
 inline fun Logger.InfoError(error: Boolean, msgFunc: (() -> String)) {
     if (error) {
         this.error(msgFunc())

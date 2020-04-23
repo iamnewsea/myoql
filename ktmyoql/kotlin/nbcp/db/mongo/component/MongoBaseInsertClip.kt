@@ -1,8 +1,10 @@
 package nbcp.db.mongo
 
+import com.mongodb.BasicDBObject
 import nbcp.comm.*
 import nbcp.db.db
 import nbcp.db.mongo.*
+import org.bson.Document
 import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
 import java.lang.Exception
@@ -19,6 +21,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
 
     /**
      * 批量添加中的添加实体。
+     * 支持两种类型：IMongoDocument,Map。  Document,DbObject 算是Map
      */
     fun addEntity(entity: Any) {
         if (entity is IMongoDocument) {
@@ -26,8 +29,22 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
                 entity.id = ObjectId().toString()
             }
             entity.createAt = LocalDateTime.now()
+            this.entities.add(entity);
+            return;
         }
-        this.entities.add(entity)
+
+
+        if (entity is MutableMap<*, *>) {
+            var map = entity as MutableMap<String, Any?>
+            if (map.get("id").AsString().isNullOrEmpty()) {
+                map.set("id", ObjectId().toString())
+            }
+            map.set("createAt", LocalDateTime.now())
+
+            this.entities.add(map)
+
+            return;
+        }
     }
 
     fun exec(): Int {
@@ -41,7 +58,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
 
         var startAt = LocalDateTime.now()
         try {
-            mongoTemplate.insertAll(entities)
+            mongoTemplate.insert(entities, this.collectionName)
             db.executeTime = LocalDateTime.now() - startAt
 
             using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
@@ -59,7 +76,15 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
         } finally {
             logger.InfoError(ret < 0) {
                 """[insert] ${this.collectionName}
-${if (logger.debug) "[entities] ${entities.ToJson()}" else "[enities.size] ${entities.size}"}
+${if (logger.debug) "[entities] ${entities.ToJson()}" else "[enities.ids] ${entities.map {
+                    if (it is IMongoDocument) {
+                        return@map it.id
+                    } else if (it is Map<*, *>) {
+                        return@map it.get("id").AsString()
+                    }
+                    return@map ""
+                }.joinToString(",")
+                }"}
 [result] ${ret}
 [耗时] ${db.executeTime}
 """

@@ -57,7 +57,7 @@ object db_mongo {
 
 
         var dbFactory = SimpleMongoClientDbFactory(uri);
-        val converter = MappingMongoConverter(DefaultDbRefResolver(dbFactory), MongoMappingContext())
+        val converter = MappingMongoConverter(DefaultDbRefResolver(dbFactory), SpringUtil.getBean<MongoMappingContext>())
         converter.setTypeMapper(DefaultMongoTypeMapper(null));
         (converter.conversionService as GenericConversionService).addConverter(Date2LocalDateTimeConverter())
 

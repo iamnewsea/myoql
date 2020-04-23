@@ -63,13 +63,13 @@ fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.aggregate(): MongoAggregateCl
 }
 
 
-/**
- * 如果存在，就Update，否则 Insert
- */
-fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.save(entity: E, unionKey: ((M) -> MongoColumnName)): Int {
-    var ret = this.updateWithEntity(entity).whereColumn(unionKey).exec()
-    if (ret > 0) return ret;
-    this.doInsert(entity);
-    ret = db.affectRowCount;
-    return ret;
-}
+///**
+// * 如果存在，就Update，否则 Insert
+// */
+//fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.save(entity: E, unionKey: ((M) -> MongoColumnName)): Int {
+//    var ret = this.updateWithEntity(entity).whereColumn(unionKey).exec()
+//    if (ret > 0) return ret;
+//    this.doInsert(entity);
+//    ret = db.affectRowCount;
+//    return ret;
+//}

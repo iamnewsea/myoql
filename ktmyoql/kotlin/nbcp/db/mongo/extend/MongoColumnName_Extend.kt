@@ -4,10 +4,6 @@ import nbcp.comm.*
 import org.bson.BasicBSONObject
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
-import org.springframework.data.mongodb.core.query.Query
-import nbcp.db.IdName
-import nbcp.comm.*
-import nbcp.db.mongo.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.regex.Pattern
@@ -31,61 +27,60 @@ import java.util.regex.Pattern
 private fun proc_mongo_match(key: MongoColumnName, value: Any?): Pair<String, Any?> {
     var key = key
     var keyString = key.toString();
-    var isId = false;
+    var keyIsId = false;
     if (keyString == "id") {
         key = MongoColumnName("_id")
-        isId = true;
+        keyIsId = true;
     } else if (keyString == "_id") {
-        isId = true;
+        keyIsId = true;
     } else if (keyString.endsWith(".id")) {
         key = MongoColumnName(keyString.slice(0..keyString.length - 4) + "._id")
-        isId = true;
+        keyIsId = true;
     } else if (keyString.endsWith("._id")) {
-        isId = true;
+        keyIsId = true;
+    }
+
+    if (value == null) {
+        return Pair<String, Any?>(key.toString(), value);
     }
 
     var value = value;
-    if (value != null) {
-        var type = value::class.java
-        if (type.isEnum) {
-            value = value.toString();
-        } else if (type == LocalDateTime::class.java ||
-                type == LocalDate::class.java) {
-            value = value.AsLocalDateTime().AsDate()
-        } else if (isId) {
-            if (value is String) {
-                if (ObjectId.isValid(value)) {
-                    value = ObjectId(value);
-                }
-            } else if (type.isArray) {
-                value = (value as Array<*>).map {
-                    if (it is String && ObjectId.isValid(it)) {
-                        return@map ObjectId(it)
-                    }
+    var type = value::class.java
 
-                    return@map it
-                }.toTypedArray()
-            } else if (type.IsListType()) {
-                value = (value as List<*>).map {
-                    if (it is String && ObjectId.isValid(it)) {
-                        return@map ObjectId(it)
-                    }
-
-                    return@map it
-                }
-            } else if (value is Pair<*, *>) {
-                var v1 = value.first;
-                if (v1 is String && ObjectId.isValid(v1)) {
-                    v1 = ObjectId(v1)
-                }
-
-                var v2 = value.second;
-                if (v2 is String && ObjectId.isValid(v2)) {
-                    v2 = ObjectId(v2)
-                }
-                value = Pair<Any?, Any?>(v1, v2);
-            }
+    if (type.isEnum) {
+        value = value.toString();
+    } else if (type == LocalDateTime::class.java ||
+            type == LocalDate::class.java) {
+        value = value.AsLocalDateTime().AsDate()
+    } else if (type.IsStringType()) {
+        if (keyIsId && value is String && ObjectId.isValid(value)) {
+            value = ObjectId(value);
         }
+    } else if (type.isArray) {
+        value = (value as Array<*>).map {
+            if (it != null && it::class.java.isEnum) {
+                return@map it.toString()
+            }
+            return@map it
+        }.toTypedArray()
+    } else if (type.IsListType()) {
+        value = (value as List<*>).map {
+            if (it != null && it::class.java.isEnum) {
+                return@map it.toString()
+            }
+            return@map it
+        }
+    } else if (value is Pair<*, *>) {
+        var v1 = value.first;
+        if (v1 != null && v1::class.java.isEnum) {
+            v1 = v1.toString()
+        }
+
+        var v2 = value.second;
+        if (v2 != null && v2::class.java.isEnum) {
+            v2 = v2.toString()
+        }
+        value = Pair<Any?, Any?>(v1, v2);
     }
 
     return Pair<String, Any?>(key.toString(), value);
