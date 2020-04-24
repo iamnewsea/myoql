@@ -27,7 +27,7 @@ fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.updateById(id: String): Mongo
 }
 
 /**
- * 按实体单条更新。 默认使用Id更新。
+ * 按实体单条更新。 默认使用Id更新，不会更新id。
  */
 fun <M : MongoBaseEntity<E>, E : IMongoDocument> M.updateWithEntity(entity: E): MongoSetEntityUpdateClip<M> {
     return MongoSetEntityUpdateClip(this, entity);

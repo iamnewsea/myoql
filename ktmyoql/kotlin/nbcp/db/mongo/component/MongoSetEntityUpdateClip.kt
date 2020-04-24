@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.core.query.Criteria
 
 /**
  * MongoUpdate
+ * 不会更新 id
  */
 class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M, var entity: IMongoDocument) : MongoBaseUpdateClip(moerEntity.tableName) {
     companion object {
