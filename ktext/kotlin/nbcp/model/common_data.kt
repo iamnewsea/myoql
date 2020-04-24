@@ -60,6 +60,9 @@ open class LoginUserModel(
         var organization: IdName = IdName(),
         var roles: List<String> = listOf() //角色
 ) : IdName(id, name) {
+    companion object{
+
+    }
 
     fun AsIdName(): IdName {
         return IdName(this.id, this.name)
