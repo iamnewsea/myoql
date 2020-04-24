@@ -26,7 +26,7 @@ class DevController {
     }
 
     @GetMapping("/getGroups")
-    fun getGroup(dbType: String): ListResult<String> {
+    fun getGroup(): ListResult<String> {
         db.mongo.groups.apply {
             return ListResult.of(this.map {
                 var name = it::class.java.simpleName
@@ -36,7 +36,7 @@ class DevController {
     }
 
     @GetMapping("/getEntities")
-    fun getEntities(dbType: String, group: String): ListResult<String> {
+    fun getEntities(group: String): ListResult<String> {
         var group = group[0].toUpperCase() + group.Slice(1) + "Group"
         var groupObj = db.mongo.groups.firstOrNull { it::class.java.simpleName == group }
         if (groupObj == null) return ListResult("找不到group")
@@ -53,7 +53,7 @@ class DevController {
     )
 
     @GetMapping("/getFields")
-    fun getEntity(dbType: String, group: String, entity: String): ListResult<FieldModel> {
+    fun getEntity(group: String, entity: String): ListResult<FieldModel> {
         var group = group[0].toUpperCase() + group.Slice(1) + "Group"
         var groupObj = db.mongo.groups.firstOrNull { it::class.java.simpleName == group }
         if (groupObj == null) return ListResult("找不到group")
