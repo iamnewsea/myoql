@@ -111,23 +111,31 @@ class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M
     /**
      * 从数组中删除一条。
      * key:是实体的属性，内容是数组，如 roles。
-     * pullWhere 是要删除实体的条件。如： _id pair "ab" , name pair "def"
+     * pullWhere 是要删除实体的条件。
+     * 如：
+     * .pull( it.menus, "id" match "ab")
+     * .pull( it.roles, "id" match "def")
+     * ==>
+     * { $pull: { "menus":{"id:"ab"} , "roles":{"id:"def"} } }
      */
-    fun pull(key: (M) -> MongoColumnName, vararg pullWhere: Criteria): MongoUpdateClip<M> {
-        this.pullData.put(key(this.moerEntity).toString(), this.moerEntity.getMongoCriteria(*pullWhere));
+    fun pull(key: (M) -> MongoColumnName, pullWhere: Criteria): MongoUpdateClip<M> {
+        this.pullData.put(key(this.moerEntity).toString(), pullWhere);
         return this;
     }
 
     /**
      * 删除数组中的单个值.
      * @param pair  key=删除的数组列表达式， value=删除该列的值。
+     * 如：
+     * .pull( it.menus  to "1")
+     * ==>
+     * { $pull :{ "menus": "1" } }
      */
     fun pull(pair: (M) -> Pair<MongoColumnName, String>): MongoUpdateClip<M> {
         var pairObject = pair(this.moerEntity);
         this.pullData.put(pairObject.first.toString(), pairObject.second);
         return this;
     }
-
 
     /**
      *@param define: 更新的参数，应该使用 Where 表达式子类 Criteria 传递
