@@ -133,11 +133,11 @@
 
                 <configuration>
                     <outputDir>${project.build.directory}/apidocs</outputDir>
-                    <externalDocumentationLinks>
-                        <externalDocumentationLink>
-                            <url>http://file.dev8.cn:8000/package-list</url>
-                        </externalDocumentationLink>
-                    </externalDocumentationLinks>
+<!--                    <externalDocumentationLinks>-->
+<!--                        <externalDocumentationLink>-->
+<!--                            <url>http://file.dev8.cn:8000/package-list</url>-->
+<!--                        </externalDocumentationLink>-->
+<!--                    </externalDocumentationLinks>-->
                 </configuration>
             </plugin>
 

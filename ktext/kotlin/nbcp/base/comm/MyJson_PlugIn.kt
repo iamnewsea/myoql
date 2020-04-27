@@ -32,7 +32,7 @@ import java.util.*
  * 本插件使用减号，需要客户端在处理时间的时候，使用 斜线 替换 减号。
  */
 @Component
-@DependsOn("myJsonModule")
+@DependsOn("defaultMyJsonMapper")
 class DateJsonSerializer : JsonSerializer<Date>(), InitializingBean {
     override fun serialize(value: Date?, generator: JsonGenerator, serializers: SerializerProvider) {
         if (value == null) {
@@ -43,13 +43,13 @@ class DateJsonSerializer : JsonSerializer<Date>(), InitializingBean {
     }
 
     override fun afterPropertiesSet() {
-        SpringUtil.getBean<MyJsonModule>().addSerializer(Date::class.java, this)
+        DefaultMyJsonMapper.addSerializer(Date::class.java, this)
     }
 }
 
 
 @Component
-@DependsOn("myJsonModule")
+@DependsOn("defaultMyJsonMapper")
 class LocalDateJsonSerializer : JsonSerializer<LocalDate>(), InitializingBean {
     override fun serialize(value: LocalDate?, generator: JsonGenerator, serializers: SerializerProvider) {
         if (value == null) {
@@ -60,12 +60,12 @@ class LocalDateJsonSerializer : JsonSerializer<LocalDate>(), InitializingBean {
     }
 
     override fun afterPropertiesSet() {
-        SpringUtil.getBean<MyJsonModule>().addSerializer(LocalDate::class.java, this)
+        DefaultMyJsonMapper.addSerializer(LocalDate::class.java, this)
     }
 }
 
 @Component
-@DependsOn("myJsonModule")
+@DependsOn("defaultMyJsonMapper")
 class LocalTimeJsonSerializer : JsonSerializer<LocalTime>(), InitializingBean {
     override fun serialize(value: LocalTime?, generator: JsonGenerator, serializers: SerializerProvider) {
         if (value == null) {
@@ -76,12 +76,12 @@ class LocalTimeJsonSerializer : JsonSerializer<LocalTime>(), InitializingBean {
     }
 
     override fun afterPropertiesSet() {
-        SpringUtil.getBean<MyJsonModule>().addSerializer(LocalTime::class.java, this)
+        DefaultMyJsonMapper.addSerializer(LocalTime::class.java, this)
     }
 }
 
 @Component
-@DependsOn("myJsonModule")
+@DependsOn("defaultMyJsonMapper")
 class LocalDateTimeJsonSerializer : JsonSerializer<LocalDateTime>(), InitializingBean {
     override fun serialize(value: LocalDateTime?, generator: JsonGenerator, serializers: SerializerProvider) {
         if (value == null) {
@@ -93,12 +93,12 @@ class LocalDateTimeJsonSerializer : JsonSerializer<LocalDateTime>(), Initializin
     }
 
     override fun afterPropertiesSet() {
-        SpringUtil.getBean<MyJsonModule>().addSerializer(LocalDateTime::class.java, this)
+        DefaultMyJsonMapper.addSerializer(LocalDateTime::class.java, this)
     }
 }
 
 @Component
-@DependsOn("myJsonModule")
+@DependsOn("defaultMyJsonMapper")
 class TimestampJsonSerializer : JsonSerializer<Timestamp>(), InitializingBean {
     override fun serialize(value: Timestamp?, generator: JsonGenerator, serializers: SerializerProvider) {
         if (value == null) {
@@ -109,14 +109,14 @@ class TimestampJsonSerializer : JsonSerializer<Timestamp>(), InitializingBean {
     }
 
     override fun afterPropertiesSet() {
-        SpringUtil.getBean<MyJsonModule>().addSerializer(Timestamp::class.java, this)
+        DefaultMyJsonMapper.addSerializer(Timestamp::class.java, this)
     }
 }
 
 //---------------------------------------------------------
 
 @Component
-@DependsOn("myJsonModule")
+@DependsOn("defaultMyJsonMapper")
 class DateJsonDeserializer : JsonDeserializer<Date>(), InitializingBean {
     override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): Date? {
         if (json == null) {
@@ -131,12 +131,12 @@ class DateJsonDeserializer : JsonDeserializer<Date>(), InitializingBean {
     }
 
     override fun afterPropertiesSet() {
-        SpringUtil.getBean<MyJsonModule>().addDeserializer(Date::class.java, this)
+        DefaultMyJsonMapper.addDeserializer(Date::class.java, this)
     }
 }
 
 @Component
-@DependsOn("myJsonModule")
+@DependsOn("defaultMyJsonMapper")
 class LocalDateJsonDeserializer : JsonDeserializer<LocalDate>(), InitializingBean {
     override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): LocalDate? {
         if (json == null) {
@@ -151,12 +151,12 @@ class LocalDateJsonDeserializer : JsonDeserializer<LocalDate>(), InitializingBea
     }
 
     override fun afterPropertiesSet() {
-        SpringUtil.getBean<MyJsonModule>().addDeserializer(LocalDate::class.java, this)
+        DefaultMyJsonMapper.addDeserializer(LocalDate::class.java, this)
     }
 }
 
 @Component
-@DependsOn("myJsonModule")
+@DependsOn("defaultMyJsonMapper")
 class LocalTimeJsonDeserializer : JsonDeserializer<LocalTime>(), InitializingBean {
     override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): LocalTime? {
         if (json == null) {
@@ -172,12 +172,12 @@ class LocalTimeJsonDeserializer : JsonDeserializer<LocalTime>(), InitializingBea
     }
 
     override fun afterPropertiesSet() {
-        SpringUtil.getBean<MyJsonModule>().addDeserializer(LocalTime::class.java, this)
+        DefaultMyJsonMapper.addDeserializer(LocalTime::class.java, this)
     }
 }
 
 @Component
-@DependsOn("myJsonModule")
+@DependsOn("defaultMyJsonMapper")
 class LocalDateTimeJsonDeserializer : JsonDeserializer<LocalDateTime>(), InitializingBean {
     override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): LocalDateTime? {
         if (json == null) {
@@ -193,12 +193,12 @@ class LocalDateTimeJsonDeserializer : JsonDeserializer<LocalDateTime>(), Initial
     }
 
     override fun afterPropertiesSet() {
-        SpringUtil.getBean<MyJsonModule>().addDeserializer(LocalDateTime::class.java, this)
+        DefaultMyJsonMapper.addDeserializer(LocalDateTime::class.java, this)
     }
 }
 
 @Component
-@DependsOn("myJsonModule")
+@DependsOn("defaultMyJsonMapper")
 class TimestampJsonDeserializer : JsonDeserializer<Timestamp>(), InitializingBean {
     override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): Timestamp? {
         if (json == null) {
@@ -213,7 +213,7 @@ class TimestampJsonDeserializer : JsonDeserializer<Timestamp>(), InitializingBea
     }
 
     override fun afterPropertiesSet() {
-        SpringUtil.getBean<MyJsonModule>().addDeserializer(Timestamp::class.java, this)
+        DefaultMyJsonMapper.addDeserializer(Timestamp::class.java, this)
     }
 }
 

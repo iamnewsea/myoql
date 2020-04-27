@@ -4,9 +4,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.*
+import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.stereotype.Component
@@ -15,19 +14,24 @@ import org.springframework.context.annotation.DependsOn
 import org.springframework.context.annotation.Primary
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.LinkedHashMap
 
 /**
  * 使用 字段值 方式序列化JSON，应用在数据库的场景中。
  */
 @Primary
 @Component
-@DependsOn(value = arrayOf("myJsonModule", "springUtil"))
+@DependsOn(value = arrayOf("springUtil"))
 open class DefaultMyJsonMapper : ObjectMapper(), InitializingBean {
     override fun afterPropertiesSet() {
         this.setStyle()
     }
 
     companion object {
+        val sers: MutableList<SimpleModule> = mutableListOf()
+        val desers: MutableList<SimpleModule> = mutableListOf()
+
+
         fun get(): ObjectMapper {
             var styles = scopes.getScopeTypes<JsonStyleEnumScope>()
             return get(*styles.toTypedArray());
@@ -36,6 +40,23 @@ open class DefaultMyJsonMapper : ObjectMapper(), InitializingBean {
         fun get(vararg styles: JsonStyleEnumScope): ObjectMapper {
             if (styles.isEmpty()) return SpringUtil.getBean<DefaultMyJsonMapper>()
             return ObjectMapper().setStyle(*styles)
+        }
+
+        fun <T> addSerializer(type: Class<out T>, ser: JsonSerializer<T>) {
+            if (this.sers.any { it.moduleName == type.name }) return;
+            var item = SimpleModule(type.name)
+            item.addSerializer(type, ser)
+            this.sers.add(item);
+            SpringUtil.getBean<DefaultMyJsonMapper>().registerModule(item)
+        }
+
+        fun <T> addDeserializer(type: Class<T>, deser: JsonDeserializer<out T>) {
+            if (this.desers.any { it.moduleName == type.name }) return;
+
+            var item = SimpleModule(type.name)
+            item.addDeserializer(type, deser)
+            this.desers.add(item)
+            SpringUtil.getBean<DefaultMyJsonMapper>().registerModule(item)
         }
     }
 }
@@ -86,9 +107,13 @@ fun ObjectMapper.setStyle(vararg styles: JsonStyleEnumScope): ObjectMapper {
     //在某些时候，如 mongo.aggregate.group._id 时， null 。
     //默认只序列化 not null 的。
 
+    DefaultMyJsonMapper.sers.forEach {
+        this.registerModule(it);
+    }
 
-    var dateModule = SpringUtil.getBean<MyJsonModule>();
-    this.registerModule(dateModule);
+    DefaultMyJsonMapper.desers.forEach {
+        this.registerModule(it);
+    }
 
 //    if (styles.contains(JsonStyleEnumScope.Pretty)) {
 //        this.setDefaultPrettyPrinter(this.serializationConfig.defaultPrettyPrinter)

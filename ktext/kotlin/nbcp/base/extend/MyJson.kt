@@ -17,23 +17,23 @@ import java.sql.Timestamp
  */
 
 
-class RawJsonObject(value: String) : MyString(value) {}
-
-@Component
-@DependsOn("myJsonModule")
-class RawJsonSerializer : JsonSerializer<RawJsonObject>(), InitializingBean {
-    override fun serialize(o: RawJsonObject?, j: JsonGenerator, s: SerializerProvider) {
-        if (o == null) {
-            j.writeNull()
-        } else {
-            j.writeRawValue(o.toString())
-        }
-    }
-
-    override fun afterPropertiesSet() {
-        SpringUtil.getBean<MyJsonModule>().addSerializer(RawJsonObject::class.java, this)
-    }
-}
+//class RawJsonObject(value: String) : MyString(value) {}
+//
+//@Component
+//@DependsOn("myJsonModule")
+//class RawJsonSerializer : JsonSerializer<RawJsonObject>(), InitializingBean {
+//    override fun serialize(o: RawJsonObject?, j: JsonGenerator, s: SerializerProvider) {
+//        if (o == null) {
+//            j.writeNull()
+//        } else {
+//            j.writeRawValue(o.toString())
+//        }
+//    }
+//
+//    override fun afterPropertiesSet() {
+//        SpringUtil.getBean<DefaultMyJsonMapper>().addSerializer(RawJsonObject::class.java, this)
+//    }
+//}
 
 //private fun getJsonInstance(getSetStyle: Boolean = false, withNull: Boolean = false): ObjectMapper {
 //    return if (getSetStyle && withNull)

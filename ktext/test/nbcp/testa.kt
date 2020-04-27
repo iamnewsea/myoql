@@ -39,23 +39,13 @@ class testa : TestBase() {
     }
 
 
-    class abd(
-            var msg: String = "",
-            var value: Int = 0,
-            var www: LocalDateTime = LocalDateTime.now()
-    ) {
-        fun getAbcd(): String = "II"
+    class abd {
+        var www: LocalDateTime = LocalDateTime.now()
     }
 
     @Test
     fun abee() {
-        using(JsonStyleEnumScope.Pretty) {
-            using(JsonStyleEnumScope.Compress) {
-                using(JsonStyleEnumScope.Pretty) {
-                    println(scopes.getScopeTypes<JsonStyleEnumScope>().ToJson())
-                }
-            }
-        }
+        println("""{"www":"2020-04-24 16:59:04"}""".FromJson<abd>().ToJson())
     }
 
     @Test
