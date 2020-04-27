@@ -43,8 +43,9 @@ open class ApiResult<T>(msg: String = "", cause: String = "") : JsonResult(msg, 
 }
 
 
-class NoDataException(msg: String) : RuntimeException(msg.AsString("找不到数据")) {
-}
+class ParameterInvalidException(msg: String) : RuntimeException(msg.AsString("参数非法"))
+
+class NoDataException(msg: String) : RuntimeException(msg.AsString("找不到数据"))
 
 
 /**
