@@ -19,9 +19,14 @@ import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+/**
+ * 动态获取图片，参数：
+ * id,url: 两者必传其一
+ * width,height
+ */
 @OpenAction
 @WebServlet(urlPatterns = arrayOf("/image/dynamic"))
-open class ImageSetServlet : HttpServlet() {
+open class ImageGetServlet : HttpServlet() {
     @Value("\${app.upload.path:}")
     private var uploadPath = ""
 

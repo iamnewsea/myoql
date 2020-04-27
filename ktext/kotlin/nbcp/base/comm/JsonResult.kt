@@ -15,7 +15,6 @@ import java.util.ArrayList
 /**
  * 普通的返回对象。
  */
-
 open class JsonResult(var msg: String = "", var cause: String = "") {}
 
 open class ApiResult<T>(msg: String = "", cause: String = "") : JsonResult(msg, cause) {
@@ -43,10 +42,11 @@ open class ApiResult<T>(msg: String = "", cause: String = "") : JsonResult(msg, 
 }
 
 
-class ParameterInvalidException(msg: String) : RuntimeException(msg.AsString("参数非法"))
+class ParameterInvalidException(msg: String, cause: String) : RuntimeException(msg.AsString("参数非法"))
 
-class NoDataException(msg: String) : RuntimeException(msg.AsString("找不到数据"))
+class NoDataException(msg: String, cause: String = "") : RuntimeException(msg.AsString("找不到数据"))
 
+class ServerException(msg: String, cause: String = "") : RuntimeException(msg.AsString("服务器异常"))
 
 /**
  * 查询对象

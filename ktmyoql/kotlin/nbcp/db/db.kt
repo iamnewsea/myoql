@@ -134,7 +134,7 @@ object db {
 //    }
 
     val mor_base by lazy {
-        return@lazy MongoBaseGroup()
+        return@lazy MongoBaseGroup
     }
 
     val rer_base by lazy {

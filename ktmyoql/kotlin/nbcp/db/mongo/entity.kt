@@ -30,6 +30,21 @@ open class SysAnnex(
 
 @Document
 @DbEntityGroup("MongoBase")
+data class SysCity(
+        var code: Int = 0,
+        var name: String = "",
+        var fullName: String = "",
+        var level: Int = 0,
+        var lng: Float = 0F, //经度
+        var lat: Float = 0F, //纬度
+        var pinyin: String = "",
+        var telCode: String = "",
+        var postCode: String = "",
+        var pcode: Int = 0
+) : IMongoDocument()
+
+@Document
+@DbEntityGroup("MongoBase")
 open class SysLog(
         var module: String = "", //模块
         var type: String = "",  //类型

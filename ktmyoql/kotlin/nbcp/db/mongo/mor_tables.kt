@@ -1,13 +1,15 @@
-
 package nbcp.db.mongo.table
 
+import nbcp.db.*
+import nbcp.db.mongo.*
+import nbcp.utils.*
 import nbcp.comm.*
 import nbcp.db.mongo.entity.*
-import nbcp.db.mongo.*
-import nbcp.db.*
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
-//generate auto @2020-03-13 14:19:55
+
+//generate auto @2020-04-27 14:59:37
 
 class IdNameMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
@@ -33,18 +35,21 @@ class ObjectMeta (private val _pname:String):MongoColumnName() {
 
 @Component("mongo.MongoBase")
 @MetaDataGroup("MongoBase")
-class MongoBaseGroup : IDataGroup{
-    override fun getEntities():Set<BaseDbEntity> = setOf(sysAnnex,sysDustbin,sysLog)
+object MongoBaseGroup : IDataGroup{
+    override fun getEntities():Set<BaseDbEntity> = setOf(sysAnnex,sysCity,sysDustbin,sysLog)
 
     val sysAnnex=SysAnnexEntity();
     fun sysAnnex(collectionName:String)=SysAnnexEntity(collectionName);
+    val sysCity=SysCityEntity();
+    fun sysCity(collectionName:String)=SysCityEntity(collectionName);
     val sysDustbin=SysDustbinEntity();
     fun sysDustbin(collectionName:String)=SysDustbinEntity(collectionName);
     val sysLog=SysLogEntity();
     fun sysLog(collectionName:String)=SysLogEntity(collectionName);
 
 
-    class SysAnnexEntity(collectionName:String=""):MongoBaseEntity<SysAnnex>(SysAnnex::class.java,collectionName.AsString("sysAnnex")) {
+    class SysAnnexEntity(collectionName:String="")
+        :MongoBaseEntity<nbcp.db.mongo.entity.SysAnnex>(nbcp.db.mongo.entity.SysAnnex::class.java,collectionName.AsString("sysAnnex")) {
         val name=MongoColumnName("name")
         val tags=MongoColumnName("tags")
         val ext=MongoColumnName("ext")
@@ -61,7 +66,25 @@ class MongoBaseGroup : IDataGroup{
         val updateAt=MongoColumnName("updateAt")
     }
     
-    class SysDustbinEntity(collectionName:String=""):MongoBaseEntity<SysDustbin>(SysDustbin::class.java,collectionName.AsString("sysDustbin")) {
+    class SysCityEntity(collectionName:String="")
+        :MongoBaseEntity<nbcp.db.mongo.entity.SysCity>(nbcp.db.mongo.entity.SysCity::class.java,collectionName.AsString("sysCity")) {
+        val code=MongoColumnName("code")
+        val name=MongoColumnName("name")
+        val fullName=MongoColumnName("fullName")
+        val level=MongoColumnName("level")
+        val lng=MongoColumnName("lng")
+        val lat=MongoColumnName("lat")
+        val pinyin=MongoColumnName("pinyin")
+        val telCode=MongoColumnName("telCode")
+        val postCode=MongoColumnName("postCode")
+        val pcode=MongoColumnName("pcode")
+        val id=MongoColumnName("_id")
+        val createAt=MongoColumnName("createAt")
+        val updateAt=MongoColumnName("updateAt")
+    }
+    
+    class SysDustbinEntity(collectionName:String="")
+        :MongoBaseEntity<nbcp.db.mongo.entity.SysDustbin>(nbcp.db.mongo.entity.SysDustbin::class.java,collectionName.AsString("sysDustbin")) {
         val table=MongoColumnName("table")
         val remark=MongoColumnName("remark")
         val creator=IdNameMeta("creator")
@@ -71,7 +94,8 @@ class MongoBaseGroup : IDataGroup{
         val updateAt=MongoColumnName("updateAt")
     }
     
-    class SysLogEntity(collectionName:String=""):MongoBaseEntity<SysLog>(SysLog::class.java,collectionName.AsString("sysLog")) {
+    class SysLogEntity(collectionName:String="")
+        :MongoBaseEntity<nbcp.db.mongo.entity.SysLog>(nbcp.db.mongo.entity.SysLog::class.java,collectionName.AsString("sysLog")) {
         val module=MongoColumnName("module")
         val type=MongoColumnName("type")
         val key=MongoColumnName("key")

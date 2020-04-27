@@ -20,6 +20,12 @@ open class IdCodeName(var id: String = "", code: String = "", name: String = "")
 open class KeyValueString(var key: String = "", var value: String = "") : java.io.Serializable {}
 
 
+open class IntCodeName(var code: Int, var name: String) : java.io.Serializable {
+    constructor() : this(0, "") {
+    }
+}
+
+
 /**
  * 表示Mongo数据库里 Id，Url 的附件实体引用。
  * fullUrl 需要配置 app.upload.host
