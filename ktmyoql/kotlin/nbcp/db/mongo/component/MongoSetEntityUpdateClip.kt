@@ -126,18 +126,15 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
      * 先更新，如果不存在，则插入。
      * @return: 返回插入的Id，如果是更新则返回空字串
      */
-    fun updateOrAdd(): String {
-        var ret = "";
-
+    fun updateOrAdd(): Int {
         //有一个问题，可能是阻止更新了。所以导致是0。
         if (this.exec() == 0) {
             var batchInsert = MongoBaseInsertClip(moerEntity.tableName)
             batchInsert.addEntity(entity);
 
-            db.affectRowCount = batchInsert.exec();
-            ret = entity.id;
+            batchInsert.exec();
         }
-        return ret;
+        return db.affectRowCount;
     }
 }
 
