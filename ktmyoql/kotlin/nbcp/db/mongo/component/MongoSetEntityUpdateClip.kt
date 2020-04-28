@@ -124,6 +124,16 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
         return update.exec();
     }
 
+    /**
+     * 执行更新, == exec ,语义清晰
+     */
+    fun execUpdate(): Int {
+        return this.exec();
+    }
+
+    /**
+     * 执行插入
+     */
     fun execInsert(): Int {
         var batchInsert = MongoBaseInsertClip(moerEntity.tableName)
         batchInsert.addEntity(entity);
@@ -137,7 +147,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
      */
     fun updateOrAdd(): Int {
         //有一个问题，可能是阻止更新了。所以导致是0。
-        if (this.exec() == 0) {
+        if (this.execUpdate() == 0) {
             return this.execInsert()
         }
         return db.affectRowCount;
