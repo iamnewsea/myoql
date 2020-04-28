@@ -28,7 +28,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
 
     private var whereColumns = mutableSetOf<String>()
     private var setColumns = mutableSetOf<String>()
-    private var unsetColumns = mutableSetOf<String>()
+    private var unsetColumns = mutableSetOf<String>("createAt")
 
     fun withColumn(setFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M> {
         this.setColumns.add(setFunc(this.moerEntity).toString())
@@ -64,7 +64,9 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
         return this;
     }
 
-
+    /**
+     * 更新
+     */
     override fun exec(): Int {
         if (whereColumns.any() == false) {
             whereColumns.add("_id")
@@ -122,6 +124,13 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
         return update.exec();
     }
 
+    fun execInsert(): Int {
+        var batchInsert = MongoBaseInsertClip(moerEntity.tableName)
+        batchInsert.addEntity(entity);
+
+        return batchInsert.exec();
+    }
+
     /**
      * 先更新，如果不存在，则插入。
      * @return: 返回插入的Id，如果是更新则返回空字串
@@ -129,10 +138,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
     fun updateOrAdd(): Int {
         //有一个问题，可能是阻止更新了。所以导致是0。
         if (this.exec() == 0) {
-            var batchInsert = MongoBaseInsertClip(moerEntity.tableName)
-            batchInsert.addEntity(entity);
-
-            batchInsert.exec();
+            return this.execInsert()
         }
         return db.affectRowCount;
     }
