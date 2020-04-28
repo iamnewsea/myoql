@@ -59,16 +59,15 @@ open class UploadService {
             var list = mutableListOf<String>()
             list.add(LocalDate.now().format("yyyy-MM"));
 
-//            if (this.extType == FileExtentionTypeEnum.Image) {
-//
-//                //按图片像素文件夹命名。不足1万 = 0
-//                var pixel = ((imgWidth * imgHeight) / 10000.0).toInt();
-//
-//                list.add(pixel.toString())
-//            } else {
-//                list.add(this.extType.toString())
-//            }
-            list.add(this.extType.toString())
+            if (this.extType == FileExtentionTypeEnum.Image) {
+                //按图片像素文件夹命名。不足1万 = 0
+                var pixel = ((imgWidth * imgHeight) / 10000.0).toInt();
+
+                list.add(pixel.toString())
+            } else {
+                list.add(this.extType.toString())
+            }
+//            list.add(this.extType.toString())
             return list.toTypedArray();
         }
 
