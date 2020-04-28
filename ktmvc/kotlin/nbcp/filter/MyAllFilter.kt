@@ -139,8 +139,18 @@ open class MyAllFilter : Filter, InitializingBean {
 
                 setLang(myRequest);
 
-                chain?.doFilter(myRequest, myResponse);
-
+                try {
+                    chain?.doFilter(myRequest, myResponse);
+                }
+                catch(e:Exception){
+                    var msgs = mutableListOf<String>()
+                    msgs.add("[[----> ${loginName} ${request.ClientIp} ${request.method} ${request.fullUrl}")
+                    msgs.add(e.message ?: "服务器错误");
+                    msgs.add("<----]]")
+                    logger.error(msgs.joinToString(line_break))
+                    response.WriteTextValue(e.message ?: "服务器错误")
+                    return ;
+                }
                 afterComplete(myRequest, myResponse, queryMap.getStringValue("callback"), startAt, "");
             } else {
                 //是否是静态资源, 必须有后缀名。
@@ -162,8 +172,18 @@ open class MyAllFilter : Filter, InitializingBean {
                     }
                 }
 
-                chain?.doFilter(request, response)
-
+                try {
+                    chain?.doFilter(request, response)
+                }
+                catch(e:Exception){
+                    var msgs = mutableListOf<String>()
+                    msgs.add("[[----> ${loginName} ${request.ClientIp} ${request.method} ${request.fullUrl}")
+                    msgs.add(e.message ?: "服务器错误");
+                    msgs.add("<----]]")
+                    logger.error(msgs.joinToString(line_break))
+                    response.WriteTextValue(e.message ?: "服务器错误")
+                    return ;
+                }
 //                logNewSession(request, response);
             }
 

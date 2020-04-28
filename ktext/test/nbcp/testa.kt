@@ -63,4 +63,10 @@ class testa : TestBase() {
         }
 
     }
+
+    @Test
+    fun rou(){
+        var d:Double = -4.9;
+        println(d.toInt())
+    }
 }

@@ -42,24 +42,29 @@ open class ImageGetServlet : HttpServlet() {
     }
 
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
-
+        //附件数据库表中的Id
         var id = request.findParameterValue("id").AsString();
+
+        //不带 host 头部的地址
         var url = request.findParameterValue("url").AsString();
+        if (id.isEmpty() && url.isEmpty()) {
+            throw ParameterInvalidException("参数非法", "id")
+        }
+
         var width = request.findParameterValue("width").AsInt()
         var height = request.findParameterValue("height").AsInt()
 
-        if (url.HasValue) {
-            url = JsUtil.decodeURIComponent(url);
-        }
-
-        if (width <= 0 || height <= 0 || (id.isEmpty() && url.isEmpty())) {
-            response.status = 500;
-            response.WriteTextValue("参数不正确")
-            return;
+        if (width <= 0 && height <= 0) {
+            throw ParameterInvalidException("参数不正确", "width")
+//            response.status = 500;
+//            response.WriteTextValue("参数不正确")
+//            return;
         }
 
         if (url.isEmpty()) {
-            url = dbService.queryById(id)?.url ?: throw RuntimeException("找不到数据")
+            url = dbService.queryById(id)?.url ?: throw NoDataException("找不到数据")
+        } else {
+            url = JsUtil.decodeURIComponent(url);
         }
 
         var ret = ImageUtil.zoomImageScale(File(uploadPath + url).inputStream().buffered(), response.outputStream, width, height)
