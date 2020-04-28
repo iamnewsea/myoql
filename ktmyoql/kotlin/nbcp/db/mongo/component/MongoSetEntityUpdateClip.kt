@@ -65,7 +65,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moer
     }
 
     /**
-     * 更新
+     * 更新，默认按 id 更新
      */
     override fun exec(): Int {
         if (whereColumns.any() == false) {
