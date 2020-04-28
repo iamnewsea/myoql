@@ -52,7 +52,10 @@ data class FileExtentionInfo(private var url: String) {
     }
 
     override fun toString(): String {
-        return this.extName;
+        if( this.extName.HasValue){
+            return this.name + "." + this.extName
+        }
+        return this.name;
     }
 
 //    val isStaticURI: Boolean

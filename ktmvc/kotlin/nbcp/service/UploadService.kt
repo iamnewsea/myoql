@@ -69,7 +69,7 @@ open class UploadService {
         }
 
         fun getTargetFileNames(): Array<String> {
-            return arrayOf(*this.getTargetPaths(), CodeUtil.getCode() + "." + extName);
+            return arrayOf(*this.getTargetPaths(), CodeUtil.getCode() + (if (extName.HasValue) ("." + extName) else ""));
         }
 
         fun getTargetFileName(corpId: String): String {
@@ -114,9 +114,17 @@ open class UploadService {
     }
 
 
-    private fun getFileInfo(fileName: String): FileExtentionInfo {
+    private fun getFileInfo(fileName1: String, fileName2: String): FileExtentionInfo {
+        var fileName = "";
+        if (fileName1.contains('.')) {
+            fileName = fileName1;
+        } else if (fileName2.contains('.')) {
+            fileName = fileName2
+        } else {
+            return FileExtentionInfo("")
+        }
 
-        var fileName = fileName.Remove("/", "\\", "?", "#", "\"", "'", " ", "%", "&", ":", "@", "<", ">")
+        fileName = fileName.Remove("/", "\\", "?", "#", "\"", "'", " ", "%", "&", ":", "@", "<", ">")
         var extInfo = FileExtentionInfo(fileName);
 
         if (fileName.length < 4) {
@@ -125,15 +133,15 @@ open class UploadService {
         return extInfo;
     }
 
-    fun getFileInfo(request: HttpServletRequest): FileExtentionInfo {
-        var oriFileName = request.getHeader("File-Name");
-        oriFileName = oriFileName.Remove("/", "\\", "?", "#", "\"", "'", " ", "%", "&", ":", "@", "<", ">")
-        var extInfo = FileExtentionInfo(oriFileName);
-        if (oriFileName.length < 4) {
-            extInfo.name = "";
-        }
-        return extInfo;
-    }
+//    fun getFileInfo(request: HttpServletRequest): FileExtentionInfo {
+//        var oriFileName = request.getHeader("File-Name");
+//        oriFileName = oriFileName.Remove("/", "\\", "?", "#", "\"", "'", " ", "%", "&", ":", "@", "<", ">")
+//        var extInfo = FileExtentionInfo(oriFileName);
+//        if (oriFileName.length < 4) {
+//            extInfo.name = "";
+//        }
+//        return extInfo;
+//    }
 
     /**
      * @return 返回相对于 uploadPath 的路径.
@@ -145,7 +153,11 @@ open class UploadService {
             throw  Exception("上传的是空文件！");
         }
 
-        var vFile = File.separatorChar + "_temp_" + File.separator + CodeUtil.getCode() + "." + extName;
+        var vFile = File.separatorChar + "_temp_" + File.separator + CodeUtil.getCode();
+        if (extName.HasValue) {
+            vFile = vFile + "." + extName
+        }
+
         var localFile = File(uploadPath + File.separator + vFile)
 
         if (localFile.parentFile.exists() == false && localFile.parentFile.mkdirs() == false) {
@@ -160,14 +172,14 @@ open class UploadService {
     /**
      * @return 返回相对于 uploadPath 的路径.
      */
-    private fun saveTempFile(file: InputStream, extName: String): String {
-
-        var vFile = File.separatorChar + "_temp_" + File.separator + CodeUtil.getCode() + "." + extName;
-        var localFile = File(uploadPath + vFile)
-
-        file.copyTo(localFile.outputStream())
-        return vFile
-    }
+//    private fun saveTempFile(file: InputStream, extName: String): String {
+//
+//        var vFile = File.separatorChar + "_temp_" + File.separator + CodeUtil.getCode() + "." + extName;
+//        var localFile = File(uploadPath + vFile)
+//
+//        file.copyTo(localFile.outputStream())
+//        return vFile
+//    }
 
 
     /**
@@ -375,13 +387,17 @@ open class UploadService {
                 var files = it.second;
 
                 files.ForEachExt for2@{ file, _ ->
-                    var oriFileExtentionInfo = getFileInfo(file.originalFilename.AsString(fileName))
+                    var oriFileExtentionInfo = getFileInfo(file.originalFilename, fileName)
+                    if (oriFileExtentionInfo.name.isEmpty()) {
+                        oriFileExtentionInfo.name = CodeUtil.getCode()
+                    }
+
                     var vTempFile = saveTempFile(file, oriFileExtentionInfo.extName);
                     if (processFile != null) {
                         processFile(uploadPath + vTempFile, oriFileExtentionInfo.extType)
                     }
 
-                    var ret1 = doUpload(vTempFile, user, corpId, oriFileExtentionInfo.name + "." + oriFileExtentionInfo.extName);
+                    var ret1 = doUpload(vTempFile, user, corpId, oriFileExtentionInfo.toString());
                     if (ret1.msg.HasValue) {
                         ret.msg = ret1.msg;
                         return@ForEachExt false
