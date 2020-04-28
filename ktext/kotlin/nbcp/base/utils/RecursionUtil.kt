@@ -1,7 +1,6 @@
 package nbcp.utils
 
 import nbcp.comm.ForEachExt
-import nbcp.comm.IsListType
 import nbcp.comm.IsSimpleType
 import java.lang.reflect.Modifier
 
@@ -150,8 +149,8 @@ object RecursionUtil {
                 }
                 return@ForEachExt true
             }
-        } else if (type.IsListType()) {
-            return (json as List<*>).ForEachExt { it, index ->
+        } else if (json is Collection<*>) {
+            return json.ForEachExt { it, index ->
                 if (it == null) {
                     return@ForEachExt true
                 }

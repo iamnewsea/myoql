@@ -64,9 +64,14 @@ class testa : TestBase() {
 
     }
 
+    class jjj{
+        var tags = mutableSetOf<String>()
+    }
     @Test
     fun rou(){
-        var d:Double = -4.9;
-        println(d.toInt())
+        var j = jjj();
+        j.tags.add("OK")
+
+        println(j.ToJson().FromJson<jjj>().ToJson())
     }
 }

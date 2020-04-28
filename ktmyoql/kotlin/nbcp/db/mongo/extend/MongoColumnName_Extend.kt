@@ -63,8 +63,8 @@ private fun proc_mongo_match(key: MongoColumnName, value: Any?): Pair<String, An
             }
             return@map it
         }.toTypedArray()
-    } else if (type.IsListType()) {
-        value = (value as List<*>).map {
+    } else if (value is Collection<*>) {
+        value = value.map {
             if (it != null && it::class.java.isEnum) {
                 return@map it.toString()
             }
