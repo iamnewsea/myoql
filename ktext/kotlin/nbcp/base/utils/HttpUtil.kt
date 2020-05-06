@@ -241,6 +241,8 @@ class HttpUtil(var url: String = "") {
             conn.doOutput = true
             conn.useCaches = false
 
+            conn.setRequestProperty("Connection", "close")
+
             //如果获取 conn!!.contentType，则 content-length 就为0
             requestHeader.forEach {
                 conn.setRequestProperty(it.key, it.value);
