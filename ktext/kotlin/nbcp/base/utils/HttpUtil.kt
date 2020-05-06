@@ -107,10 +107,10 @@ class HttpUtil(var url: String = "") {
     }
 
 
-    var responseResult: ByteArray = byteArrayOf(0)
-    private var requestAction: ((HttpURLConnection) -> Unit)? = null
-    private var responseAction: ((HttpURLConnection) -> Unit)? = null
-    val requestHeader: StringMap = StringMap()
+    var responseResult: ByteArray = byteArrayOf()
+    private var requestActions: MutableList<((HttpURLConnection) -> Unit)> = mutableListOf()
+    private var responseActions: MutableList<((HttpURLConnection) -> Unit)> = mutableListOf()
+
     private var postBody = byteArrayOf()
 
     /**
@@ -153,17 +153,17 @@ class HttpUtil(var url: String = "") {
 //    }
 
     fun setRequestHeader(key: String, value: String): HttpUtil {
-        this.requestHeader.set(key, value);
+        this.setRequest { it.setRequestProperty(key,value) }
         return this;
     }
 
     fun setRequest(action: ((HttpURLConnection) -> Unit)): HttpUtil {
-        this.requestAction = action
+        this.requestActions.add(action)
         return this;
     }
 
     fun setResponse(action: ((HttpURLConnection) -> Unit)): HttpUtil {
-        this.responseAction = action
+        this.responseActions.add(action);
         return this;
     }
 
@@ -179,33 +179,40 @@ class HttpUtil(var url: String = "") {
      * Post请求
      */
     fun doPost(postJson: JsonMap): String {
-        if (requestHeader.containsKey("Accept") == false) {
-            requestHeader["Accept"] = "application/json";
+
+        this.setRequest {
+            if( it.requestProperties.containsKey("Accept") == false){
+                it.setRequestProperty("Accept","application/json")
+            }
+            if( it.requestProperties.containsKey("Content-Type") == false){
+                it.setRequestProperty("Content-Type","application/json;charset=UTF-8")
+            }
+
+            var requestBody = "";
+            if( it.getRequestProperty("Content-Type").AsString().contains("json") == false){
+                requestBody = postJson.map { it.key + "=" + it.value }.joinToString("&");
+            }
+            else{
+                requestBody = postJson.ToJson();
+            }
+
+            this.setPostBody(requestBody)
         }
 
-        if (requestHeader.containsKey("Content-Type") == false) {
-            requestHeader["Content-Type"] = "application/json;charset=UTF-8";
-        }
-
-        var requestBody = "";
-        if (requestHeader["Content-Type"].toString().indexOf("json") < 0) {
-            requestBody = postJson.map { it.key + "=" + it.value }.joinToString("&");
-        } else {
-            requestBody = postJson.ToJson();
-        }
-
-        return doPost(requestBody);
+        return doPost();
     }
 
     /**
      * Post请求
      */
-    fun doPost(requestBody: String): String {
+    fun doPost(requestBody: String = ""): String {
 //        logger.Info { "[post]\t${url}\n${requestHeader.map { it.key + ":" + it.value }.joinToString("\n")}" }
 
         this.setRequest { it.requestMethod = "POST" }
 
-        this.setPostBody(requestBody)
+        if( requestBody.HasValue) {
+            this.setPostBody(requestBody)
+        }
 
         var ret = doNet()
 //        { conn ->
@@ -230,37 +237,42 @@ class HttpUtil(var url: String = "") {
     }
 
     fun doNet(): ByteArray {
-        var conn: HttpURLConnection? = null;
+        var conn: HttpURLConnection? = null
 //        var lines = mutableListOf<String>()
         try {
-            //建立连接
             conn = URL(url).openConnection() as HttpURLConnection;
+
+            //建立连接
             conn.requestMethod = "POST"
             conn.instanceFollowRedirects = false
             conn.doInput = true
             conn.doOutput = true
             conn.useCaches = false
+            conn.connectTimeout = 3000;
+            conn.readTimeout = 5000;
 
+            conn.setChunkedStreamingMode(0)
             conn.setRequestProperty("Connection", "close")
 
-            //如果获取 conn!!.contentType，则 content-length 就为0
-            requestHeader.forEach {
-                conn.setRequestProperty(it.key, it.value);
+
+            this.requestActions.forEach {
+                it.invoke(conn!!);
             }
 
-            if (this.requestAction != null) {
-                this.requestAction!!.invoke(conn)
-            }
-
-            conn.connect();
+//            conn.connect();
 
             if (this.postBody.any()) {
                 //POST数据
-                var out = DataOutputStream(conn.outputStream);
-                out.write(this.postBody);
 
-                out.flush();
-                out.close();
+                var out = DataOutputStream(conn.outputStream);
+                try {
+                    out.write(this.postBody);
+                    out.flush();
+                } catch (e: Exception) {
+                    throw e;
+                } finally {
+                    out.close()
+                }
             }
 
             this.status = conn.responseCode
@@ -273,22 +285,27 @@ class HttpUtil(var url: String = "") {
                 this.responseHeader[it.key.toLowerCase()] = value
             }
 
-            if (this.responseAction != null) {
-                this.responseAction!!.invoke(conn)
+            this.responseActions.forEach {
+                it.invoke(conn!!);
             }
 
-
-            this.setResponse { conn ->
-                var char_parts = conn.contentType.AsString().split(";").last().split("=");
-                if (char_parts.size == 2) {
-                    if (char_parts[0].trim().VbSame("charset")) {
-                        responseCharset = char_parts[1];
-                    }
+            var char_parts = conn.contentType.AsString().split(";").last().split("=");
+            if (char_parts.size == 2) {
+                if (char_parts[0].trim().VbSame("charset")) {
+                    responseCharset = char_parts[1];
                 }
             }
 
+
             try {
-                this.responseResult = toByteArray(conn.getInputStream());
+                var input = conn.inputStream;
+                try {
+                    this.responseResult = toByteArray(input);
+                } catch (e: Exception) {
+                    throw e;
+                } finally {
+                    input.close()
+                }
                 return this.responseResult;
             } catch (e: Exception) {
                 msg = e.message ?: "服务器错误"
@@ -299,59 +316,58 @@ class HttpUtil(var url: String = "") {
             msg = e.message ?: "请求错误"
             throw e;
         } finally {
-            try {
-                if (conn != null) {
-                    logger.InfoError(this.status != 200) {
-                        var msgs = mutableListOf<String>();
-                        msgs.add("${conn.requestMethod} ${url}\t[status:${this.status}]");
+            // 断开连接
 
-                        this.requestHeader.map {
-                            if (it.key == null) {
-                                return@map "\t${it.value}"
-                            }
-                            return@map "\t${it.key}:${it.value}"
-                        }.joinToString(line_break)
-                                .apply {
-                                    if (this.HasValue) {
-                                        msgs.add(this);
-                                    }
-                                }
+            if( conn != null) {
+                logger.InfoError(this.status != 200) {
+                    var msgs = mutableListOf<String>();
+                    msgs.add("${conn!!.requestMethod} ${url}\t[status:${this.status}]");
 
-                        //小于 10K
-                        if (postBody.any() && postBody.size < 10240) {
-                            msgs.add(postBody.toString(utf8))
+                    conn!!.requestProperties.map {
+                        if (it.key == null) {
+                            return@map "\t${it.value}"
                         }
-
-                        msgs.add("---")
-
-                        this.responseHeader.map {
-                            if (it.key == null) {
-                                return@map "\t${it.value}"
-                            }
-                            return@map "\t${it.key}:${it.value}"
-                        }.joinToString(line_break)
-                                .apply {
-                                    if (this.HasValue) {
-                                        msgs.add(this);
-                                    }
+                        return@map "\t${it.key}:${it.value}"
+                    }.joinToString(line_break)
+                            .apply {
+                                if (this.HasValue) {
+                                    msgs.add(this);
                                 }
+                            }
 
-                        //小于10K
-                        if (this.responseCharset.HasValue && this.responseResult.size < 10240) {
-                            msgs.add(this.responseResult.toString(Charset.forName(this.responseCharset)))
-                        }
-                        return@InfoError msgs.joinToString(line_break)
+                    //小于 10K
+                    if (postBody.any() && postBody.size < 10240) {
+                        msgs.add(postBody.toString(utf8))
                     }
+
+                    msgs.add("---")
+
+                    this.responseHeader.map {
+                        if (it.key == null) {
+                            return@map "\t${it.value}"
+                        }
+                        return@map "\t${it.key}:${it.value}"
+                    }.joinToString(line_break)
+                            .apply {
+                                if (this.HasValue) {
+                                    msgs.add(this);
+                                }
+                            }
+
+                    //小于10K
+                    if (this.responseCharset.HasValue && this.responseResult.size < 10240) {
+                        msgs.add(this.responseResult.toString(Charset.forName(this.responseCharset)))
+                    }
+
+                    var content = msgs.joinToString(line_break);
+                    msgs.clear();
+                    return@InfoError content;
                 }
-            } finally {
-
             }
 
 
-            if (conn != null) {
-                // 断开连接
-                conn.disconnect();
-            }
+            conn?.disconnect();
+            conn = null;
         }
     }
 
@@ -437,9 +453,10 @@ class HttpUtil(var url: String = "") {
 
         var boundary = "------" + CodeUtil.getCode();
 
-        this.requestHeader["Connection"] = "keep-alive"
-        this.requestHeader["Content-Type"] = "multipart/form-data; boundary=${boundary}"
-
+        this.setRequest {
+            it.setRequestProperty("Connection", "keep-alive")
+            it.setRequestProperty("Content-Type", "multipart/form-data; boundary=${boundary}")
+        }
 
         var b_file = FileInputStream(filePath)
 

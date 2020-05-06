@@ -72,7 +72,8 @@ data class WxRefundPayRequestData(
         var url = "https://api.mch.weixin.qq.com/secapi/pay/refund"
 
         val http = HttpUtil(url)
-        http.requestHeader["Content-Type"] = "text/xml;charset=UTF-8"
+        http.setRequest { it.setRequestProperty("Content-Type", "text/xml;charset=UTF-8") }
+
         var postData = wx.toXml(mchSecret, this);
 
         http.setRequest {
@@ -92,7 +93,6 @@ data class WxRefundPayRequestData(
         return JsonResult()
     }
 }
-
 
 
 /**

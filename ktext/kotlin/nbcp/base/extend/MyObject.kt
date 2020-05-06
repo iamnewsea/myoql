@@ -15,6 +15,7 @@ import java.nio.charset.Charset
 import java.time.*
 import java.time.temporal.Temporal
 import java.io.*
+import java.lang.Exception
 import java.lang.reflect.Modifier
 import java.util.*
 
@@ -654,12 +655,22 @@ val Logger.debug: Boolean
  * inline 内联方式可以拿到调用栈信息
  */
 inline fun Logger.InfoError(error: Boolean, msgFunc: (() -> String)) {
-    if (error) {
-        this.error(msgFunc())
-    } else {
-        this.info(msgFunc())
+    try {
+        var msg = msgFunc();
+        if (msg.isEmpty()) return;
+
+        if (error) {
+            this.error(msg)
+        } else {
+            this.info(msg)
+        }
+    } catch (e: Exception) {
+        println("记录日志出错：" + e.message)
+    } finally {
+
     }
 }
+
 
 inline fun Logger.Info(msgFunc: (() -> String)) = this.info(msgFunc())
 inline fun Logger.Error(msgFunc: (() -> String)) = this.error(msgFunc())

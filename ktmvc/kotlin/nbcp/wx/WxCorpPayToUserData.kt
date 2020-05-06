@@ -36,7 +36,7 @@ class WxCorpPayToUserData(
 
     var nonce_str: String = CodeUtil.getCode().Slice(0, 32)  //是
 
-    private fun getSSLSocketFactory( pkcs12FilePath: InputStream): SSLSocketFactory {
+    private fun getSSLSocketFactory(pkcs12FilePath: InputStream): SSLSocketFactory {
         /**
          * 注意PKCS12证书 是从微信商户平台-》账户设置-》 API安全 中下载的
          */
@@ -59,15 +59,18 @@ class WxCorpPayToUserData(
      *  用于企业向微信用户个人付款,发送到零钱
      *  @param pkcs12FilePath: 如果是打到资源包中，使用： ClassPathResource("wx-mch-cert/apiclient_cert.p12").inputStream
      */
-    fun payToPerson(mchSecret: String,pkcs12FilePath: InputStream): JsonResult {
+    fun payToPerson(mchSecret: String, pkcs12FilePath: InputStream): JsonResult {
         var url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers"
         val http = HttpUtil(url)
-        http.requestHeader["Content-Type"] = "text/xml;charset=UTF-8"
+        http.setRequest {
+            it.setRequestProperty("Content-Type", "text/xml;charset=UTF-8")
+        }
+
         var postData = wx.toXml(mchSecret, this);
 
         http.setRequest {
             (it as javax.net.ssl.HttpsURLConnection)
-                    .setSSLSocketFactory(getSSLSocketFactory( pkcs12FilePath))
+                    .setSSLSocketFactory(getSSLSocketFactory(pkcs12FilePath))
         }
 
         val result = http.doPost(postData)
@@ -80,7 +83,7 @@ class WxCorpPayToUserData(
             return JsonResult("发送红包出错:" + result.return_msg.AsString(result.err_code_des));
         }
 
-        if (result.return_msg == "NO_AUTH"){
+        if (result.return_msg == "NO_AUTH") {
             return JsonResult("发送红包出错:" + result.return_msg.AsString(result.err_code_des));
         }
 

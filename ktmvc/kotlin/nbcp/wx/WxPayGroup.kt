@@ -94,7 +94,10 @@ object WxPayGroup {
          */
         fun getPrepayId(mchSecret: String): ApiResult<String> {
             val url = HttpUtil("https://api.mch.weixin.qq.com/pay/unifiedorder")
-            url.requestHeader["Content-Type"] = "text/xml;charset=UTF-8"
+            url.setRequest {
+                it.setRequestProperty("Content-Type", "text/xml;charset=UTF-8")
+            }
+
             val result = url.doPost(this.toWxAppPayXml(mchSecret))
                     .Xml2Json()
                     .get("xml")

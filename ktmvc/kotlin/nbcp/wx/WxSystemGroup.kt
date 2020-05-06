@@ -154,7 +154,7 @@ object WxSystemGroup {
         }
 
         url.url = "${wx_url}${tokenData.data!!.token}"
-        url.requestHeader["Content-Type"] = MediaType.APPLICATION_JSON_VALUE
+        url.setRequest { it.setRequestProperty("Content-Type", MediaType.APPLICATION_JSON_VALUE) }
 
         var ret = url.doPost(data.ToJson()).FromJson<wx_msg_return_data>() ?: wx_msg_return_data()
         if (ret.errcode != 0) {
