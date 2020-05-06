@@ -8,6 +8,7 @@ import nbcp.comm.*
 import nbcp.db.mongo.*
 import org.bson.Document
 import org.bson.types.ObjectId
+import org.slf4j.LoggerFactory
 import org.springframework.core.convert.support.GenericConversionService
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory
@@ -21,6 +22,9 @@ import org.springframework.data.mongodb.core.query.Criteria
  * 请使用 db.mongo
  */
 object db_mongo {
+    private val logger by lazy {
+        return@lazy LoggerFactory.getLogger(this::class.java)
+    }
     //     val sqlEvents = SpringUtil.getBean<SqlEventConfig>();
     val mongoEvents by lazy {
         return@lazy SpringUtil.getBean<MongoEntityEvent>();
@@ -50,16 +54,31 @@ object db_mongo {
         return getMongoTemplateByUri(uri)
     }
 
+    /**
+     * MongoTemplate不释放，所以要缓存。
+     */
+    private val mongo_template_map = linkedMapOf<String, MongoTemplate>()
+
+    /**
+     * 获取 MongoTemplate ,将会有一个连接的线程在等待，所以要避免 using 而不释放。
+     */
     fun getMongoTemplateByUri(uri: String): MongoTemplate? {
         if (uri.isEmpty()) return null;
 
+        var ret = mongo_template_map.get(uri);
+        if (ret != null) {
+            return ret;
+        }
 
+        logger.error("新的连接：" + uri)
         var dbFactory = SimpleMongoClientDbFactory(uri);
         val converter = MappingMongoConverter(DefaultDbRefResolver(dbFactory), MongoMappingContext())
         converter.setTypeMapper(DefaultMongoTypeMapper(null));
         (converter.conversionService as GenericConversionService).addConverter(Date2LocalDateTimeConverter())
 
-        return MongoTemplate(dbFactory, converter);
+        ret = MongoTemplate(dbFactory, converter);
+        mongo_template_map.put(uri, ret);
+        return ret;
     }
     //----------------mongo expression-------------
 
