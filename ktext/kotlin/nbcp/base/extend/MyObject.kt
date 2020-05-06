@@ -171,12 +171,12 @@ val scopes: Stack<Any>
  *
  * @param initObjects: 可以是 array, list,IDisposeable,any , 如果是 array,list，则依次添加到作用域栈中。
  */
-inline fun <T> using(initObjects: Any, body: () -> T): T {
+inline fun <T, M : Any> using(initObjects: M, body: () -> T): T {
     return using(initObjects, body, {})
 }
 
 
-inline fun <T> using(initObjects: Any, body: () -> T, finally: (() -> Unit)): T {
+inline fun <T, M : Any> using(initObjects: M, body: () -> T, finally: ((M) -> Unit)): T {
     var init_list = mutableListOf<Any>()
 
     if (initObjects is List<*>) {
@@ -199,7 +199,7 @@ inline fun <T> using(initObjects: Any, body: () -> T, finally: (() -> Unit)): T 
                 it.dispose();
             }
         }
-        finally()
+        finally(initObjects)
         return ret;
     } finally {
         for (i in 1..init_list.size) {
