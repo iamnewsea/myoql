@@ -38,10 +38,13 @@ object db_sql {
     /**
      * 指派集合到数据库
      */
-    fun assignTableName2Database(tableName: String, data: DataSource) {
+    fun bindTableName2Database(tableName: String, data: DataSource) {
         this.dynamicTableDataSource.set(tableName, data)
     }
 
+    fun unbindTableName2Database(tableName: String) {
+        this.dynamicTableDataSource.remove(tableName)
+    }
     /**
      * 根据集合定义，获取 MongoTemplate
      */
