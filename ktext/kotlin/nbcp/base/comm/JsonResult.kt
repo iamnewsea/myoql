@@ -46,6 +46,8 @@ class ParameterInvalidException(msg: String, cause: String) : RuntimeException(m
 
 class NoDataException(msg: String, cause: String = "") : RuntimeException(msg.AsString("找不到数据"))
 
+class ExecuteDbException(msg: String, cause: String = "") : RuntimeException(msg.AsString("操作数据库失败"))
+
 class ServerException(msg: String, cause: String = "") : RuntimeException(msg.AsString("服务器异常"))
 
 /**
