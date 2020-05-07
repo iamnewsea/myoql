@@ -184,13 +184,32 @@ inline fun <T> Array<out T>.ForEachExt(action: (T, Int) -> Boolean): Boolean {
     return this.toList().ForEachExt(action);
 }
 
-
-fun <T> MutableList<T>.InsertAfter(index: Int, item: T) {
-    if (index < 0 || index > this.size) return;
-
-    if (this.size == index) {
-        this.add(item);
+/**
+ * 小于0，插入第1位。
+ * 大于长度，插入最后一位。
+ */
+fun <T> MutableList<T>.InsertBefore(index: Int, item: T) {
+    if (index < 0) {
+        this.add(0, item);
         return;
+    }
+    if (index >= this.size) {
+        this.add(item);
+    }
+    this.add(index, item);
+}
+
+/**
+ * 小于0，插入第1位。
+ * 大于长度，插入最后一位。
+ */
+fun <T> MutableList<T>.InsertAfter(index: Int, item: T) {
+    if (index < 0) {
+        this.add(0, item);
+        return;
+    }
+    if (index >= this.size - 1) {
+        this.add(item);
     }
 
     this.add(index + 1, item);
