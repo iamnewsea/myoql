@@ -22,9 +22,6 @@ import org.springframework.data.mongodb.core.query.Criteria
  * 请使用 db.mongo
  */
 object db_mongo {
-    private val logger by lazy {
-        return@lazy LoggerFactory.getLogger(this::class.java)
-    }
     //     val sqlEvents = SpringUtil.getBean<SqlEventConfig>();
     val mongoEvents by lazy {
         return@lazy SpringUtil.getBean<MongoEntityEvent>();
@@ -70,7 +67,6 @@ object db_mongo {
             return ret;
         }
 
-        logger.error("新的连接：" + uri)
         var dbFactory = SimpleMongoClientDbFactory(uri);
         val converter = MappingMongoConverter(DefaultDbRefResolver(dbFactory), MongoMappingContext())
         converter.setTypeMapper(DefaultMongoTypeMapper(null));
