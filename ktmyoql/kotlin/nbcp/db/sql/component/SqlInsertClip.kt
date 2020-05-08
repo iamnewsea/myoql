@@ -1,15 +1,14 @@
 package nbcp.db.sql
 
 import org.slf4j.LoggerFactory
-import org.springframework.jdbc.core.BatchPreparedStatementSetter
 import org.springframework.jdbc.core.PreparedStatementCreator
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import nbcp.comm.*
+import nbcp.db.BaseEntity
 
 import nbcp.utils.*
 import nbcp.db.db
 import java.lang.RuntimeException
-import java.sql.PreparedStatement
 import java.sql.Statement
 import java.time.LocalDateTime
 
@@ -17,7 +16,7 @@ import java.time.LocalDateTime
 /**
  * Created by yuxh on 2018/7/2
  */
-class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
+class SqlInsertClip<M : SqlBaseTable<out T>, T : ISqlDbEntity>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
 
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -57,6 +56,14 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
     过滤掉是 null 的列.
      */
     fun add(entity: T): SqlInsertClip<M, T> {
+        if (entity is BaseEntity) {
+            if (entity.id.isEmpty()) {
+                entity.id = CodeUtil.getCode()
+                entity.createAt = LocalDateTime.now()
+            }
+        }
+
+
         this.ori_entities.add(entity)
 
         var ent = entity.ConvertJson(JsonMap::class.java)
@@ -157,7 +164,7 @@ class SqlInsertClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
         if (this.entities.size == 1) {
             n = insert1()
         } else if (this.multiBatchSize <= 0) {
-            n = insertMany(0,this.entities.size)
+            n = insertMany(0, this.entities.size)
         } else {
             var batchSize = this.multiBatchSize;
             var times = this.entities.size / batchSize;

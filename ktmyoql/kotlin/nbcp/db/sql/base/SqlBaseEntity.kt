@@ -1,9 +1,7 @@
 package nbcp.db.sql
 
-import nbcp.db.sql.BaseDbEntity
 
-
-abstract class SqlBaseTable<T : IBaseDbEntity>(val tableClass: Class<T>, tableName: String)
+abstract class SqlBaseTable<T : ISqlDbEntity>(val tableClass: Class<T>, tableName: String)
     : BaseDbEntity(tableName) {
     abstract fun getUks(): Array<Array<String>>
     abstract fun getFks(): Array<FkDefine>

@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
 
-class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M) : SqlBaseQueryClip(mainEntity.tableName) {
+class SqlQueryClip<M : SqlBaseTable<out T>, T : ISqlDbEntity>(var mainEntity: M) : SqlBaseQueryClip(mainEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -82,7 +82,7 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
         return this;
     }
 
-    private fun <M2 : SqlBaseTable<out T2>, T2 : IBaseDbEntity> getJoinOnWhere(joinTable: M2): WhereData {
+    private fun <M2 : SqlBaseTable<out T2>, T2 : ISqlDbEntity> getJoinOnWhere(joinTable: M2): WhereData {
 
         var fks = this.mainEntity.getFks().filter { it.refTable == joinTable.tableName }
         if (fks.size == 0) {
@@ -95,7 +95,7 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
         return WhereData("${db.sql.getSqlQuoteName(fk.table)}.${db.sql.getSqlQuoteName(fk.column)} = ${db.sql.getSqlQuoteName(fk.refTable)}.${db.sql.getSqlQuoteName(fk.refColumn)}")
     }
 
-    fun <M2 : SqlBaseTable<out T2>, T2 : IBaseDbEntity> join(joinTable: M2, onWhere: (M, M2) -> WhereData, select: ((M2) -> SqlColumnNames)? = null): SqlQueryClip<M, T> {
+    fun <M2 : SqlBaseTable<out T2>, T2 : ISqlDbEntity> join(joinTable: M2, onWhere: (M, M2) -> WhereData, select: ((M2) -> SqlColumnNames)? = null): SqlQueryClip<M, T> {
         this.joins.add(JoinTableData("join", joinTable, onWhere(this.mainEntity, joinTable), if (select == null) SqlColumnNames() else select(joinTable)))
         return this
     }
@@ -103,12 +103,12 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
     /**
      * 根据外键自动 onWhere
      */
-    fun <M2 : SqlBaseTable<out T2>, T2 : IBaseDbEntity> join(joinTable: M2, select: ((M2) -> SqlColumnNames)? = null): SqlQueryClip<M, T> {
+    fun <M2 : SqlBaseTable<out T2>, T2 : ISqlDbEntity> join(joinTable: M2, select: ((M2) -> SqlColumnNames)? = null): SqlQueryClip<M, T> {
         this.join(joinTable, { a, b -> getJoinOnWhere(joinTable) }, select)
         return this
     }
 
-    fun <M2 : SqlBaseTable<out T2>, T2 : IBaseDbEntity> left_join(joinTable: M2, onWhere: (M, M2) -> WhereData, select: ((M2) -> SqlColumnNames)? = null): SqlQueryClip<M, T> {
+    fun <M2 : SqlBaseTable<out T2>, T2 : ISqlDbEntity> left_join(joinTable: M2, onWhere: (M, M2) -> WhereData, select: ((M2) -> SqlColumnNames)? = null): SqlQueryClip<M, T> {
         this.joins.add(JoinTableData("left join", joinTable, onWhere(this.mainEntity, joinTable), select?.invoke(joinTable)
                 ?: SqlColumnNames()))
         return this
@@ -117,7 +117,7 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
     /**
      * 根据外键自动 onWhere
      */
-    fun <M2 : SqlBaseTable<out T2>, T2 : IBaseDbEntity> left_join(joinTable: M2, select: ((M2) -> SqlColumnNames)? = null): SqlQueryClip<M, T> {
+    fun <M2 : SqlBaseTable<out T2>, T2 : ISqlDbEntity> left_join(joinTable: M2, select: ((M2) -> SqlColumnNames)? = null): SqlQueryClip<M, T> {
         this.left_join(joinTable, { a, b -> getJoinOnWhere(joinTable) }, select)
         return this
     }
@@ -315,7 +315,7 @@ class SqlQueryClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M
         return super.exists()
     }
 
-    fun <M2 : SqlBaseTable<out IBaseDbEntity>> insertInto(insertTable: M2): Int {
+    fun <M2 : SqlBaseTable<out ISqlDbEntity>> insertInto(insertTable: M2): Int {
         db.affectRowCount = -1;
         var select = this
 

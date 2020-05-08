@@ -56,7 +56,7 @@ class SqlEntityEvent : BeanPostProcessor {
     }
 
 
-    private fun addRef(entityClass: Class<out IBaseDbEntity>) {
+    private fun addRef(entityClass: Class<out ISqlDbEntity>) {
         var refs = entityClass.getAnnotation(DbEntityFieldRefs::class.java)
         if (refs != null && refs.values.any()) {
             refs.values.forEach {
@@ -70,7 +70,7 @@ class SqlEntityEvent : BeanPostProcessor {
         }
     }
 
-    private fun addDustbin(entityClass: Class<out IBaseDbEntity>) {
+    private fun addDustbin(entityClass: Class<out ISqlDbEntity>) {
         var dustbin = entityClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dustbin != null) {
             dustbinEntitys.add(entityClass)

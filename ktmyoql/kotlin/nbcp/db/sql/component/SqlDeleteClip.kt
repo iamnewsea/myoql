@@ -4,14 +4,13 @@ import org.slf4j.LoggerFactory
 import nbcp.comm.*
 
 import nbcp.db.db
-import nbcp.db.sql.*
 import java.time.LocalDateTime
 
 /**
  * Created by yuxh on 2018/7/2
  */
 
-class SqlDeleteClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
+class SqlDeleteClip<M : SqlBaseTable<out T>, T : ISqlDbEntity>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

@@ -1,11 +1,10 @@
 package nbcp.db.sql
 
 
-import nbcp.db.sql.*
 import java.io.Serializable
 
 
-data class JoinTableData<M : SqlBaseTable<out T>, T : IBaseDbEntity>
+data class JoinTableData<M : SqlBaseTable<out T>, T : ISqlDbEntity>
 (
         val joinType:String,
         val joinTable:M,

@@ -13,7 +13,7 @@ import java.time.LocalDateTime
  * Created by yuxh on 2018/7/2
  */
 
-class SqlUpdateClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
+class SqlUpdateClip<M : SqlBaseTable<out T>, T : ISqlDbEntity>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -22,7 +22,7 @@ class SqlUpdateClip<M : SqlBaseTable<out T>, T : IBaseDbEntity>(var mainEntity: 
     private val sets = linkedMapOf<SqlColumnName, Any?>()
     private val joins = mutableListOf<JoinTableData<*, *>>()
 
-    fun <M2 : SqlBaseTable<out T2>, T2 : IBaseDbEntity> join(joinTable: M2, onWhere: (M, M2) -> WhereData): SqlUpdateClip<M, T> {
+    fun <M2 : SqlBaseTable<out T2>, T2 : ISqlDbEntity> join(joinTable: M2, onWhere: (M, M2) -> WhereData): SqlUpdateClip<M, T> {
         this.joins.add(JoinTableData("join", joinTable, onWhere(this.mainEntity, joinTable), SqlColumnNames()))
         return this
     }
