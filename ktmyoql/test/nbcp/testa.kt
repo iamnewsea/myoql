@@ -9,20 +9,20 @@ import java.time.LocalDateTime
 
 @DbEntityGroup("sys")
 class e_test(
-    var module: String = "", //模块
-    var type: String = "",  //类型
-    @Define("""{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}""")
-    var key: String = "",   //实体标志, 查询用： module + key
-    @Define("""{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}""")
-    var msg: String = "",   //消息
-    @Define("""{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}""")
-    var data: String = "",
-    @Define("""{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}""")
-    var remark: String = "",
-    var clientIp: String = "",
-    var creatAt: LocalDateTime = LocalDateTime.now(),
-    var creatorId: String = ""
-): IEsDocument()
+        var module: String = "", //模块
+        var type: String = "",  //类型
+        @Define("""{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}""")
+        var key: String = "",   //实体标志, 查询用： module + key
+        @Define("""{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}""")
+        var msg: String = "",   //消息
+        @Define("""{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}""")
+        var data: String = "",
+        @Define("""{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}""")
+        var remark: String = "",
+        var clientIp: String = "",
+        var creatAt: LocalDateTime = LocalDateTime.now(),
+        var creatorId: String = ""
+) : BaseEntity(), IEsDocument
 
 class testa : TestBase() {
     @Test
@@ -33,6 +33,6 @@ class testa : TestBase() {
     @Test
     fun abc() {
         var m = generator_mapping();
-        m.work("mapping","nbcp",e_test::class.java)
+        m.work("mapping", "nbcp", e_test::class.java)
     }
 }

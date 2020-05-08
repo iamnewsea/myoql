@@ -28,7 +28,7 @@ open class BasicUser(
         var workLocation: String = "", //工作地
 
         var token: String = ""      // = BasicUserLoginInfo.token
-) : IMongoDocument() {
+) : BaseEntity(), IMongoDocument  {
 
 //    var name: String
 //        get() = this.identityCard.name
@@ -59,7 +59,7 @@ open class BasicUserLoginInfo(
 
         var isLocked: Boolean = false,
         var lockedRemark: String = ""
-) : IMongoDocument()
+) :BaseEntity(), IMongoDocument
 
 
 @Document
@@ -75,7 +75,7 @@ open class SysOrganization(
         var logo: IdUrl = IdUrl(),
         var isLocked: Boolean = true,
         var lockedRemark: String = ""
-) : IMongoDocument()
+) : BaseEntity(), IMongoDocument
 
 /**
  * 应用中心
@@ -93,7 +93,7 @@ open class SysApplication(
         var org: IdName = IdName(),             //所属组织信息
         var isLocked: Boolean = false,
         var loadRemark: String = ""
-) : IMongoDocument()
+) : BaseEntity(), IMongoDocument
 
 
 //系统附件表
@@ -112,7 +112,7 @@ open class SysAnnex(
         var creator: IdName = IdName(), //创建者
         var corpId: String = "",    //创建所属企业,如果是 admin,则 id = "admin" , name = "admin 即可
         var errorMsg: String = ""      //文件处理时的错误消息
-) : IMongoDocument() {
+) : BaseEntity(), IMongoDocument   {
 }
 
 
@@ -129,7 +129,7 @@ data class SysCity(
         var telCode: String = "",
         var postCode: String = "",
         var pcode: Int = 0
-) : IMongoDocument()
+) : BaseEntity(), IMongoDocument
 
 @Document
 @DbEntityGroup("MongoBase")
@@ -143,7 +143,7 @@ open class SysLog(
         var clientIp: String = "",
         var creatAt: LocalDateTime = LocalDateTime.now(),
         var creatorId: String = ""
-) : IMongoDocument() {
+) : BaseEntity(), IMongoDocument   {
 }
 
 //存放删除的数据。
@@ -154,7 +154,7 @@ open class SysDustbin(
         var remark: String = "",
         var creator: IdName = IdName(),
         var data: Any = Object()
-) : IMongoDocument()
+) : BaseEntity(), IMongoDocument
 
 
 

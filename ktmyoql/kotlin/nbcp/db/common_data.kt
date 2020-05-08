@@ -1,8 +1,15 @@
-package nbcp.db.mongo
+package nbcp.db
 
-import nbcp.db.IdUrl
 import java.time.LocalDate
 import java.time.LocalDateTime
+
+
+open class BaseEntity {
+    var id: String = "";
+    var createAt: LocalDateTime = LocalDateTime.now()
+    var updateAt: LocalDateTime? = null
+}
+
 
 enum class UserSexEnum(var remark: String) {
     Male("男"),
@@ -13,12 +20,12 @@ enum class UserSexEnum(var remark: String) {
  * 身份证内容
  */
 open class IdentityCardData(
-    var photo: IdUrl = IdUrl(),
-    var name: String = "",
-    var number: String = "",
-    var sex: UserSexEnum? = null,
-    var birthday: LocalDate? = null,
-    var location: String = ""   //身份证地址
+        var photo: IdUrl = IdUrl(),
+        var name: String = "",
+        var number: String = "",
+        var sex: UserSexEnum? = null,
+        var birthday: LocalDate? = null,
+        var location: String = ""   //身份证地址
 )
 
 /**
@@ -37,4 +44,3 @@ open class BusinessLicenseData(
         var registeOrganization: String = "",   //登记机关
         var registeAt: String = ""      //注册时间
 )
-
