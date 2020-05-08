@@ -25,7 +25,9 @@ open class BasicUser(
         var liveCity: IntCodeName = IntCodeName(),
         var liveLocation: String = "",  //常住地
         var workCity: IntCodeName = IntCodeName(),
-        var workLocation: String = ""  //工作地
+        var workLocation: String = "", //工作地
+
+        var token: String = ""      // = BasicUserLoginInfo.token
 ) : IMongoDocument() {
 
 //    var name: String
@@ -40,7 +42,7 @@ open class BasicUser(
  */
 @Document
 @DbEntityGroup("MongoBase")
-data class BasicUserLoginInfo(
+open class BasicUserLoginInfo(
         var userId: String = "",    //用户Id,唯一
         var loginName: String = "",
         var mobile: String = "",    //认证后更新
@@ -66,7 +68,7 @@ data class BasicUserLoginInfo(
 open class SysOrganization(
         var name: String = "",          //这里的名称=自定义昵称
         var siteUrl: String = "",       //网站
-        var siteNumber: String = "",
+        var siteNumber: String = "",    //网站备案号
 
         var city: IntCodeName = IntCodeName(),
         var businessLicense: BusinessLicenseData = BusinessLicenseData(),
@@ -80,7 +82,7 @@ open class SysOrganization(
  */
 @Document
 @DbEntityGroup("MongoBase")
-data class SysApplication(
+open class SysApplication(
         var key: String = "",                    // 应用Id，CodeUtil.getCode()
         var name: String = "",                  //应用名称
         var remark: String = "",
