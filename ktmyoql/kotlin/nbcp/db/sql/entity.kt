@@ -25,7 +25,7 @@ data class s_annex(
         var corpId: String = "", //企业Id
         var errorMsg: String = "",      //文件处理时的错误消息
         var createAt: LocalDateTime = LocalDateTime.now()
-) : IBaseDbEntity() {
+) : IBaseDbEntity {
 }
 
 
@@ -43,7 +43,7 @@ data class s_log(
         var clientIp: String = "",
         var creatAt: LocalDateTime = LocalDateTime.now(),
         var creatorId: String = ""
-) : IBaseDbEntity()
+) : IBaseDbEntity
 
 @DbEntityGroup("SqlBase")
 @SqlUks("id")
@@ -55,4 +55,4 @@ data class s_dustbin(
         var creator_name: String = "",
         var data: String = "",  //保存 JSON 数据
         var createAt: LocalDateTime = LocalDateTime.now()
-) : IBaseDbEntity()
+) : IBaseDbEntity
