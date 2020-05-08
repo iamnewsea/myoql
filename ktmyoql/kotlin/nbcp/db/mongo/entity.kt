@@ -12,31 +12,36 @@ import nbcp.db.mongo.*
 @Document
 @DbEntityGroup("MongoBase")
 @RemoveToSysDustbin
-open class SsoUser(
+open class BasicUser(
+        var name: String = "",      //这里的名称=自定义昵称
         var loginName: String = "",
         var mobile: String = "",
         var email: String = "",
-
-        var name: String = "",
         var logo: IdUrl = IdUrl(), //头像.
+        var remark: String = "",
 
-        var idCard: UserIdCardData = UserIdCardData(),
+        var identityCard: IdentityCardData = IdentityCardData(),
 
         var liveCity: IntCodeName = IntCodeName(),
         var liveLocation: String = "",  //常住地
-        var corpName: String = "",
-        var job: String = "",
         var workCity: IntCodeName = IntCodeName(),
         var workLocation: String = ""  //工作地
-) : IMongoDocument()
+) : IMongoDocument() {
+
+//    var name: String
+//        get() = this.identityCard.name
+//        set(value) {
+//            this.identityCard.name = value
+//        }
+}
 
 /**
  * 登录信息
  */
 @Document
 @DbEntityGroup("MongoBase")
-data class SsoLoginUser(
-        var userId: String = "",   //用户Id
+data class BasicUserLoginInfo(
+        var userId: String = "",    //用户Id,唯一
         var loginName: String = "",
         var mobile: String = "",    //认证后更新
         var email: String = "",     //认证后更新
@@ -45,15 +50,30 @@ data class SsoLoginUser(
         var lastLoginAt: LocalDateTime = LocalDateTime.now(),
 
         var authorizeCode: String = "", //授权码
-        var token: String = "",     //常用数据，也会放到主表。
+        var token: String = "",         //常用数据，也会放到主表。
         var freshToken: String = "",
         var authorizeCodeCreateAt: LocalDateTime = LocalDateTime.now(),
+        var grantApps: MutableList<IdName> = mutableListOf(),  //授权的App
 
-        var grantApps:MutableList<IdName> = mutableListOf(),  //授权的App
         var isLocked: Boolean = false,
         var lockedRemark: String = ""
 ) : IMongoDocument()
 
+
+@Document
+@DbEntityGroup("MongoBase")
+@RemoveToSysDustbin
+open class SysOrganization(
+        var name: String = "",          //这里的名称=自定义昵称
+        var siteUrl: String = "",       //网站
+        var siteNumber: String = "",
+
+        var city: IntCodeName = IntCodeName(),
+        var businessLicense: BusinessLicenseData = BusinessLicenseData(),
+        var logo: IdUrl = IdUrl(),
+        var isLocked: Boolean = true,
+        var lockedRemark: String = ""
+) : IMongoDocument()
 
 /**
  * 应用中心
@@ -61,20 +81,17 @@ data class SsoLoginUser(
 @Document
 @DbEntityGroup("MongoBase")
 data class SysApplication(
-        var key: String = "",           // 应用Id，CodeUtil.getCode()
-        var name: String = "",
-        var slogan: String = "",                    // 广告语， 每次登录的时候显示
-        var logo: IdUrl = IdUrl(),      //应用Logo
-        var siteUrl: String = "",         //展示信息，应用主站
+        var key: String = "",                    // 应用Id，CodeUtil.getCode()
+        var name: String = "",                  //应用名称
         var remark: String = "",
         var hostDomainName: String = "",            // 安全域名，http 或 https 开头。
-        var secret: String = "",        //应用密钥，Api用。
-        var userUpdateHookCallbackUrl: String = "",    //用户更新后，通知App的回调。
+        var secret: String = "",                    //应用密钥，Api用。
+        var userUpdateHookCallbackUrl: String = "",     //用户更新后，通知App的回调。
         var authorizeRange: MutableList<String> = mutableListOf(),  //需要授权的信息
+        var org: IdName = IdName(),             //所属组织信息
         var isLocked: Boolean = false,
         var loadRemark: String = ""
 ) : IMongoDocument()
-
 
 
 //系统附件表
