@@ -25,9 +25,7 @@ open class BasicUser(
         var liveCity: IntCodeName = IntCodeName(),
         var liveLocation: String = "",  //常住地
         var workCity: IntCodeName = IntCodeName(),
-        var workLocation: String = "", //工作地
-
-        var token: String = ""      // = BasicUserLoginInfo.token
+        var workLocation: String = ""  //工作地
 ) : BaseEntity(), IMongoDocument  {
 
 //    var name: String
@@ -55,7 +53,8 @@ open class BasicUserLoginInfo(
         var token: String = "",         //常用数据，也会放到主表。
         var freshToken: String = "",
         var authorizeCodeCreateAt: LocalDateTime = LocalDateTime.now(),
-        var grantApps: MutableList<IdName> = mutableListOf(),  //授权的App
+        var grantApps: MutableList<IdName> = mutableListOf(),   //授权的App
+
 
         var isLocked: Boolean = false,
         var lockedRemark: String = ""
