@@ -58,6 +58,16 @@ fun <T> T.IsIn(equalFunc: ((T, T) -> Boolean)? = null, vararg values: T): Boolea
     return false;
 }
 
+/**
+ * 大于等于 start 并且 小于等于 end
+ */
+fun <T : Comparable<in T>> T.Between(start: T?, end: T?): Boolean {
+    if (start == null || end == null) return false;
+    if (this.compareTo(start) < 0) return false;
+    if (this.compareTo(end) > 0) return false;
+    return true;
+}
+
 //http://blog.csdn.net/doctor_who2004/article/details/50449561
 //fun Date.ToISODate(): String {
 //    val format = SimpleDateFormat(
