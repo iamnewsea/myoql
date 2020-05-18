@@ -5,6 +5,15 @@ import nbcp.comm.*
 
 /**
  * 尽量使用 JsonMap
+ *
+ * kotlin 的 linkedMapOf 本身是可以直接按值比较的。它的 hashCode() 函数返回值 依赖下面的内容
+ * 1. 泛型参数类型
+ * 2. keys 排序后的内容 hasCode()
+ * 3. 按 keys 排序后的 values  hasCode()
+ * ==>
+ * linkMapOf<String,String>("name" to "udi","age","99") == linkMapOf<String,Any>("age" to "99","name" to "udi")
+ * linkMapOf<String,String>("age","99") == linkMapOf<String,Any>("age" to "99")
+ * linkMapOf<String,String>("age","99") != linkMapOf<String,Any>("age" to 99)
  */
 open class StringKeyMap<T> : LinkedHashMap<String, T> {
     companion object {
