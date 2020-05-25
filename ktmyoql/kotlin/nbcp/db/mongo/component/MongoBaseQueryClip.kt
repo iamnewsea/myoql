@@ -18,6 +18,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     protected var sort: Document = Document()
     //    private var whereJs: String = "";
     protected var selectColumns = mutableSetOf<String>();
+    protected var selectProjections = JsonMap();
     //    private var selectDbObjects = mutableSetOf<String>();
     protected var unSelectColumns = mutableSetOf<String>()
 
@@ -42,11 +43,13 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         unKeys.add(take.toString())
         unKeys.add(sort.ToJson())
         unKeys.add(selectColumns.joinToString(","))
+        unKeys.add(selectProjections.ToJson())
         unKeys.add(unSelectColumns.joinToString(","))
 
 
         return Md5Util.getBase64Md5(unKeys.joinToString("\n"));
     }
+
 
     /**
      * 核心功能，查询列表，原始数据对象是 Document
@@ -62,6 +65,10 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         var projection = Document();
         selectColumns.forEach {
             projection.put(it, 1)
+        }
+
+        selectProjections.forEach {
+            projection.put(it.key,it.value)
         }
 
         unSelectColumns.forEach {
@@ -94,7 +101,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
 //        var mapper = mor.util.getMongoMapper(collectionName, clazz);
 
         var ret = mutableListOf<R>();
-        var lastKey = selectColumns.lastOrNull() ?: ""
+        var lastKey = selectColumns.lastOrNull() ?:  selectProjections.map{it.key}.lastOrNull() ?: ""
 
         if (lastKey == "_id") {
             lastKey = "id"
@@ -142,9 +149,10 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                 var msgs = mutableListOf<String>()
                 msgs.add("[query] " + this.collectionName);
                 msgs.add("[where] " + criteria.criteriaObject.ToJson())
-                if (selectColumns.any()) {
-                    msgs.add("[select] " + selectColumns.joinToString(","))
+                if (selectColumns.any() || selectProjections.any()) {
+                    msgs.add("[select] " + arrayOf(selectColumns.joinToString(","), selectProjections.ToJson()).joinToString(","))
                 }
+
                 if (unSelectColumns.any()) {
                     msgs.add("[unselect] " + unSelectColumns.joinToString(","))
                 }

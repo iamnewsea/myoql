@@ -57,13 +57,24 @@ class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity:
         return this;
     }
 
-    fun where(whereData: List<Criteria>): MongoQueryClip<M, E> {
-        this.whereData.addAll(whereData);
-        return this;
-    }
+//    fun where(whereData: List<Criteria>): MongoQueryClip<M, E> {
+//        this.whereData.addAll(whereData);
+//        return this;
+//    }
 
     fun where(where: (M) -> Criteria): MongoQueryClip<M, E> {
         this.whereData.add(where(moerEntity));
+        return this;
+    }
+
+    fun selectWhere_elemMatch(where: (M) -> Criteria): MongoQueryClip<M, E> {
+        this.where(where);
+        return this.select_elemMatch(where)
+    }
+
+    fun select_elemMatch(where: (M) -> Criteria): MongoQueryClip<M, E> {
+        var doc = where(moerEntity).toDocument();
+        this.selectProjections.putAll(doc)
         return this;
     }
 

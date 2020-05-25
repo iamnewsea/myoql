@@ -1,7 +1,9 @@
 package nbcp.db.mongo
 
+import com.mongodb.client.model.Projections
 import nbcp.comm.*
 import org.bson.BasicBSONObject
+import org.bson.conversions.Bson
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
 import java.time.LocalDate
@@ -222,12 +224,15 @@ infix fun MongoColumnName.match_hasValue(value: Boolean): Criteria {
 
 
 /**
- * 用于 match
+ * 用于 数组的 match
+ * https://docs.mongodb.com/manual/reference/operator/query/elemMatch/index.html
+ * https://docs.mongodb.com/manual/reference/operator/projection/elemMatch/index.html
  */
 infix fun MongoColumnName.match_elemMatch(value: Criteria): Criteria {
     var (key) = proc_mongo_match(this, null);
     return Criteria.where(key).`elemMatch`(value);
 }
+
 
 ///**
 // * 用于 project
