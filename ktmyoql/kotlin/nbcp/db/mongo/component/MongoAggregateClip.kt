@@ -6,7 +6,6 @@ import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
 import nbcp.utils.*
 import nbcp.db.db
-import nbcp.db.mongo.*
 import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
 import java.time.LocalDateTime
@@ -16,7 +15,7 @@ import java.time.LocalDateTime
 /**
  * MongoAggregate
  */
-class MongoAggregateClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity: M) : MongoClipBase(moerEntity.tableName) {
+class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : IMongoDocument>(var moerEntity: M) : MongoClipBase(moerEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass);
     }
@@ -314,7 +313,7 @@ ${if (logger.debug) "[result] ${result?.ToJson()}" else "[result.size] ${result?
 }
 
 
-class BeginMatchClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var aggregate: MongoAggregateClip<M, E>) {
+class BeginMatchClip<M : MongoBaseMetaCollection<E>, E : IMongoDocument>(var aggregate: MongoAggregateClip<M, E>) {
     private var wheres = mutableListOf<Criteria>()
     fun where(where: (M) -> Criteria): BeginMatchClip<M, E> {
         wheres.add(where(this.aggregate.moerEntity))

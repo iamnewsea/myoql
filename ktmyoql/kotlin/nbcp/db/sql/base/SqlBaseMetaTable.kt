@@ -1,17 +1,30 @@
 package nbcp.db.sql
 
-import nbcp.comm.AsString
 import nbcp.comm.AllFields
-import nbcp.db.sql.SqlBaseTable
+import nbcp.comm.AsString
+import nbcp.db.*
 import java.lang.reflect.Modifier
 
-/**
- * Created by yuxh on 2018/7/18
- */
-abstract class BaseDbEntity(val tableName: String) : java.io.Serializable {
+
+abstract class SqlBaseMetaTable<T : ISqlDbEntity>(val tableClass: Class<T>, tableName: String)
+    : BaseMetaData(tableName) {
+    abstract fun getUks(): Array<Array<String>>
+    abstract fun getFks(): Array<FkDefine>
+    abstract fun getRks(): Array<Array<String>>
+    abstract fun getAutoIncrementKey(): String
+
+    fun getColumns(): SqlColumnNames {
+        var ret = SqlColumnNames()
+        ret.addAll(this::class.java.declaredFields
+                .filter { it.type == SqlColumnName::class.java }
+                .map { it.isAccessible = true; it.get(this) as SqlColumnName }
+        )
+
+        return ret;
+    }
+
+
     protected var tableAliaValue: String = ""
-
-
     /**
      * this.tableAliaValue.AsString(this.tableName)
      */
@@ -30,10 +43,11 @@ abstract class BaseDbEntity(val tableName: String) : java.io.Serializable {
     }
 }
 
+
 /**
  * 设置别名。
  */
-fun <T : BaseDbEntity> T.alias(alias: String): T {
+fun <T : SqlBaseMetaTable<M>, M> T.alias(alias: String): T {
     var type = this::class.java;
     var ret = type.newInstance()
 
@@ -49,7 +63,7 @@ fun <T : BaseDbEntity> T.alias(alias: String): T {
 
     ret.oriSetAlias(alias);
 
-    if (ret is SqlBaseTable<*>) {
+    if (ret is SqlBaseMetaTable<*>) {
         ret.getColumns().forEach {
             it.tableName = alias;
         }

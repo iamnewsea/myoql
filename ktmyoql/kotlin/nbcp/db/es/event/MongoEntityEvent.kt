@@ -25,7 +25,7 @@ class EsEntityEvent : BeanPostProcessor {
          * 根据名称查找定义的集合。
          */
         fun getCollection(collectionName: String): EsBaseEntity<IEsDocument>? {
-            var ret: BaseDbEntity? = null
+            var ret: BaseMetaData? = null
             db.es.groups.any { group ->
                 ret = group.getEntities().firstOrNull() { it.tableName == collectionName }
 

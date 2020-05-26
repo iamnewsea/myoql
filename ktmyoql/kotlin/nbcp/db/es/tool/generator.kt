@@ -72,7 +72,7 @@ ${packages.map { "import" + it }.joinToString(line_break)}
 @Component("es.${groupName}")
 @MetaDataGroup("${groupName}")
 object ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
-    override fun getEntities():Set<BaseDbEntity> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
+    override fun getEntities():Set<BaseMetaData> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
 """)
             println("${groupName}:")
             groupEntities.forEach {

@@ -1,11 +1,9 @@
 package nbcp.db.mongo
 
 
-import org.bson.types.ObjectId
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.db
-import nbcp.db.mongo.*
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.Criteria
 
@@ -19,7 +17,7 @@ import org.springframework.data.mongodb.core.query.Criteria
  * MongoUpdate
  * 不会更新 id
  */
-class MongoSetEntityUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M, var entity: IMongoDocument) : MongoBaseUpdateClip(moerEntity.tableName) {
+class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out IMongoDocument>>(var moerEntity: M, var entity: IMongoDocument) : MongoBaseUpdateClip(moerEntity.tableName) {
     companion object {
         private val logger by lazy {
             return@lazy LoggerFactory.getLogger(this::class.java)

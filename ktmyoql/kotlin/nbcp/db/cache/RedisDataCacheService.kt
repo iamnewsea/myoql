@@ -23,9 +23,7 @@ import javax.annotation.PostConstruct
 open class RedisDataCacheService : IDataCache4Sql {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
-        private val rer_base by lazy {
-            return@lazy RedisBaseGroup()
-        }
+        private val rer_base = db.rer_base
     }
 
     var cacheDefine: LinkedHashMap<String, String> = linkedMapOf()

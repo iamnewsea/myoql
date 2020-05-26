@@ -1,23 +1,17 @@
 package nbcp.db.mongo
 
-import com.mongodb.DBCursor
-import com.mongodb.client.model.DBCollectionFindOptions
 import nbcp.comm.*
 import org.bson.Document
-import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
-import org.springframework.data.mongodb.core.query.Query
-import nbcp.comm.*
 //import nbcp.comm.*
 
 
-import nbcp.db.mongo.*
 import org.slf4j.LoggerFactory
 
 /**
  * MongoQuery
  */
-class MongoQueryClip<M : MongoBaseEntity<E>, E : IMongoDocument>(var moerEntity: M) : MongoBaseQueryClip(moerEntity.tableName) {
+class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : IMongoDocument>(var moerEntity: M) : MongoBaseQueryClip(moerEntity.tableName) {
 
 
     fun limit(skip: Int, take: Int): MongoQueryClip<M, E> {

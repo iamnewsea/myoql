@@ -3,10 +3,8 @@ package nbcp.db.mongo
 
 import nbcp.comm.*
 import nbcp.db.db
-import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
-import nbcp.db.mongo.*
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.time.LocalDateTime
@@ -18,7 +16,7 @@ import java.time.LocalDateTime
 /**
  * MongoDelete
  */
-class MongoDeleteClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M) : MongoClipBase(moerEntity.tableName), IMongoWhereable {
+class MongoDeleteClip<M : MongoBaseMetaCollection<out IMongoDocument>>(var moerEntity: M) : MongoClipBase(moerEntity.tableName), IMongoWhereable {
     val whereData = mutableListOf<Criteria>()
 
     companion object {

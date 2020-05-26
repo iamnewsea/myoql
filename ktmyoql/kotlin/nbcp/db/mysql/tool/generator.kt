@@ -76,7 +76,7 @@ import org.springframework.stereotype.Component
 @Component("sql.${group.key}")
 @MetaDataGroup("${group.key}")
 object ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
-    override fun getEntities():Set<SqlBaseTable<*>> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
+    override fun getEntities():Set<BaseMetaData> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
 """)
             println("${group.key}:")
             group.value.forEach { entityType ->
@@ -335,7 +335,7 @@ object ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 
         return """
 class ${entityTypeName}(datasource:String="")
-    :SqlBaseTable<${entType.name}>(${entType.name}::class.java,"${dbName}") {
+    :SqlBaseMetaTable<${entType.name}>(${entType.name}::class.java,"${dbName}") {
 ${props.joinToString("\n")}
 
     override fun getAutoIncrementKey(): String { return "${autoIncrementKey}"}

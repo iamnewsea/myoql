@@ -30,7 +30,7 @@ class SqlEntityEvent : BeanPostProcessor {
             db.sql.groups.add(bean)
 
             bean.getEntities().forEach { moer ->
-                if (moer is SqlBaseTable<*>) {
+                if (moer is SqlBaseMetaTable<*>) {
                     var entityClass = moer.tableClass
 
                     addDustbin(entityClass)

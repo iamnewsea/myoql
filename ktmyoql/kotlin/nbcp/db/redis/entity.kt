@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import kotlin.math.exp
 
-class RedisBaseGroup {
+object RedisBaseGroup {
     val validateCode = RedisStringProxy("validateCode", 180);
 
     open class WxGroup {

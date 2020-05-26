@@ -7,7 +7,7 @@ import java.io.Serializable
 //import nbcp.db.mongo.entity.IMongoDocument
 
 
-fun <M : SqlBaseTable<out T>, T : ISqlDbEntity> M.query(selectColumn: ((M) -> SqlColumnName)? = null): SqlQueryClip<M, T> {
+fun <M : SqlBaseMetaTable<out T>, T : ISqlDbEntity> M.query(selectColumn: ((M) -> SqlColumnName)? = null): SqlQueryClip<M, T> {
     var ret = SqlQueryClip<M, T>(this);
     if (selectColumn != null) {
         ret.select { selectColumn(this) }
@@ -15,26 +15,26 @@ fun <M : SqlBaseTable<out T>, T : ISqlDbEntity> M.query(selectColumn: ((M) -> Sq
     return ret;
 }
 
-fun <M : SqlBaseTable<out T>, T : ISqlDbEntity> M.delete(): SqlDeleteClip<M, T> {
+fun <M : SqlBaseMetaTable<out T>, T : ISqlDbEntity> M.delete(): SqlDeleteClip<M, T> {
     return SqlDeleteClip<M, T>(this);
 }
 
-fun <M : SqlBaseTable<out T>, T : ISqlDbEntity> M.update(): SqlUpdateClip<M, T> {
+fun <M : SqlBaseMetaTable<out T>, T : ISqlDbEntity> M.update(): SqlUpdateClip<M, T> {
     return SqlUpdateClip<M, T>(this);
 }
 
 //自增主键 ,返回到 entity 实体上. 以及 dbr.lastAutoId
 //返回 影响行数
-fun <M : SqlBaseTable<out T>, T : ISqlDbEntity> M.doInsert(entity: T): Int {
+fun <M : SqlBaseMetaTable<out T>, T : ISqlDbEntity> M.doInsert(entity: T): Int {
     return SqlInsertClip(this).add(entity).exec()
 }
 
-fun <M : SqlBaseTable<out T>, T : ISqlDbEntity> M.batchInsert(): SqlInsertClip<M, T> {
+fun <M : SqlBaseMetaTable<out T>, T : ISqlDbEntity> M.batchInsert(): SqlInsertClip<M, T> {
     return SqlInsertClip(this)
 }
 
 
-fun <M : SqlBaseTable<out T>, T : ISqlDbEntity> M.insertIfNotExists(entity: T, unionKey: ((M) -> SqlColumnNames)): Int {
+fun <M : SqlBaseMetaTable<out T>, T : ISqlDbEntity> M.insertIfNotExists(entity: T, unionKey: ((M) -> SqlColumnNames)): Int {
     var map = entity.ConvertJson(JsonMap::class.java)
 
     var query = this.query();
@@ -59,7 +59,7 @@ fun <M : SqlBaseTable<out T>, T : ISqlDbEntity> M.insertIfNotExists(entity: T, u
 /**
  * 自动保存.: 先更新, 再插入
  */
-fun <M : SqlBaseTable<out T>, T : ISqlDbEntity> M.save(entity: T, unionKey: ((M) -> SqlColumnNames)): Int {
+fun <M : SqlBaseMetaTable<out T>, T : ISqlDbEntity> M.save(entity: T, unionKey: ((M) -> SqlColumnNames)): Int {
     var map = entity.ConvertJson(JsonMap::class.java)
 
     var update = this.update();

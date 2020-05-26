@@ -3,7 +3,7 @@ package nbcp.db
 import nbcp.utils.*
 import nbcp.comm.StringKeyMap
 import nbcp.db.sql.IDataGroup
-import nbcp.db.sql.SqlBaseTable
+import nbcp.db.sql.SqlBaseMetaTable
 import nbcp.db.sql.SqlEntityEvent
 import org.springframework.jdbc.core.JdbcTemplate
 import javax.sql.DataSource
@@ -16,7 +16,7 @@ object db_sql {
     //所有的组。
     val groups = mutableSetOf<IDataGroup>()
 
-    var getSqlEntity: ((tableName: String) -> SqlBaseTable<*>)? = null
+    var getSqlEntity: ((tableName: String) -> SqlBaseMetaTable<*>)? = null
 
 
     val sqlEvents by lazy {

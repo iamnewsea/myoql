@@ -1,13 +1,11 @@
 package nbcp.handler
 
-import ch.qos.logback.classic.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import nbcp.comm.*
 import nbcp.db.db
-import nbcp.db.mongo.MongoBaseEntity
-import nbcp.db.mongo.MongoEntityEvent
+import nbcp.db.mongo.MongoBaseMetaCollection
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaType
@@ -62,7 +60,7 @@ class DevController {
         if (entityObj == null) return ListResult("找不到entity")
 
 
-        (entityObj as MongoBaseEntity<*>).entityClass.kotlin.memberProperties.map {
+        (entityObj as MongoBaseMetaCollection<*>).entityClass.kotlin.memberProperties.map {
             var typeName = it.returnType.javaType.typeName
             var isSimpleType = false;
             if (it.returnType.javaType is Class<*>) {

@@ -1,16 +1,6 @@
 package nbcp.db.mongo
 
-import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
-import org.springframework.data.mongodb.core.query.Query
-import org.springframework.data.mongodb.repository.MongoRepository
-import nbcp.comm.*
-import nbcp.utils.*
-import nbcp.db.db
-import nbcp.db.mongo.*
-import org.slf4j.LoggerFactory
-import org.springframework.data.mongodb.core.query.CriteriaDefinition
-import java.time.LocalDateTime
 
 /**
  * Created by udi on 17-4-7.
@@ -21,7 +11,7 @@ import java.time.LocalDateTime
 /**
  * MongoUpdate
  */
-class MongoUpdateClip<M : MongoBaseEntity<out IMongoDocument>>(var moerEntity: M) : MongoBaseUpdateClip(moerEntity.tableName) {
+class MongoUpdateClip<M : MongoBaseMetaCollection<out IMongoDocument>>(var moerEntity: M) : MongoBaseUpdateClip(moerEntity.tableName) {
 
     fun where(whereData: Criteria): MongoUpdateClip<M> {
         this.whereData.add(whereData);

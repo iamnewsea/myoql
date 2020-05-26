@@ -1,24 +1,16 @@
 package nbcp.db.mongo
 
 
-import org.bson.Document
-import org.bson.types.ObjectId
-import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
-import nbcp.comm.*
-import nbcp.utils.*
-import nbcp.db.db
-
-import nbcp.db.mongo.*
 import org.slf4j.LoggerFactory
-import java.lang.Exception
+import nbcp.db.*;
 
 typealias mongoQuery = org.springframework.data.mongodb.core.query.Query
 
 /**
  * mongo 元数据实体的基类
  */
-abstract class MongoBaseEntity<T : IMongoDocument>(val entityClass: Class<T>, entityName: String) : BaseDbEntity(entityName) {
+abstract class MongoBaseMetaCollection<T : IMongoDocument>(val entityClass: Class<T>, entityName: String) : BaseMetaData(entityName) {
     //    abstract fun getColumns(): Array<String>;
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java)

@@ -1,18 +1,21 @@
-
 package nbcp.db.sql.table
 
 import nbcp.db.*
 import nbcp.db.sql.*
 import nbcp.db.sql.entity.*
+import nbcp.db.mysql.*
+import nbcp.db.mysql.entity.*
+import nbcp.comm.*
+import nbcp.utils.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-03-24 14:37:51
+//generate auto @2020-05-26 16:55:35
 
 
 @Component("sql.SqlBase")
 @MetaDataGroup("SqlBase")
-class SqlBaseGroup : IDataGroup{
-    override fun getEntities():Set<SqlBaseTable<*>> = setOf(s_annex,s_dustbin,s_log)
+object SqlBaseGroup : IDataGroup{
+    override fun getEntities():Set<BaseMetaData> = setOf(s_annex,s_dustbin,s_log)
 
     val s_annex by lazy{ return@lazy s_annex_table(); }
     val s_dustbin by lazy{ return@lazy s_dustbin_table(); }
@@ -20,7 +23,8 @@ class SqlBaseGroup : IDataGroup{
 
 
     
-    class s_annex_table(datasource:String=""):SqlBaseTable<s_annex>(s_annex::class.java,"s_annex") {
+    class s_annex_table(datasource:String="")
+        :SqlBaseMetaTable<nbcp.db.sql.entity.s_annex>(nbcp.db.sql.entity.s_annex::class.java,"s_annex") {
         val id=SqlColumnName(DbType.String,this.getAliaTableName(),"id")
         val name=SqlColumnName(DbType.String,this.getAliaTableName(),"name")
         val tags=SqlColumnName(DbType.String,this.getAliaTableName(),"tags")
@@ -42,26 +46,27 @@ class SqlBaseGroup : IDataGroup{
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
     
     
-        fun queryById (id: String ): SqlQueryClip<s_annex_table, s_annex> {
+        fun queryById (id: String ): SqlQueryClip<s_annex_table, nbcp.db.sql.entity.s_annex> {
             return this.query().where{ (it.id match id) }
         }
     
     
-        fun findById (id: String ): s_annex? {
+        fun findById (id: String ): nbcp.db.sql.entity.s_annex? {
             return this.query().where{ (it.id match id) }.limit(0,1).toEntity()
         }
     
-        fun deleteById (id: String ): SqlDeleteClip<s_annex_table,s_annex> {
+        fun deleteById (id: String ): SqlDeleteClip<s_annex_table,nbcp.db.sql.entity.s_annex> {
             return this.delete().where{ (it.id match id) }
         }
     
-        fun updateById (id: String ): SqlUpdateClip<s_annex_table,s_annex> {
+        fun updateById (id: String ): SqlUpdateClip<s_annex_table,nbcp.db.sql.entity.s_annex> {
             return this.update().where{ (it.id match id) }
         }
     
     }
     
-    class s_dustbin_table(datasource:String=""):SqlBaseTable<s_dustbin>(s_dustbin::class.java,"s_dustbin") {
+    class s_dustbin_table(datasource:String="")
+        :SqlBaseMetaTable<nbcp.db.sql.entity.s_dustbin>(nbcp.db.sql.entity.s_dustbin::class.java,"s_dustbin") {
         val id=SqlColumnName(DbType.String,this.getAliaTableName(),"id")
         val table=SqlColumnName(DbType.String,this.getAliaTableName(),"table")
         val remark=SqlColumnName(DbType.String,this.getAliaTableName(),"remark")
@@ -76,26 +81,27 @@ class SqlBaseGroup : IDataGroup{
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
     
     
-        fun queryById (id: String ): SqlQueryClip<s_dustbin_table, s_dustbin> {
+        fun queryById (id: String ): SqlQueryClip<s_dustbin_table, nbcp.db.sql.entity.s_dustbin> {
             return this.query().where{ (it.id match id) }
         }
     
     
-        fun findById (id: String ): s_dustbin? {
+        fun findById (id: String ): nbcp.db.sql.entity.s_dustbin? {
             return this.query().where{ (it.id match id) }.limit(0,1).toEntity()
         }
     
-        fun deleteById (id: String ): SqlDeleteClip<s_dustbin_table,s_dustbin> {
+        fun deleteById (id: String ): SqlDeleteClip<s_dustbin_table,nbcp.db.sql.entity.s_dustbin> {
             return this.delete().where{ (it.id match id) }
         }
     
-        fun updateById (id: String ): SqlUpdateClip<s_dustbin_table,s_dustbin> {
+        fun updateById (id: String ): SqlUpdateClip<s_dustbin_table,nbcp.db.sql.entity.s_dustbin> {
             return this.update().where{ (it.id match id) }
         }
     
     }
     
-    class s_log_table(datasource:String=""):SqlBaseTable<s_log>(s_log::class.java,"s_log") {
+    class s_log_table(datasource:String="")
+        :SqlBaseMetaTable<nbcp.db.sql.entity.s_log>(nbcp.db.sql.entity.s_log::class.java,"s_log") {
         val id=SqlColumnName(DbType.String,this.getAliaTableName(),"id")
         val module=SqlColumnName(DbType.String,this.getAliaTableName(),"module")
         val type=SqlColumnName(DbType.String,this.getAliaTableName(),"type")
@@ -113,20 +119,20 @@ class SqlBaseGroup : IDataGroup{
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
     
     
-        fun queryById (id: String ): SqlQueryClip<s_log_table, s_log> {
+        fun queryById (id: String ): SqlQueryClip<s_log_table, nbcp.db.sql.entity.s_log> {
             return this.query().where{ (it.id match id) }
         }
     
     
-        fun findById (id: String ): s_log? {
+        fun findById (id: String ): nbcp.db.sql.entity.s_log? {
             return this.query().where{ (it.id match id) }.limit(0,1).toEntity()
         }
     
-        fun deleteById (id: String ): SqlDeleteClip<s_log_table,s_log> {
+        fun deleteById (id: String ): SqlDeleteClip<s_log_table,nbcp.db.sql.entity.s_log> {
             return this.delete().where{ (it.id match id) }
         }
     
-        fun updateById (id: String ): SqlUpdateClip<s_log_table,s_log> {
+        fun updateById (id: String ): SqlUpdateClip<s_log_table,nbcp.db.sql.entity.s_log> {
             return this.update().where{ (it.id match id) }
         }
     

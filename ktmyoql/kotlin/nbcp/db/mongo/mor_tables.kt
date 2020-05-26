@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2020-05-08 21:19:10
+//generate auto @2020-05-26 16:50:01
 
 class IdUrlMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
@@ -93,7 +93,7 @@ class BusinessLicenseDataMeta (private val _pname:String):MongoColumnName() {
 @Component("mongo.MongoBase")
 @MetaDataGroup("MongoBase")
 object MongoBaseGroup : IDataGroup{
-    override fun getEntities():Set<BaseDbEntity> = setOf(basicUser,basicUserLoginInfo,sysAnnex,sysApplication,sysCity,sysDustbin,sysLog,sysOrganization)
+    override fun getEntities():Set<BaseMetaData> = setOf(basicUser,basicUserLoginInfo,sysAnnex,sysApplication,sysCity,sysDustbin,sysLog,sysOrganization)
 
     val basicUser=BasicUserEntity();
     fun basicUser(collectionName:String)=BasicUserEntity(collectionName);
@@ -114,7 +114,7 @@ object MongoBaseGroup : IDataGroup{
 
 
     class BasicUserEntity(collectionName:String="")
-        :MongoBaseEntity<nbcp.db.mongo.entity.BasicUser>(nbcp.db.mongo.entity.BasicUser::class.java,collectionName.AsString("basicUser")) {
+        :MongoBaseMetaCollection<nbcp.db.mongo.entity.BasicUser>(nbcp.db.mongo.entity.BasicUser::class.java,collectionName.AsString("basicUser")) {
         val name=MongoColumnName("name")
         val loginName=MongoColumnName("loginName")
         val mobile=MongoColumnName("mobile")
@@ -132,7 +132,7 @@ object MongoBaseGroup : IDataGroup{
     }
     
     class BasicUserLoginInfoEntity(collectionName:String="")
-        :MongoBaseEntity<nbcp.db.mongo.entity.BasicUserLoginInfo>(nbcp.db.mongo.entity.BasicUserLoginInfo::class.java,collectionName.AsString("basicUserLoginInfo")) {
+        :MongoBaseMetaCollection<nbcp.db.mongo.entity.BasicUserLoginInfo>(nbcp.db.mongo.entity.BasicUserLoginInfo::class.java,collectionName.AsString("basicUserLoginInfo")) {
         val userId=MongoColumnName("userId")
         val loginName=MongoColumnName("loginName")
         val mobile=MongoColumnName("mobile")
@@ -152,7 +152,7 @@ object MongoBaseGroup : IDataGroup{
     }
     
     class SysAnnexEntity(collectionName:String="")
-        :MongoBaseEntity<nbcp.db.mongo.entity.SysAnnex>(nbcp.db.mongo.entity.SysAnnex::class.java,collectionName.AsString("sysAnnex")) {
+        :MongoBaseMetaCollection<nbcp.db.mongo.entity.SysAnnex>(nbcp.db.mongo.entity.SysAnnex::class.java,collectionName.AsString("sysAnnex")) {
         val name=MongoColumnName("name")
         val tags=MongoColumnName("tags")
         val ext=MongoColumnName("ext")
@@ -170,7 +170,7 @@ object MongoBaseGroup : IDataGroup{
     }
     
     class SysApplicationEntity(collectionName:String="")
-        :MongoBaseEntity<nbcp.db.mongo.entity.SysApplication>(nbcp.db.mongo.entity.SysApplication::class.java,collectionName.AsString("sysApplication")) {
+        :MongoBaseMetaCollection<nbcp.db.mongo.entity.SysApplication>(nbcp.db.mongo.entity.SysApplication::class.java,collectionName.AsString("sysApplication")) {
         val key=MongoColumnName("key")
         val name=MongoColumnName("name")
         val remark=MongoColumnName("remark")
@@ -187,7 +187,7 @@ object MongoBaseGroup : IDataGroup{
     }
     
     class SysCityEntity(collectionName:String="")
-        :MongoBaseEntity<nbcp.db.mongo.entity.SysCity>(nbcp.db.mongo.entity.SysCity::class.java,collectionName.AsString("sysCity")) {
+        :MongoBaseMetaCollection<nbcp.db.mongo.entity.SysCity>(nbcp.db.mongo.entity.SysCity::class.java,collectionName.AsString("sysCity")) {
         val code=MongoColumnName("code")
         val name=MongoColumnName("name")
         val fullName=MongoColumnName("fullName")
@@ -204,7 +204,7 @@ object MongoBaseGroup : IDataGroup{
     }
     
     class SysDustbinEntity(collectionName:String="")
-        :MongoBaseEntity<nbcp.db.mongo.entity.SysDustbin>(nbcp.db.mongo.entity.SysDustbin::class.java,collectionName.AsString("sysDustbin")) {
+        :MongoBaseMetaCollection<nbcp.db.mongo.entity.SysDustbin>(nbcp.db.mongo.entity.SysDustbin::class.java,collectionName.AsString("sysDustbin")) {
         val table=MongoColumnName("table")
         val remark=MongoColumnName("remark")
         val creator=IdNameMeta("creator")
@@ -215,7 +215,7 @@ object MongoBaseGroup : IDataGroup{
     }
     
     class SysLogEntity(collectionName:String="")
-        :MongoBaseEntity<nbcp.db.mongo.entity.SysLog>(nbcp.db.mongo.entity.SysLog::class.java,collectionName.AsString("sysLog")) {
+        :MongoBaseMetaCollection<nbcp.db.mongo.entity.SysLog>(nbcp.db.mongo.entity.SysLog::class.java,collectionName.AsString("sysLog")) {
         val module=MongoColumnName("module")
         val type=MongoColumnName("type")
         val key=MongoColumnName("key")
@@ -231,7 +231,7 @@ object MongoBaseGroup : IDataGroup{
     }
     
     class SysOrganizationEntity(collectionName:String="")
-        :MongoBaseEntity<nbcp.db.mongo.entity.SysOrganization>(nbcp.db.mongo.entity.SysOrganization::class.java,collectionName.AsString("sysOrganization")) {
+        :MongoBaseMetaCollection<nbcp.db.mongo.entity.SysOrganization>(nbcp.db.mongo.entity.SysOrganization::class.java,collectionName.AsString("sysOrganization")) {
         val name=MongoColumnName("name")
         val siteUrl=MongoColumnName("siteUrl")
         val siteNumber=MongoColumnName("siteNumber")

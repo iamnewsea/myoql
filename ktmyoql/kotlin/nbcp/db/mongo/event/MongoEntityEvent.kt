@@ -2,7 +2,6 @@ package nbcp.db.mongo
 
 import nbcp.comm.*
 import nbcp.db.*
-import nbcp.db.mongo.*
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component
 
@@ -24,15 +23,15 @@ class MongoEntityEvent : BeanPostProcessor {
         /**
          * 根据名称查找定义的集合。
          */
-        fun getCollection(collectionName: String): MongoBaseEntity<IMongoDocument>? {
-            var ret: BaseDbEntity? = null
+        fun getCollection(collectionName: String): MongoBaseMetaCollection<IMongoDocument>? {
+            var ret: BaseMetaData? = null
             db.mongo.groups.any { group ->
                 ret = group.getEntities().firstOrNull() { it.tableName == collectionName }
 
                 return@any ret != null
             }
 
-            return ret as MongoBaseEntity<IMongoDocument>?
+            return ret as MongoBaseMetaCollection<IMongoDocument>?
         }
     }
 
@@ -42,7 +41,7 @@ class MongoEntityEvent : BeanPostProcessor {
             db.mongo.groups.add(bean)
 
             bean.getEntities().forEach { moer ->
-                if (moer is MongoBaseEntity<*>) {
+                if (moer is MongoBaseMetaCollection<*>) {
                     var entityClass = moer.entityClass
 
                     addDustbin(entityClass)

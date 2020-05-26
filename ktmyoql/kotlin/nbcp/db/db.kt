@@ -19,6 +19,9 @@ enum class DatabaseEnum {
     Mssql
 }
 
+
+abstract class BaseMetaData(var tableName:String):java.io.Serializable
+
 /**
  * 数据库上下文，及操作类。
  */
@@ -138,10 +141,10 @@ object db {
     }
 
     val rer_base by lazy {
-        return@lazy RedisBaseGroup()
+        return@lazy RedisBaseGroup
     }
 
     val sql_base by lazy {
-        return@lazy SqlBaseGroup()
+        return@lazy SqlBaseGroup
     }
 }

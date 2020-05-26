@@ -1,7 +1,5 @@
 package nbcp.db
 
-import nbcp.db.*;
-import nbcp.db.mysql.*
 import nbcp.comm.*
 import nbcp.db.sql.*
 import org.springframework.core.Ordered
@@ -183,7 +181,7 @@ class ProxyDataCache4Sql : IProxyCache4Sql {
             return ret
         }
 
-        var dbTable = (dbEntity as SqlBaseTable<*>)
+        var dbTable = (dbEntity as SqlBaseMetaTable<*>)
 
         var rks = dbTable.getRks()
         var uks = dbTable.getUks()
@@ -233,7 +231,7 @@ class ProxyDataCache4Sql : IProxyCache4Sql {
 
     //---------------------------------------
 
-    fun getUrkInfo(dbTable: SqlBaseTable<*>, tableAlias: String, where: WhereSqlSect, parameters: JsonMap): UrkInfo {
+    fun getUrkInfo(dbTable: SqlBaseMetaTable<*>, tableAlias: String, where: WhereSqlSect, parameters: JsonMap): UrkInfo {
         var rks = dbTable.getRks()
         var uks = dbTable.getUks()
 
@@ -380,7 +378,7 @@ class ProxyDataCache4Sql : IProxyCache4Sql {
         }
 
         var urkInfo = getUrkInfo(
-                dbEntity as SqlBaseTable<*>,
+                dbEntity as SqlBaseMetaTable<*>,
                 getUnquoteName(tableAlias.AsString(tableName)),
                 where,
                 sql.values)
@@ -418,7 +416,7 @@ class ProxyDataCache4Sql : IProxyCache4Sql {
         }
 
         var urkInfo = getUrkInfo(
-                dbEntity as SqlBaseTable<*>,
+                dbEntity as SqlBaseMetaTable<*>,
                 tableAlias,
                 where,
                 sql.values)
@@ -454,7 +452,7 @@ class ProxyDataCache4Sql : IProxyCache4Sql {
             return
         }
 
-        var dbTable = dbEntity as SqlBaseTable<*>
+        var dbTable = dbEntity as SqlBaseMetaTable<*>
 
         var rks = dbTable.getRks()
 

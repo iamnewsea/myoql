@@ -16,7 +16,7 @@ import java.time.LocalDateTime
 /**
  * Created by yuxh on 2018/7/2
  */
-class SqlInsertClip<M : SqlBaseTable<out T>, T : ISqlDbEntity>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
+class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
 
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
