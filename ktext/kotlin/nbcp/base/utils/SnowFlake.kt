@@ -9,6 +9,10 @@ import org.springframework.stereotype.Component
  * 源自Twitter的分布式自增ID雪花算法snowflake 的改进版
  * 需要配置：
  * app.machine-id ， 默认为1 ， 范围：1 - 1023
+ *
+ * 时间戳部分    43位 ， 278.92年， 2000年到 2278年
+ * 机器标识部分  10位 , 1-1023 ， 共 1023个机器
+ * 序列号部分    10位 , 0-1023 , 每毫秒 1024 个值
  */
 @Component
 class SnowFlake : InitializingBean {
@@ -71,15 +75,6 @@ class SnowFlake : InitializingBean {
         }
         lastStmp = currStmp
 
-        println((currStmp - START_STMP) shl TIMESTMP_LEFT)
-        println((machineId shl MACHINE_LEFT).toLong())
-        println(sequence)
-
-        /**
-         * //时间戳部分    43位 ， 278.92 年
-         * //机器标识部分  10位 , 1-1023 ， 共 1023个机器
-         * //序列号部分    10位 , 0-1023 , 每毫秒 1024 个值
-         */
         return (currStmp - START_STMP) shl TIMESTMP_LEFT or
                 (machineId shl MACHINE_LEFT).toLong() or
                 sequence

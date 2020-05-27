@@ -45,10 +45,7 @@ class testa : TestBase() {
 
     @Test
     fun abee() {
-
-        for (i in 0..1000) {
-            println(CodeUtil.getNumberValue())
-        }
+            println(CodeUtil.getCode())
     }
 
     @Test
