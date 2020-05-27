@@ -25,7 +25,7 @@ object CodeUtil {
      *  雪花算法生成Long型Id.
      */
     @Deprecated("尽量使用 getCode 方法生成String类型的编码！")
-    fun getId(): Long {
+    fun getNumberValue(): Long {
         return snowFlake.nextId();
     }
 

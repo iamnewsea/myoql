@@ -45,7 +45,10 @@ class testa : TestBase() {
 
     @Test
     fun abee() {
-        println("""{"www":"2020-04-24 16:59:04"}""".FromJson<abd>().ToJson())
+
+        for (i in 0..1000) {
+            println(CodeUtil.getNumberValue())
+        }
     }
 
     @Test
@@ -64,11 +67,12 @@ class testa : TestBase() {
 
     }
 
-    class jjj{
+    class jjj {
         var tags = mutableSetOf<String>()
     }
+
     @Test
-    fun rou(){
+    fun rou() {
         var j = jjj();
         j.tags.add("OK")
 

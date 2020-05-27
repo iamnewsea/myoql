@@ -545,7 +545,8 @@ fun Any?.AsDate(defaultValue: Date = Date(0)): Date {
     } else if (this is LocalDate) {
         if (this.year < 0) return defaultValue
         var c = Calendar.getInstance(TimeZone.getTimeZone("GMT+:08:00"))
-        c.set(this.year, this.monthValue - 1, this.dayOfMonth)
+        c.set(this.year, this.monthValue - 1, this.dayOfMonth,0,0,0)
+        c.set(Calendar.MILLISECOND, 0)
         return c.time
 
     } else if (this is LocalDateTime) {
