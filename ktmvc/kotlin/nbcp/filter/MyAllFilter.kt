@@ -52,8 +52,8 @@ open class MyAllFilter : Filter, InitializingBean {
     @Value("\${app.filter.allow-origins:}")
     var allowOrigins: String = "";
 
-    @Value("\${app.filter.ignore-log-urls:}")
-    var ignoreLogUrls: List<String> = listOf()
+//    @Value("\${app.filter.ignore-log-urls:}")
+//    var ignoreLogUrls: List<String> = listOf()
 
     @Value("\${app.filter.headers:}")
     var headers: List<String> = listOf()
@@ -94,14 +94,16 @@ open class MyAllFilter : Filter, InitializingBean {
 //        MDC.put("user_name", request.LoginUser.name.AsString())
 //        MDC.put("client_ip", request.ClientIp)
 
-        var ignoreLog = ignoreLogUrls.any {
-            httpRequest.requestURI.startsWith(it, true) &&
-                    !(it.last().isLetterOrDigit() && (httpRequest.requestURI.getOrNull(it.length)?.isLetterOrDigit()
-                            ?: false))
-        }
+//        var requestUri = httpRequest.requestURI;
+        var logLevel = httpRequest.queryJson.get("log-level").AsInt();
+//        var ignoreLog = .AsBoolean() || ignoreLogUrls.any {
+//            requestUri.startsWith(it, true) &&
+//                    !(it.last().isLetterOrDigit() && (httpRequest.requestURI.getOrNull(it.length)?.isLetterOrDigit()
+//                            ?: false))
+//        }
 
-        if (ignoreLog) {
-            using(LogScope(Level.ERROR_INT)) {
+        if (logLevel > 0) {
+            using(LogScope(logLevel)) {
                 next(httpRequest, httpResponse, chain);
             }
         } else {
@@ -141,15 +143,14 @@ open class MyAllFilter : Filter, InitializingBean {
 
                 try {
                     chain?.doFilter(myRequest, myResponse);
-                }
-                catch(e:Exception){
+                } catch (e: Exception) {
                     var msgs = mutableListOf<String>()
                     msgs.add("[[----> ${loginName} ${request.ClientIp} ${request.method} ${request.fullUrl}")
                     msgs.add(e.message ?: "服务器错误");
                     msgs.add("<----]]")
                     logger.error(msgs.joinToString(line_break))
                     response.WriteTextValue(e.message ?: "服务器错误")
-                    return ;
+                    return;
                 }
                 afterComplete(myRequest, myResponse, queryMap.getStringValue("callback"), startAt, "");
             } else {
@@ -174,15 +175,14 @@ open class MyAllFilter : Filter, InitializingBean {
 
                 try {
                     chain?.doFilter(request, response)
-                }
-                catch(e:Exception){
+                } catch (e: Exception) {
                     var msgs = mutableListOf<String>()
                     msgs.add("[[----> ${loginName} ${request.ClientIp} ${request.method} ${request.fullUrl}")
                     msgs.add(e.message ?: "服务器错误");
                     msgs.add("<----]]")
                     logger.error(msgs.joinToString(line_break))
                     response.WriteTextValue(e.message ?: "服务器错误")
-                    return ;
+                    return;
                 }
 //                logNewSession(request, response);
             }
