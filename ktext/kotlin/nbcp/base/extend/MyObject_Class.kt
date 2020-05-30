@@ -51,6 +51,28 @@ fun Class<*>.IsSimpleType(): Boolean {
 }
 
 /**
+ * 代码生成器使用，获取Kotlin的类型名称
+ */
+val Class<*>.kotlinTypeName: String
+    get() {
+        if (this == Integer::class.java) return "Int"
+        if (this == Object::class.java) return "Any"
+
+        if (this.isArray) {
+            if (this.componentType.isPrimitive) {
+                var name = this.componentType.simpleName;
+                return name.first().toUpperCase() + name.Slice(1) + "Array";
+            }
+        }
+
+        if (this.isPrimitive) {
+            var name = this.simpleName;
+            return name.first().toUpperCase() + name.Slice(1);
+        }
+        return this.simpleName;
+    }
+
+/**
  * 类型是否是布尔： boolean,java.lang.Boolean
  */
 fun Class<*>.IsBooleanType(): Boolean {

@@ -1,12 +1,11 @@
 package nbcp.db.sql.entity
 
-import nbcp.db.DbEntityGroup
-import nbcp.db.Key
+import nbcp.db.*
 import java.time.LocalDateTime
 import nbcp.db.sql.*
 
 @DbEntityGroup("SqlBase")
-@SqlUks("id")
+@DbUks("id")
 @SqlRks("corpId")
 data class s_annex(
         var id: String = "",
@@ -31,7 +30,7 @@ data class s_annex(
 
 @DbEntityGroup("SqlBase")
 data class s_log(
-        @Key
+        @DbKey
 //        @SqlAutoIncrementKey
         var id: String = "",
         var module: String = "", //模块
@@ -47,7 +46,7 @@ data class s_log(
 
 @DbEntityGroup("SqlBase")
 data class s_dustbin(
-        @Key
+        @DbKey
         var id: String = "",
         var table: String = "",
         var remark: String = "",

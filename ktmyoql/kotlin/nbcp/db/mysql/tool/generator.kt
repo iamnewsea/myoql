@@ -3,7 +3,6 @@ package nbcp.db.mysql.tool
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.*
-import nbcp.db.mysql.*
 import nbcp.db.sql.*
 import java.io.File
 import java.io.FileWriter
@@ -223,17 +222,6 @@ object ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
         return """val ${entityVarName} by lazy{ return@lazy ${getEntityClassName(entTypeName)}(); }""";
     }
 
-    fun javaType2KotlinType(type: Class<*>): String {
-        if (type == Int::class.java) return "Int"
-        if (type == Long::class.java) return "Long"
-        if (type == Short::class.java) return "Short"
-        if (type == Float::class.java) return "Float"
-        if (type == Double::class.java) return "Double"
-        if (type == String::class.java) return "String"
-
-        return "Any"
-    }
-
     fun genEntity(groupName: String, entType: Class<*>): String {
 
         var tableName = entType.name.split(".").last();
@@ -259,7 +247,7 @@ object ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                         uks.add(it.name)
                     }
 
-                    if (it.getAnnotation(Key::class.java) != null) {
+                    if (it.getAnnotation(DbKey::class.java) != null) {
                         pks.add(it.name);
                     }
 
@@ -290,7 +278,7 @@ object ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
         }
 
         kotlin.run {
-            var uks_define = entType.getAnnotation(SqlUks::class.java)
+            var uks_define = entType.getAnnotation(DbUks::class.java)
             if (uks_define != null) {
                 uks.addAll(uks_define.ukColumns)
             }
@@ -312,25 +300,17 @@ object ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
         uks.forEach { uk ->
             var keys = uk.split(",")
 
-            if (keys.size == 1) {
-                idMethods.add("""
-    fun queryBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${javaType2KotlinType(entType.AllFields.first { f -> it == f.name }.type)}" }.joinToString(",")} ): SqlQueryClip<${entityTypeName}, ${entType.name}> {
-        return this.query().where{ ${keys.map { "(it.${it} match ${it})" }.joinToString(" and ")} }
-    }
-""");
-            }
-
             idMethods.add("""
-    fun findBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${javaType2KotlinType(entType.AllFields.first { f -> it == f.name }.type)}" }.joinToString(",")} ): ${entType.name}? {
-        return this.query().where{ ${keys.map { "(it.${it} match ${it})" }.joinToString(" and ")} }.limit(0,1).toEntity()
+    fun queryBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): SqlQueryClip<${entityTypeName}, ${entType.name}> {
+        return this.query()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
     }
 
-    fun deleteBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${javaType2KotlinType(entType.AllFields.first { f -> it == f.name }.type)}" }.joinToString(",")} ): SqlDeleteClip<${entityTypeName},${entType.name}> {
-        return this.delete().where{ ${keys.map { "(it.${it} match ${it})" }.joinToString(" and ")} }
+    fun deleteBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): SqlDeleteClip<${entityTypeName},${entType.name}> {
+        return this.delete()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
     }
 
-    fun updateBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${javaType2KotlinType(entType.AllFields.first { f -> it == f.name }.type)}" }.joinToString(",")} ): SqlUpdateClip<${entityTypeName},${entType.name}> {
-        return this.update().where{ ${keys.map { "(it.${it} match ${it})" }.joinToString(" and ")} }
+    fun updateBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): SqlUpdateClip<${entityTypeName},${entType.name}> {
+        return this.update()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
     }
 """)
         }

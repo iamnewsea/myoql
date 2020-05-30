@@ -377,10 +377,14 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
         if (entTypeName.endsWith("\$Companion")) {
             return "";
         }
-
+        var pks = mutableListOf<String>()
         var props = entType.AllFields
                 .filter { it.name != "Companion" }
                 .map {
+                    if (it.getAnnotation(DbKey::class.java) != null) {
+                        pks.add(it.name);
+                    }
+
                     var (retValue, retTypeIsBasicType) = getEntityValue(it)
                     if (retTypeIsBasicType) {
                         return@map "val ${it.name}=EsColumnName(${retValue})".ToTab(1)
@@ -398,9 +402,41 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
             dbName = MyUtil.splitWithBigChar(entType.simpleName).map{it.toLowerCase()}.joinToString("_")
         }
 
+        var idMethods = mutableListOf<String>()
+
+        //每一项是 用逗号分隔的主键组合
+        var uks = mutableListOf<String>();
+        uks.add(pks.joinToString(","))
+
+        kotlin.run {
+            var uks_define = entType.getAnnotation(DbUks::class.java)
+            if (uks_define != null) {
+                uks.addAll(uks_define.ukColumns)
+            }
+        }
+
+        uks.forEach { uk ->
+            var keys = uk.split(",")
+
+            idMethods.add("""
+    fun queryBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): EsQueryClip<${entityTypeName}, ${entType.name}> {
+        return this.query()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
+    }
+
+    fun deleteBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): EsDeleteClip<${entityTypeName},${entType.name}> {
+        return this.delete()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
+    }
+
+    fun updateBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): EsUpdateClip<${entityTypeName},${entType.name}> {
+        return this.update()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
+    }
+""")
+        }
+
         var ent = """class ${entityTypeName}(collectionName:String="")
     :EsBaseEntity<${entType.name}>(${entType.name}::class.java,collectionName.AsString("${dbName}")) {
 ${props.joinToString("\n")}
+${idMethods.joinToString("\n")}
 }
 """
 

@@ -9,7 +9,7 @@ import nbcp.comm.*
 import nbcp.utils.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-05-30 11:50:30
+//generate auto @2020-05-30 12:52:51
 
 
 @Component("sql.SqlBase")
@@ -47,20 +47,15 @@ object SqlBaseGroup : IDataGroup{
     
     
         fun queryById (id: String ): SqlQueryClip<s_annex_table, nbcp.db.sql.entity.s_annex> {
-            return this.query().where{ (it.id match id) }
-        }
-    
-    
-        fun findById (id: String ): nbcp.db.sql.entity.s_annex? {
-            return this.query().where{ (it.id match id) }.limit(0,1).toEntity()
+            return this.query().where{ it.id match id }
         }
     
         fun deleteById (id: String ): SqlDeleteClip<s_annex_table,nbcp.db.sql.entity.s_annex> {
-            return this.delete().where{ (it.id match id) }
+            return this.delete().where{ it.id match id }
         }
     
         fun updateById (id: String ): SqlUpdateClip<s_annex_table,nbcp.db.sql.entity.s_annex> {
-            return this.update().where{ (it.id match id) }
+            return this.update().where{ it.id match id }
         }
     
     }
@@ -82,20 +77,15 @@ object SqlBaseGroup : IDataGroup{
     
     
         fun queryById (id: String ): SqlQueryClip<s_dustbin_table, nbcp.db.sql.entity.s_dustbin> {
-            return this.query().where{ (it.id match id) }
-        }
-    
-    
-        fun findById (id: String ): nbcp.db.sql.entity.s_dustbin? {
-            return this.query().where{ (it.id match id) }.limit(0,1).toEntity()
+            return this.query().where{ it.id match id }
         }
     
         fun deleteById (id: String ): SqlDeleteClip<s_dustbin_table,nbcp.db.sql.entity.s_dustbin> {
-            return this.delete().where{ (it.id match id) }
+            return this.delete().where{ it.id match id }
         }
     
         fun updateById (id: String ): SqlUpdateClip<s_dustbin_table,nbcp.db.sql.entity.s_dustbin> {
-            return this.update().where{ (it.id match id) }
+            return this.update().where{ it.id match id }
         }
     
     }
@@ -120,20 +110,15 @@ object SqlBaseGroup : IDataGroup{
     
     
         fun queryById (id: String ): SqlQueryClip<s_log_table, nbcp.db.sql.entity.s_log> {
-            return this.query().where{ (it.id match id) }
-        }
-    
-    
-        fun findById (id: String ): nbcp.db.sql.entity.s_log? {
-            return this.query().where{ (it.id match id) }.limit(0,1).toEntity()
+            return this.query().where{ it.id match id }
         }
     
         fun deleteById (id: String ): SqlDeleteClip<s_log_table,nbcp.db.sql.entity.s_log> {
-            return this.delete().where{ (it.id match id) }
+            return this.delete().where{ it.id match id }
         }
     
         fun updateById (id: String ): SqlUpdateClip<s_log_table,nbcp.db.sql.entity.s_log> {
-            return this.update().where{ (it.id match id) }
+            return this.update().where{ it.id match id }
         }
     
     }

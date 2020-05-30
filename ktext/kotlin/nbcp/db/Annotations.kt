@@ -13,7 +13,7 @@ annotation class DbName(val name: String)
  */
 @Target(AnnotationTarget.TYPE, AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Key()
+annotation class DbKey()
 
 
 /**
@@ -23,3 +23,11 @@ annotation class Key()
 @Retention(AnnotationRetention.RUNTIME)
 annotation class DbEntityGroup(val group: String)
 
+
+/**
+ * 定义唯一键，每一项表示唯一键，如果唯一键多个用逗号分隔
+ */
+@Repeatable
+@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class DbUks(vararg val ukColumns: String)

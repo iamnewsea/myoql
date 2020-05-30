@@ -5,10 +5,8 @@ import nbcp.utils.*
 import nbcp.db.*
 import java.io.File
 import java.io.FileWriter
-import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
-import java.lang.reflect.WildcardType
 import java.time.LocalDateTime
 
 /**
@@ -368,9 +366,16 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
             return "";
         }
 
+        var pks = mutableListOf<String>()
+
         var props = entType.AllFields
                 .filter { it.name != "Companion" }
                 .map {
+
+                    if (it.getAnnotation(DbKey::class.java) != null) {
+                        pks.add(it.name);
+                    }
+
                     var (retValue, retTypeIsBasicType) = getEntityValue(it)
                     if (retTypeIsBasicType) {
                         return@map "val ${it.name}=MongoColumnName(${retValue})".ToTab(1)
@@ -390,7 +395,32 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
 
         //每一项是 用逗号分隔的主键组合
         var uks = mutableListOf<String>();
+        uks.add(pks.joinToString(","))
 
+        kotlin.run {
+            var uks_define = entType.getAnnotation(DbUks::class.java)
+            if (uks_define != null) {
+                uks.addAll(uks_define.ukColumns)
+            }
+        }
+
+        uks.forEach { uk ->
+            var keys = uk.split(",")
+
+            idMethods.add("""
+    fun queryBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): MongoQueryClip<${entityTypeName}, ${entType.name}> {
+        return this.query()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
+    }
+
+    fun deleteBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): MongoDeleteClip<${entityTypeName},${entType.name}> {
+        return this.delete()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
+    }
+
+    fun updateBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): MongoUpdateClip<${entityTypeName},${entType.name}> {
+        return this.update()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
+    }
+""")
+        }
 
         var ent = """class ${entityTypeName}(collectionName:String="")
     :MongoBaseMetaCollection<${entType.name}>(${entType.name}::class.java,collectionName.AsString("${dbName}")) {
