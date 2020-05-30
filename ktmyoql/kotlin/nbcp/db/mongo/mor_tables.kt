@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2020-05-26 16:50:01
+//generate auto @2020-05-30 13:17:36
 
 class IdUrlMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
@@ -129,6 +129,7 @@ object MongoBaseGroup : IDataGroup{
         val id=MongoColumnName("_id")
         val createAt=MongoColumnName("createAt")
         val updateAt=MongoColumnName("updateAt")
+    
     }
     
     class BasicUserLoginInfoEntity(collectionName:String="")
@@ -149,6 +150,7 @@ object MongoBaseGroup : IDataGroup{
         val id=MongoColumnName("_id")
         val createAt=MongoColumnName("createAt")
         val updateAt=MongoColumnName("updateAt")
+    
     }
     
     class SysAnnexEntity(collectionName:String="")
@@ -167,6 +169,7 @@ object MongoBaseGroup : IDataGroup{
         val id=MongoColumnName("_id")
         val createAt=MongoColumnName("createAt")
         val updateAt=MongoColumnName("updateAt")
+    
     }
     
     class SysApplicationEntity(collectionName:String="")
@@ -184,6 +187,7 @@ object MongoBaseGroup : IDataGroup{
         val id=MongoColumnName("_id")
         val createAt=MongoColumnName("createAt")
         val updateAt=MongoColumnName("updateAt")
+    
     }
     
     class SysCityEntity(collectionName:String="")
@@ -201,6 +205,19 @@ object MongoBaseGroup : IDataGroup{
         val id=MongoColumnName("_id")
         val createAt=MongoColumnName("createAt")
         val updateAt=MongoColumnName("updateAt")
+    
+        fun queryByCode (code: Int ): MongoQueryClip<SysCityEntity, nbcp.db.mongo.entity.SysCity> {
+            return this.query().where{ it.code match code }
+        }
+    
+        fun deleteByCode (code: Int ): MongoDeleteClip<SysCityEntity> {
+            return this.delete().where{ it.code match code }
+        }
+    
+        fun updateByCode (code: Int ): MongoUpdateClip<SysCityEntity> {
+            return this.update().where{ it.code match code }
+        }
+    
     }
     
     class SysDustbinEntity(collectionName:String="")
@@ -212,6 +229,7 @@ object MongoBaseGroup : IDataGroup{
         val id=MongoColumnName("_id")
         val createAt=MongoColumnName("createAt")
         val updateAt=MongoColumnName("updateAt")
+    
     }
     
     class SysLogEntity(collectionName:String="")
@@ -228,6 +246,7 @@ object MongoBaseGroup : IDataGroup{
         val id=MongoColumnName("_id")
         val createAt=MongoColumnName("createAt")
         val updateAt=MongoColumnName("updateAt")
+    
     }
     
     class SysOrganizationEntity(collectionName:String="")
@@ -243,6 +262,7 @@ object MongoBaseGroup : IDataGroup{
         val id=MongoColumnName("_id")
         val createAt=MongoColumnName("createAt")
         val updateAt=MongoColumnName("updateAt")
+    
     }
     
 }

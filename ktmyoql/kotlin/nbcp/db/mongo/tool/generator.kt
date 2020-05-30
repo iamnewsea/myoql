@@ -395,7 +395,9 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
 
         //每一项是 用逗号分隔的主键组合
         var uks = mutableListOf<String>();
-        uks.add(pks.joinToString(","))
+        if( pks.any()) {
+            uks.add(pks.joinToString(","))
+        }
 
         kotlin.run {
             var uks_define = entType.getAnnotation(DbUks::class.java)
@@ -412,11 +414,11 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
         return this.query()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
     }
 
-    fun deleteBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): MongoDeleteClip<${entityTypeName},${entType.name}> {
+    fun deleteBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): MongoDeleteClip<${entityTypeName}> {
         return this.delete()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
     }
 
-    fun updateBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): MongoUpdateClip<${entityTypeName},${entType.name}> {
+    fun updateBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): MongoUpdateClip<${entityTypeName}> {
         return this.update()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
     }
 """)
