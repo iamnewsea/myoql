@@ -118,6 +118,7 @@ open class SysAnnex(
 @Document
 @DbEntityGroup("MongoBase")
 data class SysCity(
+        @Key
         var code: Int = 0,
         var name: String = "",
         var fullName: String = "",

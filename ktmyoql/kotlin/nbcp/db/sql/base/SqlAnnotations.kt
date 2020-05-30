@@ -13,8 +13,16 @@ import kotlin.reflect.KClass
 //annotation class SqlDbName(val name: String)
 
 /**
- * 如果不指定 MysqlPk ，且 表包含 @Id , 则 Pk = @id
- * 如果没有Pk，则生成实体报错。
+ * 以下情况不需要定义 Uks：
+ * 1. 实体表中字段定义了 @SqlAutoIncrementKey
+ * 2. 实体表中字段定义了 @Key ,多个字段定义认为是组合主键。
+ *
+ * 所以框架识别主键的顺序是：
+ * 1. @SqlAutoIncrementKey
+ * 2. @Key
+ * 3. @SqlUks
+ *
+ * 如果没有 Pk，则生成实体报错。
  */
 @Repeatable
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)

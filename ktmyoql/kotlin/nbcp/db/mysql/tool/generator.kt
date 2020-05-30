@@ -246,6 +246,7 @@ object ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
         var rks = mutableSetOf<String>()
         var fks = mutableSetOf<FkDefine>()
 
+        var pks = mutableListOf<String>()
 
         var props = entType.AllFields
                 .filter { it.name != "Companion" }
@@ -256,6 +257,10 @@ object ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                     if (it.getAnnotation(SqlAutoIncrementKey::class.java) != null) {
                         autoIncrementKey = it.name
                         uks.add(it.name)
+                    }
+
+                    if (it.getAnnotation(Key::class.java) != null) {
+                        pks.add(it.name);
                     }
 
                     var fk_define = it.getAnnotation(SqlFk::class.java)
@@ -279,6 +284,10 @@ object ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 
         var entityTypeName = getEntityClassName(tableName)
 
+
+        if (pks.any()) {
+            uks.add(pks.joinToString(","))
+        }
 
         kotlin.run {
             var uks_define = entType.getAnnotation(SqlUks::class.java)
@@ -328,7 +337,7 @@ object ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 
         var dbName = entType.getAnnotation(DbName::class.java)?.name ?: ""
 
-        if( dbName.isEmpty()) {
+        if (dbName.isEmpty()) {
             dbName = tableName
         }
 

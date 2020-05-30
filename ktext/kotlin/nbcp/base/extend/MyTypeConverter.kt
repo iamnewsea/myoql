@@ -1,4 +1,5 @@
-@file:JvmName("MyTypeConverter")
+@file:JvmName("MyHelper")
+@file:JvmMultifileClass
 
 package nbcp.comm
 

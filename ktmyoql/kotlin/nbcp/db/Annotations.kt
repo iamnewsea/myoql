@@ -8,20 +8,6 @@ import kotlin.reflect.KClass
 
 
 /**
- * 指定数据库中表的名字
- */
-@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class DbName(val name: String)
-
-/**
- *  Mongo实体的组
- */
-@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class DbEntityGroup(val group: String)
-
-/**
  * 生成元数据的组
  */
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)

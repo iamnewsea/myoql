@@ -1,3 +1,6 @@
+@file:JvmName("MyHelper")
+@file:JvmMultifileClass
+
 package nbcp.comm
 
 import java.lang.RuntimeException

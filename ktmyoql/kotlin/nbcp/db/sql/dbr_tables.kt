@@ -9,7 +9,7 @@ import nbcp.comm.*
 import nbcp.utils.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-05-26 16:55:35
+//generate auto @2020-05-30 11:50:30
 
 
 @Component("sql.SqlBase")

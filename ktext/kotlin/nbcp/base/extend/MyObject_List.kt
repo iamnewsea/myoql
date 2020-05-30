@@ -1,6 +1,7 @@
-package nbcp.comm
+@file:JvmName("MyHelper")
+@file:JvmMultifileClass
 
-import nbcp.comm.*
+package nbcp.comm
 
 
 fun MutableList<*>.RemoveRange(startIndex: Int, endIndex: Int) {

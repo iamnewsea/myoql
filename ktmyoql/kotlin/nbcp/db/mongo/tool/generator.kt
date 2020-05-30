@@ -386,9 +386,16 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
             dbName = MyUtil.getSmallCamelCase(entType.simpleName)
         }
 
+        var idMethods = mutableListOf<String>()
+
+        //每一项是 用逗号分隔的主键组合
+        var uks = mutableListOf<String>();
+
+
         var ent = """class ${entityTypeName}(collectionName:String="")
     :MongoBaseMetaCollection<${entType.name}>(${entType.name}::class.java,collectionName.AsString("${dbName}")) {
 ${props.joinToString("\n")}
+${idMethods.joinToString("\n")}
 }
 """
 
