@@ -133,7 +133,7 @@ data class moer_map(val _pname:String)
                 .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
                 .forEach {
 
-                    var groupName = it.getAnnotation(DbEntityGroup::class.java).group;
+                    var groupName = it.getAnnotation(DbEntityGroup::class.java).value;
 
                     if (ret.containsKey(groupName) == false) {
                         ret[groupName] = mutableListOf();
@@ -385,7 +385,7 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
                 }
 
         var entityTypeName = entTypeName + "Entity"
-        var dbName = entType.getAnnotation(DbName::class.java)?.name ?: ""
+        var dbName = entType.getAnnotation(DbName::class.java)?.value ?: ""
 
         if( dbName.isEmpty()) {
             dbName = MyUtil.getSmallCamelCase(entType.simpleName)

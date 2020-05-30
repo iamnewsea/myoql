@@ -6,10 +6,8 @@ import nbcp.db.*
 
 import java.io.File
 import java.io.FileWriter
-import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
-import java.lang.reflect.WildcardType
 import java.time.LocalDateTime
 
 /**
@@ -78,7 +76,7 @@ object ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
             groupEntities.forEach {
                 count++;
 
-                var dbName = it.getAnnotation(DbName::class.java)?.name ?: ""
+                var dbName = it.getAnnotation(DbName::class.java)?.value ?: ""
 
                 if( dbName.isEmpty()) {
                     dbName = MyUtil.splitWithBigChar(it.simpleName).map{it.toLowerCase()}.joinToString("_")
@@ -144,7 +142,7 @@ data class moer_map(val _pname:String)
                 .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
                 .forEach {
 
-                    var groupName = it.getAnnotation(DbEntityGroup::class.java).group;
+                    var groupName = it.getAnnotation(DbEntityGroup::class.java).value;
 
                     if (ret.containsKey(groupName) == false) {
                         ret[groupName] = mutableListOf();
@@ -396,7 +394,7 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
         var entityTypeName = entTypeName + "Entity"
 //        var entityVarName = getEntityName(entTypeName)
 
-        var dbName = entType.getAnnotation(DbName::class.java)?.name ?: ""
+        var dbName = entType.getAnnotation(DbName::class.java)?.value ?: ""
 
         if( dbName.isEmpty()) {
             dbName = MyUtil.splitWithBigChar(entType.simpleName).map{it.toLowerCase()}.joinToString("_")

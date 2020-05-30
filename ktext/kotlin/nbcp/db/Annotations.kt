@@ -6,7 +6,7 @@ package nbcp.db
  */
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class DbName(val name: String)
+annotation class DbName(val value: String)
 
 /**
  * 实体字段上定义主键列，如实体的多个字段定义Key，认为是组合主键。
@@ -21,7 +21,7 @@ annotation class DbKey()
  */
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class DbEntityGroup(val group: String)
+annotation class DbEntityGroup(val value: String)
 
 
 /**

@@ -57,7 +57,7 @@ class generator_mapping {
                 groupEntities.forEach {
                     count++;
                     var entType = it;
-                    var dbName = entType.getAnnotation(DbName::class.java)?.name ?: ""
+                    var dbName = entType.getAnnotation(DbName::class.java)?.value ?: ""
 
                     if (dbName.isEmpty()) {
                         dbName = MyUtil.getSmallCamelCase(entType.simpleName)
@@ -101,7 +101,7 @@ class generator_mapping {
                 .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
                 .forEach {
 
-                    var groupName = it.getAnnotation(DbEntityGroup::class.java).group;
+                    var groupName = it.getAnnotation(DbEntityGroup::class.java).value;
 
                     if (ret.containsKey(groupName) == false) {
                         ret[groupName] = mutableListOf();
