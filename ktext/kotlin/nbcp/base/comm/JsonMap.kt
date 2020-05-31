@@ -97,6 +97,7 @@ open class JsonMap : StringKeyMap<Any?> {
             set_key_value(subObj, keys.Slice(1), value);
         }
 
+        @JvmStatic
         fun loadFromUrl(UrlQuery: String): JsonMap {
             val ret = JsonMap()
             var UrlQuery = UrlQuery.trim()

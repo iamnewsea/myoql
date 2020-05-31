@@ -18,6 +18,7 @@ open class SpringUtil : ApplicationContextAware {
     companion object {
         private var applicationContext: ApplicationContext? = null
 
+        @JvmStatic
         val context: ApplicationContext
             get() {
                 if (applicationContext == null) {
@@ -26,6 +27,7 @@ open class SpringUtil : ApplicationContextAware {
                 return applicationContext!!
             }
 
+        @JvmStatic
         val isInited: Boolean
             get() = applicationContext != null
 
@@ -34,6 +36,7 @@ open class SpringUtil : ApplicationContextAware {
 //            return
 //        }
 
+        @JvmStatic
         fun getBeanObjectByArgs(name: String): Any {
             return context.getBean(name);
         }
@@ -41,17 +44,20 @@ open class SpringUtil : ApplicationContextAware {
         /**
          * 通过 name 获取Bean，并传递参数
          */
+        @JvmStatic
         fun getBeanObjectByArgs(name: String, vararg args: Any): Any {
             return context.getBean(name, *args);
         }
 
 
         //通过class获取Bean.
+        @JvmStatic
         fun <T> getBean(clazz: Class<T>): T {
             var ret = context.getBean(clazz);
             return ret;
         }
 
+        @JvmStatic
         inline fun <reified T> getBean(): T {
             return context.getBean(T::class.java);
         }
@@ -59,15 +65,17 @@ open class SpringUtil : ApplicationContextAware {
         /**
          * 通过 类型 获取Bean，并传递参数
          */
+        @JvmStatic
         inline fun <reified T> getBeanByArgs(vararg args: Any): T {
             return context.getBean(T::class.java, *args);
         }
 
-
+        @JvmStatic
         inline fun <reified T> getBeanByName(name: String): T {
             return context.getBean(name, T::class.java);
         }
 
+        @JvmStatic
         fun <T> getBeanByName(name: String, clazz: Class<T>): T {
             return context.getBean(name, clazz);
         }

@@ -23,6 +23,7 @@ open class ApiResult<T>(msg: String = "", cause: String = "") : JsonResult(msg, 
     var valueRemark: String = ""
 
     companion object {
+        @JvmStatic
         fun <T> of(data: T?): ApiResult<T> {
             var ret = ApiResult<T>();
             ret.data = data;

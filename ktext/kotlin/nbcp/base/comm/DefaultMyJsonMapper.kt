@@ -31,17 +31,19 @@ open class DefaultMyJsonMapper : ObjectMapper(), InitializingBean {
         val sers: MutableList<SimpleModule> = mutableListOf()
         val desers: MutableList<SimpleModule> = mutableListOf()
 
-
+        @JvmStatic
         fun get(): ObjectMapper {
             var styles = scopes.getScopeTypes<JsonStyleEnumScope>()
             return get(*styles.toTypedArray());
         }
 
+        @JvmStatic
         fun get(vararg styles: JsonStyleEnumScope): ObjectMapper {
             if (styles.isEmpty()) return SpringUtil.getBean<DefaultMyJsonMapper>()
             return ObjectMapper().setStyle(*styles)
         }
 
+        @JvmStatic
         fun <T> addSerializer(type: Class<out T>, ser: JsonSerializer<T>) {
             if (this.sers.any { it.moduleName == type.name }) return;
             var item = SimpleModule(type.name)
@@ -50,6 +52,7 @@ open class DefaultMyJsonMapper : ObjectMapper(), InitializingBean {
             SpringUtil.getBean<DefaultMyJsonMapper>().registerModule(item)
         }
 
+        @JvmStatic
         fun <T> addDeserializer(type: Class<T>, deser: JsonDeserializer<out T>) {
             if (this.desers.any { it.moduleName == type.name }) return;
 

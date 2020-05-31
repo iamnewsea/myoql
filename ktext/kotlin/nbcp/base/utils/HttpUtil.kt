@@ -39,6 +39,7 @@ class HttpUtil(var url: String = "") {
         /**远程下载图片,并压缩
          * @param imagePath :图片的目录,系统下载后, 会先尝试 remoteImage 名字进行保存,如果失败,则使用唯一Id进行保存.
          */
+        @JvmStatic
         fun getImage(remoteImage: String, imagePath: String, maxWidth: Int = 1200): FileMessage {
             var imagePathFile = File(imagePath)
             if (imagePathFile.exists() == false) {
