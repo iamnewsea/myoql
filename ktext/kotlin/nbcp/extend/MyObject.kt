@@ -669,18 +669,14 @@ val Logger.debug: Boolean
  * 该方法在忽略 LogScope，使用 isInfoEnabled，isErrorEnabled 先进行判断是否记录日志
  */
 inline fun Logger.InfoError(error: Boolean, msgFunc: (() -> String)) {
-    if (error) {
-        if (this.isErrorEnabled) {
-            var msg = msgFunc();
-            if (msg.isEmpty()) return;
-            this.error(msg)
-        }
-    } else {
-        if (this.isInfoEnabled) {
-            var msg = msgFunc();
-            if (msg.isEmpty()) return;
-            this.info(msg)
-        }
+    if (this.isInfoEnabled) {
+        var msg = msgFunc();
+        if (msg.isEmpty()) return;
+        this.info(msg)
+    } else if (error && this.isErrorEnabled) {
+        var msg = msgFunc();
+        if (msg.isEmpty()) return;
+        this.error(msg)
     }
 //   try {} catch (e: Exception) {
 //        println("记录日志出错：" + e.message)
