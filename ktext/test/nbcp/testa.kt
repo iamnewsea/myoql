@@ -8,6 +8,7 @@ import nbcp.utils.*
 import nbcp.db.IdName
 import nbcp.db.IdUrl
 import org.junit.Test
+import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -43,9 +44,14 @@ class testa : TestBase() {
         var www: LocalDateTime = LocalDateTime.now()
     }
 
+    @Service
+    class abcdeee {}
+
     @Test
     fun abee() {
-            println(CodeUtil.getCode())
+        for (i in (0 .. 3)) {
+            println(i)
+        }
     }
 
     @Test

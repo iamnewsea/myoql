@@ -1,6 +1,7 @@
 package nbcp.comm
 
 import nbcp.comm.AsInt
+import java.io.Serializable
 import java.time.Duration
 import java.time.LocalDateTime
 

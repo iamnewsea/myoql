@@ -78,6 +78,7 @@ fun ObjectMapper.setStyle(vararg styles: JsonStyleEnumScope): ObjectMapper {
     // 设置输入时忽略在JSON字符串中存在但Java对象实际没有的属性
     this.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
+//    this.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
 
     if (styles.contains(JsonStyleEnumScope.GetSetStyle)) {
         this.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.DEFAULT);

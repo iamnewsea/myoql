@@ -43,7 +43,6 @@ annotation class Defines(val values: Array<Define>)
  */
 @java.lang.annotation.Repeatable(Defines::class)
 @Repeatable
-@Component
 @Inherited
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS, AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)

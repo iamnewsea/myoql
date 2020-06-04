@@ -15,7 +15,7 @@ import java.util.ArrayList
 /**
  * 普通的返回对象。
  */
-open class JsonResult(var msg: String = "", var cause: String = "") {}
+open class JsonResult(var msg: String = "", var cause: String = "") : Serializable {}
 
 open class ApiResult<T>(msg: String = "", cause: String = "") : JsonResult(msg, cause) {
     var data: T? = null
@@ -63,13 +63,12 @@ open class ListQueryModel {
 /**
  * 列表返回对象
  */
-class ListResult<T>(msg: String = "",
-                    var total: Int = -1,
-                    var data: List<T> = listOf()
+open class ListResult<T>(msg: String = "",
+                         var total: Int = -1,
+                         var data: List<T> = listOf()
 ) : JsonResult(msg) {
     var value: Any? = null
     var valueRemark: String = ""
-
     companion object {
         fun <T> of(data: List<T>): ListResult<T> {
             var ret = ListResult<T>();
@@ -83,12 +82,32 @@ class ListResult<T>(msg: String = "",
      * @param valueRemark value值的含义
      * @param value value的值
      */
-    fun setValue(valueRemark: String, value: Any): ListResult<T> {
+//    fun <V> setValue(valueRemark: String, value: V): ListResult<T> {
+//        var ret = ListResultWithValue<T, V>();
+//        ret.set(this, value, valueRemark);
+//        return ret;
+//    }
+    fun setValue(valueRemark: String, value: Serializable): ListResult<T> {
         this.valueRemark = valueRemark;
         this.value = value;
         return this;
     }
 }
+
+//open class ListResultWithValue<T, V>() : ListResult<T>() {
+//    private var value: V? = null
+//    private var valueRemark: String = "";
+//
+//    fun set(list: ListResult<T> = ListResult<T>(), value: V? = null, valueRemark: String = "") {
+//        this.msg = list.msg;
+//        this.total = list.total;
+//        this.cause = list.cause;
+//        this.data = list.data;
+//
+//        this.value = value;
+//        this.valueRemark = valueRemark;
+//    }
+//}
 
 //class AppListResult<T>(msg: String = "",
 //                       var over: Boolean = false, //表示数据已结束。

@@ -2,6 +2,7 @@ package nbcp.comm
 
 import org.slf4j.LoggerFactory
 import nbcp.comm.*
+import java.io.Serializable
 
 /**
  * 尽量使用 JsonMap
@@ -15,7 +16,7 @@ import nbcp.comm.*
  * linkMapOf<String,String>("age","99") == linkMapOf<String,Any>("age" to "99")
  * linkMapOf<String,String>("age","99") != linkMapOf<String,Any>("age" to 99)
  */
-open class StringKeyMap<T> : LinkedHashMap<String, T> {
+open class StringKeyMap<T> : LinkedHashMap<String, T>, Serializable {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

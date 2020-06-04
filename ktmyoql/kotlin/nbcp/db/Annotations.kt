@@ -12,7 +12,6 @@ import kotlin.reflect.KClass
  */
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-@Component
 annotation class MetaDataGroup(val group: String)
 
 /**
@@ -69,7 +68,6 @@ annotation class DbEntityFieldRefs(val values: Array<DbEntityFieldRef>)
 @Retention(AnnotationRetention.RUNTIME)
 @java.lang.annotation.Repeatable(DbEntityFieldRefs::class)
 @Repeatable
-@Component
 @Inherited
 annotation class DbEntityFieldRef(val idField: String, val nameField: String, val masterEntityClass: KClass<*>, val masterIdField: String, val masterNameField: String)
 

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
  */
 @Aspect
 @Component
-class LogLevelIntercepter {
+open class LogLevelIntercepter {
     @Around("@within(nbcp.comm.MyLogLevel) || @annotation(nbcp.comm.MyLogLevel)")
     fun mongo(joinPoint: ProceedingJoinPoint): Any? {
         var signature = joinPoint.signature as MethodSignature;
