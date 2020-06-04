@@ -666,22 +666,28 @@ val Logger.debug: Boolean
 
 /**
  * inline 内联方式可以拿到调用栈信息
+ * 该方法在忽略 LogScope，使用 isInfoEnabled，isErrorEnabled 先进行判断是否记录日志
  */
 inline fun Logger.InfoError(error: Boolean, msgFunc: (() -> String)) {
-    try {
-        var msg = msgFunc();
-        if (msg.isEmpty()) return;
-
-        if (error) {
+    if (error) {
+        if (this.isErrorEnabled) {
+            var msg = msgFunc();
+            if (msg.isEmpty()) return;
             this.error(msg)
-        } else {
+        }
+    } else {
+        if (this.isInfoEnabled) {
+            var msg = msgFunc();
+            if (msg.isEmpty()) return;
             this.info(msg)
         }
-    } catch (e: Exception) {
-        println("记录日志出错：" + e.message)
-    } finally {
-
     }
+//   try {} catch (e: Exception) {
+//        println("记录日志出错：" + e.message)
+//        throw e;
+//    } finally {
+//
+//    }
 }
 
 

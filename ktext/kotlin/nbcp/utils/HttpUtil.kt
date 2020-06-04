@@ -154,7 +154,7 @@ class HttpUtil(var url: String = "") {
 //    }
 
     fun setRequestHeader(key: String, value: String): HttpUtil {
-        this.setRequest { it.setRequestProperty(key,value) }
+        this.setRequest { it.setRequestProperty(key, value) }
         return this;
     }
 
@@ -182,18 +182,17 @@ class HttpUtil(var url: String = "") {
     fun doPost(postJson: JsonMap): String {
 
         this.setRequest {
-            if( it.requestProperties.containsKey("Accept") == false){
-                it.setRequestProperty("Accept","application/json")
+            if (it.requestProperties.containsKey("Accept") == false) {
+                it.setRequestProperty("Accept", "application/json")
             }
-            if( it.requestProperties.containsKey("Content-Type") == false){
-                it.setRequestProperty("Content-Type","application/json;charset=UTF-8")
+            if (it.requestProperties.containsKey("Content-Type") == false) {
+                it.setRequestProperty("Content-Type", "application/json;charset=UTF-8")
             }
 
             var requestBody = "";
-            if( it.getRequestProperty("Content-Type").AsString().contains("json") == false){
+            if (it.getRequestProperty("Content-Type").AsString().contains("json") == false) {
                 requestBody = postJson.map { it.key + "=" + it.value }.joinToString("&");
-            }
-            else{
+            } else {
                 requestBody = postJson.ToJson();
             }
 
@@ -211,7 +210,7 @@ class HttpUtil(var url: String = "") {
 
         this.setRequest { it.requestMethod = "POST" }
 
-        if( requestBody.HasValue) {
+        if (requestBody.HasValue) {
             this.setPostBody(requestBody)
         }
 
@@ -237,8 +236,11 @@ class HttpUtil(var url: String = "") {
         return ret.toString(Charset.forName(responseCharset.AsString("UTF-8")));
     }
 
+    private var requestProperties: StringMap = StringMap();
     fun doNet(): ByteArray {
         var conn: HttpURLConnection? = null
+
+        this.requestProperties.clear();
 //        var lines = mutableListOf<String>()
         try {
             conn = URL(url).openConnection() as HttpURLConnection;
@@ -258,6 +260,13 @@ class HttpUtil(var url: String = "") {
 
             this.requestActions.forEach {
                 it.invoke(conn!!);
+            }
+
+            conn.requestProperties.forEach { k, v ->
+                if (k == null) {
+                    return@forEach;
+                }
+                this.requestProperties.put(k, v.joinToString(","))
             }
 
 //            conn.connect();
@@ -319,22 +328,14 @@ class HttpUtil(var url: String = "") {
         } finally {
             // 断开连接
 
-            if( conn != null) {
+            if (conn != null) {
                 logger.InfoError(this.status != 200) {
                     var msgs = mutableListOf<String>();
                     msgs.add("${conn!!.requestMethod} ${url}\t[status:${this.status}]");
 
-                    conn!!.requestProperties.map {
-                        if (it.key == null) {
-                            return@map "\t${it.value}"
-                        }
+                    this.requestProperties.map {
                         return@map "\t${it.key}:${it.value}"
                     }.joinToString(line_break)
-                            .apply {
-                                if (this.HasValue) {
-                                    msgs.add(this);
-                                }
-                            }
 
                     //小于 10K
                     if (postBody.any() && postBody.size < 10240) {
@@ -344,16 +345,16 @@ class HttpUtil(var url: String = "") {
                     msgs.add("---")
 
                     this.responseHeader.map {
-                        if (it.key == null) {
-                            return@map "\t${it.value}"
-                        }
+//                        if (it.key == null) {
+//                            return@map "\t${it.value}"
+//                        }
                         return@map "\t${it.key}:${it.value}"
                     }.joinToString(line_break)
-                            .apply {
-                                if (this.HasValue) {
-                                    msgs.add(this);
-                                }
-                            }
+//                            .apply {
+//                                if (this.HasValue) {
+//                                    msgs.add(this);
+//                                }
+//                            }
 
                     //小于10K
                     if (this.responseCharset.HasValue && this.responseResult.size < 10240) {
