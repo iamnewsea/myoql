@@ -7,19 +7,8 @@ import nbcp.comm.ToJson
 import nbcp.utils.*
 import nbcp.comm.ApiResult
 import nbcp.comm.JsonMap
-import nbcp.comm.StringMap
-import nbcp.comm.utf8
 import nbcp.db.db
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
-import org.springframework.stereotype.Service
-import sun.misc.BASE64Encoder
-import java.io.BufferedInputStream
-import java.io.ByteArrayOutputStream
-import java.io.PrintWriter
-import java.lang.Exception
-import java.net.HttpURLConnection
-import java.net.URL
 import java.nio.charset.Charset
 
 
@@ -34,7 +23,7 @@ object WxSystemGroup {
         var appId = SpringUtil.context.environment.getProperty("app.wx.appId")
 
         //获取token
-        val tokenData = db.rer_base.wx.getAccessToken(appId, appSecret)
+        val tokenData = db.rer_base.wx.getOfficialAccountAccessToken(appId, appSecret)
 
         if (tokenData.msg.HasValue) {
             return ApiResult(tokenData.msg)
@@ -146,7 +135,7 @@ object WxSystemGroup {
         var wx_url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=";
 
         var appId = SpringUtil.context.environment.getProperty("app.wx.appId")
-        var tokenData = db.rer_base.wx.getAccessToken(appId, appSecret)
+        var tokenData = db.rer_base.wx.getOfficialAccountAccessToken(appId, appSecret)
 
         var url = HttpUtil();
         if (tokenData.msg.HasValue) {

@@ -37,6 +37,16 @@ object H5Group {
         wxInfo.fillSign(appSecret, jsapiTicket, fullUrl);
         return ApiResult.of(wxInfo)
     }
+
+    /**
+     * H5 登录，使用 code 换 access_token
+     * https://developers.weixin.qq.com/doc/oplatform/Website_App/WeChat_Login/Wechat_Login.html
+     */
+    fun getH5LoginAccessToken(appSecret:String, code:String):String{
+        var url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appId}&secret=${appSecret}&code=${code}&grant_type=authorization_code"
+
+        return "";
+    }
 }
 
 
