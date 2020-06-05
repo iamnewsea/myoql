@@ -19,9 +19,17 @@ import javax.sql.DataSource
 
 class ExistsSlaveDataSourceConfigCondition : Condition {
     override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata): Boolean {
-        return context.environment.getProperty("spring.datasource.slave.url") != null ||
-                context.environment.getProperty("spring.datasource.slave.hikari.url") != null ||
-                context.environment.getProperty("spring.datasource.slave.hikari.jdbc-url") != null
+        return (
+                context.environment.getProperty("spring.datasource.url") != null ||
+                        context.environment.getProperty("spring.datasource.hikari.url") != null ||
+                        context.environment.getProperty("spring.datasource.hikari.jdbc-url") != null
+                )
+                &&
+                (
+                        context.environment.getProperty("spring.datasource.slave.url") != null ||
+                                context.environment.getProperty("spring.datasource.slave.hikari.url") != null ||
+                                context.environment.getProperty("spring.datasource.slave.hikari.jdbc-url") != null
+                        )
 
     }
 }
@@ -39,7 +47,7 @@ class ExistsDataSourceConfigCondition : Condition {
  * 主配置
  * spring.datasource.hikari
  *      jdbcUrl,如果不存在取 spring.datasource.hikari.url,spring.datasource.url
- *      driverClassName,如果不存在取 spring.datasource.driverClassName
+ *      driverClassName,如果不存在取 spring.datasource.driver-class-name
  *      username,如果不存在取 spring.datasource.username
  *      password,如果不存在取 spring.datasource.password
  *
@@ -55,7 +63,7 @@ class ExistsDataSourceConfigCondition : Condition {
 @Conditional(ExistsDataSourceConfigCondition::class)
 @DependsOn(value = arrayOf("springUtil"))
 class MysqlConfig() {
-    companion object{
+    companion object {
         val hasSlave by lazy {
             return@lazy SpringUtil.context.containsBean("slave");
         }
@@ -76,7 +84,7 @@ class MysqlConfig() {
         }
 
         if (ret.driverClassName.isNullOrEmpty()) {
-            ret.driverClassName = SpringUtil.context.environment.getProperty("spring.datasource.driverClassName").AsString("com.mysql.cj.jdbc.Driver")
+            ret.driverClassName = SpringUtil.context.environment.getProperty("spring.datasource.driver-class-name").AsString("com.mysql.cj.jdbc.Driver")
         }
 
         if (ret.username == null) {
@@ -107,7 +115,7 @@ class MysqlConfig() {
         }
 
         if (ret.driverClassName.isNullOrEmpty()) {
-            ret.driverClassName = SpringUtil.context.environment.getProperty("spring.datasource.slave.driverClassName").AsString("com.mysql.cj.jdbc.Driver")
+            ret.driverClassName = SpringUtil.context.environment.getProperty("spring.datasource.slave.driver-class-name").AsString("com.mysql.cj.jdbc.Driver")
         }
 
 
@@ -133,7 +141,7 @@ class MysqlConfig() {
     @Bean("slaveJdbcTemplate")
     @Conditional(ExistsSlaveDataSourceConfigCondition::class)
     fun slaveJdbcTemplate(): JdbcTemplate {
-        if( MysqlConfig.hasSlave ) {
+        if (MysqlConfig.hasSlave) {
             return JdbcTemplate(SpringUtil.getBeanByName<DataSource>("slave"), true)
         }
 
