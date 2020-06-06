@@ -12,6 +12,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
 import java.io.IOException
+import java.lang.RuntimeException
 import java.util.*
 import javax.imageio.ImageIO
 
@@ -246,7 +247,6 @@ class HttpUtil(var url: String = "") {
             conn = URL(url).openConnection() as HttpURLConnection;
 
             //建立连接
-            conn.requestMethod = "POST"
             conn.instanceFollowRedirects = false
             conn.doInput = true
             conn.doOutput = true
@@ -260,6 +260,10 @@ class HttpUtil(var url: String = "") {
 
             this.requestActions.forEach {
                 it.invoke(conn!!);
+            }
+
+            if (conn.requestMethod.isNullOrEmpty()) {
+                throw RuntimeException("没有设置 method！");
             }
 
             conn.requestProperties.forEach { k, v ->
@@ -284,6 +288,8 @@ class HttpUtil(var url: String = "") {
                     out.close()
                 }
             }
+
+
 
             this.status = conn.responseCode
 

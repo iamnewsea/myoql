@@ -156,6 +156,7 @@ object WxSystemGroup {
         var http = HttpUtil(requestUrl)
                 .setRequest { it.requestMethod == "POST" }
                 .setPostBody(postBody.ToJson());
+
         var bytes = http.doNet();
         if (http.status != 200 || http.responseHeader.getKeyIgnoreCase("content-type").AsString().contains("json")) {
             return ApiResult(bytes.toString(Charset.forName(http.responseCharset.AsString("UTF-8"))))
