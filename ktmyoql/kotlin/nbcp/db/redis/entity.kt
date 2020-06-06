@@ -20,6 +20,4 @@ object RedisBaseGroup {
     }
 
     val cache = CacheGroup()
-
-    val wx = WxGroup
 }

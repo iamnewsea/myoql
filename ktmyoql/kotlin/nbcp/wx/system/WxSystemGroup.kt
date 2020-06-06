@@ -1,19 +1,132 @@
-package nbcp.wx
+package nbcp.wx.system
 
-import nbcp.comm.AsString
-import nbcp.comm.FromJson
-import nbcp.comm.HasValue
-import nbcp.comm.ToJson
-import nbcp.utils.*
-import nbcp.comm.ApiResult
-import nbcp.comm.JsonMap
+import com.sun.org.apache.xerces.internal.impl.dv.util.Base64
+import nbcp.comm.*
 import nbcp.db.db
-import org.springframework.http.MediaType
+import nbcp.utils.HttpUtil
+import nbcp.utils.Md5Util
+import nbcp.utils.SpringUtil
+import nbcp.wx.wx
+import org.bouncycastle.jce.provider.BouncyCastleProvider
+import java.lang.RuntimeException
 import java.nio.charset.Charset
-
+import java.security.AlgorithmParameters
+import java.security.Security
+import java.util.*
+import javax.crypto.Cipher
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
 
 object WxSystemGroup {
 
+
+    /**
+     * 微信签名
+     * https://pay.weixin.qq.com/wiki/doc/api/wxa/wxa_api.php?chapter=4_3
+     * 忽略 @Ignore 字段， 一般是 sign 字段。
+     * 如果 指定了 @Require ，则要求不能为空。
+     */
+    fun sign(mchSecret: String, wxModel: Any): String {
+        var type = wxModel::class.java
+        var list = type.AllFields
+                .sortedBy { it.name }
+                .map {
+                    if (it.getAnnotation(Ignore::class.java) != null) {
+                        return@map ""
+                    }
+
+                    var require = it.getAnnotation(Require::class.java) != null
+
+                    var value = it.get(wxModel)
+
+                    if (value == null) {
+                        if (require) {
+                            throw RuntimeException("微信小程序签名时，${it.name} 不能为空值");
+                        }
+                        return@map "";
+                    }
+                    if (value is String && value.isNullOrEmpty()) {
+                        if (require) {
+                            throw RuntimeException("微信小程序签名时，${it.name} 为必填项");
+                        }
+                        return@map ""
+                    }
+
+                    return@map it.name + "=" + value
+                }
+                .filter { it.isNotEmpty() }
+                .toMutableList();
+
+        list.add("key=${mchSecret}");
+        return Md5Util.getMd5(list.joinToString("&")).toUpperCase();
+    }
+
+
+    fun toXml(mchSecret: String, wxModel: Any): String {
+        var sign = sign(mchSecret, wxModel);
+        if (sign.isEmpty()) return "";
+
+        var type = wxModel::class.java;
+
+        return "<xml>" + type.AllFields
+                .sortedBy { it.name }
+                .map {
+
+                    var value = it.get(wxModel)
+                    if (value == null) {
+                        return@map "" to ""
+                    }
+
+                    if (value is String && value.isEmpty()) {
+                        return@map "" to ""
+                    }
+
+                    return@map it.name to value
+                }
+                .filter { it.first.isNotEmpty() }
+                .toMutableList()
+                .apply {
+                    add("sign" to sign)
+                }
+                .map {
+                    return@map "<${it.first}><![CDATA[${it.second}]]></${it.first}>"
+                }
+                .joinToString("") + "</xml>";
+    }
+
+
+    /**
+     * https://www.cnblogs.com/handsomejunhong/p/8670367.html
+     * 解密用户的加密数据
+     */
+    fun decryptWxUserData(encryptedData: String, sessionKey: String, iv: String): String { // 被加密的数据
+        val dataByte = Base64.decode(encryptedData)
+        // 加密秘钥
+        var keyByte = Base64.decode(sessionKey)
+        // 偏移量
+        val ivByte = Base64.decode(iv)
+        // 如果密钥不足16位，那么就补足.  这个if 中的内容很重要
+        val base = 16
+        if (keyByte.size % base != 0) {
+            val groups = keyByte.size / base + if (keyByte.size % base != 0) 1 else 0
+            val temp = ByteArray(groups * base)
+            Arrays.fill(temp, 0.toByte())
+            System.arraycopy(keyByte, 0, temp, 0, keyByte.size)
+            keyByte = temp
+        }
+        // 初始化
+        Security.addProvider(BouncyCastleProvider())
+        val cipher = Cipher.getInstance("AES/CBC/PKCS7Padding", "BC")
+        val spec = SecretKeySpec(keyByte, "AES")
+        val parameters = AlgorithmParameters.getInstance("AES")
+        parameters.init(IvParameterSpec(ivByte))
+        cipher.init(Cipher.DECRYPT_MODE, spec, parameters) // 初始化
+        val resultByte = cipher.doFinal(dataByte)
+        if (null == resultByte || resultByte.size <= 0) {
+            return "";
+        }
+        return String(resultByte, utf8)
+    }
 
     /**
      * 生成带参数二维码,C端展示  base64
@@ -23,7 +136,7 @@ object WxSystemGroup {
         var appId = SpringUtil.context.environment.getProperty("app.wx.appId")
 
         //获取token
-        val tokenData = db.rer_base.wx.getOfficialAccountAccessToken(appId, appSecret)
+        val tokenData = wx.officeAccount.getAccessToken(appId, appSecret)
 
         if (tokenData.msg.HasValue) {
             return ApiResult(tokenData.msg)
@@ -135,7 +248,7 @@ object WxSystemGroup {
         var wx_url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=";
 
         var appId = SpringUtil.context.environment.getProperty("app.wx.appId")
-        var tokenData = db.rer_base.wx.getOfficialAccountAccessToken(appId, appSecret)
+        var tokenData = wx.officeAccount.getAccessToken(appId, appSecret)
 
         var url = HttpUtil();
         if (tokenData.msg.HasValue) {
@@ -143,7 +256,7 @@ object WxSystemGroup {
         }
 
         url.url = "${wx_url}${tokenData.data!!.token}"
-        url.setRequest { it.setRequestProperty("Content-Type", MediaType.APPLICATION_JSON_VALUE) }
+        url.setRequest { it.setRequestProperty("Content-Type", "application/json") }
 
         var ret = url.doPost(data.ToJson()).FromJson<wx_msg_return_data>() ?: wx_msg_return_data()
         if (ret.errcode != 0) {
@@ -151,23 +264,5 @@ object WxSystemGroup {
         }
         return ApiResult();
     }
+
 }
-
-
-data class wx_msg_return_data(
-        var errcode: Int = 0,
-        var errmsg: String = ""
-)
-
-data class wx_msg_data_value(
-        var value: String = "",
-        var color: String = "#000000"
-)
-
-data class wx_msg_data(
-        var touser: String = "",// 	是 	接收者（用户）的 openid
-        var template_id: String = "",// 	是 	所需下发的模板消息的id
-        var page: String = "",// 	否 	点击模板卡片后的跳转页面，仅限本小程序内的页面。支持带参数,（示例index?foo=bar）。该字段不填则模板无跳转。
-        //var form_id: String = "",// 	是 	表单提交场景下，为 submit 事件带上的 formId；支付场景下，为本次支付的 prepay_id
-        var data: LinkedHashMap<String, wx_msg_data_value> = LinkedHashMap<String, wx_msg_data_value>()// 	是 	模板内容，不填则下发空模板
-)

@@ -1,8 +1,9 @@
-package nbcp.wx
+package nbcp.wx.pay
 
 import jdk.nashorn.internal.ir.annotations.Ignore
 import nbcp.comm.*
 import nbcp.utils.*
+import nbcp.wx.wx
 import org.apache.http.ssl.SSLContexts
 import org.springframework.core.io.ClassPathResource
 import java.security.KeyStore
@@ -74,7 +75,7 @@ data class WxRefundPayRequestData(
         val http = HttpUtil(url)
         http.setRequest { it.setRequestProperty("Content-Type", "text/xml;charset=UTF-8") }
 
-        var postData = wx.toXml(mchSecret, this);
+        var postData = wx.sys.toXml(mchSecret, this);
 
         http.setRequest {
             (it as javax.net.ssl.HttpsURLConnection)

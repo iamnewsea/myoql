@@ -1,54 +1,13 @@
-package nbcp.wx
+package nbcp.wx.h5
 
 import nbcp.comm.AsLocalDateTime
-import nbcp.comm.HasValue
 import nbcp.comm.Slice
-import nbcp.utils.*
-import nbcp.comm.ApiResult
 import nbcp.comm.utf8
-import nbcp.db.db
-import org.springframework.beans.factory.annotation.Value
+import nbcp.utils.CodeUtil
 import java.security.MessageDigest
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.*
-
-object H5Group {
-    @Value("\${app.wx.appId}")
-    lateinit var appId: String
-
-    /**
-     *  wx.config 结构，其中不包含 jsApiList，jsApiList在客户端指定。
-     *  H5分享用
-     */
-    fun getJsapiTicket(fullUrl: String,appSecret:String): ApiResult<JsapiTicketData> {
-
-        var ticketResult = db.rer_base.wx.getJsapiTicket(appId, appSecret);
-        if (ticketResult.msg.HasValue) {
-            return ApiResult(ticketResult.msg);
-        }
-        if (ticketResult.data.isNullOrEmpty()) {
-            return ApiResult("找不到 ticket");
-        }
-
-        var jsapiTicket = ticketResult.data ?: ""
-
-        var wxInfo = JsapiTicketData(appId);
-        wxInfo.fillSign(appSecret, jsapiTicket, fullUrl);
-        return ApiResult.of(wxInfo)
-    }
-
-    /**
-     * H5 登录，使用 code 换 access_token
-     * https://developers.weixin.qq.com/doc/oplatform/Website_App/WeChat_Login/Wechat_Login.html
-     */
-    fun getH5LoginAccessToken(appSecret:String, code:String):String{
-        var url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appId}&secret=${appSecret}&code=${code}&grant_type=authorization_code"
-
-        return "";
-    }
-}
-
 
 
 /**

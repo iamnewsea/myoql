@@ -1,4 +1,4 @@
-package nbcp.wx
+package nbcp.wx.pay
 
 import nbcp.comm.AsString
 import nbcp.comm.ConvertJson
@@ -7,8 +7,7 @@ import nbcp.comm.Xml2Json
 import nbcp.utils.*
 import nbcp.comm.Ignore
 import nbcp.comm.JsonResult
-import nbcp.web.ClientIp
-import nbcp.web.HttpContext
+import nbcp.wx.wx
 import org.apache.http.ssl.SSLContexts
 import java.io.InputStream
 import java.security.KeyStore
@@ -19,14 +18,15 @@ import javax.net.ssl.SSLSocketFactory
  * https://pay.weixin.qq.com/wiki/doc/api/tools/mch_pay.php?chapter=14_2
  */
 class WxCorpPayToUserData(
-        var amount: Int = 0,
-        var openid: String = "",  //用户openid
-        var partner_trade_no: String = "", // 商户订单号，需保持唯一性
+        var spbill_create_ip: String, // 终端IP
+        var amount: Int,
+        var openid: String,  //用户openid
+        var partner_trade_no: String, // 商户订单号，需保持唯一性
         var desc: String = ""  // 企业付款备注
 ) {
     var mch_appid: String = SpringUtil.context.environment.getProperty("app.wx.appId")
     var mchid: String = SpringUtil.context.environment.getProperty("app.wx.mchId")
-    var spbill_create_ip: String = HttpContext.request.ClientIp   // 终端IP
+
     //var spbill_create_ip: String = "60.220.69.11"   // 终端IP
     var check_name: String = "NO_CHECK"  //NO_CHECK  不校验真实姓名   FORCE_CHECK：强校验真实姓名
     //var sign_type: String = "MD5"   不需要  居然是因为不需要
@@ -66,7 +66,7 @@ class WxCorpPayToUserData(
             it.setRequestProperty("Content-Type", "text/xml;charset=UTF-8")
         }
 
-        var postData = wx.toXml(mchSecret, this);
+        var postData = wx.sys.toXml(mchSecret, this);
 
         http.setRequest {
             (it as javax.net.ssl.HttpsURLConnection)
