@@ -3,23 +3,36 @@ package nbcp.wx.miniprogram
 import nbcp.comm.*
 import nbcp.db.redis.proxy.RedisStringProxy
 import nbcp.utils.HttpUtil
+import nbcp.wx.WxUserData
 
 object WxMiniProgramGroup {
     private val jscode2session = RedisStringProxy("jscode2session", 300)
 
     /**
+     * https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/login/auth.code2Session.html
+     * wx.login 返回 code ,通过上述URL返回的数据
+     */
+    data class WxLoginInfoModel(
+            var openid: String = "",
+            var session_key: String = "",
+            var unionid: String = "",
+            var errcode: String = "",
+            var errmsg: String = ""
+    )
+
+    /**
      * https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/login/auth.code2Session.htm
      */
-    fun getSessionCode(AppId: String, AppSecret: String, code: String): ApiResult<WxLoginInfoModel> {
-        var data = jscode2session.get(code).FromJson<WxLoginInfoModel>()
-        if (data != null) {
-            return ApiResult.of(data);
+    fun getOpenId(AppId: String, AppSecret: String, code: String): ApiResult<String> {
+        var openId = jscode2session.get(code)
+        if (openId.HasValue) {
+            return ApiResult.of(openId);
         }
 
         val url = "https://api.weixin.qq.com/sns/jscode2session?appid=${AppId}&secret=${AppSecret}&js_code=${code}&grant_type=authorization_code"
 
         val ajax = HttpUtil(url);
-        data = ajax.doGet().FromJson<WxLoginInfoModel>();
+        var data = ajax.doGet().FromJson<WxLoginInfoModel>();
         if (data == null) {
             return ApiResult("网络错误")
         }
@@ -28,10 +41,10 @@ object WxMiniProgramGroup {
             return ApiResult(data.errmsg)
         }
 
-        jscode2session.set(code, data.ToJson());
-        return ApiResult.of(data)
+        openId = data.openid;
+        jscode2session.set(code, openId);
+        return ApiResult.of(openId);
     }
-
 
 
 }
