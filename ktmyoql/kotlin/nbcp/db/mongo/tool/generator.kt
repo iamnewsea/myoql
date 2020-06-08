@@ -5,6 +5,7 @@ import nbcp.utils.*
 import nbcp.db.*
 import java.io.File
 import java.io.FileWriter
+import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 import java.time.LocalDateTime
@@ -387,7 +388,7 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
         var entityTypeName = entTypeName + "Entity"
         var dbName = entType.getAnnotation(DbName::class.java)?.value ?: ""
 
-        if( dbName.isEmpty()) {
+        if (dbName.isEmpty()) {
             dbName = MyUtil.getSmallCamelCase(entType.simpleName)
         }
 
@@ -395,7 +396,7 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
 
         //每一项是 用逗号分隔的主键组合
         var uks = mutableListOf<String>();
-        if( pks.any()) {
+        if (pks.any()) {
             uks.add(pks.joinToString(","))
         }
 
@@ -409,17 +410,25 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
         uks.forEach { uk ->
             var keys = uk.split(",")
 
+            //检测
+            keys.forEach {
+                if (entType.GetFieldPath(*it.split(".").toTypedArray()) == null) {
+                    throw RuntimeException("${entTypeName} 找不到 ${it} 属性!")
+                }
+            }
+
+
             idMethods.add("""
-    fun queryBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): MongoQueryClip<${entityTypeName}, ${entType.name}> {
-        return this.query()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
+    fun queryBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${MyUtil.getSmallCamelCase(it)}: ${entType.GetFieldPath(*it.split(".").toTypedArray())!!.type.kotlinTypeName}" }.joinToString(",")}): MongoQueryClip<${entityTypeName}, ${entType.name}> {
+        return this.query()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
-    fun deleteBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): MongoDeleteClip<${entityTypeName}> {
-        return this.delete()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
+    fun deleteBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${MyUtil.getSmallCamelCase(it)}: ${entType.GetFieldPath(*it.split(".").toTypedArray())!!.type.kotlinTypeName}" }.joinToString(",")}): MongoDeleteClip<${entityTypeName}> {
+        return this.delete()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
-    fun updateBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): MongoUpdateClip<${entityTypeName}> {
-        return this.update()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
+    fun updateBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${MyUtil.getSmallCamelCase(it)}: ${entType.GetFieldPath(*it.split(".").toTypedArray())!!.type.kotlinTypeName}" }.joinToString(",")}): MongoUpdateClip<${entityTypeName}> {
+        return this.update()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 """)
         }

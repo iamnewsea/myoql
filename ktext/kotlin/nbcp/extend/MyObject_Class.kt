@@ -218,6 +218,21 @@ fun Class<*>.FindField(fieldName: String): Field? {
 }
 
 /**
+ * 按路径找。
+ */
+fun Class<*>.GetFieldPath(vararg fieldNames: String): Field? {
+    var ret: Field? = null
+    var fieldName = fieldNames.first();
+
+    var field = this.FindField(fieldName);
+    if (field == null) return null;
+
+    if (fieldNames.size == 1) return field;
+
+    return field.type.GetFieldPath(*fieldNames.Slice(1).toTypedArray());
+}
+
+/**
  * 获取泛型参数的实际类型，兼容枚举类型
  */
 fun ParameterizedType.GetActualClass(index: Int): Class<*> {

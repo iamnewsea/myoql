@@ -6,6 +6,7 @@ import nbcp.db.*
 
 import java.io.File
 import java.io.FileWriter
+import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 import java.time.LocalDateTime
@@ -418,17 +419,24 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
         uks.forEach { uk ->
             var keys = uk.split(",")
 
+            //检测
+            keys.forEach {
+                if (entType.GetFieldPath(*it.split(".").toTypedArray()) == null) {
+                    throw RuntimeException("${entTypeName} 找不到 ${it} 属性!")
+                }
+            }
+
             idMethods.add("""
-    fun queryBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): EsQueryClip<${entityTypeName}, ${entType.name}> {
-        return this.query()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
+    fun queryBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${MyUtil.getSmallCamelCase(it)}: ${entType.GetFieldPath(*it.split(".").toTypedArray())!!.type.kotlinTypeName}" }.joinToString(",")}): EsQueryClip<${entityTypeName}, ${entType.name}> {
+        return this.query()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
-    fun deleteBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): EsDeleteClip<${entityTypeName}> {
-        return this.delete()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
+    fun deleteBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${MyUtil.getSmallCamelCase(it)}: ${entType.GetFieldPath(*it.split(".").toTypedArray())!!.type.kotlinTypeName}" }.joinToString(",")}): EsDeleteClip<${entityTypeName}> {
+        return this.delete()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
-    fun updateBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): EsUpdateClip<${entityTypeName}> {
-        return this.update()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
+    fun updateBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${MyUtil.getSmallCamelCase(it)}: ${entType.GetFieldPath(*it.split(".").toTypedArray())!!.type.kotlinTypeName}" }.joinToString(",")}): EsUpdateClip<${entityTypeName}> {
+        return this.update()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 """)
         }

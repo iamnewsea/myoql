@@ -478,15 +478,15 @@ object MyUtil {
 
 
     /**
-     * 大驼峰
+     * 大驼峰 ,仅保留字母，数字
      */
     fun getBigCamelCase(value: String): String {
-        return value.split("-", "_", ".").map { it[0].toUpperCase() + it.Slice(1) }.joinToString("")
+        return value.split(Regex("""[\W_]""")).map { it[0].toUpperCase() + it.Slice(1) }.joinToString("")
     }
 
     fun getSmallCamelCase(value: String): String {
         var ret = getBigCamelCase(value);
-        return ret[0].toLowerCase() + value.Slice(1)
+        return ret[0].toLowerCase() + ret.Slice(1)
     }
 }
 

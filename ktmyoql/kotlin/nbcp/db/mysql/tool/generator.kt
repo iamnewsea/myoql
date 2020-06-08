@@ -299,18 +299,24 @@ object ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
         var idMethods = mutableListOf<String>()
         uks.forEach { uk ->
             var keys = uk.split(",")
+            //检测
+            keys.forEach {
+                if (entType.GetFieldPath(*it.split(".").toTypedArray()) == null) {
+                    throw RuntimeException("${tableName} 找不到 ${it} 属性!")
+                }
+            }
 
             idMethods.add("""
-    fun queryBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): SqlQueryClip<${entityTypeName}, ${entType.name}> {
-        return this.query()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
+    fun queryBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${MyUtil.getSmallCamelCase(it)}: ${entType.GetFieldPath(*it.split(".").toTypedArray())!!.type.kotlinTypeName}" }.joinToString(",")}): SqlQueryClip<${entityTypeName}, ${entType.name}> {
+        return this.query()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
-    fun deleteBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): SqlDeleteClip<${entityTypeName},${entType.name}> {
-        return this.delete()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
+    fun deleteBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${MyUtil.getSmallCamelCase(it)}: ${entType.GetFieldPath(*it.split(".").toTypedArray())!!.type.kotlinTypeName}" }.joinToString(",")}): SqlDeleteClip<${entityTypeName},${entType.name}> {
+        return this.delete()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
-    fun updateBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${it}: ${ entType.AllFields.first { f -> it == f.name }.type.kotlinTypeName }" }.joinToString(",")} ): SqlUpdateClip<${entityTypeName},${entType.name}> {
-        return this.update()${keys.map { ".where{ it.${it} match ${it} }" }.joinToString("")}
+    fun updateBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${MyUtil.getSmallCamelCase(it)}: ${entType.GetFieldPath(*it.split(".").toTypedArray())!!.type.kotlinTypeName}" }.joinToString(",")}): SqlUpdateClip<${entityTypeName},${entType.name}> {
+        return this.update()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 """)
         }

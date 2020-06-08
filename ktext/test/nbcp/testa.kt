@@ -40,18 +40,10 @@ class testa : TestBase() {
     }
 
 
-    class abd {
-        var www: LocalDateTime = LocalDateTime.now()
-    }
-
-    @Service
-    class abcdeee {}
-
     @Test
     fun abee() {
-        for (i in (0 .. 3)) {
-            println(i)
-        }
+        var s = MyUtil.getBigCamelCase("wxUserInfo.openid")
+        println(MyUtil.getSmallCamelCase(s))
     }
 
     @Test
