@@ -13,6 +13,11 @@ data class WxUserData(
         var session_key: String = "",
         var openid: String = "",
         var unionid: String = "",
+
+        var access_token:String = "",
+        var expires_in:String = "",
+        var refresh_token:String = "",
+
         var nickName: String = "",
         var gender: String = "",
 

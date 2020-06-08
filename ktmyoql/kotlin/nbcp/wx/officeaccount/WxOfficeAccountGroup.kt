@@ -38,6 +38,11 @@ object WxOfficeAccountGroup {
         return ret;
     }
 
+    data class wx_access_token(
+            var appId: String = "",
+            var token: String = "",
+            var expires_in: Int = 7200
+    )
 
     /**
      * https://developers.weixin.qq.com/doc/offiaccount/Basic_Information/Get_access_token.html

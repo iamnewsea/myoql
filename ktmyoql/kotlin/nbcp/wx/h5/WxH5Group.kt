@@ -1,8 +1,8 @@
 package nbcp.wx.h5
 
-import nbcp.comm.ApiResult
-import nbcp.comm.HasValue
+import nbcp.comm.*
 import nbcp.db.db
+import nbcp.utils.HttpUtil
 import nbcp.wx.wx
 import org.springframework.beans.factory.annotation.Value
 
@@ -35,14 +35,34 @@ object WxH5Group {
         return ApiResult.of(wxInfo)
     }
 
+
+    data class H5AccessTokenData(
+            var access_token: String = "",
+            var expires_in: Int = 0,
+            var refresh_token: String = "",
+            var openid: String = "",
+            var scope: String = "",
+            var unionid: String = "",
+            var errcode: Int = 0,
+            var errmsg: String = ""
+    )
+
     /**
      * H5 登录，使用 code 换 access_token
      * https://developers.weixin.qq.com/doc/oplatform/Website_App/WeChat_Login/Wechat_Login.html
      */
-    fun getH5LoginAccessToken(appSecret: String, code: String): String {
+    fun getH5LoginAccessToken(appSecret: String, code: String): ApiResult<H5AccessTokenData> {
         var url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appId}&secret=${appSecret}&code=${code}&grant_type=authorization_code"
-
-        //TODO  未完待续
-        return "";
+        var ret = ApiResult<H5AccessTokenData>();
+        var http = HttpUtil(url);
+        var data = http.doGet().FromJson<H5AccessTokenData>() ?: H5AccessTokenData();
+        if (data.errcode != 0) {
+            ret.msg = data.errmsg;
+            if (ret.msg.HasValue) {
+                return ret;
+            }
+        }
+        ret.data = data;
+        return ret;
     }
 }
