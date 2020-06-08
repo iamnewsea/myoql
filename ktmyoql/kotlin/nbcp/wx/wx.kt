@@ -5,6 +5,7 @@ import nbcp.wx.miniprogram.WxMiniProgramGroup
 import nbcp.wx.officeaccount.WxOfficeAccountGroup
 import nbcp.wx.pay.WxPayGroup
 import nbcp.wx.system.WxSystemGroup
+import java.time.LocalDateTime
 
 /**
  * 微信的用户信息。
@@ -14,9 +15,9 @@ data class WxUserData(
         var openid: String = "",
         var unionid: String = "",
 
-        var access_token:String = "",
-        var expires_in:String = "",
-        var refresh_token:String = "",
+        var access_token: String = "",
+        var expires_in: Int = 0,
+        var refresh_token: String = "",
 
         var nickName: String = "",
         var gender: String = "",
@@ -25,7 +26,8 @@ data class WxUserData(
         var city: String = "",
         var province: String = "",
         var country: String = "",
-        var avatarUrl: String = ""
+        var avatarUrl: String = "",
+        var createAt: LocalDateTime = LocalDateTime.now()
 )
 
 object wx {
