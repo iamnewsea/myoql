@@ -19,9 +19,9 @@ import org.springframework.data.mongodb.core.query.Criteria
  */
 class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out IMongoDocument>>(var moerEntity: M, var entity: IMongoDocument) : MongoBaseUpdateClip(moerEntity.tableName) {
     companion object {
-        private val logger by lazy {
-            return@lazy LoggerFactory.getLogger(this::class.java)
-        }
+//        private val logger by lazy {
+//            return@lazy LoggerFactory.getLogger(this::class.java)
+//        }
     }
 
     private var whereColumns = mutableSetOf<String>()

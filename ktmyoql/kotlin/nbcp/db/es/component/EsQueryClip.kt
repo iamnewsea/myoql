@@ -97,9 +97,9 @@ class EsQueryClip<M : EsBaseEntity<E>, E : IEsDocument>(var moerEntity: M)
     }
 
     companion object {
-        private val logger by lazy {
-            return@lazy LoggerFactory.getLogger(this::class.java)
-        }
+//        private val logger by lazy {
+//            return@lazy LoggerFactory.getLogger(this::class.java)
+//        }
     }
 
 

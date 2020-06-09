@@ -136,15 +136,7 @@ object db {
 //        }
 //    }
 
-    val mor_base by lazy {
-        return@lazy MongoBaseGroup()
-    }
-
-    val rer_base by lazy {
-        return@lazy RedisBaseGroup()
-    }
-
-    val sql_base by lazy {
-        return@lazy SqlBaseGroup()
-    }
+    val mor_base get() = MongoBaseGroup()
+    val rer_base get() = RedisBaseGroup()
+    val sql_base get() = SqlBaseGroup()
 }
