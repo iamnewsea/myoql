@@ -1,9 +1,12 @@
 package nbcp.wx.h5
 
 import nbcp.comm.AsLocalDateTime
+import nbcp.comm.HasValue
 import nbcp.comm.Slice
 import nbcp.comm.utf8
 import nbcp.utils.CodeUtil
+import nbcp.wx.wx
+import java.io.Serializable
 import java.security.MessageDigest
 import java.time.Duration
 import java.time.LocalDateTime
@@ -14,16 +17,16 @@ import java.util.*
  * https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/JS-SDK.html#54
  * wx.config 结构，其中不包含 jsApiList，jsApiList在客户端指定。
  */
-data class JsapiTicketData(
-        var appId: String = ""
-) {
-
+class JsapiTicketData : Serializable {
+    var appId: String = wx.appId
     var timestamp: Long = Duration.between("1970-01-01".AsLocalDateTime(), LocalDateTime.now()).seconds
     var nonceStr: String = CodeUtil.getCode().Slice(0, 32)
     var signature: String = ""
 
 
     fun fillSign(appSecret: String, jsapi_ticket: String, fullUrl: String) {
+        require(appSecret.HasValue) { "缺少appSecret!" }
+
         val string1: String
         var signature = ""
 

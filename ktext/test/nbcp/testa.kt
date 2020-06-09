@@ -48,17 +48,12 @@ class testa : TestBase() {
 
     @Test
     fun abcd() {
-        using(arrayOf(LogScope(Level.DEBUG_INT))) {
-            var set = mutableSetOf<String>();
-            set.add("c")
-            set.add("a")
-            set.add("b")
-            set.add("c")
-            set.add("a")
-            set.add("b")
+        var url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=wxd5f2957442fc2d0b&secret=&code=001MyADx1hVRmc0YSjEx1JpDDx1MyADv&grant_type=authorization_code";
 
-            println(set.elementAt(1))
-        }
+        var http = HttpUtil(url);
+        var res = http.doGet();
+
+        println(res)
 
     }
 

@@ -243,18 +243,19 @@ class HttpUtil(var url: String = "") {
 
         this.requestProperties.clear();
 //        var lines = mutableListOf<String>()
+
+        var requestBodyValidate = false;
+
         try {
             conn = URL(url).openConnection() as HttpURLConnection;
 
             //建立连接
             conn.instanceFollowRedirects = false
-            conn.doInput = true
-            conn.doOutput = true
+
             conn.useCaches = false
             conn.connectTimeout = 3000;
             conn.readTimeout = 5000;
 
-            conn.setChunkedStreamingMode(0)
             conn.setRequestProperty("Connection", "close")
 
 
@@ -266,6 +267,19 @@ class HttpUtil(var url: String = "") {
                 throw RuntimeException("没有设置 method！");
             }
 
+            if (conn.requestMethod.toLowerCase().IsIn("post", "put")) {
+                requestBodyValidate = true;
+            }
+
+            conn.doInput = true
+
+            //https://bbs.csdn.net/topics/290053257
+            //GET,HEAD,OPTIONS
+            if (requestBodyValidate) {
+                conn.doOutput = true
+                conn.setChunkedStreamingMode(0)
+            }
+
             conn.requestProperties.forEach { k, v ->
                 if (k == null) {
                     return@forEach;
@@ -275,7 +289,7 @@ class HttpUtil(var url: String = "") {
 
 //            conn.connect();
 
-            if (this.postBody.any()) {
+            if (requestBodyValidate && this.postBody.any()) {
                 //POST数据
 
                 var out = DataOutputStream(conn.outputStream);
@@ -351,7 +365,7 @@ class HttpUtil(var url: String = "") {
                     msgs.add("---")
 
                     this.responseHeader.map {
-//                        if (it.key == null) {
+                        //                        if (it.key == null) {
 //                            return@map "\t${it.value}"
 //                        }
                         return@map "\t${it.key}:${it.value}"

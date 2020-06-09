@@ -4,6 +4,7 @@ import nbcp.comm.*
 import nbcp.db.redis.proxy.RedisStringProxy
 import nbcp.utils.HttpUtil
 import nbcp.wx.WxUserData
+import nbcp.wx.wx
 
 object WxMiniProgramGroup {
     private val jscode2session = RedisStringProxy("jscode2session", 300)
@@ -23,13 +24,15 @@ object WxMiniProgramGroup {
     /**
      * https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/login/auth.code2Session.htm
      */
-    fun getOpenId(AppId: String, AppSecret: String, code: String): ApiResult<String> {
+    fun getOpenId(appSecret: String, code: String): ApiResult<String> {
+        require(appSecret.HasValue) { "缺少appSecret!" }
+
         var openId = jscode2session.get(code)
         if (openId.HasValue) {
             return ApiResult.of(openId);
         }
 
-        val url = "https://api.weixin.qq.com/sns/jscode2session?appid=${AppId}&secret=${AppSecret}&js_code=${code}&grant_type=authorization_code"
+        val url = "https://api.weixin.qq.com/sns/jscode2session?appid=${wx.appId}&secret=${appSecret}&js_code=${code}&grant_type=authorization_code"
 
         val ajax = HttpUtil(url);
         var data = ajax.doGet().FromJson<WxLoginInfoModel>();
