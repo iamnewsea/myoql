@@ -74,7 +74,7 @@ import org.springframework.stereotype.Component
             writeToFile("""
 @Component("sql.${group.key}")
 @MetaDataGroup("${group.key}")
-object ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
+class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
     override fun getEntities():Set<BaseMetaData> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
 """)
             println("${group.key}:")
@@ -219,7 +219,7 @@ object ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 
         var entityVarName = getEntityName(entTypeName);
 
-        return """val ${entityVarName} by lazy{ return@lazy ${getEntityClassName(entTypeName)}(); }""";
+        return """val ${entityVarName} get()= ${getEntityClassName(entTypeName)}();""";
     }
 
     fun genEntity(groupName: String, entType: Class<*>): String {

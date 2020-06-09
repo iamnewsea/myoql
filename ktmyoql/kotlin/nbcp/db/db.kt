@@ -20,7 +20,7 @@ enum class DatabaseEnum {
 }
 
 
-abstract class BaseMetaData(var tableName:String):java.io.Serializable
+abstract class BaseMetaData(var tableName: String) : java.io.Serializable
 
 /**
  * 数据库上下文，及操作类。
@@ -137,14 +137,14 @@ object db {
 //    }
 
     val mor_base by lazy {
-        return@lazy MongoBaseGroup
+        return@lazy MongoBaseGroup()
     }
 
     val rer_base by lazy {
-        return@lazy RedisBaseGroup
+        return@lazy RedisBaseGroup()
     }
 
     val sql_base by lazy {
-        return@lazy SqlBaseGroup
+        return@lazy SqlBaseGroup()
     }
 }

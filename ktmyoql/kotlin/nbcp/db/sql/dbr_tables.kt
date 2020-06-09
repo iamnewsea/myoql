@@ -9,17 +9,17 @@ import nbcp.comm.*
 import nbcp.utils.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-05-30 13:02:36
+//generate auto @2020-06-09 11:38:49
 
 
 @Component("sql.SqlBase")
 @MetaDataGroup("SqlBase")
-object SqlBaseGroup : IDataGroup{
+class SqlBaseGroup : IDataGroup{
     override fun getEntities():Set<BaseMetaData> = setOf(s_annex,s_dustbin,s_log)
 
-    val s_annex by lazy{ return@lazy s_annex_table(); }
-    val s_dustbin by lazy{ return@lazy s_dustbin_table(); }
-    val s_log by lazy{ return@lazy s_log_table(); }
+    val s_annex get()= s_annex_table();
+    val s_dustbin get()= s_dustbin_table();
+    val s_log get()= s_log_table();
 
 
     
@@ -46,15 +46,15 @@ object SqlBaseGroup : IDataGroup{
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
     
     
-        fun queryById (id: String ): SqlQueryClip<s_annex_table, nbcp.db.sql.entity.s_annex> {
+        fun queryById (id: String): SqlQueryClip<s_annex_table, nbcp.db.sql.entity.s_annex> {
             return this.query().where{ it.id match id }
         }
     
-        fun deleteById (id: String ): SqlDeleteClip<s_annex_table,nbcp.db.sql.entity.s_annex> {
+        fun deleteById (id: String): SqlDeleteClip<s_annex_table,nbcp.db.sql.entity.s_annex> {
             return this.delete().where{ it.id match id }
         }
     
-        fun updateById (id: String ): SqlUpdateClip<s_annex_table,nbcp.db.sql.entity.s_annex> {
+        fun updateById (id: String): SqlUpdateClip<s_annex_table,nbcp.db.sql.entity.s_annex> {
             return this.update().where{ it.id match id }
         }
     
@@ -76,15 +76,15 @@ object SqlBaseGroup : IDataGroup{
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
     
     
-        fun queryById (id: String ): SqlQueryClip<s_dustbin_table, nbcp.db.sql.entity.s_dustbin> {
+        fun queryById (id: String): SqlQueryClip<s_dustbin_table, nbcp.db.sql.entity.s_dustbin> {
             return this.query().where{ it.id match id }
         }
     
-        fun deleteById (id: String ): SqlDeleteClip<s_dustbin_table,nbcp.db.sql.entity.s_dustbin> {
+        fun deleteById (id: String): SqlDeleteClip<s_dustbin_table,nbcp.db.sql.entity.s_dustbin> {
             return this.delete().where{ it.id match id }
         }
     
-        fun updateById (id: String ): SqlUpdateClip<s_dustbin_table,nbcp.db.sql.entity.s_dustbin> {
+        fun updateById (id: String): SqlUpdateClip<s_dustbin_table,nbcp.db.sql.entity.s_dustbin> {
             return this.update().where{ it.id match id }
         }
     
@@ -109,15 +109,15 @@ object SqlBaseGroup : IDataGroup{
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
     
     
-        fun queryById (id: String ): SqlQueryClip<s_log_table, nbcp.db.sql.entity.s_log> {
+        fun queryById (id: String): SqlQueryClip<s_log_table, nbcp.db.sql.entity.s_log> {
             return this.query().where{ it.id match id }
         }
     
-        fun deleteById (id: String ): SqlDeleteClip<s_log_table,nbcp.db.sql.entity.s_log> {
+        fun deleteById (id: String): SqlDeleteClip<s_log_table,nbcp.db.sql.entity.s_log> {
             return this.delete().where{ it.id match id }
         }
     
-        fun updateById (id: String ): SqlUpdateClip<s_log_table,nbcp.db.sql.entity.s_log> {
+        fun updateById (id: String): SqlUpdateClip<s_log_table,nbcp.db.sql.entity.s_log> {
             return this.update().where{ it.id match id }
         }
     

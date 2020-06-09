@@ -69,7 +69,7 @@ ${packages.map { "import" + it }.joinToString(line_break)}
             writeToFile("""
 @Component("mongo.${groupName}")
 @MetaDataGroup("${groupName}")
-object ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
+class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
     override fun getEntities():Set<BaseMetaData> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
 """)
             println("${groupName}:")
@@ -355,7 +355,7 @@ ${props.joinToString("\n")}
         var entityTypeName = entTypeName + "Entity";
         var entityVarName = getEntityName(entTypeName);
 
-        return """val ${entityVarName}=${entityTypeName}();
+        return """val ${entityVarName} get() = ${entityTypeName}();
 fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""";
     }
 

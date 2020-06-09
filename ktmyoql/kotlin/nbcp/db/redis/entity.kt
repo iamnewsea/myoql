@@ -7,16 +7,16 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import kotlin.math.exp
 
-object RedisBaseGroup {
-    val validateCode = RedisStringProxy("validateCode", 180);
+class RedisBaseGroup {
+    val validateCode get() = RedisStringProxy("validateCode", 180);
 
 
 
     class CacheGroup {
-        val cacheSqlData = RedisStringProxy("")
-        fun brokeKeys(table: String) = RedisSetProxy("broke-keys:${table}")
-        val borkeKeysChangedVersion = RedisNumberProxy("borke-keys-changed-version")
-        val brokingTable = RedisStringProxy("broking-table")
+        val cacheSqlData get() = RedisStringProxy("")
+        fun brokeKeys(table: String)   = RedisSetProxy("broke-keys:${table}")
+        val borkeKeysChangedVersion get() = RedisNumberProxy("borke-keys-changed-version")
+        val brokingTable get() = RedisStringProxy("broking-table")
     }
 
     val cache = CacheGroup()
