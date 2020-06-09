@@ -10,6 +10,7 @@ interface IDisposeable {
 }
 
 /**
+ * value = ch.qos.logback.classic.Level.级别
  * TRACE < DEBUG < INFO < WARN < ERROR
  */
 class LogScope(val level: Int) : IDisposeable {

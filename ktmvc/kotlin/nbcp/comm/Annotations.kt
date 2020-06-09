@@ -13,7 +13,7 @@ package nbcp.comm
 annotation class OpenAction
 
 /**
- * 不需要记录日志的注解
+ * 记录Action日志级别的注解，value = ch.qos.logback.classic.Level.级别
  */
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
