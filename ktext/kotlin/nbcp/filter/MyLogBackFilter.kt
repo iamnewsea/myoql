@@ -21,7 +21,7 @@ class MyLogBackFilter : TurboFilter() {
             get() {
                 if (_debug != null) return _debug!!;
                 if (SpringUtil.isInited == false) return false;
-                _debug = SpringUtil.context.environment.getProperty("debug").AsBoolean()
+                _debug = config.debug;
                 return _debug!!;
             }
     }

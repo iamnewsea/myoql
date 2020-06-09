@@ -652,17 +652,7 @@ fun <T : Serializable> T.CloneObject(): T {
 
 private var debug_value: Boolean? = null
 
-/**
- * 获取参数 debug，如果是调试模式，那么查询日志显示结果集，会显示插入数据
- */
-val Logger.debug: Boolean
-    get() {
-        if (debug_value == null && SpringUtil.isInited) {
-            debug_value = SpringUtil.context.environment.getProperty("debug").AsBoolean();
-        }
 
-        return (debug_value ?: false) || this.isDebugEnabled
-    }
 
 /**
  * inline 内联方式可以拿到调用栈信息

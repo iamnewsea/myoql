@@ -24,8 +24,8 @@ class WxCorpPayToUserData(
         var partner_trade_no: String, // 商户订单号，需保持唯一性
         var desc: String = ""  // 企业付款备注
 ) {
-    var mch_appid: String = SpringUtil.context.environment.getProperty("app.wx.appId")
-    var mchid: String = SpringUtil.context.environment.getProperty("app.wx.mchId")
+    var mch_appid: String = wx.appId
+    var mchid: String = wx.mchId
 
     //var spbill_create_ip: String = "60.220.69.11"   // 终端IP
     var check_name: String = "NO_CHECK"  //NO_CHECK  不校验真实姓名   FORCE_CHECK：强校验真实姓名

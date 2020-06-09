@@ -4,6 +4,7 @@ import nbcp.comm.AsLocalDateTime
 import nbcp.comm.Slice
 import nbcp.utils.CodeUtil
 import nbcp.utils.SpringUtil
+import nbcp.wx.wx
 import java.time.Duration
 import java.time.LocalDateTime
 
@@ -13,7 +14,7 @@ import java.time.LocalDateTime
  * https://pay.weixin.qq.com/wiki/doc/api/wxa/wxa_api.php?chapter=7_7&index=5
  */
 class WxRequestPaymentServerSignData(prepay_id: String) {
-    var appId: String = SpringUtil.context.environment.getProperty("app.wx.appId")
+    var appId: String = wx.appId
     var timeStamp: Long = Duration.between("1970-01-01".AsLocalDateTime(), LocalDateTime.now()).seconds
     var signType: String = "MD5"
     var nonceStr: String = CodeUtil.getCode().Slice(0, 32)

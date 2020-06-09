@@ -33,10 +33,8 @@ open class IntCodeName(var code: Int, var name: String) : java.io.Serializable {
 open class IdUrl(var id: String = "", var url: String = "") : java.io.Serializable {
     //全路径
     val fullUrl: String
-        get() {
-            var host = SpringUtil.context.environment.getProperty("app.upload.host") ?: ""
-            return url.PatchHostUrl(host)
-        }
+        get() = url.PatchHostUrl(config.uploadHost)
+
 
 //Logo图大小
 //    val logoSize: Int
@@ -66,7 +64,7 @@ open class LoginUserModel(
         var organization: IdName = IdName(),
         var roles: List<String> = listOf() //角色
 ) : IdName(id, name) {
-    companion object{
+    companion object {
 
     }
 

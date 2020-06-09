@@ -27,8 +27,8 @@ data class WxPrePayServerRequestData(
         var attach: String = "", // 附加数据
         var detail: String = ""  // 商品详情
 ) {
-    var appid: String = SpringUtil.context.environment.getProperty("app.wx.appId")
-    var mch_id: String = SpringUtil.context.environment.getProperty("app.wx.mchId")
+    var appid: String = wx.appId
+    var mch_id: String = wx.mchId
 
     private var sign_type: String = "MD5"
 

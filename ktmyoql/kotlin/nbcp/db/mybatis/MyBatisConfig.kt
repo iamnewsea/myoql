@@ -1,5 +1,6 @@
 package nbcp.db.mybatis
 
+import nbcp.comm.config
 import nbcp.utils.*
 import nbcp.db.mysql.MysqlConfig
 import org.apache.ibatis.executor.Executor
@@ -43,7 +44,7 @@ import kotlin.reflect.KClass
 @EnableTransactionManagement
 @AutoConfigureAfter(value = arrayOf(DataSourceAutoConfiguration::class))
 @ConditionalOnProperty("app.mybatis.package")
-@DependsOn(value = arrayOf("mysqlConfig", "primary","springUtil"))
+@DependsOn(value = arrayOf("mysqlConfig", "primary", "springUtil"))
 @ConditionalOnBean(value = arrayOf(MysqlConfig::class))
 @Lazy
 open class MyBatisConfig() : TransactionManagementConfigurer {
@@ -62,7 +63,7 @@ open class MyBatisConfig() : TransactionManagementConfigurer {
         //获取之前注入的beanName为sqlSessionFactory的对象
         mapperScannerConfigurer.setSqlSessionFactoryBeanName("sqlSessionFactory")
         //指定xml配置文件的路径
-        mapperScannerConfigurer.setBasePackage(SpringUtil.context.environment.getProperty("app.mybatis.package"))
+        mapperScannerConfigurer.setBasePackage(config.mybatisPackage)
         return mapperScannerConfigurer
     }
 

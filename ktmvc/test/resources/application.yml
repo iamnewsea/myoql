@@ -7,9 +7,9 @@ logging:
 app:
   wx:
     appId: wxd5f2957442fc2d0b
-    appSecret: 778c9a9c19a8da17506f95e24749ea2c
+    appSecret:
     mchId: 1575431351
-    mchSecret: om2b8pug6c46kbhocmlqyc1k84odxcy1
+    mchSecret:
   filter:
     allowOrigins: dev8.cn
     ignore-log-urls: /open/log,/log,/favicon.ico,/index.html,/webjars/,/swagger-resources/,/v2/api-docs,/swagger-ui.html
