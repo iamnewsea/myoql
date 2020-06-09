@@ -28,7 +28,7 @@ object WxH5Group {
 
         var jsapiTicket = ticketResult.data ?: ""
 
-        var wxInfo = JsapiTicketData(wx.appId);
+        var wxInfo = JsapiTicketData();
         wxInfo.fillSign(appSecret, jsapiTicket, fullUrl);
         return ApiResult.of(wxInfo)
     }
