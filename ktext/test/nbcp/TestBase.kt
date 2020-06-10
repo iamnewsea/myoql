@@ -28,6 +28,7 @@ import java.time.LocalDateTime
 abstract class TestBase {
 
     init {
+        System.setProperty("app.upload.host","http://dev8.cn")
 //        GenericXmlApplicationContext().environment.setActiveProfiles("test")
 
 //        println(SpringUtil.context.environment.activeProfiles)

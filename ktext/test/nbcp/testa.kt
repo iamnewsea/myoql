@@ -46,9 +46,16 @@ class testa : TestBase() {
     )
 
     @Test
-    fun abee() {
-        using(JsonStyleEnumScope.DateLocalStyle){
-            var a = abc();
+    fun test_IdUrl_Json() {
+        using(JsonStyleEnumScope.GetSetStyle){
+            var a = IdUrl();
+            a.url = "OK"
+            println(a.ToJson())
+        }
+
+        using(JsonStyleEnumScope.FieldStyle){
+            var a = IdUrl();
+            a.url = "OK"
             println(a.ToJson())
         }
     }
