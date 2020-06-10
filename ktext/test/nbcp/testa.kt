@@ -39,11 +39,18 @@ class testa : TestBase() {
 
     }
 
+    data class abc(
+            var t:LocalDateTime = LocalDateTime.now(),
+            var i:Date = Date(),
+            var l:LocalDate = LocalDate.now()
+    )
 
     @Test
     fun abee() {
-        var s = MyUtil.getBigCamelCase("wxUserInfo.openid")
-        println(MyUtil.getSmallCamelCase(s))
+        using(JsonStyleEnumScope.DateLocalStyle){
+            var a = abc();
+            println(a.ToJson())
+        }
     }
 
     @Test

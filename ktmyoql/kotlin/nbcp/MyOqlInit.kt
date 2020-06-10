@@ -20,7 +20,6 @@ class MyOqlInit : ApplicationListener<ContextRefreshedEvent> {
     }
 
     override fun onApplicationEvent(p0: ContextRefreshedEvent) {
-        clazzesIsSimpleDefine.add(ObjectId::class.java)
 
         logger.warn("mongo groups:" + db.mongo.groups.map { it::class.java.simpleName }.joinToString())
         logger.info("sql groups:" + db.sql.groups.map { it::class.java.simpleName }.joinToString())

@@ -35,6 +35,10 @@ class MongoEntityEvent : BeanPostProcessor {
         }
     }
 
+//    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
+//        return super.postProcessBeforeInitialization(bean, beanName)
+//    }
+
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
 
         if (bean is IDataGroup) {

@@ -143,7 +143,9 @@ fun Any?.AsInt(defaultValue: Int = 0): Int {
     }
 }
 
-
+/**
+ * @param format 时间格式化字符串，数字的话也可以传 0.0,#.#
+ */
 fun Any?.AsString(defaultValue: String = "", format: String = ""): String {
     if (this == null) return defaultValue;
     if (this is String) {
@@ -174,6 +176,10 @@ fun Any?.AsString(defaultValue: String = "", format: String = ""): String {
             return "";
         }
         return SimpleDateFormat(format.AsString("yyyy-MM-dd HH:mm:ss")).format(this);
+    }
+    else if( this is Number){
+        //TODO  格式化 0.0 , #.#
+
     }
 
     var ret = this.toString()

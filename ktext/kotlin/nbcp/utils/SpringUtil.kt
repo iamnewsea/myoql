@@ -1,21 +1,27 @@
 package nbcp.utils
 
-import org.slf4j.LoggerFactory
-import org.springframework.beans.BeansException
+import nbcp.comm.*
+import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
-
+import java.sql.Timestamp
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.util.*
 
 /**
- * Created by udi on 17-5-22.
+ * 这样能达到在所有Bean初始化之前执行的目的。
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Component
-open class SpringUtil : ApplicationContextAware {
+class SpringUtil : BeanPostProcessor, ApplicationContextAware {
     companion object {
+        private var inited = false;
+
         private var applicationContext: ApplicationContext? = null
 
         @JvmStatic
@@ -86,12 +92,33 @@ open class SpringUtil : ApplicationContextAware {
 //        }
     }
 
-    @Throws(BeansException::class)
-    override fun setApplicationContext(applicationContext: ApplicationContext) {
-        if (applicationContext != null) {
-            SpringUtil.applicationContext = applicationContext
-        } else {
+    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
+
+        if (inited == false) {
+            inited = true;
+            init_app();
+        }
+
+        return super.postProcessBeforeInitialization(bean, beanName)
+    }
+
+    /**
+     * 在所有Bean初始化之前执行
+     */
+    private fun init_app() {
+        DefaultMyJsonMapper.addSerializer(Date::class.java, DateJsonSerializer(), DateJsonDeserializer())
+        DefaultMyJsonMapper.addSerializer(LocalDate::class.java, LocalDateJsonSerializer(), LocalDateJsonDeserializer())
+        DefaultMyJsonMapper.addSerializer(LocalTime::class.java, LocalTimeJsonSerializer(), LocalTimeJsonDeserializer())
+        DefaultMyJsonMapper.addSerializer(LocalDateTime::class.java, LocalDateTimeJsonSerializer(), LocalDateTimeJsonDeserializer())
+        DefaultMyJsonMapper.addSerializer(Timestamp::class.java, TimestampJsonSerializer(), TimestampJsonDeserializer())
+    }
+
+    override fun setApplicationContext(context: ApplicationContext?) {
+        if (context == null) {
             throw RuntimeException("设置 ApplicationContext 出现了异常!")
         }
+
+        applicationContext = context
     }
 }
+
