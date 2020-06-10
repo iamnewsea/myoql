@@ -26,7 +26,7 @@ open class BasicUser(
         var liveLocation: String = "",  //常住地
         var workCity: IntCodeName = IntCodeName(),
         var workLocation: String = ""  //工作地
-) : BaseEntity(), IMongoDocument  {
+) : BaseEntity(), IMongoDocument {
 
 //    var name: String
 //        get() = this.identityCard.name
@@ -58,7 +58,7 @@ open class BasicUserLoginInfo(
 
         var isLocked: Boolean = false,
         var lockedRemark: String = ""
-) :BaseEntity(), IMongoDocument
+) : BaseEntity(), IMongoDocument
 
 
 @Document
@@ -111,7 +111,7 @@ open class SysAnnex(
         var creator: IdName = IdName(), //创建者
         var corpId: String = "",    //创建所属企业,如果是 admin,则 id = "admin" , name = "admin 即可
         var errorMsg: String = ""      //文件处理时的错误消息
-) : BaseEntity(), IMongoDocument   {
+) : BaseEntity(), IMongoDocument {
 }
 
 
@@ -120,8 +120,8 @@ open class SysAnnex(
 data class SysCity(
         @DbKey
         var code: Int = 0,
-        var name: String = "",
-        var fullName: String = "",
+        var simpleName: String = "",
+        var name: String = "",          //界面常用全称
         var level: Int = 0,
         var lng: Float = 0F, //经度
         var lat: Float = 0F, //纬度
@@ -143,7 +143,7 @@ open class SysLog(
         var clientIp: String = "",
         var creatAt: LocalDateTime = LocalDateTime.now(),
         var creatorId: String = ""
-) : BaseEntity(), IMongoDocument   {
+) : BaseEntity(), IMongoDocument {
 }
 
 //存放删除的数据。
