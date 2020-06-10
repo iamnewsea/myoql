@@ -323,7 +323,7 @@ open class UploadService {
 
             if (annex != null) {
                 if (File(uploadPath + annex.url).exists()) {
-                    return ApiResult.of(IdUrl(id = annex.id, url = annex.url));
+                    return ApiResult.of(IdUrl(annex.id, annex.url));
                 } else {
                     dbService.clearMd5ById(annex.id);
                 }
