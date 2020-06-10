@@ -245,7 +245,7 @@ object MyUtil {
                 ?: Thread.currentThread().contextClassLoader.getResource("")
 
         var file = jarFile.path
-        print(file)
+//        print(file)
         var startIndex = 0
         if (file.startsWith("//file:/")) {
             startIndex = 7
@@ -261,13 +261,16 @@ object MyUtil {
             //如果是调试模式
             index = file.indexOf("/target/classes/")
             if (index > 0) {
-                var mvn_file = File(file.Slice(0, -8)).listFiles { it -> it.name == "maven-archiver" }.firstOrNull()?.listFiles { it -> it.name == "pom.properties" }?.firstOrNull()
+                //处理文件路径中中文的问题。
+                var filePath = JsUtil.decodeURIComponent(file.Slice(0,-8));
+
+                var mvn_file = File(filePath).listFiles { it -> it.name == "maven-archiver" }.firstOrNull()?.listFiles { it -> it.name == "pom.properties" }?.firstOrNull()
                 if (mvn_file != null) {
                     var jarFile_lines = mvn_file.readLines()
                     var version = jarFile_lines.first { it.startsWith("version=") }.split("=").last()
                     var artifactId = jarFile_lines.first { it.startsWith("artifactId=") }.split("=").last()
 
-                    return File(file.Slice(0, -8) + artifactId + "-" + version + ".jar")
+                    return File(filePath + artifactId + "-" + version + ".jar")
                 }
             }
         }

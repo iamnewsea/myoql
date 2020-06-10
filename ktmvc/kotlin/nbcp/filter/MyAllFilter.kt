@@ -1,4 +1,4 @@
-package nbcp.web.config
+package nbcp.filter
 
 import ch.qos.logback.classic.Level
 import nbcp.comm.*
@@ -31,10 +31,10 @@ import javax.servlet.http.HttpServletResponse
  * Created by udi on 2017.3.11.
  * 拦截所有请求，过滤普通的GET及上传下载。
  * 需要配置 ：
- * 0. 标注 @SpringBootApplication 的启动类，还需要添加 @ServletComponentScan 注解。
- * 1. app.filter.allowOrigins
- * 2. app.filter.ignore-log-urls
- * 3. app.filter.headers
+ * 0. 标注 @SpringBootApplication 的启动类，还需要添加 @ServletComponentScan 注解（如果不是 nbcp包，@ServletComponentScan(value = {"nbcp.**"})）。
+ * 1. app.filter.allow-origins
+ * 2. app.filter.headers
+ * 3. 通过 Url参数 log-level 控制 Log级别
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 //@Configuration

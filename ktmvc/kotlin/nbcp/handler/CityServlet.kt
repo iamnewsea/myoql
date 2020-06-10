@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponse
 /**
  * 获取城市下级数据
  */
-data class cn_cityModel(var c: Int, var n: String)
+data class cn_city_model(var c: Int, var n: String)
 
 @OpenAction
 @WebServlet(urlPatterns = arrayOf("/child-citys"))
@@ -45,7 +45,7 @@ open class CityServlet : HttpServlet() {
         var list = db.mor_base.sysCity.query()
                 .where { it.pcode match pcode }
                 .toList(IntCodeName::class.java)
-                .map { cn_cityModel(it.code, it.name) }
+                .map { cn_city_model(it.code, it.name) }
 
         response.WriteJsonRawValue(ApiResult.of(list).ToJson())
     }
