@@ -385,33 +385,36 @@ open class UploadService {
         var ret = ListResult<IdUrl>();
         var list = mutableListOf<IdUrl>()
         if (request is StandardMultipartHttpServletRequest) {
-            request.multiFileMap.toList().ForEachExt { it, _ ->
-                var fileName = it.first;
-                var files = it.second;
+            throw RuntimeException("request非StandardMultipartHttpServletRequest类型")
+        }
 
-                files.ForEachExt for2@{ file, _ ->
-                    var oriFileExtentionInfo = getFileInfo(file.originalFilename, fileName)
-                    if (oriFileExtentionInfo.name.isEmpty()) {
-                        oriFileExtentionInfo.name = CodeUtil.getCode()
-                    }
+        (request as StandardMultipartHttpServletRequest).multiFileMap.toList().ForEachExt { it, _ ->
+            var fileName = it.first;
+            var files = it.second;
 
-                    var vTempFile = saveTempFile(file, oriFileExtentionInfo.extName);
-                    if (processFile != null) {
-                        processFile(uploadPath + vTempFile, oriFileExtentionInfo.extType)
-                    }
-
-                    var ret1 = doUpload(vTempFile, user, corpId, oriFileExtentionInfo.toString());
-                    if (ret1.msg.HasValue) {
-                        ret.msg = ret1.msg;
-                        return@ForEachExt false
-                    }
-                    list.add(ret1.data!!);
-                    return@for2 true
+            files.ForEachExt for2@{ file, _ ->
+                var oriFileExtentionInfo = getFileInfo(file.originalFilename, fileName)
+                if (oriFileExtentionInfo.name.isEmpty()) {
+                    oriFileExtentionInfo.name = CodeUtil.getCode()
                 }
 
-                return@ForEachExt true;
+                var vTempFile = saveTempFile(file, oriFileExtentionInfo.extName);
+                if (processFile != null) {
+                    processFile(uploadPath + vTempFile, oriFileExtentionInfo.extType)
+                }
+
+                var ret1 = doUpload(vTempFile, user, corpId, oriFileExtentionInfo.toString());
+                if (ret1.msg.HasValue) {
+                    ret.msg = ret1.msg;
+                    return@ForEachExt false
+                }
+                list.add(ret1.data!!);
+                return@for2 true
             }
+
+            return@ForEachExt true;
         }
+
 
         ret.data = list
         return ret;

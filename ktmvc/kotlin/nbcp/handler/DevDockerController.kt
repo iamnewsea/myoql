@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.io.BufferedReader
 import java.io.File
@@ -22,7 +23,8 @@ import javax.servlet.http.HttpServletResponse
  */
 @RestController
 @ConditionalOnProperty("server.dev")
-class DockerController {
+@RequestMapping("/dev/docker")
+class DevDockerController {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -30,7 +32,7 @@ class DockerController {
     /**
      * 获取 docker容器
      */
-    @PostMapping("/docker/containers")
+    @PostMapping("/containers")
     fun getContainers(name: String): ListResult<String> {
         if (name.HasValue) {
             return ListResult.of(listOf(name))
@@ -47,7 +49,7 @@ class DockerController {
     /**
      * 列出内容
      */
-    @PostMapping("/docker/list")
+    @PostMapping("/list")
     fun list(@Require container: String, bash: String, @Require work_path: String): ListResult<String> {
         var docker_cmd = "ls -ahl  ${work_path}"
         return execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd);
@@ -62,7 +64,7 @@ class DockerController {
     /**
      * 把文件拷到宿主机
      */
-    @PostMapping("/docker/copy2host")
+    @PostMapping("/copy2host")
     fun copy2host(@Require container: String, @Require work_path: String, @Require name: String): JsonResult {
         var targetPathName = path + LocalTime.now().format("HHmmss") + File.separator;
         var targetPath = File(targetPathName);
@@ -80,7 +82,7 @@ class DockerController {
     /**
      * 查看 文件内容
      */
-    @GetMapping("/docker/file")
+    @GetMapping("/file")
     fun file(@Require container: String, @Require work_path: String, @Require name: String, view: Boolean?, response: HttpServletResponse) {
         var targetPathName = path;
         var targetPath = File(targetPathName);
@@ -106,7 +108,7 @@ class DockerController {
     /**
      * 上传
      */
-    @PostMapping("/docker/upload")
+    @PostMapping("/upload")
     fun upload(@Require container: String, @Require work_path: String, @Require name: String, @Require dbFile: IdUrl): JsonResult {
         execCmd("docker", "cp", "${path}${dbFile.url}", "${container}:${work_path}/${name}");
         return JsonResult()
@@ -115,7 +117,7 @@ class DockerController {
     /**
      * 改名
      */
-    @PostMapping("/docker/rename")
+    @PostMapping("/rename")
     fun rename(@Require container: String, bash: String, @Require work_path: String, @Require name: String, @Require newName: String): JsonResult {
         var docker_cmd = "mv ${work_path}/${name} ${work_path}/${newName}"
         execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd);
@@ -126,7 +128,7 @@ class DockerController {
     /**
      * 创建文件夹
      */
-    @PostMapping("/docker/mkdir")
+    @PostMapping("/mkdir")
     fun mkdir(@Require container: String, bash: String, @Require work_path: String, @Require name: String): JsonResult {
         var docker_cmd = "mkdir -p  ${work_path}/${name}"
         execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd);
@@ -136,7 +138,7 @@ class DockerController {
     /**
      * 删除
      */
-    @PostMapping("/docker/delete")
+    @PostMapping("/delete")
     fun delete(@Require container: String, bash: String, @Require work_path: String, @Require name: String): JsonResult {
         var docker_cmd = "rm -rf  ${work_path}/${name}"
         execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd);
