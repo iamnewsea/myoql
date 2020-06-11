@@ -20,11 +20,11 @@ class markdown {
     fun work(targetFileName: String,basePackage:String,anyEntityClass:Class<*>,nameMapping:StringMap) {
         this.nameMapping = nameMapping;
 
-        var p = System.getProperty("file.separator");
+        var p = File.separator;
 
 //        var path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0]
 //        var moer_Path = File(path).parentFile.path + "/shop-orm/kotlin/nbcp/db/mongo/mor_tables.kt".replace("/", p);
-        var moer_Path = targetFileName.replace("/", p);
+        var moer_Path = targetFileName.replace("/", p).replace("\\",p);
 
 
         File(moer_Path).delete();

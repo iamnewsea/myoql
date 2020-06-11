@@ -15,7 +15,9 @@ fun LocalDate.format(pattern: String): String {
 fun LocalDateTime.format(pattern: String): String {
     return this.format(java.time.format.DateTimeFormatter.ofPattern(pattern));
 }
-
+fun LocalTime.format(pattern: String): String {
+    return this.format(java.time.format.DateTimeFormatter.ofPattern(pattern));
+}
 
 fun LocalDate.atEndOfDay(): LocalDateTime {
     return this.atTime(23, 59, 59, 999_999_999);

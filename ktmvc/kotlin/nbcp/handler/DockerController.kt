@@ -14,6 +14,7 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 import java.time.LocalDate
+import java.time.LocalTime
 import javax.servlet.http.HttpServletResponse
 
 /**
@@ -26,6 +27,9 @@ class DockerController {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
+    /**
+     * 获取 docker容器
+     */
     @PostMapping("/docker/containers")
     fun getContainers(name: String): ListResult<String> {
         if (name.HasValue) {
@@ -40,6 +44,9 @@ class DockerController {
     }
 
 
+    /**
+     * 列出内容
+     */
     @PostMapping("/docker/list")
     fun list(@Require container: String, bash: String, @Require work_path: String): ListResult<String> {
         var docker_cmd = "ls -ahl  ${work_path}"
@@ -49,37 +56,65 @@ class DockerController {
     @Value("\${app.upload.path}")
     lateinit var uploadPath: String
 
+    val path: String
+        get() = uploadPath + File.separator + "docker-" + LocalDate.now().format("YYYY-MM-dd") + File.separator
 
-    @GetMapping("/docker/file")
-    fun file(@Require container: String, @Require file: String, view: Boolean?, response: HttpServletResponse) {
-        var targetPathName = uploadPath + LocalDate.now().format("YYYY-MM-dd");
+    /**
+     * 把文件拷到宿主机
+     */
+    @GetMapping("/docker/copy2host")
+    fun copy2host(@Require container: String, @Require work_path: String, @Require name: String): JsonResult {
+        var targetPathName = path + LocalTime.now().format("HHmmss") + File.separator;
         var targetPath = File(targetPathName);
-        var fileName = file.split("/").last();
 
         if (targetPath.exists() == false && targetPath.mkdirs() == false) {
             throw Exception("创建文件夹失败:${targetPath.FullName}");
         }
 
-        var target = targetPathName + "/" + CodeUtil.getCode() + "-" + fileName;
-        execCmd("docker", "cp", "${container}:${file}", target);
+        var target = targetPathName + "/" + name;
+        execCmd("docker", "cp", "${container}:${work_path}/${name}", target);
+
+        return JsonResult();
+    }
+
+    /**
+     * 查看 文件内容
+     */
+    @GetMapping("/docker/file")
+    fun file(@Require container: String, @Require work_path: String, @Require name: String, view: Boolean?, response: HttpServletResponse) {
+        var targetPathName = path;
+        var targetPath = File(targetPathName);
+
+        if (targetPath.exists() == false && targetPath.mkdirs() == false) {
+            throw Exception("创建文件夹失败:${targetPath.FullName}");
+        }
+
+        var target = targetPathName + "/" + CodeUtil.getCode() + "-" + name;
+        execCmd("docker", "cp", "${container}:${work_path}/${name}", target);
 
         var view = view ?: false;
         if (view) {
-            var fileInfo = FileExtentionInfo(fileName);
+            var fileInfo = FileExtentionInfo(name);
             response.contentType = MyUtil.getMimeType(fileInfo.extName).AsString("text/plain")
         } else {
-            response.setDownloadFileName(fileName)
+            response.setDownloadFileName(name)
         }
         response.outputStream.write(File(target).readBytes())
     }
 
 
+    /**
+     * 上传
+     */
     @PostMapping("/docker/upload")
     fun upload(@Require container: String, @Require work_path: String, @Require name: String, @Require dbFile: IdUrl): JsonResult {
-        execCmd("docker", "cp", "${uploadPath}${dbFile.url}", "${container}:${work_path}/${name}");
+        execCmd("docker", "cp", "${path}${dbFile.url}", "${container}:${work_path}/${name}");
         return JsonResult()
     }
 
+    /**
+     * 改名
+     */
     @PostMapping("/docker/rename")
     fun rename(@Require container: String, bash: String, @Require work_path: String, @Require name: String, @Require newName: String): JsonResult {
         var docker_cmd = "mv ${work_path}/${name} ${work_path}/${newName}"
@@ -88,6 +123,9 @@ class DockerController {
     }
 
 
+    /**
+     * 创建文件夹
+     */
     @PostMapping("/docker/mkdir")
     fun mkdir(@Require container: String, bash: String, @Require work_path: String, @Require name: String): JsonResult {
         var docker_cmd = "mkdir -p  ${work_path}/${name}"
@@ -95,6 +133,9 @@ class DockerController {
         return JsonResult()
     }
 
+    /**
+     * 删除
+     */
     @PostMapping("/docker/delete")
     fun delete(@Require container: String, bash: String, @Require work_path: String, @Require name: String): JsonResult {
         var docker_cmd = "rm -rf  ${work_path}/${name}"
