@@ -62,7 +62,7 @@ class DockerController {
     /**
      * 把文件拷到宿主机
      */
-    @GetMapping("/docker/copy2host")
+    @PostMapping("/docker/copy2host")
     fun copy2host(@Require container: String, @Require work_path: String, @Require name: String): JsonResult {
         var targetPathName = path + LocalTime.now().format("HHmmss") + File.separator;
         var targetPath = File(targetPathName);
