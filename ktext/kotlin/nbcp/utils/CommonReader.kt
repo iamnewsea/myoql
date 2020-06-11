@@ -2,6 +2,16 @@ package nbcp.comm
 
 /**
  * 流式批量读取，适用于分批遍历数据库的场景
+ * @sample 如下：
+ *
+ *         var reader = CommonReader.init(20, { skip, take ->
+ *             mor.base.sysCity.query().limit(skip, take).toList()
+ *         });
+ *
+ *         while (reader.hasNext()) {
+ *             var current= reader.next();
+ *
+ *         }
  */
 class CommonReader<T>(private val nextFunc: () -> T?) : Iterator<T> {
     companion object {

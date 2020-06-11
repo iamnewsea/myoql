@@ -44,10 +44,10 @@ open class CityServlet : HttpServlet() {
 
         var list = db.mor_base.sysCity.query()
                 .select { it.code }
-                .select { it.simpleName }
+                .select { it.shortName }
                 .where { it.pcode match pcode }
                 .toList()
-                .map { cn_city_model(it.code, it.simpleName) }
+                .map { cn_city_model(it.code, it.shortName) }
 
         response.WriteJsonRawValue(ApiResult.of(list).ToJson())
     }
