@@ -120,7 +120,7 @@ open class SysAnnex(
 data class SysCity(
         @DbKey
         var code: Int = 0,
-        var simpleName: String = "",
+        var simpleName: String = "",    // 城市控件使用 simpleName
         var name: String = "",          //界面常用全称
         var level: Int = 0,
         var lng: Float = 0F, //经度

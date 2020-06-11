@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2020-06-09 11:19:56
+//generate auto @2020-06-11 11:59:40
 
 class IdUrlMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
@@ -95,21 +95,21 @@ class BusinessLicenseDataMeta (private val _pname:String):MongoColumnName() {
 class MongoBaseGroup : IDataGroup{
     override fun getEntities():Set<BaseMetaData> = setOf(basicUser,basicUserLoginInfo,sysAnnex,sysApplication,sysCity,sysDustbin,sysLog,sysOrganization)
 
-    val basicUser:BasicUserEntity get() = BasicUserEntity();
+    val basicUser get() = BasicUserEntity();
     fun basicUser(collectionName:String)=BasicUserEntity(collectionName);
-    val basicUserLoginInfo:BasicUserLoginInfoEntity get() = BasicUserLoginInfoEntity();
+    val basicUserLoginInfo get() = BasicUserLoginInfoEntity();
     fun basicUserLoginInfo(collectionName:String)=BasicUserLoginInfoEntity(collectionName);
-    val sysAnnex:SysAnnexEntity get() = SysAnnexEntity();
+    val sysAnnex get() = SysAnnexEntity();
     fun sysAnnex(collectionName:String)=SysAnnexEntity(collectionName);
-    val sysApplication:SysApplicationEntity get() = SysApplicationEntity();
+    val sysApplication get() = SysApplicationEntity();
     fun sysApplication(collectionName:String)=SysApplicationEntity(collectionName);
-    val sysCity:SysCityEntity get() = SysCityEntity();
+    val sysCity get() = SysCityEntity();
     fun sysCity(collectionName:String)=SysCityEntity(collectionName);
-    val sysDustbin:SysDustbinEntity get() = SysDustbinEntity();
+    val sysDustbin get() = SysDustbinEntity();
     fun sysDustbin(collectionName:String)=SysDustbinEntity(collectionName);
-    val sysLog:SysLogEntity get() = SysLogEntity();
+    val sysLog get() = SysLogEntity();
     fun sysLog(collectionName:String)=SysLogEntity(collectionName);
-    val sysOrganization:SysOrganizationEntity get() = SysOrganizationEntity();
+    val sysOrganization get() = SysOrganizationEntity();
     fun sysOrganization(collectionName:String)=SysOrganizationEntity(collectionName);
 
 
@@ -193,8 +193,8 @@ class MongoBaseGroup : IDataGroup{
     class SysCityEntity(collectionName:String="")
         :MongoBaseMetaCollection<nbcp.db.mongo.entity.SysCity>(nbcp.db.mongo.entity.SysCity::class.java,collectionName.AsString("sysCity")) {
         val code=MongoColumnName("code")
+        val simpleName=MongoColumnName("simpleName")
         val name=MongoColumnName("name")
-        val fullName=MongoColumnName("fullName")
         val level=MongoColumnName("level")
         val lng=MongoColumnName("lng")
         val lat=MongoColumnName("lat")

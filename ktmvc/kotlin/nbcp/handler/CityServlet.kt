@@ -43,9 +43,11 @@ open class CityServlet : HttpServlet() {
         }
 
         var list = db.mor_base.sysCity.query()
+                .select { it.code }
+                .select { it.simpleName }
                 .where { it.pcode match pcode }
-                .toList(IntCodeName::class.java)
-                .map { cn_city_model(it.code, it.name) }
+                .toList()
+                .map { cn_city_model(it.code, it.simpleName) }
 
         response.WriteJsonRawValue(ApiResult.of(list).ToJson())
     }
