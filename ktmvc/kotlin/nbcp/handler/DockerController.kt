@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletResponse
  * 三个固定参数： token,container,work_path,bash是可选
  */
 @RestController
-@OpenAction
 @ConditionalOnProperty("server.dev")
 class DockerController {
     companion object {

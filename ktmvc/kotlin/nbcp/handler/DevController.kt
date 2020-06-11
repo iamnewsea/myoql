@@ -14,7 +14,6 @@ import kotlin.reflect.jvm.javaType
 /**
  * Created by udi on 17-3-19.
  */
-@OpenAction
 @RestController
 @ConditionalOnProperty("server.dev")
 @JsonpMapping("/dev/mongo")
