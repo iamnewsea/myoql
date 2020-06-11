@@ -23,7 +23,7 @@ class DevController {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    @GetMapping("/getGroups")
+    @GetMapping("/groups")
     fun getGroup(): ListResult<String> {
         db.mongo.groups.apply {
             return ListResult.of(this.map {
@@ -33,7 +33,7 @@ class DevController {
         }
     }
 
-    @GetMapping("/getEntities")
+    @GetMapping("/entities")
     fun getEntities(group: String): ListResult<String> {
         var group = group[0].toUpperCase() + group.Slice(1) + "Group"
         var groupObj = db.mongo.groups.firstOrNull { it::class.java.simpleName == group }
@@ -50,7 +50,7 @@ class DevController {
             var isSimpleType: Boolean
     )
 
-    @GetMapping("/getFields")
+    @GetMapping("/fields")
     fun getEntity(group: String, entity: String): ListResult<FieldModel> {
         var group = group[0].toUpperCase() + group.Slice(1) + "Group"
         var groupObj = db.mongo.groups.firstOrNull { it::class.java.simpleName == group }
