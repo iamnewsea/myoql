@@ -17,29 +17,29 @@ import java.time.*
  * Created by CodeGenerator @${now}
  */
 
-@Api(description = "${entity_upper}", tags = arrayOf("${entity_upper}"))
+@Api(description = "${entity_class}", tags = arrayOf("${entity_class}"))
 @RestController
-@JsonpMapping("/${group}/${entity}")
-class ${entity_upper}Controller {
+@JsonpMapping("/${group}/${entity_url}")
+class ${entity_class}Controller {
 
     @ApiOperation("列表")
     @JsonpMapping("/list")
     fun list(
         id: String, //当列表列新一条后，刷新时使用
-        name: String,
+${if:name}        name: String,${endif:name}
         @Require skip: Int,
         @Require take: Int,
         request: MyHttpRequestWrapper
-    ): ListResult<${entity_upper}> {
+    ): ListResult<${entity_class}> {
 
         mor.${group}.${entity}.query()
             .apply{
                 if(id.HasValue){
                     this.where{it.id match id}
                 }
-                if(name.HasValue){
+${if:name}                if(name.HasValue){
                     this.where{ it.name match_like name }
-                }
+                }${endif}
             }
             .limit(skip,take)
             .toListResult()
@@ -51,17 +51,17 @@ class ${entity_upper}Controller {
     @ApiOperation("引用列表")
     @JsonpMapping("/ref")
     fun ref(
-        name: String,
+${if:name}        name: String,${endif}
         @Require skip: Int,
         @Require take: Int,
         request: MyHttpRequestWrapper
-    ): ListResult<${entity_upper}> {
+    ): ListResult<${entity_class}> {
 
         mor.${group}.${entity}.query()
             .apply{
-                if(name.HasValue){
+${if:name}                if(name.HasValue){
                     this.where{ it.name match_like name }
-                }
+                }${endif}
             }
             .limit(skip,take)
             .toListResult()
@@ -75,12 +75,12 @@ class ${entity_upper}Controller {
     fun detail(
         @Require id: String,
         request: MyHttpRequestWrapper
-    ): ApiResult<${entity_upper}> {
+    ): ApiResult<${entity_class}> {
         mor.${group}.${entity}.queryById(id)
             .toEntity()
             .apply{
                 if( this == null){
-                    return ApiResult<${entity_upper}>("找不到数据")
+                    return ApiResult<${entity_class}>("找不到数据")
                 }
 
                 return ApiResult.of(this)
@@ -90,7 +90,7 @@ class ${entity_upper}Controller {
     @ApiOperation("更新")
     @JsonpMapping("/save")
     fun save(
-      @JsonModel entity:${entity_upper},
+      @JsonModel entity:${entity_class},
       request: MyHttpRequestWrapper
     ): ApiResult<String> {
 
@@ -116,12 +116,12 @@ class ${entity_upper}Controller {
             return ApiResult.of(entity.id)
         }
     }
-
+${if:status}
     @ApiOperation("更新状态，更新一个字段")
     @JsonpMapping("/set-status")
     fun set(
         @Require id: String,
-        @Require status: String,
+        @Require status: ${status_enum_class},
         request: MyHttpRequestWrapper
     ): JsonResult {
         //鉴权
@@ -129,7 +129,7 @@ class ${entity_upper}Controller {
 
 
         mor.${group}.${entity}.updateById(id)
-            .set{it.status to ""}
+            .set{it.status to status}
             .set { it.updateAt to LocalDateTime.now() }
             .exec()
             .apply {
@@ -140,7 +140,7 @@ class ${entity_upper}Controller {
                 return JsonResult()
             }
     }
-
+${endif}
     @ApiOperation("删除")
     @JsonpMapping("/delete")
     fun delete(

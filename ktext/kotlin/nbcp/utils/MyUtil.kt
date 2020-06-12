@@ -487,9 +487,36 @@ object MyUtil {
         return value.split(Regex("""[\W_]""")).map { it[0].toUpperCase() + it.Slice(1) }.joinToString("")
     }
 
+    /**
+     * 小驼峰
+     */
     fun getSmallCamelCase(value: String): String {
         var ret = getBigCamelCase(value);
         return ret[0].toLowerCase() + ret.Slice(1)
+    }
+
+    /**
+     * 连字符格式
+     */
+    fun getHyphen(value: String): String {
+        return value.split(Regex("""[\W_]"""))
+                .map { value ->
+                    var chars = mutableListOf<Char>()
+
+                    value.forEach {
+                        if (it.isUpperCase()) {
+                            if (chars.any()) {
+                                chars.add('-')
+                            }
+                            chars.add(it.toLowerCase())
+                        } else {
+                            chars.add(it);
+                        }
+                    }
+
+                    return@map chars.joinToString("")
+                }
+                .joinToString("-")
     }
 }
 

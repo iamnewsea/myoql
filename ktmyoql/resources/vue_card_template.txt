@@ -3,7 +3,7 @@
         <div class="header-info">
             <p>{{action_name}}-${title}</p>
             <div>
-                <el-button size="mini" @click="$router.push('/${group}/${entity}/add')" v-if="action=='edit'">新建</el-button>
+                <el-button size="mini" @click="$router.push('/${group}/${entity_url}/add')" v-if="action=='edit'">新建</el-button>
                 <el-button size="mini" @click="save_click" type="primary"> 保存</el-button>
             </div>
         </div>
@@ -13,7 +13,7 @@
                     <div slot="header">
                         <span>基本信息</span>
                     </div>
-${for:fields}                    <kv label="${remark}"><el-input v-model="info.${name}"/></kv>${endfor:fields}
+${for:fields}                    <kv label="${remark}"><el-input v-model="info.${name}"/></kv>${endfor}
                 </el-card>
             </el-col>
             <el-col>
@@ -83,7 +83,7 @@ ${for:fields}                    <kv label="${remark}"><el-input v-model="info.$
         methods: {
             loadData() {
                 if (!this.id) return;
-                this.$http.post("/${group}/${entity}/detail?id=" + this.id).then(res => {
+                this.$http.post("/${group}/${entity_url}/detail?id=" + this.id).then(res => {
                     this.info = res.data.data;
                 });
             },
@@ -93,10 +93,10 @@ ${for:fields}                    <kv label="${remark}"><el-input v-model="info.$
                     return;
                 }
 
-                this.$http.post("/${group}/${entity}/save", this.info).then(res => {
+                this.$http.post("/${group}/${entity_url}/save", this.info).then(res => {
                     jv.info(this.action_name + " 成功");
                     if (this.action == "add") {
-                        this.$router.push("/${group}/${entity}/edit?id=" + res.data.data)
+                        this.$router.push("/${group}/${entity_url}/edit?id=" + res.data.data)
                     }
                 })
             },

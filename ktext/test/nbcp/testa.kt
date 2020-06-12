@@ -63,19 +63,14 @@ class testa : TestBase() {
     @Test
     fun abcd() {
         var str = "abc{--{--\${name}-{\${id}"
-        var jsonMap = StringMap( "name" to "hello");
-        println(str.format(jsonMap,"\${}"))
+        var jsonMap = StringMap("name" to "hello");
+        println(str.format(jsonMap, "\${}"))
     }
 
-    class jjj {
-        var tags = mutableSetOf<String>()
-    }
 
     @Test
     fun rou() {
-        var j = jjj();
-        j.tags.add("OK")
-
-        println(j.ToJson().FromJson<jjj>().ToJson())
+        var ret = Regex("\\$\\{if:(\\w+)}").find("\${if:name}kkkd\${endif} --\${if:status}dkfjdkf\${endif}", 0)
+        println(ret)
     }
 }

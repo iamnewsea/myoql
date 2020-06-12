@@ -3,7 +3,6 @@ package nbcp.utils
 /**
  * Created by udi on 17-4-30.
  */
-import com.sun.net.ssl.HttpsURLConnection
 import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import java.awt.image.BufferedImage
