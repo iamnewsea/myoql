@@ -5,7 +5,7 @@ import nbcp.db.BaseMetaData
 import nbcp.utils.MyUtil
 import java.time.LocalDateTime
 
-object CodeGenerator {
+object UserCodeGenerator {
     fun genMvc(group: String, entity: BaseMetaData): String {
         var stream = this::class.java.getResourceAsStream("/kotlin_mvc_template.txt")
         var text = stream.readBytes().toString(utf8)

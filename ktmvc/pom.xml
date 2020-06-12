@@ -112,11 +112,6 @@
                 <directory>test/resources</directory>
             </testResource>
         </testResources>
-        <resources>
-            <resource>
-                <directory>resources</directory>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.jetbrains.dokka</groupId>
