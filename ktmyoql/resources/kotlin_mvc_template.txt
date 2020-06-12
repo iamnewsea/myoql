@@ -121,7 +121,7 @@ class ${entity_upper}Controller {
     @JsonpMapping("/set-status")
     fun set(
         @Require id: String,
-        @Require status: 枚举,
+        @Require status: String,
         request: MyHttpRequestWrapper
     ): JsonResult {
         //鉴权
@@ -129,7 +129,7 @@ class ${entity_upper}Controller {
 
 
         mor.${group}.${entity}.updateById(id)
-            .set{it.status to 枚举}
+            .set{it.status to ""}
             .set { it.updateAt to LocalDateTime.now() }
             .exec()
             .apply {

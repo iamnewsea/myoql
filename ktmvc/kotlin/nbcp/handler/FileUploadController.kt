@@ -7,7 +7,6 @@ import nbcp.comm.*
 import nbcp.db.*
 import nbcp.service.UploadService
 import nbcp.web.*
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -23,7 +22,6 @@ import javax.servlet.http.HttpServletResponse
  *  3. 客户端调用 业务方法，把文件Id和业务关联。
  */
 @RestController
-@ConditionalOnBean(UploadService::class)
 class FileUploadController {
 //    @Value("\${server.upload.host}")
 //    var imgHost: String = "";

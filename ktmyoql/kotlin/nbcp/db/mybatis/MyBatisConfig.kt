@@ -1,22 +1,12 @@
 package nbcp.db.mybatis
 
 import nbcp.comm.config
-import nbcp.utils.*
 import nbcp.db.mysql.MysqlConfig
-import org.apache.ibatis.executor.Executor
-import org.apache.ibatis.executor.keygen.SelectKeyGenerator
-import org.apache.ibatis.mapping.MappedStatement
-import org.apache.ibatis.mapping.SqlCommandType
-import org.apache.ibatis.plugin.*
-import org.apache.ibatis.session.ResultHandler
-import org.apache.ibatis.session.RowBounds
+import nbcp.utils.*
 import org.apache.ibatis.session.SqlSessionFactory
-import org.apache.poi.util.StringUtil
 import org.mybatis.spring.SqlSessionFactoryBean
 import org.mybatis.spring.SqlSessionTemplate
 import org.mybatis.spring.mapper.MapperScannerConfigurer
-import org.mybatis.spring.transaction.SpringManagedTransaction
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -30,11 +20,8 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import org.springframework.transaction.annotation.TransactionManagementConfigurer
-import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.util.*
-import javax.annotation.Resource
 import javax.sql.DataSource
-import kotlin.reflect.KClass
 
 
 /**

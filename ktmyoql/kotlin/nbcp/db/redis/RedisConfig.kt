@@ -4,7 +4,7 @@ package nbcp.db.redis
  * Created by udi on 17-3-19.
  */
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -172,7 +172,7 @@ class AnyTypeRedisTemplate() : RedisTemplate<String, Any>() {
 @Configuration
 @AutoConfigureAfter(RedisAutoConfiguration::class)
 //@ConditionalOnProperty("spring.redis.host")
-@ConditionalOnBean(RedisConnectionFactory::class)
+@ConditionalOnProperty("spring.redis.host")
 class RedisConfig {
     @Bean
     fun redisKeyCommand(connectionFactory: RedisConnectionFactory): AnyTypeRedisTemplate {
