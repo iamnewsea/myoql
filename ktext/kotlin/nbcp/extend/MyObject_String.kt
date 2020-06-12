@@ -649,3 +649,43 @@ fun <T> String.ToEnum(enumClazz: Class<T>): T? {
     return finded.get(null) as T?;
 }
 
+/**
+ * 使用Json格式化
+ */
+fun String.formatWithJson(json: StringMap, style: String = "", itemCallback: ((String) -> String)? = null): String {
+    var style = style;
+    if (style.isEmpty()) {
+        style = "{}"
+    }
+
+    var regexp = "";
+
+    if (style == "{}") {
+        regexp = "\\{([^{}]+)}"
+    } else if (style == "\${}") {
+        regexp = "\\$\\{([^{}]+)}"
+    } else if (style == "@") {
+        regexp = "@(\\w+)"
+    } else {
+        throw java.lang.RuntimeException("不识别的样式 " + style)
+    }
+
+
+    return this.replace(Regex(regexp, RegexOption.MULTILINE), { result ->
+        if (result.groupValues.size != 2) {
+            throw java.lang.RuntimeException("匹配出错!")
+        }
+
+        var key = result.groupValues.last()
+
+        var value = json.getStringValue(*key.split(".").toTypedArray())
+        if( value == null){
+            return@replace  result.groupValues.first()
+        }
+
+        if (itemCallback != null) {
+            value = itemCallback(value)
+        }
+        return@replace value;
+    })
+}

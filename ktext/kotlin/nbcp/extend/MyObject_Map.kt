@@ -93,9 +93,9 @@ fun Map<String, *>.getPathValue(vararg keys: String): Any? {
     return v.toString()
 }
 
-fun Map<String, *>.getStringValue(vararg keys: String): String {
+fun Map<String, *>.getStringValue(vararg keys: String): String? {
     var v = this.getPathValue(*keys)
-    if (v == null) return "";
+    if (v == null) return null;
     var v_type = v::class.java;
     if (v_type.isArray) {
         return (v as Array<Any>).map { it.AsString() }.joinToString(",")

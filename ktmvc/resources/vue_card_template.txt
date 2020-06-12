@@ -1,0 +1,107 @@
+<template>
+    <div>
+        <div class="header-info">
+            <p>{{action_name}}-${title}</p>
+            <div>
+                <el-button size="mini" @click="$router.push('/${group}/${entity}/add')" v-if="action=='edit'">新建</el-button>
+                <el-button size="mini" @click="save_click" type="primary"> 保存</el-button>
+            </div>
+        </div>
+        <el-row :gutter="12" type="flex">
+            <el-col>
+                <el-card shadow="always">
+                    <div slot="header">
+                        <span>基本信息</span>
+                    </div>
+${for:fields}                    <kv label="${remark}"><el-input v-model="info.${name}"/></kv>${endfor:fields}
+                </el-card>
+            </el-col>
+            <el-col>
+                <el-card shadow="always">
+                    <div slot="header">
+                        <span>扩展信息</span>
+                    </div>
+                    <kv>
+                        <label slot="k">图片</label>
+                        <upload
+                            :maxCount="1"
+                            v-model="info.file"
+                            fileType="img"
+                            scales="16:9"
+                            :maxWidth="1024"
+                            maxSize="5M"
+                        ></upload>
+                    </kv>
+                   <kv label="枚举">
+                       <selector type="radio" v-model="query.枚举" enum="UserSexEnum" />
+                   </kv>
+                   <kv label="布尔状态">
+                       <selector  type="radio" v-model="query.布尔状态" :data="{true:'是',false:'否','':'全部'}" />
+                   </kv>
+                   <kv label="网络数据">
+                       <selector  type="check" v-model="query.网络数据" url="/sys/dict?id=1" />
+                   </kv>
+                    <kv label="数字范围">
+                         <number-range size="small" :min="-1" :map="{'-1':'任意'}" v-model="info.number"></number-range>
+                     </kv>
+                </el-card>
+            </el-col>
+        </el-row>
+    </div>
+</template>
+<style scoped>
+</style>
+<script>
+/**
+ * Created by CodeGenerator @${now}
+ */
+    export default {
+        components: {},
+        data() {
+            return {
+                //格举
+                //枚举：jv.枚举.getData(),
+                //OrderStatusEnum: jv.OrderStatusEnum.getData(),
+                //URL参数
+                action: "",
+                action_name: "",
+                id: "",
+                info: {}, //子对象需要声明。
+            }
+        },
+        watch:{
+           action(val){
+               this.action_name =  {add: "添加", edit: "修改"}[val]
+           }
+        },
+        mounted() {
+            this.action = this.$route.params.action;
+            this.id = this.$route.query.id;
+
+            this.loadData()
+        },
+        methods: {
+            loadData() {
+                if (!this.id) return;
+                this.$http.post("/${group}/${entity}/detail?id=" + this.id).then(res => {
+                    this.info = res.data.data;
+                });
+            },
+            save_click() {
+                //校验
+                if (jv.main.chk() == false) {
+                    return;
+                }
+
+                this.$http.post("/${group}/${entity}/save", this.info).then(res => {
+                    jv.info(this.action_name + " 成功");
+                    if (this.action == "add") {
+                        this.$router.push("/${group}/${entity}/edit?id=" + res.data.data)
+                    }
+                })
+            },
+
+
+        }
+    }
+</script>

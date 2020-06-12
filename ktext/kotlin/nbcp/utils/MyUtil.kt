@@ -92,7 +92,7 @@ object MyUtil {
     )
 
     fun getMimeType(extName: String): String {
-        return mimeLists.getStringValue(extName.toLowerCase())
+        return mimeLists.getStringValue(extName.toLowerCase()).AsString()
     }
 
 
@@ -262,7 +262,7 @@ object MyUtil {
             index = file.indexOf("/target/classes/")
             if (index > 0) {
                 //处理文件路径中中文的问题。
-                var filePath = JsUtil.decodeURIComponent(file.Slice(0,-8));
+                var filePath = JsUtil.decodeURIComponent(file.Slice(0, -8));
 
                 var mvn_file = File(filePath).listFiles { it -> it.name == "maven-archiver" }.firstOrNull()?.listFiles { it -> it.name == "pom.properties" }?.firstOrNull()
                 if (mvn_file != null) {

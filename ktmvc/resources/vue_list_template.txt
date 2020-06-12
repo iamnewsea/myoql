@@ -1,0 +1,108 @@
+<template>
+    <div class="list">
+        <div class="header-info">
+            <p>${title}</p>
+            <el-button type="primary" size="large" @click="add_click()">添加</el-button>
+        </div>
+        <div class="query">
+            <kv label="名称">
+                <el-input v-model="query.name"/>
+            </kv>
+            <kv label="枚举">
+                <selector type="radio" v-model="query.枚举" enum="UserSexEnum" />
+            </kv>
+            <kv label="布尔状态">
+                <selector type="radio" v-model="query.布尔状态" :data="{true:'是',false:'否','':'全部'}" />
+            </kv>
+            <kv label="网络数据">
+                <selector type="check" v-model="query.网络数据" url="/sys/dict?id=1" />
+            </kv>
+            <div>
+                <el-button type="primary" @click="loadData(1)">查询</el-button>
+            </div>
+        </div>
+        <my-list ref="list" url="/${group}/${entity}/list" @loaded="procData" :query="query" :page-size="pageSize" :store="true"
+            style="width: 100%;margin-top:20px;">
+            <el-table-column type="index" clign="center" width="50"></el-table-column>
+                        <!--<template slot-scope="scope"></template>-->
+${for:fields}            <el-table-column align="center" label="${remark}" prop="${name}"></el-table-column>${endfor:fields}
+            <el-table-column label="操作" align="center" width="180">
+                <template slot-scope="scope">
+                    <el-button @click="edit_click(scope.row)" size="small">
+                        编辑
+                    </el-button>
+                    <el-button @click="set_click(scope.row)" size="small">
+                        设置状态
+                    </el-button>
+                    <el-button @click="delete_click(scope.row)" size="small">
+                        删除
+                    </el-button>
+                </template>
+            </el-table-column>
+
+
+            <template #query="scope">
+                <kv label="名称">
+                    <el-input v-model="scope.query.name"></el-input>
+                </kv>
+            </template>
+        </my-list>
+    </div>
+</template>
+<style scoped>
+</style>
+<script>
+/**
+ * Created by CodeGenerator @${now}
+ */
+    export default {
+        components: {},
+        data() {
+            return {
+                //查询条件
+                query: {
+                    name: ""
+                },
+                pageSize:10,
+                //格举
+                //枚举：jv.枚举.getData(),
+            };
+        },
+        mounted() {
+            //本地存储上次查询的条件和页码，先加载上次的，如果不需要，去掉。
+            this.query = Object.assign(this.query, this.$refs.list.getStoredQuery());
+            this.loadData();
+        },
+        methods: {
+            //处理列表的数据
+            procData(res) {
+                res.data.data.forEach(it => {
+                    //如果是组合实体，设置 it.id=...
+                    //处理枚举 jv.枚举.fillRes(it,字段)
+                });
+            },
+            //查询
+            loadData(pageNumber) {
+                this.$refs.list.loadData(pageNumber);
+            },
+            add_click() {
+                this.$router.push("/${group}/${entity}/add")
+            },
+            edit_click(row) {
+                //记录上次点击行
+                var rowId = row.id;
+                this.$refs.list.setLastRow(row);
+                this.$router.push("/${group}/${entity}/edit?id=" + rowId)
+            },
+            delete_click(row) {
+                var rowId = row.id;
+                var rowName = row.name;
+                jv.confirm('确认删除 ' + rowName + ' 吗？').then(res => {
+                    this.$http.post("/${group}/${entity}/delete?id=" + rowId).then(res => {
+                        this.loadData();
+                    })
+                });
+            },
+        }
+    }
+</script>

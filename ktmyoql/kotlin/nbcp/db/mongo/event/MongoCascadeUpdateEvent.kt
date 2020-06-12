@@ -1,5 +1,6 @@
 package nbcp.db.mongo
 
+import nbcp.comm.AsString
 import nbcp.comm.LogScope
 import nbcp.comm.getStringValue
 import nbcp.comm.using
@@ -54,7 +55,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
             var idValue = idValues.getOrPut(ref.masterIdField) {
                 if (whereMap.keys.contains(ref.masterIdField)) {
 
-                    return@getOrPut arrayOf(whereMap.getStringValue(ref.masterIdField))
+                    return@getOrPut arrayOf(whereMap.getStringValue(ref.masterIdField).AsString())
                 } else {
                     //查询数据，把Id查出来。
                     var query = MongoBaseQueryClip(update.collectionName)
@@ -67,7 +68,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
 
             list.add(CascadeUpdateEventDataModel(ref,
                     idValue,
-                    setData.getStringValue(ref.masterNameField)
+                    setData.getStringValue(ref.masterNameField).AsString()
             ))
         }
 

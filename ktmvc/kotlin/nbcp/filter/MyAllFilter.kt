@@ -152,7 +152,7 @@ open class MyAllFilter : Filter, InitializingBean {
                     response.WriteTextValue(e.message ?: "服务器错误")
                     return;
                 }
-                afterComplete(myRequest, myResponse, queryMap.getStringValue("callback"), startAt, "");
+                afterComplete(myRequest, myResponse, queryMap.getStringValue("callback").AsString(), startAt, "");
             } else {
                 //是否是静态资源, 必须有后缀名。
                 var extention = FileExtentionInfo(request.requestURI)

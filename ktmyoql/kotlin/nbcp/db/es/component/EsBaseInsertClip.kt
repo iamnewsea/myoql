@@ -42,7 +42,7 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
     }
 
     fun addEntity(entity: JsonMap) {
-        if (entity.getStringValue("id").isEmpty()) {
+        if (entity.getStringValue("id").isNullOrEmpty()) {
             entity.put("id", CodeUtil.getCode())
         }
 

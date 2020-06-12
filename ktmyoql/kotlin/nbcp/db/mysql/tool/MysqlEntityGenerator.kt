@@ -80,7 +80,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                 var columns = columns_map.filter { it.getStringValue("table_name") == tableName }
                         .map colMap@{
                             var columnName = it.getStringValue("column_name")
-                            var dataType = it.getStringValue("data_type")
+                            var dataType = it.getStringValue("data_type").AsString()
                             var columnComment = it.getStringValue("column_comment")
 
                             var kotlinType = dataType

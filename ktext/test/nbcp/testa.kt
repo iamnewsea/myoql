@@ -40,20 +40,20 @@ class testa : TestBase() {
     }
 
     data class abc(
-            var t:LocalDateTime = LocalDateTime.now(),
-            var i:Date = Date(),
-            var l:LocalDate = LocalDate.now()
+            var t: LocalDateTime = LocalDateTime.now(),
+            var i: Date = Date(),
+            var l: LocalDate = LocalDate.now()
     )
 
     @Test
     fun test_IdUrl_Json() {
-        using(JsonStyleEnumScope.GetSetStyle){
+        using(JsonStyleEnumScope.GetSetStyle) {
             var a = IdUrl();
             a.url = "OK"
             println(a.ToJson())
         }
 
-        using(JsonStyleEnumScope.FieldStyle){
+        using(JsonStyleEnumScope.FieldStyle) {
             var a = IdUrl();
             a.url = "OK"
             println(a.ToJson())
@@ -62,13 +62,9 @@ class testa : TestBase() {
 
     @Test
     fun abcd() {
-        var url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=wxd5f2957442fc2d0b&secret=&code=001MyADx1hVRmc0YSjEx1JpDDx1MyADv&grant_type=authorization_code";
-
-        var http = HttpUtil(url);
-        var res = http.doGet();
-
-        println(res)
-
+        var str = "abc{--{--\${name}-{\${id}"
+        var jsonMap = StringMap( "name" to "hello");
+        println(str.format(jsonMap,"\${}"))
     }
 
     class jjj {

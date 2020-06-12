@@ -38,7 +38,7 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
     }
 
     fun addEntity(entity: JsonMap) {
-        if (entity.getStringValue("id").isEmpty()) {
+        if (entity.getStringValue("id").isNullOrEmpty()) {
             throw RuntimeException("批量更新时需要指定Id")
         }
 
