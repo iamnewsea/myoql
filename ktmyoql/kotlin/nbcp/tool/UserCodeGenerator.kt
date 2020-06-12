@@ -3,6 +3,7 @@ package nbcp.tool
 import nbcp.comm.*
 import nbcp.db.BaseMetaData
 import nbcp.utils.MyUtil
+import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
 import java.time.LocalDateTime
 
 object UserCodeGenerator {
@@ -38,7 +39,14 @@ object UserCodeGenerator {
         var text = text;
         var entityFields = entity::class.java.AllFields;
         //先处理${for:fields}
+
         var startIndex = 0;
+        var status_enum_class = ""
+        var status = entityFields.firstOrNull { it.name == "status" }
+        if (status != null) {
+            status_enum_class = ((entity::class.java.genericSuperclass as ParameterizedTypeImpl).actualTypeArguments[0] as Class<*>)
+                    .AllFields.first { it.name == "status" }.type.simpleName;
+        }
 
         while (true) {
             if (startIndex >= text.length - 1) {
@@ -75,7 +83,6 @@ object UserCodeGenerator {
             startIndex++;
         }
 
-
         startIndex = 0;
 
         while (true) {
@@ -88,19 +95,13 @@ object UserCodeGenerator {
             var t = text.Slice(start_index + "\${for:fields}".length, end_index);
             var p2 = text.Slice(end_index + "\${endfor}".length);
 
-            var status_enum_class = ""
-            var status = entityFields.firstOrNull { it.name == "status" }
-            if (status != null && status.type.isEnum) {
-                status_enum_class = status.type.name;
-            }
 
             var t2 = entityFields.map {
                 t.formatWithJson(StringMap(
                         "name" to it.name,
                         "remark" to it.name,
                         "type" to it.type.name,
-                        "isSimpleType" to it.type.IsSimpleType().toString().toLowerCase(),
-                        "status_enum_class" to status_enum_class
+                        "isSimpleType" to it.type.IsSimpleType().toString().toLowerCase()
                 ), "\${}")
             }.joinToString("\n");
 
@@ -119,7 +120,8 @@ object UserCodeGenerator {
                         "title" to entity_class,
                         "entity_class" to entity_class,
                         "entity_url" to entity_url,
-                        "now" to LocalDateTime.now().toString()
+                        "now" to LocalDateTime.now().toString(),
+                        "status_enum_class" to status_enum_class
                 ), "\${}")
 
     }
