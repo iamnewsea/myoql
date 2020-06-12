@@ -26,7 +26,9 @@ class ${entity_class}Controller {
     @JsonpMapping("/list")
     fun list(
         id: String, //当列表列新一条后，刷新时使用
-${if:name}        name: String,${endif:name}
+${if:name}
+        name: String,
+${endif}
         @Require skip: Int,
         @Require take: Int,
         request: MyHttpRequestWrapper
@@ -39,7 +41,8 @@ ${if:name}        name: String,${endif:name}
                 }
 ${if:name}                if(name.HasValue){
                     this.where{ it.name match_like name }
-                }${endif}
+                }
+${endif}
             }
             .limit(skip,take)
             .toListResult()
@@ -51,7 +54,8 @@ ${if:name}                if(name.HasValue){
     @ApiOperation("引用列表")
     @JsonpMapping("/ref")
     fun ref(
-${if:name}        name: String,${endif}
+${if:name}        name: String,
+${endif}
         @Require skip: Int,
         @Require take: Int,
         request: MyHttpRequestWrapper
@@ -61,7 +65,8 @@ ${if:name}        name: String,${endif}
             .apply{
 ${if:name}                if(name.HasValue){
                     this.where{ it.name match_like name }
-                }${endif}
+                }
+${endif}
             }
             .limit(skip,take)
             .toListResult()
