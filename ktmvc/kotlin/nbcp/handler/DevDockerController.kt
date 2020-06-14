@@ -79,10 +79,10 @@ class DevDockerController{
     }
 
     /**
-     * 查看 文件内容
+     * 下载 文件内容
      */
-    @GetMapping("/view")
-    fun view(@Require container: String, @Require work_path: String, @Require name: String, view: Boolean?, response: HttpServletResponse) {
+    @GetMapping("/download")
+    fun download(@Require container: String, @Require work_path: String, @Require name: String, response: HttpServletResponse) {
         var targetPathName = path;
         var targetPath = File(targetPathName);
 
@@ -93,13 +93,30 @@ class DevDockerController{
         var target = targetPathName + "/" + CodeUtil.getCode() + "-" + name;
         execCmd("docker", "cp", "${container}:${work_path}/${name}", target);
 
-        var view = view ?: false;
-        if (view) {
-            var fileInfo = FileExtentionInfo(name);
-            response.contentType = MyUtil.getMimeType(fileInfo.extName).AsString("text/plain")
-        } else {
-            response.setDownloadFileName(name)
+
+        response.setDownloadFileName(name)
+        response.outputStream.write(File(target).readBytes())
+    }
+
+    /**
+     * 查看 文件内容
+     */
+    @GetMapping("/view")
+    fun view(@Require container: String, @Require work_path: String, @Require name: String, response: HttpServletResponse) {
+        var targetPathName = path;
+        var targetPath = File(targetPathName);
+
+        if (targetPath.exists() == false && targetPath.mkdirs() == false) {
+            throw Exception("创建文件夹失败:${targetPath.FullName}");
         }
+
+        var target = targetPathName + "/" + CodeUtil.getCode() + "-" + name;
+        execCmd("docker", "cp", "${container}:${work_path}/${name}", target);
+
+
+        var fileInfo = FileExtentionInfo(name);
+        response.contentType = MyUtil.getMimeType(fileInfo.extName).AsString("text/plain")
+
         response.outputStream.write(File(target).readBytes())
     }
 

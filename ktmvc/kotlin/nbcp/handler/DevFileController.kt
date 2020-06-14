@@ -71,6 +71,37 @@ class DevFileController {
         return JsonResult();
     }
 
+    /**
+     * 下载 文件内容
+     */
+    @GetMapping("/download")
+    fun download(@Require work_path: String, @Require name: String, response: HttpServletResponse) {
+        var target = work_path + File.separator + name;
+        var targetFile = File(target);
+        if (targetFile.exists() == false) {
+            throw RuntimeException("文件 ${targetFile.FullName} 不存在")
+        }
+        response.setDownloadFileName(name)
+        response.outputStream.write(targetFile.readBytes())
+    }
+
+    /**
+     * 查看 文件内容
+     */
+    @GetMapping("/view")
+    fun view(@Require work_path: String, @Require name: String, response: HttpServletResponse) {
+        var target = work_path + File.separator + name;
+        var targetFile = File(target);
+        if (targetFile.exists() == false) {
+            throw RuntimeException("文件 ${targetFile.FullName} 不存在")
+        }
+
+        var fileInfo = FileExtentionInfo(name);
+        response.contentType = MyUtil.getMimeType(fileInfo.extName).AsString("text/plain")
+
+        response.outputStream.write(targetFile.readBytes())
+    }
+
 
     @PostMapping("/list")
     fun list(@Require work_path: String): ListResult<String> {
