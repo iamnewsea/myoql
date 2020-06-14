@@ -113,6 +113,11 @@ object UserCodeGenerator {
         var entity_class = MyUtil.getBigCamelCase(entity.tableName);
         var entity_url = MyUtil.getHyphen(entity.tableName);
 
+        if (entity_url.startsWith(group + "-")) {
+            entity_url = entity_url.Slice((group + "-").length);
+        }
+
+
         return text.formatWithJson(
                 StringMap(
                         "group" to group,
