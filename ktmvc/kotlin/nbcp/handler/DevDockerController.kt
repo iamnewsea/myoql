@@ -18,19 +18,20 @@ import java.time.LocalDate
 import java.time.LocalTime
 import javax.servlet.http.HttpServletResponse
 
+
 /**
  * 三个固定参数： token,container,work_path,bash是可选
  */
 @RestController
 @ConditionalOnProperty("server.dev")
 @RequestMapping("/dev/docker")
-class DevDockerController {
+class DevDockerController{
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
     /**
-     * 获取 docker容器
+     * 获取 docker 容器
      */
     @PostMapping("/containers")
     fun getContainers(name: String): ListResult<String> {
@@ -65,7 +66,7 @@ class DevDockerController {
      * 把文件拷到宿主机
      */
     @PostMapping("/copy2host")
-    fun copy2host(@Require container: String, @Require work_path: String, @Require name: String): JsonResult {
+    fun copy2host(@Require container: String, @Require work_path: String, @Require name: String): ListResult<String> {
         var targetPathName = path + LocalTime.now().format("HHmmss") + File.separator;
         var targetPath = File(targetPathName);
 
@@ -74,16 +75,14 @@ class DevDockerController {
         }
 
         var target = targetPathName + "/" + name;
-        execCmd("docker", "cp", "${container}:${work_path}/${name}", target);
-
-        return JsonResult();
+        return execCmd("docker", "cp", "${container}:${work_path}/${name}", target);
     }
 
     /**
      * 查看 文件内容
      */
-    @GetMapping("/file")
-    fun file(@Require container: String, @Require work_path: String, @Require name: String, view: Boolean?, response: HttpServletResponse) {
+    @GetMapping("/view")
+    fun view(@Require container: String, @Require work_path: String, @Require name: String, view: Boolean?, response: HttpServletResponse) {
         var targetPathName = path;
         var targetPath = File(targetPathName);
 
@@ -109,19 +108,17 @@ class DevDockerController {
      * 上传
      */
     @PostMapping("/upload")
-    fun upload(@Require container: String, @Require work_path: String, @Require name: String, @Require dbFile: IdUrl): JsonResult {
-        execCmd("docker", "cp", "${path}${dbFile.url}", "${container}:${work_path}/${name}");
-        return JsonResult()
+    fun upload(@Require container: String, @Require work_path: String, @Require name: String, @Require dbFile: IdUrl): ListResult<String> {
+        return execCmd("docker", "cp", "${path}${dbFile.url}", "${container}:${work_path}/${name}");
     }
 
     /**
      * 改名
      */
     @PostMapping("/rename")
-    fun rename(@Require container: String, bash: String, @Require work_path: String, @Require name: String, @Require newName: String): JsonResult {
+    fun rename(@Require container: String, bash: String, @Require work_path: String, @Require name: String, @Require newName: String): ListResult<String> {
         var docker_cmd = "mv ${work_path}/${name} ${work_path}/${newName}"
-        execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd);
-        return JsonResult()
+        return execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd)
     }
 
 
@@ -129,20 +126,18 @@ class DevDockerController {
      * 创建文件夹
      */
     @PostMapping("/mkdir")
-    fun mkdir(@Require container: String, bash: String, @Require work_path: String, @Require name: String): JsonResult {
+    fun mkdir(@Require container: String, bash: String, @Require work_path: String, @Require name: String): ListResult<String> {
         var docker_cmd = "mkdir -p  ${work_path}/${name}"
-        execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd);
-        return JsonResult()
+        return execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd);
     }
 
     /**
      * 删除
      */
     @PostMapping("/delete")
-    fun delete(@Require container: String, bash: String, @Require work_path: String, @Require name: String): JsonResult {
+    fun delete(@Require container: String, bash: String, @Require work_path: String, @Require name: String): ListResult<String> {
         var docker_cmd = "rm -rf  ${work_path}/${name}"
-        execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd);
-        return JsonResult()
+        return execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd);
     }
 
     fun execCmd(vararg cmds: String): ListResult<String> {

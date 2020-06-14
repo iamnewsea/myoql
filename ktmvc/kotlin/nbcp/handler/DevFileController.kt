@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 /**
- * 客户端启动，接收浏览器请求，写入本地文件
+ * 客户端启动，接收浏览器请求，操作本地文件。
  */
 @RestController
 @ConditionalOnProperty("server.dev")
@@ -33,11 +33,11 @@ class DevFileController {
     }
 
     /**
-     * 获取 docker容器
+     * 通过Http上传的方式保存文件
      */
     @PostMapping("/save")
-    fun save(@Require path: String, request: HttpServletRequest): JsonResult {
-        var target = File(path);
+    fun save(@Require work_path: String, request: HttpServletRequest): JsonResult {
+        var target = File(work_path);
         if (target.exists()) {
             if (target.isFile == false) {
                 return JsonResult("path已存在且是目录", "path");
@@ -69,5 +69,55 @@ class DevFileController {
         var file = files.first()
         file.transferTo(target)
         return JsonResult();
+    }
+
+
+    @PostMapping("/list")
+    fun list(@Require work_path: String): ListResult<String> {
+        var docker_cmd = "ls -ahl  ${work_path}"
+        return execCmd(docker_cmd);
+    }
+
+    @PostMapping("/delete")
+    fun delete(@Require work_path: String, @Require name: String): ListResult<String> {
+        var docker_cmd = "rm -rf  ${work_path}"
+        return execCmd(docker_cmd);
+    }
+
+    @PostMapping("/mkdir")
+    fun mkdir(@Require work_path: String, @Require name: String): JsonResult {
+        var docker_cmd = "mkdir -p  ${work_path}"
+        return execCmd(docker_cmd);
+    }
+
+    @PostMapping("/rename")
+    fun rename(@Require work_path: String, @Require name: String, @Require newName: String): JsonResult {
+        var docker_cmd = "mv ${work_path}/${name} ${work_path}/${newName}"
+        return execCmd(docker_cmd)
+    }
+
+
+    fun execCmd(vararg cmds: String): ListResult<String> {
+        logger.warn(cmds.joinToString(" "));
+        var p = Runtime.getRuntime().exec(cmds);
+        var sb = StringBuilder();
+        var lines = listOf<String>()
+
+        var br: BufferedReader? = null;
+        try {
+            p.waitFor()
+            br = BufferedReader(InputStreamReader(p.getInputStream(), "utf-8"));
+            lines = br.readLines()
+        } catch (e: Exception) {
+            return ListResult(e.message ?: "error")
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } finally {
+                }
+            }
+        }
+        return return ListResult.of(lines)
     }
 }
