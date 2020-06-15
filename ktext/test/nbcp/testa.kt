@@ -9,6 +9,8 @@ import nbcp.db.IdName
 import nbcp.db.IdUrl
 import org.junit.Test
 import org.springframework.stereotype.Service
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -70,7 +72,39 @@ class testa : TestBase() {
 
     @Test
     fun rou() {
-        var ret = Regex("\\$\\{if:(\\w+)}").find("\${if:name}kkkd\${endif} --\${if:status}dkfjdkf\${endif}", 0)
-        println(ret)
+        var line = execCmd("cmd","/c"," dirw d:")
+
+        line.data.forEach {
+            println(it)
+        }
+    }
+
+    fun execCmd(vararg cmds: String): ListResult<String> {
+        logger.warn(cmds.joinToString(" "));
+        var p = Runtime.getRuntime().exec(cmds);
+        var sb = StringBuilder();
+        var lines = listOf<String>()
+
+        var br: BufferedReader? = null;
+        try {
+            p.waitFor()
+            if (p.exitValue() == 0) {
+                br = BufferedReader(InputStreamReader(p.inputStream, "GBK"));
+                lines = br.readLines()
+            } else {
+                br = BufferedReader(InputStreamReader(p.errorStream, "GBK"));
+                lines = br.readLines();
+            }
+        } catch (e: Exception) {
+            return ListResult(e.message ?: "error")
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } finally {
+                }
+            }
+        }
+        return return ListResult.of(lines)
     }
 }

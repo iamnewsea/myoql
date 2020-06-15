@@ -131,14 +131,19 @@ class DevFileController {
     fun execCmd(vararg cmds: String): ListResult<String> {
         logger.warn(cmds.joinToString(" "));
         var p = Runtime.getRuntime().exec(cmds);
-        var sb = StringBuilder();
         var lines = listOf<String>()
 
         var br: BufferedReader? = null;
         try {
             p.waitFor()
-            br = BufferedReader(InputStreamReader(p.getInputStream(), "utf-8"));
-            lines = br.readLines()
+            if( p.exitValue() == 0) {
+                br = BufferedReader(InputStreamReader(p.inputStream, "utf-8"));
+                lines = br.readLines()
+            }
+            else{
+                br = BufferedReader(InputStreamReader(p.errorStream,"utf-8"));
+                lines = br.readLines();
+            }
         } catch (e: Exception) {
             return ListResult(e.message ?: "error")
         } finally {
