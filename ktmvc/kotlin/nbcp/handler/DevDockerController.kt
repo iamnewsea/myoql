@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @ConditionalOnProperty("server.dev")
 @RequestMapping("/dev/docker")
-class DevDockerController{
+class DevDockerController {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -165,13 +165,14 @@ class DevDockerController{
         var br: BufferedReader? = null;
         try {
             p.waitFor()
-            if( p.exitValue() == 0) {
+            if (p.exitValue() == 0) {
                 br = BufferedReader(InputStreamReader(p.inputStream, "utf-8"));
                 lines = br.readLines()
-            }
-            else{
-                br = BufferedReader(InputStreamReader(p.errorStream,"utf-8"));
+                return ListResult.of(lines)
+            } else {
+                br = BufferedReader(InputStreamReader(p.errorStream, "utf-8"));
                 lines = br.readLines();
+                return ListResult(lines.joinToString(","))
             }
         } catch (e: Exception) {
             return ListResult(e.message ?: "error")
@@ -183,6 +184,5 @@ class DevDockerController{
                 }
             }
         }
-        return return ListResult.of(lines)
     }
 }

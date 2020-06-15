@@ -91,9 +91,11 @@ class testa : TestBase() {
             if (p.exitValue() == 0) {
                 br = BufferedReader(InputStreamReader(p.inputStream, "GBK"));
                 lines = br.readLines()
+                return ListResult.of(lines)
             } else {
                 br = BufferedReader(InputStreamReader(p.errorStream, "GBK"));
                 lines = br.readLines();
+                return ListResult(lines.joinToString(","))
             }
         } catch (e: Exception) {
             return ListResult(e.message ?: "error")
@@ -105,6 +107,5 @@ class testa : TestBase() {
                 }
             }
         }
-        return return ListResult.of(lines)
     }
 }
