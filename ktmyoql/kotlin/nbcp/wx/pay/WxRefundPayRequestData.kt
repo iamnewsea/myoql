@@ -1,6 +1,5 @@
 package nbcp.wx.pay
 
-import jdk.nashorn.internal.ir.annotations.Ignore
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.wx.wx

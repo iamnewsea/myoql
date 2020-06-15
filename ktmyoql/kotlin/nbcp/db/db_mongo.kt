@@ -204,22 +204,23 @@ object db_mongo {
      * 把 Document 推送到数据库，需要转换 id
      */
     fun procSetDocumentData(value: Any): Any {
-        RecursionUtil.recursionJson(value, { json, type ->
+        RecursionUtil.recursionAny(value, { json ->
             if (json is MutableMap<*, *>) {
+                var m_json = (json as MutableMap<String, Any?>);
                 if (json.contains("id")) {
                     var value = json.get("id");
 
                     if (value is String && ObjectId.isValid(value)) {
-                        (json as MutableMap<String, Any?>).put("_id", ObjectId(value));
-                        json.remove("id")
-                        return@recursionJson true;
+                        m_json.put("_id", ObjectId(value));
+                        m_json.remove("id")
+                        return@recursionAny true;
                     }
 
-                    (json as MutableMap<String, Any?>).put("_id", value)
-                    json.remove("id")
+                    m_json.put("_id", value)
+                    m_json.remove("id")
                 }
             }
-            return@recursionJson true;
+            return@recursionAny true;
         });
 
         return value;
@@ -254,38 +255,27 @@ object db_mongo {
             return item;
         }
 
-        RecursionUtil.recursionJson(value, { json, type ->
-            if (type.isArray) {
-                (json as Array<Any?>).forEachIndexed { index, it ->
-                    if (it == null || !test(it)) {
-                        return@forEachIndexed
-                    }
-
-                    json.set(index, proc(it));
+        RecursionUtil.recursionAny(value, { json ->
+            json.keys.toTypedArray().forEachIndexed { index, it ->
+                if (it == null || !test(it)) {
                     return@forEachIndexed
                 }
-            } else if (json is MutableList<*>) {
-                json.forEachIndexed { index, it ->
-                    if (it == null || !test(it)) {
-                        return@forEachIndexed
-                    }
-                    (json as MutableList<Any>)[index] = proc(it);
-                }
-            } else if (json is Map<*, *>) {
-                json.keys.toTypedArray().forEachIndexed { index, it ->
-                    if (it == null || !test(it)) {
-                        return@forEachIndexed
-                    }
-                    (json as MutableMap<Any, Any>).set(it, proc(it));
+                (json as MutableMap<Any, Any>).set(it, proc(it));
 
-                    return@forEachIndexed
-                }
-            } else {
-                println("不识别的类型：" + json::class.java.name)
+                return@forEachIndexed
             }
 
+            return@recursionAny true
+        }, { list ->
 
-            return@recursionJson true
+            list.forEachIndexed { index, it ->
+                if (it == null || !test(it)) {
+                    return@forEachIndexed
+                }
+                (list as MutableList<Any>)[index] = proc(it);
+            }
+
+            return@recursionAny true
         })
     }
 }

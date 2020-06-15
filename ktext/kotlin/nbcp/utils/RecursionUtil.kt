@@ -1,7 +1,6 @@
 package nbcp.utils
 
-import nbcp.comm.ForEachExt
-import nbcp.comm.IsSimpleType
+import nbcp.comm.*
 import java.lang.reflect.Modifier
 
 /**
@@ -128,79 +127,138 @@ object RecursionUtil {
      * 遍历对象 ,包括 Map,Array,List,Object， 应该拿到对象后，对象属性值及子属性操作，而不能增减父对象。
      * @param json: 递归对象
      * @param consumer:  消费每一个Json
+     * @param consumerObject 如果遍历到非 Map，调用该回调
      */
-    fun recursionJson(json: Any, consumer: (Any, Class<*>) -> Boolean, deepth: Int = 0): Boolean {
-        var type = json::class.java;
-        if (type.IsSimpleType()) {
-            return true;
-        }
-
-        if (consumer(json, type) == false) {
+    fun recursionJson(json: Map<*, *>,
+                      consumerMap: (Map<*, *>) -> Boolean,
+                      consumerList: ((List<*>) -> Boolean)? = null,
+                      consumerObject: ((Any) -> Boolean)? = null,
+                      deepth: Int = 0): Boolean {
+        if (consumerMap(json) == false) {
             return false;
         }
 
-        if (type.isArray) {
-            return (json as Array<*>).ForEachExt { it, index ->
-                if (it == null) {
-                    return@ForEachExt true
-                }
-                if (recursionJson(it, consumer, deepth + 1) == false) {
-                    return@ForEachExt false;
-                }
-                return@ForEachExt true
-            }
-        } else if (json is Collection<*>) {
-            return json.ForEachExt { it, index ->
-                if (it == null) {
-                    return@ForEachExt true
-                }
-
-                if (recursionJson(it, consumer, deepth + 1) == false) {
-                    return@ForEachExt false;
-                }
-
-                return@ForEachExt true;
-            }
-        }
-
-
         //判断对象是否是 Map
-        if (json is Map<*, *>) {
-            return json.keys.toTypedArray().ForEachExt { key, index ->
-                var value = json.get(key);
-                if (value == null) {
-                    return@ForEachExt true;
-                }
-
-                if (recursionJson(value, consumer, deepth + 1) === false) {
-                    return@ForEachExt false;
-                }
+        return json.keys.toTypedArray().ForEachExt { key, index ->
+            var value = json.get(key);
+            if (value == null) {
                 return@ForEachExt true;
+            }
+
+            var type = value::class.java;
+            if (type.IsSimpleType()) {
+                return@ForEachExt true;
+            } else if (type.isArray) {
+                return@ForEachExt recursionArray(value as Array<*>, consumerMap, consumerList, consumerObject, deepth + 1);
+            } else if (type.IsListType()) {
+                return@ForEachExt recursionList(value as List<*>, consumerMap, consumerList, consumerObject, deepth + 1);
+            } else if (type.IsMapType()) {
+                return@ForEachExt recursionJson(value as Map<*, *>, consumerMap, consumerList, consumerObject, deepth + 1);
+            } else {
+                return@ForEachExt recursionObject(value, consumerMap, consumerList, consumerObject, deepth + 1);
+            }
+        }
+    }
+
+    fun recursionAny(value: Any,
+                     consumerMap: (Map<*, *>) -> Boolean,
+                     consumerList: ((List<*>) -> Boolean)? = null,
+                     consumerObject: ((Any) -> Boolean)? = null,
+                     deepth: Int = 0): Boolean {
+        var type = value::class.java;
+        if (type.IsSimpleType()) {
+            return true;
+        } else if (type.isArray) {
+            return recursionArray(value as Array<*>, consumerMap, consumerList, consumerObject, deepth + 1);
+        } else if (type.IsListType()) {
+            return recursionList(value as List<*>, consumerMap, consumerList, consumerObject, deepth + 1);
+        } else if (type.IsMapType()) {
+            return recursionJson(value as Map<*, *>, consumerMap, consumerList, consumerObject, deepth + 1);
+        } else {
+            return recursionObject(value, consumerMap, consumerList, consumerObject, deepth + 1);
+        }
+    }
+
+    fun recursionObject(value: Any,
+                        consumerMap: (Map<*, *>) -> Boolean,
+                        consumerList: ((List<*>) -> Boolean)? = null,
+                        consumerObject: ((Any) -> Boolean)? = null,
+                        deepth: Int = 0): Boolean {
+
+        if (consumerObject != null) {
+            var ret = consumerObject.invoke(value);
+            if (ret == false) {
+                return false;
             }
         }
 
+        var type = value::class.java;
 
-        return type.declaredFields.ForEachExt { it, index ->
-            if (it.modifiers and Modifier.STATIC > 0) {
-                return@ForEachExt true
-            }
+        return type.AllFields.ForEachExt { it, index ->
 
-            if (it.modifiers and Modifier.TRANSIENT > 0) {
-                return@ForEachExt true;
-            }
-
-            it.isAccessible = true;
-            var key = it.name;
-            var value = it.get(json);
+            //            var key = it.name;
+            var value = it.get(value);
 
             if (value == null) {
                 return@ForEachExt true;
             }
 
-            if (recursionJson(value, consumer, deepth + 1) === false) {
-                return@ForEachExt false;
+            var type = value::class.java;
+            if (type.IsSimpleType()) {
+                return@ForEachExt true;
+            } else if (type.isArray) {
+                return@ForEachExt recursionArray(value as Array<*>, consumerMap, consumerList, consumerObject, deepth + 1);
+            } else if (type.IsListType()) {
+                return@ForEachExt recursionList(value as List<*>, consumerMap, consumerList, consumerObject, deepth + 1);
+            } else if (type.IsMapType()) {
+                return@ForEachExt recursionJson(value as Map<*, *>, consumerMap, consumerList, consumerObject, deepth + 1);
+            } else {
+                return@ForEachExt recursionObject(value, consumerMap, consumerList, consumerObject, deepth + 1);
             }
-            return@ForEachExt true
+        }
+    }
+
+    fun recursionArray(array: Array<*>,
+                       consumerMap: (Map<*, *>) -> Boolean,
+                       consumerList: ((List<*>) -> Boolean)? = null,
+                       consumerObject: ((Any) -> Boolean)? = null,
+                       deepth: Int = 0): Boolean {
+
+        return recursionList(array.toList(), consumerMap, consumerList, consumerObject, deepth);
+    }
+
+    fun recursionList(array: List<*>,
+                      consumerMap: (Map<*, *>) -> Boolean,
+                      consumerList: ((List<*>) -> Boolean)? = null,
+                      consumerObject: ((Any) -> Boolean)? = null,
+                      deepth: Int = 0): Boolean {
+
+        if (consumerList != null) {
+            var ret = consumerList(array);
+            if (ret == false) {
+                return false;
+            }
+        }
+
+        return array.ForEachExt { it, index ->
+            var value = it;
+
+            if (value == null) {
+                return@ForEachExt true;
+            }
+
+            var type = value::class.java;
+            if (type.IsSimpleType()) {
+                return@ForEachExt true;
+            } else if (type.isArray) {
+                return@ForEachExt recursionArray(value as Array<*>, consumerMap, consumerList, consumerObject, deepth + 1);
+            } else if (type.IsListType()) {
+                return@ForEachExt recursionList(value as List<*>, consumerMap, consumerList, consumerObject, deepth + 1);
+            } else if (type.IsMapType()) {
+                return@ForEachExt recursionJson(value as Map<*, *>, consumerMap, consumerList, consumerObject, deepth + 1);
+            } else {
+                return@ForEachExt recursionObject(value, consumerMap, consumerList, consumerObject, deepth + 1);
+            }
         }
     }
 }

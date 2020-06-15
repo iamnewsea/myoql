@@ -54,11 +54,10 @@ fun Document.GetComplexPropertyValue(vararg eachProperty: String): Any? {
         /**
          * 如果取不到值。则尝试 id , _id
          */
-        if( eachProperty.size == 1 &&  retVal == null ){
-            if( key == "id"){
+        if (eachProperty.size == 1 && retVal == null) {
+            if (key == "id") {
                 retVal = this.get("_id");
-            }
-            else if( key == "_id"){
+            } else if (key == "_id") {
                 retVal = this.get("id")
             }
         }
@@ -74,16 +73,16 @@ fun Document.GetComplexPropertyValue(vararg eachProperty: String): Any? {
 /**
  * 处理Object类型的数据为 {$oid}
  */
-fun Map<*,*>.procWithMongoScript() :Map<*,*>{
+fun Map<*, *>.procWithMongoScript(): Map<*, *> {
 
     /**
      * 处理 value 是 Object 的情况。
      */
-    fun procObjectId(value:Any?):Any?{
-        if( value == null) return null;
+    fun procObjectId(value: Any?): Any? {
+        if (value == null) return null;
 
         if (value is String && ObjectId.isValid(value)) {
-            return  value.toOIdJson();
+            return value.toOIdJson();
         } else if (value is ObjectId) {
             return value.toString().toOIdJson()
         }
@@ -91,12 +90,8 @@ fun Map<*,*>.procWithMongoScript() :Map<*,*>{
     }
 
 
-    RecursionUtil.recursionJson(this, { it, clazz ->
-        if (it is Map<*,*> == false) {
-            return@recursionJson true;
-        }
-
-        var doc = it as MutableMap<String,Any>;
+    RecursionUtil.recursionJson(this, { json ->
+        var doc = json as MutableMap<String, Any>;
         doc.keys.forEach { key ->
             /**情况：
              * 1. { id : 值 }
@@ -111,32 +106,29 @@ fun Map<*,*>.procWithMongoScript() :Map<*,*>{
 
             if (key == "_id" || key.endsWith("._id")) {
                 var value_oid = procObjectId(value);
-                if( value_oid != null){
-                    doc.set(key,value_oid);
-                }
-                else if( value is MutableMap<*,*>){
-                    var value_map = value as MutableMap<String,Any>
+                if (value_oid != null) {
+                    doc.set(key, value_oid);
+                } else if (value is MutableMap<*, *>) {
+                    var value_map = value as MutableMap<String, Any>
 
                     value_map.keys.forEach forEach2@{ op ->
-                        if( op == "\$oid"){
+                        if (op == "\$oid") {
                             return@forEach2
                         }
 
                         var value2 = value_map.get(op);
-                        if( value2 == null){
+                        if (value2 == null) {
                             return@forEach2
                         }
 
                         var value2_oid = procObjectId(value2);
 
-                        if( value2_oid != null){
-                            value_map.set(op,value2_oid);
-                        }
-                        else if( value2 is List<*>){
-                            value_map.set(op, value2.map { procObjectId(it) ?: it  });
-                        }
-                        else if( value2 is Array<*>){
-                            value_map.set(op, value2.map { procObjectId(it) ?: it  });
+                        if (value2_oid != null) {
+                            value_map.set(op, value2_oid);
+                        } else if (value2 is List<*>) {
+                            value_map.set(op, value2.map { procObjectId(it) ?: it });
+                        } else if (value2 is Array<*>) {
+                            value_map.set(op, value2.map { procObjectId(it) ?: it });
                         }
                     }
                 }
