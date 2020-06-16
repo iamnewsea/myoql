@@ -16,7 +16,7 @@ class DevYapiDataTypeController {
      * 修正 yapi 的数据类型,在 title 字段设置如下格式： :IdName,IdUrl,会对其下属性添加 id,name,url 字段。
      * @param dbTypeJson , 形如： {"IdName": {id: {type:"string",description:"id"} ,name:{} }
      */
-    @PostMapping("/db-types")
+    @PostMapping("/user-types")
     fun dbTypes(@Require connString: String, @Require dbTypeJson: JsonMap): ListResult<String> {
         var ret = mutableListOf<String>()
         using(db.mongo.getMongoTemplateByUri(connString)!!) {
