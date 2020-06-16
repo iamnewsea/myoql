@@ -103,13 +103,14 @@ class DevYapiDataTypeController {
                 }
             }
 
+            var msgs = mutableListOf<String>()
             if (msgs1.any()) {
-                msgs1.add(0, "+")
+                msgs1.add("+" + msgs1.joinToString(","))
             }
             if (msgs2.any()) {
-                msgs2.add(0, "-")
+                msgs2.add("-" + msgs2.joinToString(","))
             }
-            json2.set("title", arrayOf(msgs1.joinToString(","), msgs2.joinToString(",")).joinToString(";"));
+            json2.set("title", msgs.joinToString(";"));
             return@recursionJson true;
         })
     }
