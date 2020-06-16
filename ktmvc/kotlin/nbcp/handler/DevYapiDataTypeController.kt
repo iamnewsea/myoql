@@ -93,7 +93,19 @@ class DevYapiDataTypeController {
      */
     private fun proc_item(type: String, json: MutableMap<String, Any?>, typeMap: JsonMap): Boolean {
         if (typeMap.containsKey(type) == false) return false;
-        var userTypeDefine = typeMap.get(type) as Map<String, JsonMap>;
+        var userTypeDefine:MutableMap<String,Any> = mutableMapOf()
+
+        var v = typeMap.get(type)!!
+        var v_class = v::class.java;
+
+        if( v_class.IsStringType()){
+            v.AsString().split(",").forEach {
+                userTypeDefine.put(it,JsonMap());
+            }
+        }
+        else{
+            userTypeDefine = v as MutableMap<String,Any>;
+        }
 
 
         if (json.getStringValue("type") == "array") {
@@ -106,7 +118,7 @@ class DevYapiDataTypeController {
         return true;
     }
 
-    private fun proc_object(json: MutableMap<String, Any?>, userTypeDefine: Map<String, JsonMap>) {
+    private fun proc_object(json: MutableMap<String, Any?>, userTypeDefine: Map<String, Any>) {
 
         if (json.get("type") != "object") {
             json.set("type", "object");
@@ -120,9 +132,10 @@ class DevYapiDataTypeController {
 
         userTypeDefine.forEach {
             if (properties.containsKey(it.key) == false) {
+                var mapValue = it.value as Map<String,Any>
                 var idJson = JsonMap();
-                idJson.put("type", it.value.getStringValue("type") ?: "string");
-                idJson.put("description", it.value.getStringValue("description") ?: "")
+                idJson.put("type", mapValue.getStringValue("type") ?: "string");
+                idJson.put("description", mapValue.getStringValue("description") ?: "")
                 properties.put(it.key, idJson);
             }
         }
