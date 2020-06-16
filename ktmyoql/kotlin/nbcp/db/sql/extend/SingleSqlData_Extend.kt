@@ -146,7 +146,7 @@ fun PreparedStatement.setValue(index: Int, param: SqlParameterData) {
         this.setTimestamp(index, java.sql.Timestamp.valueOf(param.value.AsLocalDateTime()))
         return
     } else if (sqlType == java.sql.Types.DATE) {
-        this.setDate(index, java.sql.Date(param.value.AsDate().time))
+        this.setDate(index, java.sql.Date(param.value.AsDate()?.time ?: 0))
         return
     } else if (sqlType == java.sql.Types.TIME) {
         this.setTime(index, java.sql.Time(param.value.AsLocalTime().toSecondOfDay() * 1000L))

@@ -37,7 +37,7 @@ fun Document.GetComplexPropertyValue(vararg eachProperty: String): Any? {
     var aryIndex = key.indexOf('[');
 
     if (aryIndex > 0) {
-        var aryPropertys = key.Slice(aryIndex).Slice(1, -1).split("][").map { it.AsInt() };
+        var aryPropertys = key.substring(aryIndex).Slice(1, -1).split("][").map { it.AsInt() };
         key = key.Slice(0, aryIndex);
 
         var aryValue = (this.get(key) as ArrayList<*>);

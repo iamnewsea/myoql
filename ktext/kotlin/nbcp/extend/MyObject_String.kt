@@ -45,7 +45,7 @@ fun String.IsNumberic(): Boolean {
     var self = this;
     var first = self[0];
     if (first == '+' || first == '-') {
-        self = self.Slice(1);
+        self = self.substring(1);
         if (self.length == 0) return false;
     }
 
@@ -265,7 +265,7 @@ fun String.Tokenizer(
                 nextIndex = this.length
             }
 
-            list.add(this.Slice(index, nextIndex))
+            list.add(this.substring(index, nextIndex))
 
             index = nextIndex - 1
             continue
@@ -275,7 +275,7 @@ fun String.Tokenizer(
                 nextIndex = this.length
             }
 
-            list.add(this.Slice(index, nextIndex))
+            list.add(this.substring(index, nextIndex))
             index = nextIndex - 1
             continue
         }
@@ -407,7 +407,7 @@ fun String.Remove(vararg removeChars: Char): String {
 
 
 /**
- * 保持和 Js 用法一致.
+ * 保持和 Js 用法一致. 该方法 == substring, 推荐使用 substring
  * 大于等于开始索引,小于结束索引
  * "abcdef".Slice(3) == "def"
  * "abcdef".Slice(3,4) == "d"
@@ -417,7 +417,7 @@ fun String.Remove(vararg removeChars: Char): String {
  * "abcdef".Slice(-300) == "abcdef"
  * "abcdef".Slice(-300,-1) == "abcde"
  */
-fun String.Slice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): String {
+fun String.Slice(startIndex: Int, endIndex: Int): String {
     var list = mutableListOf<Char>()
     this.toCharArray().forEach {
         list.add(it)
@@ -587,7 +587,7 @@ fun String.MatchPattern(pattern: String): StringMap {
             }
 
     if (prevEndIndex + 1 < this.length) {
-        tokens.add(MatchPatternTokenItem(pattern.Slice(prevEndIndex + 1)))
+        tokens.add(MatchPatternTokenItem(pattern.substring(prevEndIndex + 1)))
     }
 
 
@@ -597,7 +597,7 @@ fun String.MatchPattern(pattern: String): StringMap {
     var next_token = "";
     tokens.forEachIndexed { index, item ->
         if (item.isToken == false) {
-            var src_item = this.Slice(src_prev_index, src_prev_index + item.length)
+            var src_item = this.substring(src_prev_index, src_prev_index + item.length)
             if (src_item != item.toString()) {
                 return ret
             }
@@ -611,11 +611,11 @@ fun String.MatchPattern(pattern: String): StringMap {
             next_token = tokens[index + 1].toString();
 
             var next_index = this.indexOf(next_token, src_prev_index)
-            var value = this.Slice(src_prev_index, next_index);
+            var value = this.substring(src_prev_index, next_index);
             ret[item.toString()] = value;
             src_prev_index = next_index;
         } else {
-            ret[item.toString()] = this.Slice(src_prev_index);
+            ret[item.toString()] = this.substring(src_prev_index);
         }
     }
 
@@ -679,8 +679,8 @@ fun String.formatWithJson(json: StringMap, style: String = "", itemCallback: ((S
         var key = result.groupValues.last()
 
         var value = json.getStringValue(*key.split(".").toTypedArray())
-        if( value == null){
-            return@replace  result.groupValues.first()
+        if (value == null) {
+            return@replace result.groupValues.first()
         }
 
         if (itemCallback != null) {

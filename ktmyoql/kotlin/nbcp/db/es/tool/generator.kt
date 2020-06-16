@@ -132,7 +132,7 @@ data class moer_map(val _pname:String)
         nameMapping.forEach {
             name = name.replace(it.key, it.value)
         }
-        return name[0].toLowerCase() + name.Slice(1);
+        return name[0].toLowerCase() + name.substring(1);
     }
 
     fun getGroups(basePackage: String, anyEntityClass: Class<*>): HashMap<String, MutableList<Class<*>>> {

@@ -483,12 +483,12 @@ open class MyAllFilter : Filter, InitializingBean {
             htmlFiles = JarFile(file).entries().toList()
                     .filter { it.name.startsWith(prefix) }
                     .filter { it.name.endsWith("/") == false }
-                    .map { "/" + it.name.Slice(prefix.length) }
+                    .map { "/" + it.name.substring(prefix.length) }
         } else {
             isJarFile = false;
             var file2 = File(file.FullName + File.separator + htmlPath);
             htmlFiles = getAllFiles(file2) { it.startsWith(file2.FullName + File.separator) && (it.endsWith(File.separator) == false) }
-                    .map { "/" + it.Slice(file2.FullName.length + 1) }
+                    .map { "/" + it.substring(file2.FullName.length + 1) }
         }
     }
 }

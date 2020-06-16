@@ -61,13 +61,13 @@ val Class<*>.kotlinTypeName: String
         if (this.isArray) {
             if (this.componentType.isPrimitive) {
                 var name = this.componentType.simpleName;
-                return name.first().toUpperCase() + name.Slice(1) + "Array";
+                return name.first().toUpperCase() + name.substring(1) + "Array";
             }
         }
 
         if (this.isPrimitive) {
             var name = this.simpleName;
-            return name.first().toUpperCase() + name.Slice(1);
+            return name.first().toUpperCase() + name.substring(1);
         }
         return this.simpleName;
     }

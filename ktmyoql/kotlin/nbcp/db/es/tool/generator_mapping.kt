@@ -187,7 +187,7 @@ class generator_mapping {
 
                         var theDefines = StringMap(parentDefines
                                 .filter { d -> d.key == it.name || d.key.startsWith(it.name + ".") }
-                                .map { d -> d.key.Slice(it.name.length + 1) to d.value }
+                                .map { d -> d.key.substring(it.name.length + 1) to d.value }
                                 .toMap())
 
                         if (theDefines.filter { it.key.isNullOrEmpty() }.any()) {

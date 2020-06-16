@@ -176,8 +176,7 @@ fun Any?.AsString(defaultValue: String = "", format: String = ""): String {
             return "";
         }
         return SimpleDateFormat(format.AsString("yyyy-MM-dd HH:mm:ss")).format(this);
-    }
-    else if( this is Number){
+    } else if (this is Number) {
         //TODO  格式化 0.0 , #.#
 
     }
@@ -363,10 +362,10 @@ fun Any?.AsLocalTime(defaultVale: LocalTime = LocalTime.MIN): LocalTime {
             strValue = "0" + strValue
         }
         if (strValue[4] == ':') {
-            strValue = strValue.Slice(0, 4) + "0" + strValue.Slice(4)
+            strValue =  strValue.substring(0, 4) + "0" + strValue.substring(4)
         }
         if (strValue.length == 7 || strValue[7] == '.') {
-            strValue = strValue.Slice(0, 7) + "0" + strValue.Slice(7)
+            strValue = strValue.substring(0, 7) + "0" + strValue.substring(7)
         }
 
         var formatter = "HH:mm:ss"
@@ -375,10 +374,10 @@ fun Any?.AsLocalTime(defaultVale: LocalTime = LocalTime.MIN): LocalTime {
             formatter += ".SSS"
 
             if (strValue.length > 12) {
-                strValue = strValue.Slice(0, 12);
+                strValue = strValue.substring(0, 12);
             }
         } else {
-            strValue = strValue.Slice(0, 8);
+            strValue = strValue.substring(0, 8);
         }
 
         var ret = LocalTime.parse(strValue, DateTimeFormatter.ofPattern(formatter))
@@ -468,11 +467,11 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
 
         //补: 2017-1-1
         if (strValue[6] == fen) {
-            strValue = strValue.Slice(0, 5) + "0" + strValue.Slice(5);
+            strValue = strValue.substring(0, 5) + "0" + strValue.substring(5);
         }
 
         if (strValue.length == 9 || strValue[9].isDigit() == false) {
-            strValue = strValue.Slice(0, 8) + "0" + strValue.Slice(8);
+            strValue = strValue.substring(0, 8) + "0" + strValue.substring(8);
         }
 
         if (strValue.length == 10) {
@@ -496,19 +495,24 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
                 addZoneTimeFlag = addZoneTimeFlag or 1;
             }
 
-            strValue = strValue.Slice(0, 10) + " " + strValue.Slice(11);
+            strValue = strValue.substring(0, 10) + " " + strValue.substring(11);
             formatter += " ";
         }
 
         //补全时间
         if (strValue[12] == ':') {
-            strValue = strValue.Slice(0, 11) + "0" + strValue.Slice(11)
+            strValue = strValue.substring(0, 11) + "0" + strValue.substring(11)
         }
         if (strValue[15] == ':') {
-            strValue = strValue.Slice(0, 14) + "0" + strValue.Slice(14)
+            strValue = strValue.substring(0, 14) + "0" + strValue.substring(14)
         }
-        if (strValue.length == 18 || strValue[18].isDigit() == false) {
-            strValue = strValue.Slice(0, 17) + "0" + strValue.Slice(17)
+        //补秒
+        if (strValue.length == 16) {
+            strValue += ":00"
+        }
+
+        if (strValue.length == 18 || (strValue.length > 17 && strValue[18] == '.')) {
+            strValue = strValue.substring(0, 17) + "0" + strValue.substring(17)
         }
 
         formatter += "HH:mm:ss"
@@ -519,14 +523,14 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
 
             if (strValue.length >= 24 && strValue[23] == 'Z') {
                 addZoneTimeFlag = addZoneTimeFlag or 2;
-                strValue = strValue.Slice(0, 23);
+                strValue = strValue.substring(0, 23);
             }
 
             if (strValue.length > 23) {
-                strValue = strValue.Slice(0, 23);
+                strValue = strValue.substring(0, 23);
             }
         } else {
-            strValue = strValue.Slice(0, 19);
+            strValue = strValue.substring(0, 19);
         }
 
 
@@ -546,18 +550,20 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
 }
 
 
-fun Any?.AsDate(defaultValue: Date = Date(0)): Date {
+fun Any?.AsDate(): Date? {
+    if (this == null) return null;
+
     if (this is Date) {
         return this
     } else if (this is LocalDate) {
-        if (this.year < 0) return defaultValue
+        if (this.year < 0) return null
         var c = Calendar.getInstance(TimeZone.getTimeZone("GMT+:08:00"))
-        c.set(this.year, this.monthValue - 1, this.dayOfMonth,0,0,0)
+        c.set(this.year, this.monthValue - 1, this.dayOfMonth, 0, 0, 0)
         c.set(Calendar.MILLISECOND, 0)
         return c.time
 
     } else if (this is LocalDateTime) {
-        if (this.year < 0) return defaultValue
+        if (this.year < 0) return null
 
         var c = Calendar.getInstance(TimeZone.getTimeZone("GMT+:08:00"))
         c.set(this.year, this.monthValue - 1, this.dayOfMonth, this.hour, this.minute, this.second)
@@ -571,11 +577,11 @@ fun Any?.AsDate(defaultValue: Date = Date(0)): Date {
         }
 
         if (value is String) {
-            return value.AsLocalDateTime().AsDate(defaultValue)
+            return value.AsLocalDateTime().AsDate()
         }
     }
 
-    return defaultValue
+    return null
 }
 
 

@@ -34,7 +34,7 @@ class DevMongoController {
 
     @GetMapping("/entities")
     fun getEntities(group: String): ListResult<String> {
-        var group = group[0].toUpperCase() + group.Slice(1) + "Group"
+        var group = group[0].toUpperCase() + group.substring(1) + "Group"
         var groupObj = db.mongo.groups.firstOrNull { it::class.java.simpleName == group }
         if (groupObj == null) return ListResult("找不到group")
 
@@ -51,7 +51,7 @@ class DevMongoController {
 
     @GetMapping("/fields")
     fun getEntity(group: String, entity: String): ListResult<FieldModel> {
-        var group = group[0].toUpperCase() + group.Slice(1) + "Group"
+        var group = group[0].toUpperCase() + group.substring(1) + "Group"
         var groupObj = db.mongo.groups.firstOrNull { it::class.java.simpleName == group }
         if (groupObj == null) return ListResult("找不到group")
 

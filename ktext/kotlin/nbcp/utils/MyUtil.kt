@@ -45,12 +45,12 @@ object MyUtil {
             var item = value[index];
 
             if (item.isUpperCase()) {
-                ret.add(value.Slice(prevIndex, index))
+                ret.add(value.substring(prevIndex, index))
                 prevIndex = index;
             }
         }
 
-        ret.add(value.Slice(prevIndex));
+        ret.add(value.substring(prevIndex));
 
         return ret.filter { it.HasValue };
     }
@@ -406,7 +406,7 @@ object MyUtil {
             return ""
         }
 
-        var path2 = fullPath.Slice(jarPath.length + 1).replace(File.separatorChar, '.');
+        var path2 = fullPath.substring(jarPath.length + 1).replace(File.separatorChar, '.');
 
         if (path2.contains(basePack) == false) {
             return ""
@@ -484,7 +484,7 @@ object MyUtil {
      * 大驼峰 ,仅保留字母，数字
      */
     fun getBigCamelCase(value: String): String {
-        return value.split(Regex("""[\W_]""")).map { it[0].toUpperCase() + it.Slice(1) }.joinToString("")
+        return value.split(Regex("""[\W_]""")).map { it[0].toUpperCase() + it.substring(1) }.joinToString("")
     }
 
     /**
@@ -492,7 +492,7 @@ object MyUtil {
      */
     fun getSmallCamelCase(value: String): String {
         var ret = getBigCamelCase(value);
-        return ret[0].toLowerCase() + ret.Slice(1)
+        return ret[0].toLowerCase() + ret.substring(1)
     }
 
     /**

@@ -1,6 +1,7 @@
 package nbcp.web
 
 
+import nbcp.comm.AsDate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.convert.converter.Converter
@@ -32,35 +33,7 @@ class StringToDateConverter : Converter<String, Date> {
      * @see org.springframework.core.convert.converter.Converter.convert
      */
     override fun convert(source: String): Date? {
-        var source = source
-        if (source.isNullOrEmpty()) {
-            return null
-        }
-        source = source.trim { it <= ' ' }
-        try {
-            if (source.contains("-")) {
-                val formatter: SimpleDateFormat
-                if (source.contains(":")) {
-                    formatter = SimpleDateFormat(dateFormat)
-                } else {
-                    formatter = SimpleDateFormat(shortDateFormat)
-                }
-                val dtDate = formatter.parse(source)
-                return dtDate
-            } else if (source.matches("^\\d+$".toRegex())) {
-                val lDate = source as Long
-                return Date(lDate)
-            }
-        } catch (e: Exception) {
-            throw RuntimeException(String.format("parser %s to Date fail", source))
-        }
-
-        throw RuntimeException(String.format("parser %s to Date fail", source))
-    }
-
-    companion object {
-        private val dateFormat = "yyyy-MM-dd HH:mm:ss"
-        private val shortDateFormat = "yyyy-MM-dd"
+        return source.AsDate()
     }
 }
 

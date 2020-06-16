@@ -69,9 +69,9 @@ object UserCodeGenerator {
 
             var end_tag_end_index = end_tag_start_index + "\${endif}".length
             //-----
-            var p1 = text.Slice(0, begin_tag_start_index);
-            var t = text.Slice(begin_tag_end_index + 1, end_tag_start_index);
-            var p2 = text.Slice(end_tag_end_index + 1);
+            var p1 = text.substring(0, begin_tag_start_index);
+            var t = text.substring(begin_tag_end_index + 1, end_tag_start_index);
+            var p2 = text.substring(end_tag_end_index + 1);
 
             var t2 = "";
             if (entityFields.any { it.name == tagName }) {
@@ -91,9 +91,9 @@ object UserCodeGenerator {
             var end_index = text.indexOf("\${endfor}", start_index);
             if (end_index < 0) break;
 
-            var p1 = text.Slice(0, start_index);
-            var t = text.Slice(start_index + "\${for:fields}".length, end_index);
-            var p2 = text.Slice(end_index + "\${endfor}".length);
+            var p1 = text.substring(0, start_index);
+            var t = text.substring(start_index + "\${for:fields}".length, end_index);
+            var p2 = text.substring(end_index + "\${endfor}".length);
 
 
             var t2 = entityFields.map {
@@ -114,7 +114,7 @@ object UserCodeGenerator {
         var entity_url = MyUtil.getHyphen(entity.tableName);
 
         if (entity_url.startsWith(group + "-")) {
-            entity_url = entity_url.Slice((group + "-").length);
+            entity_url = entity_url.substring((group + "-").length);
         }
 
 

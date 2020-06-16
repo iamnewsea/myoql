@@ -5,6 +5,8 @@ import nbcp.db.db
 import nbcp.db.mongo.*
 import nbcp.utils.RecursionUtil
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 
 @OpenAction
@@ -15,7 +17,7 @@ class DevYapiDataTypeController {
      * 修正 yapi 的数据类型,在 title 字段设置如下格式： :IdName,IdUrl,会对其下属性添加 id,name,url 字段。
      * @param typeMap , 形如： {"IdName": {id: {type:"string",description:"id"} ,name:{} }
      */
-    @PostMapping("/user-types")
+    @RequestMapping("/user-types", method = arrayOf(RequestMethod.POST, RequestMethod.GET))
     fun dbTypes(@Require connString: String, @Require typeMap: JsonMap): ListResult<String> {
         var ret = mutableListOf<String>()
         using(db.mongo.getMongoTemplateByUri(connString)!!) {
@@ -71,7 +73,7 @@ class DevYapiDataTypeController {
                 return@recursionJson true;
             }
 
-            title = title.Slice(1);
+            title = title.substring(1);
             var json2 = json as MutableMap<String, Any?>;
             var msgs1 = mutableListOf<String>()
             var msgs2 = mutableListOf<String>()
@@ -93,18 +95,17 @@ class DevYapiDataTypeController {
      */
     private fun proc_item(type: String, json: MutableMap<String, Any?>, typeMap: JsonMap): Boolean {
         if (typeMap.containsKey(type) == false) return false;
-        var userTypeDefine:MutableMap<String,Any> = mutableMapOf()
+        var userTypeDefine: MutableMap<String, Any> = mutableMapOf()
 
         var v = typeMap.get(type)!!
         var v_class = v::class.java;
 
-        if( v_class.IsStringType()){
+        if (v_class.IsStringType()) {
             v.AsString().split(",").forEach {
-                userTypeDefine.put(it,JsonMap());
+                userTypeDefine.put(it, JsonMap());
             }
-        }
-        else{
-            userTypeDefine = v as MutableMap<String,Any>;
+        } else {
+            userTypeDefine = v as MutableMap<String, Any>;
         }
 
 
@@ -132,7 +133,7 @@ class DevYapiDataTypeController {
 
         userTypeDefine.forEach {
             if (properties.containsKey(it.key) == false) {
-                var mapValue = it.value as Map<String,Any>
+                var mapValue = it.value as Map<String, Any>
                 var idJson = JsonMap();
                 idJson.put("type", mapValue.getStringValue("type") ?: "string");
                 idJson.put("description", mapValue.getStringValue("description") ?: "")

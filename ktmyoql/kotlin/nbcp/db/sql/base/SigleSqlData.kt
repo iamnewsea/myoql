@@ -38,7 +38,7 @@ data class SingleSqlData(
                     var key = it.groupValues[1]
 //                    var key_var = it.groupValues[0]
 
-                    exp = exp.Slice(0, it.range.start) + "?" + exp.Slice(it.range.endInclusive + 1)
+                    exp = exp.Slice(0, it.range.start) + "?" + exp.substring(it.range.endInclusive + 1)
 
                     var value = this.values[key]
                     if (value == null) {
