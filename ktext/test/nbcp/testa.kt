@@ -64,15 +64,15 @@ class testa : TestBase() {
 
     @Test
     fun abcd() {
-        var str = "abc{--{--\${name}-{\${id}"
-        var jsonMap = StringMap("name" to "hello");
-        println(str.format(jsonMap, "\${}"))
+        println("2020/06/16 20:05".AsLocalDate())
+        println("2020/06/16 20:05:06.888".AsLocalDateTime())
+        println("2020/06/16 20:05Z".AsLocalDateTime())
     }
 
 
     @Test
     fun rou() {
-        var line = execCmd("cmd","/c"," dirw d:")
+        var line = execCmd("cmd", "/c", " dirw d:")
 
         line.data.forEach {
             println(it)

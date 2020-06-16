@@ -356,38 +356,7 @@ fun Any?.AsLocalTime(defaultVale: LocalTime = LocalTime.MIN): LocalTime {
     }
 
 
-    try {
-        //补全时间 12:12:12
-        if (strValue[1] == ':') {
-            strValue = "0" + strValue
-        }
-        if (strValue[4] == ':') {
-            strValue =  strValue.substring(0, 4) + "0" + strValue.substring(4)
-        }
-        if (strValue.length == 7 || strValue[7] == '.') {
-            strValue = strValue.substring(0, 7) + "0" + strValue.substring(7)
-        }
-
-        var formatter = "HH:mm:ss"
-
-        if (strValue.length > 8 && strValue[8] == '.') {
-            formatter += ".SSS"
-
-            if (strValue.length > 12) {
-                strValue = strValue.substring(0, 12);
-            }
-        } else {
-            strValue = strValue.substring(0, 8);
-        }
-
-        var ret = LocalTime.parse(strValue, DateTimeFormatter.ofPattern(formatter))
-        if (ret == LocalTime.MIN) {
-            return defaultVale;
-        }
-        return ret;
-    } catch (e: Exception) {
-        return defaultVale
-    }
+    return ConvertAsLocalTime(strValue)
 }
 
 fun Any?.AsLocalDateTime(): LocalDateTime? {
@@ -434,6 +403,7 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
         throw RuntimeException("非法的类型转换,试图从 ${this::class.java}类型 到 LocalDateTime类型")
     }
 
+    strValue = strValue.trim();
     if (strValue.length < 8) {
         return null;
     }
@@ -449,106 +419,112 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
         YYYY.MM.DD
          */
 
-        if (strValue.length == 8 && !strValue.any { it.isDigit() == false }) {
-            var ret = LocalDate.parse(strValue, DateTimeFormatter.ofPattern("yyyyMMdd"))
-//            if (ret == LocalDate.MIN) {
-//                return defaultVale;
-//            }
-            return ret.atStartOfDay()
+        var withZ = strValue.endsWith('Z')
+
+        if (withZ) {
+            strValue = strValue.Slice(0, -1);
         }
 
-        var fen = strValue[4];
-
-        if (fen != '-' && fen != '/' && fen != '_' && fen != '.') {
-            return null;
+        //分成两部分。 找冒号前面找字母或空格 ,T, 'T'
+        var timeSignIndex = strValue.indexOf(':');
+        if (timeSignIndex < 0) {
+            return this.AsLocalDate()?.atStartOfDay()
         }
 
-        var formatter = "yyyy${fen}MM${fen}dd"
-
-        //补: 2017-1-1
-        if (strValue[6] == fen) {
-            strValue = strValue.substring(0, 5) + "0" + strValue.substring(5);
+        var fenIndex = strValue.substring(0, timeSignIndex).indexOfFirst { it == ' ' || it.isLetter() }
+        if (fenIndex < 0) {
+            throw RuntimeException("不正确的时间格式:${strValue}")
         }
 
-        if (strValue.length == 9 || strValue[9].isDigit() == false) {
-            strValue = strValue.substring(0, 8) + "0" + strValue.substring(8);
+        var endZ = strValue.endsWith('Z');
+        var wrappeT = false;
+        if (fenIndex > 1 && fenIndex < strValue.length - 1) {
+            if (strValue[1].isDigit() == false && strValue[fenIndex - 1] == strValue[fenIndex + 1]) {
+                wrappeT = true;
+            }
         }
 
-        if (strValue.length == 10) {
-            var ret = LocalDate.parse(strValue, DateTimeFormatter.ofPattern(formatter))
-//            if (ret == LocalDate.MIN) {
-//                return defaultVale;
-//            }
-            return ret.atStartOfDay();
-        }
-
-        if (strValue.length < 16) {
-            return null;
-        }
-
-        var addZoneTimeFlag = 0;
-        if (strValue[10] == ' ') {
-            formatter += " ";
+        var datePartString = "";
+        var timePartString = "";
+        if (wrappeT) {
+            datePartString = strValue.substring(0, fenIndex - 1);
+            strValue = strValue.substring(fenIndex + 2);
         } else {
-            if (strValue[10] == 'T') {
-                //最后加8小时。
-                addZoneTimeFlag = addZoneTimeFlag or 1;
-            }
-
-            strValue = strValue.substring(0, 10) + " " + strValue.substring(11);
-            formatter += " ";
+            datePartString = strValue.substring(0, fenIndex);
+            strValue = strValue.substring(fenIndex + 1);
         }
 
-        //补全时间
-        if (strValue[12] == ':') {
-            strValue = strValue.substring(0, 11) + "0" + strValue.substring(11)
-        }
-        if (strValue[15] == ':') {
-            strValue = strValue.substring(0, 14) + "0" + strValue.substring(14)
-        }
-        //补秒
-        if (strValue.length == 16) {
-            strValue += ":00"
-        }
-
-        if (strValue.length == 18 || (strValue.length > 17 && strValue[18] == '.')) {
-            strValue = strValue.substring(0, 17) + "0" + strValue.substring(17)
-        }
-
-        formatter += "HH:mm:ss"
-
-        if (strValue.length > 19 && strValue[19] == '.') {
-            formatter += ".SSS"
-
-
-            if (strValue.length >= 24 && strValue[23] == 'Z') {
-                addZoneTimeFlag = addZoneTimeFlag or 2;
-                strValue = strValue.substring(0, 23);
-            }
-
-            if (strValue.length > 23) {
-                strValue = strValue.substring(0, 23);
-            }
+        if (endZ) {
+            timePartString = strValue.Slice(0, -1)
         } else {
-            strValue = strValue.substring(0, 19);
+            timePartString = strValue
         }
 
-
-        var ret = LocalDateTime.parse(strValue, DateTimeFormatter.ofPattern(formatter))
-//        if (ret == LocalDateTime.MIN) {
-//            return defaultVale;
-//        }
-
-        if (addZoneTimeFlag == 3) {
-            //日期T时间Z ， 在此基础上，加8小时。
-            return ret.plusSeconds(ZoneId.systemDefault().rules.getOffset(Instant.EPOCH).totalSeconds)
+        var zoneSecond = 0;
+        if (withZ) {
+            zoneSecond = ZoneId.systemDefault().rules.getOffset(Instant.EPOCH).totalSeconds
         }
-        return ret;
+
+        return ConvertAsLocalDate(datePartString)?.atTime(ConvertAsLocalTime(timePartString))?.plusSeconds(zoneSecond)
+
     } catch (e: Exception) {
+        logger.error(e.message, e);
         return null
     }
 }
 
+private fun ConvertAsLocalDate(dateString: String): LocalDate? {
+    var strValue = dateString.trim();
+
+    if (strValue.length == 8 && !strValue.any { it.isDigit() == false }) {
+        var ret = LocalDate.parse(strValue, DateTimeFormatter.ofPattern("yyyyMMdd"))
+        return ret
+    }
+
+    var fen = strValue[4];
+
+    if (fen != '-' && fen != '/' && fen != '_' && fen != '.') {
+        return null;
+    }
+
+    var sects = strValue.split(fen);
+    if (sects.size != 3) {
+        throw java.lang.RuntimeException("不识别的日期格式: ${strValue}")
+    }
+
+    var year = sects[0].AsInt();
+    var month = sects[1].AsInt();
+    var day = sects[2].AsInt();
+
+    return LocalDate.of(year, month, day);
+}
+
+
+private fun ConvertAsLocalTime(timeString: String): LocalTime {
+
+    var timeString = timeString.trim();
+    var withZ = timeString.endsWith('Z');
+    if (withZ) {
+        timeString = timeString.Slice(0, -1);
+    }
+
+    var nanos = 0L;
+    var dotIndex = timeString.indexOf('.');
+    if (dotIndex >= 0) {
+        nanos = timeString.substring(dotIndex + 1).AsLong() * 1000000;
+        timeString = timeString.substring(0, dotIndex);
+    }
+
+    var sects = timeString.split(':');
+    var hour = sects[0].AsInt();
+    var minute = sects[1].AsInt();
+    var second = 0;
+    if (sects.size > 2) {
+        second = sects[2].AsInt();
+    }
+
+    return LocalTime.of(hour, minute, second).plusNanos(nanos)
+}
 
 fun Any?.AsDate(): Date? {
     if (this == null) return null;
