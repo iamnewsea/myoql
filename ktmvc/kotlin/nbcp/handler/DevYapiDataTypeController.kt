@@ -102,7 +102,14 @@ class DevYapiDataTypeController {
                     msgs2.add(it);
                 }
             }
-            json2.set("title", arrayOf("+" + msgs1.joinToString(","), "-" + msgs2.joinToString(",")).joinToString(";"));
+
+            if (msgs1.any()) {
+                msgs1.add(0, "+")
+            }
+            if (msgs2.any()) {
+                msgs2.add(0, "-")
+            }
+            json2.set("title", arrayOf(msgs1.joinToString(","), msgs2.joinToString(",")).joinToString(";"));
             return@recursionJson true;
         })
     }
@@ -130,7 +137,7 @@ class DevYapiDataTypeController {
             throw RuntimeException("title,type必须同级!")
         }
         if (json.getStringValue("type") != "object") {
-            json.set("type","object")
+            json.set("type", "object")
             json.set("properties", JsonMap())
         }
 
