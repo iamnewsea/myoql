@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
+import java.lang.RuntimeException
 import javax.servlet.http.HttpServletRequest
 
 @OpenAction
@@ -125,22 +126,19 @@ class DevYapiDataTypeController {
         }
 
 
-        if (json.getStringValue("type") == "array") {
-            var items = json.getValue("items") as MutableMap<String, Any?>
-
-            proc_object(items, userTypeDefine);
-        } else if (json.getStringValue("type") == "object") {
-            proc_object(json, userTypeDefine);
+        if (json.containsKey("type") == false) {
+            throw RuntimeException("title,type必须同级!")
         }
+        if (json.getStringValue("type") != "object") {
+            json.set("type","object")
+            json.set("properties", JsonMap())
+        }
+
+        proc_object(json, userTypeDefine);
         return true;
     }
 
     private fun proc_object(json: MutableMap<String, Any?>, userTypeDefine: Map<String, Any>) {
-
-        if (json.get("type") != "object") {
-            json.set("type", "object");
-        }
-
         if (json.containsKey("properties") == false) {
             json.put("properties", JsonMap())
         }
