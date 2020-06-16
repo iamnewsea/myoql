@@ -253,16 +253,22 @@ val HttpServletRequest.queryJson: JsonMap
         return dbValue2;
     }
 
+fun HttpServletRequest.findParameterStringValue(key: String): String {
+    return this.findParameterValue(key).AsString()
+}
+fun HttpServletRequest.findParameterIntValue(key: String): Int {
+    return this.findParameterValue(key).AsInt()
+}
 /**
  * 从request属性， URL ， Form表单，Header，Cookie中查找参数
  */
-fun HttpServletRequest.findParameterValue(key: String): String? {
-    var ret = this.getAttribute(key)?.toString()
+fun HttpServletRequest.findParameterValue(key: String): Any? {
+    var ret = this.getAttribute(key)
     if (ret != null) {
         return ret;
     }
 
-    ret = this.queryJson.get(key)?.toString();
+    ret = this.queryJson.get(key)
     if (ret != null) {
         return ret;
     }

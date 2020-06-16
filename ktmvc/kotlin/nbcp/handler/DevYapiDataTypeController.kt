@@ -4,10 +4,12 @@ import nbcp.comm.*
 import nbcp.db.db
 import nbcp.db.mongo.*
 import nbcp.utils.RecursionUtil
+import nbcp.web.findParameterValue
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
+import javax.servlet.http.HttpServletRequest
 
 @OpenAction
 @RestController
@@ -18,7 +20,21 @@ class DevYapiDataTypeController {
      * @param typeMap , 形如： {"IdName": {id: {type:"string",description:"id"} ,name:{} }
      */
     @RequestMapping("/user-types", method = arrayOf(RequestMethod.POST, RequestMethod.GET))
-    fun dbTypes(@Require connString: String, @Require typeMap: JsonMap): ListResult<String> {
+    fun dbTypes(@Require connString: String, request: HttpServletRequest): ListResult<String> {
+        var typeMapObject = request.findParameterValue("typeMap")
+
+        if (typeMapObject == null) {
+            throw ParameterInvalidException("需要 typeMap 参数", "typeMap")
+        }
+
+        var typeMap = mutableMapOf<String, Any?>()
+        var typeMapClass = typeMapObject::class.java;
+        if (typeMapClass.IsStringType()) {
+            typeMap = typeMapObject.AsString().FromJson<MutableMap<String, Any?>>()!!
+        } else {
+            typeMap = typeMapObject as MutableMap<String, Any?>
+        }
+
         var ret = mutableListOf<String>()
         using(db.mongo.getMongoTemplateByUri(connString)!!) {
             var query = MongoBaseQueryClip("interface")
@@ -62,7 +78,7 @@ class DevYapiDataTypeController {
     /**
      * 遍历，并判断 title 是否以 ： 开头
      */
-    private fun proc(json: Map<String, Any?>, typeMap: JsonMap) {
+    private fun proc(json: Map<String, Any?>, typeMap: MutableMap<String, Any?>) {
 
         RecursionUtil.recursionJson(json, { json ->
             if (json.containsKey("title") == false) {
@@ -93,7 +109,7 @@ class DevYapiDataTypeController {
     /**
      * @param typeMap 形如： {"IdName": {id: {type:"string",description:"id"} ,name:{} }
      */
-    private fun proc_item(type: String, json: MutableMap<String, Any?>, typeMap: JsonMap): Boolean {
+    private fun proc_item(type: String, json: MutableMap<String, Any?>, typeMap: MutableMap<String, Any?>): Boolean {
         if (typeMap.containsKey(type) == false) return false;
         var userTypeDefine: MutableMap<String, Any> = mutableMapOf()
 

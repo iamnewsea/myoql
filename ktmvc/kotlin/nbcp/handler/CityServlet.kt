@@ -12,7 +12,7 @@ import nbcp.db.mysql.service.UploadFileMysqlService
 import nbcp.web.MyHttpRequestWrapper
 import nbcp.web.WriteJsonRawValue
 import nbcp.web.WriteTextValue
-import nbcp.web.findParameterValue
+import nbcp.web.findParameterIntValue
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import java.io.File
@@ -32,7 +32,7 @@ data class cn_city_model(var c: Int, var n: String)
 open class CityServlet : HttpServlet() {
     override fun doPost(request: HttpServletRequest, response: HttpServletResponse) {
 
-        var pcode = request.findParameterValue("pcode").AsInt();
+        var pcode = request.findParameterIntValue("pcode") ;
 
         if (pcode == 0) {
             throw NoDataException("城市code不能为空")

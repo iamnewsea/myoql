@@ -19,7 +19,7 @@ fun Any.ConvertType(clazz: Class<*>): Any? {
         return this;
     }
 
-    var className = clazz.name;
+//    var className = clazz.name;
 
     if (clazz == Boolean::class.java || clazz == java.lang.Boolean::class.java) {
         return this.AsBooleanWithNull()

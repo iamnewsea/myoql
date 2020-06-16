@@ -7,9 +7,7 @@ import nbcp.db.DatabaseEnum
 import nbcp.db.mongo.*
 import nbcp.db.mongo.service.UploadFileMongoService
 import nbcp.db.mysql.service.UploadFileMysqlService
-import nbcp.web.MyHttpRequestWrapper
-import nbcp.web.WriteTextValue
-import nbcp.web.findParameterValue
+import nbcp.web.*
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import java.io.File
@@ -43,16 +41,16 @@ open class ImageGetServlet : HttpServlet() {
 
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
         //附件数据库表中的Id
-        var id = request.findParameterValue("id").AsString();
+        var id = request.findParameterStringValue("id") ;
 
         //不带 host 头部的地址
-        var url = request.findParameterValue("url").AsString();
+        var url = request.findParameterStringValue("url") ;
         if (id.isEmpty() && url.isEmpty()) {
             throw ParameterInvalidException("参数非法", "id")
         }
 
-        var width = request.findParameterValue("width").AsInt()
-        var height = request.findParameterValue("height").AsInt()
+        var width = request.findParameterIntValue("width")
+        var height = request.findParameterIntValue("height")
 
         if (width <= 0 && height <= 0) {
             throw ParameterInvalidException("参数不正确", "width")

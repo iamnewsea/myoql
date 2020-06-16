@@ -11,6 +11,7 @@ import org.springframework.web.method.support.ModelAndViewContainer
 import nbcp.comm.*
 import nbcp.utils.*
 import org.slf4j.LoggerFactory
+import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
 import java.lang.RuntimeException
 import java.lang.reflect.Method
 import javax.servlet.ServletRequest
@@ -95,14 +96,31 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
                         value = true;
                     }
                 } else {
-                    //如果参数是 List.
-                    if (parameter.parameterType.isArray || parameter.parameterType.IsListType()) {
-                        if (value is String) {
-                            value = listOf(value);
+                    if (value::class.java.IsListType()) {
+                        //如果参数是 List.
+                        if (parameter.parameterType.isArray) {
+                            if (parameter.parameterType.componentType.IsStringType()) {
+                                value = (value as List<String>).toTypedArray()
+                            } else {
+                                value = (value as List<String>).map { it.ConvertType(parameter.parameterType.componentType) }.toTypedArray()
+                            }
+                        } else if (parameter.parameterType.IsListType()) {
+                            var genType = (parameter.genericParameterType as ParameterizedTypeImpl).GetActualClass(0);
+                            if (!genType.IsStringType()) {
+                                value = (value as List<String>).map { it.ConvertType(genType) }
+                            }
+                        } else if (parameter.parameterType.IsStringType()) {
+                            value = (value as List<String>).joinToString(",")
                         }
                     } else {
-                        if (List::class.java.isAssignableFrom(value::class.java)) {
-                            value = (value as List<String>).joinToString(",")
+                        //如果参数是 List.
+                        if (parameter.parameterType.isArray) {
+                            value = arrayOf(value.ConvertType(parameter.parameterType.componentType))
+                        } else if (parameter.parameterType.IsListType()) {
+                            var genType = (parameter.genericParameterType as ParameterizedTypeImpl).GetActualClass(0);
+                            value = listOf(value.ConvertType(genType))
+                        } else if (parameter.parameterType.IsStringType() == false) {
+                            value = value.ConvertType(parameter.parameterType)
                         }
                     }
                 }
