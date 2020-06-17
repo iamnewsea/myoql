@@ -53,7 +53,7 @@ ${for:fields}            <el-table-column align="center" label="${remark}" prop=
 </style>
 <script>
 /**
- * Created by CodeGenerator @${now}
+ * Created by CodeGenerator
  */
     export default {
         components: {},

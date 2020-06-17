@@ -53,7 +53,7 @@ ${for:fields}                    <kv label="${remark}"><el-input v-model="info.$
 </style>
 <script>
 /**
- * Created by CodeGenerator @${now}
+ * Created by CodeGenerator
  */
     export default {
         components: {},
