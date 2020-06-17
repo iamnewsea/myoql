@@ -5,6 +5,7 @@ import nbcp.db.db
 import nbcp.db.mongo.*
 import nbcp.utils.RecursionUtil
 import nbcp.web.findParameterValue
+import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
@@ -38,7 +39,11 @@ class DevYapiDataTypeController {
         var ret = JsonMap()
         using(db.mongo.getMongoTemplateByUri(connString)!!) {
             var query = MongoBaseQueryClip("interface")
-            query.whereData.add(MongoColumnName("req_body_other") match_like "title\":\":")
+
+            var where = (MongoColumnName("req_body_other") match_like "title\":\":") match_or
+                    (MongoColumnName("res_body") match_like "title\":\":")
+
+            query.whereData.add(where)
             var list = query.toList(JsonMap::class.java);
 
             list.forEach {
