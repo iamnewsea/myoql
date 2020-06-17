@@ -27,6 +27,7 @@ open class AuthImageServlet : HttpServlet() {
         var captcha = ArithmeticCaptcha(width, height);
         var txt = captcha.text()
         db.rer_base.validateCode.set(request.session.id, txt);
+        response.setHeader("content-type","image/png")
         captcha.out(response.outputStream);
     }
 }
