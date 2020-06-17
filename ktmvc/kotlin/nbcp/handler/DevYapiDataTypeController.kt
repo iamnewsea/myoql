@@ -5,7 +5,6 @@ import nbcp.db.db
 import nbcp.db.mongo.*
 import nbcp.utils.RecursionUtil
 import nbcp.web.findParameterValue
-import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
@@ -18,7 +17,7 @@ import javax.servlet.http.HttpServletRequest
 class DevYapiDataTypeController {
     /**
      * 修正 yapi 的数据类型,在 title 字段设置如下格式： :IdName,IdUrl,会对其下属性添加 id,name,url 字段。
-     * @param typeMap , 形如： {"IdName": {id: {type:"string",description:"id"} ,name:{} }
+     * @param typeMap , 形如： {"IdName": {id: {type:"string",description:"id",mock:"1"} ,name:{} }
      */
     @RequestMapping("/user-types", method = arrayOf(RequestMethod.POST, RequestMethod.GET))
     fun dbTypes(@Require connString: String, request: HttpServletRequest): ApiResult<JsonMap> {
@@ -164,10 +163,23 @@ class DevYapiDataTypeController {
         userTypeDefine.forEach {
             if (properties.containsKey(it.key) == false) {
                 var mapValue = it.value as Map<String, Any>
-                var idJson = JsonMap();
-                idJson.put("type", mapValue.getStringValue("type") ?: "string");
-                idJson.put("description", mapValue.getStringValue("description") ?: "")
-                properties.put(it.key, idJson);
+                var itemJson = JsonMap();
+                itemJson.put("type", mapValue.getStringValue("type") ?: "string");
+
+                var description = mapValue.getStringValue("description") ?: ""
+                if (description.HasValue) {
+                    itemJson.put("description", description)
+                }
+
+                var mock = mapValue.getStringValue("mock") ?: ""
+                if (mock.HasValue) {
+                    if (itemJson.containsKey("mock") == false) {
+                        itemJson.put("mock", JsonMap());
+                    }
+                    (itemJson.get("mock") as MutableMap<String, Any?>).put("mock", mock);
+                }
+
+                properties.put(it.key, itemJson);
             }
         }
     }
