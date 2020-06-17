@@ -256,9 +256,11 @@ val HttpServletRequest.queryJson: JsonMap
 fun HttpServletRequest.findParameterStringValue(key: String): String {
     return this.findParameterValue(key).AsString()
 }
+
 fun HttpServletRequest.findParameterIntValue(key: String): Int {
     return this.findParameterValue(key).AsInt()
 }
+
 /**
  * 从request属性， URL ， Form表单，Header，Cookie中查找参数
  */
@@ -271,6 +273,13 @@ fun HttpServletRequest.findParameterValue(key: String): Any? {
     ret = this.queryJson.get(key)
     if (ret != null) {
         return ret;
+    }
+
+    if (this is MyHttpRequestWrapper) {
+        ret = this.json.get(key)
+        if (ret != null) {
+            return ret;
+        }
     }
 
     //读取表单内容
