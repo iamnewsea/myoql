@@ -45,10 +45,11 @@ class DevYapiDataTypeController {
                 var id = it.getIntValue("id");
 
 
+                var item_msgs = mutableListOf<String>()
                 var req_body_other = it.getStringValue("req_body_other") ?: "{}"
                 var json = req_body_other.FromJson<Map<String, Any?>>();
                 if (json != null) {
-                    proc(json, typeMap);
+                    item_msgs.addAll(proc(json, typeMap));
 
                     req_body_other = json.ToJson()
                 }
@@ -56,9 +57,8 @@ class DevYapiDataTypeController {
                 var res_body = it.getStringValue("res_body") ?: "{}";
 
                 var json2 = res_body.FromJson<Map<String, Any?>>()
-                var item_msgs = ListResult<String>()
                 if (json2 != null) {
-                    item_msgs = proc(json2, typeMap);
+                    item_msgs.addAll(proc(json2, typeMap));
 
                     res_body = json2.ToJson()
                 }
@@ -73,7 +73,7 @@ class DevYapiDataTypeController {
                 if (db.affectRowCount == 0) {
 
                 } else {
-                    ret.put(it.getStringValue("path") ?: it.getStringValue("title") ?: it.toString(), item_msgs.data)
+                    ret.put(it.getStringValue("path") ?: it.getStringValue("title") ?: it.toString(), item_msgs)
                 }
             }
         }
@@ -85,7 +85,7 @@ class DevYapiDataTypeController {
     /**
      * 遍历，并判断 title 是否以 ： 开头
      */
-    private fun proc(json: Map<String, Any?>, typeMap: MutableMap<String, Any?>): ListResult<String> {
+    private fun proc(json: Map<String, Any?>, typeMap: MutableMap<String, Any?>): List<String> {
 
         var items_msg = mutableListOf<String>();
 
@@ -115,7 +115,7 @@ class DevYapiDataTypeController {
             json_item.set("title", if (msg_no.any()) "-" + msg_no.joinToString(";") else "");
             return@recursionJson true;
         })
-        return ListResult.of(items_msg);
+        return items_msg;
     }
 
     /**
