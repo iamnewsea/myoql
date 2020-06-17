@@ -5,7 +5,6 @@ import nbcp.db.db
 import nbcp.db.mongo.*
 import nbcp.utils.RecursionUtil
 import nbcp.web.findParameterValue
-import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
@@ -21,7 +20,7 @@ class DevYapiDataTypeController {
      * @param typeMap , 形如： {"IdName": {id: {type:"string",description:"id"} ,name:{} }
      */
     @RequestMapping("/user-types", method = arrayOf(RequestMethod.POST, RequestMethod.GET))
-    fun dbTypes(@Require connString: String, request: HttpServletRequest): ListResult<String> {
+    fun dbTypes(@Require connString: String, request: HttpServletRequest): ApiResult<JsonMap> {
         var typeMapObject = request.findParameterValue("typeMap")
 
         if (typeMapObject == null) {
@@ -36,7 +35,7 @@ class DevYapiDataTypeController {
             typeMap = typeMapObject as MutableMap<String, Any?>
         }
 
-        var ret = mutableListOf<String>()
+        var ret = JsonMap()
         using(db.mongo.getMongoTemplateByUri(connString)!!) {
             var query = MongoBaseQueryClip("interface")
             query.whereData.add(MongoColumnName("req_body_other") match_like "title\":\":")
@@ -44,7 +43,7 @@ class DevYapiDataTypeController {
 
             list.forEach {
                 var id = it.getIntValue("id");
-                ret.add(it.getStringValue("path") ?: it.getStringValue("title") ?: it.toString())
+
 
                 var req_body_other = it.getStringValue("req_body_other") ?: "{}"
                 var json = req_body_other.FromJson<Map<String, Any?>>();
@@ -57,8 +56,9 @@ class DevYapiDataTypeController {
                 var res_body = it.getStringValue("res_body") ?: "{}";
 
                 var json2 = res_body.FromJson<Map<String, Any?>>()
+                var item_msgs = ListResult<String>()
                 if (json2 != null) {
-                    proc(json2, typeMap);
+                    item_msgs = proc(json2, typeMap);
 
                     res_body = json2.ToJson()
                 }
@@ -69,19 +69,27 @@ class DevYapiDataTypeController {
                 update.setValue("req_body_other", req_body_other)
                 update.setValue("res_body", res_body)
                 update.exec();
+
+                if (db.affectRowCount == 0) {
+
+                } else {
+                    ret.put(it.getStringValue("path") ?: it.getStringValue("title") ?: it.toString(), item_msgs.data)
+                }
             }
         }
 
-        return ListResult.of(ret)
+        return ApiResult.of(ret)
     }
 
 
     /**
      * 遍历，并判断 title 是否以 ： 开头
      */
-    private fun proc(json: Map<String, Any?>, typeMap: MutableMap<String, Any?>) {
+    private fun proc(json: Map<String, Any?>, typeMap: MutableMap<String, Any?>): ListResult<String> {
 
-        RecursionUtil.recursionJson(json, { json ->
+        var items_msg = mutableListOf<String>();
+
+        RecursionUtil.recursionJson(json, "", { json, pKey ->
             if (json.containsKey("title") == false) {
                 return@recursionJson true
             }
@@ -91,28 +99,23 @@ class DevYapiDataTypeController {
             }
 
             title = title.substring(1);
-            var json2 = json as MutableMap<String, Any?>;
-            var msgs1 = mutableListOf<String>()
-            var msgs2 = mutableListOf<String>()
+            var json_item = json as MutableMap<String, Any?>;
+            var msg_ok = mutableListOf<String>()
+            var msg_no = mutableListOf<String>()
 
             title.split(",").forEach {
-                if (proc_item(it, json2, typeMap)) {
-                    msgs1.add(it)
+                if (proc_item(it, json_item, typeMap)) {
+                    msg_ok.add(it)
                 } else {
-                    msgs2.add(it);
+                    msg_no.add(it);
                 }
             }
 
-            var msgs = mutableListOf<String>()
-            if (msgs1.any()) {
-                msgs1.add("+" + msgs1.joinToString(","))
-            }
-            if (msgs2.any()) {
-                msgs2.add("-" + msgs2.joinToString(","))
-            }
-            json2.set("title", msgs.joinToString(";"));
+            items_msg.add(pKey + ":成功处理" + msg_ok.joinToString(",") + (if (msg_no.any()) ",未处理" + msg_no.joinToString(",") + "!" else ""))
+            json_item.set("title", if (msg_no.any()) "-" + msg_no.joinToString(";") else "");
             return@recursionJson true;
         })
+        return ListResult.of(items_msg);
     }
 
     /**

@@ -204,7 +204,7 @@ object db_mongo {
      * 把 Document 推送到数据库，需要转换 id
      */
     fun procSetDocumentData(value: Any): Any {
-        RecursionUtil.recursionAny(value, { json ->
+        RecursionUtil.recursionAny(value, { json,pKey ->
             if (json is MutableMap<*, *>) {
                 var m_json = (json as MutableMap<String, Any?>);
                 if (json.contains("id")) {
@@ -255,7 +255,7 @@ object db_mongo {
             return item;
         }
 
-        RecursionUtil.recursionAny(value, { json ->
+        RecursionUtil.recursionAny(value, { json,pKey ->
             json.keys.toTypedArray().forEachIndexed { index, it ->
                 if (it == null || !test(it)) {
                     return@forEachIndexed
@@ -266,7 +266,7 @@ object db_mongo {
             }
 
             return@recursionAny true
-        }, { list ->
+        }, { list,pKey ->
 
             list.forEachIndexed { index, it ->
                 if (it == null || !test(it)) {
