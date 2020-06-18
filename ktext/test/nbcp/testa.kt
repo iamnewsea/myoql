@@ -68,7 +68,10 @@ class testa : TestBase() {
         println("2020/06/16 20:05:06.888".AsLocalDateTime())
         println("2020/06/16 20:05Z".AsLocalDateTime())
     }
-
+    @Test
+    fun abcd2() {
+        println("0xFF".AsInt())
+    }
 
     @Test
     fun rou() {

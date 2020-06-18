@@ -130,7 +130,13 @@ fun Any?.AsInt(defaultValue: Int = 0): Int {
             if (value is String) {
                 var strValue = value.trim()
                 if (strValue.isEmpty()) return defaultValue
-                ret = strValue.toBigDecimal().toInt()
+
+
+                if (strValue.length > 2 && strValue[0] == '0' && strValue[1].toUpperCase() == 'X') {
+                    ret = strValue.substring(2).toInt(16);
+                } else {
+                    ret = strValue.toBigDecimal().toInt()
+                }
             }
         }
 
@@ -243,7 +249,13 @@ fun Any?.AsLong(defaultValue: Long = 0): Long {
             if (value is String) {
                 var strValue = value.trim()
                 if (strValue.isEmpty()) return defaultValue
-                ret = strValue.toLongOrNull() ?: defaultValue
+
+
+                if (strValue.length > 2 && strValue[0] == '0' && strValue[1].toUpperCase() == 'X') {
+                    ret = strValue.substring(2).toLong(16)
+                } else {
+                    ret = strValue.toLongOrNull() ?: defaultValue
+                }
             }
         }
 
@@ -273,6 +285,7 @@ fun Any?.AsDouble(defaultValue: Double = 0.0): Double {
             if (value is String) {
                 var strValue = value.trim();
                 if (strValue.isEmpty()) return defaultValue
+
                 ret = strValue.toDoubleOrNull() ?: defaultValue
             }
         }
