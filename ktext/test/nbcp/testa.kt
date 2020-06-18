@@ -70,7 +70,7 @@ class testa : TestBase() {
     }
     @Test
     fun abcd2() {
-        println("0xFF".AsInt())
+        println(65.toChar())
     }
 
     @Test

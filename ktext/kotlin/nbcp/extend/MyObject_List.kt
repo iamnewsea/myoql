@@ -264,7 +264,41 @@ inline fun <T, R> Iterable<T>.Intersect(other: List<R>, equalFunc: (T, R) -> Boo
     return this.filterIndexed { index, t -> indexList.contains(index) };
 }
 
-//把数据分隔为 DiffData，
+/**
+ * 把数据分隔为 DiffData
+ */
 inline fun <T, R> Iterable<T>.SplitDiffData(other: List<R>, equalFunc: (T, R) -> Boolean): DiffData<T, R> {
     return DiffData.load(this, other, equalFunc);
+}
+
+/**
+ * 把数据分组
+ */
+inline fun <reified T> List<T>.SplitGroup(operatorItem: (T) -> Boolean): List<List<T>> {
+    var ret = mutableListOf<List<T>>()
+
+    var prevIndex = 0;
+    var index = -1;
+    var subSect = listOf<T>();
+    while(true){
+        index++;
+        if( index >= this.size){
+            subSect = this.Slice(prevIndex);
+            if( subSect.any()) {
+                ret.add(subSect)
+            }
+            break;
+        }
+
+        if(operatorItem( this[index])){
+
+            subSect = this.Slice(prevIndex,index);
+            if( subSect.any()) {
+                ret.add(subSect)
+            }
+            prevIndex = index +1;
+        }
+    }
+
+    return ret;
 }

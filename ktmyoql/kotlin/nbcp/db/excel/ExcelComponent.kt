@@ -137,7 +137,7 @@ class ExcelComponent() {
     /**
      * 读取数据
      */
-    fun <T> getDataTable(clazz: Class<T>,
+    fun <T:Any> getDataTable(clazz: Class<T>,
                          filter: ((JsonMap, Map<Int, String>) -> Boolean)? = null): DataTable<T> {
         var dt = DataTable<T>(clazz)
 

@@ -137,12 +137,12 @@ private fun _getNextChar(html: String, index: Int, findChar: Char): Int {
  * 定义引用定义，开始符号，结束符号，逃逸符号。
  */
 data class TokenQuoteDefine(
-        var start: String,
-        var end: String = "",
-        var escape: String = "\\"
+        var start: Char,
+        var end: Char = 0.toChar(),
+        var escape: Char = '\\'
 ) {
     init {
-        if (end.isEmpty()) {
+        if (end.toInt() == 0) {
             end = start
         }
     }
@@ -204,7 +204,8 @@ private fun getNextIndex(value: String, startIndex: Int, findString: String): In
 /**
  * @param until 返回 true 表示命中,即返回该 index
  */
-private fun getNextIndexUntil(value: String, startIndex: Int, until: (Char) -> Boolean): Int {
+fun String.nextIndexOf(startIndex: Int, until: (Char) -> Boolean): Int {
+    var value = this;
     if (startIndex >= value.length) return -1;
     if (startIndex < 0) return -1;
 
@@ -221,66 +222,146 @@ private fun getNextIndexUntil(value: String, startIndex: Int, until: (Char) -> B
 
 /**分词器
  * select "id" from `table`  按空格分词, 把字符串 , [] 等单独对待
- * @param wordSplitFlag 单词分隔标志.如 空格 ,.@# 注意, 一定不能是 quoteDefines 的内容.
+ * @param wordSplit  单词分隔标志.如 空格 ,.@# 注意, 一定不能是 quoteDefines 的内容.
  * @param quoteDefine ,单词的包装符, key =" , value = "
- * @param joinSplitFlag 把连续的 splitFlag 合并起来，默认把空白合并起来
- * @return 返回结果会合并 相同 wordSplitFlag 的内容, 如多个连续空格, 多个连续. 多个连续回车
+ * @param only1Blank 去除连续的空白，只保留一个。空白包括： 空格，制表，回车
+ * @return
  */
 fun String.Tokenizer(
-        wordSplitFlag: CharArray = " \t \n,.".toCharArray(),
+        wordSplit: ((Char) -> Boolean)? = null,
         quoteDefines: Array<TokenQuoteDefine> = arrayOf(
-                TokenQuoteDefine("`"),
-                TokenQuoteDefine("[", "]"),
-                TokenQuoteDefine("\""),
-                TokenQuoteDefine("'")),
-        joinSplitFlag: CharArray = " \t \n".toCharArray()
-): Array<String> {
+                TokenQuoteDefine('`'),
+                TokenQuoteDefine('[', ']'),
+                TokenQuoteDefine('"'),
+                TokenQuoteDefine('\'')),
+        only1Blank: Boolean = true
+): List<String> {
+    var wordSplit = wordSplit;
+    if (wordSplit == null) {
+        wordSplit = { it.isLetterOrDigit() == false }
+    }
     var list = mutableListOf<String>()
 
-    var quoteKeys = quoteDefines.map { it.start }.toTypedArray();
-//    var prevIndex = 0
-//    var currentStatus = -1; // -1  单词边界,未判定 . 0 判断开始为 lastSplitChar. 1 判断开始非 lastSplitChar .
-//    var lastSplitChar = '\u0000'
+    var length = this.length;
+
     var index = -1;
     while (true) {
         index++;
 
-        if (index >= this.length) {
+        if (index >= length) {
             break;
         }
 
-        var item = this[index];
+        var nextIndex = getNextSplitIndex(this, index, quoteDefines, wordSplit);
+        if (nextIndex < 0) {
+            list.add(this.substring(index, nextIndex));
+            break;
+        }
 
-        var isSplitChar = wordSplitFlag.contains(item)
+        if (nextIndex == index) {
+            continue;
+        }
 
-        if (isSplitChar) {
-            var nextIndex = -1;
-            if (joinSplitFlag.contains(item)) {
-                nextIndex = getNextIndexUntil(this, index) { joinSplitFlag.contains(it) == false }
-            } else {
-                nextIndex = getNextIndexUntil(this, index) { it != item }
+        list.add(this.substring(index, nextIndex));
+
+        if (nextIndex >= length) {
+            break;
+        }
+
+        index = nextIndex - 1;
+    }
+
+
+    if (only1Blank) {
+        var blankChars = " \t \n"
+
+        var i = -1;
+        while (true) {
+            i++;
+            if (i == list.size) {
+                break;
             }
 
-            if (nextIndex < 0) {
-                nextIndex = this.length
+            var item = list[i];
+            if (blankChars.contains(item) == false) {
+                continue;
             }
 
-            list.add(this.substring(index, nextIndex))
+            while (true) {
+                if (i + 1 == list.size) {
+                    break;
+                }
 
-            index = nextIndex - 1
-            continue
-        } else {
-            var nextIndex = getNextIndexUntil(this, index) { wordSplitFlag.contains(it) }
-            if (nextIndex < 0) {
-                nextIndex = this.length
+                var other = list[i + 1];
+
+                if (blankChars.contains(other) == false) {
+                    break;
+                }
+
+                list.removeAt(i + 1);
             }
-
-            list.add(this.substring(index, nextIndex))
-            index = nextIndex - 1
-            continue
         }
     }
-    return list.toTypedArray();
+    return list;
+}
+
+/**
+ * 找下一个分词的位置，不能==startIndex
+ */
+private fun getNextSplitIndex(value: String, startIndex: Int, quoteDefines: Array<TokenQuoteDefine>, wordSplit: (Char) -> Boolean): Int {
+
+    var startQuoteKeys = quoteDefines.map { it.start }.toTypedArray();
+    var firstChar = value[startIndex];
+
+    if (startQuoteKeys.contains(firstChar) == false && wordSplit(firstChar)) {
+        return startIndex + 1;
+    }
+
+    var quote = quoteDefines.firstOrNull { it.start == firstChar } ?: TokenQuoteDefine(0.toChar())
+    var inQuote = quote.start.toInt() != 0
+    var posIndex = startIndex;
+    var length = value.length;
+
+    while (true) {
+        if (inQuote) {
+            //如果在 “”中。找一下个结束号
+            var nextIndex = value.nextIndexOf(posIndex + 1) { it == quote.end }
+            if (nextIndex < 0) {
+                break;
+            }
+
+            //判断是否有转义
+            var hasEsc = false;
+            if (quote.end == quote.escape) {
+                //看下一个
+                if (nextIndex < length - 1 && value[nextIndex + 1] == quote.end) {
+                    posIndex = nextIndex + 1;
+                    continue;
+                }
+            } else {
+                hasEsc = value[nextIndex - 1] == quote.escape;
+            }
+
+            if (hasEsc) {
+                posIndex = nextIndex;
+                continue;
+            }
+            return nextIndex + 1;
+        } else {
+            //找下一个 \b
+            var nextIndex = value.nextIndexOf(posIndex + 1) {
+                return@nextIndexOf startQuoteKeys.contains(it) || wordSplit(it)
+            }
+
+            if (nextIndex < 0) {
+                break;
+            }
+
+            return nextIndex;
+        }
+    }
+
+    return value.length;
 }
 
 private fun _getIndexString_SkipInQuote(Value: String, index: Int, vararg findStrings: String): Int {
