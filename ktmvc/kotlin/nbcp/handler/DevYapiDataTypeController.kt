@@ -171,8 +171,8 @@ class DevYapiDataTypeController {
                     itemJson.put("description", description)
                 }
 
-                var mock = mapValue.getStringValue("mock") ?: ""
-                if (mock.HasValue) {
+                var mock = mapValue.get("mock")
+                if (mock != null) {
                     if (itemJson.containsKey("mock") == false) {
                         itemJson.put("mock", JsonMap());
                     }
