@@ -23,7 +23,9 @@ import java.lang.RuntimeException
  * Created by udi on 17-4-3.
  */
 
-
+/**
+ * 配置 server.max-http-post-size 设置请求体的大小，默认 2MB
+ */
 class MyHttpRequestWrapper
 @Throws(IOException::class)
 constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
@@ -35,9 +37,13 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
 
 
         //        @Value("\${server.session.cookie.name}")
-        val cookieKey: String by lazy {
-            return@lazy SpringUtil.context.environment.getProperty("server.servlet.session.cookie.name")
-                    ?: "JSESSIONID";
+//        val cookieKey: String by lazy {
+//            return@lazy SpringUtil.context.environment.getProperty("server.servlet.session.cookie.name")
+//                    ?: "JSESSIONID";
+//        }
+
+        val maxHttpPostSize: Int by lazy {
+            return@lazy SpringUtil.context.environment.getProperty("server.max-http-post-size").AsInt(2097152)  //默认2MB
         }
 
         @Throws(IOException::class)
@@ -51,14 +57,14 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
 
 //    private var body_read = false;
 
-    //文件上传或 大于 1 MB 会返回 null , throw RuntimeException("超过10MB不能获取Body!");
+    //文件上传或 大于 10 MB 会返回 null , throw RuntimeException("超过10MB不能获取Body!");
     val body: ByteArray? by lazy {
         //如果 10MB
         if (this.IsOctetContent) {
             return@lazy null;
         }
-        if (request.contentLength > 1048576) {
-            return@lazy null;
+        if (request.contentLength > maxHttpPostSize) {
+            throw RuntimeException("请求体超过${(maxHttpPostSize / 1024 / 1024).AsInt()}MB!")
         }
 //        body_read = true;
         return@lazy request.inputStream.readBytes()
