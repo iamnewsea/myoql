@@ -1,3 +1,6 @@
+@file:JvmName("MyWebHelper")
+@file:JvmMultifileClass
+
 package nbcp.web
 
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext

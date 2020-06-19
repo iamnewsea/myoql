@@ -1,3 +1,6 @@
+@file:JvmName("MyJson")
+@file:JvmMultifileClass
+
 package nbcp.comm
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect

@@ -1,22 +1,11 @@
+@file:JvmName("MyOqlMongo")
+@file:JvmMultifileClass
+
 package nbcp.db.mongo
 
 import com.mongodb.BasicDBList
-import nbcp.comm.*
-import org.bson.BSONObject
 import org.bson.BasicBSONObject
-import org.bson.BsonString
-import org.bson.Document
-import org.bson.conversions.Bson
-import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
-import org.springframework.data.mongodb.core.query.Query
-import nbcp.db.IdName
-import nbcp.comm.*
-import nbcp.db.mongo.*
-import java.lang.reflect.ParameterizedType
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.util.regex.Pattern
 
 /**
  * Created by udi on 17-7-10.

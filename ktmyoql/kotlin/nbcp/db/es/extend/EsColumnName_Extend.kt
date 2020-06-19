@@ -1,3 +1,6 @@
+@file:JvmName("MyOqlEs")
+@file:JvmMultifileClass
+
 package nbcp.db.es
 
 import nbcp.comm.*

@@ -1,3 +1,6 @@
+@file:JvmName("MyOqlMongo")
+@file:JvmMultifileClass
+
 package nbcp.db.mongo
 
 import com.mongodb.client.model.Projections

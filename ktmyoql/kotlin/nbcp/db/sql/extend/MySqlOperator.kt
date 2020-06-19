@@ -1,5 +1,7 @@
-package nbcp.db.sql
+@file:JvmName("MyOqlSql")
+@file:JvmMultifileClass
 
+package nbcp.db.sql
 
 import nbcp.db.IdName
 import nbcp.comm.*

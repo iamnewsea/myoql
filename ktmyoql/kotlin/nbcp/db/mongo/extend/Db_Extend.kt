@@ -1,3 +1,6 @@
+@file:JvmName("MyOqlMongo")
+@file:JvmMultifileClass
+
 package nbcp.db.mongo
 
 import nbcp.db.db

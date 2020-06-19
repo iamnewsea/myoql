@@ -1,3 +1,6 @@
+@file:JvmName("MyOqlSql")
+@file:JvmMultifileClass
+
 package nbcp.db.sql
 
 import nbcp.comm.*
