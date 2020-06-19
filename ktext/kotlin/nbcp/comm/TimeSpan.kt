@@ -81,13 +81,3 @@ data class TimeSpan(val totalMilliseconds: Long = 0) {
 }
 
 
-fun Duration.toSummary(): String {
-    return TimeSpan(this.toMillis()).toString();
-}
-
-/**
- * 重载运算符， 两个时间相减： time1 - time2
- */
-operator fun LocalDateTime.minus(beforeTime: LocalDateTime): TimeSpan {
-    return TimeSpan(Duration.between(beforeTime, this).toMillis())
-}

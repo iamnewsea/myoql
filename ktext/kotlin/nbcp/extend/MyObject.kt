@@ -653,7 +653,6 @@ fun <T : Serializable> T.CloneObject(): T {
 private var debug_value: Boolean? = null
 
 
-
 /**
  * inline 内联方式可以拿到调用栈信息
  * 该方法在忽略 LogScope，使用 isInfoEnabled，isErrorEnabled 先进行判断是否记录日志
