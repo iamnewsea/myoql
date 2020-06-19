@@ -46,7 +46,7 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
         val maxHttpPostSize: DataSize by lazy {
             var value = DataSize.parse(
                     SpringUtil.context.environment.getProperty("server.servlet.max-http-post-size")
-                            ?: SpringUtil.context.environment.getProperty("server.servlet.tom.max-http-post-size") ?: "2MB")
+                            ?: SpringUtil.context.environment.getProperty("server.tomcat.max-http-post-size") ?: "2MB")
             return@lazy value      //默认2MB
         }
 
