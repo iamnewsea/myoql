@@ -6,6 +6,10 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
+import org.springframework.core.env.CommandLineArgs
+import org.springframework.core.env.ConfigurableEnvironment
+import org.springframework.core.env.MapPropertySource
+import org.springframework.core.env.SimpleCommandLinePropertySource
 import org.springframework.stereotype.Component
 import java.sql.Timestamp
 import java.time.LocalDate
@@ -36,11 +40,6 @@ class SpringUtil : BeanPostProcessor, ApplicationContextAware {
         @JvmStatic
         val isInited: Boolean
             get() = applicationContext != null
-
-        //获取applicationContext
-//        fun setContext(): ApplicationContext {
-//            return
-//        }
 
         @JvmStatic
         fun getBeanObjectByArgs(name: String): Any {

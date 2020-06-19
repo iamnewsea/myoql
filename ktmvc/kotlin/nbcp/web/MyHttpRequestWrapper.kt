@@ -25,7 +25,7 @@ import java.lang.RuntimeException
  */
 
 /**
- * 配置 server.max-http-post-size 设置请求体的大小，默认 2MB
+ * 配置 server.servlet.max-http-post-size 设置请求体的大小，默认 2MB
  */
 class MyHttpRequestWrapper
 @Throws(IOException::class)
@@ -44,7 +44,9 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
 //        }
 
         val maxHttpPostSize: DataSize by lazy {
-            var value = DataSize.parse(SpringUtil.context.environment.getProperty("server.max-http-post-size").AsString("2MB"))
+            var value = DataSize.parse(
+                    SpringUtil.context.environment.getProperty("server.servlet.max-http-post-size")
+                            ?: SpringUtil.context.environment.getProperty("server.servlet.tom.max-http-post-size") ?: "2MB")
             return@lazy value      //默认2MB
         }
 
