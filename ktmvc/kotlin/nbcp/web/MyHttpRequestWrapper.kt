@@ -17,6 +17,7 @@ import java.util.*
 import javax.servlet.ServletContext
 import javax.servlet.http.*
 import nbcp.db.IdName
+import org.springframework.util.unit.DataSize
 import java.lang.RuntimeException
 
 /**
@@ -42,8 +43,9 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
 //                    ?: "JSESSIONID";
 //        }
 
-        val maxHttpPostSize: Int by lazy {
-            return@lazy SpringUtil.context.environment.getProperty("server.max-http-post-size").AsInt(2097152)  //默认2MB
+        val maxHttpPostSize: DataSize by lazy {
+            var value = DataSize.parse(SpringUtil.context.environment.getProperty("server.max-http-post-size").AsString("2MB"))
+            return@lazy value      //默认2MB
         }
 
         @Throws(IOException::class)
@@ -63,8 +65,8 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
         if (this.IsOctetContent) {
             return@lazy null;
         }
-        if (request.contentLength > maxHttpPostSize) {
-            throw RuntimeException("请求体超过${(maxHttpPostSize / 1024 / 1024).AsInt()}MB!")
+        if (request.contentLength > maxHttpPostSize.toBytes()) {
+            throw RuntimeException("请求体超过${(maxHttpPostSize.toString()).AsInt()}!")
         }
 //        body_read = true;
         return@lazy request.inputStream.readBytes()
