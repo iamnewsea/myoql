@@ -14,9 +14,8 @@ import javax.servlet.http.HttpServletRequest
 import java.time.*
 
 /**
- * Created by CodeGenerator
+ * Created by CodeGenerator!
  */
-
 @Api(description = "${entity_class}", tags = arrayOf("${entity_class}"))
 @RestController
 @JsonpMapping("/${group}/${entity_url}")
