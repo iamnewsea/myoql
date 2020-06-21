@@ -7,6 +7,13 @@ import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
 import java.time.LocalDateTime
 
 object UserCodeGenerator {
+    fun genMvcAuto(group: String, entity: BaseMetaData): String {
+        var stream = this::class.java.getResourceAsStream("/kotlin_mvc_template_auto.txt")
+        var text = stream.readBytes().toString(utf8)
+
+        return gen(group, entity, text);
+    }
+
     fun genMvc(group: String, entity: BaseMetaData): String {
         var stream = this::class.java.getResourceAsStream("/kotlin_mvc_template.txt")
         var text = stream.readBytes().toString(utf8)
@@ -67,14 +74,16 @@ object UserCodeGenerator {
             var end_tag_start_index = text.indexOf("\${endif}", begin_tag_end_index);
             if (end_tag_start_index < 0) break;
 
-            var end_tag_end_index = end_tag_start_index + "\${endif}".length
             //-----
             var p1 = text.substring(0, begin_tag_start_index);
-            var t = text.substring(begin_tag_end_index + 1, end_tag_start_index);
-            var p2 = text.substring(end_tag_end_index + 1);
+            var p2 = text.substring(end_tag_start_index + "\${endif}".length);
 
             var t2 = "";
             if (entityFields.any { it.name == tagName }) {
+                var t = text.substring(begin_tag_end_index + 1, end_tag_start_index);
+
+                t = removeNewLine(t);
+
                 t2 = t;
             }
 
@@ -95,6 +104,7 @@ object UserCodeGenerator {
             var t = text.substring(start_index + "\${for:fields}".length, end_index);
             var p2 = text.substring(end_index + "\${endfor}".length);
 
+            t = removeNewLine(t);
 
             var t2 = entityFields.map {
                 t.formatWithJson(StringMap(
@@ -129,5 +139,22 @@ object UserCodeGenerator {
                         "status_enum_class" to status_enum_class
                 ), "\${}")
 
+    }
+
+    private fun removeNewLine(value: String): String {
+        var t = value;
+        //去除首尾的回车。
+        if (t.startsWith("\r\n")) {
+            t = t.substring(2);
+        } else if (t.startsWith("\n")) {
+            t = t.substring(1);
+        }
+
+        if (t.endsWith("\r\n")) {
+            t = t.Slice(0, -2);
+        } else if (t.endsWith("\n")) {
+            t = t.Slice(0, -1);
+        }
+        return t;
     }
 }

@@ -13,7 +13,9 @@
                     <div slot="header">
                         <span>基本信息</span>
                     </div>
-${for:fields}                    <kv label="${remark}"><el-input v-model="info.${name}"/></kv>${endfor}
+${for:fields}
+                    <kv label="${remark}"><el-input v-model="info.${name}"/></kv>
+${endfor}
                 </el-card>
             </el-col>
             <el-col>
