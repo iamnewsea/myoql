@@ -86,11 +86,11 @@ fun <T> T.ToJson(): String {
 //    return getJsonInstance(getSetStyle, withNull).writeValueAsString(this) ?: "null"
 //}
 
-fun <T> String.FromJsonWithDefaultValue(collectionClass: Class<T>, getSetStyle: Boolean = false, withNull: Boolean = false): T {
-    return this.FromJson<T>(collectionClass, getSetStyle, withNull) ?: collectionClass.newInstance()
+fun <T> String.FromJsonWithDefaultValue(collectionClass: Class<T>, getSetStyle: Boolean = false, withNullValue: Boolean = false): T {
+    return this.FromJson<T>(collectionClass, getSetStyle, withNullValue) ?: collectionClass.newInstance()
 }
 
-fun <T> String.FromJson(collectionClass: Class<T>, getSetStyle: Boolean = false, withNull: Boolean = false): T? {
+fun <T> String.FromJson(collectionClass: Class<T>, getSetStyle: Boolean = false, withNullValue: Boolean = false): T? {
     if (this.isEmpty()) return null
 
     if (collectionClass == String::class.java) {
@@ -101,10 +101,22 @@ fun <T> String.FromJson(collectionClass: Class<T>, getSetStyle: Boolean = false,
     if (jsonString.isEmpty()) {
         return null;
     }
+    var styles = mutableListOf<JsonStyleEnumScope>()
+    if (getSetStyle) {
+        styles.add(JsonStyleEnumScope.GetSetStyle)
+    } else {
+        styles.add(JsonStyleEnumScope.FieldStyle)
+    }
+
+    if (withNullValue) {
+        styles.add(JsonStyleEnumScope.WithNull)
+    } else {
+        styles.add(JsonStyleEnumScope.IgnoreNull)
+    }
 
     var ret: T? = null
     try {
-        ret = DefaultMyJsonMapper.get().readValue(jsonString, collectionClass)
+        ret = DefaultMyJsonMapper.get(*styles.toTypedArray()).readValue(jsonString, collectionClass)
     } catch (e: Exception) {
         var msg = "Json转换出错！Json数据：${jsonString}\n 类型:${collectionClass.name} \n 错误消息:" + e.message;
         throw RuntimeException(msg, e);
