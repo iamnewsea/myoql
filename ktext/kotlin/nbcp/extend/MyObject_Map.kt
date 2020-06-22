@@ -186,3 +186,8 @@ private fun get_map_querys(map: Map<String, *>): List<String> {
 fun Map<String, *>.toUrlQuery(): String {
     return get_map_querys(this).joinToString("&")
 }
+
+
+fun Map<String, Any?>.getKeyByValue(value: Any): String? {
+    return this.entries.firstOrNull { it.value == value }?.key
+}
