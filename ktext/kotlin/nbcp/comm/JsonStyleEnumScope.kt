@@ -13,5 +13,6 @@ enum class JsonStyleEnumScope private constructor(val mutexGroup: String) {
     Compress("format"),
     DateUtcStyle("date"),       // 日期T时间Z
     DateStandardStyle("date"),  // 减号连字符
-    DateLocalStyle("date")      // 斜线连字符
+    DateLocalStyle("date");      // 斜线连字符
+
 }
