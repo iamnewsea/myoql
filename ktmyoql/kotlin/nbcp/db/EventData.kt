@@ -28,12 +28,27 @@ data class DbEntityFieldRefData(
 ) {
     constructor(entityClass: Class<*>, annRef: DbEntityFieldRef) : this(
             entityClass, //moer class
-            annRef.idField,
-            annRef.nameField,
+            "",
+            "",
             annRef.masterEntityClass.java,
-            annRef.masterIdField,
-            annRef.masterNameField) {
+            "",
+            "") {
 
+        var idFields = annRef.idFieldMap.split(":").toMutableList();
+        if (idFields.size == 1) {
+            idFields.add(idFields.first().split(".").last())
+        }
+
+        this.idField = idFields.first();
+        this.masterIdField = idFields.last();
+
+        var nameFields = annRef.nameFieldMap.split(":").toMutableList();
+        if (nameFields.size == 1) {
+            nameFields.add(nameFields.first().split(".").last())
+        }
+
+        this.nameField = nameFields.first();
+        this.masterNameField = nameFields.last();
     }
 }
 

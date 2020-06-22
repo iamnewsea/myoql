@@ -61,7 +61,9 @@ annotation class DbEntityFieldRefs(val values: Array<DbEntityFieldRef>)
 /**
  * 标记Mongo字段是另一个表字段的引用， 当另一个表字段更新后，更新该字段
  * 例子： 对user表标注：
- * DbEntityFieldRef("corp.id","corp.name","SysCorporation","id","name")
+ * DbEntityFieldRef("SysCorporation","corp.id:id","corp.name:name")
+ * 或，如果fieldName相同，可省略后面的name
+ * DbEntityFieldRef("SysCorporation","corp.id","corp.name")
  * 当 SysCorporation.name 发生变化后， 该表自动更新。
  */
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
@@ -69,7 +71,7 @@ annotation class DbEntityFieldRefs(val values: Array<DbEntityFieldRef>)
 @java.lang.annotation.Repeatable(DbEntityFieldRefs::class)
 @Repeatable
 @Inherited
-annotation class DbEntityFieldRef(val idField: String, val nameField: String, val masterEntityClass: KClass<*>, val masterIdField: String, val masterNameField: String)
+annotation class DbEntityFieldRef(val masterEntityClass: KClass<*>,val idFieldMap: String, val nameFieldMap: String)
 
 
 
