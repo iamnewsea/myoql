@@ -90,7 +90,11 @@ fun <T> String.FromJsonWithDefaultValue(collectionClass: Class<T>, getSetStyle: 
     return this.FromJson<T>(collectionClass, getSetStyle, withNullValue) ?: collectionClass.newInstance()
 }
 
-fun <T> String.FromJson(collectionClass: Class<T>, getSetStyle: Boolean = false, withNullValue: Boolean = false): T? {
+fun <T> String.FromJson(collectionClass: Class<T>): T? {
+    return this.FromJson(collectionClass, false, false);
+}
+
+fun <T> String.FromJson(collectionClass: Class<T>, getSetStyle: Boolean, withNullValue: Boolean): T? {
     if (this.isEmpty()) return null
 
     if (collectionClass == String::class.java) {
