@@ -9,7 +9,10 @@ import nbcp.utils.MyUtil
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
 import java.lang.RuntimeException
 import java.lang.reflect.Field
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
+import java.util.*
 
 object UserCodeGenerator {
     fun genMvcAuto(group: String, entity: BaseMetaData): String {
@@ -59,7 +62,7 @@ object UserCodeGenerator {
             status_enum_class = statusField.type.simpleName;
         }
 
-        text = procIf(entityFields, text);
+        text = procIf("if", entityFields, null, text);
 
         text = procFor(entityFields, text);
 
@@ -106,7 +109,8 @@ object UserCodeGenerator {
 
             var t2 = entityFields.map {
 
-                return@map procForIf(entityFields, it, forExp).formatWithJson(StringMap(
+                var forExp2 = procIf("fif", entityFields, it, forExp);
+                return@map forExp2.formatWithJson(StringMap(
                         "name" to it.name,
                         "remark" to it.name,
                         "type" to it.type.simpleName,
@@ -120,49 +124,7 @@ object UserCodeGenerator {
         return text;
     }
 
-    private fun procForIf(entityFields: List<Field>, field: Field, content: String): String {
-        var times = 0;
-        var text = content;
-        while (true) {
-            times++
-            if (times > 999) {
-                throw RuntimeException("查找fif执行了999次！")
-            }
-            var start = Regex("\\$\\{fif:([^}]+)}").find(text, 0);
-            if (start == null) break;
-
-            if (start.groups.size != 2) {
-                break;
-            }
-
-            var ifKey = start.groups[1]!!.value;
-
-            var begin_tag_start_index = start.groups[0]!!.range.start;
-            var begin_tag_end_index = start.groups[0]!!.range.last;
-
-            var end_tag_start_index = text.indexOf("\${endif}", begin_tag_end_index);
-            if (end_tag_start_index < 0) break;
-
-            //-----
-            var beforeExp = text.substring(0, begin_tag_start_index);
-            var afterExp = text.substring(end_tag_start_index + "\${endif}".length);
-
-            var ifExp = "";
-            if (decideIfExp(entityFields, field, ifKey)) {
-                var t = text.substring(begin_tag_end_index + 1, end_tag_start_index);
-
-                t = removeNewLine(t);
-
-                ifExp = t;
-            }
-
-            text = beforeExp + ifExp + afterExp;
-        }
-
-        return text;
-    }
-
-    private fun procIf(entityFields: List<Field>, content: String): String {
+    private fun procIf(startTag: String, entityFields: List<Field>, field: Field?, content: String): String {
         var times = 0;
         var text = content;
         while (true) {
@@ -171,14 +133,14 @@ object UserCodeGenerator {
                 throw RuntimeException("查找if执行了999次！")
             }
 
-            var start = Regex("\\$\\{if:([^}]+)}").find(text, 0);
+            var start = Regex("\\$\\{" + startTag + ":([^}]+)}").find(text, 0);
             if (start == null) break;
 
             if (start.groups.size != 2) {
                 break;
             }
 
-            var ifKey = start.groups[1]!!.value;
+//            var ifKey = start.groups[1]!!.value;
 
             var begin_tag_start_index = start.groups[0]!!.range.start;
             var begin_tag_end_index = start.groups[0]!!.range.last;
@@ -190,14 +152,10 @@ object UserCodeGenerator {
             var beforeExp = text.substring(0, begin_tag_start_index);
             var afterExp = text.substring(end_tag_start_index + "\${endif}".length);
 
-            var ifExp = "";
-            if (decideIfExp(entityFields, null, ifKey)) {
-                var t = text.substring(begin_tag_end_index + 1, end_tag_start_index);
+            var ifAllExp = text.substring(begin_tag_start_index, end_tag_start_index + "\${endif}".length);
 
-                t = removeNewLine(t);
+            var ifExp = getIfExpression(ifAllExp, startTag,entityFields,field)
 
-                ifExp = t;
-            }
 
             text = beforeExp + ifExp + afterExp;
         }
@@ -205,24 +163,80 @@ object UserCodeGenerator {
         return text;
     }
 
+    fun getIfExpression(context: String, startTag: String,entityFields: List<Field>, field: Field?): String {
+        var text = context;
+        var start = Regex("\\$\\{" + startTag + ":([^}]+)}").find(text, 0);
+        if (start == null) return "";
+
+        if (start.groups.size != 2) {
+            return "";
+        }
+
+        var ifKey = start.groups[1]!!.value;
+        var mapIf = StringMap();
+        var valueElse = "";
+
+        var prevIndex = start.range.last + 1;
+        var startIndex = 0;
+        while (true) {
+            var elseIfSect = Regex("\\$\\{((elseif:([^}]+))|(else)|(endif))}").find(text, startIndex);
+            if (elseIfSect == null) {
+                break;
+            }
+
+            var beforeExp = text.substring(prevIndex, elseIfSect.range.first)
+
+            beforeExp = removeNewLine(beforeExp);
+
+            if (ifKey.HasValue) {
+                mapIf.put(ifKey, beforeExp);
+
+                prevIndex = elseIfSect.range.last + 1;
+            }
+            else{
+                valueElse = beforeExp;
+            }
+
+            if (elseIfSect.groups[3] != null) {
+                ifKey = elseIfSect.groups[3]!!.value;
+            }
+            else{
+                ifKey = "";
+            }
+
+            startIndex = elseIfSect.range.last;
+        }
+
+        var retKey = mapIf.keys.firstOrNull { ifKey-> decideIfExp( entityFields,field,ifKey) };
+        if( retKey != null){
+            return mapIf.getStringValue(retKey)!!;
+        }
+
+        return valueElse;
+    }
+
     private fun decideIfExp(entityFields: List<Field>, field: Field?, ifKey: String): Boolean {
         if (ifKey.startsWith("@")) {
             return field!!.type.simpleName VbSame ifKey.substring(1);
         } else if (ifKey.startsWith("#")) {
             var name = ifKey.substring(1);
-            if (name == "enum") {
-                return field!!.type.isEnum;
-            } else if (name == "normal") {
-                //非：enum ,IdUrl,IdName,boolean,Int
-                return !field!!.type.isEnum &&
-                        !field.type.IsBooleanType() &&
-                        (field.type != Int::class.java) &&
-                        (field.type != IdUrl::class.java) &&
-                        (field.type != IdName::class.java)
-
+            if (name VbSame "Res") {
+                return field!!.type.isEnum ||
+                        field.type == LocalDateTime::class.java ||
+                        field.type == LocalDate::class.java ||
+                        field.type == LocalTime::class.java ||
+                        field.type == Date::class.java ||
+                        field.type == Boolean::class.java
             }
-        }
 
+            if (name VbSame "enum") {
+                return field!!.type.isEnum;
+            }
+         }
+
+        if (field != null) {
+            return field.name == ifKey;
+        }
         return entityFields.any { it.name == ifKey }
     }
 

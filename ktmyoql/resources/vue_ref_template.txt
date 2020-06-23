@@ -7,7 +7,27 @@
     <el-table-column type="index" clign="center" width="50"></el-table-column>
         <!--<template slot-scope="scope"></template>-->
 ${for:fields}
+${fif:name}
+            <el-table-column label="${remark}" align="center">
+                <template slot-scope="scope">
+                    <div class="link" @click="edit_click(scope.row)">{{scope.row.name}}</div>
+                </template>
+            </el-table-column>
+${elseif:#Res}
+            <el-table-column align="center" label="${remark}" prop="${name}_res"></el-table-column>
+${elseif:@IdName}
+            <el-table-column align="center" label="${remark}" prop="${name}.name"></el-table-column>
+${elseif:@Int}
             <el-table-column align="center" label="${remark}" prop="${name}"></el-table-column>
+${elseif:@IdUrl}
+            <el-table-column label="${remark}" align="center">
+                <template slot-scope="scope">
+                    <img :src="scope.row.url" />
+                </template>
+            </el-table-column>
+${else}
+            <el-table-column align="center" label="${remark}" prop="${name}"></el-table-column>
+${endif}
 ${endfor}
     <template #query="scope">
       <kv label="名称">
