@@ -4,16 +4,6 @@
             <p>${title}</p>
             <el-button type="primary" size="large" @click="add_click()">添加</el-button>
         </div>
-        <div class="query">
-${if:name}
-            <kv label="名称">
-                <el-input v-model="query.name"/>
-            </kv>
-${endif}
-            <div>
-                <el-button type="primary" @click="loadData(1)">查询</el-button>
-            </div>
-        </div>
         <my-list ref="list" url="/${group}/${entity_url}/list" @loaded="procData" :query="query" :page-size="pageSize" :store="true"
             style="width: 100%;margin-top:20px;">
             <el-table-column type="index" clign="center" width="50"></el-table-column>
@@ -57,9 +47,12 @@ ${endfor}
 
 
             <template #query="scope">
+${if:name}
                 <kv label="名称">
                     <el-input v-model="scope.query.name"></el-input>
                 </kv>
+${endif}
+
             </template>
         </my-list>
     </div>

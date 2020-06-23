@@ -30,9 +30,11 @@ ${else}
 ${endif}
 ${endfor}
     <template #query="scope">
+${if:name}
       <kv label="名称">
         <el-input v-model="scope.query.name"></el-input>
       </kv>
+${endif}
     </template>
     <template #button>
       <el-button>选择${title}</el-button>
