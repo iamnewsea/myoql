@@ -32,7 +32,13 @@ ${endfor}
       }
     },
     data() {
-      return {}
+      return {
+${for:fields}
+${fif:#enum}
+                ${type}: jv.${type}.getData(),
+${endif}
+${endfor}
+      }
     },
     methods: {
       procData(res, op) {

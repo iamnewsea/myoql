@@ -14,7 +14,36 @@
                         <span>基本信息</span>
                     </div>
 ${for:fields}
+${fif:#enum}
+                    <kv label="${remark}">
+                       <selector type="radio" v-model="info.${name}" enum="${type}" />
+                    </kv>
+${endif}${fif:@IdUrl}
+                    <kv>
+                        <label slot="k">${remark}</label>
+                        <upload
+                            :maxCount="1"
+                            v-model="info.${name}"
+                            fileType="img"
+                            scales="16:9"
+                            :maxWidth="1024"
+                            maxSize="5M"
+                        ></upload>
+                    </kv>
+${endif}${fif:@IdName}
+                    <ref-${name} v-model="info.${name}"></ref-${name}>
+${endif}${fif:@Boolean}
+                    <kv label="${remark}">
+                       <selector  type="radio" v-model="info.${name}" :data="{true:'是',false:'否','':'全部'}" />
+                    </kv>
+
+${endif}${fif:@Int}
+                    <kv label="${remark}">
+                         <number-range size="small" :min="-1" :map="{'-1':'任意'}" v-model="info.${name}"></number-range>
+                    </kv>
+${endif}${fif:#normal}
                     <kv label="${remark}"><el-input v-model="info.${name}"/></kv>
+${endif}
 ${endfor}
                 </el-card>
             </el-col>
@@ -23,29 +52,6 @@ ${endfor}
                     <div slot="header">
                         <span>扩展信息</span>
                     </div>
-                    <kv>
-                        <label slot="k">图片</label>
-                        <upload
-                            :maxCount="1"
-                            v-model="info.file"
-                            fileType="img"
-                            scales="16:9"
-                            :maxWidth="1024"
-                            maxSize="5M"
-                        ></upload>
-                    </kv>
-                   <kv label="枚举">
-                       <selector type="radio" v-model="query.枚举" enum="UserSexEnum" />
-                   </kv>
-                   <kv label="布尔状态">
-                       <selector  type="radio" v-model="query.布尔状态" :data="{true:'是',false:'否','':'全部'}" />
-                   </kv>
-                   <kv label="网络数据">
-                       <selector  type="check" v-model="query.网络数据" url="/sys/dict?id=1" />
-                   </kv>
-                    <kv label="数字范围">
-                         <number-range size="small" :min="-1" :map="{'-1':'任意'}" v-model="info.number"></number-range>
-                     </kv>
                 </el-card>
             </el-col>
         </el-row>
@@ -57,13 +63,26 @@ ${endfor}
 /**
  * Created by CodeGenerator
  */
+${for:fields}
+${fif:@IdName}
+        import ref${name} from "../Home/EmptyRef"
+${endif}
+${endfor}
     export default {
-        components: {},
+        components: {
+${for:fields}
+${fif:@IdName}
+        "ref-${name}": ref${name},
+${endif}
+${endfor}
+        },
         data() {
             return {
-                //格举
-                //枚举：jv.枚举.getData(),
-                //OrderStatusEnum: jv.OrderStatusEnum.getData(),
+${for:fields}
+${fif:#enum}
+                ${type}: jv.${type}.getData(),
+${endif}
+${endfor}
                 //URL参数
                 action: "",
                 action_name: "",
@@ -102,7 +121,6 @@ ${endfor}
                     }
                 })
             },
-
 
         }
     }
