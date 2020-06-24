@@ -47,7 +47,7 @@ object MysqlEntityGenerator {
         /**
          * 生成数据库表的实体代码。
          */
-        fun done(): List<String> {
+        fun toKotlinCode(): List<String> {
 
             var tables_map = RawQuerySqlClip(SingleSqlData("""
 SELECT table_name,table_comment
