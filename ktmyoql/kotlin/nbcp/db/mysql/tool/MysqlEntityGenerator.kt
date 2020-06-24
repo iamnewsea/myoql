@@ -112,7 +112,8 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                             } else if (dataType VbSame "bit") {
                                 kotlinType = "Boolean?";
                                 defaultValue = "null";
-                            } else if (dataType VbSame "datetime") {
+                            } else if (dataType VbSame "datetime" ||
+                                    dataType VbSame "timestamp") {
                                 kotlinType = "LocalDateTime?"
                                 defaultValue = "null"
                             } else if (dataType VbSame "date") {
