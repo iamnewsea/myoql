@@ -11,10 +11,13 @@ import kotlin.reflect.jvm.javaField
 /**
  * MySql 实体生成器
  */
-class MysqlEntityGenerator {
+object MysqlEntityGenerator {
     fun db2Entity(db: String) = DbEntityBuilder(db);
 
 
+    /**
+     * 生成数据库表的实体代码。
+     */
     class DbEntityBuilder(var db: String) {
         var group = "";
         var tableLike = "";
@@ -41,6 +44,9 @@ class MysqlEntityGenerator {
             return this
         }
 
+        /**
+         * 生成数据库表的实体代码。
+         */
         fun done(): List<String> {
 
             var tables_map = RawQuerySqlClip(SingleSqlData("""
@@ -186,6 +192,10 @@ data class ${tableName}(
         }
     }
 
+
+    /**
+     * 生成实体的 sql 代码
+     */
     fun entity2Sql(entity: KClass<*>): String {
         var list = entity.memberProperties.map { property ->
             var propertyType = property.javaField!!.type as Class<*>
