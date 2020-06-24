@@ -187,7 +187,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
 @DbUks(${uks.joinToString(",")})
 data class ${tableName}(
     ${columns.joinToString(",\n").replace("\n", "\n\t")}
-): IBaseDbEntity()
+): ISqlDbEntity
 """
             }
         }
