@@ -12,15 +12,20 @@ import org.springframework.stereotype.Component
 class SqlEntityEvent : BeanPostProcessor {
     companion object {
         //需要删 除后放入垃圾箱的实体
+        @JvmStatic
         val dustbinEntitys = mutableSetOf<Class<*>>()  //mongo meta class
         // 冗余字段的引用。如 user.corp.name 引用的是  corp.name
+        @JvmStatic
         val refsMap = mutableListOf<DbEntityFieldRefData>()
         //注册的 Insert Bean
+        @JvmStatic
         val insertEvent = mutableListOf<ISqlEntityInsert>()
 
         //注册的 Update Bean
+        @JvmStatic
         val updateEvent = mutableListOf<ISqlEntityUpdate>()
         //注册的 Delete Bean
+        @JvmStatic
         val deleteEvent = mutableListOf<ISqlEntityDelete>()
     }
 

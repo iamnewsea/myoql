@@ -165,6 +165,7 @@ data class DiffData<T, R>(
 ) {
     companion object {
         //把数据分隔为 DiffData，
+        @JvmStatic
         inline fun <T, R> load(data: Iterable<T>, other: List<R>, equalFunc: (T, R) -> Boolean): DiffData<T, R> {
             var diff = DiffData<T, R>();
 

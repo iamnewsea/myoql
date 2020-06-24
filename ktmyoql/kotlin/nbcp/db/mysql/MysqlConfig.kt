@@ -63,6 +63,7 @@ class ExistsDataSourceConfigCondition : Condition {
 @DependsOn(value = arrayOf("springUtil"))
 class MysqlConfig() {
     companion object {
+        @JvmStatic
         val hasSlave by lazy {
             return@lazy SpringUtil.context.containsBean("slave");
         }

@@ -22,6 +22,7 @@ class WhereData : JsonMap {
     }
 
     companion object {
+        @JvmStatic
         fun eq(key: String, value: Any?): WhereData {
             var ret = WhereData("term" to JsonMap(
                     key to value

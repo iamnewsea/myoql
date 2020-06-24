@@ -64,6 +64,7 @@ public enum class DbType {
     }
 
     companion object {
+        @JvmStatic
         fun <T> of(clazz: Class<T>): DbType {
 
             if (clazz.isEnum) {

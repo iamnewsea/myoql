@@ -70,6 +70,7 @@ open class ListResult<T>(msg: String = "",
     var value: Any? = null
     var valueRemark: String = ""
     companion object {
+        @JvmStatic
         fun <T> of(data: List<T>): ListResult<T> {
             var ret = ListResult<T>();
             ret.data = data;

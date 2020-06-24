@@ -9,20 +9,27 @@ import org.springframework.stereotype.Component
 class MongoEntityEvent : BeanPostProcessor {
     companion object {
         //需要删 除后放入垃圾箱的实体
+        @JvmStatic
         val dustbinEntitys = mutableSetOf<Class<*>>()  //mongo entity class
+        @JvmStatic
         val logHistoryMap = linkedMapOf<Class<*>, Array<String>>()
         // 冗余字段的引用。如 user.corp.name 引用的是  corp.name
+        @JvmStatic
         val refsMap = mutableListOf<DbEntityFieldRefData>()
         //注册的 Update Bean
+        @JvmStatic
         val insertEvent = mutableListOf<IMongoEntityInsert>()
         //注册的 Update Bean
+        @JvmStatic
         val updateEvent = mutableListOf<IMongoEntityUpdate>()
         //注册的 Delete Bean
+        @JvmStatic
         val deleteEvent = mutableListOf<IMongoEntityDelete>()
 
         /**
          * 根据名称查找定义的集合。
          */
+        @JvmStatic
         fun getCollection(collectionName: String): MongoBaseMetaCollection<IMongoDocument>? {
             var ret: BaseMetaData? = null
             db.mongo.groups.any { group ->

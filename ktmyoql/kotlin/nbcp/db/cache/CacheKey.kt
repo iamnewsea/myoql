@@ -28,6 +28,7 @@ data class CacheKey(
         var whereJson: JsonMap = JsonMap() //形如: id=1&name=2&
 ) {
     companion object {
+        @JvmStatic
         fun empty():CacheKey{
             return CacheKey(CacheKeyTypeEnum.None)
         }

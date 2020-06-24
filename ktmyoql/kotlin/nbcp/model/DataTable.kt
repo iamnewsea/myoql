@@ -55,6 +55,7 @@ class DataTable<T : Any>(clazz: Class<T>) : Serializable {
         /**
          * 第一行是标题
          */
+        @JvmStatic
         fun <T : Any> loadFromCsv(content: String, clazz: Class<T>): DataTable<T> {
             var ret = DataTable(clazz)
             var words = content.Tokenizer({ it == ',' || it == '\n' }, arrayOf(

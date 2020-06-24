@@ -76,6 +76,7 @@ open class DefaultMyJsonMapper : ObjectMapper(), InitializingBean {
         }
 
 
+        @JvmStatic
         fun ObjectMapper.setStyle(vararg styles: JsonStyleEnumScope): ObjectMapper {
             // 设置输出时包含属性的风格
             this.findAndRegisterModules();

@@ -63,6 +63,7 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
 //        private val jdbcMap = linkedMapOf<String, JdbcTemplate>()
 
         // orm bean 代理 RequestCache 及 Redis Cache
+        @JvmStatic
         val cacheService by lazy {
             return@lazy SpringUtil.getBean<IProxyCache4Sql>();
         }

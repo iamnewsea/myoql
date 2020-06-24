@@ -67,8 +67,11 @@ open class MyAllFilter : Filter, InitializingBean {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
+        @JvmStatic
         var htmlFiles = listOf<String>()
+        @JvmStatic
         var isJarFile = true;
+        @JvmStatic
         var jarFile = ""
     }
 

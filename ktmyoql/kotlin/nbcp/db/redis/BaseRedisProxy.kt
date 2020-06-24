@@ -23,6 +23,7 @@ enum class RedisRenewalTypeEnum {
  */
 abstract class BaseRedisProxy(val group: String, val defaultCacheSeconds: Int) {
     companion object {
+        @JvmStatic
         fun getFullKey(group:String,key: String): String {
             if (key.startsWith(group + ":")) return key;
             return arrayOf(group, key).filter { it.isNotEmpty() }.joinToString(":");

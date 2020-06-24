@@ -43,6 +43,7 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
 //                    ?: "JSESSIONID";
 //        }
 
+        @JvmStatic
         val maxHttpPostSize: DataSize by lazy {
             var value = DataSize.parse(
                     SpringUtil.context.environment.getProperty("server.servlet.max-http-post-size")
@@ -51,6 +52,7 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
         }
 
         @Throws(IOException::class)
+        @JvmStatic
         fun Create(request: HttpServletRequest): MyHttpRequestWrapper {
             if (request is MyHttpRequestWrapper) {
                 return request

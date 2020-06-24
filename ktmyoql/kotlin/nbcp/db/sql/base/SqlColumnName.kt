@@ -9,10 +9,12 @@ import java.io.Serializable
 
 data class SqlColumnName(val dbType: DbType, var tableName: String, var name: String) : Serializable {
     companion object {
+        @JvmStatic
         fun of(name: String): SqlColumnName {
             return SqlColumnName(DbType.Other,"", name)
         }
 
+        @JvmStatic
         fun of(dbType:DbType, name: String): SqlColumnName {
             return SqlColumnName(dbType,"", name)
         }
