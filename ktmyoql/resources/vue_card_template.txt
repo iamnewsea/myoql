@@ -39,11 +39,17 @@ ${elseif:@Boolean}
                        <selector  type="radio" v-model="info.${name}" :data="{true:'是',false:'否','':'全部'}" />
                     </kv>
 ${elseif:@LocalDate}
-                    <el-date-picker v-model="info.${name}" placeholder="选择日期" />
+                    <kv label="${remark}">
+                        <el-date-picker v-model="info.${name}" placeholder="选择日期" />
+                    </kv>
 ${elseif:@LocalDateTime}
-                    <el-date-picker v-model="info.${name}" placeholder="选择日期时间"  type="datetime" />
+                    <kv label="${remark}">
+                        <el-date-picker v-model="info.${name}" placeholder="选择日期时间"  type="datetime" />
+                    </kv>
 ${elseif:@LocalTime}
-                    <el-time-select v-model="info.${name}" placeholder="选择时间" />
+                    <kv label="${remark}">
+                        <el-time-select v-model="info.${name}" placeholder="选择时间" />
+                    </kv>
 ${else}
                     <kv label="${remark}"><el-input v-model="info.${name}"/></kv>
 ${endif}
