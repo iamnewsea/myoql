@@ -17,8 +17,6 @@ ${elseif:#Res}
             <el-table-column align="center" label="${remark}" prop="${name}_res"></el-table-column>
 ${elseif:@IdName}
             <el-table-column align="center" label="${remark}" prop="${name}.name"></el-table-column>
-${elseif:@Int}
-            <el-table-column align="center" label="${remark}" prop="${name}"></el-table-column>
 ${elseif:@IdUrl}
             <el-table-column label="${remark}" align="center">
                 <template slot-scope="scope">

@@ -31,14 +31,12 @@ ${elseif:@IdUrl}
                         ></upload>
                     </kv>
 ${elseif:@IdName}
-                    <ref-${name} v-model="info.${name}"></ref-${name}>
+                    <kv label="${remark}">
+                       <ref-${name} v-model="info.${name}"></ref-${name}>
+                    </kv>
 ${elseif:@Boolean}
                     <kv label="${remark}">
                        <selector  type="radio" v-model="info.${name}" :data="{true:'是',false:'否','':'全部'}" />
-                    </kv>
-${elseif:@Int}
-                    <kv label="${remark}">
-                         <number-range size="small" :min="-1" :map="{'-1':'任意'}" v-model="info.${name}"></number-range>
                     </kv>
 ${elseif:@LocalDate}
                     <el-date-picker v-model="info.${name}" placeholder="选择日期" />
@@ -46,7 +44,7 @@ ${elseif:@LocalDateTime}
                     <el-date-picker v-model="info.${name}" placeholder="选择日期时间"  type="datetime" />
 ${elseif:@LocalTime}
                     <el-time-select v-model="info.${name}" placeholder="选择时间" />
-${elseif}
+${else}
                     <kv label="${remark}"><el-input v-model="info.${name}"/></kv>
 ${endif}
 ${endfor}
