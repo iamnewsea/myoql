@@ -343,7 +343,7 @@ class HttpUtil(var url: String = "") {
             //读取响应
         } catch (e: Exception) {
             msg = e.message ?: "请求错误"
-            throw e;
+            return "".toByteArray(utf8);
         } finally {
             // 断开连接
 
