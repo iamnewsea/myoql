@@ -1,5 +1,6 @@
 package nbcp.db.mongo
 
+import nbcp.db.Cn
 import java.time.LocalDateTime
 
 /**
@@ -7,6 +8,7 @@ import java.time.LocalDateTime
  */
 interface IMongoDocument : java.io.Serializable {
     var id: String  ;
+
     var createAt: LocalDateTime
     var updateAt: LocalDateTime?
 }

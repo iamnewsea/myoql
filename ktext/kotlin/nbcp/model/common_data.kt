@@ -9,15 +9,15 @@ import nbcp.utils.*
 
 open class IdValue(var id: String = "", var value: String = "") : java.io.Serializable {}
 
-open class IdName(var id: String = "", var name: String = "") : java.io.Serializable {}
+open class IdName(var id: String = "",@Cn("名称") var name: String = "") : java.io.Serializable {}
 
-open class CodeName(var code: String = "", var name: String = "") : java.io.Serializable {}
+open class CodeName(@Cn("编码")var code: String = "",@Cn("名称") var name: String = "") : java.io.Serializable {}
 
-open class CodeValue(var code: String = "", var value: String = "") : java.io.Serializable {}
+open class CodeValue(@Cn("编码")var code: String = "",@Cn("值") var value: String = "") : java.io.Serializable {}
 
-open class IdCodeName(var id: String = "", code: String = "", name: String = "") : CodeName(code, name) {}
+open class IdCodeName(var id: String = "",code: String = "", name: String = "") : CodeName(code, name) {}
 
-open class KeyValueString(var key: String = "", var value: String = "") : java.io.Serializable {}
+open class KeyValueString(@Cn("键")var key: String = "",@Cn("值") var value: String = "") : java.io.Serializable {}
 
 
 open class IntCodeName(var code: Int, var name: String) : java.io.Serializable {
@@ -34,6 +34,7 @@ open class IntCodeName(var code: Int, var name: String) : java.io.Serializable {
 open class IdUrl() : java.io.Serializable {
     var id: String = ""
 
+    @Cn("网络资源地址")
     var url: String = ""
         get() {
             var style = scopes.getLatestScope(JsonStyleEnumScope.FieldStyle, JsonStyleEnumScope.GetSetStyle)
@@ -56,7 +57,7 @@ open class IdUrl() : java.io.Serializable {
     }
 }
 
-open class IdNameUrl(id: String = "", var name: String = "", url: String = "") : IdUrl(id, url)
+open class IdNameUrl(id: String = "",@Cn("名称") var name: String = "", url: String = "") : IdUrl(id, url)
 
 /**
  * 登录用户数据
