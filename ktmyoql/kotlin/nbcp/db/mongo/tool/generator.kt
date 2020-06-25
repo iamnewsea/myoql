@@ -74,15 +74,15 @@ class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
     override fun getEntities():Set<BaseMetaData> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
 """)
             println("${groupName}:")
-//            groupEntities.forEach {
-//                writeToFile(genVarEntity(it).ToTab(1))
-//            }
-
-            writeToFile("\n")
-
             groupEntities.forEach {
                 count++;
                 println("${count.toString().padStart(2, ' ')} 生成实体：${groupName}.${it.simpleName}".ToTab(1))
+                writeToFile(genVarEntity(it).ToTab(1))
+            }
+
+            writeToFile(line_break)
+
+            groupEntities.forEach {
                 writeToFile(genEntity(it).ToTab(1))
             }
             writeToFile("""}""")
@@ -320,7 +320,7 @@ data class moer_map(val _pname:String)
                 .map {
                     var v1 = getMetaValue(it, entTypeName, 1)
 
-                    return@map "${CodeGeneratorHelper.getFieldComment(it)}\nval ${it.name}=${v1}".ToTab(1)
+                    return@map "${CodeGeneratorHelper.getFieldComment(it)}${line_break}val ${it.name}=${v1}".ToTab(1)
                 }
 
         var entityTypeName = entTypeName;
@@ -330,7 +330,7 @@ data class moer_map(val _pname:String)
 class ${entityTypeName}Meta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
 
-${props.joinToString("\n")}
+${props.joinToString(line_break)}
 
     override fun toString(): String {
         return join(this._pname).toString()
@@ -359,8 +359,8 @@ ${props.joinToString("\n")}
         var entityTypeName = entTypeName + "Entity";
         var entityVarName = getEntityName(entTypeName);
 
-        return """val ${entityVarName} get() = ${entityTypeName}();
-fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""";
+        return """${CodeGeneratorHelper.getEntityComment(entType)}${line_break}val ${entityVarName} get() = ${entityTypeName}();"""
+//fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""";
     }
 
 
@@ -383,9 +383,9 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
 
                     var (retValue, retTypeIsBasicType) = getEntityValue(it)
                     if (retTypeIsBasicType) {
-                        return@map "${CodeGeneratorHelper.getFieldComment(it)}\nval ${it.name}=MongoColumnName(${retValue})".ToTab(1)
+                        return@map "${CodeGeneratorHelper.getFieldComment(it)}${line_break}val ${it.name}=MongoColumnName(${retValue})".ToTab(1)
                     } else {
-                        return@map "${CodeGeneratorHelper.getFieldComment(it)}\nval ${it.name}=${retValue}".ToTab(1)
+                        return@map "${CodeGeneratorHelper.getFieldComment(it)}${line_break}val ${it.name}=${retValue}".ToTab(1)
                     }
                 }
 
@@ -440,8 +440,8 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
         var ent = """${CodeGeneratorHelper.getEntityComment(entType)}
     class ${entityTypeName}(collectionName:String="")
     :MongoBaseMetaCollection<${entType.name}>(${entType.name}::class.java,collectionName.AsString("${dbName}")) {
-${props.joinToString("\n")}
-${idMethods.joinToString("\n")}
+${props.joinToString(line_break)}
+${idMethods.joinToString(line_break)}
 }
 """
 

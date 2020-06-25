@@ -115,7 +115,7 @@ object UserCodeGenerator {
                         "type" to it.type.simpleName,
                         "isSimpleType" to it.type.IsSimpleType().toString().toLowerCase()
                 ), "\${}")
-            }.filter { it.HasValue }.joinToString("\n");
+            }.filter { it.HasValue }.joinToString(line_break);
 
             text = beforeExp + t2 + afterExp;
         }
