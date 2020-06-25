@@ -2,11 +2,8 @@ package nbcp.tool
 
 import nbcp.comm.*
 import nbcp.db.BaseMetaData
-import nbcp.db.IdName
-import nbcp.db.IdUrl
 import nbcp.db.mongo.MongoBaseMetaCollection
 import nbcp.utils.MyUtil
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
 import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.time.LocalDate
@@ -50,9 +47,10 @@ object UserCodeGenerator {
         return gen(group, entity, text);
     }
 
-    private fun gen(group: String, entity: BaseMetaData, text: String): String {
+    private fun gen(group: String, metaEntity: BaseMetaData, text: String): String {
         var text = text;
-        var entityFields = (entity as MongoBaseMetaCollection<*>).entityClass.AllFields;
+        var entityClass = (metaEntity as MongoBaseMetaCollection<*>).entityClass
+        var entityFields = entityClass.AllFields;
         //先处理${for:fields}
 
 
@@ -66,8 +64,9 @@ object UserCodeGenerator {
 
         text = procFor(entityFields, text);
 
-        var entity_class = MyUtil.getBigCamelCase(entity.tableName);
-        var entity_url = MyUtil.getHyphen(entity.tableName);
+        var title = CodeGeneratorHelper.getEntityComment(entityClass).AsString(metaEntity.tableName);
+        var entity_class = MyUtil.getBigCamelCase(metaEntity.tableName);
+        var entity_url = MyUtil.getHyphen(metaEntity.tableName);
 
         if (entity_url.startsWith(group + "-")) {
             entity_url = entity_url.substring((group + "-").length);
@@ -77,8 +76,8 @@ object UserCodeGenerator {
         return text.formatWithJson(
                 StringMap(
                         "group" to group,
-                        "entity" to entity.tableName,
-                        "title" to entity_class,
+                        "entity" to metaEntity.tableName,
+                        "title" to title,
                         "entity_class" to entity_class,
                         "entity_url" to entity_url,
                         "now" to LocalDateTime.now().toString(),
@@ -112,7 +111,7 @@ object UserCodeGenerator {
                 var forExp2 = procIf("fif", entityFields, it, forExp);
                 return@map forExp2.formatWithJson(StringMap(
                         "name" to it.name,
-                        "remark" to it.name,
+                        "remark" to CodeGeneratorHelper.getFieldComment(it).AsString(it.name),
                         "type" to it.type.simpleName,
                         "isSimpleType" to it.type.IsSimpleType().toString().toLowerCase()
                 ), "\${}")

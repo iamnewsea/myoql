@@ -339,25 +339,7 @@ ${props.joinToString("\n")}
         return ent;
     }
 
-    /**
-     * 获取表的中文注释及Cn注解
-     */
-    private fun getEntityComment(entType: Class<*>): String {
-        var cn = entType.getAnnotation(Cn::class.java)?.value ?: "";
-        if (cn.isNullOrEmpty()) return "";
 
-        return """/**
-* ${cn}
-*/"""
-    }
-
-    private fun getFieldComment(field: Field): String {
-        var cn = field.getAnnotation(Cn::class.java)?.value ?: "";
-        if (cn.isNullOrEmpty()) return "";
-        return """/**
-* ${cn}
-*/"""
-    }
 
     fun genVarName(entType: Class<*>): String {
         var entTypeName = entType.name.split(".").last();
