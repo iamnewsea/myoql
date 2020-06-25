@@ -48,7 +48,7 @@ class DevFileController {
             }
         }
 
-        if (request is StandardMultipartHttpServletRequest) {
+        if (request is StandardMultipartHttpServletRequest == false) {
             throw RuntimeException("request非StandardMultipartHttpServletRequest类型")
         }
 

@@ -384,7 +384,7 @@ open class UploadService {
 
         var ret = ListResult<IdUrl>();
         var list = mutableListOf<IdUrl>()
-        if (request is StandardMultipartHttpServletRequest) {
+        if (request is StandardMultipartHttpServletRequest == false) {
             throw RuntimeException("request非StandardMultipartHttpServletRequest类型")
         }
 
