@@ -30,6 +30,18 @@ ${elseif:@IdUrl}
                             maxSize="5M"
                         ></upload>
                     </kv>
+${elseif:#IdUrlList}
+                    <kv>
+                        <label slot="k">${remark}</label>
+                        <upload
+                            :maxCount="99"
+                            v-model="info.${name}"
+                            fileType="img"
+                            scales="16:9"
+                            :maxWidth="1024"
+                            maxSize="5M"
+                        ></upload>
+                    </kv>
 ${elseif:@IdName}
                     <kv label="${remark}">
                        <ref-${name} v-model="info.${name}"></ref-${name}>

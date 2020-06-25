@@ -2,10 +2,12 @@ package nbcp.tool
 
 import nbcp.comm.*
 import nbcp.db.BaseMetaData
+import nbcp.db.IdUrl
 import nbcp.db.mongo.MongoBaseMetaCollection
 import nbcp.utils.MyUtil
 import java.lang.RuntimeException
 import java.lang.reflect.Field
+import java.lang.reflect.ParameterizedType
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -228,6 +230,12 @@ object UserCodeGenerator {
 
             if (name VbSame "enum") {
                 return field!!.type.isEnum;
+            }
+
+            if (name VbSame "IdUrlList") {
+                return (field!!.type.IsListType() && IdUrl::class.java.isAssignableFrom((field.genericType as ParameterizedType).GetActualClass(0))) ||
+                        (field.type.isArray && IdUrl::class.java.isAssignableFrom(field.type.componentType.javaClass))
+
             }
         }
 
