@@ -75,8 +75,6 @@ ${fif:#enum}
                 ${type}: jv.${type}.getData(),
 ${endif}
 ${endfor}
-                //格举
-                //枚举：jv.枚举.getData(),
             };
         },
         mounted() {
@@ -89,7 +87,11 @@ ${endfor}
             procData(res) {
                 res.data.data.forEach(it => {
                     //如果是组合实体，设置 it.id=...
-                    //处理枚举 jv.枚举.fillRes(it,字段)
+${for:fields}
+${fif:#enum}
+                    jv.${type}.fillRes(it,"${name}");
+${endif}
+${endfor}
                 });
             },
             //查询

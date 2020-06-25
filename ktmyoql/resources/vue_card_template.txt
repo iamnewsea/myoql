@@ -140,6 +140,9 @@ ${endfor}
                     if (this.action == "add") {
                         this.$router.push("/${group}/${entity_url}/edit?id=" + res.data.data)
                     }
+                    else if (this.action == "edit") {
+                        this.$router.push("/${group}/${entity_url}/list")
+                    }
                 })
             },
 
