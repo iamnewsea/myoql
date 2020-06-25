@@ -14,7 +14,7 @@ object CodeGeneratorHelper {
         return """/**
 * ${cn}
 */
-@Cn(${cn})
+@Cn("${cn}")
 """
     }
 
@@ -24,7 +24,7 @@ object CodeGeneratorHelper {
         return """/**
 * ${cn}
 */
-@Cn(${cn})
+@Cn("${cn}")
 """
     }
 }
