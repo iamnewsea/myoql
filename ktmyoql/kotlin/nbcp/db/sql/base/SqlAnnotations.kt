@@ -27,7 +27,7 @@ import kotlin.reflect.KClass
  *
  * 如果没有 Pk，则生成实体报错。
  */
-@Target(AnnotationTarget.PROPERTY, AnnotationTarget.FIELD)
+@Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class SqlAutoIncrementKey()
 
@@ -43,7 +43,7 @@ annotation class SqlRks(vararg val rkColumns: String)//多个逗号隔开
  * 实体字段上定义的外键关系，如： @SqlFk("s_user", "id")
  */
 @Repeatable
-@Target(AnnotationTarget.PROPERTY, AnnotationTarget.FIELD)
+@Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class SqlFk(val refTable: String, val refTableColumn: String)
 
@@ -53,7 +53,7 @@ annotation class SqlFk(val refTable: String, val refTableColumn: String)
  * 使用方式，如在实体字段上定义 @ConverterValueToDb(TrimUppercaseConverter::class)
  */
 @Repeatable
-@Target(AnnotationTarget.PROPERTY, AnnotationTarget.FIELD)
+@Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class ConverterValueToDb(val converter: KClass<out IConverter>)
 

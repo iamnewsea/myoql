@@ -12,9 +12,10 @@ annotation class DbName(val value: String)
 /**
  * 中文化名称
  */
-@Target(AnnotationTarget.PROPERTY, AnnotationTarget.FIELD,AnnotationTarget.TYPE, AnnotationTarget.CLASS)
+@Target(AnnotationTarget.FIELD, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Cn(val value: String)
+
 
 /**
  * 实体字段上定义主键列，如实体的多个字段定义Key，认为是组合主键。
