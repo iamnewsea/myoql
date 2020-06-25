@@ -312,10 +312,9 @@ fun <T> List<T>.MoveToFirst(itemCallback: (T) -> Boolean): List<T> {
     var normalPart = mutableListOf<T>()
 
     this.forEach {
-        if( itemCallback(it)){
+        if (itemCallback(it)) {
             firstPart.add(it);
-        }
-        else{
+        } else {
             normalPart.add(it);
         }
     }
