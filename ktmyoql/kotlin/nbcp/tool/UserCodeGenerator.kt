@@ -50,7 +50,7 @@ object UserCodeGenerator {
     private fun gen(group: String, metaEntity: BaseMetaData, text: String): String {
         var text = text;
         var entityClass = (metaEntity as MongoBaseMetaCollection<*>).entityClass
-        var entityFields = entityClass.AllFields;
+        var entityFields = entityClass.AllFields.MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
         //先处理${for:fields}
 
 
@@ -153,7 +153,7 @@ object UserCodeGenerator {
 
             var ifAllExp = text.substring(begin_tag_start_index, end_tag_start_index + "\${endif}".length);
 
-            var ifExp = getIfExpression(ifAllExp, startTag,entityFields,field)
+            var ifExp = getIfExpression(ifAllExp, startTag, entityFields, field)
 
 
             text = beforeExp + ifExp + afterExp;
@@ -162,7 +162,7 @@ object UserCodeGenerator {
         return text;
     }
 
-    fun getIfExpression(context: String, startTag: String,entityFields: List<Field>, field: Field?): String {
+    fun getIfExpression(context: String, startTag: String, entityFields: List<Field>, field: Field?): String {
         var text = context;
         var start = Regex("\\$\\{" + startTag + ":([^}]+)}").find(text, 0);
         if (start == null) return "";
@@ -191,23 +191,21 @@ object UserCodeGenerator {
                 mapIf.put(ifKey, beforeExp);
 
                 prevIndex = elseIfSect.range.last + 1;
-            }
-            else{
+            } else {
                 valueElse = beforeExp;
             }
 
             if (elseIfSect.groups[3] != null) {
                 ifKey = elseIfSect.groups[3]!!.value;
-            }
-            else{
+            } else {
                 ifKey = "";
             }
 
             startIndex = elseIfSect.range.last;
         }
 
-        var retKey = mapIf.keys.firstOrNull { ifKey-> decideIfExp( entityFields,field,ifKey) };
-        if( retKey != null){
+        var retKey = mapIf.keys.firstOrNull { ifKey -> decideIfExp(entityFields, field, ifKey) };
+        if (retKey != null) {
             return mapIf.getStringValue(retKey)!!;
         }
 
@@ -231,7 +229,7 @@ object UserCodeGenerator {
             if (name VbSame "enum") {
                 return field!!.type.isEnum;
             }
-         }
+        }
 
         if (field != null) {
             return field.name == ifKey;

@@ -280,25 +280,45 @@ inline fun <reified T> List<T>.SplitGroup(operatorItem: (T) -> Boolean): List<Li
     var prevIndex = 0;
     var index = -1;
     var subSect = listOf<T>();
-    while(true){
+    while (true) {
         index++;
-        if( index >= this.size){
+        if (index >= this.size) {
             subSect = this.Slice(prevIndex);
-            if( subSect.any()) {
+            if (subSect.any()) {
                 ret.add(subSect)
             }
             break;
         }
 
-        if(operatorItem( this[index])){
+        if (operatorItem(this[index])) {
 
-            subSect = this.Slice(prevIndex,index);
-            if( subSect.any()) {
+            subSect = this.Slice(prevIndex, index);
+            if (subSect.any()) {
                 ret.add(subSect)
             }
-            prevIndex = index +1;
+            prevIndex = index + 1;
         }
     }
 
     return ret;
+}
+
+
+/**
+ * 把某些项移到前面。
+ */
+fun <T> List<T>.MoveToFirst(itemCallback: (T) -> Boolean): List<T> {
+    var firstPart = mutableListOf<T>();
+    var normalPart = mutableListOf<T>()
+
+    this.forEach {
+        if( itemCallback(it)){
+            firstPart.add(it);
+        }
+        else{
+            normalPart.add(it);
+        }
+    }
+
+    return firstPart.asReversed() + normalPart;
 }
