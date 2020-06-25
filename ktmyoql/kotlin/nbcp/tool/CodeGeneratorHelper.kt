@@ -13,7 +13,9 @@ object CodeGeneratorHelper {
 
         return """/**
 * ${cn}
-*/"""
+*/
+@Cn(${cn})
+"""
     }
 
     fun getFieldComment(field: Field): String {
@@ -21,6 +23,8 @@ object CodeGeneratorHelper {
         if (cn.isNullOrEmpty()) return "";
         return """/**
 * ${cn}
-*/"""
+*/
+@Cn(${cn})
+"""
     }
 }
