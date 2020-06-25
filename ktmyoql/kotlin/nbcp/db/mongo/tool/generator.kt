@@ -318,7 +318,7 @@ data class moer_map(val _pname:String)
 
         var props = entType.AllFields
                 .filter { it.name != "Companion" }
-                .MoveToFirst { it.name == "id" || it.name == "name" }
+                .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
                 .map {
                     var v1 = getMetaValue(it, entTypeName, 1)
 
@@ -376,7 +376,7 @@ ${props.joinToString("\n")}
 
         var props = entType.AllFields
                 .filter { it.name != "Companion" }
-                .MoveToFirst { it.name == "id" || it.name == "name" }
+                .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
                 .map {
 
                     if (it.getAnnotation(DbKey::class.java) != null) {
