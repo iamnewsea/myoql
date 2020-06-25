@@ -31,7 +31,7 @@ class generator {
 
 //        var path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0]
 //        var moer_Path = File(path).parentFile.path + "/shop-orm/kotlin/nbcp/db/mongo/mor_tables.kt".replace("/", p);
-        var moer_Path = targetFileName.replace("/", p).replace("\\",p);
+        var moer_Path = targetFileName.replace("/", p).replace("\\", p);
 
 
         File(moer_Path).delete();
@@ -73,15 +73,15 @@ class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
     override fun getEntities():Set<BaseMetaData> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
 """)
             println("${groupName}:")
-            groupEntities.forEach {
-                count++;
-                println("${count.toString().padStart(2, ' ')} 生成实体：${groupName}.${it.simpleName}".ToTab(1))
-                writeToFile(genVarEntity(it).ToTab(1))
-            }
+//            groupEntities.forEach {
+//                writeToFile(genVarEntity(it).ToTab(1))
+//            }
 
             writeToFile("\n")
 
             groupEntities.forEach {
+                count++;
+                println("${count.toString().padStart(2, ' ')} 生成实体：${groupName}.${it.simpleName}".ToTab(1))
                 writeToFile(genEntity(it).ToTab(1))
             }
             writeToFile("""}""")
@@ -319,12 +319,14 @@ data class moer_map(val _pname:String)
                 .map {
                     var v1 = getMetaValue(it, entTypeName, 1)
 
-                    return@map "val ${it.name}=${v1}".ToTab(1)
+                    return@map "${getFieldComment(it)}\nval ${it.name}=${v1}".ToTab(1)
                 }
 
         var entityTypeName = entTypeName;
 
-        var ent = """class ${entityTypeName}Meta (private val _pname:String):MongoColumnName() {
+
+        var ent = """${getEntityComment(entType)}
+class ${entityTypeName}Meta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
 
 ${props.joinToString("\n")}
@@ -335,6 +337,26 @@ ${props.joinToString("\n")}
 }
 """
         return ent;
+    }
+
+    /**
+     * 获取表的中文注释及Cn注解
+     */
+    private fun getEntityComment(entType: Class<*>): String {
+        var cn = entType.getAnnotation(Cn::class.java)?.value ?: "";
+        if (cn.isNullOrEmpty()) return "";
+
+        return """/**
+* ${cn}
+*/"""
+    }
+
+    private fun getFieldComment(field: Field): String {
+        var cn = field.getAnnotation(Cn::class.java)?.value ?: "";
+        if (cn.isNullOrEmpty()) return "";
+        return """/**
+* ${cn}
+*/"""
     }
 
     fun genVarName(entType: Class<*>): String {
@@ -379,9 +401,9 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
 
                     var (retValue, retTypeIsBasicType) = getEntityValue(it)
                     if (retTypeIsBasicType) {
-                        return@map "val ${it.name}=MongoColumnName(${retValue})".ToTab(1)
+                        return@map "${getFieldComment(it)}\nval ${it.name}=MongoColumnName(${retValue})".ToTab(1)
                     } else {
-                        return@map "val ${it.name}=${retValue}".ToTab(1)
+                        return@map "${getFieldComment(it)}\nval ${it.name}=${retValue}".ToTab(1)
                     }
                 }
 
@@ -433,7 +455,8 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
 """)
         }
 
-        var ent = """class ${entityTypeName}(collectionName:String="")
+        var ent = """${getEntityComment(entType)}
+    class ${entityTypeName}(collectionName:String="")
     :MongoBaseMetaCollection<${entType.name}>(${entType.name}::class.java,collectionName.AsString("${dbName}")) {
 ${props.joinToString("\n")}
 ${idMethods.joinToString("\n")}
