@@ -75,14 +75,15 @@ class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
 """)
             println("${groupName}:")
             groupEntities.forEach {
-                count++;
-                println("${count.toString().padStart(2, ' ')} 生成实体：${groupName}.${it.simpleName}".ToTab(1))
                 writeToFile(genVarEntity(it).ToTab(1))
             }
 
             writeToFile("\n")
 
             groupEntities.forEach {
+                count++;
+                println("${count.toString().padStart(2, ' ')} 生成实体：${groupName}.${it.simpleName}".ToTab(1))
+
                 writeToFile(genEntity(it).ToTab(1))
             }
             writeToFile("""}""")
@@ -358,7 +359,7 @@ ${props.joinToString("\n")}
         var entityTypeName = entTypeName + "Entity";
         var entityVarName = getEntityName(entTypeName);
 
-        return """${CodeGeneratorHelper.getEntityComment(entType)}val ${entityVarName} get() = ${entityTypeName}();"""
+        return """${CodeGeneratorHelper.getEntityCommentOnly(entType)}val ${entityVarName} get() = ${entityTypeName}();"""
 //fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""";
     }
 

@@ -64,7 +64,7 @@ object UserCodeGenerator {
 
         text = procFor(entityFields, text);
 
-        var title = CodeGeneratorHelper.getEntityComment(entityClass).AsString(metaEntity.tableName);
+        var title = CodeGeneratorHelper.getEntityCommentValue(entityClass).AsString(metaEntity.tableName);
         var entity_class = MyUtil.getBigCamelCase(metaEntity.tableName);
         var entity_url = MyUtil.getHyphen(metaEntity.tableName);
 
@@ -111,7 +111,7 @@ object UserCodeGenerator {
                 var forExp2 = procIf("fif", entityFields, it, forExp);
                 return@map forExp2.formatWithJson(StringMap(
                         "name" to it.name,
-                        "remark" to CodeGeneratorHelper.getFieldComment(it).AsString(it.name),
+                        "remark" to CodeGeneratorHelper.getFieldCommentValue(it).AsString(it.name),
                         "type" to it.type.simpleName,
                         "isSimpleType" to it.type.IsSimpleType().toString().toLowerCase()
                 ), "\${}")
