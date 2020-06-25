@@ -3,6 +3,7 @@ package nbcp.db.mongo.tool
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.*
+import nbcp.tool.CodeGeneratorHelper
 import java.io.File
 import java.io.FileWriter
 import java.lang.RuntimeException
@@ -319,13 +320,13 @@ data class moer_map(val _pname:String)
                 .map {
                     var v1 = getMetaValue(it, entTypeName, 1)
 
-                    return@map "${getFieldComment(it)}\nval ${it.name}=${v1}".ToTab(1)
+                    return@map "${CodeGeneratorHelper.getFieldComment(it)}\nval ${it.name}=${v1}".ToTab(1)
                 }
 
         var entityTypeName = entTypeName;
 
 
-        var ent = """${getEntityComment(entType)}
+        var ent = """${CodeGeneratorHelper.getEntityComment(entType)}
 class ${entityTypeName}Meta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
 
@@ -338,7 +339,6 @@ ${props.joinToString("\n")}
 """
         return ent;
     }
-
 
 
     fun genVarName(entType: Class<*>): String {
@@ -383,9 +383,9 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
 
                     var (retValue, retTypeIsBasicType) = getEntityValue(it)
                     if (retTypeIsBasicType) {
-                        return@map "${getFieldComment(it)}\nval ${it.name}=MongoColumnName(${retValue})".ToTab(1)
+                        return@map "${CodeGeneratorHelper.getFieldComment(it)}\nval ${it.name}=MongoColumnName(${retValue})".ToTab(1)
                     } else {
-                        return@map "${getFieldComment(it)}\nval ${it.name}=${retValue}".ToTab(1)
+                        return@map "${CodeGeneratorHelper.getFieldComment(it)}\nval ${it.name}=${retValue}".ToTab(1)
                     }
                 }
 
@@ -437,7 +437,7 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
 """)
         }
 
-        var ent = """${getEntityComment(entType)}
+        var ent = """${CodeGeneratorHelper.getEntityComment(entType)}
     class ${entityTypeName}(collectionName:String="")
     :MongoBaseMetaCollection<${entType.name}>(${entType.name}::class.java,collectionName.AsString("${dbName}")) {
 ${props.joinToString("\n")}
