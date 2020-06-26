@@ -7,7 +7,7 @@
     <el-table-column type="index" clign="center" width="50"></el-table-column>
         <!--<template slot-scope="scope"></template>-->
 ${for:fields}
-${fif:name}
+${fif:id}${elseif:name}
             <el-table-column label="${remark}" align="center">
                 <template slot-scope="scope">
                     <div class="link" @click="edit_click(scope.row)">{{scope.row.name}}</div>

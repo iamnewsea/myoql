@@ -14,7 +14,8 @@
                         <span>基本信息</span>
                     </div>
 ${for:fields}
-${fif:#enum}
+${fif:id}${elseif:createAt}
+${elseif:#enum}
                     <kv label="${remark}">
                        <selector type="radio" v-model="info.${name}" enum="${type}" />
                     </kv>
@@ -62,6 +63,8 @@ ${elseif:@LocalTime}
                     <kv label="${remark}">
                         <el-time-select v-model="info.${name}" placeholder="选择时间" />
                     </kv>
+${elseif:name}
+                    <kv label="${remark}"><el-input v-model="info.${name}" chk="*"/></kv>
 ${else}
                     <kv label="${remark}"><el-input v-model="info.${name}"/></kv>
 ${endif}
