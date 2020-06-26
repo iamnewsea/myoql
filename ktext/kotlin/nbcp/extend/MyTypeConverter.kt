@@ -441,7 +441,7 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
         //分成两部分。 找冒号前面找字母或空格 ,T, 'T'
         var timeSignIndex = strValue.indexOf(':');
         if (timeSignIndex < 0) {
-            return this.AsLocalDate()?.atStartOfDay()
+            return ConvertAsLocalDate(strValue)?.atStartOfDay()
         }
 
         var fenIndex = strValue.substring(0, timeSignIndex).indexOfFirst { it == ' ' || it.isLetter() }

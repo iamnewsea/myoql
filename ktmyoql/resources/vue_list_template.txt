@@ -88,7 +88,7 @@ ${endfor}
                 res.data.data.forEach(it => {
                     //如果是组合实体，设置 it.id=...
 ${for:fields}
-${fif:#enum}
+${fif:#enum1}
                     jv.${type}.fillRes(it,"${name}");
 ${endif}
 ${endfor}

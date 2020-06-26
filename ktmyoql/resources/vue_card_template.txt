@@ -15,9 +15,13 @@
                     </div>
 ${for:fields}
 ${fif:id}${elseif:createAt}
-${elseif:#enum}
+${elseif:#enum1}
                     <kv label="${remark}">
                        <selector type="radio" v-model="info.${name}" enum="${type}" />
+                    </kv>
+${elseif:#enumList}
+                    <kv label="${remark}">
+                       <selector type="check" v-model="info.${name}" enum="${type}" />
                     </kv>
 ${elseif:@IdUrl}
                     <kv>

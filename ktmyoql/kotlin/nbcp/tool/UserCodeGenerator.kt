@@ -228,14 +228,19 @@ object UserCodeGenerator {
                         field.type == Boolean::class.java
             }
 
-            if (name VbSame "enum") {
+            if (name VbSame "enum1") {
                 return field!!.type.isEnum;
+            }
+            if (name VbSame "enumList") {
+                return CodeGeneratorHelper.IsListEnum(field!!);
+            }
+
+            if (name VbSame "enum") {
+                return field!!.type.isEnum || CodeGeneratorHelper.IsListEnum(field!!);
             }
 
             if (name VbSame "IdUrlList") {
-                return (field!!.type.IsListType() && IdUrl::class.java.isAssignableFrom((field.genericType as ParameterizedType).GetActualClass(0))) ||
-                        (field.type.isArray && IdUrl::class.java.isAssignableFrom(field.type.componentType.javaClass))
-
+                return CodeGeneratorHelper.IsListType<IdUrl>(field!!);
             }
         }
 
