@@ -30,11 +30,19 @@ class TestKtExt_Json : TestBase() {
         using(JsonStyleEnumScope.GetSetStyle) {
             println(b.ToJson())
         }
+
+        using(JsonStyleEnumScope.FieldStyle) {
+            println(b.ToJson())
+        }
     }
 
     @Test
     fun test_FromJson() {
         using(JsonStyleEnumScope.GetSetStyle) {
+            println("""{"isDeleted":true}""".FromJson<bc>()!!.isDeleted)
+        }
+
+        using(JsonStyleEnumScope.FieldStyle) {
             println("""{"isDeleted":true}""".FromJson<bc>()!!.isDeleted)
         }
     }
