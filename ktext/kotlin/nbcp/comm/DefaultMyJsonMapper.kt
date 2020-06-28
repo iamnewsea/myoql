@@ -36,24 +36,23 @@ open class DefaultMyJsonMapper : ObjectMapper(), InitializingBean {
 
         @JvmStatic
         fun get(vararg styles: JsonStyleEnumScope): ObjectMapper {
-            var scopeStyles = scopes.getScopeTypes<JsonStyleEnumScope>();
+            var scopeStyles = scopes.getScopeTypes<JsonStyleEnumScope>().minus(styles).toMutableSet()
 
-            var scopeStyleList = scopeStyles.toMutableSet();
 
             //看互斥性
             styles.forEach { style ->
-                scopeStyleList.removeAll { it.mutexGroup == style.mutexGroup }
-                scopeStyleList.add(style);
+                scopeStyles.removeAll { it.mutexGroup == style.mutexGroup }
+                scopeStyles.add(style);
             }
 
-            var key = scopeStyleList.toSortedSet().joinToString(",")
+            var key = scopeStyles.toSortedSet().joinToString(",")
 
             var cacheManagerItem = cacheManagers.get(key);
             if (cacheManagerItem != null) {
                 return cacheManagerItem
             }
 
-            cacheManagerItem = DefaultMyJsonMapper().setStyle(*scopeStyleList.toTypedArray())
+            cacheManagerItem = DefaultMyJsonMapper().setStyle(*scopeStyles.toTypedArray())
             cacheManagers.put(key, cacheManagerItem);
             return cacheManagerItem;
         }
