@@ -321,3 +321,18 @@ fun <T> List<T>.MoveToFirst(itemCallback: (T) -> Boolean): List<T> {
 
     return firstPart.asReversed() + normalPart;
 }
+
+/**
+ * 修改数据
+ */
+fun <T> MutableList<T>.ModifyListMoveToFirst(itemCallback: (T) -> Boolean): List<T> {
+    var length = this.size;
+    for (i in 0 until length) {
+        var item = this.get(i);
+        if (itemCallback(item)) {
+            this.Swap(0, i);
+        }
+    }
+
+    return this;
+}

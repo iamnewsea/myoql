@@ -70,23 +70,24 @@ class StringToLocalDateTimeConverter : Converter<String, LocalDateTime> {
     }
 }
 
-@Configuration
-@DependsOn("springUtil")
-open class WebConfigBeans {
-    /**
-     * 增加字符串转日期的功能
-     */
-    @PostConstruct
-    fun initEditableValidation() {
-        var handlerAdapter = SpringUtil.getBean<RequestMappingHandlerAdapter>()
-        val initializer = handlerAdapter.webBindingInitializer as ConfigurableWebBindingInitializer
-        if (initializer.conversionService != null) {
-            val genericConversionService = initializer.conversionService as GenericConversionService
-            genericConversionService.addConverter(StringToDateConverter())
-            genericConversionService.addConverter(StringToLocalDateConverter())
-            genericConversionService.addConverter(StringToLocalTimeConverter())
-            genericConversionService.addConverter(StringToLocalDateTimeConverter())
-        }
-
-    }
-}
+//
+//@Configuration
+//@DependsOn("springUtil")
+//open class WebConfigBeans {
+//    /**
+//     * 增加字符串转日期的功能
+//     */
+//    @PostConstruct
+//    fun initEditableValidation() {
+//        var handlerAdapter = SpringUtil.getBean<RequestMappingHandlerAdapter>()
+//        val initializer = handlerAdapter.webBindingInitializer as ConfigurableWebBindingInitializer
+//        if (initializer.conversionService != null) {
+//            val genericConversionService = initializer.conversionService as GenericConversionService
+//            genericConversionService.addConverter(StringToDateConverter())
+//            genericConversionService.addConverter(StringToLocalDateConverter())
+//            genericConversionService.addConverter(StringToLocalTimeConverter())
+//            genericConversionService.addConverter(StringToLocalDateTimeConverter())
+//        }
+//
+//    }
+//}
