@@ -8,7 +8,6 @@ import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.CacheKey
 import nbcp.db.CacheKeyTypeEnum
-import nbcp.db.redis.RedisBaseGroup
 import javax.annotation.PostConstruct
 
 /**
@@ -20,7 +19,7 @@ import javax.annotation.PostConstruct
  */
 @Service("redis")
 @ConfigurationProperties(prefix = "sql-orm")
-open class RedisDataCacheService : IDataCache4Sql {
+open class DataCache4SqlServiceImpl : DataCache4SqlService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
         private val rer_base = db.rer_base
@@ -76,10 +75,10 @@ open class RedisDataCacheService : IDataCache4Sql {
         if (getCacheSeconds(cacheKey.tableName) <= 0) return ""
 
         //如果正在删除依赖表中的任何一个,都不要再返回了.
-        if (cacheKey.dependencies.any { rer_base.cache.brokeKeys(it).size("") > 0 }) {
+        if (cacheKey.dependencies.any { rer_base.sqlCache.brokeKeys(it).size("") > 0 }) {
             return "";
         }
-        var ret = rer_base.cache.cacheSqlData.get(cacheKey.getExpression());
+        var ret = rer_base.sqlCache.cacheSqlData.get(cacheKey.getExpression());
 
         if (ret.isNotEmpty()) {
             logger.info("命中缓存数据: ${cacheKey}")
@@ -95,18 +94,18 @@ open class RedisDataCacheService : IDataCache4Sql {
         if (cacheSeconds <= 0) return
 
         //如果正在删除依赖表中的任何一个,都不要再添加了.
-        var brokingTable = rer_base.cache.brokingTable.get()
+        var brokingTable = rer_base.sqlCache.brokingTable.get()
 
         if (cacheKey.dependencies.any { brokingTable == it }) {
             return;
         }
 
-        rer_base.cache.cacheSqlData.set(cacheKey.getExpression(), cacheJson, cacheSeconds)
+        rer_base.sqlCache.cacheSqlData.set(cacheKey.getExpression(), cacheJson, cacheSeconds)
     }
 
     override fun brokeCache(tableName: String, keys: Set<String>) {
-        rer_base.cache.brokeKeys(tableName).add("", *keys.toTypedArray())
-        rer_base.cache.borkeKeysChangedVersion.increment("")
+        rer_base.sqlCache.brokeKeys(tableName).add("", *keys.toTypedArray())
+        rer_base.sqlCache.borkeKeysChangedVersion.increment("")
     }
 
     override fun clear(tableName: String) {

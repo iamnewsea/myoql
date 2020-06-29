@@ -19,13 +19,6 @@ open class IdCodeName(var id: String = "",code: String = "", name: String = "") 
 
 open class KeyValueString(@Cn("键")var key: String = "",@Cn("值") var value: String = "") : java.io.Serializable {}
 
-
-open class IntCodeName(var code: Int, var name: String) : java.io.Serializable {
-    constructor() : this(0, "") {
-    }
-}
-
-
 /**
  * 表示Mongo数据库里 Id，Url 的附件实体引用。
  * 保存到Mongo数据库的时候，使用 field Json，无Host。

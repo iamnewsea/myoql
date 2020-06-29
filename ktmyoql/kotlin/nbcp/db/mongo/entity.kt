@@ -31,11 +31,11 @@ open class BasicUser(
         var identityCard: IdentityCardData = IdentityCardData(),
 
         @Cn("居住城市")
-        var liveCity: IntCodeName = IntCodeName(),
+        var liveCity: CityCodeName = CityCodeName(),
         @Cn("常住地址")
         var liveLocation: String = "",  //常住地
         @Cn("工作城市")
-        var workCity: IntCodeName = IntCodeName(),
+        var workCity: CityCodeName = CityCodeName(),
         @Cn("工作地址")
         var workLocation: String = ""  //工作地
 ) : BaseEntity(), IMongoDocument {
@@ -99,7 +99,7 @@ open class SysOrganization(
         var siteNumber: String = "",    //网站备案号
 
         @Cn("所在城市")
-        var city: IntCodeName = IntCodeName(),
+        var city: CityCodeName = CityCodeName(),
         @Cn("营业执照")
         var businessLicense: BusinessLicenseData = BusinessLicenseData(),
         @Cn("徽标")

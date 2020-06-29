@@ -4,6 +4,8 @@ import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.comm.TimeSpan
 import nbcp.db.mongo.table.MongoBaseGroup
+import nbcp.db.mysql.ExistsDataSourceConfigCondition
+import nbcp.db.mysql.ExistsSlaveDataSourceConfigCondition
 import nbcp.db.redis.RedisBaseGroup
 import nbcp.db.sql.table.SqlBaseGroup
 
@@ -30,7 +32,20 @@ object db {
 //        return@lazy LoggerFactory.getLogger(this::class.java)
 //    }
 
-    var currentDatabaseType: DatabaseEnum = DatabaseEnum.Mysql
+
+    val mainDatabaseType: DatabaseEnum by lazy {
+        var value: DatabaseEnum? = SpringUtil.context.environment.getProperty("app.database-type")?.ToEnum(DatabaseEnum::class.java)
+
+        if (value != null) {
+            return@lazy value!!
+        }
+
+        if (ExistsDataSourceConfigCondition().getValue(SpringUtil.context.environment)) {
+            value = DatabaseEnum.Mysql
+        }
+
+        return@lazy value ?: DatabaseEnum.Mongo;
+    }
 
     val sql = db_sql;
     val mongo = db_mongo;
@@ -135,6 +150,24 @@ object db {
 //            }
 //        }
 //    }
+
+    /**
+     * 填充 city.name
+     */
+    fun fillCityName(value: Any) {
+        RecursionUtil.recursionAny(value, { map, pkey ->
+            true
+        }, { list, pkey ->
+            true
+        }, { value, pkey ->
+            if (value is CityCodeName) {
+                if (value.code > 0 && value.name.isEmpty()) {
+                    value.name = db.rer_base.getCityNameByCode(value.code)
+                }
+            }
+            true
+        })
+    }
 
     val mor_base get() = MongoBaseGroup()
     val rer_base get() = RedisBaseGroup()

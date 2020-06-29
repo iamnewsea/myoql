@@ -1,21 +1,10 @@
-package nbcp.db
+package nbcp.db.cache
 
-import nbcp.comm.*
+import nbcp.db.CacheKey
 import nbcp.db.sql.SingleSqlData
 
-interface IDataCache4Sql {
-    fun isEnable(): Boolean;
-    fun clear(tableName:String="")
-    fun getCacheSeconds(tableName:String?):Int
 
-
-    fun getCacheJson(cacheKey: CacheKey): String
-    fun setCacheJson(cacheKey: CacheKey, cacheJson: String)
-
-    fun brokeCache(tableName:String,keys:Set<String>)
-}
-
-interface IProxyCache4Sql   {
+interface ProxyCache4SqlService   {
     fun isEnable(): Boolean;
     fun clear(tableName:String="")
 
@@ -31,7 +20,3 @@ interface IProxyCache4Sql   {
     fun insertMany4BrokeCache(tableName: String)
     fun insertSelect4BrokeCache(tableName: String)
 }
-
-
-data class UrkInfo(val rks: StringMap, val uks: StringMap, val rksValid: Boolean, val uksValid: Boolean)
-

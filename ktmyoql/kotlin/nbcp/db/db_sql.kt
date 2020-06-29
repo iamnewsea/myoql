@@ -24,9 +24,9 @@ object db_sql {
     }
 
     fun getSqlQuoteName(value: String): String {
-        if (db.currentDatabaseType == DatabaseEnum.Mysql) {
+        if (db.mainDatabaseType == DatabaseEnum.Mysql) {
             return "`${value}`"
-        } else if (db.currentDatabaseType == DatabaseEnum.Mssql) {
+        } else if (db.mainDatabaseType == DatabaseEnum.Mssql) {
             return "[${value}]"
         } else {
             return """"${value}""""

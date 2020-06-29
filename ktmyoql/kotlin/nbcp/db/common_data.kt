@@ -65,3 +65,10 @@ open class BusinessLicenseData(
         @Cn("注册时间")
         var registeAt: String = ""      //注册时间
 )
+
+
+
+open class CityCodeName(var code: Int, var name: String) : java.io.Serializable {
+    constructor() : this(0, "") {
+    }
+}

@@ -2,20 +2,14 @@ package nbcp.db.sql
 
 import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.jdbc.datasource.DataSourceTransactionManager
-import org.springframework.transaction.support.TransactionTemplate
 import nbcp.comm.*
 
 import nbcp.utils.*
 import nbcp.db.*
-import nbcp.db.sql.component.JsonMapRowMapper
+import nbcp.db.cache.ProxyCache4SqlService
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
 import java.io.Serializable
-import javax.sql.DataSource
-import nbcp.db.sql.*
 import java.time.LocalDateTime
-import nbcp.db.*;
-import nbcp.db.cache.*;
 import nbcp.db.mysql.MysqlConfig
 
 /**
@@ -65,7 +59,7 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
         // orm bean 代理 RequestCache 及 Redis Cache
         @JvmStatic
         val cacheService by lazy {
-            return@lazy SpringUtil.getBean<IProxyCache4Sql>();
+            return@lazy SpringUtil.getBean<ProxyCache4SqlService>();
         }
 
 

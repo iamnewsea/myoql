@@ -124,7 +124,7 @@ object RecursionUtil {
     }
 
     /**
-     * 遍历对象 ,包括 Map,Array,List,Object， 应该拿到对象后，对象属性值及子属性操作，而不能增减父对象。
+     * 遍历Json, 应该拿到对象后，对象属性值及子属性操作，而不能增减父对象。
      * @param json: 递归对象
      * @param consumer:  消费每一个Json
      * @param consumerObject 如果遍历到非 Map，调用该回调
@@ -161,6 +161,13 @@ object RecursionUtil {
         }
     }
 
+    /**
+     * 递归对象 ,内部包括 Map,Array,List,Object。
+     * @param value 递归对象
+     * @param consumerMap : 发现一个Map, 第一个参数是发现的Map,第二个参数是父key
+     * @param consumerList : 发现一个List, 第一个参数是发现的List,第二个参数是父key
+     * @param consumerObject: 发现一个 Object, 第一个参数是发现的Object,第二个参数是父key
+     */
     fun recursionAny(value: Any,
                      consumerMap: (Map<*, *>, String) -> Boolean,
                      consumerList: ((List<*>, String) -> Boolean)? = null,
@@ -180,12 +187,12 @@ object RecursionUtil {
         }
     }
 
-    fun recursionObject(value: Any,
-                        rootKey: String,
-                        consumerMap: (Map<*, *>, String) -> Boolean,
-                        consumerList: ((List<*>, String) -> Boolean)? = null,
-                        consumerObject: ((Any, String) -> Boolean)? = null,
-                        deepth: Int = 0): Boolean {
+    private fun recursionObject(value: Any,
+                                rootKey: String,
+                                consumerMap: (Map<*, *>, String) -> Boolean,
+                                consumerList: ((List<*>, String) -> Boolean)? = null,
+                                consumerObject: ((Any, String) -> Boolean)? = null,
+                                deepth: Int = 0): Boolean {
 
         if (consumerObject != null) {
             var ret = consumerObject.invoke(value, rootKey);

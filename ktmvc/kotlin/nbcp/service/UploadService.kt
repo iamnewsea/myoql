@@ -4,30 +4,22 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.multipart.MultipartHttpServletRequest
-import org.springframework.web.multipart.commons.CommonsMultipartResolver
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.*
-import nbcp.db.mongo.*
 import nbcp.db.mongo.entity.*
 import nbcp.db.mongo.service.UploadFileMongoService
-import nbcp.db.mongo.table.MongoBaseGroup
 import nbcp.db.mysql.service.UploadFileMysqlService
-import nbcp.model.IUploadFileDbService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
 import java.io.File
 import java.io.FileInputStream
-import java.io.InputStream
 import java.lang.RuntimeException
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import javax.imageio.ImageIO
 import javax.servlet.http.HttpServletRequest
-import nbcp.db.mongo.entity.*
 
 /**
  * 参数传递过程中,都没有 uploadPath 部分.
@@ -92,8 +84,6 @@ open class UploadService {
     @Value("\${app.upload.saveCorp:true}")
     private var saveCorp = false
 
-    @Value("\${app.upload.dbType:Mongo}")
-    private var dbType = "Mongo"
 
 //小图，在上传时不生成。 在请求时在内存中压缩即时生成。
 //    @Value("\${server.upload.logoSize:0}")
@@ -302,7 +292,7 @@ open class UploadService {
     }
 
     private val dbService by lazy {
-        if (this.dbType VbSame DatabaseEnum.Mongo.toString()) {
+        if (db.mainDatabaseType == DatabaseEnum.Mongo) {
             return@lazy SpringUtil.context.getBean(UploadFileMongoService::class.java)
         } else {
             return@lazy SpringUtil.context.getBean(UploadFileMysqlService::class.java)

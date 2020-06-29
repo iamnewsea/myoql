@@ -12,32 +12,41 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.context.annotation.*
+import org.springframework.core.env.Environment
 import org.springframework.core.type.AnnotatedTypeMetadata
 import org.springframework.jdbc.core.JdbcTemplate
 import javax.sql.DataSource
 
 class ExistsSlaveDataSourceConfigCondition : Condition {
-    override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata): Boolean {
+    override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata?): Boolean {
+        return getValue(context.environment);
+
+    }
+
+    fun getValue(environment: Environment):Boolean {
         return (
-                context.environment.getProperty("spring.datasource.url") != null ||
-                        context.environment.getProperty("spring.datasource.hikari.url") != null ||
-                        context.environment.getProperty("spring.datasource.hikari.jdbc-url") != null
+                 environment.getProperty("spring.datasource.url") != null ||
+                         environment.getProperty("spring.datasource.hikari.url") != null ||
+                         environment.getProperty("spring.datasource.hikari.jdbc-url") != null
                 )
                 &&
                 (
-                        context.environment.getProperty("spring.datasource.slave.url") != null ||
-                                context.environment.getProperty("spring.datasource.slave.hikari.url") != null ||
-                                context.environment.getProperty("spring.datasource.slave.hikari.jdbc-url") != null
+                         environment.getProperty("spring.datasource.slave.url") != null ||
+                                 environment.getProperty("spring.datasource.slave.hikari.url") != null ||
+                                 environment.getProperty("spring.datasource.slave.hikari.jdbc-url") != null
                         )
-
     }
 }
 
 class ExistsDataSourceConfigCondition : Condition {
     override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata): Boolean {
-        return context.environment.getProperty("spring.datasource.url") != null ||
-                context.environment.getProperty("spring.datasource.hikari.url") != null ||
-                context.environment.getProperty("spring.datasource.hikari.jdbc-url") != null
+        return getValue(context.environment)
+    }
+
+    fun getValue(environment: Environment):Boolean {
+        return environment.getProperty("spring.datasource.url") != null ||
+                environment.getProperty("spring.datasource.hikari.url") != null ||
+                environment.getProperty("spring.datasource.hikari.jdbc-url") != null
     }
 }
 

@@ -1,7 +1,8 @@
 package nbcp.db.mongo
 
 import nbcp.db.*
-import nbcp.db.mongo.*
+import nbcp.utils.MyUtil
+import nbcp.utils.RecursionUtil
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
@@ -12,6 +13,21 @@ import java.time.LocalDateTime
 class MongoUpdateAtEvent : IMongoEntityUpdate {
     override fun beforeUpdate(update: MongoBaseUpdateClip): DbEntityEventResult {
         update.setValue("updateAt", LocalDateTime.now())
+
+        //补全 CityCodeName 中的 name
+
+
+        update.setData.forEach { it ->
+            if (it.value == null) {
+                return@forEach
+            }
+
+            db.fillCityName(it.value!!);
+
+            return@forEach
+        }
+
+
         return DbEntityEventResult(true, null)
     }
 
