@@ -89,7 +89,7 @@ open class MyMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
 @JsonComponent
 class MyMvcJsonSerializerManage {
     @Bean
-    fun jacksonObjectMapper(builder: Jackson2ObjectMapperBuilder): ObjectMapper {
+    fun jacksonObjectMapper(): ObjectMapper {
         return DefaultMyJsonMapper.get(JsonStyleEnumScope.GetSetStyle, JsonStyleEnumScope.IgnoreNull, JsonStyleEnumScope.Compress)
     }
 }
