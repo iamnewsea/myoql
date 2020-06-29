@@ -221,10 +221,10 @@ object UserCodeGenerator {
             var name = ifKey.substring(1);
             if (name VbSame "Res") {
                 return field!!.type.isEnum ||
-                        field.type == LocalDateTime::class.java ||
-                        field.type == LocalDate::class.java ||
-                        field.type == LocalTime::class.java ||
-                        field.type == Date::class.java ||
+//                        field.type == LocalDateTime::class.java ||
+//                        field.type == LocalDate::class.java ||
+//                        field.type == LocalTime::class.java ||
+//                        field.type == Date::class.java ||
                         field.type == Boolean::class.java
             }
 
