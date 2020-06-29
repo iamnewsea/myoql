@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Level
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.comm.*
+import nbcp.db.CityCodeName
 import nbcp.utils.*
 import nbcp.db.IdName
 import nbcp.db.IdUrl
@@ -18,32 +19,15 @@ import java.util.*
 
 class TestKtExt_Json : TestBase() {
 
-    class bc {
-        var isDeleted: Boolean? = false;
-    }
-
-    @Test
-    fun test_ToJson() {
-        var b = bc();
-        b.isDeleted = true;
-
-        using(JsonStyleEnumScope.GetSetStyle) {
-            println(b.ToJson())
-        }
-
-        using(JsonStyleEnumScope.FieldStyle) {
-            println(b.ToJson())
-        }
-    }
 
     @Test
     fun test_FromJson() {
         using(JsonStyleEnumScope.GetSetStyle) {
-            println("""{"id":"123"}""".FromJson<IdName>()!!.name)
+            println("""{"code":123}""".FromJson<CityCodeName>()!!.name)
         }
 
         using(JsonStyleEnumScope.FieldStyle) {
-            println("""{"isDeleted":true}""".FromJson<bc>()!!.isDeleted)
+            println("""{"code":123}""".FromJson<CityCodeName>()!!.name)
         }
     }
 }

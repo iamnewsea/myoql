@@ -67,8 +67,5 @@ open class BusinessLicenseData(
 )
 
 
-
-open class CityCodeName(var code: Int, var name: String) : java.io.Serializable {
-    constructor() : this(0, "") {
-    }
+open class CityCodeName(var code: Int = 0, var name: String = "") : java.io.Serializable {
 }
