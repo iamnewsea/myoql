@@ -10,7 +10,7 @@ ${for:fields}
 ${fif:id}${elseif:name}
             <el-table-column label="${remark}" align="center">
                 <template slot-scope="scope">
-                    <div class="link" @click="edit_click(scope.row)">{{scope.row.name}}</div>
+                    <div class="link">{{scope.row.name}}</div>
                 </template>
             </el-table-column>
 ${elseif:#Res}
