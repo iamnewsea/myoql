@@ -55,6 +55,7 @@ class NbcpBeanSelector : ImportSelector, BeanFactoryAware {
 }
 
 /**
+ * 自动导入 nbcp.** 的包。
  * 需要在SpringBoot启动类上定义：
  *
  * @ComponentScan("nbcp.**")

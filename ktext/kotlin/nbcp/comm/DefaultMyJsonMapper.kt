@@ -88,7 +88,10 @@ open class DefaultMyJsonMapper : ObjectMapper(), InitializingBean {
 fun ObjectMapper.setStyle(vararg styles: JsonStyleEnumScope): ObjectMapper {
     // 设置输出时包含属性的风格
     this.findAndRegisterModules();
+
+    //这句话会让 kotlin isXXX:Boolean 原样输出。
     this.registerKotlinModule()
+
     // 允许单引号、允许不带引号的字段名称
     this.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
     this.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true)
