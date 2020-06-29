@@ -12,11 +12,10 @@ import java.time.LocalDateTime
 @Component
 class MongoUpdateAtEvent : IMongoEntityUpdate {
     override fun beforeUpdate(update: MongoBaseUpdateClip): DbEntityEventResult {
+        update.setData.remove("createAt")
         update.setValue("updateAt", LocalDateTime.now())
 
         //补全 CityCodeName 中的 name
-
-
         update.setData.forEach { it ->
             if (it.value == null) {
                 return@forEach
