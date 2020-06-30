@@ -4,7 +4,7 @@
             <p>${title}</p>
             <el-button type="primary" size="large" @click="add_click()">添加</el-button>
         </div>
-        <my-list ref="list" url="/${group}/${entity_url}/list" @loaded="procData" :query="query" :page-size="pageSize" :store="true"
+        <my-list ref="list" url="/${group}/${entity_url}/list" @param="preload" @loaded="procData" :page-size="pageSize" :store="true"
             style="width: 100%;margin-top:20px;">
             <el-table-column type="index" clign="center" width="50"></el-table-column>
                         <!--<template slot-scope="scope"></template>-->
@@ -65,10 +65,6 @@ ${endif}
         components: {},
         data() {
             return {
-                //查询条件
-                query: {
-                    name: ""
-                },
                 pageSize:10,
 ${for:fields}
 ${fif:#enum}
@@ -78,11 +74,14 @@ ${endfor}
             };
         },
         mounted() {
-            //本地存储上次查询的条件和页码，先加载上次的，如果不需要，去掉。
-            this.query = Object.assign(this.query, this.$refs.list.getStoredQuery());
             this.loadData();
         },
         methods: {
+            //处理请求参数
+            preload(param){
+                //添加查询参数，修改分页参数等。
+                //param.type = this.$route.params.type
+            },
             //处理列表的数据
             procData(res) {
                 res.data.data.forEach(it => {
