@@ -115,6 +115,8 @@ object UserCodeGenerator {
                         "name" to it.name,
                         "remark" to CodeGeneratorHelper.getFieldCommentValue(it).AsString(it.name),
                         "type" to it.type.simpleName,
+                        "NAME" to MyUtil.getBigCamelCase(it.name),
+                        "name-" to MyUtil.getHyphen(it.name),
                         "isSimpleType" to it.type.IsSimpleType().toString().toLowerCase()
                 ), "\${}")
             }.filter { it.HasValue }.joinToString(line_break);

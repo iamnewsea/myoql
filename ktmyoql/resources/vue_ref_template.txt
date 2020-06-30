@@ -55,7 +55,7 @@ ${endif}
       return {
 ${for:fields}
 ${fif:#enum}
-                ${type}: jv.${type}.getData(),
+                ${type}: jv.enum.${type}.getData(),
 ${endif}
 ${endfor}
       }
@@ -67,7 +67,7 @@ ${endfor}
             //如果是组合实体，设置 it.id=...
 ${for:fields}
 ${fif:#enum1}
-                    jv.${type}.fillRes(it,"${name}");
+                    jv.enum.${type}.fillRes(it,"${name}");
 ${endif}
 ${endfor}
         });

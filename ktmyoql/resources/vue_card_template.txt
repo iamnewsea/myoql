@@ -49,7 +49,7 @@ ${elseif:#IdUrlList}
                     </kv>
 ${elseif:@IdName}
                     <kv label="${remark}">
-                       <ref-${name} v-model="info.${name}"></ref-${name}>
+                       <ref-${name-} v-model="info.${name}"></ref-${name-}>
                     </kv>
 ${elseif:@Boolean}
                     <kv label="${remark}">
@@ -93,14 +93,14 @@ ${endfor}
  */
 ${for:fields}
 ${fif:@IdName}
-        import ref${name} from "../home/EmptyRef"
+        import Ref${NAME} from "../home/EmptyRef"
 ${endif}
 ${endfor}
     export default {
         components: {
 ${for:fields}
 ${fif:@IdName}
-        "ref-${name}": ref${name},
+        "ref-${name-}": Ref${NAME},
 ${endif}
 ${endfor}
         },
@@ -108,7 +108,7 @@ ${endfor}
             return {
 ${for:fields}
 ${fif:#enum}
-                ${type}: jv.${type}.getData(),
+                ${type}: jv.enum.${type}.getData(),
 ${endif}
 ${endfor}
                 //URL参数

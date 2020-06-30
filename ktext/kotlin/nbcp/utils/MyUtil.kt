@@ -496,7 +496,7 @@ object MyUtil {
     }
 
     /**
-     * 连字符格式
+     * 连字符格式,全小写。
      */
     fun getHyphen(value: String): String {
         return value.split(Regex("""[\W_]"""))
