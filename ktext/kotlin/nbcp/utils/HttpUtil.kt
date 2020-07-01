@@ -12,6 +12,7 @@ import java.net.URL
 import java.nio.charset.Charset
 import java.io.IOException
 import java.lang.RuntimeException
+import java.time.LocalDateTime
 import java.util.*
 import javax.imageio.ImageIO
 
@@ -133,6 +134,11 @@ class HttpUtil(var url: String = "") {
         private set;
 
     /**
+     * 请求耗时时间
+     */
+    var totalTime: TimeSpan = TimeSpan(0)
+        private set;
+    /**
      * 该次回发过程中的错误消息，只读
      */
     var msg: String = ""  //初始化失败的消息.用于对象传递
@@ -245,6 +251,8 @@ class HttpUtil(var url: String = "") {
 
         var requestBodyValidate = false;
 
+        var startAt = LocalDateTime.now();
+
         try {
             conn = URL(url).openConnection() as HttpURLConnection;
 
@@ -302,8 +310,6 @@ class HttpUtil(var url: String = "") {
                 }
             }
 
-
-
             this.status = conn.responseCode
 
             conn.headerFields.forEach {
@@ -325,7 +331,6 @@ class HttpUtil(var url: String = "") {
                 }
             }
 
-
             try {
                 var input = conn.inputStream;
                 try {
@@ -335,6 +340,8 @@ class HttpUtil(var url: String = "") {
                 } finally {
                     input.close()
                 }
+
+                this.totalTime = LocalDateTime.now() - startAt
                 return this.responseResult;
             } catch (e: Exception) {
                 msg = e.message ?: "服务器错误"
@@ -346,6 +353,9 @@ class HttpUtil(var url: String = "") {
             return "".toByteArray(utf8);
         } finally {
             // 断开连接
+            if (this.totalTime.totalMilliseconds == 0L) {
+                this.totalTime = LocalDateTime.now() - startAt
+            }
 
             if (conn != null) {
                 logger.InfoError(this.status != 200) {
@@ -364,16 +374,9 @@ class HttpUtil(var url: String = "") {
                     msgs.add("---")
 
                     this.responseHeader.map {
-                        //                        if (it.key == null) {
-//                            return@map "\t${it.value}"
-//                        }
                         return@map "\t${it.key}:${it.value}"
                     }.joinToString(line_break)
-//                            .apply {
-//                                if (this.HasValue) {
-//                                    msgs.add(this);
-//                                }
-//                            }
+
 
                     //小于10K
                     if (this.responseCharset.HasValue && this.responseResult.size < 10240) {
