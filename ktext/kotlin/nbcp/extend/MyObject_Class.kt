@@ -82,9 +82,9 @@ fun Class<*>.IsBooleanType(): Boolean {
 }
 
 /**
- * 类型是否是List： Collection
+ * 类型是否是Collection, List,Set都是。
  */
-fun Class<*>.IsListType(): Boolean {
+fun Class<*>.IsCollectionType(): Boolean {
     return Collection::class.java.isAssignableFrom(this)
 }
 

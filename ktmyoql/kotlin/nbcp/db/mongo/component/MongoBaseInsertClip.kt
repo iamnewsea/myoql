@@ -44,7 +44,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
             return;
         }
 
-        if (entity is List<*>) {
+        if (entity is Collection<*>) {
             //不能插入列表，请一条一条的插入
             throw RuntimeException("不能插入列表!")
         }

@@ -88,7 +88,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
     /**
      * 不过滤列.
      */
-    fun addAll(entity: List<T>): SqlInsertClip<M, T> {
+    fun addAll(entity: Collection<T>): SqlInsertClip<M, T> {
         if (entity.size == 0) return this
         entity.forEach {
             add(it)

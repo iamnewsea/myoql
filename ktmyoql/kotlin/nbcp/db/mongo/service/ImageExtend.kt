@@ -60,7 +60,7 @@ fun <M : MongoBaseMetaCollection<E>, E : IMongoDocument> M.swap(fieldName: Strin
 
     var imagesData = info.get(fieldName);
 
-    if (imagesData == null || (imagesData is List<*> == false)) {
+    if (imagesData == null || (imagesData is Collection<*> == false)) {
         return JsonResult("找不到数据信息")
     }
 

@@ -18,7 +18,7 @@ class WhereData : JsonMap {
     constructor(vararg pairs: Pair<String, Any?>) : super(*pairs) {
     }
 
-    constructor(data: List<Pair<String, Any?>>) : super(data) {
+    constructor(data: Collection<Pair<String, Any?>>) : super(data) {
     }
 
     companion object {

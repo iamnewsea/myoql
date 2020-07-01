@@ -1,9 +1,8 @@
 package nbcp.tool
 
 import nbcp.comm.GetActualClass
-import nbcp.comm.IsListType
+import nbcp.comm.IsCollectionType
 import nbcp.db.Cn
-import nbcp.db.IdUrl
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 
@@ -58,13 +57,13 @@ object CodeGeneratorHelper {
 
     inline fun <reified T> IsListType(field: Field): Boolean {
         var clazz = T::class.java;
-        return (field.type.IsListType() && clazz.isAssignableFrom((field.genericType as ParameterizedType).GetActualClass(0))) ||
+        return (field.type.IsCollectionType() && clazz.isAssignableFrom((field.genericType as ParameterizedType).GetActualClass(0))) ||
                 (field.type.isArray && clazz.isAssignableFrom(field.type.componentType.javaClass))
 
     }
 
     fun IsListEnum(field: Field): Boolean {
-        return (field.type.IsListType() && (field.genericType as ParameterizedType).GetActualClass(0).isEnum) ||
+        return (field.type.IsCollectionType() && (field.genericType as ParameterizedType).GetActualClass(0).isEnum) ||
                 (field.type.isArray && field.type.componentType.javaClass.isEnum)
     }
 }

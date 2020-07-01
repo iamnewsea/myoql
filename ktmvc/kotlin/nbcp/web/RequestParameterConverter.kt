@@ -96,27 +96,27 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
                         value = true;
                     }
                 } else {
-                    if (value::class.java.IsListType()) {
+                    if (value::class.java.IsCollectionType()) {
                         //如果参数是 List.
                         if (parameter.parameterType.isArray) {
                             if (parameter.parameterType.componentType.IsStringType()) {
-                                value = (value as List<String>).toTypedArray()
+                                value = (value as Collection<String>).toTypedArray()
                             } else {
-                                value = (value as List<String>).map { it.ConvertType(parameter.parameterType.componentType) }.toTypedArray()
+                                value = (value as Collection<String>).map { it.ConvertType(parameter.parameterType.componentType) }.toTypedArray()
                             }
-                        } else if (parameter.parameterType.IsListType()) {
+                        } else if (parameter.parameterType.IsCollectionType()) {
                             var genType = (parameter.genericParameterType as ParameterizedTypeImpl).GetActualClass(0);
                             if (!genType.IsStringType()) {
-                                value = (value as List<String>).map { it.ConvertType(genType) }
+                                value = (value as Collection<String>).map { it.ConvertType(genType) }
                             }
                         } else if (parameter.parameterType.IsStringType()) {
-                            value = (value as List<String>).joinToString(",")
+                            value = (value as Collection<String>).joinToString(",")
                         }
                     } else {
                         //如果参数是 List.
                         if (parameter.parameterType.isArray) {
                             value = arrayOf(value.ConvertType(parameter.parameterType.componentType))
-                        } else if (parameter.parameterType.IsListType()) {
+                        } else if (parameter.parameterType.IsCollectionType()) {
                             var genType = (parameter.genericParameterType as ParameterizedTypeImpl).GetActualClass(0);
                             value = listOf(value.ConvertType(genType))
                         } else if (parameter.parameterType.IsStringType() == false) {

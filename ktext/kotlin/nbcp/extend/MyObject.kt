@@ -192,7 +192,7 @@ inline fun <T, M : Any> using(initObjects: M, body: () -> T): T {
 inline fun <T, M : Any> using(initObjects: M, body: () -> T, finally: ((M) -> Unit)): T {
     var init_list = mutableListOf<Any>()
 
-    if (initObjects is List<*>) {
+    if (initObjects is Collection<*>) {
         init_list.addAll(initObjects as Collection<Any>)
     } else if (initObjects is Array<*>) {
         init_list.addAll(initObjects.map { it!! })

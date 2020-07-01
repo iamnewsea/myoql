@@ -33,7 +33,7 @@ open class StringKeyMap<T> : LinkedHashMap<String, T>, Serializable {
     constructor(vararg pairs: Pair<String, T>) : this(pairs.toList()) {
     }
 
-    constructor(pairs: List<Pair<String, T>>) : this() {
+    constructor(pairs: Collection<Pair<String, T>>) : this() {
         for (p in pairs) {
             this.put(p.first, p.second);
         }

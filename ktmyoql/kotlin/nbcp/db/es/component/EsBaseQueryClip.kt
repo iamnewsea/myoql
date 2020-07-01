@@ -97,7 +97,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
                 return ret;
             }
 
-            list = (hits.getTypeValue<List<*>>("hits") ?: listOf<Any>())
+            list = (hits.getTypeValue<Collection<*>>("hits") ?: listOf<Any>())
                     .map { (it as Map<String, *>).getTypeValue<Map<String, Any>>("_source") }
                     .filter { it != null }
                     .map { it!! }

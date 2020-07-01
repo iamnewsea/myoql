@@ -128,7 +128,7 @@ fun Map<*, *>.procWithMongoScript(): Map<*, *> {
 
                         if (value2_oid != null) {
                             value_map.set(op, value2_oid);
-                        } else if (value2 is List<*>) {
+                        } else if (value2 is Collection<*>) {
                             value_map.set(op, value2.map { procObjectId(it) ?: it });
                         } else if (value2 is Array<*>) {
                             value_map.set(op, value2.map { procObjectId(it) ?: it });

@@ -82,6 +82,6 @@ data class SqlColumnName(val dbType: DbType, var tableName: String, var name: St
     }
 }
 
-fun List<SqlColumnName>.toArray() :SqlColumnNames{
+fun Collection<SqlColumnName>.toArray() :SqlColumnNames{
     return SqlColumnNames(*this.toTypedArray())
 }

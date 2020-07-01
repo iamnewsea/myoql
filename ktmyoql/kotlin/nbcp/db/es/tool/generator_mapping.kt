@@ -128,7 +128,7 @@ class generator_mapping {
         if (field.type.isArray) {
             return getActType(field.type.componentType)
         }
-        if (field.type.IsListType()) {
+        if (field.type.IsCollectionType()) {
             var actType = (field.genericType as ParameterizedType).GetActualClass(0);
             return getActType(actType)
         }

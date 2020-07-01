@@ -28,7 +28,7 @@ fun <T> MutableList<T>.Swap(index1: Int, index2: Int) {
 
 
 //把最里面的数据收集起来。
-inline fun <reified T> List<Array<T>>.Unwind(): Array<T> {
+inline fun <reified T> Collection<Array<T>>.Unwind(): Array<T> {
     var list = mutableListOf<T>()
     this.forEach {
         it.forEach {
@@ -130,7 +130,7 @@ fun Collection<*>.EqualArrayContent(other: Collection<*>, withIndex: Boolean = f
     return one.intersect(two).size == this.size;
 }
 
-inline fun <T> List<out T>.Skip(skipNumber: Int): List<T> {
+inline fun <T> Collection<out T>.Skip(skipNumber: Int): List<T> {
     var ret = mutableListOf<T>();
     if (this.any() == false) return ret;
 
@@ -219,7 +219,7 @@ fun <T> MutableList<T>.InsertAfter(index: Int, item: T) {
 /**
  * 获取相同数据的索引，返回 map ,key 是相同数据的 第一个数据的位置索引，  value 是相同数据的 第二个数据的位置索引。
  */
-inline fun <T, R> Iterable<T>.IntersectIndeies(other: List<R>, equalFunc: (T, R) -> Boolean): Map<Int, Int> {
+inline fun <T, R> Iterable<T>.IntersectIndeies(other: Collection<R>, equalFunc: (T, R) -> Boolean): Map<Int, Int> {
     if (this.any() == false) return mapOf();
     if (other.any() == false) return mapOf();
 
@@ -243,7 +243,7 @@ inline fun <T, R> Iterable<T>.IntersectIndeies(other: List<R>, equalFunc: (T, R)
     return listIndex
 }
 
-inline fun <T, R> Iterable<T>.Minus(other: List<R>, equalFunc: (T, R) -> Boolean): List<T> {
+inline fun <T, R> Iterable<T>.Minus(other: Collection<R>, equalFunc: (T, R) -> Boolean): List<T> {
     if (this.any() == false) return this.toList();
     if (other.any() == false) return this.toList();
 
@@ -255,7 +255,7 @@ inline fun <T, R> Iterable<T>.Minus(other: List<R>, equalFunc: (T, R) -> Boolean
 /**
  * 获取相同数据部分
  */
-inline fun <T, R> Iterable<T>.Intersect(other: List<R>, equalFunc: (T, R) -> Boolean): List<T> {
+inline fun <T, R> Iterable<T>.Intersect(other: Collection<R>, equalFunc: (T, R) -> Boolean): List<T> {
     if (this.any() == false) return this.toList();
     if (other.any() == false) return this.toList();
 
@@ -267,14 +267,14 @@ inline fun <T, R> Iterable<T>.Intersect(other: List<R>, equalFunc: (T, R) -> Boo
 /**
  * 把数据分隔为 DiffData
  */
-inline fun <T, R> Iterable<T>.SplitDiffData(other: List<R>, equalFunc: (T, R) -> Boolean): DiffData<T, R> {
+inline fun <T, R> Iterable<T>.SplitDiffData(other: Collection<R>, equalFunc: (T, R) -> Boolean): DiffData<T, R> {
     return DiffData.load(this, other, equalFunc);
 }
 
 /**
  * 把数据分组
  */
-inline fun <reified T> List<T>.SplitGroup(operatorItem: (T) -> Boolean): List<List<T>> {
+inline fun <reified T> Collection<T>.SplitGroup(operatorItem: (T) -> Boolean): List<List<T>> {
     var ret = mutableListOf<List<T>>()
 
     var prevIndex = 0;
@@ -290,7 +290,7 @@ inline fun <reified T> List<T>.SplitGroup(operatorItem: (T) -> Boolean): List<Li
             break;
         }
 
-        if (operatorItem(this[index])) {
+        if (operatorItem(this.elementAt(index))) {
 
             subSect = this.Slice(prevIndex, index);
             if (subSect.any()) {
@@ -307,7 +307,7 @@ inline fun <reified T> List<T>.SplitGroup(operatorItem: (T) -> Boolean): List<Li
 /**
  * 把某些项移到前面。
  */
-fun <T> List<T>.MoveToFirst(itemCallback: (T) -> Boolean): List<T> {
+fun <T> Collection<T>.MoveToFirst(itemCallback: (T) -> Boolean): List<T> {
     var firstPart = mutableListOf<T>();
     var normalPart = mutableListOf<T>()
 

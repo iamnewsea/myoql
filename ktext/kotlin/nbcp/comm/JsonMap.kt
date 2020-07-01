@@ -133,7 +133,7 @@ open class JsonMap : StringKeyMap<Any?> {
     constructor(vararg pairs: Pair<String, Any?>) : super(*pairs) {
     }
 
-    constructor(data: List<Pair<String, Any?>>) : super(data) {
+    constructor(data: Collection<Pair<String, Any?>>) : super(data) {
     }
 
     operator fun plus(other: JsonMap): JsonMap {
@@ -166,7 +166,7 @@ data class DiffData<T, R>(
     companion object {
         //把数据分隔为 DiffData，
         @JvmStatic
-        inline fun <T, R> load(data: Iterable<T>, other: List<R>, equalFunc: (T, R) -> Boolean): DiffData<T, R> {
+        inline fun <T, R> load(data: Iterable<T>, other: Collection<R>, equalFunc: (T, R) -> Boolean): DiffData<T, R> {
             var diff = DiffData<T, R>();
 
             var indexList = data.IntersectIndeies(other, equalFunc);

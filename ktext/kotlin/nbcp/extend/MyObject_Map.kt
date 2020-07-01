@@ -52,7 +52,7 @@ inline fun <reified K, reified V, reified RK, reified RV> Map<K, V>.ToMap(keyAct
     return map;
 }
 
-inline fun <reified T, reified RK, reified RV> List<T>.ToMap(keyAct: ((T) -> RK), valueAct: ((T) -> RV)): LinkedHashMap<RK, RV> {
+inline fun <reified T, reified RK, reified RV> Collection<T>.ToMap(keyAct: ((T) -> RK), valueAct: ((T) -> RV)): LinkedHashMap<RK, RV> {
     var map = linkedMapOf<RK, RV>()
     this.forEach {
         map[keyAct(it)] = valueAct(it);
@@ -99,8 +99,8 @@ fun Map<String, *>.getStringValue(vararg keys: String): String? {
     var v_type = v::class.java;
     if (v_type.isArray) {
         return (v as Array<Any>).map { it.AsString() }.joinToString(",")
-    } else if (List::class.java.isAssignableFrom(v_type)) {
-        return (v as List<Any>).map { it.AsString() }.joinToString(",")
+    } else if (v_type.IsCollectionType()) {
+        return (v as Collection<Any>).map { it.AsString() }.joinToString(",")
     }
     return v.toString()
 }
@@ -114,7 +114,7 @@ fun Map<String, *>.getIntValue(vararg keys: String): Int {
 //------------------
 
 
-private fun get_array_querys(list: List<Any?>): List<String> {
+private fun get_array_querys(list: Collection<Any?>): List<String> {
     return list.map { value ->
         if (value == null) return@map arrayOf<String>();
 
@@ -124,8 +124,8 @@ private fun get_array_querys(list: List<Any?>): List<String> {
                 return@map get_array_querys((value as Array<*>).toList())
                         .map { "[]=" + it }
                         .toTypedArray()
-            } else if (type.IsListType()) {
-                return@map get_array_querys((value as List<*>))
+            } else if (type.IsCollectionType()) {
+                return@map get_array_querys((value as Collection<*>))
                         .map { "[]=" + it }
                         .toTypedArray()
             } else if (type.IsMapType()) {
@@ -159,8 +159,8 @@ private fun get_map_querys(map: Map<String, *>): List<String> {
                 return@map get_array_querys((value as Array<*>).toList())
                         .map { key + it }
                         .toTypedArray()
-            } else if (type.IsListType()) {
-                return@map get_array_querys((value as List<*>))
+            } else if (type.IsCollectionType()) {
+                return@map get_array_querys((value as Collection<*>))
                         .map { key + it }
                         .toTypedArray()
             } else if (type.IsMapType()) {

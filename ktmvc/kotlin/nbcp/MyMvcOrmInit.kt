@@ -71,7 +71,7 @@ open class MyMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
             if (converter is AllEncompassingFormHttpMessageConverter) {
                 converter.setCharset(utf8)
 
-                (MyUtil.getPrivatePropertyValue(converter, "partConverters") as List<*>).forEach foreach2@{ sub_conveter ->
+                (MyUtil.getPrivatePropertyValue(converter, "partConverters") as Collection<*>).forEach foreach2@{ sub_conveter ->
 
                     if (sub_conveter is MappingJackson2HttpMessageConverter) {
                         sub_conveter.defaultCharset = utf8

@@ -188,15 +188,21 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
     //从 json, queryString,header中获取值。
     fun getValue(key: String): String {
         if (queryJson.containsKey(key)) {
-            var ret = queryJson.get(key) ?: ""
-            if (ret is String) return ret;
-            return (ret as List<String>).joinToString(",")
+            var ret = queryJson.get(key)
+            if( ret != null) {
+                if (ret is String) return ret;
+                return (ret as Collection<String>).joinToString(",")
+            }
 
-        } else if (json.containsKey(key)) {
-            var ret = json.get(key) ?: ""
-            if (ret is String) return ret;
-            else if (ret is ArrayList<*>) return ret.joinToString(",")
-            return ret.AsString()
+        }
+
+        if (json.containsKey(key)) {
+            var ret = json.get(key)
+            if( ret != null) {
+                if (ret is String) return ret;
+                else if (ret is Collection<*>) return ret.joinToString(",")
+                return ret.AsString()
+            }
         }
 
         var ret = this.getHeader(key)

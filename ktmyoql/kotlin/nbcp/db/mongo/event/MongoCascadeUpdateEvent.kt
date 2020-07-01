@@ -81,7 +81,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
             return;
         }
 
-        var ret = eventData.extData as List<CascadeUpdateEventDataModel>
+        var ret = eventData.extData as Collection<CascadeUpdateEventDataModel>
         if (ret.any() == false) return;
 
 
