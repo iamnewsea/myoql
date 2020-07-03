@@ -7,6 +7,7 @@ import nbcp.comm.*
 import org.springframework.http.MediaType
 import nbcp.utils.*
 import nbcp.db.LoginUserModel
+import org.springframework.web.servlet.HandlerMapping
 import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -265,13 +266,19 @@ fun HttpServletRequest.findParameterIntValue(key: String): Int {
 }
 
 /**
- * 从request属性， URL ， Form表单，Header，Cookie中查找参数
+ * 从request属性，Path变量， URL ， Form表单，Header 中查找参数
  */
 fun HttpServletRequest.findParameterValue(key: String): Any? {
     var ret = this.getAttribute(key)
     if (ret != null) {
         return ret;
     }
+
+    ret = (this.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as Map<String, Any?>?)?.get(key)
+    if (ret != null) {
+        return ret;
+    }
+
 
     ret = this.queryJson.get(key)
     if (ret != null) {
@@ -298,10 +305,10 @@ fun HttpServletRequest.findParameterValue(key: String): Any? {
         return ret;
     }
 
-    ret = this.cookies?.firstOrNull { it.name == key }?.value
-    if (ret != null) {
-        return ret;
-    }
+//    ret = this.cookies?.firstOrNull { it.name == key }?.value
+//    if (ret != null) {
+//        return ret;
+//    }
 
     return null;
 }

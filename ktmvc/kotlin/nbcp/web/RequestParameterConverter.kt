@@ -11,6 +11,7 @@ import org.springframework.web.method.support.ModelAndViewContainer
 import nbcp.comm.*
 import nbcp.utils.*
 import org.slf4j.LoggerFactory
+import org.springframework.web.servlet.HandlerMapping
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
 import java.lang.RuntimeException
 import java.lang.reflect.Method
@@ -86,45 +87,10 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
         var key = parameter.parameterName
 
 
-        if (webRequest.queryString != null) {
-            var queryMap = webRequest.queryJson
-            if (queryMap.containsKey(key)) {
-                value = queryMap.get(key)
+        value = (webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as Map<String, Any?>?)?.get(key);
 
-                if (value == null) {
-                    if (parameter.parameterType.IsBooleanType()) {
-                        value = true;
-                    }
-                } else {
-                    if (value::class.java.IsCollectionType()) {
-                        //如果参数是 List.
-                        if (parameter.parameterType.isArray) {
-                            if (parameter.parameterType.componentType.IsStringType()) {
-                                value = (value as Collection<String>).toTypedArray()
-                            } else {
-                                value = (value as Collection<String>).map { it.ConvertType(parameter.parameterType.componentType) }.toTypedArray()
-                            }
-                        } else if (parameter.parameterType.IsCollectionType()) {
-                            var genType = (parameter.genericParameterType as ParameterizedTypeImpl).GetActualClass(0);
-                            if (!genType.IsStringType()) {
-                                value = (value as Collection<String>).map { it.ConvertType(genType) }
-                            }
-                        } else if (parameter.parameterType.IsStringType()) {
-                            value = (value as Collection<String>).joinToString(",")
-                        }
-                    } else {
-                        //如果参数是 List.
-                        if (parameter.parameterType.isArray) {
-                            value = arrayOf(value.ConvertType(parameter.parameterType.componentType))
-                        } else if (parameter.parameterType.IsCollectionType()) {
-                            var genType = (parameter.genericParameterType as ParameterizedTypeImpl).GetActualClass(0);
-                            value = listOf(value.ConvertType(genType))
-                        } else if (parameter.parameterType.IsStringType() == false) {
-                            value = value.ConvertType(parameter.parameterType)
-                        }
-                    }
-                }
-            }
+        if (value == null && webRequest.queryString != null) {
+            value = getFromQuery(webRequest, parameter);
         }
 
         if (value == null && myRequest != null) {
@@ -171,6 +137,58 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
             return retValue.AsString().trim()
         }
         return retValue;
+    }
+
+    private fun getFromQuery(webRequest: HttpServletRequest, parameter: MethodParameter): Any? {
+        var key = parameter.parameterName
+        var value: Any? = null
+        var queryMap = webRequest.queryJson
+        if (queryMap.containsKey(key) == false) {
+            return null;
+        }
+
+        value = queryMap.get(key)
+
+        if (value == null) {
+            if (parameter.parameterType.IsBooleanType()) {
+                return true;
+            }
+            return null;
+        }
+
+        if (value::class.java.IsCollectionType()) {
+            //如果参数是 List.
+            if (parameter.parameterType.isArray) {
+                if (parameter.parameterType.componentType.IsStringType()) {
+                    value = (value as Collection<String>).toTypedArray()
+                } else {
+                    value = (value as Collection<String>).map { it.ConvertType(parameter.parameterType.componentType) }.toTypedArray()
+                }
+            } else if (parameter.parameterType.IsCollectionType()) {
+                var genType = (parameter.genericParameterType as ParameterizedTypeImpl).GetActualClass(0);
+                if (!genType.IsStringType()) {
+                    value = (value as Collection<String>).map { it.ConvertType(genType) }
+                }
+            } else if (parameter.parameterType.IsStringType()) {
+                value = (value as Collection<String>).joinToString(",")
+            }
+
+            return value;
+        }
+
+
+        //如果参数是 List.
+        if (parameter.parameterType.isArray) {
+            value = arrayOf(value.ConvertType(parameter.parameterType.componentType))
+        } else if (parameter.parameterType.IsCollectionType()) {
+            var genType = (parameter.genericParameterType as ParameterizedTypeImpl).GetActualClass(0);
+            value = listOf(value.ConvertType(genType))
+        } else if (parameter.parameterType.IsStringType() == false) {
+            value = value.ConvertType(parameter.parameterType)
+        }
+
+
+        return value;
     }
 
 }
