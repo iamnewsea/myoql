@@ -119,7 +119,7 @@ ${endfor}
                 return this.$route.params.action;
             },
             id(){
-                this.$route.params.id || """;
+                this.$route.params.id || "";
             },
             action_name(){
                 return {add: "添加", edit: "修改"}[this.action]
