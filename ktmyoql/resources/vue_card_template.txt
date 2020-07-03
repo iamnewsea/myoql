@@ -111,28 +111,27 @@ ${fif:#enum}
                 ${type}: jv.enum.${type}.getData(),
 ${endif}
 ${endfor}
-                //URL参数
-                action: "",
-                action_name: "",
-                id: "",
                 info: {}, //子对象需要声明。
             }
         },
-        watch:{
-           action(val){
-               this.action_name =  {add: "添加", edit: "修改"}[val]
-           }
+        computed:{
+            action(){
+                return this.$route.params.action;
+            },
+            id(){
+                this.$route.params.id || """;
+            },
+            action_name(){
+                return {add: "添加", edit: "修改"}[this.action]
+            }
         },
         mounted() {
-            this.action = this.$route.params.action;
-            this.id = this.$route.query.id;
-
             this.loadData()
         },
         methods: {
             loadData() {
                 if (!this.id) return;
-                this.$http.post("/${group}/${entity_url}/detail?id=" + this.id).then(res => {
+                this.$http.post("/${group}/${entity_url}/detail/" + this.id).then(res => {
                     this.info = res.data.data;
                 });
             },
@@ -145,7 +144,7 @@ ${endfor}
                 this.$http.post("/${group}/${entity_url}/save", this.info).then(res => {
                     jv.info(this.action_name + " 成功");
                     if (this.action == "add") {
-                        this.$router.push("/${group}/${entity_url}/edit?id=" + res.data.data)
+                        this.$router.push("/${group}/${entity_url}/edit/" + res.data.data)
                     }
                     else if (this.action == "edit") {
                         this.$router.push("/${group}/${entity_url}/list")

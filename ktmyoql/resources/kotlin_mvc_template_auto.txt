@@ -78,7 +78,7 @@ ${endif}
     }
 
     @ApiOperation("详情")
-    @JsonpMapping("/detail")
+    @JsonpMapping("/detail/{id}")
     fun detail(
         @Require id: String,
         request: MyHttpRequestWrapper
@@ -149,7 +149,7 @@ ${if:status}
     }
 ${endif}
     @ApiOperation("删除")
-    @JsonpMapping("/delete")
+    @JsonpMapping("/delete/{id}")
     fun delete(
       @Require id:String,
       request: MyHttpRequestWrapper
