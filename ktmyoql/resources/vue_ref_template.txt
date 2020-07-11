@@ -1,5 +1,5 @@
 <template>
-  <my-ref url="/${group}/${entity_url}/ref"
+  <my-ref url="/${group}/${entity_url}/list"
           v-model="value" @loaded="procData" :multi="multi" :page-size="10"
           ref="list" name="${title}" :store="true"  v-bind="[$attrs]"
           :readOnly="readOnly" @change="(v,id)=>$emit('input',v,id)"

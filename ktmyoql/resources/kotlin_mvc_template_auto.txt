@@ -51,32 +51,6 @@ ${endif}
             }
     }
 
-    @ApiOperation("引用列表")
-    @JsonpMapping("/ref")
-    fun ref(
-${if:name}
-        name: String,
-${endif}
-        @Require skip: Int,
-        @Require take: Int,
-        request: MyHttpRequestWrapper
-    ): ListResult<${entity_class}> {
-
-        mor.${group}.${entity}.query()
-            .apply{
-${if:name}
-                if(name.HasValue){
-                    this.where{ it.name match_like name }
-                }
-${endif}
-            }
-            .limit(skip,take)
-            .toListResult()
-            .apply{
-                return this;
-            }
-    }
-
     @ApiOperation("详情")
     @JsonpMapping("/detail/{id}")
     fun detail(
