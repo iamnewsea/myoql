@@ -171,7 +171,9 @@ infix fun MongoColumnName.match_lessThan(to: Any): Criteria {
     return Criteria.where(key).lt(to!!);
 }
 
-//大于等于并且小于。
+/**
+ * 大于等于并且小于。
+ */
 infix fun MongoColumnName.match_between(value: Pair<Any, Any>): Criteria {
     var (key, value2) = proc_mongo_match(this, value);
     var pair = value2 as Pair<Any, Any>
