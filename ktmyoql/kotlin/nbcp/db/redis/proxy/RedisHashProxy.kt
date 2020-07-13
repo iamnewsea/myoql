@@ -26,6 +26,16 @@ class RedisHashProxy(
         return anyTypeCommand.opsForHash<String, Any>().entries(cacheKey)
     }
 
+
+    /**
+     * 增加其中的某一项。
+     */
+    fun increment(key: String, field: String, value: Long = 1): Long {
+        var cacheKey = getFullKey(key);
+        return anyTypeCommand.opsForHash<String, Any>().increment(cacheKey, field, value)
+    }
+
+
 //    fun setMap(key: String, map: Map<String, String>) {
 //        return redis.byteArrayCommand(dbOffset) { cmd ->
 //            var cacheKey = getKey(key)
