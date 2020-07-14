@@ -255,48 +255,21 @@ open class UploadService {
         var fFmpegFrameGrabber = FFmpegFrameGrabber(vFile)
         fFmpegFrameGrabber.start();
 
-        val ftp = fFmpegFrameGrabber.lengthInFrames
+        try {
+            val ftp = fFmpegFrameGrabber.lengthInFrames
 
-        annexInfo.imgHeight = fFmpegFrameGrabber.imageHeight;
-        annexInfo.imgWidth = fFmpegFrameGrabber.imageWidth;
-        annexInfo.videoTime = (ftp / fFmpegFrameGrabber.frameRate / 60).AsInt();
-
-        fFmpegFrameGrabber.stop()
-        fFmpegFrameGrabber.close()
+            annexInfo.imgHeight = fFmpegFrameGrabber.imageHeight;
+            annexInfo.imgWidth = fFmpegFrameGrabber.imageWidth;
+            annexInfo.videoTime = (ftp / fFmpegFrameGrabber.frameRate / 60).AsInt();
+        } finally {
+            fFmpegFrameGrabber.stop()
+            fFmpegFrameGrabber.close()
+        }
     }
 
     private fun setVideoUrlTime(annexInfo: SysAnnex, vFile: File, fileData: FileNameData) {
-        var fFmpegFrameGrabber = FFmpegFrameGrabber(vFile)
-        fFmpegFrameGrabber.start();
-
-        val ftp = fFmpegFrameGrabber.lengthInFrames
-
-        annexInfo.videoTime = (ftp / fFmpegFrameGrabber.frameRate / 60).AsInt();
-
-        var index = -1;
         var targetFileName = fileData.getTargetPaths().joinToString(File.separator) + File.separator + CodeUtil.getCode() + annexInfo.ext;
-        while (index <= ftp) {
-            index++;
-
-            var frame = fFmpegFrameGrabber.grabImage()
-            if (frame == null) {
-                break;
-            }
-
-            if (index == 5) {
-                ImageIO.write(FrameToBufferedImage(frame), "jpg", File(uploadPath + File.separator + targetFileName))
-                annexInfo.videoLogoUrl = targetFileName;
-                break
-            }
-
-        }
-        fFmpegFrameGrabber.stop()
-        fFmpegFrameGrabber.close()
-    }
-
-    fun FrameToBufferedImage(frame: Frame): BufferedImage { //创建BufferedImage对象
-        val converter = Java2DFrameConverter()
-        return converter.getBufferedImage(frame)
+        annexInfo.videoLogoUrl = VideoUtil.getVideoLogo(vFile, uploadPath, targetFileName)
     }
 
 
