@@ -29,7 +29,7 @@ object VideoUtil {
                 }
 
                 if (index == 5) {
-                    ImageIO.write(FrameToBufferedImage(frame), "jpg", File(uploadPath + targetLogoPath))
+                    ImageIO.write(Java2DFrameConverter().getBufferedImage(frame), "jpg", File(uploadPath + targetLogoPath))
                     return uploadPath;
                 }
             }
@@ -39,10 +39,5 @@ object VideoUtil {
         }
 
         return "";
-    }
-
-    private fun FrameToBufferedImage(frame: Frame): BufferedImage { //创建BufferedImage对象
-        val converter = Java2DFrameConverter()
-        return converter.getBufferedImage(frame)
     }
 }
