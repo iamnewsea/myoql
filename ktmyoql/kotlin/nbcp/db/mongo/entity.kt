@@ -159,6 +159,12 @@ open class SysAnnex(
         var imgWidth: Int = 0,          // 图像宽度值。
         @Cn("图像高度")
         var imgHeight: Int = 0,         // 图像高度值。
+
+        @Cn("时长")
+        var videoTime: Int = 0,          //视频时长,秒
+        @Cn("封面")
+        var videoLogoUrl: String = "",   //视频封面链接 ，第一巾帧链接
+
         @Cn("短路径")
         var url: String = "",           //下载的路径。没有 host
 

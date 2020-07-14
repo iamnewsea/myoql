@@ -1,25 +1,34 @@
 package nbcp.service
 
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Service
-import org.springframework.web.multipart.MultipartFile
 import nbcp.comm.*
-import nbcp.utils.*
-import nbcp.db.*
-import nbcp.db.mongo.entity.*
+import nbcp.db.DatabaseEnum
+import nbcp.db.IdName
+import nbcp.db.IdUrl
+import nbcp.db.db
+import nbcp.db.mongo.entity.SysAnnex
 import nbcp.db.mongo.service.UploadFileMongoService
 import nbcp.db.mysql.service.UploadFileMysqlService
+import nbcp.utils.CodeUtil
+import nbcp.utils.HttpUtil
+import nbcp.utils.Md5Util
+import nbcp.utils.SpringUtil
+import org.bytedeco.javacv.FFmpegFrameGrabber
+import org.bytedeco.javacv.Frame
+import org.bytedeco.javacv.Java2DFrameConverter
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-
+import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
+import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
-import java.lang.RuntimeException
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.imageio.ImageIO
 import javax.servlet.http.HttpServletRequest
+
 
 /**
  * 参数传递过程中,都没有 uploadPath 部分.
@@ -50,16 +59,16 @@ open class UploadService {
         fun getTargetPaths(): Array<String> {
             var list = mutableListOf<String>()
             list.add(LocalDate.now().format("yyyy-MM"));
+            var pixelTotal = imgWidth * imgHeight;
 
-            if (this.extType == FileExtentionTypeEnum.Image) {
+
+            if (pixelTotal > 0) {
+                var pixel = (pixelTotal / 10000.0).toInt();
                 //按图片像素文件夹命名。不足1万 = 0
-                var pixel = ((imgWidth * imgHeight) / 10000.0).toInt();
-
                 list.add(pixel.toString())
             } else {
                 list.add(this.extType.toString())
             }
-//            list.add(this.extType.toString())
             return list.toTypedArray();
         }
 
@@ -217,21 +226,20 @@ open class UploadService {
 
             annexInfo.imgWidth = bufferedImage.getWidth();
             annexInfo.imgHeight = bufferedImage.getHeight();
+        } else if (extInfo.extType == FileExtentionTypeEnum.Video) {
 
-            fileData.imgWidth = annexInfo.imgWidth;
-            fileData.imgHeight = annexInfo.imgHeight;
+            fillVideoWidthHeight(annexInfo, vFile);
         }
 
+        fileData.imgWidth = annexInfo.imgWidth;
+        fileData.imgHeight = annexInfo.imgHeight;
         var targetFileName = fileData.getTargetFileName(if (saveCorp) corpId else "")
+        annexInfo.url = renameFile(vTempFile, targetFileName).replace("\\", "/")
 
+        if (extInfo.extType == FileExtentionTypeEnum.Video) {
+            setVideoUrlTime(annexInfo, vFile, fileData);
+        }
 
-        annexInfo.url = renameFile(vTempFile, targetFileName)
-
-//        if (fileData.extType == FileExtentionTypeEnum.Image && logoSize > 0) {
-//            ImageUtil.zoomImageScale(uploadPath + annexInfo.url, uploadPath + annexInfo.url + ".${logoSize}." + fileData.extName, logoSize, logoSize)
-//        }
-
-        annexInfo.url = annexInfo.url.replace("\\", "/");
 
         if (saveCorp) {
             annexInfo.corpId = corpId
@@ -241,6 +249,54 @@ open class UploadService {
             return ApiResult<IdUrl>("记录到数据出错")
         }
         return ApiResult.of(IdUrl(annexInfo.id, annexInfo.url))
+    }
+
+    private fun fillVideoWidthHeight(annexInfo: SysAnnex, vFile: File) {
+        var fFmpegFrameGrabber = FFmpegFrameGrabber(vFile)
+        fFmpegFrameGrabber.start();
+
+        val ftp = fFmpegFrameGrabber.lengthInFrames
+
+        annexInfo.imgHeight = fFmpegFrameGrabber.imageHeight;
+        annexInfo.imgWidth = fFmpegFrameGrabber.imageWidth;
+        annexInfo.videoTime = (ftp / fFmpegFrameGrabber.frameRate / 60).AsInt();
+
+        fFmpegFrameGrabber.stop()
+        fFmpegFrameGrabber.close()
+    }
+
+    private fun setVideoUrlTime(annexInfo: SysAnnex, vFile: File, fileData: FileNameData) {
+        var fFmpegFrameGrabber = FFmpegFrameGrabber(vFile)
+        fFmpegFrameGrabber.start();
+
+        val ftp = fFmpegFrameGrabber.lengthInFrames
+
+        annexInfo.videoTime = (ftp / fFmpegFrameGrabber.frameRate / 60).AsInt();
+
+        var index = -1;
+        var targetFileName = fileData.getTargetPaths().joinToString(File.separator) + File.separator + CodeUtil.getCode() + annexInfo.ext;
+        while (index <= ftp) {
+            index++;
+
+            var frame = fFmpegFrameGrabber.grabImage()
+            if (frame == null) {
+                break;
+            }
+
+            if (index == 5) {
+                ImageIO.write(FrameToBufferedImage(frame), "jpg", File(uploadPath + File.separator + targetFileName))
+                annexInfo.videoLogoUrl = targetFileName;
+                break
+            }
+
+        }
+        fFmpegFrameGrabber.stop()
+        fFmpegFrameGrabber.close()
+    }
+
+    fun FrameToBufferedImage(frame: Frame): BufferedImage { //创建BufferedImage对象
+        val converter = Java2DFrameConverter()
+        return converter.getBufferedImage(frame)
     }
 
 
@@ -352,6 +408,17 @@ open class UploadService {
         if (r.exists() == false) {
             return ApiResult()
         }
+
+        if (annex.videoLogoUrl.HasValue) {
+            var targetLogoFileName = File.separator + fileData.getTargetPaths().joinToString(File.separator) + File.separator + CodeUtil.getCode() + "." + fileData.extName;
+            annex.videoLogoUrl = targetLogoFileName;
+
+            var r2 = File(uploadPath + annex.videoLogoUrl).copyTo(File(uploadPath + targetLogoFileName))
+            if (r2.exists() == false) {
+                return ApiResult()
+            }
+        }
+
 
         annex.url = targetFileName;
         annex.id = "";
