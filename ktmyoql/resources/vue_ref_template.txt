@@ -1,7 +1,7 @@
 <template>
   <my-ref url="/${group}/${entity_url}/list"
           v-model="value" @loaded="procData" :multi="multi" :page-size="10"
-          ref="list" name="${title}" :store="true"  v-bind="[$attrs]"
+          ref="list" name="${title}" :store="true"  v-bind="[$attrs]" @input="v=>$emit('input',v)"
           :readOnly="readOnly"
   >
     <el-table-column type="index" clign="center" width="50"></el-table-column>
