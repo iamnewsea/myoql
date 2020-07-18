@@ -14,8 +14,8 @@ import java.time.LocalTime
 import java.util.*
 
 object UserCodeGenerator {
-    fun genMvcAuto(group: String, entity: BaseMetaData): String {
-        var stream = this::class.java.getResourceAsStream("/kotlin_mvc_template_auto.txt")
+    fun genMvcBase(group: String, entity: BaseMetaData): String {
+        var stream = this::class.java.getResourceAsStream("/kotlin_mvc_template_base.txt")
         var text = stream.readBytes().toString(utf8)
 
         return gen(group, entity, text);
