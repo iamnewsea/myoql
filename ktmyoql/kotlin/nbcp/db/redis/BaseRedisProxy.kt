@@ -24,7 +24,7 @@ enum class RedisRenewalTypeEnum {
 abstract class BaseRedisProxy(val group: String, val defaultCacheSeconds: Int) {
     companion object {
         @JvmStatic
-        fun getFullKey(group:String,key: String): String {
+        fun getFullKey(group: String, key: String): String {
             if (key.startsWith(group + ":")) return key;
             return arrayOf(group, key).filter { it.isNotEmpty() }.joinToString(":");
         }
@@ -110,13 +110,21 @@ abstract class BaseRedisProxy(val group: String, val defaultCacheSeconds: Int) {
     fun expireKey(key: String, cacheSeconds: Int = defaultCacheSeconds) {
         var cs = cacheSeconds.AsInt();
         if (cs <= 0) {
+            RedisTask.deleteKeys(getFullKey(key))
             return;
         }
 
         RedisTask.setExpireKey(getFullKey(key), cs);
     }
 
-    fun deleteKeys(vararg keys: String): Long = anyTypeCommand.delete(keys.map { getFullKey(it) });
+    /***
+     * 删除键，使键过期。
+     */
+    fun deleteKeys(vararg keys: String): Long {
+        var fullKeys = keys.map { getFullKey(it) }
+        RedisTask.deleteKeys(*fullKeys.toTypedArray());
+        return anyTypeCommand.delete(fullKeys);
+    }
 
     /**
      * 判断是否存在该Key
