@@ -111,7 +111,6 @@ infix fun MongoColumnName.match_pattern(pattern: String): Criteria {
     return Criteria.where(this.toString()).regex(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE))
 }
 
-
 infix fun MongoColumnName.match_like(like: String): Criteria {
     return this match_pattern "${like}"
 }
