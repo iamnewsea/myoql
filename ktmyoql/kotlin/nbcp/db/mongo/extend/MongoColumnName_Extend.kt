@@ -97,11 +97,20 @@ infix fun MongoColumnName.match_size(value: Int): Criteria {
 
 
 /**
- * 模糊查询，用法： mor.code.qrCodeInfo.product.name match_pattern "^.*王.*$"
+ * 模糊查询，用法：
+ * mor.code.qrCodeInfo.product.name match_pattern "国际"
+ * 即：内容包含 "国际"。
+ *
+ * mor.code.qrCodeInfo.product.name match_pattern "^国际"
+ * 即：内容以 "国际" 开头。
+ *
+ * mor.code.qrCodeInfo.product.name match_pattern "国际$"
+ * 即：内容以 "国际" 结尾。
  */
 infix fun MongoColumnName.match_pattern(pattern: String): Criteria {
     return Criteria.where(this.toString()).regex(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE))
 }
+
 
 infix fun MongoColumnName.match_like(like: String): Criteria {
     return this match_pattern "${like}"
