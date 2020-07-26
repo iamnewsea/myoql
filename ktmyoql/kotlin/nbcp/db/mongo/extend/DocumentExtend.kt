@@ -53,7 +53,6 @@ fun Document.GetComplexPropertyValue(vararg eachProperty: String): Any? {
     } else {
         retVal = this.get(key);
 
-
         /**
          * 如果取不到值。则尝试 id , _id
          */
@@ -65,6 +64,11 @@ fun Document.GetComplexPropertyValue(vararg eachProperty: String): Any? {
             }
         }
     }
+
+    if( retVal== null){
+        return null;
+    }
+
 
     if (eachProperty.size == 1) {
         return retVal;
