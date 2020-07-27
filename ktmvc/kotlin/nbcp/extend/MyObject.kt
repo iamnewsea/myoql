@@ -233,7 +233,7 @@ var HttpServletRequest.LoginUser: LoginUserModel
     }
     set(value) {
         this.setAttribute("[LoginUser]", value)
-        HttpContext.response.setHeader("token", value.token)
+        HttpContext.nullableResponse?.setHeader("token", value.token)
     }
 
 

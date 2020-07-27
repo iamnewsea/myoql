@@ -28,9 +28,14 @@ object HttpContext {
     @JvmStatic
     val request: HttpServletRequest
         get() {
-            return (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.request!!
+            return this.nullableRequest!!
         }
 
+    @JvmStatic
+    val nullableRequest: HttpServletRequest?
+        get() {
+            return (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.request
+        }
 //    @JvmStatic
 //    val session: HttpSession
 //        get() {
@@ -40,7 +45,13 @@ object HttpContext {
     @JvmStatic
     val response: HttpServletResponse
         get() {
-            return (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.response!!
+            return this.nullableResponse!!
+        }
+
+    @JvmStatic
+    val nullableResponse: HttpServletResponse?
+        get() {
+            return (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.response
         }
 
     @JvmStatic
@@ -48,14 +59,6 @@ object HttpContext {
         get() {
             return request.servletContext!!
         }
-
-    @JvmStatic
-    val nullableRequest: HttpServletRequest?
-        get() {
-            return (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.request
-        }
-
-
 
 
 //    @JvmStatic
