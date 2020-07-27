@@ -212,16 +212,18 @@ var Request_Id: UInt = 0U;
 //        request_cache = value
 //    }
 
+var getLoginUserFunc: ((HttpServletRequest) -> LoginUserModel?)? = null
+
 /**
  * 高并发系统不应该有Session。使用token即可。
- * 设置 Attribute("(LoginUser)") ,需要通过 HandlerInterceptorAdapter.preHandle 通过 token 设置 LoginUser，来保持登录信息，比 RedisSession 简单
+ * 设置 Attribute("[LoginUser]") ,需要通过 HandlerInterceptorAdapter.preHandle 通过 token 设置 LoginUser，来保持登录信息，比 RedisSession 简单
  */
 var HttpServletRequest.LoginUser: LoginUserModel
     get() {
-        return this.getAttribute("(LoginUser)") as LoginUserModel? ?: LoginUserModel()
+        return this.getAttribute("[LoginUser]") as LoginUserModel? ?: (getLoginUserFunc?.invoke(this) ?: LoginUserModel())
     }
     set(value) {
-        this.setAttribute("(LoginUser)", value)
+        this.setAttribute("[LoginUser]", value)
         HttpContext.response.setHeader("token", value.token)
     }
 
