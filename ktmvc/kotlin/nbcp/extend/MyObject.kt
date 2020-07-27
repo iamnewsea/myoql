@@ -220,7 +220,16 @@ var getLoginUserFunc: ((HttpServletRequest) -> LoginUserModel?)? = null
  */
 var HttpServletRequest.LoginUser: LoginUserModel
     get() {
-        return this.getAttribute("[LoginUser]") as LoginUserModel? ?: (getLoginUserFunc?.invoke(this) ?: LoginUserModel())
+        var ret = this.getAttribute("[LoginUser]") as LoginUserModel?;
+        if (ret != null) {
+            return ret;
+        }
+        ret = getLoginUserFunc?.invoke(this);
+        if (ret != null) {
+            this.LoginUser = ret;
+            return ret;
+        }
+        return LoginUserModel()
     }
     set(value) {
         this.setAttribute("[LoginUser]", value)
