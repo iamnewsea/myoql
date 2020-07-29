@@ -3,7 +3,6 @@ package nbcp.wx.miniprogram
 import nbcp.comm.*
 import nbcp.db.redis.proxy.RedisStringProxy
 import nbcp.utils.HttpUtil
-import nbcp.wx.WxUserData
 import nbcp.wx.wx
 
 object WxMiniProgramGroup {

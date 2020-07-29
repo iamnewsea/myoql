@@ -12,6 +12,8 @@ import java.time.LocalDateTime
  * 微信的用户信息。
  */
 data class WxUserData(
+        var code: String = "",  //微信登录时产生的临时Code，用于验证用户登录信息
+
         var session_key: String = "",
         var openid: String = "",
         var unionid: String = "",
