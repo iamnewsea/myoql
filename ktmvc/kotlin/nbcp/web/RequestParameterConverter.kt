@@ -101,27 +101,12 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
             value = myRequest.json.get(key)
         }
 
-
         if (value == null) {
             value = webRequest.getHeader(key)
         }
 
         if (value == null) {
-            var require = parameter.getParameterAnnotation(Require::class.java)
-            if (require != null) {
-                var caller = ""
-                if (parameter.executable is Method) {
-                    var method = parameter.executable as Method
-                    caller = "${method.name}(${method.parameters.map { it.toString() }.joinToString()}):${method.returnType.name}"
-                } else {
-                    var method = parameter.executable
-                    caller = "${method.name}(${method.parameters.map { it.toString() }.joinToString()})"
-                }
-
-                var errorMsg = require.value.AsString("请求:${webRequest.fullUrl} --> 方法:${caller} 中，找不到参数${parameter.parameterName}")
-                logger.error(errorMsg);
-                throw RuntimeException("找不到参数${parameter.parameterName}")
-            }
+            checkRequire(parameter, webRequest);
 
             if (parameter.parameterType == String::class.java) {
                 return "";
@@ -134,9 +119,34 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
         var retValue = value.ConvertType(parameter.parameterType);
 
         if (parameter.parameterType == String::class.java) {
-            return retValue.AsString().trim()
+            var strValue = retValue.AsString().trim()
+
+            if (strValue.isEmpty()) {
+                checkRequire(parameter, webRequest)
+            }
+
+            retValue = strValue;
         }
+
         return retValue;
+    }
+
+    private fun checkRequire(parameter: MethodParameter, webRequest: HttpServletRequest) {
+        var require = parameter.getParameterAnnotation(Require::class.java)
+        if (require != null) {
+            var caller = ""
+            if (parameter.executable is Method) {
+                var method = parameter.executable as Method
+                caller = "${method.name}(${method.parameters.map { it.toString() }.joinToString()}):${method.returnType.name}"
+            } else {
+                var method = parameter.executable
+                caller = "${method.name}(${method.parameters.map { it.toString() }.joinToString()})"
+            }
+
+            var errorMsg = require.value.AsString("请求:${webRequest.fullUrl} --> 方法:${caller} 中，找不到参数${parameter.parameterName}")
+            logger.error(errorMsg);
+            throw RuntimeException("找不到参数${parameter.parameterName}")
+        }
     }
 
     private fun getFromQuery(webRequest: HttpServletRequest, parameter: MethodParameter): Any? {
