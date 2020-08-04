@@ -19,11 +19,12 @@ import java.time.format.DateTimeFormatter
  * 微信请求做成实体方法。
  */
 data class WxPrePayServerRequestData(
-        var spbill_create_ip:String,// 终端IP
-        var notify_url: String  ,
-        var out_trade_no: String  ,
-        var total_fee: Int  ,
-        var openid: String  ,
+        var body: String,
+        var spbill_create_ip: String,// 终端IP
+        var notify_url: String,
+        var out_trade_no: String,
+        var total_fee: Int,
+        var openid: String,
         var attach: String = "", // 附加数据
         var detail: String = ""  // 商品详情
 ) {
@@ -34,7 +35,7 @@ data class WxPrePayServerRequestData(
 
     //    @Ignore
     //  var sign: String = ""
-    var body: String = "时光锁纪-相册"
+
 
     private var nonce_str: String = CodeUtil.getCode().Slice(0, 32)  //是
 
