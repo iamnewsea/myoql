@@ -67,6 +67,7 @@ object WxPayGroup {
      * 预付
      */
     fun prepay(
+            body:String,
             spbill_create_ip: String,
             notify_url: String,
             out_trade_no: String,
@@ -75,6 +76,7 @@ object WxPayGroup {
             attach: String = "", // 附加数据
             detail: String = ""  // 商品详情
     ) = WxPrePayServerRequestData(
+            body,
             spbill_create_ip,
             notify_url,
             out_trade_no,
