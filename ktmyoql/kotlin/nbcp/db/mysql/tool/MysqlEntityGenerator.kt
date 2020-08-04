@@ -217,15 +217,20 @@ data class ${tableName}(
                 type = "bit"
             }
 
-            return@map """`${propertyType.name}` ${type} not null ${if (propertyType.IsNumberType()) "default '0'" else if (propertyType.IsStringType()) "default ''" else ""} comment ''"""
+            return@map """`${property.name}` ${type} not null ${if (propertyType.IsNumberType()) "default '0'" else if (propertyType.IsStringType()) "default ''" else ""} comment ''"""
         }
 
         return """
 DROP TABLE IF EXISTS `${entity.simpleName}`;
 CREATE TABLE IF NOT EXISTS `${entity.simpleName}` (
-  ${list.map { it + line_break + "," }.joinToString("")}
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT COMMENT='';
+${list.sortedBy {
+            if (it == "id") return@sortedBy -9;
+            if (it == "name") return@sortedBy -8;
+            if (it == "code") return@sortedBy -7;
+            return@sortedBy it.length;
+        }.joinToString(line_break + ",")}
+,PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 COMMENT='';
 """
     }
 }
