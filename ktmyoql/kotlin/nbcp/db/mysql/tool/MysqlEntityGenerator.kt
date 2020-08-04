@@ -220,15 +220,17 @@ data class ${tableName}(
             return@map """`${property.name}` ${type} not null ${if (propertyType.IsNumberType()) "default '0'" else if (propertyType.IsStringType()) "default ''" else ""} comment ''"""
         }
 
+        list = list.sortedBy {
+            if (it VbSame "id") return@sortedBy -9;
+            if (it VbSame "name") return@sortedBy -8;
+            if (it VbSame "code") return@sortedBy -7;
+            return@sortedBy it.length;
+        }
+
         return """
 DROP TABLE IF EXISTS `${entity.simpleName}`;
 CREATE TABLE IF NOT EXISTS `${entity.simpleName}` (
-${list.sortedBy {
-            if (it == "id") return@sortedBy -9;
-            if (it == "name") return@sortedBy -8;
-            if (it == "code") return@sortedBy -7;
-            return@sortedBy it.length;
-        }.joinToString(line_break + ",")}
+${list.joinToString(line_break + ",")}
 ,PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 COMMENT='';
 """
