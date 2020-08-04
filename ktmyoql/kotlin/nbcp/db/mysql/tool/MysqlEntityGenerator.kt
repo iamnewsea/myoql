@@ -198,34 +198,34 @@ data class ${tableName}(
      * 生成实体的 sql 代码
      */
     fun entity2Sql(entity: KClass<*>): String {
-        var list = entity.memberProperties.map { property ->
-            var propertyType = property.javaField!!.type as Class<*>
-            var type = propertyType.name
+        var list = entity.memberProperties
+                .sortedBy {
+                    if (it.name VbSame "id") return@sortedBy -9;
+                    if (it.name VbSame "name") return@sortedBy -8;
+                    if (it.name VbSame "code") return@sortedBy -7;
+                    return@sortedBy it.name.length;
+                }
+                .map { property ->
+                    var propertyType = property.javaField!!.type as Class<*>
+                    var type = propertyType.name
 
-            if (property.javaField!!.type == String::class.java) {
-                type = "varchar(50)"
-            }
-            if (propertyType == Int::class.java || propertyType == java.lang.Integer::class.java) {
-                type = "int"
-            }
+                    if (property.javaField!!.type == String::class.java) {
+                        type = "varchar(50)"
+                    }
+                    if (propertyType == Int::class.java || propertyType == java.lang.Integer::class.java) {
+                        type = "int"
+                    }
 
-            if (propertyType == LocalDateTime::class.java || propertyType == Date::class.java) {
-                type = "DateTime"
-            }
+                    if (propertyType == LocalDateTime::class.java || propertyType == Date::class.java) {
+                        type = "DateTime"
+                    }
 
-            if (propertyType == Boolean::class.java || propertyType == java.lang.Boolean::class.java) {
-                type = "bit"
-            }
+                    if (propertyType == Boolean::class.java || propertyType == java.lang.Boolean::class.java) {
+                        type = "bit"
+                    }
 
-            return@map """`${property.name}` ${type} not null ${if (propertyType.IsNumberType()) "default '0'" else if (propertyType.IsStringType()) "default ''" else ""} comment ''"""
-        }
-
-        list = list.sortedBy {
-            if (it VbSame "id") return@sortedBy -9;
-            if (it VbSame "name") return@sortedBy -8;
-            if (it VbSame "code") return@sortedBy -7;
-            return@sortedBy it.length;
-        }
+                    return@map """`${property.name}` ${type} not null ${if (propertyType.IsNumberType()) "default '0'" else if (propertyType.IsStringType()) "default ''" else ""} comment ''"""
+                }
 
         return """
 DROP TABLE IF EXISTS `${entity.simpleName}`;
