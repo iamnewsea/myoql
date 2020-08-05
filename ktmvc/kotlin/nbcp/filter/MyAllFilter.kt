@@ -132,7 +132,7 @@ open class MyAllFilter : Filter, InitializingBean {
 //            }
 //        }
 
-        var loginName = request.LoginUser.name.AsString();
+
         var queryMap = request.queryJson
 
         if (request.method == "GET") {
@@ -147,11 +147,14 @@ open class MyAllFilter : Filter, InitializingBean {
                 try {
                     chain?.doFilter(myRequest, myResponse);
                 } catch (e: Exception) {
-                    var msgs = mutableListOf<String>()
-                    msgs.add("[[----> ${loginName} ${request.ClientIp} ${request.method} ${request.fullUrl}")
-                    msgs.add(e.message ?: "服务器错误");
-                    msgs.add("<----]]")
-                    logger.error(msgs.joinToString(line_break))
+                    logger.Error {
+                        var msgs = mutableListOf<String>()
+                        msgs.add("[[----> ${request.LoginUser.name} ${request.ClientIp} ${request.method} ${request.fullUrl}")
+                        msgs.add(e.message ?: "服务器错误");
+                        msgs.add("<----]]")
+
+                        return@Error msgs.joinToString(line_break)
+                    }
                     response.WriteTextValue(e.message ?: "服务器错误")
                     return;
                 }
@@ -179,11 +182,13 @@ open class MyAllFilter : Filter, InitializingBean {
                 try {
                     chain?.doFilter(request, response)
                 } catch (e: Exception) {
-                    var msgs = mutableListOf<String>()
-                    msgs.add("[[----> ${loginName} ${request.ClientIp} ${request.method} ${request.fullUrl}")
-                    msgs.add(e.message ?: "服务器错误");
-                    msgs.add("<----]]")
-                    logger.error(msgs.joinToString(line_break))
+
+                    logger.Error { var msgs = mutableListOf<String>()
+                        msgs.add("[[----> ${request.LoginUser.name} ${request.ClientIp} ${request.method} ${request.fullUrl}")
+                        msgs.add(e.message ?: "服务器错误");
+                        msgs.add("<----]]")
+                        return@Error msgs.joinToString(line_break)
+                    }
                     response.WriteTextValue(e.message ?: "服务器错误")
                     return;
                 }
@@ -194,7 +199,7 @@ open class MyAllFilter : Filter, InitializingBean {
 
             logger.Info {
                 var msgs = mutableListOf<String>()
-                msgs.add("[[----> ${loginName} ${request.ClientIp} ${request.method} ${request.fullUrl}")
+                msgs.add("[[----> ${request.LoginUser.name} ${request.ClientIp} ${request.method} ${request.fullUrl}")
                 msgs.add("[response] ${response.status} ${endAt - startAt}")
 
                 var cookie = response.getHeader("Set-Cookie")
@@ -227,7 +232,7 @@ open class MyAllFilter : Filter, InitializingBean {
         var myResponse = MyHttpResponseWrapper(response);
         request.characterEncoding = "utf-8";
 
-        procFilter(myRequest, myResponse, chain, startAt, loginName)
+        procFilter(myRequest, myResponse, chain, startAt)
     }
 
 //    private fun logNewSession(request: HttpServletRequest, httpResponse: HttpServletResponse) {
@@ -239,10 +244,10 @@ open class MyAllFilter : Filter, InitializingBean {
 //        }
 //    }
 
-    private fun procFilter(request: MyHttpRequestWrapper, response: MyHttpResponseWrapper, chain: FilterChain?, startAt: LocalDateTime, loginName: String) {
+    private fun procFilter(request: MyHttpRequestWrapper, response: MyHttpResponseWrapper, chain: FilterChain?, startAt: LocalDateTime) {
         RequestContextHolder.setRequestAttributes(ServletRequestAttributes(request, response))
 
-        beforeRequest(request, loginName)
+        beforeRequest(request)
 
         //set lang
         setLang(request);
@@ -303,10 +308,10 @@ open class MyAllFilter : Filter, InitializingBean {
         }
     }
 
-    private fun beforeRequest(request: MyHttpRequestWrapper, loginName: String) {
+    private fun beforeRequest(request: MyHttpRequestWrapper) {
         logger.Info {
             var msgs = mutableListOf<String>()
-            msgs.add("[[----> ${loginName} ${request.ClientIp} ${request.method} ${request.fullUrl}")
+            msgs.add("[[----> ${request.LoginUser.name} ${request.ClientIp} ${request.method} ${request.fullUrl}")
 
             if (request.headerNames.hasMoreElements()) {
                 msgs.add("[request header]:")

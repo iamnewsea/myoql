@@ -143,8 +143,7 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
                 caller = "${method.name}(${method.parameters.map { it.toString() }.joinToString()})"
             }
 
-            var errorMsg = require.value.AsString("请求:${webRequest.fullUrl} --> 方法:${caller} 中，找不到参数${parameter.parameterName}")
-            logger.error(errorMsg);
+            logger.Error { require.value.AsString("请求:${webRequest.fullUrl} --> 方法:${caller} 中，找不到参数${parameter.parameterName}") }
             throw RuntimeException("找不到参数${parameter.parameterName}")
         }
     }

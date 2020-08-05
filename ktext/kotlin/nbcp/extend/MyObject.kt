@@ -3,6 +3,7 @@
 
 package nbcp.comm
 
+import ch.qos.logback.core.spi.FilterReply
 import nbcp.comm.*
 
 import nbcp.utils.*
@@ -652,17 +653,42 @@ fun <T : Serializable> T.CloneObject(): T {
 
 private var debug_value: Boolean? = null
 
+inline val Logger.scopeInfoLevel: Boolean
+    get() {
+        var log = scopes.getLatestScope<LogScope>()
+        if (log == null) {
+            return this.isInfoEnabled;
+        }
+
+        if (ch.qos.logback.classic.Level.INFO_INT >= log.level) {
+            return true
+        }
+        return false;
+    }
+
+inline val Logger.scopeErrorLevel: Boolean
+    get() {
+        var log = scopes.getLatestScope<LogScope>()
+        if (log == null) {
+            return this.isErrorEnabled;
+        }
+
+        if (ch.qos.logback.classic.Level.ERROR_INT >= log.level) {
+            return true
+        }
+        return false;
+    }
 
 /**
  * inline 内联方式可以拿到调用栈信息
- * 该方法在忽略 LogScope，使用 isInfoEnabled，isErrorEnabled 先进行判断是否记录日志
+ * 该方法会忽略 LogScope，使用 isInfoEnabled，isErrorEnabled 先进行判断是否记录日志
  */
 inline fun Logger.InfoError(error: Boolean, msgFunc: (() -> String)) {
-    if (this.isInfoEnabled) {
+    if (this.scopeInfoLevel) {
         var msg = msgFunc();
         if (msg.isEmpty()) return;
         this.info(msg)
-    } else if (error && this.isErrorEnabled) {
+    } else if (error && this.scopeErrorLevel) {
         var msg = msgFunc();
         if (msg.isEmpty()) return;
         this.error(msg)
@@ -676,10 +702,19 @@ inline fun Logger.InfoError(error: Boolean, msgFunc: (() -> String)) {
 }
 
 
-inline fun Logger.Info(msgFunc: (() -> String)) = this.info(msgFunc())
-inline fun Logger.Error(msgFunc: (() -> String)) = this.error(msgFunc())
+inline fun Logger.Info(msgFunc: (() -> String)) {
+    if (this.scopeInfoLevel) {
+        this.info(msgFunc())
+    }
+}
 
-//
+inline fun Logger.Error(msgFunc: (() -> String)) {
+    if (this.scopeErrorLevel) {
+        this.error(msgFunc())
+    }
+}
+
+
 //inline fun Logger.Trace(infoFunc: (() -> String)) = this.Log(Level.TRACE, infoFunc)
 //inline fun Logger.Debug(infoFunc: (() -> String)) = this.Log(Level.DEBUG, infoFunc)
 //inline fun Logger.Info(infoFunc: (() -> String)) = this.Log(Level.INFO, infoFunc)
