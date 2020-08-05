@@ -6,9 +6,9 @@ logging:
 
 app:
   wx:
-    appId: wxd5f2957442fc2d0b
+    appId: wxd123
     appSecret:
-    mchId: 1575431351
+    mchId: 157123
     mchSecret:
   filter:
     allowOrigins: dev8.cn
