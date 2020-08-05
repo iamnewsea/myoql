@@ -449,7 +449,6 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
             throw RuntimeException("不正确的时间格式:${strValue}")
         }
 
-        var endZ = strValue.endsWith('Z');
         var wrappeT = false;
         if (fenIndex > 1 && fenIndex < strValue.length - 1) {
             if (strValue[1].isDigit() == false && strValue[fenIndex - 1] == strValue[fenIndex + 1]) {
@@ -467,7 +466,7 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
             strValue = strValue.substring(fenIndex + 1);
         }
 
-        if (endZ) {
+        if (withZ) {
             timePartString = strValue.Slice(0, -1)
         } else {
             timePartString = strValue
@@ -486,8 +485,15 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
     }
 }
 
-private fun ConvertAsLocalDate(dateString: String): LocalDate? {
+/**
+ * 转换为 LocalDate
+ */
+fun ConvertAsLocalDate(dateString: String, dateFormat: String = ""): LocalDate? {
     var strValue = dateString.trim();
+
+    if (dateFormat.HasValue) {
+        return LocalDate.parse(strValue, DateTimeFormatter.ofPattern(dateFormat));
+    }
 
     if (strValue.length == 8 && !strValue.any { it.isDigit() == false }) {
         var ret = LocalDate.parse(strValue, DateTimeFormatter.ofPattern("yyyyMMdd"))
@@ -513,12 +519,14 @@ private fun ConvertAsLocalDate(dateString: String): LocalDate? {
 }
 
 
-private fun ConvertAsLocalTime(timeString: String): LocalTime {
-
+/**
+ * 转换为 LocalTime
+ */
+fun ConvertAsLocalTime(timeString: String, timeFormat: String = ""): LocalTime {
     var timeString = timeString.trim();
-    var withZ = timeString.endsWith('Z');
-    if (withZ) {
-        timeString = timeString.Slice(0, -1);
+
+    if (timeFormat.HasValue) {
+        return LocalTime.parse(timeString, DateTimeFormatter.ofPattern(timeFormat));
     }
 
     var nanos = 0L;

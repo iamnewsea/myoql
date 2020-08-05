@@ -44,4 +44,9 @@ select * from[pub space].tab where`id`  like'% 1 %'
             println("[" + index.toString() + "]:" + s)
         }
     }
+
+    @Test
+    fun test_type_convert() {
+        println("2020-08-05 13:17:18".AsLocalDateTime().toString())
+    }
 }
