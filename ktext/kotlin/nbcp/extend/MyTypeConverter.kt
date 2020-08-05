@@ -368,8 +368,7 @@ fun Any?.AsLocalTime(defaultVale: LocalTime = LocalTime.MIN): LocalTime {
         return defaultVale;
     }
 
-
-    return ConvertAsLocalTime(strValue)
+    return ConvertToLocalTime(strValue)
 }
 
 fun Any?.AsLocalDateTime(): LocalDateTime? {
@@ -423,62 +422,7 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
 
 
     try {
-        //正则判断日期格式.
-        /**
-        YYYYMMDD
-        YYYY-MM-DD
-        YYYY/MM/DD
-        YYYY_MM_DD
-        YYYY.MM.DD
-         */
-
-        var withZ = strValue.endsWith('Z')
-
-        if (withZ) {
-            strValue = strValue.Slice(0, -1);
-        }
-
-        //分成两部分。 找冒号前面找字母或空格 ,T, 'T'
-        var timeSignIndex = strValue.indexOf(':');
-        if (timeSignIndex < 0) {
-            return ConvertAsLocalDate(strValue)?.atStartOfDay()
-        }
-
-        var fenIndex = strValue.substring(0, timeSignIndex).indexOfFirst { it == ' ' || it.isLetter() }
-        if (fenIndex < 0) {
-            throw RuntimeException("不正确的时间格式:${strValue}")
-        }
-
-        var wrappeT = false;
-        if (fenIndex > 1 && fenIndex < strValue.length - 1) {
-            if (strValue[1].isDigit() == false && strValue[fenIndex - 1] == strValue[fenIndex + 1]) {
-                wrappeT = true;
-            }
-        }
-
-        var datePartString = "";
-        var timePartString = "";
-        if (wrappeT) {
-            datePartString = strValue.substring(0, fenIndex - 1);
-            strValue = strValue.substring(fenIndex + 2);
-        } else {
-            datePartString = strValue.substring(0, fenIndex);
-            strValue = strValue.substring(fenIndex + 1);
-        }
-
-        if (withZ) {
-            timePartString = strValue.Slice(0, -1)
-        } else {
-            timePartString = strValue
-        }
-
-        var zoneSecond = 0;
-        if (withZ) {
-            zoneSecond = ZoneId.systemDefault().rules.getOffset(Instant.EPOCH).totalSeconds
-        }
-
-        return ConvertAsLocalDate(datePartString)?.atTime(ConvertAsLocalTime(timePartString))?.plusSeconds(zoneSecond)
-
+        return ConvertToLocalDateTime(strValue);
     } catch (e: Exception) {
         logger.error(e.message, e);
         return null
@@ -486,13 +430,77 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
 }
 
 /**
- * 转换为 LocalDate
+ * 字符串转为 LocalDateTime
  */
-fun ConvertAsLocalDate(dateString: String, dateFormat: String = ""): LocalDate? {
+fun ConvertToLocalDateTime(dateTimeString: String, dateTimeFormatter: DateTimeFormatter? = null): LocalDateTime? {
+    var strValue = dateTimeString.trim();
+
+    if (dateTimeFormatter != null) {
+        return LocalDateTime.parse(dateTimeString, dateTimeFormatter)
+    }
+
+    var withZ = strValue.endsWith('Z')
+
+    if (withZ) {
+        strValue = strValue.Slice(0, -1);
+    }
+
+    //分成两部分。 找冒号前面找字母或空格 ,T, 'T'
+    var timeSignIndex = strValue.indexOf(':');
+    if (timeSignIndex < 0) {
+        return ConvertToLocalDate(strValue)?.atStartOfDay()
+    }
+
+    var fenIndex = strValue.substring(0, timeSignIndex).indexOfFirst { it == ' ' || it.isLetter() }
+    if (fenIndex < 0) {
+        throw RuntimeException("不正确的时间格式:${strValue}")
+    }
+
+    var wrappeT = false;
+    if (fenIndex > 1 && fenIndex < strValue.length - 1) {
+        if (strValue[1].isDigit() == false && strValue[fenIndex - 1] == strValue[fenIndex + 1]) {
+            wrappeT = true;
+        }
+    }
+
+    var datePartString = "";
+    var timePartString = "";
+    if (wrappeT) {
+        datePartString = strValue.substring(0, fenIndex - 1);
+        strValue = strValue.substring(fenIndex + 2);
+    } else {
+        datePartString = strValue.substring(0, fenIndex);
+        strValue = strValue.substring(fenIndex + 1);
+    }
+
+    if (withZ) {
+        timePartString = strValue.Slice(0, -1)
+    } else {
+        timePartString = strValue
+    }
+
+    var zoneSecond = 0;
+    if (withZ) {
+        zoneSecond = ZoneId.systemDefault().rules.getOffset(Instant.EPOCH).totalSeconds
+    }
+
+    return ConvertToLocalDate(datePartString)?.atTime(ConvertToLocalTime(timePartString))?.plusSeconds(zoneSecond)
+}
+
+
+/**
+ * 转换为 LocalDate
+YYYYMMDD
+YYYY-MM-DD
+YYYY/MM/DD
+YYYY_MM_DD
+YYYY.MM.DD
+ */
+fun ConvertToLocalDate(dateString: String, dateFormatter: DateTimeFormatter? = null): LocalDate? {
     var strValue = dateString.trim();
 
-    if (dateFormat.HasValue) {
-        return LocalDate.parse(strValue, DateTimeFormatter.ofPattern(dateFormat));
+    if (dateFormatter != null) {
+        return LocalDate.parse(strValue, dateFormatter);
     }
 
     if (strValue.length == 8 && !strValue.any { it.isDigit() == false }) {
@@ -522,11 +530,11 @@ fun ConvertAsLocalDate(dateString: String, dateFormat: String = ""): LocalDate? 
 /**
  * 转换为 LocalTime
  */
-fun ConvertAsLocalTime(timeString: String, timeFormat: String = ""): LocalTime {
+fun ConvertToLocalTime(timeString: String, timeFormatter: DateTimeFormatter? = null): LocalTime {
     var timeString = timeString.trim();
 
-    if (timeFormat.HasValue) {
-        return LocalTime.parse(timeString, DateTimeFormatter.ofPattern(timeFormat));
+    if (timeFormatter != null) {
+        return LocalTime.parse(timeString, timeFormatter);
     }
 
     var nanos = 0L;

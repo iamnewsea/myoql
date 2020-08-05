@@ -13,6 +13,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -26,8 +27,8 @@ class TestKtExt_String : TestBase() {
 "28099","9",31.246717000000000,121.593050000000005,0.020000000000000,0.000000000000000,14.100000000000000,"12",2020-05-29 09:56:45
         """
 
-        txt.Tokenizer({it == ',' || it == '\n'}, arrayOf(
-                TokenQuoteDefine('"','"','"') )
+        txt.Tokenizer({ it == ',' || it == '\n' }, arrayOf(
+                TokenQuoteDefine('"', '"', '"'))
         ).forEachIndexed { index, s ->
             println("[" + index.toString() + "]:" + s)
         }
@@ -47,6 +48,7 @@ select * from[pub space].tab where`id`  like'% 1 %'
 
     @Test
     fun test_type_convert() {
-        println("2020-08-05 13:17:18".AsLocalDateTime().toString())
+        println(ConvertToLocalDateTime("20111203101530",DateTimeFormatter.ofPattern("yyyyMMddHHmmss")))
+        //println(ConvertToLocalDateTime("2011-12-03T10:15:30Z", DateTimeFormatter.ISO_INSTANT))
     }
 }
