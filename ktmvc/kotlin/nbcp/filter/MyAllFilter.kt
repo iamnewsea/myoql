@@ -105,7 +105,7 @@ open class MyAllFilter : Filter, InitializingBean {
 //                            ?: false))
 //        }
 
-        if (logLevel > 0) {
+        if (logLevel > 0 && config.debug) {
             using(LogScope(logLevel)) {
                 next(httpRequest, httpResponse, chain);
             }

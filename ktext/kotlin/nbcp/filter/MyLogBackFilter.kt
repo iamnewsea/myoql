@@ -16,14 +16,6 @@ import org.slf4j.Marker
  */
 class MyLogBackFilter : TurboFilter() {
     companion object {
-        private var _debug: Boolean? = null
-        private val debug: Boolean
-            get() {
-                if (_debug != null) return _debug!!;
-                if (SpringUtil.isInited == false) return false;
-                _debug = config.debug;
-                return _debug!!;
-            }
     }
 
     override fun decide(marker: Marker?, logger: Logger?, level: Level?, format: String?, params: Array<out Any>?, t: Throwable?): FilterReply {
@@ -41,7 +33,7 @@ class MyLogBackFilter : TurboFilter() {
 
         //在获取 debug 期间，禁用Log
         using(LogScope(Level.OFF_INT)) {
-            if (debug) {
+            if (config.debug) {
                 return FilterReply.ACCEPT
             }
         }

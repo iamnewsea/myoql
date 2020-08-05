@@ -34,7 +34,18 @@ val line_break: String = System.getProperty("line.separator")
 
 object config {
     val uploadHost get() = SpringUtil.context.environment.getProperty("app.upload.host") ?: "";
-    val debug get() = SpringUtil.context.environment.getProperty("debug").AsBoolean()
+
+    private var _debug: Boolean? = null;
+    val debug: Boolean
+        get() {
+            if (_debug != null) {
+                return _debug!!;
+            }
+
+            if (SpringUtil.isInited == false) return false;
+            _debug = SpringUtil.context.environment.getProperty("debug").AsBoolean();
+            return _debug ?: false;
+        }
 
     val mybatisPackage get() = SpringUtil.context.environment.getProperty("app.mybatis.package") ?: ""
 
