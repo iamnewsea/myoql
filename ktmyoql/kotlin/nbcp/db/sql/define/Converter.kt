@@ -14,3 +14,10 @@ class TrimUppercaseConverter:IConverter{
         return value.trim().toUpperCase()
     }
 }
+
+
+class TrimLowercaseConverter:IConverter{
+    override fun convert(value: String): String {
+        return value.trim().toLowerCase()
+    }
+}

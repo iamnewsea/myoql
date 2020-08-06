@@ -20,7 +20,7 @@ annotation class Cn(val value: String)
 /**
  * 实体字段上定义主键列，如实体的多个字段定义Key，认为是组合主键。
  */
-@Target(AnnotationTarget.PROPERTY, AnnotationTarget.FIELD)
+@Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class DbKey()
 

@@ -171,7 +171,7 @@ open class SysAnnex(
         @Cn("创建者")
         var creator: IdName = IdName(), //创建者
         @Cn("所属企业")
-        var corpId: String = "",    //创建所属企业,如果是 admin,则 id = "admin" , name = "admin 即可
+        var corpId: String = "",        //创建所属企业,如果是 admin,则 id = "admin" , name = "admin 即可
         @Cn("错误消息")
         var errorMsg: String = ""      //文件处理时的错误消息
 ) : BaseEntity(), IMongoDocument {
