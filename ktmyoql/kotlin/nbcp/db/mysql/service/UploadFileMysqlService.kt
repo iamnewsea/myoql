@@ -19,9 +19,10 @@ class UploadFileMysqlService : IUploadFileDbService {
         return db.sql_base.s_annex.query()
                 .where { it.checkCode match md5 }
                 .where { it.corpId match corpId }
-                .toEntity(SysAnnex::class.java) {
-                    it["creator"] = IdName(it["creator_id"].AsString(), it["creator_name"].AsString())
-                }
+                .toEntity(SysAnnex::class.java)
+//                {
+//                    it["creator"] = IdName(it["creator_id"].AsString(), it["creator_name"].AsString())
+//                }
     }
 
     override fun insert(annex: SysAnnex): Int {
