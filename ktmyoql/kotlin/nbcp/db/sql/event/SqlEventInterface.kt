@@ -4,12 +4,21 @@ import nbcp.db.DbEntityEventResult
 import nbcp.db.mongo.*
 
 /**
+ * 处理 select 的 Bean 接口。
+ */
+interface ISqlEntitySelect {
+    fun beforeSelect(select: SqlBaseQueryClip): DbEntityEventResult?
+
+    fun select(select: SqlBaseQueryClip, eventData: DbEntityEventResult?,result:List<MutableMap<String, Any?>>)
+}
+
+/**
  * 处理 Insert 的 Bean 接口。
  */
 interface ISqlEntityInsert {
-    fun beforeInsert(update: SqlInsertClip<*,*>): DbEntityEventResult?
+    fun beforeInsert(insert: SqlInsertClip<*,*>): DbEntityEventResult?
 
-    fun insert(update: SqlInsertClip<*,*>, eventData: DbEntityEventResult?)
+    fun insert(insert: SqlInsertClip<*,*>, eventData: DbEntityEventResult?)
 }
 
 

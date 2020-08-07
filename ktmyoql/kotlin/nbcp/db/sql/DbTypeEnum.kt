@@ -63,6 +63,26 @@ public enum class DbType {
         return this == DbType.Int || this == DbType.Long || this == DbType.Short || this == DbType.Byte || this == DbType.Boolean
     }
 
+    fun toMySqlTypeString(): kotlin.String{
+        return when(this){
+            String -> "varchar(200)"
+            Enum -> "varchar(200)"
+            Int -> "int"
+            Float -> "float"
+            Long -> "bigint"
+            Double -> "double"
+            Byte -> "tinyint"
+            Short -> "tinyint"
+            Boolean -> "bit"
+            Decimal -> "decimal"
+            Date -> "date"
+            Time -> "time"
+            DateTime -> "datetime"
+            Binary -> "binary"
+            Other -> ""
+        }
+    }
+
     companion object {
         @JvmStatic
         fun <T> of(clazz: Class<T>): DbType {

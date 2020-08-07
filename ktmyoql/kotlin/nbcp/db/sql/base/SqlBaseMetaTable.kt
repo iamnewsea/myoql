@@ -12,16 +12,19 @@ abstract class SqlBaseMetaTable<T : ISqlDbEntity>(val tableClass: Class<T>, tabl
     abstract fun getFks(): Array<FkDefine>
     abstract fun getRks(): Array<Array<String>>
     abstract fun getAutoIncrementKey(): String
+    abstract fun getColumns(): SqlColumnNames
+    abstract fun getSpreadColumns(): Array<String>
+    abstract fun getConvertValueColumns(): Array<String>
 
-    fun getColumns(): SqlColumnNames {
-        var ret = SqlColumnNames()
-        ret.addAll(this::class.java.declaredFields
-                .filter { it.type == SqlColumnName::class.java }
-                .map { it.isAccessible = true; it.get(this) as SqlColumnName }
-        )
-
-        return ret;
-    }
+//    fun getColumns(): SqlColumnNames {
+//        var ret = SqlColumnNames()
+//        ret.addAll(this::class.java.AllFields
+//                .filter { it.type == SqlColumnName::class.java }
+//                .map { it.isAccessible = true; it.get(this) as SqlColumnName }
+//        )
+//
+//        return ret;
+//    }
 
 
     protected var tableAliaValue: String = ""

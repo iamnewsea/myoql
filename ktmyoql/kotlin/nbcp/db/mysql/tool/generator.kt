@@ -43,7 +43,7 @@ class generator {
 
 //        var path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0]
 //        var moer_Path = File(path).parentFile.path + "/shop-orm/kotlin/nbcp/db/mysql/dbr_tables.kt".replace("/", p);
-        var moer_Path = targetFileName.replace("/", p).replace("\\",p);
+        var moer_Path = targetFileName.replace("/", p).replace("\\", p);
 
         File(moer_Path).delete();
         File(moer_Path).createNewFile()
@@ -223,7 +223,6 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
     }
 
     fun genEntity(groupName: String, entType: Class<*>): String {
-
         var tableName = entType.name.split(".").last();
         if (tableName.endsWith("\$Companion")) {
             return "";
@@ -233,41 +232,71 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
         var uks = mutableSetOf<String>()
         var rks = mutableSetOf<String>()
         var fks = mutableSetOf<FkDefine>()
-
         var pks = mutableListOf<String>()
+        var columns = mutableListOf<String>()
+        var columns_spread = mutableListOf<String>()
+        var columns_convertValue = mutableListOf<String>()
 
-        var props = entType.AllFields
+        var props = mutableListOf<String>();
+
+        entType.AllFields
                 .filter { it.name != "Companion" }
-                .map {
-                    it.isAccessible = true
-                    var db_column_name = it.name;
-
-                    if (it.getAnnotation(SqlAutoIncrementKey::class.java) != null) {
-                        autoIncrementKey = it.name
-                        uks.add(it.name)
+                .forEach { field ->
+                    field.isAccessible = true
+                    var db_column_name = field.name;
+                    if (field.getAnnotation(SqlAutoIncrementKey::class.java) != null) {
+                        autoIncrementKey = db_column_name
+                        uks.add(db_column_name)
                     }
 
-                    if (it.getAnnotation(DbKey::class.java) != null) {
-                        pks.add(it.name);
+                    if (field.getAnnotation(DbKey::class.java) != null) {
+                        pks.add(db_column_name);
                     }
 
-                    var fk_define = it.getAnnotation(SqlFk::class.java)
+                    var fk_define = field.getAnnotation(SqlFk::class.java)
                     if (fk_define != null) {
                         fks.add(FkDefine(tableName, db_column_name, fk_define.refTable, fk_define.refTableColumn))
                     }
 
-                    var converter = it.getAnnotation(ConverterValueToDb::class.java)
+                    var converter = field.getAnnotation(ConverterValueToDb::class.java)
                     var ann_converter = "";
                     if (converter != null) {
+                        columns_convertValue.add(db_column_name);
                         ann_converter = "@ConverterValueToDb(" + (converter.converter.qualifiedName
                                 ?: "") + "::class)\n";
                     }
 
-                    var dbType = DbType.of(it.type)
+                    var dbType = DbType.of(field.type)
                     if (dbType == DbType.Other) {
-                        throw RuntimeException("未识别的数据类型,表：${tableName},列:${db_column_name}")
+
+                        //看是否是展开列。
+                        var spreadColumn = field.getAnnotation(SqlSpreadColumn::class.java)
+                        if (spreadColumn != null) {
+                            columns_spread.add(db_column_name);
+
+                            field.type.AllFields
+                                    .filter { it.name != "Companion" }
+                                    .forEach {
+                                        var db_column_name = db_column_name + "_" + it.name;
+                                        var dbType = DbType.of(it.type)
+
+                                        columns.add(db_column_name);
+
+                                        var item = """val ${db_column_name}=SqlColumnName(DbType.${dbType.name},this.getAliaTableName(),"${db_column_name}")""".ToTab(1)
+                                        props.add(item);
+                                    }
+
+                            return@forEach
+                        } else {
+                            throw RuntimeException("未识别的数据类型,表：${tableName},列:${db_column_name},如果定义复杂列，请在列在添加 @SqlSpreadColumn 注解")
+                        }
                     }
-                    return@map """${ann_converter}val ${it.name}=SqlColumnName(DbType.${dbType.name},this.getAliaTableName(),"${db_column_name}")""".ToTab(1)
+                    else {
+                        columns.add(db_column_name);
+                    }
+
+                    var item = """${ann_converter}val ${db_column_name}=SqlColumnName(DbType.${dbType.name},this.getAliaTableName(),"${db_column_name}")""".ToTab(1)
+                    props.add(item);
                 }
 
         var entityTypeName = getEntityClassName(tableName)
@@ -333,6 +362,9 @@ class ${entityTypeName}(datasource:String="")
     :SqlBaseMetaTable<${entType.name}>(${entType.name}::class.java,"${dbName}") {
 ${props.joinToString("\n")}
 
+    override fun getSpreadColumns(): Array<String> { return arrayOf<String>("${columns_spread.joinToString(",")}")}
+    override fun getConvertValueColumns(): Array<String> { return arrayOf<String>(${columns_convertValue.map { "\"" + it + "\"" }.joinToString(",")})}
+    override fun getColumns(): SqlColumnNames { return SqlColumnNames(${columns.joinToString(",")})}
     override fun getAutoIncrementKey(): String { return "${autoIncrementKey}"}
     override fun getUks(): Array<Array<String>>{ return arrayOf(${uks2.joinToString(",")} )}
     override fun getRks(): Array<Array<String>>{ return arrayOf(${rks2.joinToString(",")} )}

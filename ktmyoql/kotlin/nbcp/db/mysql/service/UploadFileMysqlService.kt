@@ -26,8 +26,9 @@ class UploadFileMysqlService : IUploadFileDbService {
 
     override fun insert(annex: SysAnnex): Int {
         var ent = annex.ConvertJson(s_annex::class.java);
-        ent.creator_id = annex.creator.id;
-        ent.creator_name = annex.creator.name;
+        ent.creator = annex.creator;
+//        ent.creator_id = annex.creator.id;
+//        ent.creator_name = annex.creator.name;
         return db.sql_base.s_annex.doInsert(ent)
     }
 
@@ -36,8 +37,9 @@ class UploadFileMysqlService : IUploadFileDbService {
     }
 
     override fun queryById(id: String): SysAnnex? {
-        return db.sql_base.s_annex.queryById(id).toEntity(SysAnnex::class.java) {
-            it["creator"] = IdName(it["creator_id"].AsString(), it["creator_name"].AsString())
-        }
+        return db.sql_base.s_annex.queryById(id).toEntity(SysAnnex::class.java)
+//        {
+//            it["creator"] = IdName(it["creator_id"].AsString(), it["creator_name"].AsString())
+//        }
     }
 }

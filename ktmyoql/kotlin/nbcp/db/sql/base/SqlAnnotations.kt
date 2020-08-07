@@ -67,5 +67,5 @@ annotation class ConverterValueToDb(val converter: KClass<out IConverter>)
 
 
 interface  IConverter{
-    fun convert(value:String):String
+    fun convert(value:Any?):Any?
 }

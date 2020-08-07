@@ -9,7 +9,7 @@ import nbcp.comm.*
 import nbcp.utils.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-06-09 11:38:49
+//generate auto @2020-08-07 16:11:21
 
 
 @Component("sql.SqlBase")
@@ -25,6 +25,7 @@ class SqlBaseGroup : IDataGroup{
     
     class s_annex_table(datasource:String="")
         :SqlBaseMetaTable<nbcp.db.sql.entity.s_annex>(nbcp.db.sql.entity.s_annex::class.java,"s_annex") {
+        @ConverterValueToDb(nbcp.db.sql.TrimLowercaseConverter::class)
         val id=SqlColumnName(DbType.String,this.getAliaTableName(),"id")
         val name=SqlColumnName(DbType.String,this.getAliaTableName(),"name")
         val tags=SqlColumnName(DbType.String,this.getAliaTableName(),"tags")
@@ -40,6 +41,9 @@ class SqlBaseGroup : IDataGroup{
         val errorMsg=SqlColumnName(DbType.String,this.getAliaTableName(),"errorMsg")
         val createAt=SqlColumnName(DbType.DateTime,this.getAliaTableName(),"createAt")
     
+        override fun getSpreadColumns(): Array<String> { return arrayOf<String>("creator")}
+        override fun getConvertValueColumns(): Array<String> { return arrayOf<String>("id")}
+        override fun getColumns(): SqlColumnNames { return SqlColumnNames(id,name,tags,ext,size,checkCode,imgWidth,imgHeight,url,creator_id,creator_name,corpId,errorMsg,createAt)}
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}
         override fun getRks(): Array<Array<String>>{ return arrayOf( arrayOf("corpId")  )}
@@ -70,6 +74,9 @@ class SqlBaseGroup : IDataGroup{
         val data=SqlColumnName(DbType.String,this.getAliaTableName(),"data")
         val createAt=SqlColumnName(DbType.DateTime,this.getAliaTableName(),"createAt")
     
+        override fun getSpreadColumns(): Array<String> { return arrayOf<String>("creator")}
+        override fun getConvertValueColumns(): Array<String> { return arrayOf<String>()}
+        override fun getColumns(): SqlColumnNames { return SqlColumnNames(id,table,remark,creator_id,creator_name,data,createAt)}
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}
         override fun getRks(): Array<Array<String>>{ return arrayOf( )}
@@ -92,6 +99,7 @@ class SqlBaseGroup : IDataGroup{
     
     class s_log_table(datasource:String="")
         :SqlBaseMetaTable<nbcp.db.sql.entity.s_log>(nbcp.db.sql.entity.s_log::class.java,"s_log") {
+        @ConverterValueToDb(nbcp.db.sql.TrimLowercaseConverter::class)
         val id=SqlColumnName(DbType.String,this.getAliaTableName(),"id")
         val module=SqlColumnName(DbType.String,this.getAliaTableName(),"module")
         val type=SqlColumnName(DbType.String,this.getAliaTableName(),"type")
@@ -103,6 +111,9 @@ class SqlBaseGroup : IDataGroup{
         val creatAt=SqlColumnName(DbType.DateTime,this.getAliaTableName(),"creatAt")
         val creatorId=SqlColumnName(DbType.String,this.getAliaTableName(),"creatorId")
     
+        override fun getSpreadColumns(): Array<String> { return arrayOf<String>("")}
+        override fun getConvertValueColumns(): Array<String> { return arrayOf<String>("id")}
+        override fun getColumns(): SqlColumnNames { return SqlColumnNames(id,module,type,key,msg,data,remark,clientIp,creatAt,creatorId)}
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}
         override fun getRks(): Array<Array<String>>{ return arrayOf( )}

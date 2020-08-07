@@ -197,34 +197,40 @@ data class ${tableName}(
     /**
      * 生成实体的 sql 代码
      */
-    fun entity2Sql(entity: KClass<*>): String {
-        var list = entity.memberProperties
+    fun entity2Sql(entity: Class<*>): String {
+        var list = mutableListOf<String>();
+
+        entity.AllFields
                 .sortedBy {
                     if (it.name VbSame "id") return@sortedBy -9;
                     if (it.name VbSame "name") return@sortedBy -8;
                     if (it.name VbSame "code") return@sortedBy -7;
                     return@sortedBy it.name.length;
                 }
-                .map { property ->
-                    var propertyType = property.javaField!!.type as Class<*>
-                    var type = propertyType.name
+                .forEach { property ->
+                    var columnName = property.name;
+                    var propertyType = property.type as Class<*>
+                    var dbType = DbType.of(propertyType)
+                    var type = dbType.toMySqlTypeString()
 
-                    if (property.javaField!!.type == String::class.java) {
-                        type = "varchar(50)"
-                    }
-                    if (propertyType == Int::class.java || propertyType == java.lang.Integer::class.java) {
-                        type = "int"
+                    if (type.isEmpty()) {
+                        var spreadColumn = property.getAnnotation(SqlSpreadColumn::class.java)
+                        if (spreadColumn != null) {
+                            propertyType.AllFields.forEach {
+                                var columnName = columnName + "_" + it.name;
+                                var dbType = DbType.of(it.type);
+                                var type = dbType.toMySqlTypeString()
+
+                                var item = """`${columnName}` ${type} not null ${if (dbType.isNumberic()) "default '0'" else if (propertyType.IsStringType()) "default ''" else ""} comment ''"""
+                                list.add(item);
+                            }
+
+                            return@forEach
+                        }
                     }
 
-                    if (propertyType == LocalDateTime::class.java || propertyType == Date::class.java) {
-                        type = "DateTime"
-                    }
-
-                    if (propertyType == Boolean::class.java || propertyType == java.lang.Boolean::class.java) {
-                        type = "bit"
-                    }
-
-                    return@map """`${property.name}` ${type} not null ${if (propertyType.IsNumberType()) "default '0'" else if (propertyType.IsStringType()) "default ''" else ""} comment ''"""
+                    var item = """`${columnName}` ${type} not null ${if (propertyType.IsNumberType()) "default '0'" else if (propertyType.IsStringType()) "default ''" else ""} comment ''"""
+                    list.add(item);
                 }
 
         return """

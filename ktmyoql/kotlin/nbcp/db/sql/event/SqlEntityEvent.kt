@@ -17,10 +17,13 @@ class SqlEntityEvent : BeanPostProcessor {
         // 冗余字段的引用。如 user.corp.name 引用的是  corp.name
         @JvmStatic
         val refsMap = mutableListOf<DbEntityFieldRefData>()
+
+        //注册的 select Bean
+        @JvmStatic
+        val selectEvent = mutableListOf<ISqlEntitySelect>()
         //注册的 Insert Bean
         @JvmStatic
         val insertEvent = mutableListOf<ISqlEntityInsert>()
-
         //注册的 Update Bean
         @JvmStatic
         val updateEvent = mutableListOf<ISqlEntityUpdate>()
@@ -43,6 +46,10 @@ class SqlEntityEvent : BeanPostProcessor {
 
                 }
             }
+        }
+
+        if( bean is ISqlEntitySelect){
+            selectEvent.add(bean)
         }
 
         if( bean is ISqlEntityInsert){
@@ -80,6 +87,20 @@ class SqlEntityEvent : BeanPostProcessor {
         if (dustbin != null) {
             dustbinEntitys.add(entityClass)
         }
+    }
+
+    fun onSelecting(select:SqlBaseQueryClip):Array<Pair<ISqlEntitySelect, DbEntityEventResult?>>{
+        //先判断是否进行了类拦截.
+        var list = mutableListOf<Pair<ISqlEntitySelect, DbEntityEventResult?>>()
+        selectEvent.ForEachExt { it, index ->
+            var ret = it.beforeSelect(select);
+            if (ret != null && ret.result == false) {
+                return@ForEachExt false;
+            }
+            list.add(it to ret)
+            return@ForEachExt true
+        }
+        return list.toTypedArray()
     }
 
 

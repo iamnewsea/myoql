@@ -10,14 +10,22 @@ import nbcp.db.sql.IConverter
  * 自定义转换： 把所有值转为大写。
  */
 class TrimUppercaseConverter:IConverter{
-    override fun convert(value: String): String {
-        return value.trim().toUpperCase()
+    override fun convert(value: Any?): Any? {
+        if( value == null) return null;
+        if( value is String) {
+            return value.trim().toUpperCase()
+        }
+        return value;
     }
 }
 
 
 class TrimLowercaseConverter:IConverter{
-    override fun convert(value: String): String {
-        return value.trim().toLowerCase()
+    override fun convert(value: Any?): Any? {
+        if( value == null) return null;
+        if( value is String) {
+            return value.trim().toLowerCase()
+        }
+        return value;
     }
 }

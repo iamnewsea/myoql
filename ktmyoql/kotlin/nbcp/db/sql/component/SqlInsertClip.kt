@@ -23,12 +23,12 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
     }
 
     private val columns = SqlColumnNames()
-    private val entities = mutableListOf<JsonMap>()
+    val entities = mutableListOf<JsonMap>()
     //    private var transaction = false;
     private var multiBatchSize = 256;
 
     //回写自增Id用。
-    private val ori_entities = mutableListOf<T>()
+    protected val ori_entities = mutableListOf<T>()
 
     /**
      * 批量插入时， 指定是否使用事务。
@@ -55,7 +55,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
     /*
     过滤掉是 null 的列.
      */
-    fun add(entity: T): SqlInsertClip<M, T> {
+    fun addEntity(entity: T): SqlInsertClip<M, T> {
         if (entity is BaseEntity) {
             if (entity.id.isEmpty()) {
                 entity.id = CodeUtil.getCode()
@@ -91,7 +91,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
     fun addAll(entity: Collection<T>): SqlInsertClip<M, T> {
         if (entity.size == 0) return this
         entity.forEach {
-            add(it)
+            addEntity(it)
         }
         return this
     }
@@ -313,9 +313,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
 
         var executeData = sql.toExecuteSqlAndParameters();
 
-
         var startAt = LocalDateTime.now();
-
 
         var error = false;
         var n = 0;

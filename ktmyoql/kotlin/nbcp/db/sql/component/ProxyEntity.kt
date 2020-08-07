@@ -23,10 +23,14 @@ fun <M : SqlBaseMetaTable<out T>, T : ISqlDbEntity> M.update(): SqlUpdateClip<M,
     return SqlUpdateClip<M, T>(this);
 }
 
+fun <M : SqlBaseMetaTable<out T>, T : ISqlDbEntity> M.updateWithEntity(entity:T): SqlSetEntityUpdateClip<M, T> {
+    return SqlSetEntityUpdateClip<M, T>(this,entity);
+}
+
 //自增主键 ,返回到 entity 实体上. 以及 dbr.lastAutoId
 //返回 影响行数
 fun <M : SqlBaseMetaTable<out T>, T : ISqlDbEntity> M.doInsert(entity: T): Int {
-    return SqlInsertClip(this).add(entity).exec()
+    return SqlInsertClip(this).addEntity(entity).exec()
 }
 
 fun <M : SqlBaseMetaTable<out T>, T : ISqlDbEntity> M.batchInsert(): SqlInsertClip<M, T> {
@@ -52,7 +56,7 @@ fun <M : SqlBaseMetaTable<out T>, T : ISqlDbEntity> M.insertIfNotExists(entity: 
     if (query.exists()) {
         return 0;
     }
-    return SqlInsertClip(this).add(entity).exec()
+    return SqlInsertClip(this).addEntity(entity).exec()
 }
 
 
@@ -85,6 +89,6 @@ fun <M : SqlBaseMetaTable<out T>, T : ISqlDbEntity> M.save(entity: T, unionKey: 
     if (db.affectRowCount > 0) {
         return db.affectRowCount;
     }
-    return SqlInsertClip(this).add(entity).exec()
+    return SqlInsertClip(this).addEntity(entity).exec()
 }
 

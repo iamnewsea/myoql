@@ -13,13 +13,13 @@ import java.time.LocalDateTime
  * Created by yuxh on 2018/7/2
  */
 
-class SqlUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
+open class SqlUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    private var whereDatas = WhereData()
-    private val sets = linkedMapOf<SqlColumnName, Any?>()
+    val whereDatas = WhereData()
+    val sets = linkedMapOf<SqlColumnName, Any?>()
     private val joins = mutableListOf<JoinTableData<*, *>>()
 
     fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> join(joinTable: M2, onWhere: (M, M2) -> WhereData): SqlUpdateClip<M, T> {
@@ -44,35 +44,35 @@ class SqlUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
         return this
     }
 
-    fun set(entity: T, whereKey: ((M) -> SqlColumnNames)): SqlUpdateClip<M, T> {
-        var columns = this.mainEntity.getColumns()
-        var field_names = entity::class.java.AllFields.map { it.name };
-
-        var whereColumns = whereKey(this.mainEntity)
-        var where = WhereData();
-
-        whereColumns.forEach { column ->
-            var value = MyUtil.getPrivatePropertyValue(entity, column.name)
-
-            where.and(WhereData("${column.fullName} = {${column.jsonKeyName}}", JsonMap(column.jsonKeyName to value)))
-        }
-
-        //自增 id 不能更新。
-        var auKey = this.mainEntity.getAutoIncrementKey();
-        columns.minus(whereColumns)
-                .filter { column -> column.name != auKey && field_names.contains(column.name) }
-                .forEach { key ->
-                    var value = MyUtil.getPrivatePropertyValue(entity, key.name)
-                    if (value == null) {
-                        return@forEach
-                    }
-
-                    this.sets.put(key, proc_value(value));
-                }
-
-        this.whereDatas.and(where)
-        return this
-    }
+//    fun set(entity: T, whereKey: ((M) -> SqlColumnNames)): SqlUpdateClip<M, T> {
+//        var columns = this.mainEntity.getColumns()
+//        var field_names = entity::class.java.AllFields.map { it.name };
+//
+//        var whereColumns = whereKey(this.mainEntity)
+//        var where = WhereData();
+//
+//        whereColumns.forEach { column ->
+//            var value = MyUtil.getPrivatePropertyValue(entity, column.name)
+//
+//            where.and(WhereData("${column.fullName} = {${column.jsonKeyName}}", JsonMap(column.jsonKeyName to value)))
+//        }
+//
+//        //自增 id 不能更新。
+//        var auKey = this.mainEntity.getAutoIncrementKey();
+//        columns.minus(whereColumns)
+//                .filter { column -> column.name != auKey && field_names.contains(column.name) }
+//                .forEach { key ->
+//                    var value = MyUtil.getPrivatePropertyValue(entity, key.name)
+//                    if (value == null) {
+//                        return@forEach
+//                    }
+//
+//                    this.sets.put(key, proc_value(value));
+//                }
+//
+//        this.whereDatas.and(where)
+//        return this
+//    }
 
     override fun toSql(): SingleSqlData {
         if (whereDatas.hasValue == false) {
@@ -109,7 +109,7 @@ class SqlUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
 //                .mapKeys { it.key.name }
 
         sets.keys.forEachIndexed { index, setKey ->
-            var setValue = sets.get(setKey)
+            var setValue = sets.filterKeys { it.name == setKey.name }.values.firstOrNull()
 
             if (index > 0) {
                 ret.expression += " , "

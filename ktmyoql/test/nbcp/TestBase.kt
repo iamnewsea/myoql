@@ -25,7 +25,7 @@ import java.time.LocalDateTime
  * Created by udi on 17-3-27.
  */
 
-@SpringBootApplication(exclude = arrayOf(MongoAutoConfiguration::class, RedisAutoConfiguration::class, DataSourceAutoConfiguration::class))
+@SpringBootApplication(exclude = arrayOf(MongoAutoConfiguration::class, RedisAutoConfiguration::class))
 @Import(SpringUtil::class)
 open class KtMyoqlTestApplication {
 
@@ -46,7 +46,7 @@ open class KtMyoqlTestApplication {
 @RunWith(SpringRunner::class)
 @WebAppConfiguration
 @SpringBootTest(classes = arrayOf(KtMyoqlTestApplication::class))
-//@TestPropertySource(locations = arrayOf("classpath:application.yml"))
+@TestPropertySource(locations = arrayOf("classpath:application.yml"))
 //@ActiveProfiles("unittest","productprofile")
 //注释 pom.xml 中的  project.build.resources.resource 中的 excludes
 abstract class TestBase {

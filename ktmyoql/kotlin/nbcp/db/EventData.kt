@@ -56,8 +56,12 @@ data class DbEntityFieldRefData(
  * 更新或删除事件执行的结果
  */
 data class DbEntityEventResult(
-        // 执行结果
+        /**
+         * 执行结果 ，返回 false 将停止后面的执行。
+         */
         var result: Boolean = true,
-        // 执行前，操作的额外数据。
+        /**
+         * 传递给后续操作的额外数据。
+         */
         var extData: Any? = null
 )

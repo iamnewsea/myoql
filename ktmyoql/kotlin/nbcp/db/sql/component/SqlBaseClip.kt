@@ -205,7 +205,14 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
 
     protected fun toMapList(sql: SingleSqlData): MutableList<JsonMap> {
         db.affectRowCount = -1
-        var retJsons = mutableListOf<Map<String, Any?>>()
+
+        var settings = db.sql.sqlEvents.onSelecting(this)
+        if (settings.any { it.second != null && it.second!!.result == false }) {
+            db.affectRowCount = 0;
+            return mutableListOf();
+        }
+
+        var retJsons = mutableListOf<MutableMap<String, Any?>>()
 
         var cacheKey = cacheService.getCacheKey(sql)
 
@@ -252,10 +259,14 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
             }
         } else {
             //logger.info("sql query from cache: " + cacheKey.toString())
-            retJsons = cacheJson.FromJsonWithDefaultValue<MutableList<Map<String, Any?>>>()
+            retJsons = cacheJson.FromJsonWithDefaultValue<MutableList<MutableMap<String, Any?>>>()
         }
 
         db.affectRowCount = retJsons.size
+
+        settings.forEach {
+            it.first.select(this, it.second,retJsons);
+        }
 
         if (retJsons.size == 0) {
             return mutableListOf();
