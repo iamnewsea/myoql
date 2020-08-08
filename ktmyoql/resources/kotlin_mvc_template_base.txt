@@ -16,10 +16,10 @@ import java.time.*
 /**
  * Created by CodeGenerator!
  */
-@Api(description = "${title}", tags = arrayOf("${entity_class}"))
+@Api(description = "${title}", tags = arrayOf("${entity}"))
 @RestController
 @JsonpMapping("/${group}/${entity_url}")
-class ${entity_class}AutoController {
+class ${entity}AutoController {
 
     @ApiOperation("列表")
     @JsonpMapping("/list")
@@ -31,7 +31,7 @@ ${endif}
         @Require skip: Int,
         @Require take: Int,
         request: MyHttpRequestWrapper
-    ): ListResult<${entity_class}> {
+    ): ListResult<${entity}> {
 
         mor.${group}.${entity}.query()
             .apply{
@@ -56,12 +56,12 @@ ${endif}
     fun detail(
         @Require id: String,
         request: MyHttpRequestWrapper
-    ): ApiResult<${entity_class}> {
+    ): ApiResult<${entity}> {
         mor.${group}.${entity}.queryById(id)
             .toEntity()
             .apply{
                 if( this == null){
-                    return ApiResult<${entity_class}>("找不到数据")
+                    return ApiResult<${entity}>("找不到数据")
                 }
 
                 return ApiResult.of(this)
@@ -71,7 +71,7 @@ ${endif}
     @ApiOperation("更新")
     @JsonpMapping("/save")
     fun save(
-      @JsonModel entity:${entity_class},
+      @JsonModel entity:${entity},
       request: MyHttpRequestWrapper
     ): ApiResult<String> {
 

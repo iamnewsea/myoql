@@ -13,9 +13,9 @@ import nbcp.web.*
 import javax.servlet.http.HttpServletRequest
 import java.time.*
 
-@Api(description = "${entity_class}", tags = arrayOf("${entity_class}"))
+@Api(description = "${entity}", tags = arrayOf("${entity}"))
 @RestController
 @JsonpMapping("/${group}/${entity_url}")
-class ${entity_class}Controller {
+class ${entity}Controller {
 
 }

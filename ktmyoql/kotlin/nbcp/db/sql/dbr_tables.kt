@@ -9,7 +9,7 @@ import nbcp.comm.*
 import nbcp.utils.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-08-07 16:11:21
+//generate auto @2020-08-08 15:20:40
 
 
 @Component("sql.SqlBase")
@@ -111,7 +111,7 @@ class SqlBaseGroup : IDataGroup{
         val creatAt=SqlColumnName(DbType.DateTime,this.getAliaTableName(),"creatAt")
         val creatorId=SqlColumnName(DbType.String,this.getAliaTableName(),"creatorId")
     
-        override fun getSpreadColumns(): Array<String> { return arrayOf<String>("")}
+        override fun getSpreadColumns(): Array<String> { return arrayOf<String>()}
         override fun getConvertValueColumns(): Array<String> { return arrayOf<String>("id")}
         override fun getColumns(): SqlColumnNames { return SqlColumnNames(id,module,type,key,msg,data,remark,clientIp,creatAt,creatorId)}
         override fun getAutoIncrementKey(): String { return ""}

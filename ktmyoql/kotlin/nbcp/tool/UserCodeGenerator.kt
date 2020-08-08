@@ -67,7 +67,7 @@ object UserCodeGenerator {
         text = procFor(entityFields, text);
 
         var title = CodeGeneratorHelper.getEntityCommentValue(entityClass).AsString(metaEntity.tableName);
-        var entity_class = MyUtil.getBigCamelCase(metaEntity.tableName);
+
         var entity_url = MyUtil.getHyphen(metaEntity.tableName);
 
         if (entity_url.startsWith(group + "-")) {
@@ -78,9 +78,8 @@ object UserCodeGenerator {
         return text.formatWithJson(
                 StringMap(
                         "group" to group,
-                        "entity" to metaEntity.tableName,
+                        "entity" to entityClass.simpleName,
                         "title" to title,
-                        "entity_class" to entity_class,
                         "entity_url" to entity_url,
                         "now" to LocalDateTime.now().toString(),
                         "status_enum_class" to status_enum_class

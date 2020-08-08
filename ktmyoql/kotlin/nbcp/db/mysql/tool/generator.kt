@@ -290,8 +290,7 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                         } else {
                             throw RuntimeException("未识别的数据类型,表：${tableName},列:${db_column_name},如果定义复杂列，请在列在添加 @SqlSpreadColumn 注解")
                         }
-                    }
-                    else {
+                    } else {
                         columns.add(db_column_name);
                     }
 
@@ -362,7 +361,7 @@ class ${entityTypeName}(datasource:String="")
     :SqlBaseMetaTable<${entType.name}>(${entType.name}::class.java,"${dbName}") {
 ${props.joinToString("\n")}
 
-    override fun getSpreadColumns(): Array<String> { return arrayOf<String>("${columns_spread.joinToString(",")}")}
+    override fun getSpreadColumns(): Array<String> { return arrayOf<String>(${columns_spread.map { "\"" + it + "\"" }.joinToString(",")})}
     override fun getConvertValueColumns(): Array<String> { return arrayOf<String>(${columns_convertValue.map { "\"" + it + "\"" }.joinToString(",")})}
     override fun getColumns(): SqlColumnNames { return SqlColumnNames(${columns.joinToString(",")})}
     override fun getAutoIncrementKey(): String { return "${autoIncrementKey}"}
