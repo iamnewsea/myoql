@@ -188,7 +188,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
             it.first.insert(this, it.second);
         }
 
-        return 0
+        return n
     }
 
 

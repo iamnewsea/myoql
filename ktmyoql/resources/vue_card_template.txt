@@ -114,12 +114,12 @@ ${endfor}
                 info: {}, //子对象需要声明。
             }
         },
+        props: {
+            id: {type: String, default: ""}
+        },
         computed:{
-            action(){
-                return this.$route.params.action;
-            },
-            id(){
-                this.$route.params.id || "";
+            action() {
+                return this.id ? "edit" : "add";
             },
             action_name(){
                 return {add: "添加", edit: "修改"}[this.action]
