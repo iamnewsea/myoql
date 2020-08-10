@@ -158,31 +158,32 @@ class DevDockerController {
     }
 
     fun execCmd(vararg cmds: String): ListResult<String> {
-        logger.warn(cmds.joinToString(" "));
-        var p = Runtime.getRuntime().exec(cmds);
-        var lines = listOf<String>()
-
-        var br: BufferedReader? = null;
-        try {
-            p.waitFor()
-            if (p.exitValue() == 0) {
-                br = BufferedReader(InputStreamReader(p.inputStream, "utf-8"));
-                lines = br.readLines()
-                return ListResult.of(lines)
-            } else {
-                br = BufferedReader(InputStreamReader(p.errorStream, "utf-8"));
-                lines = br.readLines();
-                return ListResult(lines.joinToString(","))
-            }
-        } catch (e: Exception) {
-            return ListResult(e.message ?: "error")
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } finally {
-                }
-            }
-        }
+        return execRuntimeCommand(*cmds);
+//        logger.warn(cmds.joinToString(" "));
+//        var p = Runtime.getRuntime().exec(cmds);
+//        var lines = listOf<String>()
+//
+//        var br: BufferedReader? = null;
+//        try {
+//            p.waitFor()
+//            if (p.exitValue() == 0) {
+//                br = BufferedReader(InputStreamReader(p.inputStream, "utf-8"));
+//                lines = br.readLines()
+//                return ListResult.of(lines)
+//            } else {
+//                br = BufferedReader(InputStreamReader(p.errorStream, "utf-8"));
+//                lines = br.readLines();
+//                return ListResult(lines.joinToString(","))
+//            }
+//        } catch (e: Exception) {
+//            return ListResult(e.message ?: "error")
+//        } finally {
+//            if (br != null) {
+//                try {
+//                    br.close();
+//                } finally {
+//                }
+//            }
+//        }
     }
 }
