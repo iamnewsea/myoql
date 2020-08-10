@@ -69,6 +69,8 @@ import org.springframework.stereotype.Component
 """)
         var count = 0;
 
+        var exts = mutableListOf<String>();
+
         groups.forEach { group ->
 
             writeToFile("""
@@ -87,13 +89,18 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
             writeToFile("\n")
 
             group.value.forEach { entityType ->
-                writeToFile(genEntity(MyUtil.getSmallCamelCase(group.key), entityType).ToTab(1))
+                var item = genEntity(MyUtil.getSmallCamelCase(group.key), entityType)
+
+                if (item.ext.HasValue) {
+                    exts.add(item.ext);
+                }
+                writeToFile(item.body.ToTab(1))
             }
 
             writeToFile("""}""")
-
         }
 
+        writeToFile(exts.joinToString("\n"))
     }
 
 
@@ -222,10 +229,15 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
         return """val ${entityVarName} get()= ${getEntityClassName(entTypeName)}();""";
     }
 
-    fun genEntity(groupName: String, entType: Class<*>): String {
+    class EntityResult {
+        var body = ""
+        var ext = "";
+    }
+
+    fun genEntity(groupName: String, entType: Class<*>): EntityResult {
         var tableName = entType.name.split(".").last();
         if (tableName.endsWith("\$Companion")) {
-            return "";
+            return EntityResult();
         }
 
         var autoIncrementKey = "";
@@ -238,6 +250,9 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
         var columns_convertValue = mutableListOf<String>()
 
         var props = mutableListOf<String>();
+        var idMethods = mutableListOf<String>()
+        var extMethods = mutableListOf<String>()
+        var entityTypeName = getEntityClassName(tableName)
 
         entType.AllFields
                 .filter { it.name != "Companion" }
@@ -274,8 +289,18 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                         if (spreadColumn != null) {
                             columns_spread.add(db_column_name);
 
-                            field.type.AllFields
+                            var spread_methods = mutableListOf<String>()
+                            var subFields = field.type.AllFields
                                     .filter { it.name != "Companion" }
+
+                            spread_methods.add("""
+                                
+    fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName},${entType.name}>.set_${db_column_name}(${db_column_name}:${field.type.name}):SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName}, ${entType.name}>{
+        return this${subFields.map { ".set{ it." + db_column_name + "_" + it.name + " to " + db_column_name + "." + it.name + " }" }.joinToString("\n\t\t\t\t\t")}
+    }
+""")
+
+                            subFields
                                     .forEach {
                                         var db_column_name = db_column_name + "_" + it.name;
                                         var dbType = DbType.of(it.type)
@@ -285,6 +310,10 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                                         var item = """val ${db_column_name}=SqlColumnName(DbType.${dbType.name},this.getAliaTableName(),"${db_column_name}")""".ToTab(1)
                                         props.add(item);
                                     }
+
+
+
+                            extMethods.addAll(spread_methods)
 
                             return@forEach
                         } else {
@@ -298,7 +327,6 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                     props.add(item);
                 }
 
-        var entityTypeName = getEntityClassName(tableName)
 
 
         if (pks.any()) {
@@ -324,7 +352,7 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
         var rks2 = rks.map { """ arrayOf(${it.split(",").map { "\"" + it + "\"" }.joinToString(",")}) """ }
         var fks_exp_string = fks.map { """FkDefine("${it.table}","${it.column}","${it.refTable}","${it.refColumn}") """ }.toTypedArray()
 
-        var idMethods = mutableListOf<String>()
+
         uks.forEach { uk ->
             var keys = uk.split(",")
             //检测
@@ -356,7 +384,8 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
         }
 
 
-        return """
+        var ret = EntityResult();
+        ret.body = """
 class ${entityTypeName}(datasource:String="")
     :SqlBaseMetaTable<${entType.name}>(${entType.name}::class.java,"${dbName}") {
 ${props.joinToString("\n")}
@@ -371,5 +400,8 @@ ${props.joinToString("\n")}
 
 ${idMethods.joinToString("\n")}
 }"""
+        ret.ext = extMethods.joinToString("\n");
+
+        return ret;
     }
 }
