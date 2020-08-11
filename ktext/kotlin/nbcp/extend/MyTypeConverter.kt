@@ -4,6 +4,7 @@
 package nbcp.comm
 
 import java.math.BigDecimal
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -183,8 +184,11 @@ fun Any?.AsString(defaultValue: String = "", format: String = ""): String {
         }
         return SimpleDateFormat(format.AsString("yyyy-MM-dd HH:mm:ss")).format(this);
     } else if (this is Number) {
-        //TODO  格式化 0.0 , #.#
-
+        if (format.HasValue) {
+            return this.toString();
+        }
+        //https://www.cnblogs.com/Small-sunshine/p/11648652.html
+        return DecimalFormat(format).format(this.toString())
     }
 
     var ret = this.toString()

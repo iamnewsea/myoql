@@ -150,17 +150,6 @@ object MyUtil {
         return Ip.isEmpty() || Ip.startsWith("192.168.") || Ip.startsWith("10.") || Ip.startsWith("172.") || Ip.startsWith("127.") || Ip.startsWith("0.") || Ip.startsWith("0:")
     }
 
-    private fun getMd5(localFile: File): String {
-        var fileStream = FileInputStream(localFile);
-        try {
-            return Md5Util.getFileMD5(fileStream);
-        } catch (e: Exception) {
-            return "";
-        } finally {
-            fileStream.close();
-        }
-    }
-
     /**
      * 生成最大数的随机数
      */

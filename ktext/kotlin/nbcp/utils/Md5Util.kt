@@ -1,6 +1,7 @@
 package nbcp.utils
 
 import org.apache.commons.codec.digest.DigestUtils
+import java.io.File
 import java.math.BigInteger
 import java.io.FileInputStream
 import java.security.MessageDigest
@@ -69,7 +70,7 @@ object Md5Util {
     }
 
     /**
-     * 优先使用 getBase64Md5
+     * 建议使用 getBase64Md5
      */
     fun getMd5(source: String): String {
         return DigestUtils.md5Hex(source)
@@ -80,15 +81,34 @@ object Md5Util {
         return DigestUtils.md5Hex(source)
     }
 
-    fun getFileMD5(fileStream: FileInputStream): String {
-        return DigestUtils.md5Hex(fileStream)
+    fun getFileMD5(file: File): String {
+        var ret = "";
+        var fileStream: FileInputStream? = null;
+        try {
+            fileStream = FileInputStream(file);
+            ret = DigestUtils.md5Hex(fileStream)
+        } finally {
+            fileStream?.close();
+        }
+        return ret;
     }
 
-    fun getFileBase64MD5(fileStream: FileInputStream): String {
-        val result = DigestUtils.md5(fileStream).toMutableList();
+    /**
+     * 计算文件的 md5 + chksum ，返回 base64格式
+     */
+    fun getFileBase64MD5(file: File): String {
+        var fileStream: FileInputStream? = null;
+        var result = mutableListOf<Byte>()
+        var checksum = 0;
+        try {
+            fileStream = FileInputStream(file);
+            result = DigestUtils.md5(fileStream).toMutableList();
 
-        //再加两个 byte 做 checksum  % 65536  , Int16=Short
-        var checksum = getChksum(fileStream).toInt();
+            //再加两个 byte 做 checksum  % 65536  , Int16=Short
+            checksum = getChksum(fileStream).toInt();
+        } finally {
+            fileStream?.close()
+        }
 
         result.add((checksum ushr 8).toByte())
         result.add((checksum % 255).toByte())

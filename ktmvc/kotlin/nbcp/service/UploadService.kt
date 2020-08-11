@@ -309,15 +309,10 @@ open class UploadService {
 
 
     private fun getMd5(localFile: File): String {
-        var fileStream = FileInputStream(localFile);
-        try {
-            if (checkType VbSame "md5") {
-                return Md5Util.getFileMD5(fileStream);
-            }
-            return Md5Util.getFileBase64MD5(fileStream);
-        } finally {
-            fileStream.close();
+        if (checkType VbSame "md5") {
+            return Md5Util.getFileMD5(localFile);
         }
+        return Md5Util.getFileBase64MD5(localFile);
     }
 
     private val dbService by lazy {

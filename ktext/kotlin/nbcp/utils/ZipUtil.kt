@@ -15,9 +15,10 @@ import java.lang.RuntimeException
 
 
 object ZipUtil {
-    fun compress(destFileName: String, passwd: String, vararg files: String):String{
-        return compress(destFileName,passwd,*files.map { File(it) }.toTypedArray())
+    fun compress(destFileName: String, passwd: String, vararg files: String) {
+        compress(destFileName, passwd, *files.map { File(it) }.toTypedArray())
     }
+
     /**
      * 根据给定密码压缩文件(s)到指定目录
      *
@@ -26,7 +27,7 @@ object ZipUtil {
      * @param files 单个文件或文件数组
      * @return 最终的压缩文件存放的绝对路径,如果为null则说明压缩失败.
      */
-    fun compress(destFileName: String, passwd: String, vararg files: File): String {
+    fun compress(destFileName: String, passwd: String, vararg files: File) {
         val parameters = ZipParameters()
         parameters.compressionMethod = CompressionMethod.DEFLATE // 压缩方式
         parameters.compressionLevel = CompressionLevel.NORMAL // 压缩级别
@@ -40,7 +41,6 @@ object ZipUtil {
             zipFile.setPassword(passwd.toCharArray())
         }
         addFiles(zipFile, parameters, *files);
-        return ""
     }
 
     private fun addFiles(zipFile: ZipFile, parameters: ZipParameters, vararg files: File) {
@@ -53,8 +53,8 @@ object ZipUtil {
         }
     }
 
-    fun deCompress(zipFile: String, destDir: String, passwd: String):String{
-        return deCompress(File(zipFile),File(destDir),passwd);
+    fun deCompress(zipFile: String, destDir: String, passwd: String): String {
+        return deCompress(File(zipFile), File(destDir), passwd);
     }
 
     /**
@@ -67,7 +67,7 @@ object ZipUtil {
      * @return 解压后的文件数组
      * @throws ZipException
      */
-    fun deCompress(zipFile: File, destDir: File, passwd: String):String  {
+    fun deCompress(zipFile: File, destDir: File, passwd: String): String {
         //1.判断指定目录是否存在
         if (!destDir.exists()) {
             destDir.mkdir()
@@ -85,21 +85,5 @@ object ZipUtil {
         //4.解压所有文件
         zFile.extractAll(destDir.FullName)
         return "";
-//        val headerList = zFile.getFileHeaders()
-//        val extractedFileList = mutableListOf<File>()
-//        for (fileHeader in headerList) {
-//            if (!fileHeader.isDirectory) {
-//                extractedFileList.add(File(destDir, fileHeader.fileName))
-//            }
-//        }
-//
-//        return extractedFileList.toTypedArray();
     }
-
-//    @JvmStatic
-//    fun main(args: Array<String>) {
-//        var folder = "D:\\test23\\";
-//        compress("d:\\测试.zip", "123456", folder);
-//        deCompress("d:\\测试.zip", "D:/test24", "123456")
-//    }
 }
