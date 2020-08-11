@@ -29,7 +29,7 @@ open class DataCache4SqlServiceImpl : DataCache4SqlService {
 
     //这个字段从 spring.redis.host 中判断
     val enable: Boolean by lazy {
-        return@lazy SpringUtil.context.environment.getProperty("spring.redis.host").HasValue
+        return@lazy config.redisHost.HasValue
     }
 
     override fun isEnable(): Boolean {

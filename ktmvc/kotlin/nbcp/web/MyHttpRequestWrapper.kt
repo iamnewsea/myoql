@@ -43,13 +43,6 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
 //                    ?: "JSESSIONID";
 //        }
 
-        @JvmStatic
-        val maxHttpPostSize: DataSize by lazy {
-            var value = DataSize.parse(
-                    SpringUtil.context.environment.getProperty("server.servlet.max-http-post-size")
-                            ?: SpringUtil.context.environment.getProperty("server.tomcat.max-http-post-size") ?: "2MB")
-            return@lazy value      //默认2MB
-        }
 
         @Throws(IOException::class)
         @JvmStatic
@@ -69,8 +62,8 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
         if (this.IsOctetContent) {
             return@lazy null;
         }
-        if (request.contentLength > maxHttpPostSize.toBytes()) {
-            throw RuntimeException("请求体超过${(maxHttpPostSize.toString()).AsInt()}!")
+        if (request.contentLength > config.maxHttpPostSize.toBytes()) {
+            throw RuntimeException("请求体超过${(config.maxHttpPostSize.toString()).AsInt()}!")
         }
 //        body_read = true;
         return@lazy request.inputStream.readBytes()
@@ -189,7 +182,7 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
     fun getValue(key: String): String {
         if (queryJson.containsKey(key)) {
             var ret = queryJson.get(key)
-            if( ret != null) {
+            if (ret != null) {
                 if (ret is String) return ret;
                 return (ret as Collection<String>).joinToString(",")
             }
@@ -198,7 +191,7 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
 
         if (json.containsKey(key)) {
             var ret = json.get(key)
-            if( ret != null) {
+            if (ret != null) {
                 if (ret is String) return ret;
                 else if (ret is Collection<*>) return ret.joinToString(",")
                 return ret.AsString()

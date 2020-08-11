@@ -20,7 +20,6 @@ import javax.sql.DataSource
 class ExistsSlaveDataSourceConfigCondition : Condition {
     override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata?): Boolean {
         return getValue(context.environment);
-
     }
 
     fun getValue(environment: Environment):Boolean {
@@ -31,10 +30,10 @@ class ExistsSlaveDataSourceConfigCondition : Condition {
                 )
                 &&
                 (
-                         environment.getProperty("spring.datasource.slave.url") != null ||
-                                 environment.getProperty("spring.datasource.slave.hikari.url") != null ||
-                                 environment.getProperty("spring.datasource.slave.hikari.jdbc-url") != null
-                        )
+                     environment.getProperty("spring.datasource.slave.url") != null ||
+                             environment.getProperty("spring.datasource.slave.hikari.url") != null ||
+                             environment.getProperty("spring.datasource.slave.hikari.jdbc-url") != null
+                )
     }
 }
 

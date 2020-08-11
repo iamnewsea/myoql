@@ -1,5 +1,6 @@
 package nbcp.wx
 
+import nbcp.comm.config
 import nbcp.utils.SpringUtil
 import nbcp.wx.h5.WxH5Group
 import nbcp.wx.miniprogram.WxMiniProgramGroup
@@ -35,8 +36,8 @@ data class WxUserData(
 
 object wx {
 
-    val appId get() = SpringUtil.context.environment.getProperty("app.wx.appId")
-    val mchId get() = SpringUtil.context.environment.getProperty("app.wx.mchId")
+    val appId get() = config.wxAppId
+    val mchId get() = config.wxMchId
 
 
     val h5 = WxH5Group

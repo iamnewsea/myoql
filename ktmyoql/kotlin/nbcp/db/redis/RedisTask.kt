@@ -2,6 +2,7 @@ package nbcp.db.redis
 
 import nbcp.comm.AsInt
 import nbcp.comm.AsLong
+import nbcp.comm.config
 import nbcp.comm.minus
 import nbcp.utils.*
 import org.slf4j.LoggerFactory
@@ -71,8 +72,8 @@ class RedisTask {
                 return;
             }
 
-            var redisTaskSize = SpringUtil.context.environment.getProperty("app.redis.task.size").AsInt(1024);
-            var redisTaskDelay = SpringUtil.context.environment.getProperty("app.redis.task.delay").AsInt(15);
+            var redisTaskSize = config.redisTaskSize;
+            var redisTaskDelay = config.redisTaskDelay;
 
             var working = rKeys.size > redisTaskSize || LocalDateTime.now().minus(lastExecuteTime).totalSeconds > redisTaskDelay;
 

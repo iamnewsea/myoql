@@ -18,7 +18,8 @@ enum class DatabaseEnum {
     Mysql,
     Oracle,
     Sqlite,
-    Mssql
+    Mssql,
+    Postgre
 }
 
 
@@ -34,7 +35,7 @@ object db {
 
 
     val mainDatabaseType: DatabaseEnum by lazy {
-        var value: DatabaseEnum? = SpringUtil.context.environment.getProperty("app.database-type")?.ToEnum(DatabaseEnum::class.java)
+        var value: DatabaseEnum? = config.databaseType?.ToEnum(DatabaseEnum::class.java)
 
         if (value != null) {
             return@lazy value!!
