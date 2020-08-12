@@ -56,6 +56,12 @@ select * from[pub space].tab where`id`  like'% 1 %'
     fun test_3des() {
         var key = CipherUtil.get3desKey();
         println("key:" + key)
+        key = CipherUtil.get3desKey();
+        println("key:" + key)
+        key = CipherUtil.get3desKey();
+        println("key:" + key)
+        key = CipherUtil.get3desKey();
+        println("key:" + key)
         var result = CipherUtil.encrypt3des("println(ConvertToLocalDateTime(\"20111203101530\",DateTimeFormatter.", key)
         println("结果:" + result);
 
