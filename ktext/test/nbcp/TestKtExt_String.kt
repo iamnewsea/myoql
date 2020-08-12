@@ -54,17 +54,17 @@ select * from[pub space].tab where`id`  like'% 1 %'
 
     @Test
     fun test_3des() {
+        var key1 = CipherUtil.getDesKey();
+        println("key:" + key1)
+        var result1 = CipherUtil.encryptDes("println(ConvertToLocalDateTime(\"20111203101530\",DateTimeFormatter.", key1)
+        println("结果:" + result1);
+        println("原文:" + CipherUtil.decryptDes(result1, key1))
+
+
         var key = CipherUtil.get3desKey();
-        println("key:" + key)
-        key = CipherUtil.get3desKey();
-        println("key:" + key)
-        key = CipherUtil.get3desKey();
-        println("key:" + key)
-        key = CipherUtil.get3desKey();
         println("key:" + key)
         var result = CipherUtil.encrypt3des("println(ConvertToLocalDateTime(\"20111203101530\",DateTimeFormatter.", key)
         println("结果:" + result);
-
         println("原文:" + CipherUtil.decrypt3des(result, key))
     }
 }
