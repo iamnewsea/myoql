@@ -48,7 +48,17 @@ select * from[pub space].tab where`id`  like'% 1 %'
 
     @Test
     fun test_type_convert() {
-        println(ConvertToLocalDateTime("20111203101530",DateTimeFormatter.ofPattern("yyyyMMddHHmmss")))
+        println(ConvertToLocalDateTime("20111203101530", DateTimeFormatter.ofPattern("yyyyMMddHHmmss")))
         //println(ConvertToLocalDateTime("2011-12-03T10:15:30Z", DateTimeFormatter.ISO_INSTANT))
+    }
+
+    @Test
+    fun test_3des() {
+        var key = CipherUtil.get3desKey();
+        println("key:" + key)
+        var result = CipherUtil.encrypt3des("println(ConvertToLocalDateTime(\"20111203101530\",DateTimeFormatter.", key)
+        println("结果:" + result);
+
+        println("原文:" + CipherUtil.decrypt3des(result, key))
     }
 }
