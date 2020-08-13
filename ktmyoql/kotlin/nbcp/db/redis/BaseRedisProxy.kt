@@ -1,7 +1,5 @@
 package nbcp.db.redis
 
-import io.lettuce.core.ScanArgs
-import io.lettuce.core.ScanCursor
 import nbcp.comm.AsInt
 import nbcp.utils.*
 import nbcp.comm.*
