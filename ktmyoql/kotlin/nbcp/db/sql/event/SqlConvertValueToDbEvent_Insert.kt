@@ -25,8 +25,17 @@ class SqlConvertValueToDbEvent_Insert : ISqlEntityInsert {
         }
 
         annotations.forEach { field, converter ->
+
+            var values = mutableListOf<Any?>()
+
             insert.entities.forEach {
-                it.set(field.name, converter.convert(it.get(field.name)));
+                var convertedValue = converter.convert(it.get(field.name))
+                values.add(convertedValue);
+                it.set(field.name, convertedValue);
+            }
+
+            insert.ori_entities.forEachIndexed { index, entity ->
+                MyUtil.setPrivatePropertyValue(entity, field.name, values[index])
             }
         }
 

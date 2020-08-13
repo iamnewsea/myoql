@@ -285,14 +285,14 @@ object MyUtil {
         type.set(entity, value)
     }
 
-    fun setPropertyValue(entity: Any, property: String, value: Any?) {
-        var type = entity::class.java.AllFields.firstOrNull { it.name == property };
-        if (type == null) {
-            return;
-        }
-//        type.isAccessible = true;
-        type.set(entity, value)
-    }
+//    fun setPropertyValue(entity: Any, property: String, value: Any?) {
+//        var type = entity::class.java.AllFields.firstOrNull { it.name == property };
+//        if (type == null) {
+//            return;
+//        }
+////        type.isAccessible = true;
+//        type.set(entity, value)
+//    }
 
     /**
      * 通过反射把 源对象值传输到目标对象

@@ -28,7 +28,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
     private var multiBatchSize = 256;
 
     //回写自增Id用。
-    protected val ori_entities = mutableListOf<T>()
+    val ori_entities = mutableListOf<T>()
 
     /**
      * 批量插入时， 指定是否使用事务。
