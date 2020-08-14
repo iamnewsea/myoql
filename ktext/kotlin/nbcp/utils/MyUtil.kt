@@ -1,9 +1,8 @@
 package nbcp.utils
 
 import nbcp.comm.*
-import nbcp.db.CodeName
 import java.io.File
-import java.io.FileInputStream
+import java.lang.RuntimeException
 import java.net.JarURLConnection
 import java.net.URL
 import java.time.*
@@ -230,41 +229,32 @@ object MyUtil {
          * var file = Thread.currentThread().contextClassLoader.getResource("/").path
          */
 //        var file = clazz.protectionDomain.codeSource.location.path
-        var jarFile = Thread.currentThread().contextClassLoader.getResource("/")
-                ?: Thread.currentThread().contextClassLoader.getResource("")
+        var classLoader = Thread.currentThread().contextClassLoader
 
-        var file = jarFile.path
-//        print(file)
-        var startIndex = 0
-        if (file.startsWith("//file:/")) {
-            startIndex = 7
-        } else if (file.startsWith("file:/")) {
-            startIndex = 5
-        }
+        //jar方式使用 /，空字符串都可以。 调试时只能使用 字符串。
+        var url = classLoader.getResource("") ?: classLoader.getResource("/")
+        var path = JsUtil.decodeURIComponent(url.path)
+        if (url.protocol == "jar") {
+            //值是： file:/D:/code/sites/server/admin/target/admin-api-1.0.1.jar!/BOOT-INF/classes!/
+            var index = 0;
+            if (path.startsWith("file:/")) {
+                index = "file:/".length;
+            }
+            return File(path.Slice(index, 0 - "!/BOOT-INF/classes!/".length))
+        } else if (url.protocol == "file") {
+            //值是： /D:/code/sites/server/admin/target/classes/
+            //处理文件路径中中文的问题。
+            var targetPath = File(path).parentFile
+            var mvn_file = targetPath.listFiles { it -> it.name == "maven-archiver" }.firstOrNull()?.listFiles { it -> it.name == "pom.properties" }?.firstOrNull()
+            if (mvn_file != null) {
+                var jarFile_lines = mvn_file.readLines()
+                var version = jarFile_lines.first { it.startsWith("version=") }.split("=").last()
+                var artifactId = jarFile_lines.first { it.startsWith("artifactId=") }.split("=").last()
 
-        //如果是Jar包
-        var index = file.indexOf("!/BOOT-INF/classes!/");
-        if (index > 0) {
-            return File(file.slice(startIndex..(index - 1)))
-        } else {
-            //如果是调试模式
-            index = file.indexOf("/target/classes/")
-            if (index > 0) {
-                //处理文件路径中中文的问题。
-                var filePath = JsUtil.decodeURIComponent(file.Slice(0, -8));
-
-                var mvn_file = File(filePath).listFiles { it -> it.name == "maven-archiver" }.firstOrNull()?.listFiles { it -> it.name == "pom.properties" }?.firstOrNull()
-                if (mvn_file != null) {
-                    var jarFile_lines = mvn_file.readLines()
-                    var version = jarFile_lines.first { it.startsWith("version=") }.split("=").last()
-                    var artifactId = jarFile_lines.first { it.startsWith("artifactId=") }.split("=").last()
-
-                    return File(filePath + artifactId + "-" + version + ".jar")
-                }
+                return File(targetPath.FullName + artifactId + "-" + version + ".jar")
             }
         }
-
-        return File(file)
+        throw RuntimeException("不识别的协议类型 ${url.protocol}")
     }
 
     fun getPrivatePropertyValue(entity: Any, property: String): Any? {
@@ -362,16 +352,23 @@ object MyUtil {
     }
 
 
+    /**
+     * 加载的类
+     */
     fun getLoadedClasses(): Vector<Class<*>> = MyUtil.getPrivatePropertyValue(Thread.currentThread().contextClassLoader, "classes") as Vector<Class<*>>
 
+    /**
+     * 查找类。
+     */
     fun findClasses(basePack: String, oneClass: Class<*>): List<Class<*>> {
 
         var basePackPath = basePack.replace(".", "/")
         var ret = mutableListOf<Class<*>>();
 
         //通过当前线程得到类加载器从而得到URL的枚举
-        val urlEnumeration = Thread.currentThread().contextClassLoader.getResources(basePackPath)
-        var jarPath = File(Thread.currentThread().contextClassLoader.getResource(oneClass.name.replace('.', '/') + ".class").path.Slice(0, 0 - oneClass.name.length - ".class".length)).path;
+        var classLeader = Thread.currentThread().contextClassLoader
+        val urlEnumeration = classLeader.getResources(basePackPath)
+        var jarPath = File(classLeader.getResource(oneClass.name.replace('.', '/') + ".class").path.Slice(0, 0 - oneClass.name.length - ".class".length)).path;
 
         while (urlEnumeration.hasMoreElements()) {
             val url = urlEnumeration.nextElement()//得到的结果大概是：jar:file:/C:/Users/ibm/.m2/repository/junit/junit/4.12/junit-4.12.jar!/org/junit
@@ -384,6 +381,53 @@ object MyUtil {
         }
 
         return ret;
+    }
+
+    /**
+     * 列出下一级的资源文件
+     * @param url: 可以从 SpringApplication.classLoader.getResource("") 中获取,也可以从 Thread.currentThread().contextClassLoader.getResource("") 中获取
+     */
+    fun listResourceFiles(filter: ((String) -> Boolean)? = null): List<String> {
+        var classLoader = Thread.currentThread().contextClassLoader
+        var url = classLoader.getResource("") ?: classLoader.getResource("/")
+        var list = mutableListOf<String>()
+
+        //jar方式使用 /，空字符串都可以。 调试时只能使用 字符串。
+        if (url.protocol == "jar") {
+            var conn = url.openConnection() as JarURLConnection
+            var ents = conn.jarFile.entries();
+            while (ents.hasMoreElements()) {
+                var item = ents.nextElement();
+                var name = item.name;
+                if (filter != null && filter(name) == false) {
+                    continue;
+                }
+
+                list.add(name);
+            }
+        } else if (url.protocol == "file") {
+            var path = File(url.path).FullName + File.separator
+
+            list = list_files_recursion(File(path), path, filter)
+        }
+
+        return list;
+    }
+
+    private fun list_files_recursion(path: File, base: String, filter: ((String) -> Boolean)? = null): MutableList<String> {
+        var list = mutableListOf<String>()
+        path.listFiles { it ->
+            if (it.isFile) {
+                var relativeName = it.FullName.substring(base.length);
+                if (filter?.invoke(relativeName) ?: true) {
+                    list.add(relativeName);
+                }
+            } else {
+                list.addAll(list_files_recursion(it, base, filter))
+            }
+            return@listFiles true;
+        }
+        return list;
     }
 
     private fun getClassName(fullPath: String, basePack: String, jarPath: String): String {
@@ -436,7 +480,7 @@ object MyUtil {
             return listOf();
         }
 
-        val jarFile = connection.getJarFile()
+        val jarFile = connection.jarFile
         if (jarFile == null) {
             return listOf();
         }
