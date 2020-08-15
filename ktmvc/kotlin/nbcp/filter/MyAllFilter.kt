@@ -59,6 +59,9 @@ open class MyAllFilter : Filter, InitializingBean {
     @Value("\${app.filter.headers:}")
     var headers: List<String> = listOf()
 
+    /**
+     * 静态文件在 resources 里的文件夹。前后不能有 "/"
+     */
     @Value("\${app.filter.html-path:public}")
     var htmlPath: String = "public"
 
@@ -161,7 +164,7 @@ open class MyAllFilter : Filter, InitializingBean {
                 afterComplete(myRequest, myResponse, queryMap.getStringValue("callback").AsString(), startAt, "");
             } else {
                 //如果是静态资源
-                var file = htmlFiles.firstOrNull { (htmlPath + "/" + request.requestURI).startsWith(it) }
+                var file = htmlFiles.firstOrNull { (htmlPath + request.requestURI).startsWith(it) }
                 if (file != null) {
                     response.status = 200;
 
