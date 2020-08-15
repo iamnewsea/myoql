@@ -11,6 +11,9 @@ class RuntimeUtil {
 
 private val logger = LoggerFactory.getLogger(RuntimeUtil::class.java)
 
+/**
+ * 简单的方式是，传递3个参数： "sh","-c","复杂的命令字符串"
+ */
 fun execRuntimeCommand(vararg cmds: String): List<String> {
     logger.warn(cmds.joinToString(" "));
     var p = Runtime.getRuntime().exec(cmds);
