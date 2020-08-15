@@ -385,7 +385,8 @@ object MyUtil {
 
     /**
      * 列出下一级的资源文件
-     * @param url: 可以从 SpringApplication.classLoader.getResource("") 中获取,也可以从 Thread.currentThread().contextClassLoader.getResource("") 中获取
+     * 可以从 SpringApplication.classLoader.getResource("") 中获取,也可以从 Thread.currentThread().contextClassLoader.getResource("") 中获取
+     * @param filter: 参数为资源路径，统一格式：分隔符为"/",开头不包括"/".
      */
     fun listResourceFiles(filter: ((String) -> Boolean)? = null): List<String> {
         var classLoader = Thread.currentThread().contextClassLoader
@@ -418,7 +419,7 @@ object MyUtil {
         var list = mutableListOf<String>()
         path.listFiles { it ->
             if (it.isFile) {
-                var relativeName = it.FullName.substring(base.length);
+                var relativeName = it.FullName.substring(base.length).replace("\\", "/");
                 if (filter?.invoke(relativeName) ?: true) {
                     list.add(relativeName);
                 }

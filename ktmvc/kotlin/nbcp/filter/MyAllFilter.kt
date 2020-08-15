@@ -14,6 +14,7 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.http.MediaType
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
@@ -67,12 +68,11 @@ open class MyAllFilter : Filter, InitializingBean {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
+        /**
+         * 以public开头的（不以"/"开头） 文件夹下的路径。
+         */
         @JvmStatic
         var htmlFiles = listOf<String>()
-        @JvmStatic
-        var isJarFile = true;
-        @JvmStatic
-        var jarFile = ""
     }
 
     override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
@@ -160,30 +160,30 @@ open class MyAllFilter : Filter, InitializingBean {
                 }
                 afterComplete(myRequest, myResponse, queryMap.getStringValue("callback").AsString(), startAt, "");
             } else {
-                //是否是静态资源, 必须有后缀名。
-                var extention = FileExtentionInfo(request.requestURI)
-                if (extention.extName.HasValue) {
-                    var file = htmlFiles.firstOrNull { request.requestURI.startsWith(it) }
-                    if (file != null) {
-                        response.status = 200;
+                //如果是静态资源
+                var file = htmlFiles.firstOrNull { (htmlPath + "/" + request.requestURI).startsWith(it) }
+                if (file != null) {
+                    response.status = 200;
 
-                        var contentType = MyUtil.getMimeType(extention.extName)
-                        if (contentType.HasValue) {
-                            response.contentType = contentType
-                        }
-
-                        var prefix = if (isJarFile) "/" else "";
-
-                        Thread.currentThread().contextClassLoader.getResourceAsStream("${prefix}${htmlPath}${file}").copyTo(response.outputStream)
-                        return;
+                    var extention = FileExtentionInfo(file)
+                    var contentType = MyUtil.getMimeType(extention.extName)
+                    if (contentType.HasValue) {
+                        response.contentType = contentType
                     }
+
+                    var resourceResolver = PathMatchingResourcePatternResolver()
+                    var resource = resourceResolver.getResource(file)
+                    resource.inputStream.copyTo(response.outputStream)
+                    return;
                 }
+
 
                 try {
                     chain?.doFilter(request, response)
                 } catch (e: Exception) {
 
-                    logger.Error { var msgs = mutableListOf<String>()
+                    logger.Error {
+                        var msgs = mutableListOf<String>()
                         msgs.add("[[----> ${request.LoginUser.name} ${request.ClientIp} ${request.method} ${request.fullUrl}")
                         msgs.add(e.message ?: "服务器错误");
                         msgs.add("<----]]")
@@ -479,24 +479,11 @@ open class MyAllFilter : Filter, InitializingBean {
 
     //收集静态资源
     override fun afterPropertiesSet() {
-        var file = MyUtil.getStartingJarFile();
-        if (file.exists() == false) {
-            return;
-        }
-        jarFile = file.FullName;
-
-        if (file.isFile) {
-            isJarFile = true;
-            var prefix = "BOOT-INF/classes/${htmlPath}/"
-            htmlFiles = JarFile(file).entries().toList()
-                    .filter { it.name.startsWith(prefix) }
-                    .filter { it.name.endsWith("/") == false }
-                    .map { "/" + it.name.substring(prefix.length) }
-        } else {
-            isJarFile = false;
-            var file2 = File(file.FullName + File.separator + htmlPath);
-            htmlFiles = getAllFiles(file2) { it.startsWith(file2.FullName + File.separator) && (it.endsWith(File.separator) == false) }
-                    .map { "/" + it.substring(file2.FullName.length + 1) }
+        htmlFiles = MyUtil.listResourceFiles {
+            if (it.startsWith("${htmlPath}/") == false) {
+                return@listResourceFiles false
+            }
+            return@listResourceFiles true
         }
     }
 }
