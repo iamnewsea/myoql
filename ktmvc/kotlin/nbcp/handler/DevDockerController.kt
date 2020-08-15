@@ -158,7 +158,7 @@ class DevDockerController {
     }
 
     fun execCmd(vararg cmds: String): ListResult<String> {
-        return execRuntimeCommand(*cmds);
+        return ListResult.of(execRuntimeCommand(*cmds))
 //        logger.warn(cmds.joinToString(" "));
 //        var p = Runtime.getRuntime().exec(cmds);
 //        var lines = listOf<String>()
