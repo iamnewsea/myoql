@@ -11,7 +11,7 @@ class RuntimeUtil {
 
 private val logger = LoggerFactory.getLogger(RuntimeUtil::class.java)
 
-fun execRuntimeCommand(vararg cmds: String): ListResult<String> {
+fun execRuntimeCommand(vararg cmds: String): List<String> {
     logger.warn(cmds.joinToString(" "));
     var p = Runtime.getRuntime().exec(cmds);
 
@@ -20,13 +20,11 @@ fun execRuntimeCommand(vararg cmds: String): ListResult<String> {
         p.waitFor()
         if (p.exitValue() == 0) {
             br = BufferedReader(InputStreamReader(p.inputStream, "utf-8"));
-            return ListResult.of(br.readLines());
+            return br.readLines();
         } else {
             br = BufferedReader(InputStreamReader(p.errorStream, "utf-8"));
-            return ListResult(br.readLines().joinToString(","))
+            throw RuntimeException(br.readLines().joinToString(","))
         }
-    } catch (e: Exception) {
-        return ListResult(e.message ?: "error")
     } finally {
         if (br != null) {
             try {
