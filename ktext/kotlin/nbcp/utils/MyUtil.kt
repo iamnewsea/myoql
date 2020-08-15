@@ -252,6 +252,8 @@ object MyUtil {
                 var artifactId = jarFile_lines.first { it.startsWith("artifactId=") }.split("=").last()
 
                 return File(targetPath.FullName + artifactId + "-" + version + ".jar")
+            } else {
+                throw RuntimeException("找不到 maven-archiver , 先打包再运行!")
             }
         }
         throw RuntimeException("不识别的协议类型 ${url.protocol}")
