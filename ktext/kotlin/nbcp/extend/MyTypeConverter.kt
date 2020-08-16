@@ -63,11 +63,12 @@ fun Any.ConvertType(clazz: Class<*>): Any? {
     }
 
     if (theClass.isArray) {
-        if (clazz is List<*>) {
-            (this as Array<*>).toMutableList();
-        }
+        //因为 set 也是 Collection,所以先转 set
         if (clazz is Set<*>) {
-            (this as Array<*>).toMutableSet();
+            return (this as Array<*>).toMutableSet();
+        }
+        else if (clazz.IsCollectionType()) {
+            return (this as Array<*>).toMutableList();
         }
     }
 

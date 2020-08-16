@@ -116,17 +116,27 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
             return null;
         }
 
-        var retValue = value.ConvertType(parameter.parameterType);
-
-        if (parameter.parameterType == String::class.java) {
-            var strValue = retValue.AsString().trim()
+        if (parameter.parameterType.IsStringType()) {
+            var strValue = value.AsString().trim()
 
             if (strValue.isEmpty()) {
                 checkRequire(parameter, webRequest)
             }
 
-            retValue = strValue;
+            return strValue;
         }
+
+        //如果是列表。
+        if (parameter.parameterType.IsCollectionType()) {
+            var genType = (parameter.genericParameterType as ParameterizedTypeImpl).GetActualClass(0);
+            return (value as Collection<*>).map { it?.ConvertType(genType) }
+        } else if (parameter.parameterType.isArray) {
+            var genType = parameter.parameterType.componentType;
+            return (value as Array<*>).map { it?.ConvertType(genType) }
+        }
+
+        //转换枚举、Map之类的。
+        var retValue = value.ConvertType(parameter.parameterType);
 
         return retValue;
     }
@@ -165,6 +175,7 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
             return null;
         }
 
+        //如果得到了多个值。进行转换。
         if (value::class.java.IsCollectionType()) {
             //如果参数是 List.
             if (parameter.parameterType.isArray) {
@@ -186,7 +197,7 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
         }
 
 
-        //如果参数是 List.
+        //如果得到了一个值，但是参数是 List.
         if (parameter.parameterType.isArray) {
             value = arrayOf(value.ConvertType(parameter.parameterType.componentType))
         } else if (parameter.parameterType.IsCollectionType()) {
