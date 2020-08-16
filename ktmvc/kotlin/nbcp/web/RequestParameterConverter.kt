@@ -87,6 +87,7 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
         var key = parameter.parameterName
 
 
+        //获取 PathVariable 的值
         value = (webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as Map<String, Any?>?)?.get(key);
 
         if (value == null && webRequest.queryString != null) {
