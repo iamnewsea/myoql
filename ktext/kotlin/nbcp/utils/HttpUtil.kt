@@ -260,8 +260,8 @@ class HttpUtil(var url: String = "") {
             conn.instanceFollowRedirects = false
 
             conn.useCaches = false
-            conn.connectTimeout = 3000;
-            conn.readTimeout = 5000;
+            conn.connectTimeout = 5000;     //5秒
+            conn.readTimeout = 30000;        //30秒
 
             conn.setRequestProperty("Connection", "close")
 
