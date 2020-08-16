@@ -217,7 +217,6 @@ object MyUtil {
     /**
      * 获取启动Jar所的路径
      * 调试时，会返回 target/classes/nbcp/base/utils
-     * @param clazz: 启动Jar所任意类
      */
     fun getStartingJarFile(): File {
         /**
@@ -231,8 +230,20 @@ object MyUtil {
 //        var file = clazz.protectionDomain.codeSource.location.path
         var classLoader = Thread.currentThread().contextClassLoader
 
-        //jar方式使用 /，空字符串都可以。 调试时只能使用 字符串。
-        var url = classLoader.getResource("") ?: classLoader.getResource("/")
+        /**
+         * jar -Dloader.path=libs 方式:
+         * 1. 使用 /, 表示启动的Jar包 !/BOOT-INF/classes!/
+         * 2. 使用 ./ 或 空串 表示 libs 目录
+         *
+         * jar 方式：
+         * 1. 使用 /, 表示启动的Jar包 !/BOOT-INF/classes!/
+         * 2. 使用 ./ 或 空串 表示Jar包
+         *
+         * 调试时：
+         * 1. 使用 / 返回 null
+         * 2. 使用 ./ 或 空串 ,返回 /D:/code/sites/server/admin/target/classes/
+         */
+        var url = classLoader.getResource("/") ?: classLoader.getResource("")
         var path = JsUtil.decodeURIComponent(url.path)
         if (url.protocol == "jar") {
             //值是： file:/D:/code/sites/server/admin/target/admin-api-1.0.1.jar!/BOOT-INF/classes!/
@@ -392,7 +403,7 @@ object MyUtil {
      */
     fun listResourceFiles(filter: ((String) -> Boolean)? = null): List<String> {
         var classLoader = Thread.currentThread().contextClassLoader
-        var url = classLoader.getResource("") ?: classLoader.getResource("/")
+        var url = classLoader.getResource("/") ?: classLoader.getResource("")
         var list = mutableListOf<String>()
 
         //jar方式使用 /，空字符串都可以。 调试时只能使用 字符串。
