@@ -1,6 +1,4 @@
-package nbcp.utils
-
-import nbcp.comm.*
+package nbcp.comm
 
 import java.io.File
 import java.io.RandomAccessFile

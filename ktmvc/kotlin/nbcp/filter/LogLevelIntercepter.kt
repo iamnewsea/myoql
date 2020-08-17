@@ -15,8 +15,15 @@ import org.springframework.stereotype.Component
 @Aspect
 @Component
 open class LogLevelIntercepter {
+
+    //@annotation 表示拦截方法级别上的注解。
+    //@within 表示拦截类级别上的注解。
+
+    /**
+     * 日志拦截
+     */
     @Around("@within(nbcp.comm.MyLogLevel) || @annotation(nbcp.comm.MyLogLevel)")
-    fun mongo(joinPoint: ProceedingJoinPoint): Any? {
+    fun logPoint(joinPoint: ProceedingJoinPoint): Any? {
         var signature = joinPoint.signature as MethodSignature;
         var targetType = signature.declaringType
         var method = targetType.getDeclaredMethod(signature.name, *signature.parameterTypes);

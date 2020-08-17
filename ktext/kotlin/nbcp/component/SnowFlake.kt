@@ -1,4 +1,4 @@
-package nbcp.utils
+package nbcp.component
 
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean

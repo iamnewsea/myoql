@@ -13,15 +13,15 @@ package nbcp.comm
  *
  *         }
  */
-class CommonReader<T>(private val nextFunc: () -> T?) : Iterator<T> {
+class BatchReader<T>(private val nextFunc: () -> T?) : Iterator<T> {
     companion object {
         @JvmStatic
-        fun <T> init(batchSize: Int = 20, producer: (Int, Int) -> List<T>): CommonReader<T> {
+        fun <T> init(batchSize: Int = 20, producer: (Int, Int) -> List<T>): BatchReader<T> {
             return init(0, batchSize, producer);
         }
 
         @JvmStatic
-        fun <T> init(producer: (Int, Int) -> List<T>): CommonReader<T> {
+        fun <T> init(producer: (Int, Int) -> List<T>): BatchReader<T> {
             return init(0, 20, producer);
         }
 
@@ -31,7 +31,7 @@ class CommonReader<T>(private val nextFunc: () -> T?) : Iterator<T> {
          * @param producer:生产者，参数是 startIndex + 偏移,batchSize，如果生产者返回空列表，则遍历完成。
          */
         @JvmStatic
-        fun <T> init(startIndex: Int = 0, batchSize: Int = 20, producer: (Int, Int) -> List<T>): CommonReader<T> {
+        fun <T> init(startIndex: Int = 0, batchSize: Int = 20, producer: (Int, Int) -> List<T>): BatchReader<T> {
             var skip = startIndex - batchSize;
 
             var currentData = listOf<T>();
@@ -57,7 +57,7 @@ class CommonReader<T>(private val nextFunc: () -> T?) : Iterator<T> {
                 return@abc null;
             }
 
-            return CommonReader(nextFunc)
+            return BatchReader(nextFunc)
         }
     }
 

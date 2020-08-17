@@ -1,14 +1,6 @@
 package nbcp.utils
 
-import org.slf4j.LoggerFactory
-import nbcp.comm.Lock
-import java.math.BigInteger
-import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoField
-import java.util.*
+import nbcp.component.SnowFlake
 
 /**
  * Created by udi on 17-5-22.
