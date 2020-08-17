@@ -20,11 +20,15 @@ class TestKtExt_Json : TestBase() {
 
     class bc {
         var isDeleted: Boolean? = false;
+        var list = mutableListOf<IdName>();
+        var ary = arrayOf<IdName>()
     }
 
     @Test
     fun test_ToJson() {
         var b = bc();
+        b.list.add(IdName("1", "abc"))
+        b.ary = arrayOf(IdName("2", "def"))
         b.isDeleted = true;
 
         using(JsonStyleEnumScope.GetSetStyle) {
@@ -38,12 +42,19 @@ class TestKtExt_Json : TestBase() {
 
     @Test
     fun test_FromJson() {
-        using(JsonStyleEnumScope.GetSetStyle) {
-            println("""{"id":"123"}""".FromJson<IdName>()!!.name)
-        }
+        var b = bc();
+        b.list.add(IdName("1", "abc"))
+        b.ary = arrayOf(IdName("2", "def"))
+        b.isDeleted = true;
 
-        using(JsonStyleEnumScope.FieldStyle) {
-            println("""{"isDeleted":true}""".FromJson<bc>()!!.isDeleted)
+
+        var result   = ApiResult<Any>();
+        result.data = b;
+
+        var str = result.ToJson();
+        using(JsonStyleEnumScope.GetSetStyle) {
+            result = str.FromJson<ApiResult<Any>>()!!;
+            println(result.data!!.ConvertJson(bc::class.java).list.first().ToJson())
         }
     }
 }

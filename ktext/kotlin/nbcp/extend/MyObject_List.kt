@@ -243,6 +243,9 @@ inline fun <T, R> Iterable<T>.IntersectIndeies(other: Collection<R>, equalFunc: 
     return listIndex
 }
 
+/**
+ * 减法
+ */
 inline fun <T, R> Iterable<T>.Minus(other: Collection<R>, equalFunc: (T, R) -> Boolean): List<T> {
     if (this.any() == false) return this.toList();
     if (other.any() == false) return this.toList();
