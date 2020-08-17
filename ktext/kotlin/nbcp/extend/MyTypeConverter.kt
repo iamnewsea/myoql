@@ -3,6 +3,7 @@
 
 package nbcp.comm
 
+import nbcp.utils.MyUtil
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
@@ -66,8 +67,7 @@ fun Any.ConvertType(clazz: Class<*>): Any? {
         //因为 set 也是 Collection,所以先转 set
         if (clazz is Set<*>) {
             return (this as Array<*>).toMutableSet();
-        }
-        else if (clazz.IsCollectionType()) {
+        } else if (clazz.IsCollectionType()) {
             return (this as Array<*>).toMutableList();
         }
     }
@@ -104,7 +104,7 @@ fun Any.ConvertType(clazz: Class<*>): Any? {
 /**
  * @param format 时间格式化字符串，数字的话也可以传 0.0,#.#
  */
-fun Any?.AsString(defaultValue: String = "", format: String = ""): String {
+fun Any?.AsString(defaultValue: String = ""): String {
     if (this == null) return defaultValue;
     if (this is String) {
         if (this.isEmpty()) return defaultValue
@@ -116,34 +116,34 @@ fun Any?.AsString(defaultValue: String = "", format: String = ""): String {
             return "";
         }
         if (this.hour == 0 && this.minute == 0 && this.second == 0) {
-            return this.format(java.time.format.DateTimeFormatter.ofPattern(format.AsString("yyyy-MM-dd")));
+            return this.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         }
-        return this.format(java.time.format.DateTimeFormatter.ofPattern(format.AsString("yyyy-MM-dd HH:mm:ss")));
+        return this.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     } else if (this is LocalDate) {
         if (this == LocalDate.MIN) {
             return "";
         }
-        return this.format(java.time.format.DateTimeFormatter.ofPattern(format.AsString("yyyy-MM-dd")));
+        return this.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     } else if (this is LocalTime) {
         if (this == LocalTime.MIN) {
             return "";
         }
-        return this.format(java.time.format.DateTimeFormatter.ofPattern(format.AsString("HH:mm:ss")));
+        return this.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));
     } else if (this is Date) {
         if (this.time == 0L) {
             return "";
         }
-        return SimpleDateFormat(format.AsString("yyyy-MM-dd HH:mm:ss")).format(this);
-    } else if (this is Number) {
-        if (format.HasValue) {
-            return this.toString();
+        if( this.time % (MyUtil.OneDaySeconds *1000) == 0L){
+            return SimpleDateFormat("yyyy-MM-dd").format(this);
         }
-        //https://www.cnblogs.com/Small-sunshine/p/11648652.html
-        return DecimalFormat(format).format(this.toString())
+        return SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(this);
+    } else if (this is Number) {
+
+        return this.toString();
     }
 
     var ret = this.toString()
-    if (ret.isNullOrEmpty()) return defaultValue
+    if (ret.isEmpty()) return defaultValue
     return ret
 }
 

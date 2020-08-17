@@ -28,15 +28,15 @@ class DateJsonSerializer : JsonSerializer<Date>() {
         } else {
             //使用上下文格式转换。 , 不使用传过来的  (serializers.config.dateFormat as SimpleDateFormat).toPattern()
             var format = "yyyy-MM-dd HH:mm:ss";
-            var style = scopes.getLatestScope(JsonStyleEnumScope.DateLocalStyle,JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.DateStandardStyle) ?: JsonStyleEnumScope.DateStandardStyle
-            if( style == JsonStyleEnumScope.DateLocalStyle){
+            var style = scopes.getLatestScope(JsonStyleEnumScope.DateLocalStyle, JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.DateStandardStyle)
+                    ?: JsonStyleEnumScope.DateStandardStyle
+            if (style == JsonStyleEnumScope.DateLocalStyle) {
                 format = "yyyy/MM/dd HH:mm:ss"
-            }
-            else if( style == JsonStyleEnumScope.DateUtcStyle){
+            } else if (style == JsonStyleEnumScope.DateUtcStyle) {
                 format = "yyyy/MM/dd HH:mm:ss"
             }
 
-            generator.writeString(value.AsString("", format))
+            generator.writeString(value.Format(format))
         }
     }
 }
@@ -48,11 +48,12 @@ class LocalDateJsonSerializer : JsonSerializer<LocalDate>() {
         } else {
             //使用上下文格式转换。 , 不使用传过来的  (serializers.config.dateFormat as SimpleDateFormat).toPattern()
             var format = "yyyy-MM-dd";
-            var style = scopes.getLatestScope(JsonStyleEnumScope.DateLocalStyle,JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.DateStandardStyle) ?: JsonStyleEnumScope.DateStandardStyle
-            if( style == JsonStyleEnumScope.DateLocalStyle){
+            var style = scopes.getLatestScope(JsonStyleEnumScope.DateLocalStyle, JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.DateStandardStyle)
+                    ?: JsonStyleEnumScope.DateStandardStyle
+            if (style == JsonStyleEnumScope.DateLocalStyle) {
                 format = "yyyy/MM/dd"
             }
-            generator.writeString(value.AsString("", format))
+            generator.writeString(value.Format(format))
         }
     }
 }
@@ -62,7 +63,7 @@ class LocalTimeJsonSerializer : JsonSerializer<LocalTime>() {
         if (value == null) {
             generator.writeNull()
         } else {
-            generator.writeString(value.AsString("", "HH:mm:ss"))
+            generator.writeString(value.Format())
         }
     }
 }
@@ -76,15 +77,15 @@ class LocalDateTimeJsonSerializer : JsonSerializer<LocalDateTime>() {
             //想办法在输出的时候，表示该字段是一个时间类型。 客户端收到后，统一转换。添加 _res
             //使用上下文格式转换。 , 不使用传过来的  (serializers.config.dateFormat as SimpleDateFormat).toPattern()
             var format = "yyyy-MM-dd HH:mm:ss";
-            var style = scopes.getLatestScope(JsonStyleEnumScope.DateLocalStyle,JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.DateStandardStyle) ?: JsonStyleEnumScope.DateStandardStyle
-            if( style == JsonStyleEnumScope.DateLocalStyle){
+            var style = scopes.getLatestScope(JsonStyleEnumScope.DateLocalStyle, JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.DateStandardStyle)
+                    ?: JsonStyleEnumScope.DateStandardStyle
+            if (style == JsonStyleEnumScope.DateLocalStyle) {
                 format = "yyyy/MM/dd HH:mm:ss"
-            }
-            else if( style == JsonStyleEnumScope.DateUtcStyle){
+            } else if (style == JsonStyleEnumScope.DateUtcStyle) {
                 format = "yyyy/MM/dd HH:mm:ss"
             }
 
-            generator.writeString(value.AsString("", format))
+            generator.writeString(value.Format(format))
         }
     }
 }
@@ -96,14 +97,14 @@ class TimestampJsonSerializer : JsonSerializer<Timestamp>() {
         } else {
             //使用上下文格式转换。 , 不使用传过来的  (serializers.config.dateFormat as SimpleDateFormat).toPattern()
             var format = "yyyy-MM-dd HH:mm:ss";
-            var style = scopes.getLatestScope(JsonStyleEnumScope.DateLocalStyle,JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.DateStandardStyle) ?: JsonStyleEnumScope.DateStandardStyle
-            if( style == JsonStyleEnumScope.DateLocalStyle){
+            var style = scopes.getLatestScope(JsonStyleEnumScope.DateLocalStyle, JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.DateStandardStyle)
+                    ?: JsonStyleEnumScope.DateStandardStyle
+            if (style == JsonStyleEnumScope.DateLocalStyle) {
+                format = "yyyy/MM/dd HH:mm:ss"
+            } else if (style == JsonStyleEnumScope.DateUtcStyle) {
                 format = "yyyy/MM/dd HH:mm:ss"
             }
-            else if( style == JsonStyleEnumScope.DateUtcStyle){
-                format = "yyyy/MM/dd HH:mm:ss"
-            }
-            generator.writeString(value.toLocalDateTime().AsString("", format))
+            generator.writeString(value.toLocalDateTime().Format(format))
         }
     }
 }

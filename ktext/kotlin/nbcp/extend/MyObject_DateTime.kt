@@ -3,20 +3,46 @@
 
 package nbcp.comm
 
+import nbcp.utils.MyUtil
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
 import java.time.*
 import java.util.*
 
 
-fun LocalDate.format(pattern: String): String {
-    return this.format(java.time.format.DateTimeFormatter.ofPattern(pattern));
+fun LocalDate.Format(pattern: String = ""): String {
+    if (this == LocalDate.MIN) return "";
+    return this.format(java.time.format.DateTimeFormatter.ofPattern(pattern.AsString("yyyy-MM-dd")));
 }
 
-fun LocalDateTime.format(pattern: String): String {
-    return this.format(java.time.format.DateTimeFormatter.ofPattern(pattern));
+
+fun LocalDateTime.Format(pattern: String = ""): String {
+    if (this == LocalDateTime.MIN) return "";
+    if (this.hour == 0 && this.minute == 0 && this.second == 0) {
+        return this.format(java.time.format.DateTimeFormatter.ofPattern(pattern.AsString("yyyy-MM-dd")));
+    }
+    return this.format(java.time.format.DateTimeFormatter.ofPattern(pattern.AsString("yyyy-MM-dd HH:mm:ss")));
 }
-fun LocalTime.format(pattern: String): String {
-    return this.format(java.time.format.DateTimeFormatter.ofPattern(pattern));
+
+/**
+ * @param pattern: 最全格式 HH:mm:ss.SSS
+ */
+fun LocalTime.Format(pattern: String = ""): String {
+    if (this == LocalTime.MIN) {
+        return "";
+    }
+    return this.format(java.time.format.DateTimeFormatter.ofPattern(pattern.AsString("HH:mm:ss")));
+}
+
+
+fun java.util.Date.Format(pattern: String): String {
+    if (this.time == 0L) {
+        return "";
+    }
+    if (this.time % (MyUtil.OneDaySeconds * 1000) == 0L) {
+        return SimpleDateFormat(pattern.AsString("yyyy-MM-dd")).format(this);
+    }
+    return SimpleDateFormat(pattern.AsString("yyyy-MM-dd HH:mm:ss")).format(this)
 }
 
 fun LocalDate.atEndOfDay(): LocalDateTime {

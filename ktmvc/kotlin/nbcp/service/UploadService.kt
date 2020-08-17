@@ -58,7 +58,7 @@ open class UploadService {
          */
         fun getTargetPaths(): Array<String> {
             var list = mutableListOf<String>()
-            list.add(LocalDate.now().format("yyyy-MM"));
+            list.add(LocalDate.now().Format("yyyy-MM"));
             var pixelTotal = imgWidth * imgHeight;
 
 

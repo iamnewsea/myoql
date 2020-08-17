@@ -60,14 +60,14 @@ class DevDockerController {
     lateinit var uploadPath: String
 
     val path: String
-        get() = uploadPath + File.separator + "docker-" + LocalDate.now().format("YYYY-MM-dd") + File.separator
+        get() = uploadPath + File.separator + "docker-" + LocalDate.now().Format("YYYY-MM-dd") + File.separator
 
     /**
      * 把文件拷到宿主机
      */
     @PostMapping("/copy2host")
     fun copy2host(@Require container: String, @Require work_path: String, @Require name: String): ListResult<String> {
-        var targetPathName = path + LocalTime.now().format("HHmmss") + File.separator;
+        var targetPathName = path + LocalTime.now().Format("HHmmss") + File.separator;
         var targetPath = File(targetPathName);
 
         if (targetPath.exists() == false && targetPath.mkdirs() == false) {

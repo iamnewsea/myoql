@@ -10,11 +10,12 @@ import java.time.ZoneId
 
 
 /*分 转化为 可读的金额。单位： 亿，万，元。
+* 1234123456789L => 123亿4123万4567.89元
 * */
 fun Long.ToReadableAmountValue(): String {
     var value = this;
     var ret = StringBuilder();
-    var yi_fen = 10000000000L
+    var yi_fen = 1_0000_0000_00L
     if (value < 0) {
         ret.append("-");
         value = Math.abs(value);
@@ -26,7 +27,7 @@ fun Long.ToReadableAmountValue(): String {
         value = value % yi_fen;
     }
 
-    var wan_fen = 1000000;
+    var wan_fen = 1_0000_00;
     if (value > wan_fen) {
         ret.append(value / wan_fen);
         ret.append("万");
@@ -42,7 +43,7 @@ fun Long.ToReadableAmountValue(): String {
     }
 
     ret.append("元")
-    return ret.toString() + "元"
+    return ret.toString()
 }
 
 /**
@@ -51,13 +52,13 @@ fun Long.ToReadableAmountValue(): String {
 fun Long.ToBitPowerValue(): List<Int> {
     var ret = mutableListOf<Int>()
     var value = this;
-    var i = 0 ;
+    var i = 0;
     while (true) {
         if (value == 0L) {
             break;
         }
         if (value and 1 == 1L) {
-            ret.add(  i )
+            ret.add(i)
         }
 
         i++;
@@ -86,4 +87,17 @@ fun <T> Int.ToEnum(enumClazz: Class<T>): T? {
 
     numberField.isAccessible = true;
     return enumClazz.GetEnumList().firstOrNull { numberField.get(it).AsInt() == this }
+}
+
+/**
+ * 2位小数： #0.00
+ * 百分数(两位小数)： ##.00%
+ * 百分数（不带小数）： ##%
+ */
+fun Number.Format(format:String = ""):String{
+    if( format.isEmpty()){
+        return this.toString();
+    }
+    //https://www.cnblogs.com/Small-sunshine/p/11648652.html
+    return DecimalFormat(format).format(this)
 }
