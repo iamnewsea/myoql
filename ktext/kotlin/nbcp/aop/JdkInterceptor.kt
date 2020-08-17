@@ -18,7 +18,7 @@ import java.lang.reflect.Modifier
  * @param target 被代理对象
  * @param aspect 切面实现
  */
-class JdkInterceptor(val target: Any, private val aspect: Aspect) : InvocationHandler, Serializable {
+class JdkInterceptor(private val target: Any, private val aspect: Aspect) : InvocationHandler, Serializable {
 
     override fun invoke(proxy: Any, method: Method, args: Array<Any?>): Any? {
         val target = target

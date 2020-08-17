@@ -17,8 +17,7 @@ import java.lang.reflect.Method
  * @param target 被代理对象
  * @param aspect 切面实现
  */
-class CglibInterceptor(val target: Any, private val aspect: Aspect) : MethodInterceptor, Serializable {
-
+class CglibInterceptor(private val target: Any, private val aspect: Aspect) : MethodInterceptor, Serializable {
 
     override fun intercept(obj: Any, method: Method, args: Array<Any?>, proxy: MethodProxy): Any? {
         val target = target
