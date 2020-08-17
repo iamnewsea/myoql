@@ -46,11 +46,6 @@ select * from[pub space].tab where`id`  like'% 1 %'
         }
     }
 
-    @Test
-    fun test_type_convert() {
-        println(ConvertToLocalDateTime("20111203101530", DateTimeFormatter.ofPattern("yyyyMMddHHmmss")))
-        //println(ConvertToLocalDateTime("2011-12-03T10:15:30Z", DateTimeFormatter.ISO_INSTANT))
-    }
 
     @Test
     fun test_3des() {
