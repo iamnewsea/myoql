@@ -1,24 +1,23 @@
 package nbcp.db.sql
 
-import nbcp.db.DbEntityEventResult
-import nbcp.db.mongo.*
+import nbcp.db.EventResult
 
 /**
  * 处理 select 的 Bean 接口。
  */
 interface ISqlEntitySelect {
-    fun beforeSelect(select: SqlBaseQueryClip): DbEntityEventResult?
+    fun beforeSelect(select: SqlBaseQueryClip): EventResult?
 
-    fun select(select: SqlBaseQueryClip, eventData: DbEntityEventResult?,result:List<MutableMap<String, Any?>>)
+    fun select(select: SqlBaseQueryClip, eventData: EventResult?, result:List<MutableMap<String, Any?>>)
 }
 
 /**
  * 处理 Insert 的 Bean 接口。
  */
 interface ISqlEntityInsert {
-    fun beforeInsert(insert: SqlInsertClip<*,*>): DbEntityEventResult?
+    fun beforeInsert(insert: SqlInsertClip<*,*>): EventResult?
 
-    fun insert(insert: SqlInsertClip<*,*>, eventData: DbEntityEventResult?)
+    fun insert(insert: SqlInsertClip<*,*>, eventData: EventResult?)
 }
 
 
@@ -26,16 +25,16 @@ interface ISqlEntityInsert {
  * 处理 Update 的 Bean 接口。
  */
 interface ISqlEntityUpdate {
-    fun beforeUpdate(update: SqlUpdateClip<*,*>): DbEntityEventResult?
+    fun beforeUpdate(update: SqlUpdateClip<*,*>): EventResult?
 
-    fun update(update: SqlUpdateClip<*,*>, eventData: DbEntityEventResult?)
+    fun update(update: SqlUpdateClip<*,*>, eventData: EventResult?)
 }
 
 /**
  * 处理 Delete 的 Bean 接口。
  */
 interface ISqlEntityDelete {
-    fun beforeDelete(delete: SqlDeleteClip<*,*>): DbEntityEventResult?
+    fun beforeDelete(delete: SqlDeleteClip<*,*>): EventResult?
 
-    fun delete(delete: SqlDeleteClip<*,*>, eventData: DbEntityEventResult?)
+    fun delete(delete: SqlDeleteClip<*,*>, eventData: EventResult?)
 }

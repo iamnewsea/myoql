@@ -1,22 +1,15 @@
 package nbcp.db.sql
 
-import nbcp.comm.AllFields
-import nbcp.comm.JsonMap
-import nbcp.comm.ToJson
 import nbcp.comm.ToMap
-import nbcp.utils.*
 import nbcp.db.*
-import nbcp.db.sql.entity.s_dustbin
 import org.springframework.stereotype.Component
-import java.lang.reflect.Field
-import kotlin.reflect.full.createInstance
 
 /**
  * 处理删除数据后转移到垃圾箱功能
  */
 @Component
 class SqlSpreadColumnEvent_Select : ISqlEntitySelect {
-    override fun beforeSelect(select: SqlBaseQueryClip): DbEntityEventResult? {
+    override fun beforeSelect(select: SqlBaseQueryClip): EventResult? {
 //        var select  = select as SqlQueryClip< SqlBaseMetaTable<out ISqlDbEntity>, ISqlDbEntity>
 //        var spreads = select.mainEntity.getSpreadColumns();
 //        if( spreads.any()) {
@@ -25,10 +18,10 @@ class SqlSpreadColumnEvent_Select : ISqlEntitySelect {
 //                select.select {  }
 //            }
 //        }
-        return DbEntityEventResult(true)
+        return EventResult(true)
     }
 
-    override fun select(select: SqlBaseQueryClip, eventData: DbEntityEventResult?, result: List<MutableMap<String, Any?>>) {
+    override fun select(select: SqlBaseQueryClip, eventData: EventResult?, result: List<MutableMap<String, Any?>>) {
         var select = select as SqlQueryClip<SqlBaseMetaTable<out ISqlDbEntity>, ISqlDbEntity>
         var spreads = select.mainEntity.getSpreadColumns();
         spreads.forEach { spread ->

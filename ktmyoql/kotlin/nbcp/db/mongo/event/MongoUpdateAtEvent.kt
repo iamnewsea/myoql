@@ -1,8 +1,6 @@
 package nbcp.db.mongo
 
 import nbcp.db.*
-import nbcp.utils.MyUtil
-import nbcp.utils.RecursionUtil
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
@@ -11,7 +9,7 @@ import java.time.LocalDateTime
  */
 @Component
 class MongoUpdateAtEvent : IMongoEntityUpdate {
-    override fun beforeUpdate(update: MongoBaseUpdateClip): DbEntityEventResult {
+    override fun beforeUpdate(update: MongoBaseUpdateClip): EventResult {
         update.setData.remove("createAt")
         update.setValue("updateAt", LocalDateTime.now())
 
@@ -27,9 +25,9 @@ class MongoUpdateAtEvent : IMongoEntityUpdate {
         }
 
 
-        return DbEntityEventResult(true, null)
+        return EventResult(true, null)
     }
 
-    override fun update(update: MongoBaseUpdateClip, eventData: DbEntityEventResult) {
+    override fun update(update: MongoBaseUpdateClip, eventData: EventResult) {
     }
 }

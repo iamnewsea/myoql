@@ -89,9 +89,9 @@ class SqlEntityEvent : BeanPostProcessor {
         }
     }
 
-    fun onSelecting(select:SqlBaseQueryClip):Array<Pair<ISqlEntitySelect, DbEntityEventResult?>>{
+    fun onSelecting(select:SqlBaseQueryClip):Array<Pair<ISqlEntitySelect, EventResult?>>{
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<ISqlEntitySelect, DbEntityEventResult?>>()
+        var list = mutableListOf<Pair<ISqlEntitySelect, EventResult?>>()
         selectEvent.ForEachExt { it, index ->
             var ret = it.beforeSelect(select);
             if (ret != null && ret.result == false) {
@@ -104,9 +104,9 @@ class SqlEntityEvent : BeanPostProcessor {
     }
 
 
-    fun onInserting(insert: SqlInsertClip<*, *>): Array<Pair<ISqlEntityInsert, DbEntityEventResult?>> {
+    fun onInserting(insert: SqlInsertClip<*, *>): Array<Pair<ISqlEntityInsert, EventResult?>> {
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<ISqlEntityInsert, DbEntityEventResult?>>()
+        var list = mutableListOf<Pair<ISqlEntityInsert, EventResult?>>()
         insertEvent.ForEachExt { it, index ->
             var ret = it.beforeInsert(insert);
             if (ret != null && ret.result == false) {
@@ -119,9 +119,9 @@ class SqlEntityEvent : BeanPostProcessor {
     }
 
 
-    fun onUpdating(update: SqlUpdateClip<*, *>): Array<Pair<ISqlEntityUpdate, DbEntityEventResult?>> {
+    fun onUpdating(update: SqlUpdateClip<*, *>): Array<Pair<ISqlEntityUpdate, EventResult?>> {
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<ISqlEntityUpdate, DbEntityEventResult?>>()
+        var list = mutableListOf<Pair<ISqlEntityUpdate, EventResult?>>()
         updateEvent.ForEachExt { it, index ->
             var ret = it.beforeUpdate(update);
             if (ret != null && ret.result == false) {
@@ -133,10 +133,10 @@ class SqlEntityEvent : BeanPostProcessor {
         return list.toTypedArray()
     }
 
-    fun onDeleting(delete: SqlDeleteClip<*, *>): Array<Pair<ISqlEntityDelete, DbEntityEventResult?>> {
+    fun onDeleting(delete: SqlDeleteClip<*, *>): Array<Pair<ISqlEntityDelete, EventResult?>> {
 
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<ISqlEntityDelete, DbEntityEventResult?>>()
+        var list = mutableListOf<Pair<ISqlEntityDelete, EventResult?>>()
         deleteEvent.ForEachExt { it, index ->
             var ret = it.beforeDelete(delete);
             if (ret != null && ret.result == false) {

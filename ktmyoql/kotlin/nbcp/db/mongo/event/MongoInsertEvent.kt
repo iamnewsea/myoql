@@ -2,7 +2,6 @@ package nbcp.db.mongo
 
 import nbcp.comm.AsString
 import nbcp.db.*
-import nbcp.utils.RecursionUtil
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -12,7 +11,7 @@ import java.time.LocalDateTime
  */
 @Component
 class MongoInsertEvent : IMongoEntityInsert {
-    override fun beforeInsert(insert: MongoBaseInsertClip): DbEntityEventResult {
+    override fun beforeInsert(insert: MongoBaseInsertClip): EventResult {
         insert.entities.forEach { entity ->
             db.fillCityName(entity);
 
@@ -32,10 +31,10 @@ class MongoInsertEvent : IMongoEntityInsert {
             }
         }
 
-        return DbEntityEventResult(true, null);
+        return EventResult(true, null);
     }
 
-    override fun insert(insert: MongoBaseInsertClip, eventData: DbEntityEventResult) {
+    override fun insert(insert: MongoBaseInsertClip, eventData: EventResult) {
 
     }
 

@@ -1,20 +1,15 @@
 package nbcp.db.sql
 
 import nbcp.comm.AllFields
-import nbcp.comm.ToJson
-import nbcp.utils.*
 import nbcp.db.*
-import nbcp.db.sql.entity.s_dustbin
 import org.springframework.stereotype.Component
-import java.lang.reflect.Field
-import kotlin.reflect.full.createInstance
 
 /**
  * 处理删除数据后转移到垃圾箱功能
  */
 @Component
 class SqlSpreadColumnEvent_Insert : ISqlEntityInsert {
-    override fun beforeInsert(insert: SqlInsertClip<*, *>): DbEntityEventResult? {
+    override fun beforeInsert(insert: SqlInsertClip<*, *>): EventResult? {
 
 //        var annotations = mutableListOf<Field>()
 //        insert.mainEntity.tableClass.AllFields.forEach {
@@ -41,10 +36,10 @@ class SqlSpreadColumnEvent_Insert : ISqlEntityInsert {
         }
 
 
-        return DbEntityEventResult(true)
+        return EventResult(true)
     }
 
-    override fun insert(insert: SqlInsertClip<*, *>, eventData: DbEntityEventResult?) {
+    override fun insert(insert: SqlInsertClip<*, *>, eventData: EventResult?) {
 
     }
 }

@@ -2,7 +2,6 @@ package nbcp.db.es
 
 import nbcp.comm.*
 import nbcp.db.*
-import nbcp.db.es.*
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component
 
@@ -103,9 +102,9 @@ class EsEntityEvent : BeanPostProcessor {
         }
     }
 
-    fun onInserting(insert: EsBaseInsertClip): Array<Pair<IEsEntityInsert, DbEntityEventResult>> {
+    fun onInserting(insert: EsBaseInsertClip): Array<Pair<IEsEntityInsert, EventResult>> {
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<IEsEntityInsert, DbEntityEventResult>>()
+        var list = mutableListOf<Pair<IEsEntityInsert, EventResult>>()
         using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
             insertEvent.ForEachExt { it, index ->
                 var ret = it.beforeInsert(insert);
@@ -119,9 +118,9 @@ class EsEntityEvent : BeanPostProcessor {
         return list.toTypedArray()
     }
 
-    fun onUpdating(update: EsBaseUpdateClip): Array<Pair<IEsEntityUpdate, DbEntityEventResult>> {
+    fun onUpdating(update: EsBaseUpdateClip): Array<Pair<IEsEntityUpdate, EventResult>> {
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<IEsEntityUpdate, DbEntityEventResult>>()
+        var list = mutableListOf<Pair<IEsEntityUpdate, EventResult>>()
         using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
             updateEvent.ForEachExt { it, index ->
                 var ret = it.beforeUpdate(update);
@@ -135,10 +134,10 @@ class EsEntityEvent : BeanPostProcessor {
         return list.toTypedArray()
     }
 
-    fun onDeleting(delete: EsBaseDeleteClip): Array<Pair<IEsEntityDelete, DbEntityEventResult>> {
+    fun onDeleting(delete: EsBaseDeleteClip): Array<Pair<IEsEntityDelete, EventResult>> {
 
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<IEsEntityDelete, DbEntityEventResult>>()
+        var list = mutableListOf<Pair<IEsEntityDelete, EventResult>>()
         using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
             deleteEvent.ForEachExt { it, index ->
                 var ret = it.beforeDelete(delete);

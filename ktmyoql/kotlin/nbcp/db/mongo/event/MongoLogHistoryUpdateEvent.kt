@@ -1,18 +1,9 @@
 package nbcp.db.mongo
 
-import nbcp.comm.LogScope
-import nbcp.comm.OrmLogScope
-import nbcp.comm.getStringValue
-import nbcp.comm.using
 import nbcp.utils.*
 import nbcp.db.*
-import nbcp.db.mongo.*
 import nbcp.db.mongo.entity.*
-import nbcp.db.mongo.table.MongoBaseGroup
-import nbcp.db.mongo.toDocument
 import org.bson.Document
-import org.bson.types.ObjectId
-import org.springframework.data.mongodb.core.query.BasicQuery
 import org.springframework.stereotype.Component
 
 /**
@@ -21,10 +12,10 @@ import org.springframework.stereotype.Component
 
 @Component
 class MongoLogHistoryUpdateEvent : IMongoEntityUpdate {
-    override fun beforeUpdate(update: MongoBaseUpdateClip): DbEntityEventResult {
+    override fun beforeUpdate(update: MongoBaseUpdateClip): EventResult {
         var logs = MongoEntityEvent.logHistoryMap.filter { MyUtil.getSmallCamelCase(it.key.simpleName) == update.collectionName }
         if (logs.any() == false) {
-            return DbEntityEventResult(true, null)
+            return EventResult(true, null)
         }
 
         var fields = logs.values.first();
@@ -35,7 +26,7 @@ class MongoLogHistoryUpdateEvent : IMongoEntityUpdate {
 
         var settedField = setData.keys.intersect(fields.toList());
         if (settedField.any() == false) {
-            return DbEntityEventResult(true, null)
+            return EventResult(true, null)
         }
 
         //查询数据，把Id查出来。
@@ -48,10 +39,10 @@ class MongoLogHistoryUpdateEvent : IMongoEntityUpdate {
         }
 
         var list = query.toList(Document::class.java)
-        return DbEntityEventResult(true, list)
+        return EventResult(true, list)
     }
 
-    override fun update(update: MongoBaseUpdateClip, eventData: DbEntityEventResult) {
+    override fun update(update: MongoBaseUpdateClip, eventData: EventResult) {
         if (eventData.extData == null) {
             return;
         }

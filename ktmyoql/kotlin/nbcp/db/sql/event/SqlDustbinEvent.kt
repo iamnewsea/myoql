@@ -12,20 +12,20 @@ import org.springframework.stereotype.Component
 @Component
 class SqlDustbinEvent : ISqlEntityDelete {
 
-    override fun beforeDelete(delete: SqlDeleteClip<*, *>): DbEntityEventResult? {
+    override fun beforeDelete(delete: SqlDeleteClip<*, *>): EventResult? {
         var dust = delete.mainEntity.tableClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dust != null) {
             //找出数据
             var where = delete.whereDatas.toSingleData()
             where.expression = "select * from " + delete.mainEntity.fromTableName + " where " + where.expression
             var cursor = RawQuerySqlClip(where, delete.mainEntity.tableName).toMapList()
-            return DbEntityEventResult(true, cursor)
+            return EventResult(true, cursor)
         }
 
         return null;
     }
 
-    override fun delete(delete: SqlDeleteClip<*, *>, eventData: DbEntityEventResult?) {
+    override fun delete(delete: SqlDeleteClip<*, *>, eventData: EventResult?) {
         var data = eventData?.extData
         if (data == null) return
 

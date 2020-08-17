@@ -106,9 +106,9 @@ class MongoEntityEvent : BeanPostProcessor {
         }
     }
 
-    fun onInserting(insert: MongoBaseInsertClip): Array<Pair<IMongoEntityInsert, DbEntityEventResult>> {
+    fun onInserting(insert: MongoBaseInsertClip): Array<Pair<IMongoEntityInsert, EventResult>> {
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<IMongoEntityInsert, DbEntityEventResult>>()
+        var list = mutableListOf<Pair<IMongoEntityInsert, EventResult>>()
         using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
             insertEvent.ForEachExt { it, index ->
                 var ret = it.beforeInsert(insert);
@@ -122,9 +122,9 @@ class MongoEntityEvent : BeanPostProcessor {
         return list.toTypedArray()
     }
 
-    fun onUpdating(update: MongoBaseUpdateClip): Array<Pair<IMongoEntityUpdate, DbEntityEventResult>> {
+    fun onUpdating(update: MongoBaseUpdateClip): Array<Pair<IMongoEntityUpdate, EventResult>> {
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<IMongoEntityUpdate, DbEntityEventResult>>()
+        var list = mutableListOf<Pair<IMongoEntityUpdate, EventResult>>()
         using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
             updateEvent.ForEachExt { it, index ->
                 var ret = it.beforeUpdate(update);
@@ -138,10 +138,10 @@ class MongoEntityEvent : BeanPostProcessor {
         return list.toTypedArray()
     }
 
-    fun onDeleting(delete: MongoDeleteClip<*>): Array<Pair<IMongoEntityDelete, DbEntityEventResult>> {
+    fun onDeleting(delete: MongoDeleteClip<*>): Array<Pair<IMongoEntityDelete, EventResult>> {
 
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<IMongoEntityDelete, DbEntityEventResult>>()
+        var list = mutableListOf<Pair<IMongoEntityDelete, EventResult>>()
         using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
             deleteEvent.ForEachExt { it, index ->
                 var ret = it.beforeDelete(delete);

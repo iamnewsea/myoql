@@ -1,13 +1,7 @@
 package nbcp.db.mongo
 
-import nbcp.comm.LogScope
-import nbcp.comm.using
 import nbcp.db.*
-import nbcp.db.mongo.MongoDeleteClip
-import nbcp.db.mongo.MongoEntityEvent
 import nbcp.db.mongo.entity.*
-import nbcp.db.mongo.table.MongoBaseGroup
-import nbcp.db.mongo.toDocument
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.BasicQuery
@@ -19,20 +13,20 @@ import org.springframework.stereotype.Component
  */
 @Component
 class MongoDustbinEvent : IMongoEntityDelete {
-    override fun beforeDelete(delete: MongoDeleteClip<*>): DbEntityEventResult {
+    override fun beforeDelete(delete: MongoDeleteClip<*>): EventResult {
         var contains = MongoEntityEvent.dustbinEntitys.contains(delete.moerEntity.entityClass)
         if (contains == false) {
-            return DbEntityEventResult(true, null);
+            return EventResult(true, null);
         }
 
         //找出数据
         var where = delete.getMongoCriteria(*delete.whereData.toTypedArray());
         var query = BasicQuery(where.toDocument())
         var cursor = delete.mongoTemplate.find(query, Document::class.java, delete.collectionName)
-        return DbEntityEventResult(true, cursor)
+        return EventResult(true, cursor)
     }
 
-    override fun delete(delete: MongoDeleteClip<*>, eventData: DbEntityEventResult) {
+    override fun delete(delete: MongoDeleteClip<*>, eventData: EventResult) {
         var data = eventData.extData
         if (data == null) return
 

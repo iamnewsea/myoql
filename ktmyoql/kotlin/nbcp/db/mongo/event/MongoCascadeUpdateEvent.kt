@@ -1,18 +1,9 @@
 package nbcp.db.mongo
 
 import nbcp.comm.AsString
-import nbcp.comm.LogScope
 import nbcp.comm.getStringValue
-import nbcp.comm.using
 import nbcp.utils.*
 import nbcp.db.*
-import nbcp.db.mongo.*
-import nbcp.db.mongo.base.*
-import nbcp.db.mongo.table.MongoBaseGroup
-import nbcp.db.mongo.toDocument
-import org.bson.Document
-import org.bson.types.ObjectId
-import org.springframework.data.mongodb.core.query.BasicQuery
 import org.springframework.stereotype.Component
 
 /**
@@ -27,10 +18,10 @@ data class CascadeUpdateEventDataModel(
 
 @Component
 class MongoCascadeUpdateEvent : IMongoEntityUpdate {
-    override fun beforeUpdate(update: MongoBaseUpdateClip): DbEntityEventResult {
+    override fun beforeUpdate(update: MongoBaseUpdateClip): EventResult {
         var refs = MongoEntityEvent.refsMap.filter { MyUtil.getSmallCamelCase(it.masterEntityClass.simpleName) == update.collectionName }
         if (refs.any() == false) {
-            return DbEntityEventResult(true, null)
+            return EventResult(true, null)
         }
 
         var list = mutableListOf<CascadeUpdateEventDataModel>()
@@ -42,7 +33,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
 
         var setCascadeColumns = setData.keys.intersect(masterNameFields);
         if (setCascadeColumns.any() == false) {
-            return DbEntityEventResult(true, null)
+            return EventResult(true, null)
         }
         var masterIdFields = refs.map { it.masterIdField }.toSet();
 
@@ -73,10 +64,10 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
         }
 
 
-        return DbEntityEventResult(true, list)
+        return EventResult(true, list)
     }
 
-    override fun update(update: MongoBaseUpdateClip, eventData: DbEntityEventResult) {
+    override fun update(update: MongoBaseUpdateClip, eventData: EventResult) {
         if (eventData.extData == null) {
             return;
         }
