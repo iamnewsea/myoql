@@ -1,24 +1,27 @@
 package nbcp.extend
 
 import nbcp.TestBase
-import nbcp.comm.AsString
-import nbcp.comm.ConvertToLocalDateTime
-import nbcp.comm.Format
-import nbcp.comm.ToReadableAmountValue
+import nbcp.comm.*
 import org.junit.Test
 import java.time.format.DateTimeFormatter
 
-class TestConvert :TestBase(){
+class TestConvert : TestBase() {
     @Test
-    fun testFormat(){
+    fun testNumberFormat() {
         var d = 23.4;
         println(d.Format("#0.00%"))
     }
 
     @Test
-    fun testFormat2(){
+    fun testNumberAmountFormat() {
         var d = 1234123456789L;
         println(d.ToReadableAmountValue())
+    }
+
+    @Test
+    fun testStringFormat() {
+        var d = "{i} love {you}";
+        println(d.formatWithJson(StringMap("i" to "郭", "you" to "黄")))
     }
 
     @Test

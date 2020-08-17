@@ -733,7 +733,7 @@ fun <T> String.ToEnum(enumClazz: Class<T>): T? {
 /**
  * 使用Json格式化
  */
-fun String.formatWithJson(json: StringMap, style: String = "", itemCallback: ((String) -> String)? = null): String {
+fun String.formatWithJson(json: Map<String,String>, style: String = "", itemCallback: ((String) -> String)? = null): String {
     var style = style;
     if (style.isEmpty()) {
         style = "{}"
