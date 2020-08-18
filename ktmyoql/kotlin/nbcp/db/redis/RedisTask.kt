@@ -4,6 +4,7 @@ import nbcp.comm.AsInt
 import nbcp.comm.AsLong
 import nbcp.comm.config
 import nbcp.comm.minus
+import nbcp.model.MasterAlternateMap
 import nbcp.utils.*
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -27,28 +28,18 @@ class RedisTask {
         /**
          * 续期的 keys，value=过期时间，单位秒
          */
-        private var masterWording = false;
-        private val masterKeys = linkedMapOf<String, Int>()
-        private val alternateKeys = linkedMapOf<String, Int>()
-
-
-        private var lastExecuteTime = LocalDateTime.now();
+        private var cache = MasterAlternateMap<Int>();
 
         /**
          * 定时任务，使键续期。
          */
         fun setExpireKey(key: String, cacheSecond: Int) {
-            if (masterWording) {
-                alternateKeys.put(key, cacheSecond);
-            } else {
-                masterKeys.put(key, cacheSecond);
-            }
+            cache.put(key, cacheSecond);
         }
 
         fun deleteKeys(vararg keys: String) {
             keys.forEach {
-                masterKeys.remove(it);
-                alternateKeys.remove(it);
+                cache.removeAll(it);
             }
         }
     }
@@ -58,46 +49,37 @@ class RedisTask {
      */
     @Scheduled(fixedDelay = 1000)
     fun renewal() {
-        masterWording = !masterWording;
-        var rKeys = linkedMapOf<String, Int>();
+        if (SpringUtil.isInited == false) {
+            return;
+        }
 
         try {
-            if (masterWording) {
-                rKeys = masterKeys
-            } else {
-                rKeys = alternateKeys;
-            }
-
-            if (SpringUtil.isInited == false) {
-                return;
-            }
-
             var redisTaskSize = config.redisTaskSize;
             var redisTaskDelay = config.redisTaskDelay;
 
-            var working = rKeys.size > redisTaskSize || LocalDateTime.now().minus(lastExecuteTime).totalSeconds > redisTaskDelay;
+            var working = cache.reservoirSize > redisTaskSize || LocalDateTime.now().minus(cache.switchAt).totalSeconds > redisTaskDelay;
 
             if (working == false) {
                 return;
             }
 
-            lastExecuteTime = LocalDateTime.now();
+            cache.switch();
             var keyCommand = SpringUtil.getBean<AnyTypeRedisTemplate>();
 
-            rKeys.keys.forEach { key ->
-                var cacheSecond = rKeys[key];
+            while (true) {
+                var item = cache.pop()
+                if (item == null) {
+                    break;
+                }
+
+                var key = item.first;
+                var cacheSecond = item.second;
 
                 if (cacheSecond == null || cacheSecond <= 0) {
-                    return@forEach
+                    break;
                 }
 
                 keyCommand.expire(key, cacheSecond.AsLong(), TimeUnit.SECONDS)
-            }
-
-            if (masterWording) {
-                masterKeys.clear()
-            } else {
-                alternateKeys.clear();
             }
         } catch (e: Exception) {
             logger.error(e.message, e);
