@@ -236,9 +236,9 @@ open class UploadService {
         var targetFileName = fileData.getTargetFileName(if (saveCorp) corpId else "")
         annexInfo.url = renameFile(vTempFile, targetFileName).replace("\\", "/")
 
-        if (extInfo.extType == FileExtentionTypeEnum.Video) {
-            setVideoUrlTime(annexInfo, vFile, fileData);
-        }
+//        if (extInfo.extType == FileExtentionTypeEnum.Video) {
+//            setVideoUrlTime(annexInfo, vFile, fileData);
+//        }
 
 
         if (saveCorp) {
@@ -267,10 +267,10 @@ open class UploadService {
         }
     }
 
-    private fun setVideoUrlTime(annexInfo: SysAnnex, vFile: File, fileData: FileNameData) {
-        var targetFileName = fileData.getTargetPaths().joinToString(File.separator) + File.separator + CodeUtil.getCode() + annexInfo.ext;
-        annexInfo.videoLogoUrl = VideoUtil.getVideoLogo(vFile, uploadPath, targetFileName)
-    }
+//    private fun setVideoUrlTime(annexInfo: SysAnnex, vFile: File, fileData: FileNameData) {
+//        var targetFileName = fileData.getTargetPaths().joinToString(File.separator) + File.separator + CodeUtil.getCode() + annexInfo.ext;
+//        annexInfo.videoLogoUrl = VideoUtil.getVideoLogo(vFile, uploadPath, targetFileName)
+//    }
 
 
     /**
@@ -377,15 +377,15 @@ open class UploadService {
             return ApiResult()
         }
 
-        if (annex.videoLogoUrl.HasValue) {
-            var targetLogoFileName = File.separator + fileData.getTargetPaths().joinToString(File.separator) + File.separator + CodeUtil.getCode() + "." + fileData.extName;
-            annex.videoLogoUrl = targetLogoFileName;
-
-            var r2 = File(uploadPath + annex.videoLogoUrl).copyTo(File(uploadPath + targetLogoFileName))
-            if (r2.exists() == false) {
-                return ApiResult()
-            }
-        }
+//        if (annex.videoLogoUrl.HasValue) {
+//            var targetLogoFileName = File.separator + fileData.getTargetPaths().joinToString(File.separator) + File.separator + CodeUtil.getCode() + "." + fileData.extName;
+//            annex.videoLogoUrl = targetLogoFileName;
+//
+//            var r2 = File(uploadPath + annex.videoLogoUrl).copyTo(File(uploadPath + targetLogoFileName))
+//            if (r2.exists() == false) {
+//                return ApiResult()
+//            }
+//        }
 
 
         annex.url = targetFileName;
