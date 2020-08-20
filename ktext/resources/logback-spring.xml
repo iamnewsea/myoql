@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false" scan="true" scanPeriod="30 seconds">
+    <springProperty scope="context" name="logLevel" source="logging.level.root"/>
+    <springProperty scope="context" name="logPath" source="logging.file.path"/>
+    <springProperty scope="context" name="name" source="spring.application.name"/>
+    <turboFilter class="nbcp.filter.MyLogBackFilter"></turboFilter>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] [%X{request_id}] [%class:%line]:%n%m%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/${name}.txt</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] [%X{request_id}] [%class:%line]:%n%m%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/${name}.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <!-- 30 days -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <filter class="nbcp.filter.MyAppLogBackFilter"></filter>
+    </appender>
+    <appender name="FILE-TASK-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/${name}-task.txt</file>
+        <immediateFlush>true</immediateFlush>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] [%X{request_id}] [%class:%line]:%n%m%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/${name}-task.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <!-- 30 days -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <filter class="nbcp.filter.MyScheduledTaskLogBackFilter"></filter>
+    </appender>
+    <appender name="ERROR-FILE-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/${name}-error.log</file>
+        <immediateFlush>true</immediateFlush>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] [%X{request_id}] [%class:%line]:%n%m%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/${name}-error.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <!-- 30 days -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+    <root level="${logLevel}">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE-OUT" />
+        <appender-ref ref="FILE-TASK-OUT" />
+        <appender-ref ref="ERROR-FILE-OUT" />
+    </root>
+</configuration>

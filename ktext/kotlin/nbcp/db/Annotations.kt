@@ -1,5 +1,8 @@
 package nbcp.db
 
+import org.springframework.core.annotation.AliasFor
+import org.springframework.stereotype.Component
+
 
 /**
  * 指定数据库中表的名字
