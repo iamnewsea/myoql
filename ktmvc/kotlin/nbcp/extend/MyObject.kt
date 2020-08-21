@@ -333,13 +333,23 @@ val HttpServletRequest.fullUrl: String
     }
 
 /**
- * 输出 javascript 呼叫父窗口，弹出消息 用于前端下载时处理消息。
- * 前端下载，
- * 前端使用： jv.download() 函数，在页面添加一个 iframe ,设置url 即可使用 ajax + open 的方式下载了。
- * 在出错的时候，通过 postMessage 呼叫父窗口弹出消息
+ * 输出 javascript ，通过 window.parent.postMessage 函数呼叫父窗口，弹出消息 用于前端下载时处理消息。
+ * 前端环境：
+ *  1. 调用 jv.download() 函数，原理是通过页面的iframe,打开下载页面。
+ *  2. 在主页面添加 window.addEventListener('message',e=>{}) 处理函数。
  * @param msg: 错误消息
  * @param title: 消息标题
  */
 fun HttpServletResponse.parentAlert(msg: String, title: String = "", targetOrigin: String = "*") {
+    /**
+     * <pre>{@code
+     * window.addEventListener('message',e=>{
+     *      if( e.data.event == 'error') {
+     *          jv.error.apply(jv, e.data.arguments)
+     *      }
+     *  });
+     *  }
+     *  </pre>
+     */
     this.WriteTextValue("<script>window.parent.postMessage({event:'error',arguments:['${msg}','${title}']},'${targetOrigin}')</script>")
 }
