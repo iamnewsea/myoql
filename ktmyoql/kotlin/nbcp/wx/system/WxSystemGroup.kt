@@ -259,7 +259,7 @@ object WxSystemGroup {
         url.url = "${wx_url}${tokenData.data!!.token}"
         url.setRequest { it.setRequestProperty("Content-Type", "application/json") }
 
-        var ret = url.doPost(data.ToJson()).FromJson<wx_msg_return_data>() ?: wx_msg_return_data()
+        var ret = url.doPost(data.ToJson()).FromJson<wx_return_data>() ?: wx_return_data()
         if (ret.errcode != 0) {
             return ApiResult(ret.errmsg);
         }

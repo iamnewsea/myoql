@@ -1,10 +1,12 @@
 package nbcp.wx.system
 
+import java.io.Serializable
 
-data class wx_msg_return_data(
+
+open class wx_return_data(
         var errcode: Int = 0,
         var errmsg: String = ""
-)
+): Serializable
 
 data class wx_msg_data_value(
         var value: String = "",

@@ -5,6 +5,7 @@ import nbcp.comm.HasValue
 import nbcp.comm.Slice
 import nbcp.comm.utf8
 import nbcp.utils.CodeUtil
+import nbcp.wx.system.wx_return_data
 import nbcp.wx.wx
 import java.io.Serializable
 import java.security.MessageDigest
@@ -54,4 +55,19 @@ class JsapiTicketData : Serializable {
         formatter.close()
         return result
     }
+}
+
+/**
+ * 微信公众号用户信息
+ * https://developers.weixin.qq.com/doc/offiaccount/User_Management/Get_users_basic_information_UnionID.html#UinonId
+ */
+class WxH5UserInfoData : wx_return_data() {
+    var openid = ""
+    var nickname = ""
+    var sex = 0
+    var language = ""
+    var city = ""
+    var province = ""
+    var country = ""
+    var headimgurl = ""
 }
