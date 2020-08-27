@@ -1,12 +1,9 @@
 package nbcp.db.redis
 
 import nbcp.comm.*
+import nbcp.db.LoginUserModel
 import nbcp.db.db
-import nbcp.utils.*
 import nbcp.db.redis.proxy.*
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import kotlin.math.exp
 
 /**
  * 缓存
@@ -49,4 +46,21 @@ class RedisBaseGroup {
     }
 
     val sqlCache = SqlCacheGroup()
+
+
+    private val userSystemRedis
+        get() = RedisStringProxy(config.userSystem + "token", 900);
+
+    fun getLoginInfoFromToken(token: String): LoginUserModel? {
+        userSystemRedis.expireKey(token);
+        return userSystemRedis.get(token).FromJson<LoginUserModel>();
+    }
+
+    fun saveLoginUserInfo(token: String, userInfo: LoginUserModel) {
+        userSystemRedis.set(token, userInfo.ToJson())
+    }
+
+    fun deleteToken(vararg tokens: String) {
+        userSystemRedis.deleteKeys(*tokens)
+    }
 }

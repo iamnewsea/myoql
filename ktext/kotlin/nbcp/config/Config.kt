@@ -125,4 +125,15 @@ object config {
     val wxMchId: String by lazy {
         return@lazy SpringUtil.context.environment.getProperty("app.wx.mchId") ?: ""
     }
+
+    val applicationName :String by lazy{
+        return@lazy SpringUtil.context.environment.getProperty("spring.application.name") ?: ""
+    }
+
+    /**
+     * 用户体系：一般分为： admin,corp,open
+     */
+    val userSystem :String by lazy{
+        return@lazy SpringUtil.context.environment.getProperty("app.user-system") ?: ""
+    }
 }
