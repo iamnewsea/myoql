@@ -176,7 +176,7 @@ val HttpServletRequest.ClientIp: String
     }
 
 
-var Request_Id: UInt = 0U;
+//var Request_Id: UInt = 0U;
 
 /**
  * 获取当前请求Id，已缓存。
@@ -212,19 +212,39 @@ var Request_Id: UInt = 0U;
 //        request_cache = value
 //    }
 
-var getLoginUserFunc: ((HttpServletRequest) -> LoginUserModel?)? = null
+/**
+ * 根据 token 获取用户信息.
+ */
+var getLoginUserFunc: ((String) -> LoginUserModel?)? = null
 
 /**
  * 高并发系统不应该有Session。使用token即可。
- * 设置 Attribute("[LoginUser]") ,需要通过 HandlerInterceptorAdapter.preHandle 通过 token 设置 LoginUser，来保持登录信息，比 RedisSession 简单
+ * 另外，由于跨域 SameSite 的限制，需要避免使用 Cookie 的方式。
+ * 设置 getLoginUserFunc 在需要用户信息的时候获取。示例代码：
  */
 var HttpServletRequest.LoginUser: LoginUserModel
     get() {
+        /**
+ getLoginUserFunc 示例代码：
+ nbcp.web.getLoginUserFunc = af@{
+    var token = it;
+    if (token.startsWith("sf.")) {
+        var time = CodeUtil.getDateTimeFromCode(token.substring(3));
+        if ((LocalDateTime.now() - time).totalHours > 7) {
+            return@af null;
+        }
+    }
+    return@af LoginUserModel.loadFromToken(token)
+}
+         */
+
+
+
         var ret = this.getAttribute("[LoginUser]") as LoginUserModel?;
         if (ret != null) {
             return ret;
         }
-        ret = getLoginUserFunc?.invoke(this);
+        ret = getLoginUserFunc?.invoke(this.tokenValue);
         if (ret != null) {
             this.LoginUser = ret;
             return ret;
@@ -233,7 +253,7 @@ var HttpServletRequest.LoginUser: LoginUserModel
     }
     set(value) {
         this.setAttribute("[LoginUser]", value)
-        HttpContext.nullableResponse?.setHeader("token", value.token)
+        HttpContext.nullableResponse?.setHeader(config.tokenKey, value.token)
     }
 
 
@@ -274,6 +294,26 @@ fun HttpServletRequest.findParameterStringValue(key: String): String {
 
 fun HttpServletRequest.findParameterIntValue(key: String): Int {
     return this.findParameterValue(key).AsInt()
+}
+
+/**
+ * 由于 SameSite 限制，避免使用 Cookie，定义一个额外值来保持会话。使用 app.token-key 定义。
+ */
+val HttpServletRequest.tokenValue: String
+    get() {
+        var cacheKey = "_Token_Value_";
+        var value = this.getAttribute(cacheKey);
+        if (value != null) {
+            return value.AsString();
+        }
+
+        value = this.findParameterValue(config.tokenKey);
+        this.setAttribute(cacheKey, value)
+        return value.AsString();
+    }
+
+fun HttpServletResponse.setTokenValue(value: String) {
+    this.setHeader(config.tokenKey, value);
 }
 
 /**

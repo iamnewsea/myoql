@@ -101,19 +101,24 @@ fun Any.ConvertType(clazz: Class<*>): Any? {
 }
 
 
-/**
- * @param format 时间格式化字符串，数字的话也可以传 0.0,#.#
- */
 fun Any?.AsString(defaultValue: String = ""): String {
-    if (this == null) return defaultValue;
+    var ret = this.AsStringWithNull();
+    if (ret.isNullOrEmpty()) return defaultValue;
+    return ret;
+}
+
+/**
+ */
+fun Any?.AsStringWithNull(): String? {
+    if (this == null) return null;
     if (this is String) {
-        if (this.isEmpty()) return defaultValue
+        if (this.isEmpty()) return null
         return this;
     } else if (this is CharArray) {
         return String(this)
     } else if (this is LocalDateTime) {
         if (this == LocalDateTime.MIN) {
-            return "";
+            return null;
         }
         if (this.hour == 0 && this.minute == 0 && this.second == 0) {
             return this.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -121,30 +126,28 @@ fun Any?.AsString(defaultValue: String = ""): String {
         return this.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     } else if (this is LocalDate) {
         if (this == LocalDate.MIN) {
-            return "";
+            return null;
         }
         return this.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     } else if (this is LocalTime) {
         if (this == LocalTime.MIN) {
-            return "";
+            return null;
         }
         return this.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));
     } else if (this is Date) {
         if (this.time == 0L) {
-            return "";
+            return null;
         }
-        if( this.time % (MyUtil.OneDaySeconds *1000) == 0L){
+        if (this.time % (MyUtil.OneDaySeconds * 1000) == 0L) {
             return SimpleDateFormat("yyyy-MM-dd").format(this);
         }
         return SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(this);
     } else if (this is Number) {
-
+        //数字使用格式化函数 format
         return this.toString();
     }
 
-    var ret = this.toString()
-    if (ret.isEmpty()) return defaultValue
-    return ret
+    return this.toString()
 }
 
 

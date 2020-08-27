@@ -1,9 +1,12 @@
 package nbcp.component
 
+import nbcp.comm.AsLocalDateTime
+import nbcp.comm.ToLocalDateTime
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
 
 /**
  * 源自Twitter的分布式自增ID雪花算法snowflake 的改进版
@@ -38,6 +41,11 @@ class SnowFlake : InitializingBean {
          */
         private const val MACHINE_LEFT = SEQUENCE_BIT
         private const val TIMESTMP_LEFT = SEQUENCE_BIT + MACHINE_BIT
+
+        fun getLocalDateTimeValue(code: String): LocalDateTime {
+            var value = java.lang.Long.valueOf(code, 36);
+            return ((value shr TIMESTMP_LEFT) + START_STMP).ToLocalDateTime()
+        }
     }
 
     /**

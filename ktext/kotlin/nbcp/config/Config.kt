@@ -46,6 +46,13 @@ object config {
     }
 
     /**
+     * 由于 SameSite 限制，避免使用 Cookie，定义一个额外值来保持会话。
+     */
+    val tokenKey: String by lazy {
+        return@lazy SpringUtil.context.environment.getProperty("app.token-key") ?: "token"
+    }
+
+    /**
      * 映射到 DatabaseEnum 枚举上
      */
     val databaseType: String by lazy {

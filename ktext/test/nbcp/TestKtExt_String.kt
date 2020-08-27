@@ -62,4 +62,12 @@ select * from[pub space].tab where`id`  like'% 1 %'
         println("结果:" + result);
         println("原文:" + CipherUtil.decrypt3des(result, key))
     }
+
+    @Test
+    fun test_radix() {
+        var v = System.currentTimeMillis()
+        println(v)
+        println(v.toString(36))
+        println(java.lang.Long.valueOf(v.toString(36), 36))
+    }
 }

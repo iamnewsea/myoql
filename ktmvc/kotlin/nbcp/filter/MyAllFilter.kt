@@ -53,9 +53,6 @@ open class MyAllFilter : Filter, InitializingBean {
     @Value("\${app.filter.allow-origins:}")
     var allowOrigins: String = "";
 
-//    @Value("\${app.filter.ignore-log-urls:}")
-//    var ignoreLogUrls: List<String> = listOf()
-
     @Value("\${app.filter.headers:}")
     var headers: List<String> = listOf()
 
@@ -96,7 +93,9 @@ open class MyAllFilter : Filter, InitializingBean {
             return;
         }
 
-        MDC.put("request_id", httpRequest.session.id.AsString())
+        var request_id = httpRequest.tokenValue;
+
+        MDC.put("request_id", request_id)
 //        MDC.put("user_name", request.LoginUser.name.AsString())
 //        MDC.put("client_ip", request.ClientIp)
 
@@ -197,6 +196,8 @@ open class MyAllFilter : Filter, InitializingBean {
                 }
 //                logNewSession(request, response);
             }
+
+            procCORS(request, response)
 
             var endAt = LocalDateTime.now()
 

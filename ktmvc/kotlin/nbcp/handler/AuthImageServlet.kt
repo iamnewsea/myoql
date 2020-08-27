@@ -5,7 +5,11 @@ import com.wf.captcha.ArithmeticCaptcha
 import com.wf.captcha.utils.CaptchaUtil
 import nbcp.comm.*
 import nbcp.db.db
+import nbcp.web.findParameterStringValue
 import nbcp.web.queryJson
+import nbcp.web.tokenValue
+import org.springframework.beans.factory.annotation.Value
+import java.lang.RuntimeException
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -20,14 +24,26 @@ import javax.servlet.http.HttpServlet
 @MyLogLevel(Level.ERROR_INT)
 @WebServlet(urlPatterns = arrayOf("/open/validate-code-image"))
 open class AuthImageServlet : HttpServlet() {
+
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
+        var request_id = request.tokenValue
+        if (request_id.isNullOrEmpty()) {
+            throw RuntimeException("找不到token")
+        }
+
         var width = request.queryJson.get("width").AsInt(130)
         var height = request.queryJson.get("height").AsInt(48)
 
         var captcha = ArithmeticCaptcha(width, height);
         var txt = captcha.text()
-        db.rer_base.validateCode.set(request.session.id, txt);
-        response.setHeader("content-type","image/png")
+
+        db.rer_base.validateCode.set(request_id, txt);
+        response.setHeader("content-type", "image/png")
+
+//        var set_cookie_ori = response.getHeader("Set-Cookie") ?: "";
+//        if (set_cookie_ori.contains(" SameSite=", true) == false) {
+//            response.setHeader("Set-Cookie", set_cookie_ori + "; SameSite=Lax");
+//        }
         captcha.out(response.outputStream);
     }
 }
