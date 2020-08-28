@@ -264,10 +264,10 @@ var HttpServletRequest.LoginUser: LoginUserModel
                 var newToken = generateToken();
                 webUserToken.changeToken(token, newToken);
                 db.rer_base.userSystem.deleteToken(token)
-
+                token = newToken;
                 var cacheKey = "_Token_Value_";
                 this.setAttribute(cacheKey, newToken);
-                token = newToken;
+                HttpContext.nullableResponse?.setHeader(config.tokenKey, newToken)
             }
         }
 
