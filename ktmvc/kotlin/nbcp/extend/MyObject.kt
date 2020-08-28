@@ -282,8 +282,13 @@ var HttpServletRequest.LoginUser: LoginUserModel
             return ret;
         }
 
-        db.rer_base.userSystem.deleteToken(token)
-        HttpContext.nullableResponse?.setHeader(config.tokenKey, generateToken())
+        if( changed == false) {
+            db.rer_base.userSystem.deleteToken(token)
+            var newToken = generateToken();
+            var cacheKey = "_Token_Value_";
+            this.setAttribute(cacheKey, newToken);
+            HttpContext.nullableResponse?.setHeader(config.tokenKey, newToken)
+        }
         return LoginUserModel()
     }
     set(value) {
