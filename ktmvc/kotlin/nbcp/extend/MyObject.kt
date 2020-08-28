@@ -7,6 +7,7 @@ import nbcp.comm.*
 import org.springframework.http.MediaType
 import nbcp.utils.*
 import nbcp.db.LoginUserModel
+import nbcp.db.db
 import org.springframework.web.servlet.HandlerMapping
 import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
@@ -221,23 +222,23 @@ var getLoginUserFunc: ((String) -> LoginUserModel?)? = null
  * 高并发系统不应该有Session。使用token即可。
  * 另外，由于跨域 SameSite 的限制，需要避免使用 Cookie 的方式。
  * 设置 getLoginUserFunc 在需要用户信息的时候获取。示例代码：
+ * 获取用户 token 使用 db.rer_base.getLoginInfoFromToken
  */
 var HttpServletRequest.LoginUser: LoginUserModel
     get() {
         /**
- getLoginUserFunc 示例代码：
- nbcp.web.getLoginUserFunc = af@{
-    var token = it;
-    if (token.startsWith("sf.")) {
+        getLoginUserFunc 示例代码：
+        nbcp.web.getLoginUserFunc = af@{
+        var token = it;
+        if (token.startsWith("sf.")) {
         var time = CodeUtil.getDateTimeFromCode(token.substring(3));
         if ((LocalDateTime.now() - time).totalHours > 7) {
-            return@af null;
+        return@af null;
         }
-    }
-    return@af LoginUserModel.loadFromToken(token)
-}
+        }
+        return@af LoginUserModel.loadFromToken(token)
+        }
          */
-
 
 
         var ret = this.getAttribute("[LoginUser]") as LoginUserModel?;
@@ -254,6 +255,7 @@ var HttpServletRequest.LoginUser: LoginUserModel
     set(value) {
         this.setAttribute("[LoginUser]", value)
         HttpContext.nullableResponse?.setHeader(config.tokenKey, value.token)
+        db.rer_base.saveLoginUserInfo(value.token, value);
     }
 
 
@@ -271,6 +273,12 @@ val HttpServletRequest.UserName: String
     get() {
         return this.LoginUser.name;
     }
+
+//fun LoginUserModel.setAsLoginUser(request: HttpServletRequest,response: HttpServletResponse){
+//    request.LoginUser = this;
+//    response.setHeader(config.tokenKey, this.token);
+//    db.rer_base.saveLoginUserInfo(this.token, this);
+//}
 
 /**
  * 把 queryString 加载为 Json
@@ -312,9 +320,7 @@ val HttpServletRequest.tokenValue: String
         return value.AsString();
     }
 
-fun HttpServletResponse.setTokenValue(value: String) {
-    this.setHeader(config.tokenKey, value);
-}
+
 
 /**
  * 从request属性，Path变量， URL ， Form表单，Header 中查找参数

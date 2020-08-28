@@ -1,19 +1,8 @@
 package nbcp.db.mongo
 
 import nbcp.comm.*
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.core.convert.TypeDescriptor
 import org.springframework.core.convert.converter.GenericConverter
-import org.springframework.core.convert.support.GenericConversionService
-import org.springframework.data.mongodb.MongoDbFactory
-import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver
-import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper
-import org.springframework.data.mongodb.core.convert.MappingMongoConverter
-import org.springframework.data.mongodb.core.mapping.MongoMappingContext
-import nbcp.utils.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
