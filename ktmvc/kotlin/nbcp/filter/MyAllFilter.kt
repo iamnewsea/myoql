@@ -371,6 +371,7 @@ open class MyAllFilter : Filter, InitializingBean {
 
                 //https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
                 var standardHeaders = arrayOf(
+                        "referer",
                         "expires",
                         "cache-control",
                         "content-language",
@@ -382,7 +383,9 @@ open class MyAllFilter : Filter, InitializingBean {
                         "connection",
                         "host",
                         "accept-language",
-                        "accept-encoding"
+                        "accept-encoding",
+                        "content-length",
+                        "content-type"
                 )
                 //移除标准 header
                 allowHeaders.removeAll { standardHeaders.contains(it.toLowerCase()) }
@@ -391,8 +394,8 @@ open class MyAllFilter : Filter, InitializingBean {
 
             if (allowHeaders.any()) {
                 response.setHeader("Access-Control-Allow-Headers", allowHeaders.joinToString(","))
+                response.setHeader("Access-Control-Expose-Headers", allowHeaders.joinToString(","))
             }
-            response.setHeader("Access-Control-Expose-Headers", "*")
         }
     }
 
