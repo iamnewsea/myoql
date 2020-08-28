@@ -16,7 +16,7 @@ enum class SystemEnum {
 
 
     fun getLoginInfoFromRedisToken(token: String): LoginUserModel? {
-        loginUserRedis.expireKey(token);
+        loginUserRedis.renewalKey(token);
         return loginUserRedis.get(token).FromJson<LoginUserModel>();
     }
 
@@ -29,5 +29,5 @@ enum class SystemEnum {
     }
 }
 ```
-使用 loginUserRedis.expireKey 方法，让RedisKey在每次访问之后使用缓存自动续期。
+使用 loginUserRedis.renewalKey 方法，让RedisKey在每次访问之后使用缓存自动续期。
 

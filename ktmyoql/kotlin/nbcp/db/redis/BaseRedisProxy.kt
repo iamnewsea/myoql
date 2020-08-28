@@ -102,17 +102,17 @@ abstract class BaseRedisProxy(val group: String, val defaultCacheSeconds: Int) {
 
 
     /**
-     * 使用 RedisTask.setExpireKey 设置过期时间
+     * 使用 RedisTask.setExpireKey 设置续期时间
      * @param key:不带group
      */
-    fun expireKey(key: String, cacheSeconds: Int = defaultCacheSeconds) {
+    fun renewalKey(key: String, cacheSeconds: Int = defaultCacheSeconds) {
         var cs = cacheSeconds.AsInt();
         if (cs <= 0) {
             RedisTask.deleteKeys(getFullKey(key))
             return;
         }
 
-        RedisTask.setExpireKey(getFullKey(key), cs);
+        RedisTask.setRenewalKey(getFullKey(key), cs);
     }
 
     /***

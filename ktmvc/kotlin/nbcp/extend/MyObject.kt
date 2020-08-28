@@ -9,6 +9,7 @@ import nbcp.utils.*
 import nbcp.db.LoginUserModel
 import nbcp.db.db
 import org.springframework.web.servlet.HandlerMapping
+import java.time.LocalDateTime
 import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -213,10 +214,18 @@ val HttpServletRequest.ClientIp: String
 //        request_cache = value
 //    }
 
-/**
- * 根据 token 获取用户信息.
- */
-var getLoginUserFunc: ((String) -> LoginUserModel?)? = null
+fun generateToken(): String {
+    return "sf." + CodeUtil.getCode();
+}
+
+///**
+// * 根据 token 获取用户信息.
+// */
+//var getLoginUserFunc: ((String,String) -> LoginUserModel?)? = null
+
+private val webUserToken: WebUserTokenBean by lazy {
+    return@lazy SpringUtil.getBean<WebUserTokenBean>()
+}
 
 /**
  * 高并发系统不应该有Session。使用token即可。
@@ -240,22 +249,47 @@ var HttpServletRequest.LoginUser: LoginUserModel
         }
          */
 
+        var now = LocalDateTime.now()
+        var token = this.tokenValue;
+        var changed = false;
+        if (token.startsWith("sf.")) {
+            var time = CodeUtil.getDateTimeFromCode(token.substring(3));
+            var diffSeconds = (now - time).totalSeconds
+            if (diffSeconds > config.tokenKeyExpireSeconds) {
+                db.rer_base.userSystem.deleteToken(token);
+                HttpContext.nullableResponse?.setHeader(config.tokenKey, generateToken())
+                return LoginUserModel();
+            } else if (diffSeconds > config.tokenKeyRenewalSeconds) {
+                changed = true;
+                var newToken = generateToken();
+                webUserToken.changeToken(token, newToken);
+                db.rer_base.userSystem.deleteToken(token)
+
+                var cacheKey = "_Token_Value_";
+                this.setAttribute(cacheKey, newToken);
+                token = newToken;
+            }
+        }
+
 
         var ret = this.getAttribute("[LoginUser]") as LoginUserModel?;
         if (ret != null) {
             return ret;
         }
-        ret = getLoginUserFunc?.invoke(this.tokenValue);
-        if (ret != null) {
+        ret = webUserToken.getUserInfo(token);
+        if (ret.id.HasValue) {
             this.LoginUser = ret;
             return ret;
         }
+
+        db.rer_base.userSystem.deleteToken(token)
+        HttpContext.nullableResponse?.setHeader(config.tokenKey, generateToken())
         return LoginUserModel()
     }
     set(value) {
         this.setAttribute("[LoginUser]", value)
         HttpContext.nullableResponse?.setHeader(config.tokenKey, value.token)
-        db.rer_base.saveLoginUserInfo(value.token, value);
+        db.rer_base.userSystem.saveLoginUserInfo(value.token, value);
     }
 
 
@@ -319,7 +353,6 @@ val HttpServletRequest.tokenValue: String
         this.setAttribute(cacheKey, value)
         return value.AsString();
     }
-
 
 
 /**

@@ -7,6 +7,7 @@ import nbcp.comm.*
 import nbcp.db.db
 import nbcp.utils.CodeUtil
 import nbcp.web.findParameterStringValue
+import nbcp.web.generateToken
 import nbcp.web.queryJson
 import org.springframework.beans.factory.annotation.Value
 import java.lang.RuntimeException
@@ -38,7 +39,7 @@ open class TokenGeneratorServlet : HttpServlet() {
 
     private fun gen(response: HttpServletResponse) {
         var ret = ApiResult<String>();
-        ret.data = "sf." + CodeUtil.getCode();
+        ret.data = generateToken()
         response.outputStream.write(ret.ToJson().toByteArray(utf8))
     }
 }

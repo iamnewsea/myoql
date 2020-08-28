@@ -10,8 +10,6 @@ import nbcp.db.redis.proxy.*
  * 如果封装方法，会有数据库操作
  */
 class RedisBaseGroup {
-    val validateCode get() = RedisStringProxy("validateCode", 180);
-
     class SqlCacheGroup {
         val cacheSqlData get() = RedisStringProxy("")
         fun brokeKeys(table: String) = RedisSetProxy("broke-keys:${table}")
@@ -47,20 +45,26 @@ class RedisBaseGroup {
 
     val sqlCache = SqlCacheGroup()
 
+    val userSystem = UserSystemGroup()
 
-    private val userSystemRedis
-        get() = RedisStringProxy(config.userSystem + "token", 900);
+    class UserSystemGroup {
+        private val userSystemRedis
+            get() = RedisStringProxy(config.userSystem + "token", 900);
 
-    fun getLoginInfoFromToken(token: String): LoginUserModel? {
-        userSystemRedis.expireKey(token);
-        return userSystemRedis.get(token).FromJson<LoginUserModel>();
-    }
+        val validateCode get() = RedisStringProxy(config.userSystem + "validateCode", 180);
 
-    fun saveLoginUserInfo(token: String, userInfo: LoginUserModel) {
-        userSystemRedis.set(token, userInfo.ToJson())
-    }
 
-    fun deleteToken(vararg tokens: String) {
-        userSystemRedis.deleteKeys(*tokens)
+        fun getLoginInfoFromToken(token: String): LoginUserModel? {
+            userSystemRedis.renewalKey(token);
+            return userSystemRedis.get(token).FromJson<LoginUserModel>();
+        }
+
+        fun saveLoginUserInfo(token: String, userInfo: LoginUserModel) {
+            userSystemRedis.set(token, userInfo.ToJson())
+        }
+
+        fun deleteToken(vararg tokens: String) {
+            userSystemRedis.deleteKeys(*tokens)
+        }
     }
 }

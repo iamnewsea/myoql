@@ -33,7 +33,7 @@ class RedisTask {
         /**
          * 定时任务，使键续期。
          */
-        fun setExpireKey(key: String, cacheSecond: Int) {
+        fun setRenewalKey(key: String, cacheSecond: Int) {
             cache.put(key, cacheSecond);
         }
 

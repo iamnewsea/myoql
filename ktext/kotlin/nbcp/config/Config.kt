@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service
 import org.springframework.util.unit.DataSize
 import java.lang.annotation.Inherited
 import java.nio.charset.Charset
+import java.time.Duration
 
 /**
  * 配置项
@@ -50,6 +51,24 @@ object config {
      */
     val tokenKey: String by lazy {
         return@lazy SpringUtil.context.environment.getProperty("app.token-key") ?: "token"
+    }
+
+    /**
+     * 强制 token 过期时间。单位是秒,默认是72小时
+     */
+    val tokenKeyExpireSeconds: Int by lazy {
+        var ret = Duration.parse(SpringUtil.context.environment.getProperty("app.token-key-expire").AsString("P3D"));
+        if (ret.seconds < tokenKeyRenewalSeconds * 3) {
+            return@lazy tokenKeyRenewalSeconds * 3
+        }
+        return@lazy ret.seconds.toInt()
+    }
+
+    /**
+     * 到指定时间后(未到过期时间)，返回新的token。默认20分钟。会保存到Redis里。单位是秒
+     */
+    val tokenKeyRenewalSeconds: Int by lazy {
+        return@lazy Duration.parse(SpringUtil.context.environment.getProperty("app.token-key-renewal").AsString("P20M")).seconds.toInt()
     }
 
     /**
@@ -126,14 +145,14 @@ object config {
         return@lazy SpringUtil.context.environment.getProperty("app.wx.mchId") ?: ""
     }
 
-    val applicationName :String by lazy{
+    val applicationName: String by lazy {
         return@lazy SpringUtil.context.environment.getProperty("spring.application.name") ?: ""
     }
 
     /**
      * 用户体系：一般分为： admin,corp,open
      */
-    val userSystem :String by lazy{
+    val userSystem: String by lazy {
         return@lazy SpringUtil.context.environment.getProperty("app.user-system") ?: ""
     }
 }

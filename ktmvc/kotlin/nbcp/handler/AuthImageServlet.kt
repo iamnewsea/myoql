@@ -37,7 +37,7 @@ open class AuthImageServlet : HttpServlet() {
         var captcha = ArithmeticCaptcha(width, height);
         var txt = captcha.text()
 
-        db.rer_base.validateCode.set(request_id, txt);
+        db.rer_base.userSystem.validateCode.set(request_id, txt);
         response.setHeader("content-type", "image/png")
 
 //        var set_cookie_ori = response.getHeader("Set-Cookie") ?: "";
