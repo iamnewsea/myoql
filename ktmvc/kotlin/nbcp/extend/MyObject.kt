@@ -277,8 +277,8 @@ var HttpServletRequest.LoginUser: LoginUserModel
             return ret;
         }
         ret = webUserToken.getUserInfo(token);
-        if (ret.id.HasValue) {
-            this.LoginUser = ret;
+        if (ret?.id.HasValue) {
+            this.LoginUser = ret!!;
             return ret;
         }
 

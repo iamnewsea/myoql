@@ -11,6 +11,6 @@ interface WebUserTokenBean {
      */
     fun changeToken(token: String, newToken: String);
 
-    fun getUserInfo(token: String): LoginUserModel
+    fun getUserInfo(token: String): LoginUserModel?
 
 }
