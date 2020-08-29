@@ -252,7 +252,7 @@ class HttpUtil(var url: String = "") {
         var requestBodyValidate = false;
 
         var startAt = LocalDateTime.now();
-
+        var respIsText = false;
         try {
             conn = URL(url).openConnection() as HttpURLConnection;
 
@@ -331,6 +331,8 @@ class HttpUtil(var url: String = "") {
                 }
             }
 
+            respIsText = conn.contentType.contains("json", true) || conn.contentType.contains("htm", true) || conn.contentType.contains("text", true)
+
             try {
                 var input = conn.inputStream;
                 try {
@@ -362,25 +364,26 @@ class HttpUtil(var url: String = "") {
                     var msgs = mutableListOf<String>();
                     msgs.add("${conn!!.requestMethod} ${url}\t[status:${this.status}]");
 
-                    this.requestProperties.map {
+                    msgs.add(this.requestProperties.map {
                         return@map "\t${it.key}:${it.value}"
-                    }.joinToString(line_break)
+                    }.joinToString(line_break))
 
+                    var k10Size = 10240
                     //小于 10K
-                    if (postBody.any() && postBody.size < 10240) {
-                        msgs.add(postBody.toString(utf8))
+                    if (postBody.any()) {
+                        msgs.add(postBody.toString(utf8).Slice(0, k10Size))
                     }
 
                     msgs.add("---")
 
-                    this.responseHeader.map {
+                    msgs.add(this.responseHeader.map {
                         return@map "\t${it.key}:${it.value}"
-                    }.joinToString(line_break)
+                    }.joinToString(line_break))
 
 
                     //小于10K
-                    if (this.responseCharset.HasValue && this.responseResult.size < 10240) {
-                        msgs.add(this.responseResult.toString(Charset.forName(this.responseCharset)))
+                    if (respIsText && this.responseResult.size < 10240) {
+                        msgs.add(this.responseResult.toString(Charset.forName(this.responseCharset.AsString("utf-8"))).Slice(0, k10Size))
                     }
 
                     var content = msgs.joinToString(line_break);
