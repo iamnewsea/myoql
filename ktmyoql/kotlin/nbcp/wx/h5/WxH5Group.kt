@@ -54,7 +54,7 @@ object WxH5Group {
         require(appSecret.HasValue) { "缺少appSecret!" }
 
         var url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=${wx.appId}&secret=${appSecret}&code=${code}&grant_type=authorization_code"
-        var ret = ApiResult<H5AccessTokenData>("异常");
+        var ret = ApiResult<H5AccessTokenData>();
         var http = HttpUtil(url);
         var data = http.doGet().FromJson<H5AccessTokenData>() ?: H5AccessTokenData();
         if (data.errcode != 0) {
@@ -76,7 +76,7 @@ object WxH5Group {
         require(openid.HasValue) { "缺少openid" }
 
         var url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=${access_token}&openid=${openid}&lang=zh_CN"
-        var ret = ApiResult<WxH5UserInfoData>("异常");
+        var ret = ApiResult<WxH5UserInfoData>();
         var http = HttpUtil(url);
         var data = http.doGet().FromJson<WxH5UserInfoData>() ?: WxH5UserInfoData();
         if (data.errcode != 0) {
