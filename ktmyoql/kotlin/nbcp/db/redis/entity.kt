@@ -59,8 +59,10 @@ class RedisBaseGroup {
             return userSystemRedis.get(token).FromJson<LoginUserModel>();
         }
 
-        fun saveLoginUserInfo(token: String, userInfo: LoginUserModel) {
-            userSystemRedis.set(token, userInfo.ToJson())
+        fun saveLoginUserInfo(userInfo: LoginUserModel) {
+            if( userInfo.token.HasValue) {
+                userSystemRedis.set(userInfo.token, userInfo.ToJson())
+            }
         }
 
         fun deleteToken(vararg tokens: String) {

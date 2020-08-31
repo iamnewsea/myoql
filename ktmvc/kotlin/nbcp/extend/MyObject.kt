@@ -266,7 +266,7 @@ var HttpServletRequest.LoginUser: LoginUserModel
     }
     set(value) {
         this.setAttribute("[LoginUser]", value)
-        db.rer_base.userSystem.saveLoginUserInfo(value.token, value);
+        db.rer_base.userSystem.saveLoginUserInfo(value);
     }
 
 
@@ -340,11 +340,13 @@ val HttpServletRequest.tokenValue: String
                     token = generateToken();
                 } else if (diffSeconds > config.tokenKeyRenewalSeconds) {
                     var newToken = generateToken();
-                    var ori_value = webUserToken.getUserInfo(token);
-                    if (ori_value != null) {
-                        webUserToken.saveTokenUser(newToken, ori_value);
-                        webUserToken.lostToken(token);
-                    }
+//                    var ori_value = webUserToken.getUserInfo(token);
+//                    if (ori_value != null) {
+//                        ori_value.token = newToken
+//                        webUserToken.tokenLoginUser(ori_value);
+//                        webUserToken.lostToken(token);
+//                    }
+                    webUserToken.changeToken(token,newToken);
                     token = newToken;
                 }
             }
