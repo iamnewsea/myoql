@@ -76,6 +76,11 @@ open class MyAllFilter : Filter, InitializingBean {
     }
 
     override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
+        var httpRequest = request as HttpServletRequest
+        var httpResponse = response as HttpServletResponse
+
+        HttpContext.init(httpRequest, httpResponse);
+
         if (!(request is HttpServletRequest) ||
 //                FileExtentionInfo(request.requestURI).isStaticURI ||
                 request.method == "HEAD" ||
@@ -84,8 +89,7 @@ open class MyAllFilter : Filter, InitializingBean {
             return;
         }
 
-        var httpRequest = request as HttpServletRequest
-        var httpResponse = response as HttpServletResponse
+
 
         if (httpRequest.method == "OPTIONS") {
             procCORS(httpRequest, httpResponse)
@@ -357,6 +361,7 @@ open class MyAllFilter : Filter, InitializingBean {
 
 
             var allowHeaders = mutableSetOf<String>();
+            allowHeaders.add(config.tokenKey);
 
             //添加指定的
             allowHeaders.addAll(headers)

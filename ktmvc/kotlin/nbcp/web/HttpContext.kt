@@ -25,41 +25,31 @@ import kotlin.concurrent.getOrSet
  * Created by udi on 17-5-22.
  */
 object HttpContext {
+
+    var _request: ThreadLocal<HttpServletRequest?> = ThreadLocal.withInitial { null }
+    var _response: ThreadLocal<HttpServletResponse?> = ThreadLocal.withInitial { null }
+
+    fun init(request: HttpServletRequest, response: HttpServletResponse) {
+        this._request.set(request);
+        this._response.set(response);
+    }
+
+
     @JvmStatic
     val request: HttpServletRequest
         get() {
-            return this.nullableRequest!!
+            return _request.get()
+                    ?: (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.request!!
         }
-
-    @JvmStatic
-    val nullableRequest: HttpServletRequest?
-        get() {
-            return (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.request
-        }
-//    @JvmStatic
-//    val session: HttpSession
-//        get() {
-//            return request.session;
-//        }
 
     @JvmStatic
     val response: HttpServletResponse
         get() {
-            return this.nullableResponse!!
+            return _response.get()
+                    ?: (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.response!!
         }
 
-    @JvmStatic
-    val nullableResponse: HttpServletResponse?
-        get() {
-            return (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.response
-        }
-
-    @JvmStatic
-    val servletContext: ServletContext
-        get() {
-            return request.servletContext!!
-        }
-
+    //(RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.response!!
 
 //    @JvmStatic
 //    val userName: String = SystemContext.userName

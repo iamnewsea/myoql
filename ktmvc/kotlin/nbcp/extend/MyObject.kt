@@ -249,51 +249,23 @@ var HttpServletRequest.LoginUser: LoginUserModel
         }
          */
 
-        var now = LocalDateTime.now()
-        var token = this.tokenValue;
-        var changed = false;
-        if (token.startsWith("sf.")) {
-            var time = CodeUtil.getDateTimeFromCode(token.substring(3));
-            var diffSeconds = (now - time).totalSeconds
-            if (diffSeconds > config.tokenKeyExpireSeconds) {
-                db.rer_base.userSystem.deleteToken(token);
-                HttpContext.nullableResponse?.setHeader(config.tokenKey, generateToken())
-                return LoginUserModel();
-            } else if (diffSeconds > config.tokenKeyRenewalSeconds) {
-                changed = true;
-                var newToken = generateToken();
-                webUserToken.changeToken(token, newToken);
-                db.rer_base.userSystem.deleteToken(token)
-                token = newToken;
-                var cacheKey = "_Token_Value_";
-                this.setAttribute(cacheKey, newToken);
-                HttpContext.nullableResponse?.setHeader(config.tokenKey, newToken)
-            }
-        }
-
-
         var ret = this.getAttribute("[LoginUser]") as LoginUserModel?;
         if (ret != null) {
             return ret;
         }
+
+        var token = this.tokenValue;
+
         ret = webUserToken.getUserInfo(token);
-        if (ret?.id.HasValue) {
-            this.LoginUser = ret!!;
-            return ret;
+        if (ret == null) {
+            ret = LoginUserModel.ofToken(token);
         }
 
-        if( changed == false) {
-            db.rer_base.userSystem.deleteToken(token)
-            var newToken = generateToken();
-            var cacheKey = "_Token_Value_";
-            this.setAttribute(cacheKey, newToken);
-            HttpContext.nullableResponse?.setHeader(config.tokenKey, newToken)
-        }
-        return LoginUserModel()
+        this.LoginUser = ret;
+        return ret;
     }
     set(value) {
         this.setAttribute("[LoginUser]", value)
-        HttpContext.nullableResponse?.setHeader(config.tokenKey, value.token)
         db.rer_base.userSystem.saveLoginUserInfo(value.token, value);
     }
 
@@ -349,14 +321,38 @@ fun HttpServletRequest.findParameterIntValue(key: String): Int {
 val HttpServletRequest.tokenValue: String
     get() {
         var cacheKey = "_Token_Value_";
-        var value = this.getAttribute(cacheKey);
-        if (value != null) {
-            return value.AsString();
+        var token = this.getAttribute(cacheKey).AsStringWithNull();
+        if (token.HasValue) {
+            return token.AsString();
         }
 
-        value = this.findParameterValue(config.tokenKey);
-        this.setAttribute(cacheKey, value)
-        return value.AsString();
+        token = this.findParameterValue(config.tokenKey).AsStringWithNull();
+
+        if (token.isNullOrEmpty()) {
+            token = generateToken();
+        } else {
+            if (token.startsWith("sf.")) {
+                var now = LocalDateTime.now();
+                var time = CodeUtil.getDateTimeFromCode(token.substring(3));
+                var diffSeconds = (now - time).totalSeconds
+                if (diffSeconds > config.tokenKeyExpireSeconds) {
+                    db.rer_base.userSystem.deleteToken(token);
+                    token = generateToken();
+                } else if (diffSeconds > config.tokenKeyRenewalSeconds) {
+                    var newToken = generateToken();
+                    var ori_value = webUserToken.getUserInfo(token);
+                    if (ori_value != null) {
+                        webUserToken.saveTokenUser(newToken, ori_value);
+                        webUserToken.lostToken(token);
+                    }
+                    token = newToken;
+                }
+            }
+        }
+
+        this.setAttribute(cacheKey, token)
+        HttpContext.response.setHeader(config.tokenKey, token)
+        return token;
     }
 
 

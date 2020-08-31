@@ -9,8 +9,11 @@ interface WebUserTokenBean {
     /**
      * token发生改变，但是依然有效。
      */
-    fun changeToken(token: String, newToken: String);
+//    fun changeToken(token: String, newToken: String);
 
     fun getUserInfo(token: String): LoginUserModel?
 
+    fun saveTokenUser(token:String,userInfo:LoginUserModel)
+
+    fun lostToken(token:String)
 }
