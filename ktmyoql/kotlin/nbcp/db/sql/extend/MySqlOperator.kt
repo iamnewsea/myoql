@@ -58,6 +58,12 @@ private fun SqlColumnName.column_match_value(op: String, value: Serializable): W
  */
 infix fun SqlColumnName.like(value: String): WhereData = this.column_match_value("like", value)
 
+/**
+ * like "%查询内容%"
+ */
+infix fun SqlColumnName.like_all(value: String): WhereData = this.column_match_value("like", ("%" + value + "%"))
+
+
 //infix fun SqlColumnName.match(value: Serializable): WhereData = this.column_match_value("=", value)
 //infix fun SqlColumnName.match(value: String): WhereData = this.column_match_value("=", value)
 //infix fun SqlColumnName.match(value: Boolean): WhereData = this.column_match_value("=", value)
@@ -68,7 +74,7 @@ infix fun SqlColumnName.like(value: String): WhereData = this.column_match_value
  * 相等操作
  */
 infix fun SqlColumnName.match(value: Serializable): WhereData {
-    if( value is SqlColumnName) {
+    if (value is SqlColumnName) {
         return WhereData("${this.fullName} = ${value.fullName}")
     }
     return this.column_match_value("=", value);
@@ -85,7 +91,7 @@ infix fun SqlColumnName.match(value: Serializable): WhereData {
  * 不等操作
  */
 infix fun SqlColumnName.match_not_equal(value: Serializable): WhereData {
-    if( value is SqlColumnName) {
+    if (value is SqlColumnName) {
         return WhereData("${this.fullName} != ${value.fullName}")
     }
     return this.column_match_value("!=", value);
@@ -100,7 +106,7 @@ infix fun SqlColumnName.match_not_equal(value: Serializable): WhereData {
  * 大于等于操作
  */
 infix fun SqlColumnName.match_gte(value: Serializable): WhereData {
-    if( value is SqlColumnName) {
+    if (value is SqlColumnName) {
         return WhereData("${this.fullName} >= ${value.fullName}")
     }
     return this.column_match_value(">=", value)
@@ -116,10 +122,10 @@ infix fun SqlColumnName.match_gte(value: Serializable): WhereData {
  * 大于操作，不包含等于
  */
 infix fun SqlColumnName.match_greaterThan(value: Serializable): WhereData {
-    if( value is SqlColumnName) {
+    if (value is SqlColumnName) {
         return WhereData("${this.fullName} > ${value.fullName}")
     }
-    return  this.column_match_value(">", value);
+    return this.column_match_value(">", value);
 }
 
 
@@ -132,7 +138,7 @@ infix fun SqlColumnName.match_greaterThan(value: Serializable): WhereData {
  * 小于等于操作。
  */
 infix fun SqlColumnName.match_lte(value: Serializable): WhereData {
-    if( value is SqlColumnName) {
+    if (value is SqlColumnName) {
         return WhereData("${this.fullName} <= ${value.fullName}")
     }
 
@@ -148,7 +154,7 @@ infix fun SqlColumnName.match_lte(value: Serializable): WhereData {
  * 小于操作，不包含等于
  */
 infix fun SqlColumnName.match_lessThan(value: Serializable): WhereData {
-    if( value is SqlColumnName) {
+    if (value is SqlColumnName) {
         return WhereData("${this.fullName} < ${value.fullName}")
     }
     return this.column_match_value("<", value)
@@ -170,8 +176,8 @@ private fun SqlColumnName.column_match_between(min: Any, max: Any): WhereData {
 /**
  * 大于等于，并且 小于
  */
-fun<T : Serializable> SqlColumnName.match_between(min: T, max: T): WhereData {
-    if( min is SqlColumnName && max is SqlColumnName) {
+fun <T : Serializable> SqlColumnName.match_between(min: T, max: T): WhereData {
+    if (min is SqlColumnName && max is SqlColumnName) {
         return WhereData("${this.fullName} >= ${min.fullName} and ${this.fullName} < ${max.fullName}")
     }
     return this.column_match_between(min, max);
@@ -202,8 +208,8 @@ fun<T : Serializable> SqlColumnName.match_between(min: T, max: T): WhereData {
 /**
  * in (values)操作
  */
-infix inline fun<reified T: Serializable> SqlColumnName.match_in(values: Array<T>): WhereData {
-    if(T::class.java == SqlColumnName::class.java) {
+infix inline fun <reified T : Serializable> SqlColumnName.match_in(values: Array<T>): WhereData {
+    if (T::class.java == SqlColumnName::class.java) {
         return WhereData("${this.fullName} in (${values.map { (it as SqlColumnName).fullName }.joinToString(",").AsString("null")} )")
     }
 
@@ -236,8 +242,8 @@ infix fun SqlColumnName.match_in(select: SqlQueryClip<*, *>): WhereData {
 /**
  * not in (values) 操作
  */
-infix inline fun<reified T: Serializable> SqlColumnName.match_not_in(values: Array<T>): WhereData {
-    if(T::class.java == SqlColumnName::class.java) {
+infix inline fun <reified T : Serializable> SqlColumnName.match_not_in(values: Array<T>): WhereData {
+    if (T::class.java == SqlColumnName::class.java) {
         return WhereData("${this.fullName} not in (${values.map { (it as SqlColumnName).fullName }.joinToString(",").AsString("null")} )")
     }
 
