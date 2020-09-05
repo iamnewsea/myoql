@@ -21,17 +21,14 @@ class SqlSpreadColumnEvent_Insert : ISqlEntityInsert {
 //        }
 
         insert.mainEntity.getSpreadColumns().forEach { column ->
-            var field = insert.mainEntity.tableClass.getDeclaredField(column)
-            field.isAccessible = true;
-
             insert.entities.forEach { entity ->
-                var value = entity.get(field.name) as Map<String, *>;
+                var value = entity.get(column) as Map<String, *>;
                 if (value == null) {
                     return@forEach
                 }
 
-                field.type.AllFields.forEach {
-                    entity.set(field.name + "_" + it.name,  value.get(it.name))
+                value.keys.forEach { key->
+                    entity.set(column + "_" + key,  value.get(key))
                 }
             }
         }
