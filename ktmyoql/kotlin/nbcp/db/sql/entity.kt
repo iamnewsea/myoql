@@ -7,7 +7,7 @@ import nbcp.db.sql.*
 @DbEntityGroup("SqlBase")
 @DbUks("id")
 @SqlRks("corpId")
-data class s_annex(
+open class s_annex(
         @ConverterValueToDb(TrimLowercaseConverter::class)
         var id: String = "",
         var name: String = "",          //显示的名字,友好的名称
@@ -29,7 +29,7 @@ data class s_annex(
 
 
 @DbEntityGroup("SqlBase")
-data class s_log(
+open class s_log(
         @DbKey
         @ConverterValueToDb(TrimLowercaseConverter::class)
 //        @SqlAutoIncrementKey
@@ -45,8 +45,33 @@ data class s_log(
         var creatorId: String = ""
 ) : ISqlDbEntity
 
+
 @DbEntityGroup("SqlBase")
-data class s_dustbin(
+open class s_city(
+        @DbKey
+        var code: Int = 0,
+        @Cn("城市短名称")
+        var shortName: String = "",    // 城市控件使用 simpleName
+        @Cn("城市全称")
+        var name: String = "",          //界面常用全称
+        @Cn("级别")
+        var level: Int = 0,
+        @Cn("经度")
+        var lng: Float = 0F, //经度
+        @Cn("纬度")
+        var lat: Float = 0F, //纬度
+        @Cn("拼音")
+        var pinyin: String = "",
+        @Cn("电话码")
+        var telCode: String = "",
+        @Cn("邮编")
+        var postCode: String = "",
+        @Cn("父级码")
+        var pcode: Int = 0
+) : ISqlDbEntity
+
+@DbEntityGroup("SqlBase")
+open class s_dustbin(
         @DbKey
         var id: String = "",
         var table: String = "",

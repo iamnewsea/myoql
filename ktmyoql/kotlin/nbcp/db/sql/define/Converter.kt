@@ -1,6 +1,7 @@
 package nbcp.db.sql
 
 import nbcp.db.sql.IConverter
+import nbcp.utils.CodeUtil
 
 /**
  * Created by yuxh on 2019/1/31
@@ -25,6 +26,15 @@ class TrimLowercaseConverter:IConverter{
         if( value == null) return null;
         if( value is String) {
             return value.trim().toLowerCase()
+        }
+        return value;
+    }
+}
+
+class AutoIdConverter : IConverter {
+    override fun convert(value: Any?): Any? {
+        if (value == null || value.toString().isNullOrEmpty()) {
+            return CodeUtil.getCode();
         }
         return value;
     }

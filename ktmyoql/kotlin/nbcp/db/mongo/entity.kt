@@ -179,7 +179,7 @@ open class SysAnnex(
 @Document
 @DbEntityGroup("MongoBase")
 @Cn("城市令牌")
-data class SysCity(
+open class SysCity(
         @DbKey
         @Cn("城市编码")
         var code: Int = 0,
