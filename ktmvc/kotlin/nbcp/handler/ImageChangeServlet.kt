@@ -3,6 +3,7 @@ package nbcp.handler
 import nbcp.db.IdUrl
 import nbcp.comm.*
 import nbcp.db.mongo.*
+import nbcp.db.mongo.event.*
 import nbcp.web.MyHttpRequestWrapper
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServlet
