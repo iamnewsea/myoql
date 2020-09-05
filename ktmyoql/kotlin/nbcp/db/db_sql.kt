@@ -4,7 +4,7 @@ import nbcp.utils.*
 import nbcp.comm.StringKeyMap
 import nbcp.db.sql.IDataGroup
 import nbcp.db.sql.SqlBaseMetaTable
-import nbcp.db.sql.SqlEntityEvent
+import nbcp.db.sql.event.*
 import org.springframework.jdbc.core.JdbcTemplate
 import javax.sql.DataSource
 

@@ -4,6 +4,7 @@ package nbcp.db
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.mongo.*
+import nbcp.db.mongo.event.*
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.core.convert.support.GenericConversionService
