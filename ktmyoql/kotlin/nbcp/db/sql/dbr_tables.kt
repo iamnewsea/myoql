@@ -9,7 +9,7 @@ import nbcp.comm.*
 import nbcp.utils.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-09-05 15:22:32
+//generate auto @2020-09-05 16:31:38
 
 
 @Component("sql.SqlBase")
@@ -174,14 +174,14 @@ class SqlBaseGroup : IDataGroup{
 }
 
                                 
-    fun SqlUpdateClip<SqlBaseGroup.s_annex_table,nbcp.db.sql.entity.s_annex>.set_creator(creator:nbcp.db.IdName):SqlUpdateClip<SqlBaseGroup.s_annex_table, nbcp.db.sql.entity.s_annex>{
+    fun SqlUpdateClip<SqlBaseGroup.s_annex_table,nbcp.db.sql.entity.s_annex>.set_s_annex_creator(creator:nbcp.db.IdName):SqlUpdateClip<SqlBaseGroup.s_annex_table, nbcp.db.sql.entity.s_annex>{
         return this.set{ it.creator_id to creator.id }
 					.set{ it.creator_name to creator.name }
     }
 
 
                                 
-    fun SqlUpdateClip<SqlBaseGroup.s_dustbin_table,nbcp.db.sql.entity.s_dustbin>.set_creator(creator:nbcp.db.IdName):SqlUpdateClip<SqlBaseGroup.s_dustbin_table, nbcp.db.sql.entity.s_dustbin>{
+    fun SqlUpdateClip<SqlBaseGroup.s_dustbin_table,nbcp.db.sql.entity.s_dustbin>.set_s_dustbin_creator(creator:nbcp.db.IdName):SqlUpdateClip<SqlBaseGroup.s_dustbin_table, nbcp.db.sql.entity.s_dustbin>{
         return this.set{ it.creator_id to creator.id }
 					.set{ it.creator_name to creator.name }
     }

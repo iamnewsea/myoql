@@ -295,7 +295,7 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 
                             spread_methods.add("""
                                 
-    fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName},${entType.name}>.set_${db_column_name}(${db_column_name}:${field.type.name}):SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName}, ${entType.name}>{
+    fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName},${entType.name}>.set_${tableName}_${db_column_name}(${db_column_name}:${field.type.name}):SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName}, ${entType.name}>{
         return this${subFields.map { ".set{ it." + db_column_name + "_" + it.name + " to " + db_column_name + "." + it.name + " }" }.joinToString("\n\t\t\t\t\t")}
     }
 """)
