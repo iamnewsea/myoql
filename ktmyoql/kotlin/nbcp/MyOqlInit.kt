@@ -1,5 +1,7 @@
 package nbcp
 
+import nbcp.comm.LogScope
+import nbcp.comm.using
 import nbcp.utils.*
 import nbcp.db.*
 import nbcp.db.mongo.event.*
@@ -17,10 +19,8 @@ class MyOqlInit : ApplicationListener<ContextRefreshedEvent> {
     }
 
     override fun onApplicationEvent(p0: ContextRefreshedEvent) {
-
-        logger.warn("mongo groups:" + db.mongo.groups.map { it::class.java.simpleName }.joinToString())
+        logger.info("mongo groups:" + db.mongo.groups.map { it::class.java.simpleName }.joinToString())
         logger.info("sql groups:" + db.sql.groups.map { it::class.java.simpleName }.joinToString())
-
 
 //        var restClient = SpringUtil.getBean<RestClient>()
     }

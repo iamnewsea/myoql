@@ -129,7 +129,7 @@ class DevFileController {
 
 
     fun execCmd(vararg cmds: String): ListResult<String> {
-        logger.warn(cmds.joinToString(" "));
+        logger.info(cmds.joinToString(" "));
         var p = Runtime.getRuntime().exec(cmds);
         var lines = listOf<String>()
 
