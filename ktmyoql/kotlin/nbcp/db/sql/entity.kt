@@ -8,7 +8,8 @@ import nbcp.db.sql.*
 @DbUks("id")
 @SqlRks("corpId")
 open class s_annex(
-        @ConverterValueToDb(TrimLowercaseConverter::class)
+        @DbKey
+        @ConverterValueToDb(AutoIdConverter::class)
         var id: String = "",
         var name: String = "",          //显示的名字,友好的名称
         var tags: String = "",
@@ -31,7 +32,7 @@ open class s_annex(
 @DbEntityGroup("SqlBase")
 open class s_log(
         @DbKey
-        @ConverterValueToDb(TrimLowercaseConverter::class)
+        @ConverterValueToDb(AutoIdConverter::class)
 //        @SqlAutoIncrementKey
         var id: String = "",
         var module: String = "", //模块
@@ -73,6 +74,7 @@ open class s_city(
 @DbEntityGroup("SqlBase")
 open class s_dustbin(
         @DbKey
+        @ConverterValueToDb(AutoIdConverter::class)
         var id: String = "",
         var table: String = "",
         var remark: String = "",
