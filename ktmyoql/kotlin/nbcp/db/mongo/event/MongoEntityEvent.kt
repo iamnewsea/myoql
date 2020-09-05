@@ -1,4 +1,6 @@
-package nbcp.db.mongo
+package nbcp.db.mongo.event;
+
+import nbcp.db.mongo.*;
 
 import nbcp.comm.*
 import nbcp.db.*

@@ -1,5 +1,6 @@
-package nbcp.db.mongo
+package nbcp.db.mongo.event;
 
+import nbcp.db.mongo.*;
 import nbcp.comm.AsString
 import nbcp.comm.getStringValue
 import nbcp.utils.*

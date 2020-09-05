@@ -1,5 +1,6 @@
-package nbcp.db.mongo
+package nbcp.db.mongo.event;
 
+import nbcp.db.mongo.*;
 import nbcp.db.*
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime

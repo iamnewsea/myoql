@@ -1,5 +1,6 @@
-package nbcp.db.mongo
+package nbcp.db.mongo.event;
 
+import nbcp.db.mongo.*;
 import nbcp.db.*
 import nbcp.db.mongo.entity.*
 import org.bson.Document

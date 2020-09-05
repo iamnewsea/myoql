@@ -1,5 +1,6 @@
-package nbcp.db.sql
+package nbcp.db.sql.event
 
+import nbcp.db.sql.*;
 import nbcp.db.EventResult
 
 /**
