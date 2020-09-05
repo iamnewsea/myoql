@@ -6,10 +6,7 @@ import com.wf.captcha.utils.CaptchaUtil
 import nbcp.comm.*
 import nbcp.db.db
 import nbcp.utils.CodeUtil
-import nbcp.web.findParameterStringValue
-import nbcp.web.generateToken
-import nbcp.web.queryJson
-import nbcp.web.tokenValue
+import nbcp.web.*
 import org.springframework.beans.factory.annotation.Value
 import java.lang.RuntimeException
 import javax.servlet.annotation.WebServlet
@@ -27,12 +24,12 @@ open class CodeServlet : HttpServlet() {
 
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
         var code = CodeUtil.getCode();
-        response.outputStream.write(ApiResult.of(code).ToJson().toByteArray(utf8))
+        response.WriteJsonRawValue(ApiResult.of(code).ToJson())
     }
 
     override fun doPost(request: HttpServletRequest, response: HttpServletResponse) {
         var code = CodeUtil.getCode();
-        response.outputStream.write(ApiResult.of(code).ToJson().toByteArray(utf8))
+        response.WriteJsonRawValue(ApiResult.of(code).ToJson())
     }
 }
 
