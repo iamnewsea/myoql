@@ -22,22 +22,17 @@ import javax.servlet.http.HttpServlet
  */
 @OpenAction
 @MyLogLevel(Level.ERROR_INT)
-@WebServlet(urlPatterns = arrayOf("/open/token"))
-open class TokenGeneratorServlet : HttpServlet() {
-    /**
-     * 由于 SameSite 阻止跨域 Set-Cookie 的问题，所以使用请求参数 token 代替 cookie
-     */
-//    @Value("\${app.token-name:token}")
-//    var tokenName: String = ""
+@WebServlet(urlPatterns = arrayOf("/open/code"))
+open class CodeServlet : HttpServlet() {
 
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
-        var token = request.tokenValue;
-        response.outputStream.write(ApiResult.of(token).ToJson().toByteArray(utf8))
+        var code = CodeUtil.getCode();
+        response.outputStream.write(ApiResult.of(code).ToJson().toByteArray(utf8))
     }
 
     override fun doPost(request: HttpServletRequest, response: HttpServletResponse) {
-        var token = request.tokenValue;
-        response.outputStream.write(ApiResult.of(token).ToJson().toByteArray(utf8))
+        var code = CodeUtil.getCode();
+        response.outputStream.write(ApiResult.of(code).ToJson().toByteArray(utf8))
     }
 }
 

@@ -340,12 +340,6 @@ val HttpServletRequest.tokenValue: String
                     token = generateToken();
                 } else if (diffSeconds > config.tokenKeyRenewalSeconds) {
                     var newToken = generateToken();
-//                    var ori_value = webUserToken.getUserInfo(token);
-//                    if (ori_value != null) {
-//                        ori_value.token = newToken
-//                        webUserToken.tokenLoginUser(ori_value);
-//                        webUserToken.lostToken(token);
-//                    }
                     webUserToken.changeToken(token,newToken);
                     token = newToken;
                 }
