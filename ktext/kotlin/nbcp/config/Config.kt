@@ -18,6 +18,7 @@ import org.springframework.core.type.AnnotationMetadata
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import org.springframework.util.unit.DataSize
+import java.lang.RuntimeException
 import java.lang.annotation.Inherited
 import java.nio.charset.Charset
 import java.time.Duration
@@ -38,8 +39,23 @@ object config {
             return _debug ?: false;
         }
 
+
+    /**
+     * 上传到本地时使用该配置,最后不带 "/"
+     */
     val uploadHost: String by lazy {
-        return@lazy SpringUtil.context.environment.getProperty("app.upload.host") ?: "";
+        return@lazy SpringUtil.context.environment.getProperty("app.upload.host")
+                .must { it.HasValue }
+                .elseThrow("必须指定 app.upload.host")
+    }
+
+    /**
+     * 上传到本地时使用该配置,最后不带 "/"
+     */
+    val uploadPath: String by lazy {
+        return@lazy SpringUtil.context.environment.getProperty("app.upload.path")
+                .must { it.HasValue }
+                .elseThrow("必须指定 app.upload.path")
     }
 
     val mybatisPackage: String by lazy {
@@ -116,7 +132,8 @@ object config {
             }
             return@lazy "Mysql"
         }
-        return@lazy ""
+
+        throw RuntimeException("无法识别数据库类型,请指定 app.database-type")
     }
 
     val maxHttpPostSize: DataSize by lazy {
@@ -138,21 +155,29 @@ object config {
     }
 
     val wxAppId: String by lazy {
-        return@lazy SpringUtil.context.environment.getProperty("app.wx.appId") ?: ""
+        return@lazy SpringUtil.context.environment.getProperty("app.wx.appId")
+                .must { it.HasValue }
+                .elseThrow("必须指定 app.wx.appId")
     }
 
     val wxMchId: String by lazy {
-        return@lazy SpringUtil.context.environment.getProperty("app.wx.mchId") ?: ""
+        return@lazy SpringUtil.context.environment.getProperty("app.wx.mchId")
+                .must { it.HasValue }
+                .elseThrow("必须指定 app.wx.mchId")
     }
 
     val applicationName: String by lazy {
-        return@lazy SpringUtil.context.environment.getProperty("spring.application.name") ?: ""
+        return@lazy SpringUtil.context.environment.getProperty("spring.application.name")
+                .must { it.HasValue }
+                .elseThrow("必须指定 spring.application.name")
     }
 
     /**
      * 用户体系：一般分为： admin,corp,open
      */
     val userSystem: String by lazy {
-        return@lazy SpringUtil.context.environment.getProperty("app.user-system") ?: ""
+        return@lazy SpringUtil.context.environment.getProperty("app.user-system")
+                .must { it.HasValue }
+                .elseThrow("必须指定 app.user-system")
     }
 }

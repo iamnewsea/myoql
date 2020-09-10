@@ -87,9 +87,6 @@ open class UploadService {
     }
 
 
-    @Value("\${app.upload.path:}")
-    private var uploadPath = ""
-
     @Value("\${app.upload.saveCorp:true}")
     private var saveCorp = false
 
@@ -105,7 +102,7 @@ open class UploadService {
     private var checkType = "md5"
 
     fun downloadImage(url: String, corp: IdName, user: IdName, maxWidth: Int = 1200): ApiResult<IdUrl> {
-        var fileMsg = HttpUtil.getImage(url, uploadPath + File.separator + "_temp_", maxWidth);
+        var fileMsg = HttpUtil.getImage(url, config.uploadPath + File.separator + "_temp_", maxWidth);
         if (fileMsg.msg.HasValue) {
             return ApiResult<IdUrl>(msg = fileMsg.msg);
         }
@@ -160,7 +157,7 @@ open class UploadService {
             vFile = vFile + "." + extName
         }
 
-        var localFile = File(uploadPath + File.separator + vFile)
+        var localFile = File(config.uploadPath + File.separator + vFile)
 
         if (localFile.parentFile.exists() == false && localFile.parentFile.mkdirs() == false) {
             throw Exception("创建文件夹失败:${localFile.parent}");
@@ -189,7 +186,7 @@ open class UploadService {
      */
     private fun doUpload(vTempFile: String, user: IdName, corpId: String, oriFileName: String = ""): ApiResult<IdUrl> {
 
-        var vFile = File(uploadPath + vTempFile);
+        var vFile = File(config.uploadPath + vTempFile);
         if (vFile.exists() == false) {
             return ApiResult<IdUrl>("找不到文件:${vFile.FullName}")
         }
@@ -287,14 +284,14 @@ open class UploadService {
             return targetPath;
         }
 
-        var localFile = File(uploadPath + tempPath);
+        var localFile = File(config.uploadPath + tempPath);
 
         if (localFile.exists() == false) {
             throw Exception("找不到保存的文件")
         }
 //        var targetFileSects = fileData.getTargetFileName() targetFileSects.joinToString(File.separator)
 
-        var targetFile = File(uploadPath + targetPath)
+        var targetFile = File(config.uploadPath + targetPath)
         if (targetFile.parentFile.exists() == false && targetFile.parentFile.mkdirs() == false) {
             return "创建文件夹失败： ${targetFile.parentFile.FullName}"
         }
@@ -336,7 +333,7 @@ open class UploadService {
             var annex = dbService.getByMd5(md5, corpId);
 
             if (annex != null) {
-                if (File(uploadPath + annex.url).exists()) {
+                if (File(config.uploadPath + annex.url).exists()) {
                     return ApiResult.of(IdUrl(annex.id, annex.url));
                 } else {
                     dbService.clearMd5ById(annex.id);
@@ -350,7 +347,7 @@ open class UploadService {
             return ApiResult();
         }
 
-        if (File(uploadPath + annex.url).exists() == false) {
+        if (File(config.uploadPath + annex.url).exists() == false) {
             dbService.clearMd5ById(annex.id)
             return ApiResult();
         }
@@ -372,7 +369,7 @@ open class UploadService {
         var targetFileName = fileData.getTargetFileName(if (saveCorp) corpId else "")
 
 
-        var r = File(uploadPath + annex.url).copyTo(File(uploadPath + targetFileName))
+        var r = File(config.uploadPath + annex.url).copyTo(File(config.uploadPath + targetFileName))
         if (r.exists() == false) {
             return ApiResult()
         }
@@ -425,7 +422,7 @@ open class UploadService {
 
                 var vTempFile = saveTempFile(file, oriFileExtentionInfo.extName);
                 if (processFile != null) {
-                    processFile(uploadPath + vTempFile, oriFileExtentionInfo.extType)
+                    processFile(config.uploadPath + vTempFile, oriFileExtentionInfo.extType)
                 }
 
                 var ret1 = doUpload(vTempFile, user, corpId, oriFileExtentionInfo.toString());

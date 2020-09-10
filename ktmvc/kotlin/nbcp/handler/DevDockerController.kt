@@ -56,11 +56,9 @@ class DevDockerController {
         return execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd);
     }
 
-    @Value("\${app.upload.path}")
-    lateinit var uploadPath: String
 
     val path: String
-        get() = uploadPath + File.separator + "docker-" + LocalDate.now().Format("YYYY-MM-dd") + File.separator
+        get() = config.uploadPath + File.separator + "docker-" + LocalDate.now().Format("YYYY-MM-dd") + File.separator
 
     /**
      * 把文件拷到宿主机

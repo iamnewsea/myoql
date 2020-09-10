@@ -20,6 +20,7 @@ import java.time.*
 import java.time.temporal.Temporal
 import java.io.*
 import java.lang.Exception
+import java.lang.RuntimeException
 import java.lang.reflect.Modifier
 import java.util.*
 
@@ -35,6 +36,17 @@ import java.util.*
 //    return false;
 //}
 
+data class CheckMustExpresstion<T>(var condition: Boolean , var data: T?) {
+
+    fun elseThrow(msg: String): T {
+        if (condition) return data!!
+        else throw RuntimeException(msg);
+    }
+}
+
+fun <T> T?.must(trueCondition: ((T?) -> Boolean)): CheckMustExpresstion<T> {
+    return CheckMustExpresstion(trueCondition(this), this)
+}
 
 fun <T> T.IsIn(vararg values: T): Boolean {
     return this.IsIn(null, *values);

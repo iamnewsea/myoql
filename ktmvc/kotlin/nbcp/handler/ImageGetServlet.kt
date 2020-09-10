@@ -25,14 +25,9 @@ import javax.servlet.http.HttpServletResponse
 @OpenAction
 @WebServlet(urlPatterns = arrayOf("/image/dynamic"))
 open class ImageGetServlet : HttpServlet() {
-    @Value("\${app.upload.path:}")
-    private var uploadPath = ""
-
-    @Value("\${app.upload.dbType:Mongo}")
-    private var dbType = "Mongo"
 
     private val dbService by lazy {
-        if (this.dbType VbSame DatabaseEnum.Mongo.toString()) {
+        if (config.databaseType VbSame DatabaseEnum.Mongo.toString()) {
             return@lazy SpringUtil.context.getBean(UploadFileMongoService::class.java)
         } else {
             return@lazy SpringUtil.context.getBean(UploadFileMysqlService::class.java)
@@ -65,7 +60,7 @@ open class ImageGetServlet : HttpServlet() {
             url = JsUtil.decodeURIComponent(url);
         }
 
-        var ret = ImageUtil.zoomImageScale(File(uploadPath + url).inputStream().buffered(), response.outputStream, width, height)
+        var ret = ImageUtil.zoomImageScale(File(config.uploadPath + url).inputStream().buffered(), response.outputStream, width, height)
         if (ret.msg.HasValue) {
             response.WriteTextValue(ret.msg)
             return;
