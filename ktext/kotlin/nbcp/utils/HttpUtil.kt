@@ -31,7 +31,8 @@ data class FileMessage(
 //        var data: ByteArray = byteArrayOf()
 //)
 /*
- * 利用HttpClient进行post请求的工具类
+ * 尽量使用 RestTemplate.
+ * 封装了 HttpURLConnection 进行网络请求。
  */
 class HttpUtil(var url: String = "") {
     companion object {
