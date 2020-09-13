@@ -3,6 +3,7 @@ package nbcp.utils
 /**
  * Created by udi on 17-4-30.
  */
+
 import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import java.awt.image.BufferedImage
@@ -23,13 +24,22 @@ data class FileMessage(
         var extName: String = "",
         var msg: String = "");
 
-//data class HttpReturnData(
-//        var url: String = "",
-//        var status: Int = 0,
-//        var contentType: String = "",
-//        var header: StringMap = StringMap(),
-//        var data: ByteArray = byteArrayOf()
-//)
+//@Configuration
+//class RestTemplateConfig {
+//    @Bean
+//    fun restTemplate(factory: ClientHttpRequestFactory?): RestTemplate {
+//        return RestTemplate(factory)
+//    }
+//
+//    @Bean
+//    fun simpleClientHttpRequestFactory(): ClientHttpRequestFactory {
+//        val factory = SimpleClientHttpRequestFactory()
+//        factory.setConnectTimeout(15000)
+//        factory.setReadTimeout(5000)
+//        return factory
+//    }
+//}
+
 /*
  * 尽量使用 RestTemplate.
  * 封装了 HttpURLConnection 进行网络请求。
