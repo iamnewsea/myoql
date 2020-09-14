@@ -149,6 +149,7 @@ class HttpUtil(var url: String = "") {
      */
     var totalTime: TimeSpan = TimeSpan(0)
         private set;
+
     /**
      * 该次回发过程中的错误消息，只读
      */
@@ -264,6 +265,8 @@ class HttpUtil(var url: String = "") {
 
         var startAt = LocalDateTime.now();
         var respIsText = false;
+        var requestIsText = false;
+
         try {
             conn = URL(url).openConnection() as HttpURLConnection;
 
@@ -301,6 +304,10 @@ class HttpUtil(var url: String = "") {
             conn.requestProperties.forEach { k, v ->
                 if (k == null) {
                     return@forEach;
+                }
+                if ((k VbSame "content-type") ||
+                        (k VbSame "ContentType")) {
+                    requestIsText = getIsTextFromContentType(k);
                 }
                 this.requestProperties.put(k, v.joinToString(","))
             }
@@ -342,7 +349,7 @@ class HttpUtil(var url: String = "") {
                 }
             }
 
-            respIsText = conn.contentType.contains("json", true) || conn.contentType.contains("htm", true) || conn.contentType.contains("text", true)
+            respIsText = getIsTextFromContentType(conn.contentType);
 
             try {
                 var input = conn.inputStream;
@@ -381,8 +388,8 @@ class HttpUtil(var url: String = "") {
 
                     var k10Size = 10240
                     //小于 10K
-                    if (postBody.any()) {
-                        msgs.add(postBody.toString(utf8).Slice(0, k10Size))
+                    if (requestIsText && postBody.any()) {
+                        msgs.add(postBody.take(k10Size).toByteArray().toString(utf8))
                     }
 
                     msgs.add("---")
@@ -393,8 +400,8 @@ class HttpUtil(var url: String = "") {
 
 
                     //小于10K
-                    if (respIsText && this.responseResult.size < 10240) {
-                        msgs.add(this.responseResult.toString(Charset.forName(this.responseCharset.AsString("utf-8"))).Slice(0, k10Size))
+                    if (respIsText && this.responseResult.any()) {
+                        msgs.add(this.responseResult.take(k10Size).toByteArray().toString(Charset.forName(this.responseCharset.AsString("utf-8"))))
                     }
 
                     var content = msgs.joinToString(line_break);
@@ -407,6 +414,12 @@ class HttpUtil(var url: String = "") {
             conn?.disconnect();
             conn = null;
         }
+    }
+
+    private fun getIsTextFromContentType(contentType: String): Boolean {
+        return contentType.contains("json", true) ||
+                contentType.contains("htm", true) ||
+                contentType.contains("text", true)
     }
 
     fun toByteArray(input: InputStream): ByteArray {
