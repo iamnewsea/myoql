@@ -96,12 +96,12 @@ object config {
             return@lazy type;
         }
 
-        var mongo = SpringUtil.context.containsBean("mongoAutoConfiguration");
+        var mongo = SpringUtil.context.containsBean("org.springframework.data.mongodb.MongoDatabaseFactory");
         if (mongo) {
             return@lazy "Mongo"
         }
 
-        var sql = SpringUtil.context.containsBean("dataSourceAutoConfiguration");
+        var sql = SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration");
         if (sql) {
 
             var conn = SpringUtil.context.environment.getProperty("spring.datasource.url");

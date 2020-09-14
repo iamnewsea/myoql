@@ -1,18 +1,25 @@
 package nbcp.base
 
 import nbcp.TestBase
-import nbcp.comm.AsLocalDateTime
-import nbcp.comm.JsonMap
-import nbcp.comm.minus
+import nbcp.app.GroupLog
+import nbcp.comm.*
 import org.junit.Test
+import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.time.LocalDateTime
 
+@GroupLog("main")
 class TestDuration : TestBase() {
+    companion object{
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    }
     @Test
     fun Test_Duration() {
         var d = Duration.parse("PT20M");
         println(d.seconds)
+        using(LogScope.ImportantInfo()) {
+            logger.info(d.seconds.toString())
+        }
     }
 
     @Test

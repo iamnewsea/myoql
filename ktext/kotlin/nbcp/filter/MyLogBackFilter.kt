@@ -4,11 +4,13 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.classic.turbo.TurboFilter
+import ch.qos.logback.core.filter.AbstractMatcherFilter
 import ch.qos.logback.core.filter.Filter
 import ch.qos.logback.core.spi.FilterReply
-import nbcp.app.ScheduledTaskScope
+import nbcp.app.GroupLog
 import nbcp.comm.*
 import nbcp.utils.*
+import org.slf4j.MDC
 import org.slf4j.Marker
 
 
@@ -23,6 +25,7 @@ class MyLogBackFilter : TurboFilter() {
     }
 
     override fun decide(marker: Marker?, logger: Logger?, level: Level?, format: String?, params: Array<out Any>?, t: Throwable?): FilterReply {
+
         if (level == null) {
             return FilterReply.NEUTRAL
         }
@@ -45,42 +48,67 @@ class MyLogBackFilter : TurboFilter() {
     }
 }
 
+
+///**
+// * 应用日志过滤器
+// * logback-spring.xml 文件中，
+// * configuration.appender 下面添加
+// * <filter class="nbcp.filter.MyAppLogBackFilter"></filter>
+// */
+//class MyAppLogBackFilter : Filter<ILoggingEvent>() {
+//    companion object {
+//    }
+//
+//    override fun decide(event: ILoggingEvent?): FilterReply {
+//        var taskScope = scopes.getLatestScope<GroupLog>();
+//        if (taskScope != null) {
+//            return FilterReply.DENY;
+//        }
+//
+//        return FilterReply.NEUTRAL;
+//    }
+//}
+
+///**
+// * 定时任务日志过滤器，定时任务使用 GroupLog("group") 进行注解
+// * logback-spring.xml 文件中，
+// * configuration.appender 下面添加
+// * <filter class="nbcp.filter.MyTaskGroupLogBackFilter"></filter>
+// */
+//class MyTaskGroupLogBackFilter : Filter<ILoggingEvent>() {
+//    companion object {
+//    }
+//
+//    override fun decide(event: ILoggingEvent?): FilterReply {
+//        var groupScope = scopes.getLatestScope<GroupLog>();
+//        if (groupScope == null) {
+//            return FilterReply.DENY;
+//        }
+//
+//        if (groupScope.value != "task") {
+//            return FilterReply.DENY;
+//        }
+//        return FilterReply.NEUTRAL;
+//    }
+//}
+
+
 /**
- * 应用日志过滤器
+ * 主要业务日志分组,使用 GroupLog("main") 进行注解
  * logback-spring.xml 文件中，
  * configuration.appender 下面添加
- * <filter class="nbcp.filter.MyAppLogBackFilter"></filter>
+ * <filter class="nbcp.filter.MyMainGroupLogBackFilter">
+ *     <group>main</group>
+ * </filter>
  */
-class MyAppLogBackFilter : Filter<ILoggingEvent>() {
-    companion object {
-    }
+class MyGroupLogBackFilter : Filter<ILoggingEvent>() {
+    var group: String = "";
 
-    override fun decide(event: ILoggingEvent?): FilterReply{
-        var taskScope = scopes.getLatestScope<ScheduledTaskScope>();
-        if (taskScope != null) {
-            return FilterReply.DENY;
+    override fun decide(event: ILoggingEvent?): FilterReply {
+        var groupScope = scopes.getLatestScope<GroupLog>();
+        if (groupScope == null) {
+            return if (group.isEmpty()) FilterReply.ACCEPT else FilterReply.DENY
         }
-
-        return  FilterReply.NEUTRAL;
-    }
-}
-
-/**
- * 定时任务日志过滤器，定时任务使用 ScheduledTask 注解
- * logback-spring.xml 文件中，
- * configuration.appender 下面添加
- * <filter class="nbcp.filter.MyScheduledTaskLogBackFilter"></filter>
- */
-class MyScheduledTaskLogBackFilter : Filter<ILoggingEvent>() {
-    companion object {
-    }
-
-    override fun decide(event: ILoggingEvent?): FilterReply{
-        var taskScope = scopes.getLatestScope<ScheduledTaskScope>();
-        if (taskScope == null) {
-            return FilterReply.DENY;
-        }
-
-        return  FilterReply.NEUTRAL;
+        return if (groupScope.value == group) FilterReply.ACCEPT else FilterReply.DENY
     }
 }

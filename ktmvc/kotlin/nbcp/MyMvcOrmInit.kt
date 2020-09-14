@@ -3,25 +3,28 @@ package nbcp
 import com.fasterxml.jackson.databind.ObjectMapper
 import nbcp.comm.DefaultMyJsonMapper
 import nbcp.comm.JsonStyleEnumScope
-import nbcp.comm.ModifyListMoveToFirst
-import nbcp.utils.*
 import nbcp.comm.utf8
-import nbcp.web.RequestParameterConverter
+import nbcp.utils.MyUtil
+import nbcp.utils.SpringUtil
+import nbcp.web.*
+import org.springframework.boot.jackson.JsonComponent
+import org.springframework.boot.web.servlet.MultipartConfigFactory
 import org.springframework.context.ApplicationListener
-import org.springframework.context.event.ContextRefreshedEvent
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
+import org.springframework.context.event.ContextRefreshedEvent
 import org.springframework.core.convert.support.GenericConversionService
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter
+import org.springframework.util.unit.DataSize
+import org.springframework.util.unit.DataUnit
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
-import nbcp.web.*;
-import org.springframework.boot.jackson.JsonComponent
-import org.springframework.context.annotation.Bean
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
+import javax.servlet.MultipartConfigElement
+
 
 @Configuration
 @DependsOn("springUtil")
@@ -35,7 +38,6 @@ open class MyMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
         initMvcRequest()
     }
-
 
     private fun initMvcRequest() {
 
