@@ -54,6 +54,12 @@
             <artifactId>spring-data-redis</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <scope>test</scope>
+        </dependency>
+
 <!--        &lt;!&ndash; https://mvnrepository.com/artifact/io.lettuce/lettuce-core &ndash;&gt;-->
 <!--        <dependency>-->
 <!--            <groupId>io.lettuce</groupId>-->
@@ -145,6 +151,12 @@
         <!--<version>${boot.version}</version>-->
         <!--<scope>provided</scope>-->
         <!--</dependency>-->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

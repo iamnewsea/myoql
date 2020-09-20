@@ -63,12 +63,24 @@ spring:
     auto: true
   data:
     mongodb:
+      host: dev8.cn
+      port: 27017
+      db: cms
+      username: dev
+      password:
+      uri: mongodb://${spring.data.mongodb.username}:${spring.data.mongodb.password}@${spring.data.mongodb.host:127.0.0.1}:${spring.data.mongodb.port:27017}/${spring.data.mongodb.db}
   redis:
     timeout: 3000
+    database: 0
+    host: 172.72.0.20
+    password:
+    port: 6379
   rabbitmq:
-    addresses: ${server.rabbitmqIp}:5672
+    host:
+    port:
+    addresses: ${spring.rabbitmq.host:127.0.0.1}:${spring.rabbitmq.port:5672}
     password: dev
-    username: dev
+    username:
     virtual-host: /
 #  datasource:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
@@ -98,11 +110,12 @@ spring:
       password: admin
 
   datasource:
-    ip: dev8.cn
+    host: dev8.cn
     port: 8306
-    url: jdbc:mysql://${spring.datasource.ip}:${spring.datasource.port}/sites?serverTimezone=GMT%2B8&characterEncoding=utf8&useUnicode=true&useSSL=false
+    db:
+    url: jdbc:mysql://${spring.datasource.host:127.0.0.1}:${spring.datasource.port:3306}/${spring.datasource.db:db}?serverTimezone=GMT%2B8&characterEncoding=utf8&useUnicode=true&useSSL=false
     username: root
-    password: 1234.5678
+    password:
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       maximum-pool-size: 20

@@ -25,7 +25,8 @@ import java.time.LocalDateTime
  * Created by udi on 17-3-27.
  */
 
-@SpringBootApplication(exclude = arrayOf(MongoAutoConfiguration::class, RedisAutoConfiguration::class))
+//@SpringBootApplication(exclude = arrayOf(MongoAutoConfiguration::class, RedisAutoConfiguration::class))
+@SpringBootApplication(exclude = arrayOf(DataSourceAutoConfiguration::class))
 @Import(SpringUtil::class)
 open class KtMyoqlTestApplication {
 

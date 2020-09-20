@@ -9,11 +9,13 @@ import org.springframework.context.annotation.DependsOn
 import org.springframework.context.annotation.Primary
 import org.springframework.core.convert.support.GenericConversionService
 import org.springframework.data.mongodb.MongoDatabaseFactory
+import org.springframework.data.mongodb.MongoTransactionManager
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext
+
 
 /**
  * https://docs.spring.io/spring-data/data-mongodb/docs/current/reference/html/index.html
@@ -25,7 +27,7 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext
 class MongoDbConfig {
 
     @Bean
-    fun mongoContext():MongoMappingContext{
+    fun mongoContext(): MongoMappingContext {
         var ret = MongoMappingContext()
 //        ret.setInitialEntitySet(setOf(Document::class.java))
         return ret;
@@ -44,4 +46,12 @@ class MongoDbConfig {
         return MongoTemplate(dbFactory, converter)
     }
 
+
+    /**
+     * 事务支持。在需要事务的方法上添加注解:@Transactional,使用 mongotemplate 即可。
+     */
+    @Bean
+    fun transactionManager(dbFactory: MongoDatabaseFactory): MongoTransactionManager {
+        return MongoTransactionManager(dbFactory)
+    }
 }
