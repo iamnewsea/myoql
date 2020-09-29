@@ -39,7 +39,7 @@ class DevDockerController {
             return ListResult.of(listOf(name))
         }
 
-        var ret = execCmd("docker", "ps", "-a", "--format", "table {{.Names}}")
+        var ret = execCmd("docker", "ps","--format", "table {{.Names}}")
         if (ret.msg.HasValue == false) {
             ret.data = ret.data.Skip(1);
         }
