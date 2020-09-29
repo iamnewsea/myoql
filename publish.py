@@ -7,6 +7,13 @@ import shutil
 import  xml.dom.minidom
 import  getopt
 
+if sys.version_info < (3, 0):
+    print("必须使用 python3版本")
+    sys.exit(1)
+
+if len(sys.argv)<2:
+    print("缺少 version 参数")
+    sys.exit(1)
 
 # 第一个参数
 version = sys.argv[1]
