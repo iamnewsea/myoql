@@ -2,17 +2,6 @@ package nbcp.db.sql
 
 import kotlin.reflect.KClass
 
-
-//@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
-//@Retention(AnnotationRetention.RUNTIME)
-//annotation class SqlEntityGroup(val group: String)
-
-//尽量不使用, 尽量使用 sql 数据库的列名.
-//@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS, AnnotationTarget.FIELD)
-//@Retention(AnnotationRetention.RUNTIME)
-//annotation class SqlDbName(val name: String)
-
-
 /**
  * 实体字段上定义自增列，一个实体只能有一个自增列
  *

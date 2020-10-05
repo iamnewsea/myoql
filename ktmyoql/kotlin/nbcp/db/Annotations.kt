@@ -29,28 +29,6 @@ annotation class RemoveToSysDustbin()
 @Retention(AnnotationRetention.RUNTIME)
 annotation class DbEntityLogHistory(vararg val fields: String)
 
-///**
-// * 标注 实体更新的 Bean，需要实现  IDbEntityUpdate
-// */
-//@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
-//@Retention(AnnotationRetention.RUNTIME)
-//@Component
-//annotation class DbEntityUpdate(@get:AliasFor(annotation = Component::class) val value: String = "")
-//
-//@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
-//@Retention(AnnotationRetention.RUNTIME)
-//@Component
-//annotation class DbEntityInsert(@get:AliasFor(annotation = Component::class) val value: String = "")
-//
-///**
-// * 标注 实体删除的 Bean，需要实现  IDbEntityDelete
-// */
-//@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
-//@Retention(AnnotationRetention.RUNTIME)
-//@Component
-//annotation class DbEntityDelete(@get:AliasFor(annotation = Component::class) val value: String = "")
-
-
 /**
  * 重复性
  */
