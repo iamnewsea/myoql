@@ -36,7 +36,7 @@ import java.util.*
 //    return false;
 //}
 
-data class CheckMustExpresstion<T>(var condition: Boolean , var data: T?) {
+data class CheckMustExpresstion<T>(var condition: Boolean, var data: T?) {
 
     fun elseThrow(msg: String): T {
         if (condition) return data!!
@@ -667,28 +667,22 @@ private var debug_value: Boolean? = null
 
 inline val Logger.scopeInfoLevel: Boolean
     get() {
-        var log = scopes.getLatestScope<LogScope>()
-        if (log == null) {
-            return this.isInfoEnabled;
+        var logs = scopes.getScopeTypes<LogScope>()
+        if (logs.any()) {
+            return logs.any { ch.qos.logback.classic.Level.INFO_INT >= it.level }
         }
 
-        if (ch.qos.logback.classic.Level.INFO_INT >= log.level) {
-            return true
-        }
-        return false;
+        return this.isInfoEnabled;
     }
 
 inline val Logger.scopeErrorLevel: Boolean
     get() {
-        var log = scopes.getLatestScope<LogScope>()
-        if (log == null) {
-            return this.isErrorEnabled;
+        var logs = scopes.getScopeTypes<LogScope>()
+        if (logs.any()) {
+            return logs.any { ch.qos.logback.classic.Level.ERROR_INT >= it.level }
         }
 
-        if (ch.qos.logback.classic.Level.ERROR_INT >= log.level) {
-            return true
-        }
-        return false;
+        return this.isErrorEnabled;
     }
 
 /**

@@ -38,7 +38,7 @@ abstract class SqlBaseMetaTable<T : ISqlDbEntity>(val tableClass: Class<T>, tabl
     /**
      * 调用扩展方法 alias
      */
-    fun oriSetAlias(alias: String) {
+    internal fun oriSetAlias(alias: String) {
         if (alias == this.tableAliaValue) {
             return;
         }

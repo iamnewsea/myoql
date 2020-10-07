@@ -46,7 +46,7 @@ object db_sql {
         this.dynamicTableDataSource.remove(tableName)
     }
     /**
-     * 根据集合定义，获取 MongoTemplate
+     * 根据集合定义，获取 JdbcTemplate
      */
     fun getJdbcTemplateByTableName(tableName: String): JdbcTemplate? {
         var dataSource = dynamicTableDataSource.get(tableName);
