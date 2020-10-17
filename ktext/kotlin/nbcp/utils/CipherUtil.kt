@@ -45,6 +45,7 @@ object CipherUtil {
 
     /**
      * 加密
+     * @param key: 使用 get3desKey 生成的 key
      */
     fun encryptDes(text: String, key: String): String {
         var encoder = Base64.getEncoder();
@@ -54,6 +55,7 @@ object CipherUtil {
 
     /**
      * 解密
+     * @param key: 使用 get3desKey 生成的 key
      */
     fun decryptDes(text: String, key: String): String {
         var decoder = Base64.getDecoder();
