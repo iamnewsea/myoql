@@ -349,7 +349,7 @@ class HttpUtil(var url: String = "") {
                 }
             }
 
-            respIsText = getIsTextFromContentType(conn.contentType);
+            respIsText = getIsTextFromContentType(conn.contentType ?: "");
 
             try {
                 var input = conn.inputStream;
@@ -386,22 +386,27 @@ class HttpUtil(var url: String = "") {
                         return@map "\t${it.key}:${it.value}"
                     }.joinToString(line_break))
 
-                    var k10Size = 10240
-                    //小于 10K
-                    if (requestIsText && postBody.any()) {
-                        msgs.add(postBody.take(k10Size).toByteArray().toString(utf8))
+                    if( this.status == 0){
+                        msgs.add("[Timeout]");
                     }
+                    else {
 
-                    msgs.add("---")
+                        var k10Size = 10240
+                        //小于 10K
+                        if (requestIsText && postBody.any()) {
+                            msgs.add(postBody.take(k10Size).toByteArray().toString(utf8))
+                        }
 
-                    msgs.add(this.responseHeader.map {
-                        return@map "\t${it.key}:${it.value}"
-                    }.joinToString(line_break))
+                        msgs.add("---")
 
+                        msgs.add(this.responseHeader.map {
+                            return@map "\t${it.key}:${it.value}"
+                        }.joinToString(line_break))
 
-                    //小于10K
-                    if (respIsText && this.responseResult.any()) {
-                        msgs.add(this.responseResult.take(k10Size).toByteArray().toString(Charset.forName(this.responseCharset.AsString("utf-8"))))
+                        //小于10K
+                        if (respIsText && this.responseResult.any()) {
+                            msgs.add(this.responseResult.take(k10Size).toByteArray().toString(Charset.forName(this.responseCharset.AsString("utf-8"))))
+                        }
                     }
 
                     var content = msgs.joinToString(line_break);
