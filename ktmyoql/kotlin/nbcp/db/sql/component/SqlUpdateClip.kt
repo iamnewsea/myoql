@@ -20,6 +20,8 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var main
 
     val whereDatas = WhereData()
     val sets = linkedMapOf<SqlColumnName, Any?>()
+    //默认是-1
+    private var take = -1;
     private val joins = mutableListOf<JoinTableData<*, *>>()
 
     fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> join(joinTable: M2, onWhere: (M, M2) -> WhereData): SqlUpdateClip<M, T> {
@@ -42,6 +44,14 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var main
         var p = set(this.mainEntity)
         this.sets.remove(p)
         return this
+    }
+
+    /**
+     * update table set column=value where id=1 limit n;
+     */
+    fun limit(take:Int):SqlUpdateClip<M, T>{
+        this.take = take;
+        return this;
     }
 
 //    fun set(entity: T, whereKey: ((M) -> SqlColumnNames)): SqlUpdateClip<M, T> {
@@ -139,6 +149,10 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var main
         ret.expression += " where "
         ret += whereDatas.toSingleData();
 
+
+        if( this.take >=0){
+            ret.expression += " limit ${take}"
+        }
         return ret
     }
 

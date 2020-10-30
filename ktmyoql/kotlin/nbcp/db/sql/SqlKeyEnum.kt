@@ -24,3 +24,8 @@ enum class SqlKeyEnum {
     Set,
     Other,
 }
+
+enum class SqlLockType{
+    ShareMode,
+    Update
+}

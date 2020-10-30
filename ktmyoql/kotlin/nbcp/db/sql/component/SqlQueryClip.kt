@@ -21,7 +21,9 @@ class SqlQueryClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity
     private val having = WhereData()
     private var subSelect: SqlQueryClip<*, *>? = null //<out SqlBaseTable<out IBaseDbEntity>, out IBaseDbEntity>? = null
     private var subSelectAlias: String = ""
-
+    private var lockType: SqlLockType? = null;
+    // <0: 不出现子句， 0:nowait子句, >0: wait子句
+    private var lockSeconds = 0;
 
     fun wrapSelect(alias: String): SqlQueryClip<M, T> {
         var ret = SqlQueryClip(this.mainEntity)
@@ -82,6 +84,12 @@ class SqlQueryClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity
         return this;
     }
 
+    fun withLock(lockType:SqlLockType, lockSeconds:Int = -1):SqlQueryClip<M, T>{
+        this.lockType = lockType;
+        this.lockSeconds = lockSeconds;
+        return this;
+    }
+
     private fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> getJoinOnWhere(joinTable: M2): WhereData {
 
         var fks = this.mainEntity.getFks().filter { it.refTable == joinTable.tableName }
@@ -133,6 +141,9 @@ class SqlQueryClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity
         return this
     }
 
+    /**
+     * https://mariadb.com/kb/en/select/
+     */
     override fun toSql(): SingleSqlData {
         var ret = SingleSqlData();
 
@@ -213,6 +224,11 @@ class SqlQueryClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity
             }
         }
 
+        if (having.hasValue) {
+            ret.expression += " having "
+            ret += having.toSingleData()
+        }
+
         if (orders.any()) {
             ret.expression += " order by"
             orders.forEachIndexed { index, order ->
@@ -223,11 +239,6 @@ class SqlQueryClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity
             }
         }
 
-        if (having.hasValue) {
-            ret.expression += " having "
-            ret += having.toSingleData()
-        }
-
         if (skip > 0 && take >= 0) {
             ret.expression += " limit ${skip},${take}"
         } else if (take >= 0) {
@@ -236,6 +247,24 @@ class SqlQueryClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity
             ret.expression += " limit  ${skip},99999"
         }
 
+        if( this.lockType != null){
+            if( this.lockType == SqlLockType.ShareMode){
+                ret.expression += " lock in share mode"
+            }
+            else if( this.lockType == SqlLockType.Update){
+                ret.expression += " for update"
+            }
+            else{
+                throw RuntimeException("不识别的SqlLockType:${this.lockType}")
+            }
+
+            if( this.lockSeconds == 0){
+                ret.expression += " nowait"
+            }
+            else if( this.lockSeconds >0){
+                ret.expression += " wait ${this.lockSeconds}"
+            }
+        }
 
         return ret
     }

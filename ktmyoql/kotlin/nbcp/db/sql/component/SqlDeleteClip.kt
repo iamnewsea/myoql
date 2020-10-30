@@ -15,10 +15,20 @@ class SqlDeleteClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
+    private var take =-1;
+
     val whereDatas = WhereData()
 
     fun where(whereData: (M) -> WhereData): SqlDeleteClip<M, T> {
         this.whereDatas.and(whereData(this.mainEntity));
+        return this;
+    }
+
+    /**
+     * delete from table where id=1 limit n;
+     */
+    fun limit(take:Int):SqlDeleteClip<M, T>{
+        this.take = take;
         return this;
     }
 
@@ -31,7 +41,12 @@ class SqlDeleteClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
         var exp = "delete from ${mainEntity.quoteTableName} where ${where.expression}";
         var values = where.values
 
+        if( this.take >=0){
+            exp += " limit ${take}"
+        }
+
         var execute = SingleSqlData(exp, values)
+
 
 //        if( logger.isInfoEnabled){
 //            logger.info(execute.expression + line_break + "\t"+ execute.values.ToJson())
