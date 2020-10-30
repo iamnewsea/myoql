@@ -22,6 +22,7 @@ object MyUtil {
 //    val OneDayMilliseconds: Int = 86400000;
     val OneDaySeconds: Int = 86400;
     val SystemTimeZoneOffsetTotalSeconds = ZoneId.systemDefault().rules.getStandardOffset(Date().toInstant()).totalSeconds  //系统时区相差的秒数
+
     @JvmStatic
     private val random = Random();
 
@@ -262,7 +263,7 @@ object MyUtil {
                 var version = jarFile_lines.first { it.startsWith("version=") }.split("=").last()
                 var artifactId = jarFile_lines.first { it.startsWith("artifactId=") }.split("=").last()
 
-                return File(targetPath.FullName + artifactId + "-" + version + ".jar")
+                return File(targetPath.FullName + "/" + artifactId + "-" + version + ".jar")
             } else {
                 throw RuntimeException("找不到 maven-archiver , 先打包再运行!")
             }
