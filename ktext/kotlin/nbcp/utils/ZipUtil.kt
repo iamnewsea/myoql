@@ -86,4 +86,19 @@ object ZipUtil {
         zFile.extractAll(destDir.FullName)
         return "";
     }
+
+    /**
+     * 获取zipFile的内容
+     */
+    fun listFile(zipFile: File, passwd: String): List<FileHeader> {
+        val zFile = ZipFile(zipFile)
+        zFile.charset = utf8
+        if (!zFile.isValidZipFile()) {
+            return listOf()
+        }
+        if (zFile.isEncrypted()) {
+            zFile.setPassword(passwd.toCharArray())
+        }
+        return zFile.fileHeaders;
+    }
 }
