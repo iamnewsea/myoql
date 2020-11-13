@@ -62,7 +62,7 @@ class LocalTimeJsonSerializer : JsonSerializer<LocalTime>() {
     override fun serialize(value: LocalTime?, generator: JsonGenerator, serializers: SerializerProvider) {
         if (value == null) {
             generator.writeNull()
-        } else {
+        }  else {
             generator.writeString(value.Format())
         }
     }
@@ -147,12 +147,7 @@ class LocalTimeJsonDeserializer : JsonDeserializer<LocalTime>() {
             return null;
         }
 
-        if (json.valueAsString.contains(".")) {
-            return LocalTime.parse(json.valueAsString, DateTimeFormatter.ofPattern("HH:mm:ss.SSS"))
-        }
-
-
-        return LocalTime.parse(json.valueAsString, DateTimeFormatter.ofPattern("HH:mm:ss"))
+        return json.valueAsString.AsLocalTime();
     }
 }
 

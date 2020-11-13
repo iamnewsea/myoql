@@ -16,9 +16,9 @@ fun Any?.AsLocalDate(): LocalDate? {
 }
 
 
-fun Any?.AsLocalTime(defaultVale: LocalTime = LocalTime.MIN): LocalTime {
+fun Any?.AsLocalTime(): LocalTime? {
     if (this == null) {
-        return defaultVale;
+        return null;
     }
 
     if (this is LocalTime) {
@@ -26,7 +26,7 @@ fun Any?.AsLocalTime(defaultVale: LocalTime = LocalTime.MIN): LocalTime {
     }
 
     if (this is LocalDate) {
-        return defaultVale;
+        return LocalTime.MIN;
     }
 
     if (this is LocalDateTime) {
@@ -47,7 +47,7 @@ fun Any?.AsLocalTime(defaultVale: LocalTime = LocalTime.MIN): LocalTime {
     }
 
     if (strValue.length < 5 && !strValue.any { it == ':' }) {
-        return defaultVale;
+        return null;
     }
 
     return strValue.ConvertToLocalTime()
@@ -218,7 +218,7 @@ fun String.ConvertToLocalTime(timeFormatter: DateTimeFormatter? = null): LocalTi
     if (timeFormatter != null) {
         return LocalTime.parse(timeString, timeFormatter);
     }
-
+    timeString = timeString.split(' ').last();
     var nanos = 0L;
     var dotIndex = timeString.indexOf('.');
     if (dotIndex >= 0) {

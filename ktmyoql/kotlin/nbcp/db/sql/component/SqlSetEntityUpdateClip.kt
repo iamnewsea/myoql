@@ -40,6 +40,9 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var 
         return this;
     }
 
+    /**
+     * 不应该依赖客户端，不应该使用这个方法
+     */
     fun withRequestParams(keys: Set<String>): SqlSetEntityUpdateClip<M, T> {
         var columns = this.mainEntity.getColumns();
         keys.forEach { key ->
@@ -143,6 +146,7 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var 
                 .forEach { key ->
                     var value = MyUtil.getPrivatePropertyValue(entity, key.name)
                     if (value == null) {
+                        setValues.put(key,null);
                         return@forEach
                     }
 

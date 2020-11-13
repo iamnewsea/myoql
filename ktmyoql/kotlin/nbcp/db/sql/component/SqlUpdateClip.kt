@@ -34,9 +34,14 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var main
         return this;
     }
 
-    fun set(set: (M) -> Pair<SqlColumnName, Serializable>): SqlUpdateClip<M, T> {
+    fun set(set: (M) -> Pair<SqlColumnName, Serializable?>): SqlUpdateClip<M, T> {
         var p = set(this.mainEntity)
-        this.sets.put(p.first, proc_value(p.second))
+        if(p.second == null){
+            this.sets.put(p.first,null);
+        }
+        else {
+            this.sets.put(p.first, proc_value(p.second!!))
+        }
         return this
     }
 

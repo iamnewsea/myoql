@@ -43,6 +43,9 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out IMongoDocument>>(
         return this;
     }
 
+    /**
+     * 不应该依赖客户端，不应该使用这个方法
+     */
     fun withRequestParams(keys: Set<String>): MongoSetEntityUpdateClip<M> {
         keys.forEach { key ->
             withColumn { MongoColumnName(key) }

@@ -146,13 +146,28 @@ fun PreparedStatement.setValue(index: Int, param: SqlParameterData) {
         this.setByte(index, param.value.AsInt().toByte())
         return
     } else if (sqlType == java.sql.Types.TIMESTAMP) {
-        this.setTimestamp(index, java.sql.Timestamp.valueOf(param.value.AsLocalDateTime()))
+        var v = param.value.AsLocalDateTime()
+        if (v == null) {
+            this.setTimestamp(index, null);
+        } else {
+            this.setTimestamp(index, java.sql.Timestamp.valueOf(v))
+        }
         return
     } else if (sqlType == java.sql.Types.DATE) {
-        this.setDate(index, java.sql.Date(param.value.AsDate()?.time ?: 0))
+        var v = param.value.AsDate()
+        if (v == null) {
+            this.setDate(index, null);
+        } else {
+            this.setDate(index, java.sql.Date(v.time))
+        }
         return
     } else if (sqlType == java.sql.Types.TIME) {
-        this.setTime(index, java.sql.Time(param.value.AsLocalTime().toSecondOfDay() * 1000L))
+        var v = param.value.AsLocalTime();
+        if (v == null) {
+            this.setTime(index, null);
+        } else {
+            this.setTime(index, java.sql.Time(v.toSecondOfDay() * 1000L))
+        }
         return
     } else if (sqlType == java.sql.Types.FLOAT) {
         this.setFloat(index, param.value.AsFloat())
