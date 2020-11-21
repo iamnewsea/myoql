@@ -159,6 +159,8 @@ open class MyAllFilter : Filter, InitializingBean {
 
                 setLang(myRequest);
 
+                RequestContextHolder.setRequestAttributes(ServletRequestAttributes(request, response))
+                beforeRequest(myRequest);
                 try {
                     chain?.doFilter(myRequest, myResponse);
                 } catch (e: Exception) {
