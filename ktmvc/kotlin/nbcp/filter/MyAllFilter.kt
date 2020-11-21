@@ -190,6 +190,7 @@ open class MyAllFilter : Filter, InitializingBean {
                 }
 
                 if (file != null) {
+                    file = htmlPath + file;
                     response.status = 200;
 
                     var extention = FileExtentionInfo(file)
@@ -201,6 +202,12 @@ open class MyAllFilter : Filter, InitializingBean {
                     var resourceResolver = PathMatchingResourcePatternResolver()
                     var resource = resourceResolver.getResource(file)
                     resource.inputStream.copyTo(response.outputStream)
+
+                    logger.Info {
+                        var msgs = mutableListOf<String>()
+                        msgs.add("[[----> ${request.LoginUser.name} ${request.ClientIp} ${request.method} ${request.fullUrl} <----]]")
+                        return@Info msgs.joinToString(line_break)
+                    }
                     return;
                 }
 
