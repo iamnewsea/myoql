@@ -400,12 +400,12 @@ object MyUtil {
     /**
      * 列出下一级的资源文件
      * 可以从 SpringApplication.classLoader.getResource("") 中获取,也可以从 Thread.currentThread().contextClassLoader.getResource("") 中获取
-     * @param filter: 参数为资源路径，统一格式：分隔符为"/",开头不包括"/".
+     * @param fileFilter: 参数为资源路径，统一格式：分隔符为"/",开头不包括"/"，如果结尾为"/"表示目录
      */
-    fun listResourceFiles(filter: ((String) -> Boolean)? = null): List<String> {
+    fun listResourceFiles(fileFilter: ((String) -> Boolean)? = null): Set<String> {
         var classLoader = Thread.currentThread().contextClassLoader
         var url = classLoader.getResource("/") ?: classLoader.getResource("")
-        var list = mutableListOf<String>()
+        var list = mutableSetOf<String>()
 
         //jar方式使用 /，空字符串都可以。 调试时只能使用 字符串。
         if (url.protocol == "jar") {
@@ -414,31 +414,34 @@ object MyUtil {
             while (ents.hasMoreElements()) {
                 var item = ents.nextElement();
                 var name = item.name;
-                if (filter != null && filter(name) == false) {
+
+                if (fileFilter != null && fileFilter(name) == false) {
                     continue;
                 }
+
 
                 list.add(name);
             }
         } else if (url.protocol == "file") {
             var path = File(url.path).FullName + File.separator
 
-            list = list_files_recursion(File(path), path, filter)
+            list = list_files_recursion(File(path), path, fileFilter)
         }
 
         return list;
     }
 
-    private fun list_files_recursion(path: File, base: String, filter: ((String) -> Boolean)? = null): MutableList<String> {
-        var list = mutableListOf<String>()
+    private fun list_files_recursion(path: File, base: String, fileFilter: ((String) -> Boolean)? = null): MutableSet<String> {
+        var list = mutableSetOf<String>()
         path.listFiles { it ->
+            var relativeName = it.FullName.substring(base.length).replace("\\", "/");
             if (it.isFile) {
-                var relativeName = it.FullName.substring(base.length).replace("\\", "/");
-                if (filter?.invoke(relativeName) ?: true) {
+                if (fileFilter?.invoke(relativeName) ?: true) {
                     list.add(relativeName);
                 }
             } else {
-                list.addAll(list_files_recursion(it, base, filter))
+                fileFilter?.invoke(relativeName)
+                list.addAll(list_files_recursion(it, base, fileFilter))
             }
             return@listFiles true;
         }
