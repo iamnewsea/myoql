@@ -214,8 +214,13 @@ val HttpServletRequest.ClientIp: String
 //        request_cache = value
 //    }
 
+/**
+ * token前缀
+ */
+val tokenPrefix = "sf";
+
 fun generateToken(): String {
-    return "sf." + CodeUtil.getCode();
+    return tokenPrefix + CodeUtil.getCode();
 }
 
 ///**
@@ -331,17 +336,28 @@ val HttpServletRequest.tokenValue: String
         if (token.isNullOrEmpty()) {
             token = generateToken();
         } else {
-            if (token.startsWith("sf.")) {
-                var now = LocalDateTime.now();
-                var time = CodeUtil.getDateTimeFromCode(token.substring(3));
-                var diffSeconds = (now - time).totalSeconds
-                if (diffSeconds > config.tokenKeyExpireSeconds) {
-                    db.rer_base.userSystem.deleteToken(token);
-                    token = generateToken();
-                } else if (diffSeconds > config.tokenKeyRenewalSeconds) {
-                    var newToken = generateToken();
-                    webUserToken.changeToken(token,newToken);
-                    token = newToken;
+            if (token.startsWith(tokenPrefix)) {
+                var tokenTime: LocalDateTime? = null;
+                try {
+                    tokenTime = CodeUtil.getDateTimeFromCode(token.substring(tokenPrefix.length));
+                } catch (e: Exception) {
+                    logger.error("token格式非法:" + e.message);
+                }
+
+                if (tokenTime != null) {
+                    var now = LocalDateTime.now();
+
+                    var diffSeconds = (now - tokenTime).totalSeconds
+                    if (diffSeconds > config.tokenKeyExpireSeconds) {
+                        db.rer_base.userSystem.deleteToken(token);
+                        token = generateToken();
+                    } else if (diffSeconds > config.tokenKeyRenewalSeconds) {
+                        var newToken = generateToken();
+                        webUserToken.changeToken(token, newToken);
+                        token = newToken;
+                    }
+                } else {
+                    token = generateToken()
                 }
             }
         }
