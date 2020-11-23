@@ -115,6 +115,8 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
  * 字符串转为 LocalDateTime
  */
 fun String.ConvertToLocalDateTime(dateTimeFormatter: DateTimeFormatter? = null): LocalDateTime? {
+    //关于 160空格：https://blog.csdn.net/lewky_liu/article/details/79353151
+    //本函数不做处理。
     var strValue = this.trim();
 
     if (dateTimeFormatter != null) {
