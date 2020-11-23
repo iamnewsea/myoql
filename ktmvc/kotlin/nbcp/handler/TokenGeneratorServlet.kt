@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServlet
  * Created by udi on 20-8-27.
  */
 @OpenAction
-@MyLogLevel(Level.ERROR_INT)
+@MyLogLevel(Level.WARN_INT)
 @WebServlet(urlPatterns = arrayOf("/open/token"))
 open class TokenGeneratorServlet : HttpServlet() {
     /**
