@@ -18,6 +18,7 @@ enum class RedisRenewalTypeEnum {
  * 命令参考
  * http://doc.redisfans.com/
  * http://redisdoc.com/index.html
+ * @param group: 系统推荐所有的Redis键，都要分组，带前缀！
  */
 abstract class BaseRedisProxy(val group: String, val defaultCacheSeconds: Int) {
     companion object {
@@ -94,10 +95,10 @@ abstract class BaseRedisProxy(val group: String, val defaultCacheSeconds: Int) {
         return list;
     }
 
-    /**
-     * 对 group 键值续期
-     */
-    fun renewal(cacheSeconds: Int = defaultCacheSeconds) = renewalKey("", cacheSeconds);
+//    /**
+//     * 对 group 键值续期
+//     */
+//    fun renewal(cacheSeconds: Int = defaultCacheSeconds) = renewalKey("", cacheSeconds);
 
     /**
      * 使用 RedisTask.setExpireKey 设置续期时间
@@ -113,10 +114,10 @@ abstract class BaseRedisProxy(val group: String, val defaultCacheSeconds: Int) {
         RedisTask.setRenewalKey(getFullKey(key), cs);
     }
 
-    /**
-     * 删除 group 键值。
-     */
-    fun delete(): Long = deleteKeys("");
+//    /**
+//     * 删除 group 键值。
+//     */
+//    fun delete(): Long = deleteKeys("");
 
 
     /***
@@ -137,8 +138,8 @@ abstract class BaseRedisProxy(val group: String, val defaultCacheSeconds: Int) {
      */
     fun existsKey(key: String): Boolean = anyTypeCommand.hasKey(getFullKey(key));
 
-    /**
-     * 判断是否存在 group key
-     */
-    fun exists(): Boolean = existsKey("")
+//    /**
+//     * 判断是否存在 group key
+//     */
+//    fun exists(): Boolean = existsKey("")
 }

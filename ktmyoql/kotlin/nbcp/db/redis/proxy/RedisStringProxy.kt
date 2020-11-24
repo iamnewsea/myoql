@@ -14,8 +14,8 @@ import java.time.Duration
  */
 class RedisStringProxy(
         group: String,
-        defaultCacheSeconds: Int = 0 ) :
-        BaseRedisProxy( group, defaultCacheSeconds) {
+        defaultCacheSeconds: Int = 0) :
+        BaseRedisProxy(group, defaultCacheSeconds) {
 
 
     fun get(key: String = ""): String {
@@ -25,13 +25,15 @@ class RedisStringProxy(
         return value
     }
 
-    fun set(key: String, value: String, cacheSecond: Int = defaultCacheSeconds)  {
+//    fun setKey(value: String, cacheSecond: Int = defaultCacheSeconds) = setKey("", value, cacheSecond);
+
+    fun set(key: String, value: String, cacheSecond: Int = defaultCacheSeconds) {
         var cacheKey = getFullKey(key)
 
         if (cacheSecond <= 0) {
-              stringCommand.opsForValue().set(cacheKey, value)
+            stringCommand.opsForValue().set(cacheKey, value)
         } else {
-             stringCommand.opsForValue().set(cacheKey, value, Duration.ofSeconds(cacheSecond.AsLong()))
+            stringCommand.opsForValue().set(cacheKey, value, Duration.ofSeconds(cacheSecond.AsLong()))
         }
     }
 
@@ -45,8 +47,8 @@ class RedisStringProxy(
 
 class RedisNumberProxy(
         group: String,
-        defaultCacheSeconds: Int = 0 ) :
-        BaseRedisProxy( group, defaultCacheSeconds ) {
+        defaultCacheSeconds: Int = 0) :
+        BaseRedisProxy(group, defaultCacheSeconds) {
 
     fun get(key: String = ""): Long {
         var cacheKey = getFullKey(key)
@@ -54,29 +56,31 @@ class RedisNumberProxy(
         return value.AsLong()
     }
 
-    fun set(key: String, value: Long, cacheSecond: Int = defaultCacheSeconds)  {
+//    fun set(value: Long, cacheSecond: Int = defaultCacheSeconds) = setKey("",value,cacheSecond)
+
+    fun set(key: String, value: Long, cacheSecond: Int = defaultCacheSeconds) {
         var cacheKey = getFullKey(key)
         if (cacheSecond <= 0) {
             stringCommand.opsForValue().set(cacheKey, value.toString())
         } else {
-            stringCommand.opsForValue().set (cacheKey, value.toString(), Duration.ofSeconds( cacheSecond.AsLong()))
+            stringCommand.opsForValue().set(cacheKey, value.toString(), Duration.ofSeconds(cacheSecond.AsLong()))
         }
     }
 
 
-    fun increment(key: String  ,value:Int = 1): Long {
+    fun increment(key: String, value: Int = 1): Long {
         var cacheKey = getFullKey(key)
         if (cacheKey.isEmpty()) return -1L
 
-        var ret = stringCommand.opsForValue().increment(cacheKey,value.AsLong())
+        var ret = stringCommand.opsForValue().increment(cacheKey, value.AsLong())
         return ret;
     }
 
-    fun decrement(key: String  ,value:Int = 1): Long {
+    fun decrement(key: String, value: Int = 1): Long {
         var cacheKey = getFullKey(key)
         if (cacheKey.isEmpty()) return -1L
 
-        var ret = stringCommand.opsForValue().decrement(cacheKey,value.AsLong())
+        var ret = stringCommand.opsForValue().decrement(cacheKey, value.AsLong())
         return ret;
     }
 }
