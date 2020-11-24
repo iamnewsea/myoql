@@ -249,18 +249,15 @@ open class UploadService {
     }
 
     private fun fillVideoWidthHeight(annexInfo: SysAnnex, vFile: File) {
-        var fFmpegFrameGrabber = FFmpegFrameGrabber(vFile)
-        fFmpegFrameGrabber.start();
-
-        try {
+        FFmpegFrameGrabber(vFile).use { fFmpegFrameGrabber ->
+            fFmpegFrameGrabber.start();
             val ftp = fFmpegFrameGrabber.lengthInFrames
 
             annexInfo.imgHeight = fFmpegFrameGrabber.imageHeight;
             annexInfo.imgWidth = fFmpegFrameGrabber.imageWidth;
             annexInfo.videoTime = (ftp / fFmpegFrameGrabber.frameRate / 60).AsInt();
-        } finally {
+
             fFmpegFrameGrabber.stop()
-            fFmpegFrameGrabber.close()
         }
     }
 

@@ -337,8 +337,7 @@ val File.FullName: String
 </String> */
 fun File.ReadTailLines(action: ((String, Int) -> Boolean)): Int {
     if (this.isFile == false) return -1;
-    var reader = BufferTailReader(this)
-    try {
+    BufferTailReader(this).use { reader ->
         while (true) {
             var line = reader.readLine()
             if (line == null) {
@@ -350,32 +349,29 @@ fun File.ReadTailLines(action: ((String, Int) -> Boolean)): Int {
             }
         }
         return reader.currentLineIndex;
-    } finally {
-        reader.close()
     }
+
 }
 
 
 fun File.ReadHeadLines(action: ((String, Int) -> Boolean)): Int {
     if (this.isFile == false) return -1;
 
-    var reader = BufferedReader(InputStreamReader(FileInputStream(this), utf8))
+    BufferedReader(InputStreamReader(FileInputStream(this), utf8)).use { reader ->
+        var index = -1;
+        while (true) {
+            index++;
+            var line = reader.readLine()
+            if (line == null) {
+                return index;
+            }
 
-    var index = -1;
-    while (true) {
-        index++;
-        var line = reader.readLine()
-        if (line == null) {
-            return index;
+            if (action(line, index) == false) {
+                return index;
+            }
         }
-
-        if (action(line, index) == false) {
-            return index;
-        }
+        return index;
     }
-
-    reader.close();
-    return index;
 }
 
 /**
@@ -618,19 +614,19 @@ fun InputStream.GetHtmlString(): String {
 fun <T : Serializable> T.CloneObject(): T {
     var obj = this;
     //写入字节流
-    var out = ByteArrayOutputStream();
-    var obs = ObjectOutputStream(out);
-    obs.writeObject(obj);
-    obs.close();
+    var out = ByteArrayOutputStream()
+    ObjectOutputStream(out).use { obs ->
+        obs.writeObject(obj);
+    }
+
 
     //分配内存，写入原始对象，生成新对象
     var ios = ByteArrayInputStream(out.toByteArray());
-    var ois = ObjectInputStream(ios);
-
-    //返回生成的新对象
-    var cloneObj = ois.readObject() as T;
-    ois.close();
-    return cloneObj;
+    ObjectInputStream(ios).use { ois ->
+        //返回生成的新对象
+        var cloneObj = ois.readObject() as T;
+        return cloneObj;
+    }
 }
 
 //

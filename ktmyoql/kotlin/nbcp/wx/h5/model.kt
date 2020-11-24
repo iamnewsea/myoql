@@ -47,13 +47,12 @@ class JsapiTicketData : Serializable {
     }
 
     private fun byteToHex(hash: ByteArray): String {
-        val formatter = Formatter()
-        for (b in hash) {
-            formatter.format("%02x", b)
+        Formatter().use { formatter ->
+            for (b in hash) {
+                formatter.format("%02x", b)
+            }
+            return formatter.toString()
         }
-        val result = formatter.toString()
-        formatter.close()
-        return result
     }
 }
 

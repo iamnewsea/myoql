@@ -65,25 +65,19 @@ class ExcelComponent() {
         get() {
             var ret = mutableListOf<String>()
 
-            val file = FileMagic.prepareToCheckMagic(FileInputStream(fileName))
-            try {
+            FileMagic.prepareToCheckMagic(FileInputStream(fileName)).use { file ->
                 val fm = FileMagic.valueOf(file)
                 when (fm) {
                     FileMagic.OOXML -> {
-                        var book = WorkbookFactory.create(FileInputStream(fileName));
-                        try {
+                        WorkbookFactory.create(FileInputStream(fileName)).use { book ->
                             for (i in 0..(book.numberOfSheets - 1)) {
                                 ret.add(book.getSheetAt(i).sheetName)
                             }
-                        } finally {
-                            book.close()
                         }
                     }
 
                     FileMagic.OLE2 -> {
-                        var xlsxPackage = OPCPackage.open(fileName, PackageAccess.READ)
-
-                        try {
+                        OPCPackage.open(fileName, PackageAccess.READ).use { xlsxPackage ->
                             var xssfReader = XSSFReader(xlsxPackage)
                             var iter = xssfReader.sheetsData as XSSFReader.SheetIterator
                             while (iter.hasNext()) {
@@ -91,14 +85,9 @@ class ExcelComponent() {
                                     ret.add(iter.sheetName);
                                 }
                             }
-                        } finally {
-                            xlsxPackage.close();
                         }
                     }
                 }
-
-            } finally {
-                file.close()
             }
 
             return ret.toTypedArray()
@@ -137,13 +126,13 @@ class ExcelComponent() {
     /**
      * 读取数据
      */
-    fun <T:Any> getDataTable(clazz: Class<T>,
-                         filter: ((JsonMap, Map<Int, String>) -> Boolean)? = null): DataTable<T> {
+    fun <T : Any> getDataTable(clazz: Class<T>,
+                               filter: ((JsonMap, Map<Int, String>) -> Boolean)? = null): DataTable<T> {
         var dt = DataTable<T>(clazz)
 
         var pk_values = mutableListOf<String>()
 
-        readData { row,oriData ->
+        readData { row, oriData ->
             //判断该行是否是主键空值.
             //主键全空.
             if (pks.any()) {
@@ -157,7 +146,7 @@ class ExcelComponent() {
             }
 
             if (filter != null) {
-                if (filter(row,oriData) == false) {
+                if (filter(row, oriData) == false) {
                     return@readData false;
                 }
             }
@@ -187,8 +176,8 @@ class ExcelComponent() {
             }
         }
 
-        val file = FileMagic.prepareToCheckMagic(FileInputStream(fileName))
-        try {
+        FileMagic.prepareToCheckMagic(FileInputStream(fileName)).use { file ->
+
             val fm = FileMagic.valueOf(file)
             var lined = 0;
             var filter2: (JsonMap, Map<Int, String>) -> Boolean = f2@{ row, oriData ->
@@ -217,9 +206,6 @@ class ExcelComponent() {
                 FileMagic.OOXML -> readOpenXmlExcelData(filter2);
                 FileMagic.OLE2 -> readOle2ExcelData(filter2)
             }
-
-        } finally {
-            file.close()
         }
     }
 
@@ -228,87 +214,84 @@ class ExcelComponent() {
      * @param getRowData: 返回 null 停止。
      */
     fun writeNewData(offset_column: Int = 0, getRowData: (Int) -> JsonMap?): ByteArray {
-        val book = SXSSFWorkbook(1000)
+        SXSSFWorkbook(1000).use { book ->
 
-        //生成一个sheet1
-        val sheet = book.createSheet(sheetName);
-        var header_row = sheet.createRow(offset_row);
+            //生成一个sheet1
+            val sheet = book.createSheet(sheetName);
+            var header_row = sheet.createRow(offset_row);
 
-        columns.forEachIndexed { index, columnName ->
-            val cell = header_row.createCell(index + offset_column)
-            cell.setCellValue(columnName);
-        }
-
-        var dataRowIndex = -1;
-        while (true) {
-            dataRowIndex++;
-
-            var dbRowData = getRowData(dataRowIndex)
-            if (dbRowData == null) {
-                break;
+            columns.forEachIndexed { index, columnName ->
+                val cell = header_row.createCell(index + offset_column)
+                cell.setCellValue(columnName);
             }
 
-            var excelRowIndex = dataRowIndex + 1 + offset_row
-            var excelRow = sheet.createRow(excelRowIndex)
-            if (dbRowData.any() == false) {
-                continue;
-            }
+            var dataRowIndex = -1;
+            while (true) {
+                dataRowIndex++;
 
-            for (columnIndex in offset_column..(offset_column + columns.size - 1)) {
-                var columnName = columns.get(columnIndex)
+                var dbRowData = getRowData(dataRowIndex)
+                if (dbRowData == null) {
+                    break;
+                }
 
-                var dbValue = dbRowData.get(columnName)
-                var cell = excelRow.createCell(columnIndex)
+                var excelRowIndex = dataRowIndex + 1 + offset_row
+                var excelRow = sheet.createRow(excelRowIndex)
+                if (dbRowData.any() == false) {
+                    continue;
+                }
+
+                for (columnIndex in offset_column..(offset_column + columns.size - 1)) {
+                    var columnName = columns.get(columnIndex)
+
+                    var dbValue = dbRowData.get(columnName)
+                    var cell = excelRow.createCell(columnIndex)
 
 
-                if (dbValue == null) {
-                    cell.cellType = CellType.BLANK
-                } else if (dbValue is String) {
-                    cell.setCellValue(dbValue.AsString())
-                } else if (dbValue is Number) {
-                    cell.setCellValue(dbValue.AsDouble())
-                } else if (dbValue is Boolean) {
-                    cell.setCellValue(dbValue.AsBoolean())
-                } else if (dbValue is LocalDateTime ||
-                        dbValue is LocalDate ||
-                        dbValue is Date) {
-                    cell.setCellValue(dbValue.AsDate())
-                } else {
-                    cell.setCellValue(dbValue.AsString())
+                    if (dbValue == null) {
+                        cell.cellType = CellType.BLANK
+                    } else if (dbValue is String) {
+                        cell.setCellValue(dbValue.AsString())
+                    } else if (dbValue is Number) {
+                        cell.setCellValue(dbValue.AsDouble())
+                    } else if (dbValue is Boolean) {
+                        cell.setCellValue(dbValue.AsBoolean())
+                    } else if (dbValue is LocalDateTime ||
+                            dbValue is LocalDate ||
+                            dbValue is Date) {
+                        cell.setCellValue(dbValue.AsDate())
+                    } else {
+                        cell.setCellValue(dbValue.AsString())
+                    }
                 }
             }
+
+
+            var outputStream = ByteArrayOutputStream();
+            book.write(outputStream)
+            return outputStream.toByteArray()
         }
-
-
-        var outputStream = ByteArrayOutputStream();
-        book.write(outputStream)
-        book.close()
-        return outputStream.toByteArray()
     }
 
 
     private fun readOle2ExcelData(filter: (JsonMap, Map<Int, String>) -> Boolean
     ) {
-        var book = WorkbookFactory.create(FileInputStream(fileName))
-        var sheet: Sheet;
+        WorkbookFactory.create(FileInputStream(fileName)).use { book ->
 
-        try {
-            if (book.numberOfSheets == 1) {
-                sheet = book.getSheetAt(0)
-            } else {
-                sheet = book.getSheet(sheetName);
+            var sheet: Sheet;
+
+            try {
+                if (book.numberOfSheets == 1) {
+                    sheet = book.getSheetAt(0)
+                } else {
+                    sheet = book.getSheet(sheetName);
+                }
+            } catch (e: java.lang.Exception) {
+                throw java.lang.Exception("打不开Excel文件的Sheet ${sheetName} ！")
             }
-        } catch (e: java.lang.Exception) {
-            book.close();
-            throw java.lang.Exception("打不开Excel文件的 ${sheetName} ！")
-        }
 
-        try {
+
             //公式执行器
             var evaluator = book.creationHelper.createFormulaEvaluator()
-
-
-
 
             for (rowIndex in (offset_row + 1)..sheet.lastRowNum) {
                 var row = sheet.getRow(rowIndex)
@@ -372,17 +355,13 @@ class ExcelComponent() {
                     return;
                 }
             }
-
-        } finally {
-            book.close()
         }
     }
 
 
     private fun readOpenXmlExcelData(filter: (JsonMap, Map<Int, String>) -> Boolean) {
-        var xlsxPackage = OPCPackage.open(fileName, PackageAccess.READ)
+        OPCPackage.open(fileName, PackageAccess.READ).use { xlsxPackage ->
 
-        try {
             var xssfReader = XSSFReader(xlsxPackage)
             var iter: XSSFReader.SheetIterator
 
@@ -421,9 +400,7 @@ class ExcelComponent() {
                 }
             }
 
-            throw java.lang.Exception("找不到 Excel文件的 ${sheetName} ！")
-        } finally {
-            xlsxPackage.close();
+            throw java.lang.Exception("找不到Excel文件的Sheet ${sheetName} ！")
         }
     }
 

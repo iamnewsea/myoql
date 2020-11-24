@@ -82,32 +82,22 @@ object Md5Util {
     }
 
     fun getFileMD5(file: File): String {
-        var ret = "";
-        var fileStream: FileInputStream? = null;
-        try {
-            fileStream = FileInputStream(file);
-            ret = DigestUtils.md5Hex(fileStream)
-        } finally {
-            fileStream?.close();
-        }
-        return ret;
+        FileInputStream(file).use { fileStream -> return DigestUtils.md5Hex(fileStream) }
     }
 
     /**
      * 计算文件的 md5 + chksum ，返回 base64格式
      */
     fun getFileBase64MD5(file: File): String {
-        var fileStream: FileInputStream? = null;
+
         var result = mutableListOf<Byte>()
         var checksum = 0;
-        try {
-            fileStream = FileInputStream(file);
+
+        FileInputStream(file).use { fileStream ->
             result = DigestUtils.md5(fileStream).toMutableList();
 
             //再加两个 byte 做 checksum  % 65536  , Int16=Short
             checksum = getChksum(fileStream).toInt();
-        } finally {
-            fileStream?.close()
         }
 
         result.add((checksum ushr 8).toByte())

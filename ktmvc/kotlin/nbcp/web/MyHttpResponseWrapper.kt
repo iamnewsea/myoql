@@ -1,10 +1,7 @@
 package nbcp.web
 
 
-import java.io.ByteArrayOutputStream
-import java.io.IOException
-import java.io.OutputStream
-import java.io.PrintWriter
+import java.io.*
 import java.util.*
 import javax.servlet.ServletOutputStream
 import javax.servlet.WriteListener
@@ -18,7 +15,7 @@ import javax.servlet.http.HttpServletResponseWrapper
 
 class MyHttpResponseWrapper(
         private val response: HttpServletResponse
-) : HttpServletResponseWrapper(response) {
+) : HttpServletResponseWrapper(response), Closeable {
     private val out: ByteServletOutputStream
     private val writer: PrintWriter
 
@@ -76,16 +73,20 @@ class MyHttpResponseWrapper(
 
             val response = getResponse()
             response.setContentLength(value.size)
-            val sos = response.outputStream
-            sos.write(value)
-            sos.flush()
-            sos.close()
+            response.outputStream.use { sos ->
+                sos.write(value)
+                sos.flush()
+            }
         }
+
+    override fun close() {
+        this.writer.close()
+        this.out.close()
+    }
 
     @Throws(Throwable::class)
     fun finalize() {
-        this.writer.close()
-        this.out.close()
+        this.close()
     }
 
     override fun isCommitted(): Boolean {

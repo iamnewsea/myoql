@@ -71,35 +71,33 @@ abstract class BaseRedisProxy(val group: String, val defaultCacheSeconds: Int) {
     }
 
 
+    /**
+     * 使用 scan 替代 keys
+     */
     fun scan(pattern: String, limit: Int = 999): Set<String> {
         var list = mutableSetOf<String>()
-        var result = anyTypeCommand
+        anyTypeCommand
                 .connectionFactory
                 .clusterConnection
-                .scan(ScanOptions.scanOptions().match(group + pattern).count(limit.AsLong()).build())
-
-
-        while (result.hasNext()) {
-            list.add(result.next().toString())
-        }
-        result.close()
-
-//                if( result.cursorId == 0L){
-//                    break;
-//                }
-
-
+                .use { conn ->
+                    conn.scan(ScanOptions
+                            .scanOptions()
+                            .match(group + pattern)
+                            .count(limit.AsLong())
+                            .build()
+                    ).use { result ->
+                        while (result.hasNext()) {
+                            list.add(result.next().toString())
+                        }
+                    }
+                }
         return list;
     }
 
-
     /**
-     * 服务器会禁用 keys
+     * 对 group 键值续期
      */
-//    fun keys(pattern: String): Set<String> {
-//        return this.redis.stringCommand(dbOffset) { it.keys(pattern).toSet(); }
-//    }
-
+    fun renewal(cacheSeconds: Int = defaultCacheSeconds) = renewalKey("", cacheSeconds);
 
     /**
      * 使用 RedisTask.setExpireKey 设置续期时间
@@ -115,11 +113,21 @@ abstract class BaseRedisProxy(val group: String, val defaultCacheSeconds: Int) {
         RedisTask.setRenewalKey(getFullKey(key), cs);
     }
 
+    /**
+     * 删除 group 键值。
+     */
+    fun delete(): Long = deleteKeys("");
+
+
     /***
      * 删除键，使键过期。
+     * 如果参数为空，则删除group键
      */
     fun deleteKeys(vararg keys: String): Long {
         var fullKeys = keys.map { getFullKey(it) }
+        if (fullKeys.any() == false) {
+            return 0;
+        }
         RedisTask.deleteKeys(*fullKeys.toTypedArray());
         return anyTypeCommand.delete(fullKeys);
     }
@@ -128,4 +136,9 @@ abstract class BaseRedisProxy(val group: String, val defaultCacheSeconds: Int) {
      * 判断是否存在该Key
      */
     fun existsKey(key: String): Boolean = anyTypeCommand.hasKey(getFullKey(key));
+
+    /**
+     * 判断是否存在 group key
+     */
+    fun exists(): Boolean = existsKey("")
 }

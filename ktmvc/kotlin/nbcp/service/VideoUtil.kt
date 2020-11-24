@@ -11,11 +11,14 @@ import javax.imageio.ImageIO
 
 object VideoUtil {
 
-    fun getVideoLogo(videoFile: File, uploadPath: String, targetLogoPath: String): String {
-        var fFmpegFrameGrabber = FFmpegFrameGrabber(videoFile)
-        fFmpegFrameGrabber.start();
+    /**
+     * @return 返回错误消息
+     */
+    fun getVideoLogo(videoFile: File, targetLogoFile: File): String {
+        FFmpegFrameGrabber(videoFile).use { fFmpegFrameGrabber ->
+            fFmpegFrameGrabber.start();
 
-        try {
+
             val ftp = fFmpegFrameGrabber.lengthInFrames
 
             var index = -1;
@@ -29,13 +32,12 @@ object VideoUtil {
                 }
 
                 if (index == 5) {
-                    ImageIO.write(Java2DFrameConverter().getBufferedImage(frame), "jpg", File(uploadPath + targetLogoPath))
-                    return uploadPath;
+                    ImageIO.write(Java2DFrameConverter().getBufferedImage(frame), "jpg", targetLogoFile)
+                    return "";
                 }
             }
-        } finally {
+
             fFmpegFrameGrabber.stop()
-            fFmpegFrameGrabber.close()
         }
 
         return "";

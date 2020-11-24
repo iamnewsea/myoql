@@ -66,19 +66,22 @@ open class RedisSetProxy(
         return anyTypeCommand.opsForSet().pop(cacheKey)?.toString()
     }
 
+    /**
+     * 扫描
+     */
     fun sscan(key: String, pattern: String, limit: Int = 999): Set<String> {
-        var list = mutableSetOf<String>()
+
         var cacheKey = getFullKey(key);
 
-        var result = anyTypeCommand.opsForSet()
+        anyTypeCommand.opsForSet()
                 .scan(cacheKey, ScanOptions.scanOptions().match(group + pattern).count(limit.AsLong()).build())
-
-        while (result.hasNext()) {
-            list.add(result.next().toString())
-        }
-
-        result.close()
-        return list;
+                .use { result ->
+                    var list = mutableSetOf<String>()
+                    while (result.hasNext()) {
+                        list.add(result.next().toString())
+                    }
+                    return list;
+                }
     }
 
 

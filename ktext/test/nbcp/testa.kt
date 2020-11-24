@@ -68,6 +68,7 @@ class testa : TestBase() {
         println("2020/06/16 20:05:06.888".AsLocalDateTime())
         println("2020/06/16 20:05Z".AsLocalDateTime())
     }
+
     @Test
     fun abcd2() {
         println(65.toChar())
@@ -85,30 +86,23 @@ class testa : TestBase() {
     fun execCmd(vararg cmds: String): ListResult<String> {
         logger.info(cmds.joinToString(" "));
         var p = Runtime.getRuntime().exec(cmds);
-        var sb = StringBuilder();
         var lines = listOf<String>()
 
-        var br: BufferedReader? = null;
         try {
             p.waitFor()
             if (p.exitValue() == 0) {
-                br = BufferedReader(InputStreamReader(p.inputStream, "GBK"));
-                lines = br.readLines()
-                return ListResult.of(lines)
+                BufferedReader(InputStreamReader(p.inputStream, "GBK")).use { br ->
+                    lines = br.readLines()
+                    return ListResult.of(lines)
+                }
             } else {
-                br = BufferedReader(InputStreamReader(p.errorStream, "GBK"));
-                lines = br.readLines();
-                return ListResult(lines.joinToString(","))
+                BufferedReader(InputStreamReader(p.errorStream, "GBK")).use { br ->
+                    lines = br.readLines();
+                    return ListResult(lines.joinToString(","))
+                }
             }
         } catch (e: Exception) {
             return ListResult(e.message ?: "error")
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } finally {
-                }
-            }
         }
     }
 }

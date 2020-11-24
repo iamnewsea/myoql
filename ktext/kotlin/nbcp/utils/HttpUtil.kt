@@ -317,14 +317,9 @@ class HttpUtil(var url: String = "") {
             if (requestBodyValidate && this.postBody.any()) {
                 //POST数据
 
-                var out = DataOutputStream(conn.outputStream);
-                try {
+                DataOutputStream(conn.outputStream).use{out->
                     out.write(this.postBody);
                     out.flush();
-                } catch (e: Exception) {
-                    throw e;
-                } finally {
-                    out.close()
                 }
             }
 
@@ -352,14 +347,7 @@ class HttpUtil(var url: String = "") {
             respIsText = getIsTextFromContentType(conn.contentType ?: "");
 
             try {
-                var input = conn.inputStream;
-                try {
-                    this.responseResult = toByteArray(input);
-                } catch (e: Exception) {
-                    throw e;
-                } finally {
-                    input.close()
-                }
+                conn.inputStream.use { input-> this.responseResult = toByteArray(input);}
 
                 this.totalTime = LocalDateTime.now() - startAt
                 return this.responseResult;

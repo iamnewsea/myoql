@@ -1,5 +1,6 @@
 package nbcp.comm
 
+import java.io.Closeable
 import java.io.File
 import java.io.RandomAccessFile
 import java.io.Reader
@@ -8,7 +9,7 @@ import java.nio.charset.Charset
 /**
  * 从末尾读取流
  */
-class BufferTailReader(var file: File, var charset: Charset = utf8) {
+class BufferTailReader(var file: File, var charset: Charset = utf8) : Closeable {
     private var pos = -1L;
     private var reader: RandomAccessFile
     var currentLineIndex = 0;
@@ -50,7 +51,7 @@ class BufferTailReader(var file: File, var charset: Charset = utf8) {
 //        currentLineIndex++;
     }
 
-    fun close() {
+    override fun close() {
         this.reader.close();
     }
 
@@ -73,9 +74,9 @@ class BufferTailReader(var file: File, var charset: Charset = utf8) {
 
             if (char == n) {
                 if (pos != 0L) {
-                    reader.seek(pos-1);
-                     char = reader.readByte();
-                    if ( char == r) {
+                    reader.seek(pos - 1);
+                    char = reader.readByte();
+                    if (char == r) {
                         pos--;
                     }
                 }
