@@ -31,11 +31,11 @@ class TestKtExt_Json : TestBase() {
         b.ary = arrayOf(IdName("2", "def"))
         b.isDeleted = true;
 
-        using(JsonStyleEnumScope.GetSetStyle) {
+        usingScope(JsonStyleEnumScope.GetSetStyle) {
             println(b.ToJson())
         }
 
-        using(JsonStyleEnumScope.FieldStyle) {
+        usingScope(JsonStyleEnumScope.FieldStyle) {
             println(b.ToJson())
         }
     }
@@ -52,7 +52,7 @@ class TestKtExt_Json : TestBase() {
         result.data = b;
 
         var str = result.ToJson();
-        using(JsonStyleEnumScope.GetSetStyle) {
+        usingScope(JsonStyleEnumScope.GetSetStyle) {
             result = str.FromJson<ApiResult<Any>>()!!;
             println(result.data!!.ConvertJson(bc::class.java).list.first().ToJson())
         }

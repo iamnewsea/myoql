@@ -39,7 +39,7 @@ class MyLogBackFilter : TurboFilter() {
         }
 
         //在获取 debug 期间，禁用Log
-        using(LogScope(Level.OFF_INT)) {
+        usingScope(LogScope(Level.OFF_INT)) {
             if (config.debug) {
                 return FilterReply.ACCEPT
             }

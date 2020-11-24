@@ -407,7 +407,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity
             if (data.size < this.take) {
                 ret.total = data.size;
             } else {
-                using(arrayOf(OrmLogScope.IgnoreExecuteTime, OrmLogScope.IgnoreAffectRow)) {
+                usingScope(arrayOf(OrmLogScope.IgnoreExecuteTime, OrmLogScope.IgnoreAffectRow)) {
                     ret.total = count()
                 }
             }

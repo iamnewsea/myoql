@@ -2,19 +2,14 @@ package nbcp.comm
 
 import ch.qos.logback.classic.Level
 import org.springframework.boot.logging.LogLevel
+import java.io.Closeable
 
-/**
- * 提供析构的接口
- */
-interface IDisposeable {
-    fun dispose();
-}
 
 /**
  * value = ch.qos.logback.classic.Level.级别
  * TRACE < DEBUG < INFO < WARN < ERROR
  */
-class LogScope(val level: Int) : IDisposeable {
+class LogScope(val level: Int) : Closeable {
     companion object {
         /**
          * 记录所有的Info
@@ -31,16 +26,16 @@ class LogScope(val level: Int) : IDisposeable {
         }
     }
 
-    override fun dispose() {
+    override fun close() {
     }
 }
 
 
-enum class OrmLogScope(val remark: String) : IDisposeable {
+enum class OrmLogScope(val remark: String) : Closeable {
     IgnoreExecuteTime("不记录执行时间"),
     IgnoreAffectRow("不记录影响行数");
 
-    override fun dispose() {
+    override fun close() {
     }
 }
 

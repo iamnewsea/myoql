@@ -114,7 +114,7 @@
 - OpenAction ，不需要权限的Action
 
 ## 其它
-- using ，在每个作用域里控制变量。
+- usingScope ，在每个作用域里控制变量。
 
 
 

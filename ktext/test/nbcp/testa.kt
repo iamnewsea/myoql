@@ -49,13 +49,13 @@ class testa : TestBase() {
 
     @Test
     fun test_IdUrl_Json() {
-        using(JsonStyleEnumScope.GetSetStyle) {
+        usingScope(JsonStyleEnumScope.GetSetStyle) {
             var a = IdUrl();
             a.url = "OK"
             println(a.ToJson())
         }
 
-        using(JsonStyleEnumScope.FieldStyle) {
+        usingScope(JsonStyleEnumScope.FieldStyle) {
             var a = IdUrl();
             a.url = "OK"
             println(a.ToJson())

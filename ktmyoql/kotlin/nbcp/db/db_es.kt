@@ -30,7 +30,7 @@ object db_es {
 
         var json = JsonMap("description" to description, "processors" to processors)
         var requestBody = "";
-        using(arrayOf(JsonStyleEnumScope.DateUtcStyle,JsonStyleEnumScope.Compress)) {
+        usingScope(arrayOf(JsonStyleEnumScope.DateUtcStyle,JsonStyleEnumScope.Compress)) {
             requestBody = json.ToJson()
         }
 

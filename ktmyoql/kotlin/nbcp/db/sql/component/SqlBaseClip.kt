@@ -24,7 +24,7 @@ import nbcp.db.mysql.MysqlConfig
  *
  * 2. 切数据源
  *
- * using(db.getJdbcTemplate("primary")){
+ * usingScope(db.getJdbcTemplate("primary")){
  *
  * }
  *
@@ -77,7 +77,7 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
     }
 
     /**
-     * 通过 using 作用域 切换数据源。
+     * 通过 usingScope 作用域 切换数据源。
      */
     val jdbcTemplate: JdbcTemplate
         get() {

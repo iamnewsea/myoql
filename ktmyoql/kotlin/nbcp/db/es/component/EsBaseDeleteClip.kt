@@ -84,7 +84,7 @@ open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhere
         }
 
         var requestBody = "";
-        using(arrayOf(JsonStyleEnumScope.DateUtcStyle,JsonStyleEnumScope.Compress)) {
+        usingScope(arrayOf(JsonStyleEnumScope.DateUtcStyle,JsonStyleEnumScope.Compress)) {
             requestBody = data.map { it.ToJson() + line_break }.joinToString("")
         }
 
@@ -101,7 +101,7 @@ open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhere
             db.executeTime = LocalDateTime.now() - startAt
             responseBody = response.entity.content.readBytes().toString(utf8)
 
-            using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+            usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
                 settingResult.forEach {
                     it.first.delete(this, it.second)
                 }

@@ -59,7 +59,7 @@ object db_mongo {
     private val mongo_template_map = linkedMapOf<String, MongoTemplate>()
 
     /**
-     * 获取 MongoTemplate ,将会有一个连接的线程在等待，所以要避免 using 而不释放。
+     * 获取 MongoTemplate ,将会有一个连接的线程在等待，所以要避免 usingScope 而不释放。
      */
     fun getMongoTemplateByUri(uri: String): MongoTemplate? {
         if (uri.isEmpty()) return null;

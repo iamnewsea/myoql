@@ -3,25 +3,16 @@
 
 package nbcp.comm
 
-import ch.qos.logback.core.spi.FilterReply
 import nbcp.comm.*
 
 import nbcp.utils.*
-import java.text.DecimalFormat
-import java.text.SimpleDateFormat
-import kotlin.collections.LinkedHashMap
 import nbcp.utils.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.slf4j.event.Level
-import java.lang.reflect.Field
-import java.nio.charset.Charset
 import java.time.*
 import java.time.temporal.Temporal
 import java.io.*
-import java.lang.Exception
 import java.lang.RuntimeException
-import java.lang.reflect.Modifier
 import java.util.*
 
 
@@ -191,18 +182,15 @@ val scopes: Stack<Any>
 
 /**
  * 用法:
- * class LoggerScope:IDisposeable{
  *
- * }
- *
- * @param initObjects: 可以是 array, list,IDisposeable,any , 如果是 array,list，则依次添加到作用域栈中。
+ * @param initObjects: 可以是 array, list,AutoCloseable,any, 如果是 array,list，则依次添加到作用域栈中。
  */
-inline fun <T, M : Any> using(initObjects: M, body: () -> T): T {
-    return using(initObjects, body, {})
+inline fun <T, M : Any> usingScope(initObjects: M, body: () -> T): T {
+    return usingScope(initObjects, body, {})
 }
 
 
-inline fun <T, M : Any> using(initObjects: M, body: () -> T, finally: ((M) -> Unit)): T {
+inline fun <T, M : Any> usingScope(initObjects: M, body: () -> T, finally: ((M) -> Unit)): T {
     var init_list = mutableListOf<Any>()
 
     if (initObjects is Collection<*>) {
@@ -220,9 +208,9 @@ inline fun <T, M : Any> using(initObjects: M, body: () -> T, finally: ((M) -> Un
     try {
         var ret = body();
 
-        init_list.forEach {
-            if (it is IDisposeable) {
-                it.dispose();
+        init_list.asReversed().forEach {
+            if (it is AutoCloseable) {
+                it.close()
             }
         }
         finally(initObjects)

@@ -66,7 +66,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out IMongoDocument>>(var moerE
             db.affectRowCount = ret;
 
             if (ret > 0) {
-                using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+                usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
                     settingResult.forEach {
                         it.first.delete(this, it.second)
                     }

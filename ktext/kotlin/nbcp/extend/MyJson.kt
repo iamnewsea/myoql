@@ -58,7 +58,7 @@ import java.util.*
 
 
 /**
- * 样式请使用 using(listOf(JsonStyleEnum.FieldStyle)){}
+ * 样式请使用 usingScope(listOf(JsonStyleEnum.FieldStyle)){}
  */
 fun <T> T.ToJson(): String {
     if (this is String) return this;

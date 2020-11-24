@@ -52,7 +52,7 @@ class FileUploadController {
         var ids = ret.data;
 
         response.contentType = "application/json;charset=UTF-8"
-        using(JsonStyleEnumScope.GetSetStyle) {
+        usingScope(JsonStyleEnumScope.GetSetStyle) {
             if (ids.size == 0) {
                 response.outputStream.write(JsonResult("上传失败").ToJson().toByteArray(utf8));
             } else if (ids.size == 1) {

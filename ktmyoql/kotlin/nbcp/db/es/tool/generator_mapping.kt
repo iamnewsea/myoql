@@ -44,7 +44,7 @@ class generator_mapping {
 
         println("开始生成 es mapping ...")
 
-        using(JsonStyleEnumScope.Pretty) {
+        usingScope(JsonStyleEnumScope.Pretty) {
             var count = 0;
             groups.forEach { group ->
                 var groupName = group.key

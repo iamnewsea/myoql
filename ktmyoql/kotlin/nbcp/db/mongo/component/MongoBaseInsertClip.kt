@@ -64,7 +64,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
             mongoTemplate.insert(entities, this.collectionName)
             db.executeTime = LocalDateTime.now() - startAt
 
-            using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+            usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
                 settingResult.forEach {
                     it.first.insert(this, it.second)
                 }

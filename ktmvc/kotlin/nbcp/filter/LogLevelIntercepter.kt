@@ -1,8 +1,9 @@
 package nbcp.filter
 
 import nbcp.comm.LogScope
-import nbcp.comm.using
+import nbcp.comm.usingScope
 import nbcp.comm.MyLogLevel
+import nbcp.comm.usingScope
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
@@ -10,7 +11,7 @@ import org.aspectj.lang.reflect.MethodSignature
 import org.springframework.stereotype.Component
 
 /**
- * 对注解了 MyLogLevel 的Bean或方法，使用 using(LogScope.NoLog) 包裹
+ * 对注解了 MyLogLevel 的Bean或方法，使用 usingScope(LogScope.NoLog) 包裹
  */
 @Aspect
 @Component
@@ -41,7 +42,7 @@ open class LogLevelIntercepter {
             }
         }
 
-        return using(LogScope(level.value)) {
+        return usingScope(LogScope(level.value)) {
             var args = joinPoint.args
             if (args.any()) {
                 return joinPoint.proceed(args)

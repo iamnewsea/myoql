@@ -1,6 +1,6 @@
 package nbcp.app
 
-import nbcp.comm.using
+import nbcp.comm.usingScope
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
@@ -31,9 +31,9 @@ class GroupLogIntercepter {
             return invoke(joinPoint);
         }
 
-        return using(groupLog) {
+        return usingScope(groupLog) {
             MDC.put("group", groupLog.value)
-            return@using invoke(joinPoint);
+            return@usingScope invoke(joinPoint);
         }
     }
 

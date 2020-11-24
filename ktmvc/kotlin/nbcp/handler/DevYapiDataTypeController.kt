@@ -36,7 +36,7 @@ class DevYapiDataTypeController {
         }
 
         var ret = JsonMap()
-        using(db.mongo.getMongoTemplateByUri(connString)!!) {
+        usingScope(db.mongo.getMongoTemplateByUri(connString)!!) {
             var query = MongoBaseQueryClip("interface")
 
             var where = (MongoColumnName("req_body_other") match_like "title\":\":") match_or

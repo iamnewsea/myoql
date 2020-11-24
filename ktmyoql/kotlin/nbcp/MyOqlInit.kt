@@ -1,7 +1,7 @@
 package nbcp
 
 import nbcp.comm.LogScope
-import nbcp.comm.using
+import nbcp.comm.usingScope
 import nbcp.utils.*
 import nbcp.db.*
 import nbcp.db.mongo.event.*

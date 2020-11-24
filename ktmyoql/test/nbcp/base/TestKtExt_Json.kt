@@ -10,11 +10,11 @@ class TestKtExt_Json : TestBase() {
 
     @Test
     fun test_FromJson() {
-        using(JsonStyleEnumScope.GetSetStyle) {
+        usingScope(JsonStyleEnumScope.GetSetStyle) {
             println("""{"code":123}""".FromJson<CityCodeName>()!!.name)
         }
 
-        using(JsonStyleEnumScope.FieldStyle) {
+        usingScope(JsonStyleEnumScope.FieldStyle) {
             println("""{"code":123}""".FromJson<CityCodeName>()!!.name)
         }
     }

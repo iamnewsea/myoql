@@ -105,7 +105,7 @@ class EsEntityEvent : BeanPostProcessor {
     fun onInserting(insert: EsBaseInsertClip): Array<Pair<IEsEntityInsert, EventResult>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IEsEntityInsert, EventResult>>()
-        using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+        usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
             insertEvent.ForEachExt { it, index ->
                 var ret = it.beforeInsert(insert);
                 if (ret.result == false) {
@@ -121,7 +121,7 @@ class EsEntityEvent : BeanPostProcessor {
     fun onUpdating(update: EsBaseUpdateClip): Array<Pair<IEsEntityUpdate, EventResult>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IEsEntityUpdate, EventResult>>()
-        using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+        usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
             updateEvent.ForEachExt { it, index ->
                 var ret = it.beforeUpdate(update);
                 if (ret.result == false) {
@@ -138,7 +138,7 @@ class EsEntityEvent : BeanPostProcessor {
 
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IEsEntityDelete, EventResult>>()
-        using(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+        usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
             deleteEvent.ForEachExt { it, index ->
                 var ret = it.beforeDelete(delete);
                 if (ret.result == false) {
