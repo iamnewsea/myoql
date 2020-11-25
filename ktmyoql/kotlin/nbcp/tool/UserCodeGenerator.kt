@@ -79,6 +79,7 @@ object UserCodeGenerator {
                 StringMap(
                         "group" to group,
                         "entity" to entityClass.simpleName,
+                        "entityField" to MyUtil.getSmallCamelCase(entityClass.simpleName),
                         "title" to title,
                         "entity_url" to entity_url,
                         "now" to LocalDateTime.now().toString(),

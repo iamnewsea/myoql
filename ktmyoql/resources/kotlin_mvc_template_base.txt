@@ -33,7 +33,7 @@ ${endif}
         request: MyHttpRequestWrapper
     ): ListResult<${entity}> {
 
-        mor.${group}.${entity}.query()
+        mor.${group}.${entityField}.query()
             .apply{
                 if(id.HasValue){
                     this.where{it.id match id}
@@ -57,7 +57,7 @@ ${endif}
         @Require id: String,
         request: MyHttpRequestWrapper
     ): ApiResult<${entity}> {
-        mor.${group}.${entity}.queryById(id)
+        mor.${group}.${entityField}.queryById(id)
             .toEntity()
             .apply{
                 if( this == null){
@@ -79,7 +79,7 @@ ${endif}
     var userId = request.UserId;
 
 
-    mor.${group}.${entity}.updateWithEntity(entity)
+    mor.${group}.${entityField}.updateWithEntity(entity)
         .withRequestParams(request.json.keys)
         .run {
             if (entity.id.HasValue){
@@ -109,7 +109,7 @@ ${if:status}
         var userId = request.UserId;
 
 
-        mor.${group}.${entity}.updateById(id)
+        mor.${group}.${entityField}.updateById(id)
             .set{it.status to status}
             .set { it.updateAt to LocalDateTime.now() }
             .exec()
@@ -131,12 +131,12 @@ ${endif}
     //鉴权
     var userId = request.UserId;
 
-    var entity = mor.${group}.${entity}.queryById(id).toEntity();
+    var entity = mor.${group}.${entityField}.queryById(id).toEntity();
     if(entity == null){
         return JsonResult("找不到数据")
     }
 
-    mor.${group}.${entity}.deleteById(id)
+    mor.${group}.${entityField}.deleteById(id)
         .exec()
         .apply{
             if(this == 0){
