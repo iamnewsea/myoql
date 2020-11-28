@@ -40,19 +40,19 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var 
         return this;
     }
 
-//    /**
-//     * 不应该依赖客户端，不应该使用这个方法
-//     */
-//    fun withRequestParams(keys: Set<String>): SqlSetEntityUpdateClip<M, T> {
-//        var columns = this.mainEntity.getColumns();
-//        keys.forEach { key ->
-//            var column = columns.firstOrNull { it.name == key }
-//            if (column != null) {
-//                withColumn { column }
-//            }
-//        }
-//        return this
-//    }
+    /**
+     * 不应该依赖客户端，不应该使用这个方法
+     */
+    fun withRequestParams(keys: Set<String>): SqlSetEntityUpdateClip<M, T> {
+        var columns = this.mainEntity.getColumns();
+        keys.forEach { key ->
+            var column = columns.firstOrNull { it.name == key }
+            if (column != null) {
+                withColumn { column }
+            }
+        }
+        return this
+    }
 
     //额外设置
     fun set(setItemAction: (M) -> Pair<SqlColumnName, Any?>): SqlSetEntityUpdateClip<M, T> {
