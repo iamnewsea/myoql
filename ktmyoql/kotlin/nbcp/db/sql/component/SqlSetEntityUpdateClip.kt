@@ -65,11 +65,16 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var 
      * 更新，默认按 id 更新
      */
     override fun exec(): Int {
+        //调用这个方法很重要。
         this.toSql();
         return sqlUpdate.exec();
     }
 
     private var sqlUpdate = SqlUpdateClip<M, T>(mainEntity);
+
+    /**
+     * 设置 sqlUpdate 对象
+     */
     override fun toSql(): SingleSqlData {
         sqlUpdate = SqlUpdateClip<M, T>(mainEntity);
 
@@ -78,7 +83,7 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var 
         var setValues = mutableMapOf<SqlColumnName, Any?>()
 
         var field_names = mutableListOf<String>();
-        entity::class.java.AllFields.forEach {field->
+        entity::class.java.AllFields.forEach { field ->
 
 //            var ann = field.getAnnotation(SqlSpreadColumn::class.java);
 //            if( ann!= null){
@@ -89,15 +94,15 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var 
 //                }
 //            }
 
-            if( this.mainEntity.getSpreadColumns().contains(field.name)){
+            if (this.mainEntity.getSpreadColumns().contains(field.name)) {
                 var ent_field_value = field.get(entity);
                 field.type.AllFields.forEach { subField ->
                     var value = subField.get(ent_field_value);
-                    setValues.put(columns.first { it.name == field.name +"_" + subField.name }, value)
+                    setValues.put(columns.first { it.name == field.name + "_" + subField.name }, value)
                 }
             }
 
-             field_names .add(field.name);
+            field_names.add(field.name);
         };
 
 
@@ -146,7 +151,7 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var 
                 .forEach { key ->
                     var value = MyUtil.getPrivatePropertyValue(entity, key.name)
                     if (value == null) {
-                        setValues.put(key,null);
+                        setValues.put(key, null);
                         return@forEach
                     }
 
