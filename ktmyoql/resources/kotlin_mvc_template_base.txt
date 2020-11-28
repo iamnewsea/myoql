@@ -80,7 +80,6 @@ ${endif}
 
 
     mor.${group}.${entityField}.updateWithEntity(entity)
-        .withRequestParams(request.json.keys)
         .run {
             if (entity.id.HasValue){
                 return@run  this.execUpdate()
