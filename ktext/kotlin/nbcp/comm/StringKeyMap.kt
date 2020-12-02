@@ -42,7 +42,7 @@ open class StringKeyMap<T> : LinkedHashMap<String, T>, Serializable {
     /**
      * 忽略大小写获取键值
      */
-    fun getKeyIgnoreCase(key: String): T? {
+    fun getByIgnoreCaseKey(key: String): T? {
         var key2 = this.keys.firstOrNull { it.VbSame(key) };
         if (key2 == null) {
             return null
