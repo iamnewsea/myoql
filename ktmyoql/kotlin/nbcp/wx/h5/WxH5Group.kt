@@ -54,7 +54,7 @@ object WxH5Group {
         require(appSecret.HasValue) { "缺少appSecret!" }
 
         var url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=${wx.appId}&secret=${appSecret}&code=${code}&grant_type=authorization_code"
-        var ret = ApiResult<H5AccessTokenData>();
+        var ret = ApiResult<H5AccessTokenData>("异常");
         var http = HttpUtil(url);
         var data = http.doGet().FromJson<H5AccessTokenData>() ?: H5AccessTokenData();
         if (data.errcode != 0) {
