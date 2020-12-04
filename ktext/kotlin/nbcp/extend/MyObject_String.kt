@@ -83,23 +83,40 @@ fun Char.NewString(count: Int): String {
     return chrs.toString();
 }
 
-////返回最先找到的字符的索引,找不到返回 -1
-//@Deprecated("使用系统提供的")
-//fun String.IndexOf(startIndex: Int, vararg findChars: Char): Int {
-//    for (i in startIndex..this.length - 1) {
-//        if (findChars.contains(this[i])) return i;
-//    }
-//    return -1;
-//}
+data class CharFlowSetting(
+        var index: Int = 0,
+        var item: Char = 0.toChar(),
+        var prevCutIndex: Int = 0,
+        //休息状态，如在括号内部
+        var sleep: Boolean = false
+)
 
-////返回从最后开始最先找到的索引。找不到返回 -1
-//@Deprecated("使用系统提供的")
-//fun String.LastIndexOf(vararg findChars: Char): Int {
-//    var ret = this.reversed().IndexOf(0, *findChars);
-//    if (ret == -1) return -1;
-//    return this.length - 1 - ret;
-//}
+/**
+ *
+ */
+fun String.cutWith(callback: ((CharFlowSetting) -> Boolean)): List<String> {
+    var list = mutableListOf<String>();
 
+    var setting = CharFlowSetting();
+
+    for (i in 0 until this.length) {
+        setting.index = i;
+        setting.item = this.get(i);
+
+        if (callback.invoke(setting)) {
+            var item = this.substring(setting.prevCutIndex, i);
+            if (item.length > 0) {
+                list.add(item)
+            }
+            setting.prevCutIndex = i;
+        }
+    }
+    var item = this.substring(setting.prevCutIndex);
+    if (item.length > 0) {
+        list.add(item)
+    }
+    return list;
+}
 
 fun String.IsMatch(Index: Int, MatchString: String): Boolean {
     if ((Index + MatchString.length) > this.length) return false;
@@ -733,7 +750,7 @@ fun <T> String.ToEnum(enumClazz: Class<T>): T? {
 /**
  * 使用Json格式化
  */
-fun String.formatWithJson(json: Map<String,String>, style: String = "", itemCallback: ((String) -> String)? = null): String {
+fun String.formatWithJson(json: Map<String, String>, style: String = "", itemCallback: ((String) -> String)? = null): String {
     var style = style;
     if (style.isEmpty()) {
         style = "{}"

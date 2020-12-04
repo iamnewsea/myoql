@@ -123,6 +123,12 @@ fun String.ConvertToLocalDateTime(dateTimeFormatter: DateTimeFormatter? = null):
         return LocalDateTime.parse(strValue, dateTimeFormatter)
     }
 
+    // Fri, 04 Dec 2020 03:11:42 GMT
+    // DateTimeFormatter.RFC_1123_DATE_TIME
+    if (this.endsWith("GMT") && this.contains(",")) {
+        return LocalDateTime.parse(this, DateTimeFormatter.RFC_1123_DATE_TIME);
+    }
+
     var withZ = strValue.endsWith('Z')
 
     if (withZ) {
