@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.ImportSelector
 import org.springframework.core.type.AnnotationMetadata
 import org.springframework.stereotype.Component
+import java.lang.Exception
 import java.lang.annotation.Inherited
 
 
@@ -19,26 +20,30 @@ class NbcpBeanSelector : ImportSelector, BeanFactoryAware {
 
         var ret = MyUtil.findClasses("nbcp", SpringUtil::class.java)
                 .filter {
-                    var anns = it.annotations;
-                    if (anns.any() == false) return@filter false;
-                    if (it == EnableNbcpBean::class.java) return@filter false;
-                    if (anns.any { it.annotationClass.java == Component::class.java }) return@filter true;
+                    try {
+                        var anns = it.annotations;
+                        if (anns.any() == false) return@filter false;
+                        if (it == EnableNbcpBean::class.java) return@filter false;
+                        if (anns.any { it.annotationClass.java == Component::class.java }) return@filter true;
 
-                    for (i in (0 until anns.size)) {
-                        var clazz = anns.get(i).annotationClass.java;
+                        for (i in (0 until anns.size)) {
+                            var clazz = anns.get(i).annotationClass.java;
 
-                        var value = anns_components.get(clazz);
-                        if (value == null) {
-                            value = getHasComponent(clazz);
-                            anns_components.put(clazz, value);
+                            var value = anns_components.get(clazz);
+                            if (value == null) {
+                                value = getHasComponent(clazz);
+                                anns_components.put(clazz, value);
+                            }
+
+                            if (value == true) {
+                                return@filter true;
+                            }
                         }
 
-                        if (value == true) {
-                            return@filter true;
-                        }
+                        return@filter false;
+                    } catch (e: Exception) {
+                        return@filter false;
                     }
-
-                    return@filter false;
                 }
                 .map { it.name }.toTypedArray();
 

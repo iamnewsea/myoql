@@ -11,6 +11,7 @@
         <module>ktext</module>
         <module>ktmyoql</module>
         <module>ktmvc</module>
+        <module>ktweb</module>
     </modules>
 
     <licenses>

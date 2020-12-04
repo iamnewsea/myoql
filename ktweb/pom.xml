@@ -1,8 +1,10 @@
-<?xml version="1.0" ?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cn.dev8</groupId>
-    <artifactId>ktmvc</artifactId>
+    <artifactId>ktweb</artifactId>
     <version>0.1.42</version>
     <packaging>jar</packaging>
 
@@ -24,7 +26,17 @@
         </dependency>
         <dependency>
             <groupId>cn.dev8</groupId>
-            <artifactId>ktext</artifactId>
+            <artifactId>ktmyoql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.dev8</groupId>
+            <artifactId>ktmvc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.dev8</groupId>
+            <artifactId>ktmyoql</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -39,20 +51,20 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/it.sauronsoftware/jave -->
-<!--        <dependency>-->
-<!--            <groupId>it.sauronsoftware</groupId>-->
-<!--            <artifactId>jave</artifactId>-->
-<!--            <version>1.0.2</version>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>it.sauronsoftware</groupId>-->
+        <!--            <artifactId>jave</artifactId>-->
+        <!--            <version>1.0.2</version>-->
+        <!--            <scope>provided</scope>-->
+        <!--        </dependency>-->
 
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/commons-codec/commons-codec &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>commons-codec</groupId>-->
-<!--            <artifactId>commons-codec</artifactId>-->
-<!--            <version>1.14</version>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
+        <!--        &lt;!&ndash; https://mvnrepository.com/artifact/commons-codec/commons-codec &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>commons-codec</groupId>-->
+        <!--            <artifactId>commons-codec</artifactId>-->
+        <!--            <version>1.14</version>-->
+        <!--            <scope>provided</scope>-->
+        <!--        </dependency>-->
 
 
         <!-- https://mvnrepository.com/artifact/org.bytedeco/javacv -->
@@ -64,13 +76,12 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.bytedeco.javacpp-presets/ffmpeg-platform -->
-<!--        <dependency>-->
-<!--            <groupId>org.bytedeco.javacpp-presets</groupId>-->
-<!--            <artifactId>ffmpeg-platform</artifactId>-->
-<!--            <version>4.1-1.4.4</version>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
-
+        <!--        <dependency>-->
+        <!--            <groupId>org.bytedeco.javacpp-presets</groupId>-->
+        <!--            <artifactId>ffmpeg-platform</artifactId>-->
+        <!--            <version>4.1-1.4.4</version>-->
+        <!--            <scope>provided</scope>-->
+        <!--        </dependency>-->
 
 
         <!--        <dependency>-->
@@ -86,31 +97,31 @@
         </dependency>
 
 
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.springframework.data/spring-data-mongodb &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.data</groupId>-->
-<!--            <artifactId>spring-data-mongodb</artifactId>-->
-<!--        </dependency>-->
+        <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-mongodb -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-mongodb</artifactId>
+        </dependency>
 
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.springframework.data/spring-data-redis &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.data</groupId>-->
-<!--            <artifactId>spring-data-redis</artifactId>-->
-<!--        </dependency>-->
+        <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-redis -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-redis</artifactId>
+        </dependency>
 
 
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.springframework/spring-jdbc &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework</groupId>-->
-<!--            <artifactId>spring-jdbc</artifactId>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/mysql/mysql-connector-java &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>mysql</groupId>-->
-<!--            <artifactId>mysql-connector-java</artifactId>-->
-<!--        </dependency>-->
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
 
 
         <dependency>
@@ -119,7 +130,6 @@
             <version>1.6.2</version>
             <scope>provided</scope>
         </dependency>
-
 
 
         <dependency>
@@ -158,11 +168,11 @@
 
                 <configuration>
                     <outputDir>${project.build.directory}/apidocs</outputDir>
-<!--                    <externalDocumentationLinks>-->
-<!--                        <externalDocumentationLink>-->
-<!--                            <url>http://file.dev8.cn:8000/package-list</url>-->
-<!--                        </externalDocumentationLink>-->
-<!--                    </externalDocumentationLinks>-->
+                    <!--                    <externalDocumentationLinks>-->
+                    <!--                        <externalDocumentationLink>-->
+                    <!--                            <url>http://file.dev8.cn:8000/package-list</url>-->
+                    <!--                        </externalDocumentationLink>-->
+                    <!--                    </externalDocumentationLinks>-->
                 </configuration>
             </plugin>
 
