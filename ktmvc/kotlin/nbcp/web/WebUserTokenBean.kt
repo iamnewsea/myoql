@@ -2,6 +2,7 @@ package nbcp.web
 
 import nbcp.db.LoginUserModel
 import org.springframework.beans.factory.config.BeanPostProcessor
+import org.springframework.stereotype.Component
 
 /**
  * 用户TokenBean，必须有一个
@@ -19,10 +20,12 @@ interface WebUserTokenBean {
 //    fun lostToken(token:String)
 }
 
+
+@Component
 class WebUserTokenBeanInstance : BeanPostProcessor {
     companion object {
         //如果没有配置WebUserTokenBean,那么使用session
-        var instance:WebUserTokenBean? = null;
+        var instance: WebUserTokenBean? = null;
     }
 
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
