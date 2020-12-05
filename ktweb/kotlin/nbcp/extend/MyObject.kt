@@ -78,7 +78,7 @@ val HttpServletRequest.UserName: String
 val HttpServletRequest.tokenValue: String
     get() {
         if (WebUserTokenBeanInstance.instance == null) {
-            return this.requestedSessionId;
+            return this.requestedSessionId ?: "";
         }
         var cacheKey = "_Token_Value_";
         var token = this.getAttribute(cacheKey).AsStringWithNull();
