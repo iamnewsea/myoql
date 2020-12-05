@@ -65,9 +65,9 @@ spring:
     mongodb:
       host: dev8.cn
       port: 27017
-      db: cms
-      username: dev
-      password:
+      db: edu_report_1
+      username: root
+      password: yxh123
       uri: mongodb://${spring.data.mongodb.username}:${spring.data.mongodb.password}@${spring.data.mongodb.host:127.0.0.1}:${spring.data.mongodb.port:27017}/${spring.data.mongodb.db}
   redis:
     timeout: 3000

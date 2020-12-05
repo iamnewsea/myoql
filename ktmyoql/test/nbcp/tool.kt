@@ -28,7 +28,7 @@ class tool : TestBase() {
         var path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0]
 
         nbcp.db.mongo.tool.generator().work(
-                File(path).parentFile.path + "/ktmyoql/kotlin/nbcp/db/mongo/mor_tables.kt",
+                File(path).parentFile.path + "/ktmyoql/kotlin/nbcp/db/mongo/mor_base_tables.kt",
                 "nbcp.db.mongo.entity.",
                 SysAnnex::class.java,
                 arrayOf(),

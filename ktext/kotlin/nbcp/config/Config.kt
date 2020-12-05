@@ -64,6 +64,7 @@ object config {
 
     /**
      * 由于 SameSite 限制，避免使用 Cookie，定义一个额外值来保持会话。
+     * 如果设置为空，则使用 set-cookie方式
      */
     val tokenKey: String by lazy {
         return@lazy SpringUtil.context.environment.getProperty("app.token-key") ?: "token"

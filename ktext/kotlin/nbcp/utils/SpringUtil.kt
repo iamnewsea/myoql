@@ -83,11 +83,6 @@ class SpringUtil : BeanPostProcessor, ApplicationContextAware {
         fun <T> getBeanByName(name: String, clazz: Class<T>): T {
             return context.getBean(name, clazz);
         }
-
-        //通过name,以及Clazz返回指定的Bean
-//        fun <T> getBean(name: String, clazz: Class<T>): T {
-//            return context.getBean(name, clazz)
-//        }
     }
 
     override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {

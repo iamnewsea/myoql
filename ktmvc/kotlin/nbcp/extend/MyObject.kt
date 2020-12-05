@@ -184,10 +184,6 @@ fun generateToken(): String {
     return tokenPrefix + CodeUtil.getCode();
 }
 
-//private val webUserToken: WebUserTokenBean by lazy {
-//    return@lazy SpringUtil.getBean<WebUserTokenBean>()
-//}
-
 
 /**
  * 把 queryString 加载为 Json
