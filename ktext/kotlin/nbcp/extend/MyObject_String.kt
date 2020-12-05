@@ -118,37 +118,37 @@ fun String.cutWith(callback: ((CharFlowSetting) -> Boolean)): List<String> {
     return list;
 }
 
-fun String.IsMatch(Index: Int, MatchString: String): Boolean {
-    if ((Index + MatchString.length) > this.length) return false;
+//fun String.IsMatch(Index: Int, MatchString: String): Boolean {
+//    if ((Index + MatchString.length) > this.length) return false;
+//
+//    for (i in 0..MatchString.length - 1) {
+//        if (this.get(Index + i) != MatchString.get(i)) return false;
+//    }
+//
+//    return true;
+//}
 
-    for (i in 0..MatchString.length - 1) {
-        if (this.get(Index + i) != MatchString.get(i)) return false;
-    }
-
-    return true;
-}
-
-private fun _getNextChar(html: String, index: Int, findChar: Char): Int {
-    var len = html.length;
-    var index = index - 1;
-
-    while (true) {
-        index++;
-        if (index >= len) break;
-
-
-        if (html.get(index) == '\\') {
-            index++;
-            continue;
-        }
-
-        if (html.get(index) == findChar) {
-            return index;
-        }
-    }
-
-    return -1;
-}
+//private fun _getNextChar(html: String, index: Int, findChar: Char): Int {
+//    var len = html.length;
+//    var index = index - 1;
+//
+//    while (true) {
+//        index++;
+//        if (index >= len) break;
+//
+//
+//        if (html.get(index) == '\\') {
+//            index++;
+//            continue;
+//        }
+//
+//        if (html.get(index) == findChar) {
+//            return index;
+//        }
+//    }
+//
+//    return -1;
+//}
 
 /**
  * 定义引用定义，开始符号，结束符号，逃逸符号。
@@ -165,45 +165,27 @@ data class TokenQuoteDefine(
     }
 }
 
-
-/**
- * 找出是哪一个 quote
- */
-private fun getMatchedQuoteKey(value: String, startIndex: Int, quoteKeys: Array<String>): String {
-    var list = quoteKeys.filter { value.IsMatch(startIndex, it) };
-
-    if (list.size == 0) return ""
-    else if (list.size == 1) return list.first();
-    else {
-        throw RuntimeException("QuoteDefine 出现多个 ${list.joinToString(",")}")
-    }
-}
-
-/**
- * 找到指定findString的索引.
- * @param value 源字符串
- * @param startIndex 源字符串开始的位置
- * @param findString 要查找的字符串
- */
-private fun getNextIndex(value: String, startIndex: Int, findString: String): Int {
-    if (startIndex >= value.length) return -1;
-    if (startIndex < 0) return -1;
-
-    var index = startIndex - 1;
-    while (true) {
-        index++;
-        if (index >= value.length) break;
-        if (value.IsMatch(index, findString)) {
-            return index;
-        }
-    }
-    return -1;
-}
-
-/**
- * 找到startIndex后,不是findString的索引.
- */
-//private fun getNextNotValueIndex(value: String, startIndex: Int, findString: Char): Int {
+//
+///**
+// * 找出是哪一个 quote
+// */
+//private fun getMatchedQuoteKey(value: String, startIndex: Int, quoteKeys: Array<String>): String {
+//    var list = quoteKeys.filter { value.IsMatch(startIndex, it) };
+//
+//    if (list.size == 0) return ""
+//    else if (list.size == 1) return list.first();
+//    else {
+//        throw RuntimeException("QuoteDefine 出现多个 ${list.joinToString(",")}")
+//    }
+//}
+//
+///**
+// * 找到指定findString的索引.
+// * @param value 源字符串
+// * @param startIndex 源字符串开始的位置
+// * @param findString 要查找的字符串
+// */
+//private fun getNextIndex(value: String, startIndex: Int, findString: String): Int {
 //    if (startIndex >= value.length) return -1;
 //    if (startIndex < 0) return -1;
 //
@@ -211,12 +193,13 @@ private fun getNextIndex(value: String, startIndex: Int, findString: String): In
 //    while (true) {
 //        index++;
 //        if (index >= value.length) break;
-//        if (value[index] != findString) {
+//        if (value.IsMatch(index, findString)) {
 //            return index;
 //        }
 //    }
 //    return -1;
 //}
+
 
 /**
  * @param until 返回 true 表示命中,即返回该 index
@@ -381,85 +364,6 @@ private fun getNextSplitIndex(value: String, startIndex: Int, quoteDefines: Arra
     return value.length;
 }
 
-private fun _getIndexString_SkipInQuote(Value: String, index: Int, vararg findStrings: String): Int {
-
-    if (index == Value.length) return -1;
-    if (index < 0) return -1;
-
-    var tmpPos = 0;
-
-    var i = index - 1;
-    while (true) {
-        i++;
-        if (i >= Value.length) break;
-
-        var item = Value.get(i);
-        if (item == '\\') {
-            i++;
-            continue;
-        }
-
-        if (item == '\'') {
-            tmpPos = _getNextChar(Value, i + 1, '\'');
-            if (tmpPos < 0) return tmpPos;
-
-            i = tmpPos;
-            continue;
-        }
-
-        if (item == '"') {
-            tmpPos = _getNextChar(Value, i + 1, '"');
-            if (tmpPos < 0) return tmpPos;
-
-            i = tmpPos;
-            continue;
-        }
-
-        for (findString in findStrings) {
-            if (Value.IsMatch(i, findString)) {
-                return i;
-            }
-        }
-    }
-
-
-    return -1;
-}
-
-fun String.RemoveComment(): String {
-    var str = this;
-    //去除注释
-    var i = -1;
-    while (true) {
-        i++;
-        if (i >= str.length) break;
-
-        var next = _getIndexString_SkipInQuote(str, i, "//", "/*");
-        if (next < 0) break;
-
-        if (str.IsMatch(next, "//")) {
-            var lineEnd = str.indexOf('\n', next);
-            if (lineEnd < 0) {
-                str = str.substring(0, next);
-                break;
-            } else {
-                str = str.substring(0, next) + str.substring(lineEnd + 1);
-            }
-        } else {
-            var end = str.indexOf("*/", next);
-            if (end < 0) {
-                str = str.substring(0, next);
-                break;
-            } else {
-                str = str.substring(0, next) + str.substring(end + 2);
-            }
-        }
-
-        i = next - 1;
-    }
-
-    return str;
-}
 
 
 fun String.Repeat(count: Int): String {
@@ -651,11 +555,9 @@ fun String.Xml2Json(): JsonMap {
 
 
 class MatchPatternTokenItem(value: String) : MyString(value) {
-
     var isToken: Boolean = false
         get() = field
         private set
-
 
     init {
         isToken = value.length > 0 && value.first().isLetter()

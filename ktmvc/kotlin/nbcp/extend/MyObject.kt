@@ -1,4 +1,4 @@
-@file:JvmName("MyWebHelper")
+@file:JvmName("MyMvcHelper")
 @file:JvmMultifileClass
 
 package nbcp.web

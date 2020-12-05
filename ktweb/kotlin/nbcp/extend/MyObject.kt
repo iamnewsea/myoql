@@ -4,15 +4,11 @@
 package nbcp.web
 
 import nbcp.comm.*
-import org.springframework.http.MediaType
 import nbcp.utils.*
 import nbcp.db.LoginUserModel
 import nbcp.db.db
-import org.springframework.web.servlet.HandlerMapping
 import java.time.LocalDateTime
-import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 
 private val webUserToken: WebUserTokenBean by lazy {

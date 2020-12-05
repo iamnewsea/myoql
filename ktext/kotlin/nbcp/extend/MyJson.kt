@@ -101,7 +101,7 @@ fun <T> String.FromJson(collectionClass: Class<T>, getSetStyle: Boolean, withNul
         return this as T
     }
 
-    var jsonString = this.RemoveComment().Remove("\r\n", "\n")
+    var jsonString = this
     if (jsonString.isEmpty()) {
         return null;
     }
