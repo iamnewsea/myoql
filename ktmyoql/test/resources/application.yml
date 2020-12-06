@@ -63,12 +63,11 @@ spring:
     auto: true
   data:
     mongodb:
+#      uri: mongodb://dev:123@dev8.cn:27017/cms
       host: dev8.cn
-      port: 27017
-      db: edu_report_1
-      username: root
-      password: yxh123
-      uri: mongodb://${spring.data.mongodb.username}:${spring.data.mongodb.password}@${spring.data.mongodb.host:127.0.0.1}:${spring.data.mongodb.port:27017}/${spring.data.mongodb.db}
+      database: cms
+      username: dev
+      password: 123
   redis:
     timeout: 3000
     database: 0

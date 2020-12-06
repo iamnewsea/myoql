@@ -1,13 +1,15 @@
 package nbcp.db.mongo
 
+import nbcp.comm.HasValue
+import nbcp.db.mysql.ExistsDataSourceConfigCondition
 import nbcp.utils.SpringUtil
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.DependsOn
-import org.springframework.context.annotation.Primary
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
+import org.springframework.context.annotation.*
 import org.springframework.core.convert.support.GenericConversionService
+import org.springframework.core.type.AnnotatedTypeMetadata
 import org.springframework.data.mongodb.MongoDatabaseFactory
 import org.springframework.data.mongodb.MongoTransactionManager
 import org.springframework.data.mongodb.core.MongoTemplate
@@ -21,8 +23,7 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext
  * https://docs.spring.io/spring-data/data-mongodb/docs/current/reference/html/index.html
  */
 @Configuration
-@AutoConfigureAfter(MongoDatabaseFactory::class)
-@ConditionalOnProperty("spring.data.mongodb.uri")
+@Conditional(ExistsMongoDataSourceConfigCondition::class)
 @DependsOn("springUtil")
 class MongoDbConfig {
 
@@ -54,4 +55,13 @@ class MongoDbConfig {
     fun transactionManager(dbFactory: MongoDatabaseFactory): MongoTransactionManager {
         return MongoTransactionManager(dbFactory)
     }
+}
+
+
+class ExistsMongoDataSourceConfigCondition: Condition {
+    override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata): Boolean {
+         return context.environment.getProperty("spring.data.mongodb.uri") != null ||
+                 context.environment.getProperty("spring.data.mongodb.database") != null
+    }
+
 }

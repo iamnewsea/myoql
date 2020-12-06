@@ -66,7 +66,6 @@ class ExistsDataSourceConfigCondition : Condition {
  *      password,如果不存在取 spring.datasource.slave.password
  */
 @Configuration()
-@AutoConfigureAfter(value = arrayOf(DataSourceAutoConfiguration::class))
 @Conditional(ExistsDataSourceConfigCondition::class)
 @DependsOn(value = arrayOf("springUtil"))
 class MysqlConfig() {
