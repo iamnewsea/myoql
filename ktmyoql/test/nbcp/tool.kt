@@ -17,7 +17,7 @@ class tool : TestBase() {
         var path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0];
 
         nbcp.db.mysql.tool.generator().work(
-                File(path).parentFile.path + "/ktmyoql/kotlin/nbcp/db/sql/dbr_tables.kt",
+                File(path).parentFile.path + "/ktmyoql/kotlin/nbcp/db/sql/dbr_base_tables.kt",
                 "nbcp.db.sql.entity.",
                 s_annex::class.java, StringMap(), listOf()
         )
