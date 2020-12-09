@@ -43,7 +43,7 @@
         <mybatis-spring.version>2.0.5</mybatis-spring.version>
         <mybatis.version>3.5.5</mybatis.version>
         <elasticsearch-rest-client.version>7.9.0</elasticsearch-rest-client.version>
-        <jackson.version>2.11.2</jackson.version>
+        <jackson.version>2.12.0</jackson.version>
         <!--        <undertow.version>2.0.28.Final</undertow.version>-->
         <!--        <jackson.version>2.10.0</jackson.version>-->
 
@@ -53,7 +53,7 @@
     </properties>
 
 
-    <!-- 设定主仓库，按设定顺序进行查找。 -->
+  <!-- 设定主仓库，按设定顺序进行查找。 -->
     <repositories>
         <repository>
             <id>main-repos</id>
@@ -84,7 +84,6 @@
         </pluginRepository>
     </pluginRepositories>
 
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -112,12 +111,6 @@
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-kotlin</artifactId>
             <version>${jackson.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jetbrains.kotlin</groupId>
-                    <artifactId>kotlin-reflect</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
         <dependency>
@@ -163,12 +156,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.ow2.asm</groupId>
-                    <artifactId>asm</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 
@@ -222,8 +209,8 @@
         <plugins>
             <plugin>
                 <artifactId>kotlin-maven-plugin</artifactId>
-                <version>${kotlin.version}</version>
                 <groupId>org.jetbrains.kotlin</groupId>
+                <version>${kotlin.version}</version>
                 <configuration>
                     <jvmTarget>1.8</jvmTarget>
                     <compilerPlugins>
