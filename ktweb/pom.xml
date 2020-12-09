@@ -48,22 +48,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/it.sauronsoftware/jave -->
-        <!--        <dependency>-->
-        <!--            <groupId>it.sauronsoftware</groupId>-->
-        <!--            <artifactId>jave</artifactId>-->
-        <!--            <version>1.0.2</version>-->
-        <!--            <scope>provided</scope>-->
-        <!--        </dependency>-->
-
-        <!--        &lt;!&ndash; https://mvnrepository.com/artifact/commons-codec/commons-codec &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>commons-codec</groupId>-->
-        <!--            <artifactId>commons-codec</artifactId>-->
-        <!--            <version>1.14</version>-->
-        <!--            <scope>provided</scope>-->
-        <!--        </dependency>-->
-
 
         <!-- https://mvnrepository.com/artifact/org.bytedeco/javacv -->
         <dependency>
@@ -72,22 +56,6 @@
             <version>1.5.3</version>
             <scope>provided</scope>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.bytedeco.javacpp-presets/ffmpeg-platform -->
-        <!--        <dependency>-->
-        <!--            <groupId>org.bytedeco.javacpp-presets</groupId>-->
-        <!--            <artifactId>ffmpeg-platform</artifactId>-->
-        <!--            <version>4.1-1.4.4</version>-->
-        <!--            <scope>provided</scope>-->
-        <!--        </dependency>-->
-
-
-        <!--        <dependency>-->
-        <!--            <groupId>io.undertow</groupId>-->
-        <!--            <artifactId>undertow-core</artifactId>-->
-        <!--            <version>${undertow.version}</version>-->
-        <!--            <scope>provided</scope>-->
-        <!--        </dependency>-->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
