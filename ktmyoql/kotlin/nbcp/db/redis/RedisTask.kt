@@ -7,7 +7,9 @@ import nbcp.comm.minus
 import nbcp.model.MasterAlternateMap
 import nbcp.utils.*
 import org.slf4j.LoggerFactory
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 import org.springframework.context.annotation.DependsOn
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -22,6 +24,7 @@ import java.util.concurrent.TimeUnit
 @Service
 @DependsOn("springUtil")
 @ConditionalOnProperty("spring.redis.host")
+@ConditionalOnBean(RedisAutoConfiguration::class)
 class RedisTask {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

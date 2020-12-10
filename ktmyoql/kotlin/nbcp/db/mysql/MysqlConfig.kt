@@ -5,6 +5,7 @@ import nbcp.comm.AsString
 import nbcp.utils.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -22,18 +23,18 @@ class ExistsSlaveDataSourceConfigCondition : Condition {
         return getValue(context.environment);
     }
 
-    fun getValue(environment: Environment):Boolean {
+    fun getValue(environment: Environment): Boolean {
         return (
-                 environment.getProperty("spring.datasource.url") != null ||
-                         environment.getProperty("spring.datasource.hikari.url") != null ||
-                         environment.getProperty("spring.datasource.hikari.jdbc-url") != null
+                environment.getProperty("spring.datasource.url") != null ||
+                        environment.getProperty("spring.datasource.hikari.url") != null ||
+                        environment.getProperty("spring.datasource.hikari.jdbc-url") != null
                 )
                 &&
                 (
-                     environment.getProperty("spring.datasource.slave.url") != null ||
-                             environment.getProperty("spring.datasource.slave.hikari.url") != null ||
-                             environment.getProperty("spring.datasource.slave.hikari.jdbc-url") != null
-                )
+                        environment.getProperty("spring.datasource.slave.url") != null ||
+                                environment.getProperty("spring.datasource.slave.hikari.url") != null ||
+                                environment.getProperty("spring.datasource.slave.hikari.jdbc-url") != null
+                        )
     }
 }
 
@@ -42,7 +43,7 @@ class ExistsDataSourceConfigCondition : Condition {
         return getValue(context.environment)
     }
 
-    fun getValue(environment: Environment):Boolean {
+    fun getValue(environment: Environment): Boolean {
         return environment.getProperty("spring.datasource.url") != null ||
                 environment.getProperty("spring.datasource.hikari.url") != null ||
                 environment.getProperty("spring.datasource.hikari.jdbc-url") != null
@@ -67,6 +68,7 @@ class ExistsDataSourceConfigCondition : Condition {
  */
 @Configuration()
 @Conditional(ExistsDataSourceConfigCondition::class)
+@ConditionalOnBean(DataSourceAutoConfiguration::class)
 @DependsOn(value = arrayOf("springUtil"))
 class MysqlConfig() {
     companion object {

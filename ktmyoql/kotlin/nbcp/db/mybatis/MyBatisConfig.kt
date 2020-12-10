@@ -1,6 +1,7 @@
 package nbcp.db.mybatis
 
 import nbcp.comm.config
+import nbcp.db.mysql.ExistsDataSourceConfigCondition
 import nbcp.db.mysql.MysqlConfig
 import nbcp.utils.*
 import org.apache.ibatis.session.SqlSessionFactory
@@ -12,10 +13,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.DependsOn
-import org.springframework.context.annotation.Lazy
+import org.springframework.context.annotation.*
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.EnableTransactionManagement
@@ -31,8 +29,9 @@ import javax.sql.DataSource
 @EnableTransactionManagement
 @AutoConfigureAfter(value = arrayOf(DataSourceAutoConfiguration::class))
 @ConditionalOnProperty("app.mybatis.package")
-@DependsOn(value = arrayOf("mysqlConfig", "primary", "springUtil"))
-@ConditionalOnBean(value = arrayOf(MysqlConfig::class))
+//@DependsOn(value = arrayOf("mysqlConfig", "primary", "springUtil"))
+@Conditional(ExistsDataSourceConfigCondition::class)
+@ConditionalOnBean(DataSourceAutoConfiguration::class)
 @Lazy
 open class MyBatisConfig() : TransactionManagementConfigurer {
     val dataSource: DataSource by lazy {

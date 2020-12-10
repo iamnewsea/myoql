@@ -7,4 +7,4 @@
 - MongoAutoConfiguration::class , 排除 Mongo数据库配置
 - DataSourceAutoConfiguration::class , 排除 MySql数据库配置
 - RedisAutoConfiguration::class , 排除 Redis数据库配置
-
+- ElasticsearchDataAutoConfiguration ,排除 Es数据库配置

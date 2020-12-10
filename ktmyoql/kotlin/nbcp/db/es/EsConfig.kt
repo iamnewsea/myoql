@@ -12,7 +12,9 @@ import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestClient.FailureListener
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
@@ -23,6 +25,7 @@ import java.lang.RuntimeException
 @Configuration
 @DependsOn("springUtil")
 @ConditionalOnProperty("spring.elasticsearch.rest.uris")
+@ConditionalOnBean(ElasticsearchDataAutoConfiguration::class)
 @Lazy
 class EsConfig {
     companion object {
