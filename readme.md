@@ -8,6 +8,32 @@
 - 本发安装单个Jar包： python install_jar.py -f ktext
 
 
+## 发布到私服
+maven的 setting.xml 增加
+```
+<server>
+<id>nancal</id>
+<username>admin</username>
+<password></password>
+</server>
+```
+
+pom.xml 中增加：
+```
+<profile>
+    <id>nancal</id>
+    <distributionManagement>
+        <repository>
+            <id>nancal</id>
+            <url>http://saas-dev.nancal.com:31016/repository/maven-releases/</url>
+        </repository>
+    </distributionManagement>
+</profile>
+```
+
+本地打包：python install.py
+本地发包：mvn clean deploy -Dmaven.test.skip=true -P nancal
+
 ## 版本
 
 Major.Minor.Fix
