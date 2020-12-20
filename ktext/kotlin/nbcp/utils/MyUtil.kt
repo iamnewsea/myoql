@@ -151,7 +151,7 @@ object MyUtil {
     }
 
     /**
-     * 生成最大数的随机数
+     * 生成大于等于0，小于指定最大值的随机数,即 [0,max)
      */
     fun getRandomWithMaxValue(max: Int): Int {
         return Math.abs(random.nextInt() % max);
