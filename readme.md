@@ -32,7 +32,7 @@ pom.xml 中增加：
 ```
 
 本地打包：python install.py
-本地发包：mvn clean deploy -Dmaven.test.skip=true -P nancal
+发布到私服：mvn clean deploy -Dmaven.test.skip=true -P nancal
 
 ## 版本
 
