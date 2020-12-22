@@ -31,7 +31,7 @@ pom.xml 中增加：
 </profile>
 ```
 
-本地打包：python install.py
+本地打包：python install_jar.py
 发布到私服：mvn clean deploy -Dmaven.test.skip=true -P nancal
 
 ## 版本
