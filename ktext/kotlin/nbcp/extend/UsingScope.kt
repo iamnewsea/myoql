@@ -1,43 +1,123 @@
+@file:JvmName("MyHelper")
+@file:JvmMultifileClass
+
 package nbcp.comm
 
-import ch.qos.logback.classic.Level
-import org.springframework.boot.logging.LogLevel
-import java.io.Closeable
+import nbcp.comm.GetEnumStringField
+import nbcp.comm.LogScope
+import nbcp.comm.logger
+import org.slf4j.Logger
+import java.util.*
+
+
+private val _scopes = ThreadLocal.withInitial { Stack<Any>() }
+
+val scopes: Stack<Any>
+    get() = _scopes.get();
+
+/**
+ * 用法:
+ *
+ * @param initObjects: 可以是 array, list,AutoCloseable,any, 如果是 array,list，则依次添加到作用域栈中。
+ */
+inline fun <T, M : Any> usingScope(initObjects: M, body: () -> T): T {
+    return usingScope(initObjects, body, {})
+}
+
+
+inline fun <T, M : Any> usingScope(initObjects: M, body: () -> T, finally: ((M) -> Unit)): T {
+    var init_list = mutableListOf<Any>()
+
+    if (initObjects is Collection<*>) {
+        init_list.addAll(initObjects as Collection<Any>)
+    } else if (initObjects is Array<*>) {
+        init_list.addAll(initObjects.map { it!! })
+    } else {
+        init_list.add(initObjects)
+    }
+
+    init_list.forEach {
+        scopes.push(it);
+    }
+
+    try {
+        var ret = body();
+
+        init_list.asReversed().forEach {
+            if (it is AutoCloseable) {
+                it.close()
+            }
+        }
+        finally(initObjects)
+        return ret;
+    } finally {
+        for (i in 1..init_list.size) {
+            if (scopes.isEmpty() == false) {
+                scopes.pop()
+            } else {
+                logger.error("scopes isEmpty!")
+            }
+        }
+    }
+}
 
 
 /**
- * value = ch.qos.logback.classic.Level.级别
- * TRACE < DEBUG < INFO < WARN < ERROR
+ * 按类型获取当前域 ,  互斥枚举类型：枚举有 mutexGroup:String 属性。
  */
-class LogScope(val level: Int) : Closeable {
-    companion object {
-        /**
-         * 记录所有的Info
-         */
-        fun ImportantInfo(): LogScope {
-            return LogScope(Level.INFO_INT);
-        }
+inline fun <reified R> Stack<*>.getScopeTypes(): Set<R> {
+    if (this.size == 0) return setOf()
 
-        /**
-         * 记录所有记录
-         */
-        fun AllTrace(): LogScope {
-            return LogScope(Level.TRACE_INT);
+    var list = mutableSetOf<R>()
+    for (i in this.indices.reversed()) {
+        var item = this[i];
+        if (item is R) {
+            list.add(item);
         }
     }
 
-    override fun close() {
+
+    var retType = R::class.java;
+    if (retType.isEnum) {
+        var mutexGroupField = retType.GetEnumStringField()
+        if (mutexGroupField != null && mutexGroupField.name == "mutexGroup") {
+            var groups = mutableSetOf<String>()
+            var removeItems = mutableSetOf<R>()
+            for (i in list.indices) {
+                var item = list.elementAt(i);
+                var group = mutexGroupField.get(item).toString();
+                if (groups.contains(group)) {
+                    removeItems.add(item);
+                } else {
+                    groups.add(group)
+                }
+            }
+
+            list.removeAll(removeItems);
+        }
     }
+    return list;
 }
 
 
-enum class OrmLogScope(val remark: String) : Closeable {
-    IgnoreExecuteTime("不记录执行时间"),
-    IgnoreAffectRow("不记录影响行数");
+private var debug_value: Boolean? = null
 
-    override fun close() {
+inline val Logger.scopeInfoLevel: Boolean
+    get() {
+        var logs = scopes.getScopeTypes<LogScope>()
+        if (logs.any()) {
+            return logs.any { ch.qos.logback.classic.Level.INFO_INT >= it.level }
+        }
+
+        return this.isInfoEnabled;
     }
-}
 
+inline val Logger.scopeErrorLevel: Boolean
+    get() {
+        var logs = scopes.getScopeTypes<LogScope>()
+        if (logs.any()) {
+            return logs.any { ch.qos.logback.classic.Level.ERROR_INT >= it.level }
+        }
 
-
+        return this.isErrorEnabled;
+    }
