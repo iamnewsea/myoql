@@ -252,7 +252,7 @@ object MyUtil {
             if (path.startsWith("file:/")) {
                 index = "file:/".length;
             }
-            return File(path.Slice(index, 0 - "!/BOOT-INF/classes!/".length))
+            return File(path.Slice(index - 1, 0 - "!/BOOT-INF/classes!/".length))
         } else if (url.protocol == "file") {
             //值是： /D:/code/sites/server/admin/target/classes/
             //处理文件路径中中文的问题。
