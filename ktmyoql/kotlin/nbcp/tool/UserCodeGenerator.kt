@@ -14,13 +14,19 @@ import java.time.LocalTime
 import java.util.*
 
 object UserCodeGenerator {
-    fun genMvcBase(group: String, entity: BaseMetaData): String {
-        var stream = this::class.java.getResourceAsStream("/kotlin_mvc_template_base.txt")
+    /**
+     * 生成基础的CRUD接口
+     */
+    fun genMvcCrud(group: String, entity: BaseMetaData): String {
+        var stream = this::class.java.getResourceAsStream("/kotlin_mvc_template_crud.txt")
         var text = stream.readBytes().toString(utf8)
 
         return gen(group, entity, text);
     }
 
+    /**
+     * 生成空的Mvc类
+     */
     fun genMvc(group: String, entity: BaseMetaData): String {
         var stream = this::class.java.getResourceAsStream("/kotlin_mvc_template.txt")
         var text = stream.readBytes().toString(utf8)
@@ -28,6 +34,9 @@ object UserCodeGenerator {
         return gen(group, entity, text);
     }
 
+    /**
+     * 生成Vue列表页面
+     */
     fun genVueList(group: String, entity: BaseMetaData): String {
         var stream = this::class.java.getResourceAsStream("/vue_list_template.txt")
         var text = stream.readBytes().toString(utf8)
@@ -35,6 +44,9 @@ object UserCodeGenerator {
         return gen(group, entity, text);
     }
 
+    /**
+     * 生成Vue卡片页面
+     */
     fun genVueCard(group: String, entity: BaseMetaData): String {
         var stream = this::class.java.getResourceAsStream("/vue_card_template.txt")
         var text = stream.readBytes().toString(utf8)
@@ -42,6 +54,9 @@ object UserCodeGenerator {
         return gen(group, entity, text);
     }
 
+    /**
+     * 生成Vue引用
+     */
     fun genVueRef(group: String, entity: BaseMetaData): String {
         var stream = this::class.java.getResourceAsStream("/vue_ref_template.txt")
         var text = stream.readBytes().toString(utf8)
