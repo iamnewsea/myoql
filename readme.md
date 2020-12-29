@@ -10,29 +10,91 @@
 
 ## 发布到私服
 maven的 setting.xml 增加
+
+servers
 ```
-<server>
-<id>nancal</id>
-<username>admin</username>
-<password></password>
-</server>
+    <server>
+       <id>snapshots</id>
+      <username>iamnewsea</username>
+      <password>Didadi.123uijk</password>
+    </server>
+	
+	<server>
+       <id>nancal-dev</id>
+      <username>admin</username>
+      <password>xxx</password>
+    </server>
+	<server>
+       <id>nancal-test</id>
+      <username>admin</username>
+      <password>xxx</password>
+    </server>
+	<server>
+       <id>nancal-main</id>
+      <username>admin</username>
+      <password>xxx</password>
+    </server>
 ```
 
-pom.xml 中增加：
+mirrors
+```
+	<mirror>
+        <id>nancal-dev</id>
+		<mirrorOf>nancal-dev</mirrorOf>
+        <name>nancal-dev</name>
+        <url>http://saas-dev.nancal.com:31016/repository/maven-public/</url>
+    </mirror>
+	<mirror>
+        <id>nancal-test</id>
+		<mirrorOf>nancal-test</mirrorOf>
+        <name>nancal-test</name>
+        <url>http://saas-dev.nancal.com:32016/repository/maven-public/</url>
+    </mirror>
+	<mirror>
+        <id>nancal-main</id>
+		<mirrorOf>nancal-main</mirrorOf>
+        <name>nancal-main</name>
+        <url>http://saas-dev.nancal.com:33016/repository/maven-public/</url>
+    </mirror>
+```
+
+
+pom.xml 文件设置：(以后想办法把这一段移到 setting.xml 中)
 ```
 <profile>
-    <id>nancal</id>
-    <distributionManagement>
-        <repository>
-            <id>nancal</id>
-            <url>http://saas-dev.nancal.com:31016/repository/maven-releases/</url>
-        </repository>
-    </distributionManagement>
-</profile>
+		<id>nancal-dev</id>
+
+		<distributionManagement>
+			<repository>
+				<id>nancal</id>
+				<url>http://saas-dev.nancal.com:31016/repository/maven-releases/</url>
+			</repository>
+		</distributionManagement>
+	</profile>
+	<profile>
+		<id>nancal-test</id>
+
+		<distributionManagement>
+			<repository>
+				<id>nancal</id>
+				<url>http://saas-dev.nancal.com:32016/repository/maven-releases/</url>
+			</repository>
+		</distributionManagement>
+	</profile>
+	<profile>
+		<id>nancal-main</id>
+
+		<distributionManagement>
+			<repository>
+				<id>nancal</id>
+				<url>http://saas-dev.nancal.com:33016/repository/maven-releases/</url>
+			</repository>
+		</distributionManagement>
+	</profile>
 ```
 
 本地打包：python install_jar.py
-发布到私服：mvn clean deploy -Dmaven.test.skip=true -P nancal
+发布到私服：mvn clean deploy -Dmaven.test.skip=true -P nancal-dev
 
 ## 版本
 
