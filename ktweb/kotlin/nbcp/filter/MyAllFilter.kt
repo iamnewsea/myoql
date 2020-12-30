@@ -92,8 +92,9 @@ open class MyAllFilter : Filter, InitializingBean {
 
         if (!(request is HttpServletRequest) ||
 //                FileExtentionInfo(request.requestURI).isStaticURI ||
-                request.method == "HEAD" ||
-                (request is MyHttpRequestWrapper)) {
+            request.method == "HEAD" ||
+            (request is MyHttpRequestWrapper)
+        ) {
             chain?.doFilter(request, response)
             return;
         }
@@ -282,7 +283,12 @@ open class MyAllFilter : Filter, InitializingBean {
 //        }
 //    }
 
-    private fun procFilter(request: MyHttpRequestWrapper, response: MyHttpResponseWrapper, chain: FilterChain?, startAt: LocalDateTime) {
+    private fun procFilter(
+        request: MyHttpRequestWrapper,
+        response: MyHttpResponseWrapper,
+        chain: FilterChain?,
+        startAt: LocalDateTime
+    ) {
         RequestContextHolder.setRequestAttributes(ServletRequestAttributes(request, response))
 
         beforeRequest(request)
@@ -299,7 +305,8 @@ open class MyAllFilter : Filter, InitializingBean {
                 errorMsg = err.Detail.AsString(err.message.AsString()).AsString("(未知错误)")
                 var errorInfo = mutableListOf<String>()
                 errorInfo.add(err::class.java.simpleName + ": " + errorMsg)
-                errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }.take(24))
+                errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }
+                    .take(24))
 
                 return@Error errorInfo.joinToString(line_break)
             }
@@ -382,59 +389,73 @@ open class MyAllFilter : Filter, InitializingBean {
                 originClient.contains("localhost") ||
                 originClient.contains("127.0.0.1");
 
-        if (allow) {
-            response.setHeader("Access-Control-Allow-Origin", originClient)
-            response.setHeader("Access-Control-Max-Age", "2592000") //30天。
+        if (allow == false) {
+            return;
+        }
 
-            response.setHeader("Access-Control-Allow-Credentials", "true")
-            response.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,PUT,HEAD,OPTIONS,DELETE")
+        //如果已经处理过，则跳过
+        if (response.getHeader("Access-Control-Allow-Origin").HasValue) {
+            return;
+        }
 
+        response.setHeader("Access-Control-Allow-Origin", originClient)
+        response.setHeader("Access-Control-Max-Age", "2592000") //30天。
 
-            var allowHeaders = mutableSetOf<String>();
-            allowHeaders.add(config.tokenKey);
-
-            //添加指定的
-            allowHeaders.addAll(headers)
-
-            if (request.method == "OPTIONS") {
-                allowHeaders.addAll(request.getHeader("Access-Control-Request-Headers").AsString().split(",").filter { it.HasValue })
-            }
-
-            if (allowHeaders.any() == false) {
-                allowHeaders.addAll(request.headerNames.toList())
+        response.setHeader("Access-Control-Allow-Credentials", "true")
+        response.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,PUT,HEAD,OPTIONS,DELETE")
 
 
-                //https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
-                var standardHeaders = arrayOf(
-                        "referer",
-                        "expires",
-                        "cache-control",
-                        "content-language",
-                        "last-modified",
-                        "pragma",
-                        "origin",
-                        "accept",
-                        "user-agent",
-                        "connection",
-                        "host",
-                        "accept-language",
-                        "accept-encoding",
-                        "content-length",
-                        "content-type"
-                )
-                //移除标准 header
-                allowHeaders.removeAll { standardHeaders.contains(it.toLowerCase()) }
-            }
+        var allowHeaders = mutableSetOf<String>();
+        allowHeaders.add(config.tokenKey);
+
+        //添加指定的
+        allowHeaders.addAll(headers)
+
+        if (request.method == "OPTIONS") {
+            allowHeaders.addAll(
+                request.getHeader("Access-Control-Request-Headers").AsString().split(",").filter { it.HasValue })
+        }
+
+        if (allowHeaders.any() == false) {
+            allowHeaders.addAll(request.headerNames.toList())
 
 
-            if (allowHeaders.any()) {
-                response.setHeader("Access-Control-Allow-Headers", allowHeaders.joinToString(","))
-                response.setHeader("Access-Control-Expose-Headers", allowHeaders.joinToString(","))
-            }
+            //https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
+            var standardHeaders = arrayOf(
+                "referer",
+                "expires",
+                "cache-control",
+                "content-language",
+                "last-modified",
+                "pragma",
+                "origin",
+                "accept",
+                "user-agent",
+                "connection",
+                "host",
+                "accept-language",
+                "accept-encoding",
+                "content-length",
+                "content-type"
+            )
+            //移除标准 header
+            allowHeaders.removeAll { standardHeaders.contains(it.toLowerCase()) }
+        }
+
+
+        if (allowHeaders.any()) {
+            response.setHeader("Access-Control-Allow-Headers", allowHeaders.joinToString(","))
+            response.setHeader("Access-Control-Expose-Headers", allowHeaders.joinToString(","))
         }
     }
 
-    fun afterComplete(request: MyHttpRequestWrapper, response: MyHttpResponseWrapper, callback: String, startAt: LocalDateTime, errorMsg: String) {
+    fun afterComplete(
+        request: MyHttpRequestWrapper,
+        response: MyHttpResponseWrapper,
+        callback: String,
+        startAt: LocalDateTime,
+        errorMsg: String
+    ) {
 //设置 Set-Cookie:PZXTK=59160c3a-5443-490f-a94f-db1e83f041fd; Path=/; HttpOnly
 //        var setCookieValue = myResponse.getHeader("Set-Cookie")
 //        if (setCookieValue.HasValue) {
@@ -490,7 +511,11 @@ open class MyAllFilter : Filter, InitializingBean {
         }
     }
 
-    private fun setResponseBid(resValue: ByteArray, request: MyHttpRequestWrapper, response: MyHttpResponseWrapper): Boolean {
+    private fun setResponseBid(
+        resValue: ByteArray,
+        request: MyHttpRequestWrapper,
+        response: MyHttpResponseWrapper
+    ): Boolean {
         if (resValue.isEmpty()) return false;
         var ori_md5 = request.getHeader("_bid_");
         if (ori_md5 == null) return false;
