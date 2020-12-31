@@ -100,10 +100,9 @@ open class MyAllFilter : Filter, InitializingBean {
         }
 
 
-
         if (httpRequest.method == "OPTIONS") {
             procCORS(httpRequest, httpResponse)
-            httpResponse.status = 200
+            httpResponse.status = 204
             return;
         }
 
@@ -390,11 +389,6 @@ open class MyAllFilter : Filter, InitializingBean {
                 originClient.contains("127.0.0.1");
 
         if (allow == false) {
-            return;
-        }
-
-        //如果已经处理过，则跳过
-        if (response.getHeader("Access-Control-Allow-Origin").HasValue) {
             return;
         }
 
