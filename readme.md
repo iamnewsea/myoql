@@ -16,7 +16,7 @@ servers
     <server>
        <id>snapshots</id>
       <username>iamnewsea</username>
-      <password>Didadi.123uijk</password>
+      <password>xxx</password>
     </server>
 	
 	<server>
