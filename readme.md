@@ -63,30 +63,27 @@ pom.xml 文件设置：(以后想办法把这一段移到 setting.xml 中)
 ```
 <profile>
 		<id>nancal-dev</id>
-
 		<distributionManagement>
 			<repository>
-				<id>nancal</id>
+				<id>nancal-dev</id>
 				<url>http://saas-dev.nancal.com:31016/repository/maven-releases/</url>
 			</repository>
 		</distributionManagement>
 	</profile>
 	<profile>
 		<id>nancal-test</id>
-
 		<distributionManagement>
 			<repository>
-				<id>nancal</id>
+				<id>nancal-test</id>
 				<url>http://saas-dev.nancal.com:32016/repository/maven-releases/</url>
 			</repository>
 		</distributionManagement>
 	</profile>
 	<profile>
 		<id>nancal-main</id>
-
 		<distributionManagement>
 			<repository>
-				<id>nancal</id>
+				<id>nancal-main</id>
 				<url>http://saas-dev.nancal.com:33016/repository/maven-releases/</url>
 			</repository>
 		</distributionManagement>
