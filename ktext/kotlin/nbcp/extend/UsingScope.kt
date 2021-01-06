@@ -3,12 +3,9 @@
 
 package nbcp.comm
 
-import nbcp.comm.GetEnumStringField
-import nbcp.comm.LogScope
-import nbcp.comm.logger
 import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.util.*
-
 
 private val _scopes = ThreadLocal.withInitial { Stack<Any>() }
 
@@ -54,8 +51,6 @@ inline fun <T, M : Any> usingScope(initObjects: M, body: () -> T, finally: ((M) 
         for (i in 1..init_list.size) {
             if (scopes.isEmpty() == false) {
                 scopes.pop()
-            } else {
-                logger.error("scopes isEmpty!")
             }
         }
     }

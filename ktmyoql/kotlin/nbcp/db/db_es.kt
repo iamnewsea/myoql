@@ -6,12 +6,14 @@ import nbcp.utils.*
 import org.springframework.core.convert.support.GenericConversionService
 import nbcp.db.es.*
 import org.elasticsearch.client.*
+import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 
 /**
  * 请使用 db.mongo
  */
 object db_es {
+    private  val logger = LoggerFactory.getLogger(this::class.java)
 
     //所有的组。
     val groups = mutableSetOf<IDataGroup>()

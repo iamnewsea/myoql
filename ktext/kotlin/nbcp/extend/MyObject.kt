@@ -88,9 +88,6 @@ inline fun <reified R> Stack<*>.getLatestScope(vararg enumValues: R): R? {
     return null;
 }
 
-val logger = LoggerFactory.getLogger(MyString::class.java)
-
-
 fun Serializable.ToSerializableByteArray(): ByteArray {
     ByteArrayOutputStream().use { byteOutStream ->
         ObjectOutputStream(byteOutStream).use { objStream ->

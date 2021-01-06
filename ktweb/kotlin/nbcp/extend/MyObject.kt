@@ -7,10 +7,11 @@ import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.LoginUserModel
 import nbcp.db.db
+import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import javax.servlet.http.HttpServletRequest
 
-
+private val logger = LoggerFactory.getLogger("ktweb.MyWebHelper")
 /**
  * 高并发系统不应该有Session。使用token即可。
  * 另外，由于跨域 SameSite 的限制，需要避免使用 Cookie 的方式。

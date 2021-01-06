@@ -3,13 +3,12 @@
 
 package nbcp.comm
 
-import java.math.BigDecimal
-import java.text.DecimalFormat
-import java.text.SimpleDateFormat
+import org.slf4j.LoggerFactory
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.*
 
+private val logger = LoggerFactory.getLogger("ktext.MyObject.DateTimeConverter")
 
 fun Any?.AsLocalDate(): LocalDate? {
     return this.AsLocalDateTime()?.toLocalDate();
@@ -80,19 +79,6 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
         return this.toLocalDateTime()
     } else if (this is Date) {
         return LocalDateTime.ofInstant(this.toInstant(), ZoneId.systemDefault());
-        //return LocalDateTime.of(this.year + 1900, this.month + 1, this.date, this.hours, this.minutes, this.seconds, (this.time % 1000).AsInt() * 1000000)
-//        var value = this.time;
-//
-//        var ret = LocalDate.of(1970, 1, 1).atStartOfDay();
-//
-////        //按北京时间处理。
-////        ret = ret.plusHours(8);
-//        ret = ret.plusSeconds(value / 1000)
-//        ret = ret.plusNanos(value % 1000 * 1000000)
-//
-//        //当地时间。
-//        return ret;
-//        return LocalDateTime.ofInstant(this.toInstant(), ZoneId.systemDefault());
     } else {
         throw RuntimeException("非法的类型转换,试图从 ${this::class.java}类型 到 LocalDateTime类型")
     }

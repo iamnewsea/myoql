@@ -84,7 +84,6 @@ class testa : TestBase() {
     }
 
     fun execCmd(vararg cmds: String): ListResult<String> {
-        logger.info(cmds.joinToString(" "));
         var p = Runtime.getRuntime().exec(cmds);
         var lines = listOf<String>()
 
