@@ -7,6 +7,7 @@ import nbcp.comm.*
 import nbcp.db.*
 import nbcp.comm.*
 import nbcp.db.es.*
+import org.elasticsearch.client.Response
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.regex.Pattern
@@ -24,7 +25,8 @@ private fun proc_es_match(value: Any?): Any? {
     if (type.isEnum) {
         return value.toString();
     } else if (type == LocalDateTime::class.java ||
-            type == LocalDate::class.java) {
+        type == LocalDate::class.java
+    ) {
         return value.AsLocalDateTime().AsDate()
     }
 
@@ -37,9 +39,83 @@ infix fun String.match(to: Any?): WhereData {
 }
 
 infix fun EsColumnName.match(to: Any?): WhereData {
-    var to = proc_es_match( to);
+    var to = proc_es_match(to);
 
     return WhereData.eq(this.toString(), to);// Pair<String, T>(this, to);
+}
+
+/**
+insert 返回结果：
+{
+"took": 0,
+"errors": true,
+"items": [{
+"create": {
+"_index": "nginx",
+"_type": "_doc",
+"_id": "5a8rxp2ri6f4",
+"status": 400,
+"error": {
+"type": "mapper_parsing_exception",
+"reason": "failed to parse field [createAt] of type [date] in document with id '5a8rxp2ri6f4'. Preview of field's value: '2021/01/07 20:50:36'",
+"caused_by": {
+"type": "illegal_argument_exception",
+"reason": "failed to parse date field [2021/01/07 20:50:36] with format [strict_date_optional_time||epoch_millis]",
+"caused_by": {
+"type": "date_time_parse_exception",
+"reason": "Failed to parse with all enclosed parsers"
+}
+}
+}
+}
+}]
+}
+ */
+data class EsResultMsg(
+    var error: Boolean = true,
+    var took: Int = 0,
+    var action: String = "", //create
+    var index: String = "",  // _index
+    var id: String = "",     // _id
+    var status: Int = 0,    //status
+    var type: String = "",   //type
+    var msg: String = "" //第一条错误信息, reason
+)
+
+fun Response.getResultMsg(): EsResultMsg {
+    var result_map = this.entity.content.readBytes().toString(utf8).FromJson<JsonMap>();
+    var ret = EsResultMsg();
+    if (result_map == null) return ret;
+    ret.error = result_map.get("errors").AsBoolean()
+    ret.took = result_map.get("took").AsInt()
+
+    var items = result_map.get("items") as List<Any>;
+    if (items.any() == false) {
+        return ret;
+    }
+
+    var item = items.first() as Map<String, Any>;
+    var item_keys = item.keys;
+    if (item_keys.any() == false) {
+        return ret;
+    }
+
+    var item_key1 = item.keys.first().AsString();
+    var item_value1 = item[item_key1] as Map<String, Any>
+    ret.action = item_key1;
+    ret.index = item_value1.get("_index").AsString()
+    ret.id = item_value1.get("_id").AsString()
+    ret.status = item_value1.get("status").AsInt()
+
+    var error = item_value1.get("error") as Map<String, Any>?;
+    if (error == null || error.keys.any() == false) {
+        return ret;
+    }
+
+    ret.type = error.get("type").AsString()
+    ret.msg = error.get("reason").AsString()
+
+    return ret;
 }
 
 //infix fun EsColumnName.match_size(value: Int): WhereData {

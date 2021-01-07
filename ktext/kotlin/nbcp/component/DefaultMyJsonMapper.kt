@@ -45,7 +45,7 @@ open class DefaultMyJsonMapper : ObjectMapper(), InitializingBean {
 
         @JvmStatic
         fun get(vararg styles: JsonStyleEnumScope): ObjectMapper {
-            var scopeStyles = scopes.getScopeTypes<JsonStyleEnumScope>().minus(styles).toMutableSet()
+            var scopeStyles = scopes.getScopeTypes<JsonStyleEnumScope>().plus(styles).toMutableSet()
 
 
             //看互斥性
@@ -124,7 +124,7 @@ fun ObjectMapper.setStyle(vararg styles: JsonStyleEnumScope): ObjectMapper {
     // 设置时区
     this.setTimeZone(TimeZone.getTimeZone("GMT+:08:00"))
 
-    this.dateFormat = SimpleDateFormat(styles.toList().getDateFormat());
+    this.dateFormat = SimpleDateFormat(styles.getDateFormat());
 
 
     //在某些时候，如 mongo.aggregate.group._id 时， null 。
@@ -144,10 +144,10 @@ fun ObjectMapper.setStyle(vararg styles: JsonStyleEnumScope): ObjectMapper {
     return this;
 }
 
+fun Array<out JsonStyleEnumScope>.getDateFormat(): String = this.toList().getDateFormat()
 /**
- * 这个方法不准确，应该按 scopes.getLatestScope(JsonStyleEnumScope.DateLocalStyle,JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.DateStandardStyle) ?: JsonStyleEnumScope.DateStandardStyle
  */
-private fun List<JsonStyleEnumScope>.getDateFormat(): String {
+fun Collection<JsonStyleEnumScope>.getDateFormat(): String {
     if (this.contains(JsonStyleEnumScope.DateUtcStyle)) {
         return "yyyy-MM-dd'T'HH:mm:ss'Z'"
     } else if (this.contains(JsonStyleEnumScope.DateLocalStyle)) {

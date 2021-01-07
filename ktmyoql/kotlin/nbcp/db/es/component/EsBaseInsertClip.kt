@@ -11,6 +11,7 @@ import org.bson.types.ObjectId
 import org.elasticsearch.client.Request
 import org.slf4j.LoggerFactory
 import java.lang.Exception
+import java.lang.RuntimeException
 import java.time.LocalDateTime
 
 /**
@@ -105,12 +106,14 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
         }
 
         var requestBody = "";
-        usingScope(arrayOf(JsonStyleEnumScope.DateUtcStyle,JsonStyleEnumScope.Compress)) {
+        // 关于es中时间类型，仅支持 "yyyy-MM-dd"、"yyyyMMdd"、"yyyyMMddHHmmss"、"yyyy-MM-ddTHH:mm:ss"、"yyyy-MM-ddTHH:mm:ss.SSS"、"yyyy-MM-ddTHH:mm:ss.SSSZ"格式
+        // https://www.cnblogs.com/koushr/p/9498888.html
+        usingScope(arrayOf(JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.Compress)) {
             requestBody = data.map { it.ToJson() + line_break }.joinToString("")
         }
         request.entity = NStringEntity(requestBody, ContentType.create("application/x-ndjson", utf8))
 
-        var responseBody = "";
+        var responseBody = EsResultMsg()
         var startAt = LocalDateTime.now()
         try {
             var response = esTemplate.performRequest(request)
@@ -119,7 +122,12 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
             }
 
             db.executeTime = LocalDateTime.now() - startAt
-            responseBody = response.entity.content.readBytes().toString(utf8)
+            responseBody = response.getResultMsg();
+
+            if (responseBody.error) {
+                throw RuntimeException(responseBody.toString())
+                return ret;
+            }
 
             usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
                 settingResult.forEach {
@@ -129,7 +137,7 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
 
             ret = entities.size;
             db.affectRowCount = entities.size
-            return db.affectRowCount
+            return ret
         } catch (e: Exception) {
             ret = -1;
             throw e;
@@ -138,7 +146,7 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
                 """[insert] ${this.collectionName}
 [url] ${request.method} ${request.endpoint}
 ${if (logger.debug) "[body] ${requestBody}" else "[enities.size] ${entities.size}"}
-[result] ${if (logger.debug) responseBody else ret}
+[result] ${if (logger.debug) responseBody.toString() else ret}
 [耗时] ${db.executeTime}
 """
             };
