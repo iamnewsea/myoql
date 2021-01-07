@@ -87,7 +87,9 @@ class generator_mapping {
         println("https://www.elastic.co/guide/en/elasticsearch/reference/7.6/indices.html")
         println("---")
         println("创建空的 index: curl -X PUT /{index}")
-        println("更新Mapping： curl -X PUT '/{index}/_mapping' -d '{json}' ")
+        println("更新Mapping：")
+        println("  curl -X PUT -H 'Content-Type: application/json' '/{index}/_mapping'  -d 'json'")
+        println("  curl -X PUT -H 'Content-Type: application/json' '/{index}/_mapping'  -d@jsonfile ")
     }
 
     var maxLevel = 9;
