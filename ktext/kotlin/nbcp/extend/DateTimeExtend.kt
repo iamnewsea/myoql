@@ -21,7 +21,12 @@ fun LocalDateTime.Format(pattern: String = ""): String {
     if (this.hour == 0 && this.minute == 0 && this.second == 0) {
         return this.format(java.time.format.DateTimeFormatter.ofPattern(pattern.AsString("yyyy-MM-dd")));
     }
-    return this.format(java.time.format.DateTimeFormatter.ofPattern(pattern.AsString("yyyy-MM-dd HH:mm:ss")));
+    var zoneSecond = 0L;
+    if (pattern.contains("Z")) {
+        zoneSecond = ZoneId.systemDefault().rules.getOffset(Instant.EPOCH).totalSeconds.AsLong()
+    }
+    return this.minusSeconds(zoneSecond)
+        .format(java.time.format.DateTimeFormatter.ofPattern(pattern.AsString("yyyy-MM-dd HH:mm:ss")));
 }
 
 /**
@@ -39,10 +44,18 @@ fun java.util.Date.Format(pattern: String): String {
     if (this.time == 0L) {
         return "";
     }
-    if (this.time % (MyUtil.OneDaySeconds * 1000) == 0L) {
-        return SimpleDateFormat(pattern.AsString("yyyy-MM-dd")).format(this);
+
+    var time = this;
+    if (time.time % (MyUtil.OneDaySeconds * 1000) == 0L) {
+        return SimpleDateFormat(pattern.AsString("yyyy-MM-dd")).format(time);
     }
-    return SimpleDateFormat(pattern.AsString("yyyy-MM-dd HH:mm:ss")).format(this)
+
+    var zoneSecond = 0L;
+    if (pattern.contains("Z")) {
+        zoneSecond = ZoneId.systemDefault().rules.getOffset(Instant.EPOCH).totalSeconds.AsLong()
+        time = Date(time.time - zoneSecond)
+    }
+    return SimpleDateFormat(pattern.AsString("yyyy-MM-dd HH:mm:ss")).format(time)
 }
 
 fun LocalDate.atEndOfDay(): LocalDateTime {

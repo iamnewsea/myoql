@@ -24,6 +24,7 @@ import java.util.*
 class SpringUtil : BeanPostProcessor, ApplicationContextAware {
     companion object {
         private var inited = false;
+        var startAt: LocalDateTime? = null
 
         private var applicationContext: ApplicationContext? = null
 
@@ -102,7 +103,11 @@ class SpringUtil : BeanPostProcessor, ApplicationContextAware {
         DefaultMyJsonMapper.addSerializer(Date::class.java, DateJsonSerializer(), DateJsonDeserializer())
         DefaultMyJsonMapper.addSerializer(LocalDate::class.java, LocalDateJsonSerializer(), LocalDateJsonDeserializer())
         DefaultMyJsonMapper.addSerializer(LocalTime::class.java, LocalTimeJsonSerializer(), LocalTimeJsonDeserializer())
-        DefaultMyJsonMapper.addSerializer(LocalDateTime::class.java, LocalDateTimeJsonSerializer(), LocalDateTimeJsonDeserializer())
+        DefaultMyJsonMapper.addSerializer(
+            LocalDateTime::class.java,
+            LocalDateTimeJsonSerializer(),
+            LocalDateTimeJsonDeserializer()
+        )
         DefaultMyJsonMapper.addSerializer(Timestamp::class.java, TimestampJsonSerializer(), TimestampJsonDeserializer())
     }
 
@@ -111,6 +116,9 @@ class SpringUtil : BeanPostProcessor, ApplicationContextAware {
             throw RuntimeException("设置 ApplicationContext 出现了异常!")
         }
 
+        if (startAt == null) {
+            startAt = LocalDateTime.now()
+        }
         applicationContext = context
     }
 }
