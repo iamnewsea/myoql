@@ -87,10 +87,14 @@ def resetVersion(module, file, groupId, artifactId, version):
 if __name__ == '__main__':
     setWorkPath()
 
+    groupId, artifactId, version, modules = getVersionData()
+
+
     if len(newVersion) > 0:
         resetVersionOnly(newVersion)
-
-    groupId, artifactId, version, modules = getVersionData()
+    else:
+        print("mysql现在的版本: " + version)
+        sys.exit(1)
 
     print("-------------------------------------------------------------------------------")
     print(os.linesep)
@@ -102,5 +106,5 @@ if __name__ == '__main__':
         os.chdir("../")
 
     print("")
-    print("新版本 %s 设置完成！" % (version))
+    print("新版本 %s 设置完成！" % (newVersion))
     print("-------------------------------------------------------------------------------")
