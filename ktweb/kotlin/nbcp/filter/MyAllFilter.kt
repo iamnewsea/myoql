@@ -174,7 +174,7 @@ open class MyAllFilter : Filter, InitializingBean {
                 } catch (e: Exception) {
                     logger.Error {
                         var msgs = mutableListOf<String>()
-                        msgs.add("[[----> ${request.LoginUser.name} ${request.ClientIp} ${request.method} ${request.fullUrl}")
+                        msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
                         msgs.add(e.message ?: "服务器错误");
                         msgs.add("<----]]")
 
@@ -215,7 +215,7 @@ open class MyAllFilter : Filter, InitializingBean {
 
                     logger.Info {
                         var msgs = mutableListOf<String>()
-                        msgs.add("[[----> ${request.LoginUser.name} ${request.ClientIp} ${request.method} ${request.fullUrl} <----]]")
+                        msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl} <----]]")
                         return@Info msgs.joinToString(line_break)
                     }
                     return;
@@ -228,7 +228,7 @@ open class MyAllFilter : Filter, InitializingBean {
 
                     logger.Error {
                         var msgs = mutableListOf<String>()
-                        msgs.add("[[----> ${request.LoginUser.name} ${request.ClientIp} ${request.method} ${request.fullUrl}")
+                        msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
                         msgs.add(e.message ?: "服务器错误");
                         msgs.add("<----]]")
                         return@Error msgs.joinToString(line_break)
@@ -245,7 +245,7 @@ open class MyAllFilter : Filter, InitializingBean {
 
             logger.Info {
                 var msgs = mutableListOf<String>()
-                msgs.add("[[----> ${request.LoginUser.name} ${request.ClientIp} ${request.method} ${request.fullUrl}")
+                msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
                 msgs.add("[response] ${response.status} ${endAt - startAt}")
 
                 var cookie = response.getHeader("Set-Cookie")
@@ -363,7 +363,7 @@ open class MyAllFilter : Filter, InitializingBean {
     private fun beforeRequest(request: MyHttpRequestWrapper) {
         logger.Info {
             var msgs = mutableListOf<String>()
-            msgs.add("[[----> ${request.LoginUser.name} ${request.ClientIp} ${request.method} ${request.fullUrl}")
+            msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
 
             if (request.headerNames.hasMoreElements()) {
                 msgs.add("[request header]:")
