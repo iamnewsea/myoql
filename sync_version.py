@@ -33,13 +33,15 @@ def resetVersionOnly(version):
     root = dom.documentElement
 
     vv_data = root.getElementsByTagName('version')[0].childNodes[0]
+    ori_version = vv_data.data
     vv_data.data = version
 
     with open('pom.xml', 'w', encoding='UTF-8') as fh:
         fh.write(dom.toxml())
         fh.flush()
 
-    print("重新设置了版本号 %s" % (version))
+    print("对 pom.xml 重新设置了版本号 %s --> %s" % (ori_version, version))
+    return ori_version
 
 
 def getVersionData():
@@ -81,29 +83,23 @@ def resetVersion(module, file, groupId, artifactId, version):
         fh.write(dom.toxml())
         fh.flush()
 
-    print("重新设置了: %s" % (module))
+    print("对 %s 重新设置了版本号: %s" % (module, version))
 
 
 if __name__ == '__main__':
     setWorkPath()
 
+    if len(newVersion) == 0:
+        print("myoql现在的版本: " + version)
+        sys.exit(1)
+    print("-----------------------------------------------")
+    resetVersionOnly(newVersion)
     groupId, artifactId, version, modules = getVersionData()
 
-    if len(newVersion) > 0:
-        resetVersionOnly(newVersion)
-    else:
-        print("mysql现在的版本: " + version)
-        sys.exit(1)
-
-    print("-------------------------------------------------------------------------------")
-    print(os.linesep)
-
-    # resetVersion("", "pom_component.xml", groupId, artifactId, version)
+    print("-----------------------------------------------")
 
     for module in modules:
         resetVersion(module, "pom.xml", groupId, artifactId, version)
         os.chdir("../")
 
-    print("")
-    print("版本设置完成:  %s --> %s" % (version,newVersion))
-    print("-------------------------------------------------------------------------------")
+    print("-----------------------------------------------")

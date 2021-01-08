@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletResponse
  * 0. 标注 @SpringBootApplication 的启动类，还需要添加 @ServletComponentScan 注解（如果不是 nbcp包，@ServletComponentScan(value = {"nbcp.**"})）。
  * 1. app.filter.allow-origins
  * 2. app.filter.headers
- * 3. 通过 Url参数 log-level 控制 Log级别
+ * 3. 通过 Url参数 log-level 控制 Log级别,可以是数字，也可以是被 ch.qos.logback.classic.Level.toLevel识别的参数，不区分大小写，如：off,info
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 //@Configuration
@@ -113,15 +113,23 @@ open class MyAllFilter : Filter, InitializingBean {
 //        MDC.put("client_ip", request.ClientIp)
 
 //        var requestUri = httpRequest.requestURI;
-        var logLevel = httpRequest.queryJson.get("log-level").AsInt();
-//        var ignoreLog = .AsBoolean() || ignoreLogUrls.any {
-//            requestUri.startsWith(it, true) &&
-//                    !(it.last().isLetterOrDigit() && (httpRequest.requestURI.getOrNull(it.length)?.isLetterOrDigit()
-//                            ?: false))
-//        }
+        var logLevelString = httpRequest.queryJson.get("log-level").AsString();
 
-        if (logLevel > 0 && config.debug) {
-            usingScope(LogScope(logLevel)) {
+        var logLevel: ch.qos.logback.classic.Level? = null
+
+        if (logLevelString.HasValue) {
+            if (logLevelString.IsNumberic()) {
+                var logLevelInt = logLevelString.AsInt()
+                if (logLevelInt > 0) {
+                    logLevel = Level.toLevel(logLevelInt, Level.WARN)
+                }
+            } else {
+                logLevel = Level.toLevel(logLevelString, Level.WARN)
+            }
+        }
+
+        if (logLevel != null) {
+            usingScope(LogScope(logLevel.toInt())) {
                 next(httpRequest, httpResponse, chain);
             }
         } else {
