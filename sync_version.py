@@ -89,7 +89,6 @@ if __name__ == '__main__':
 
     groupId, artifactId, version, modules = getVersionData()
 
-
     if len(newVersion) > 0:
         resetVersionOnly(newVersion)
     else:
@@ -106,5 +105,5 @@ if __name__ == '__main__':
         os.chdir("../")
 
     print("")
-    print("新版本 %s 设置完成！" % (newVersion))
+    print("版本设置完成:  %s --> %s" % (version,newVersion))
     print("-------------------------------------------------------------------------------")
