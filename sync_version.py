@@ -28,6 +28,13 @@ def setWorkPath():
     os.chdir(base_path)
 
 
+def getVersionOnly():
+    dom = xml.dom.minidom.parse('pom.xml')
+    root = dom.documentElement
+
+    vv_data = root.getElementsByTagName('version')[0].childNodes[0]
+    return vv_data.data
+
 def resetVersionOnly(version):
     dom = xml.dom.minidom.parse('pom.xml')
     root = dom.documentElement
@@ -90,7 +97,7 @@ if __name__ == '__main__':
     setWorkPath()
 
     if len(newVersion) == 0:
-        print("myoql现在的版本: " + version)
+        print("myoql现在的版本: " + getVersionOnly())
         sys.exit(1)
     print("-----------------------------------------------")
     resetVersionOnly(newVersion)
