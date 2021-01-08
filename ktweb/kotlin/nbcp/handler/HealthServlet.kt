@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServlet
  * 事实上， HandlerInterceptorAdapter 不会拦截 HttpServlet
  */
 @OpenAction
-@MyLogLevel(Level.WARN_INT)
+@MyLogLevel(Level.OFF_INT)
 @WebServlet(urlPatterns = arrayOf("/health"))
 open class HealthServlet : HttpServlet() {
 
