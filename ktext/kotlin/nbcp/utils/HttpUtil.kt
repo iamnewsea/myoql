@@ -384,6 +384,7 @@ class HttpUtil(var url: String = "") {
                         var k10Size = 10240
                         //小于 10K
                         if (requestIsText && postBody.any()) {
+                            msgs.add("---")
                             msgs.add(postBody.take(k10Size).toByteArray().toString(utf8))
                         }
 
