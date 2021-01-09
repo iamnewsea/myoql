@@ -306,12 +306,13 @@ class HttpUtil(var url: String = "") {
                 if (k == null) {
                     return@forEach;
                 }
+                var value = v.joinToString(",");
                 if ((k VbSame "content-type") ||
                     (k VbSame "ContentType")
                 ) {
-                    requestIsText = requestIsText || getIsTextFromContentType(k);
+                    requestIsText = requestIsText || getIsTextFromContentType(value);
                 }
-                this.requestProperties.put(k, v.joinToString(","))
+                this.requestProperties.put(k, value)
             }
 
 //            conn.connect();
