@@ -127,12 +127,10 @@ class HttpUtil(var url: String = "") {
 
     private var postBody = byteArrayOf()
 
-    private var contentType = "";
-
     /**
      * 回发的编码，只读
      */
-    var responseCharset: String = ""
+    var responseCharset: String = "UTF-8"
         private set;
 
     /**
@@ -159,14 +157,13 @@ class HttpUtil(var url: String = "") {
     var msg: String = ""  //初始化失败的消息.用于对象传递
         private set;
 
-    fun setPostBody(postBody: ByteArray, contentType: String = ""): HttpUtil {
-        this.contentType = contentType;
+    fun setPostBody(postBody: ByteArray): HttpUtil {
         this.postBody = postBody;
         return this;
     }
 
-    fun setPostBody(postBody: String, contentType: String = ""): HttpUtil {
-        return this.setPostBody(postBody.toByteArray(utf8), contentType)
+    fun setPostBody(postBody: String): HttpUtil {
+        return this.setPostBody(postBody.toByteArray(utf8))
     }
 //    private var https = false;
 //
@@ -227,13 +224,13 @@ class HttpUtil(var url: String = "") {
     /**
      * Post请求
      */
-    fun doPost(requestBody: String = "", contentType: String = ""): String {
+    fun doPost(requestBody: String = ""): String {
 //        logger.Info { "[post]\t${url}\n${requestHeader.map { it.key + ":" + it.value }.joinToString("\n")}" }
 
         this.setRequest { it.requestMethod = "POST" }
 
         if (requestBody.HasValue) {
-            this.setPostBody(requestBody, contentType)
+            this.setPostBody(requestBody)
         }
 
         var ret = doNet()
@@ -312,7 +309,7 @@ class HttpUtil(var url: String = "") {
                 if ((k VbSame "content-type") ||
                     (k VbSame "ContentType")
                 ) {
-                    requestIsText = getIsTextFromContentType(k);
+                    requestIsText = requestIsText || getIsTextFromContentType(k);
                 }
                 this.requestProperties.put(k, v.joinToString(","))
             }
@@ -399,7 +396,7 @@ class HttpUtil(var url: String = "") {
                         if (respIsText && this.responseResult.any()) {
                             msgs.add(
                                 this.responseResult.take(k10Size).toByteArray()
-                                    .toString(Charset.forName(this.responseCharset.AsString("utf-8")))
+                                    .toString(Charset.forName(this.responseCharset.AsString("UTF-8")))
                             )
                         }
                     }
@@ -419,7 +416,8 @@ class HttpUtil(var url: String = "") {
     private fun getIsTextFromContentType(contentType: String): Boolean {
         return contentType.contains("json", true) ||
                 contentType.contains("htm", true) ||
-                contentType.contains("text", true)
+                contentType.contains("text", true) ||
+                contentType.contains("urlencoded", true)
     }
 
     fun toByteArray(input: InputStream): ByteArray {
