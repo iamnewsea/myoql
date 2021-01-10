@@ -125,6 +125,14 @@ class HttpUtil(var url: String = "") {
     private var requestActions: MutableList<((HttpURLConnection) -> Unit)> = mutableListOf()
     private var responseActions: MutableList<((HttpURLConnection) -> Unit)> = mutableListOf()
 
+    /**
+     * postAction 是上传专用
+     */
+    var postAction: ((DataOutputStream) -> Unit)? = null
+
+    /**
+     * post 小数据量
+     */
     private var postBody = byteArrayOf()
 
     /**
@@ -268,19 +276,17 @@ class HttpUtil(var url: String = "") {
         var respIsText = false;
         var requestIsText = false;
 
+        conn = URL(url).openConnection() as HttpURLConnection;
+
+        //建立连接
+        conn.instanceFollowRedirects = false
+
+        conn.useCaches = false
+        conn.connectTimeout = 5000;     //5秒
+        conn.readTimeout = 30000;        //30秒
+        conn.setRequestProperty("Connection", "close")
+
         try {
-            conn = URL(url).openConnection() as HttpURLConnection;
-
-            //建立连接
-            conn.instanceFollowRedirects = false
-
-            conn.useCaches = false
-            conn.connectTimeout = 5000;     //5秒
-            conn.readTimeout = 30000;        //30秒
-
-            conn.setRequestProperty("Connection", "close")
-
-
             this.requestActions.forEach {
                 it.invoke(conn!!);
             }
@@ -310,19 +316,24 @@ class HttpUtil(var url: String = "") {
                 if ((k VbSame "content-type") ||
                     (k VbSame "ContentType")
                 ) {
-                    requestIsText = requestIsText || getIsTextFromContentType(value);
+                    requestIsText = requestIsText || getTextTypeFromContentType(value);
                 }
                 this.requestProperties.put(k, value)
             }
 
-//            conn.connect();
 
-            if (requestBodyValidate && this.postBody.any()) {
-                //POST数据
-
-                DataOutputStream(conn.outputStream).use { out ->
-                    out.write(this.postBody);
-                    out.flush();
+            if (requestBodyValidate) {
+                //如果是 post 小数据
+                if (this.postBody.any()) {
+                    DataOutputStream(conn.outputStream).use { out ->
+                        out.write(this.postBody);
+                        out.flush();
+                    }
+                } else if (this.postAction != null) {
+                    DataOutputStream(conn.outputStream).use { out ->
+                        this.postAction?.invoke(out);
+                        out.flush();
+                    }
                 }
             }
 
@@ -347,21 +358,12 @@ class HttpUtil(var url: String = "") {
                 }
             }
 
-            respIsText = getIsTextFromContentType(conn.contentType ?: "");
+            respIsText = getTextTypeFromContentType(conn.contentType ?: "");
 
-            try {
-                conn.inputStream.use { input -> this.responseResult = toByteArray(input); }
+            conn.inputStream.use { input -> this.responseResult = toByteArray(input); }
 
-                this.totalTime = LocalDateTime.now() - startAt
-                return this.responseResult;
-            } catch (e: Exception) {
-                msg = e.message ?: "服务器错误"
-                return "".toByteArray(utf8);
-            }
-            //读取响应
-        } catch (e: Exception) {
-            msg = e.message ?: "请求错误"
-            return "".toByteArray(utf8);
+            this.totalTime = LocalDateTime.now() - startAt
+            return this.responseResult;
         } finally {
             // 断开连接
             if (this.totalTime.totalMilliseconds == 0L) {
@@ -415,7 +417,10 @@ class HttpUtil(var url: String = "") {
         }
     }
 
-    private fun getIsTextFromContentType(contentType: String): Boolean {
+    /**
+     * http://tools.jb51.net/table/http_content_type/
+     */
+    fun getTextTypeFromContentType(contentType: String): Boolean {
         return contentType.contains("json", true) ||
                 contentType.contains("htm", true) ||
                 contentType.contains("text", true) ||
@@ -491,10 +496,12 @@ class HttpUtil(var url: String = "") {
 
 
     /**
-     * 上传文件
+     * 大文件上传文件，块大小1MB
      * @param filePath: 要上传的文件。
      */
     fun uploadFile(filePath: String): String {
+        var CACHESIZE = 1024 * 1024;
+
         var file = File(filePath);
         if (file.exists() == false) {
             throw  Exception("文件${filePath}不存在")
@@ -502,59 +509,74 @@ class HttpUtil(var url: String = "") {
 
         var fileName = file.name;
 
-        var boundary = "------" + CodeUtil.getCode();
+        var conn = URL(url).openConnection() as HttpURLConnection
 
-        this.setRequest {
-            it.setRequestProperty("Connection", "keep-alive")
-            it.setRequestProperty("Content-Type", "multipart/form-data; boundary=${boundary}")
-        }
+            conn.setRequestProperty("Connection", "keep-alive")
+            conn.setRequestProperty("Content-Type", "multipart/form-data; file=${fileName}")
 
-        var b_file = FileInputStream(filePath)
+            conn.doOutput = true;
+            conn.doInput = true;
+            conn.setChunkedStreamingMode(CACHESIZE);
+            conn.requestMethod = "POST";
+            conn.setRequestProperty("Charsert", "UTF-8");
 
+            //20分钟
+            conn.connectTimeout = 1200_000;
+            conn.readTimeout = 1200_000;
 
-        var content = mutableListOf<Byte>()
-        content.addAll(
-            """--${boundary}
-Content-Disposition: form-data; name="${fileName}"; filename="blob"
-Content-Type: application/octet-stream
+        conn.connect();
 
-""".replace("\n", "\r\n").toByteArray().toList()
-        )
-
-        content.addAll(b_file.readBytes().toList())
-
-        content.addAll("\r\n--${boundary}--".toByteArray().toList())
-
-        this.setRequest { it.requestMethod = "POST" }
-
-        var isTxt = false;
-        this.setResponse { conn ->
-            isTxt = conn.contentType.contains("json", true) || conn.contentType.contains(
-                "htm",
-                true
-            ) || conn.contentType.contains("text", true)
-        }
-
-        this.setPostBody(content.toByteArray())
-
-        var ret = this.doNet()
-//        { conn ->
-
-//            if (content.size > 0) {
-//                //conn.setRequestProperty("Content-Length", requestBody.toByteArray().size.toString());
-//                //POST请求
-//                var out = DataOutputStream(conn.outputStream);
-//                out.write();
+//        var content = mutableListOf<Byte>()
+//        content.addAll(
+//            """--${boundary}
+//Content-Disposition: form-data; name="${fileName}"; filename="blob"
+//Content-Type: application/octet-stream
 //
-//                out.flush();
-//                out.close();
-//            }
-//        }
-            .toString(Charset.forName(responseCharset))
+//""".replace("\n", "\r\n").toByteArray().toList()
+//        )
+//
+//        var b_file = FileInputStream(filePath)
+//        content.addAll(b_file.readBytes().toList())
+//
+//        content.addAll("\r\n--${boundary}--".toByteArray().toList())
 
-        if (isTxt) {
-            logger.info(ret.Slice(0, 4096))
-        }
-        return ret;
+//        var isTxt = false;
+//        this.setResponse { conn ->
+//            isTxt = getTextTypeFromContentType(conn.contentType)
+//        }
+
+        //流式上传
+         DataOutputStream(conn.outputStream).use { out ->
+
+
+             var bytes = ByteArray(CACHESIZE);
+             var bytes_len = 0;
+             var count = -1;
+             DataInputStream(FileInputStream(file)).use { input ->
+                 while (true) {
+                     bytes_len = input.read(bytes)
+                     if (bytes_len <= 0) {
+                         break;
+                     }
+
+                     count++;
+                     try {
+                         out.write(bytes, 0, bytes_len)
+                     } catch (e: java.lang.Exception) {
+                         print(count)
+                         print(bytes_len);
+                         throw e;
+                     }
+                 }
+             }
+         }
+
+
+        var d= InputStreamReader( conn.inputStream).readText();
+
+
+
+
+        return d;
     }
 }
