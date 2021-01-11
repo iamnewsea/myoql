@@ -18,11 +18,11 @@ import javax.net.ssl.SSLSocketFactory
  * https://pay.weixin.qq.com/wiki/doc/api/tools/mch_pay.php?chapter=14_2
  */
 class WxCorpPayToUserData(
-        var spbill_create_ip: String, // 终端IP
-        var amount: Int,
-        var openid: String,  //用户openid
-        var partner_trade_no: String, // 商户订单号，需保持唯一性
-        var desc: String = ""  // 企业付款备注
+    var spbill_create_ip: String, // 终端IP
+    var amount: Int,
+    var openid: String,  //用户openid
+    var partner_trade_no: String, // 商户订单号，需保持唯一性
+    var desc: String = ""  // 企业付款备注
 ) {
     var mch_appid: String = wx.appId
     var mchid: String = wx.mchId
@@ -49,8 +49,8 @@ class WxCorpPayToUserData(
 
         //创建向客户端提交的证书
         val sslcontext = SSLContexts.custom()
-                .loadKeyMaterial(keyStore, mchid.toCharArray()) //密码
-                .build()
+            .loadKeyMaterial(keyStore, mchid.toCharArray()) //密码
+            .build()
         return sslcontext.socketFactory;
     }
 
@@ -63,21 +63,21 @@ class WxCorpPayToUserData(
         var url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers"
         val http = HttpUtil(url)
         http.setRequest {
-            it.setRequestProperty("Content-Type", "text/xml;charset=UTF-8")
+            it.contentType = "text/xml;charset=UTF-8"
         }
 
         var postData = wx.sys.toXml(mchSecret, this);
 
         http.setRequest {
             (it as javax.net.ssl.HttpsURLConnection)
-                    .setSSLSocketFactory(getSSLSocketFactory(pkcs12FilePath))
+                .setSSLSocketFactory(getSSLSocketFactory(pkcs12FilePath))
         }
 
         val result = http.doPost(postData)
-                .Xml2Json()
-                .get("xml")
-                ?.ConvertJson(WxRefundPayResponseData::class.java)
-                ?: return JsonResult("请求中出错!");
+            .Xml2Json()
+            .get("xml")
+            ?.ConvertJson(WxRefundPayResponseData::class.java)
+            ?: return JsonResult("请求中出错!");
 
         if (result.return_code != "SUCCESS" && result.result_code != "SUCCESS") {
             return JsonResult("发送红包出错:" + result.return_msg.AsString(result.err_code_des));

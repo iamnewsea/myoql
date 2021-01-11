@@ -82,10 +82,10 @@ object config {
     }
 
     /**
-     * 到指定时间后(未到过期时间)，返回新的token。默认20分钟。会保存到Redis里。单位是秒
+     * 到指定时间后(未到过期时间)，返回新的token。默认4小时。会保存到Redis里。单位是秒
      */
     val tokenKeyRenewalSeconds: Int by lazy {
-        return@lazy Duration.parse(SpringUtil.context.environment.getProperty("app.token-key-renewal").AsString("PT20M")).seconds.toInt()
+        return@lazy Duration.parse(SpringUtil.context.environment.getProperty("app.token-key-renewal").AsString("PT4H")).seconds.toInt()
     }
 
     /**
@@ -97,7 +97,7 @@ object config {
             return@lazy type;
         }
 
-        var mongo = SpringUtil.context.containsBean("org.springframework.data.mongodb.MongoDatabaseFactory");
+        var mongo = SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration");
         if (mongo) {
             return@lazy "Mongo"
         }

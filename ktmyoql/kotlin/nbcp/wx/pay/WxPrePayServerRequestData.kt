@@ -19,14 +19,14 @@ import java.time.format.DateTimeFormatter
  * 微信请求做成实体方法。
  */
 data class WxPrePayServerRequestData(
-        var body: String,
-        var spbill_create_ip: String,// 终端IP
-        var notify_url: String,
-        var out_trade_no: String,
-        var total_fee: Int,
-        var openid: String,
-        var attach: String = "", // 附加数据
-        var detail: String = ""  // 商品详情
+    var body: String,
+    var spbill_create_ip: String,// 终端IP
+    var notify_url: String,
+    var out_trade_no: String,
+    var total_fee: Int,
+    var openid: String,
+    var attach: String = "", // 附加数据
+    var detail: String = ""  // 商品详情
 ) {
     var appid: String = wx.appId
     var mch_id: String = wx.mchId
@@ -41,7 +41,8 @@ data class WxPrePayServerRequestData(
 
     //private var fee_type: String = "CNY" //否
     private var time_start: String = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) //否
-    private var time_expire: String = LocalDateTime.now().plusMinutes(30).format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) //否
+    private var time_expire: String =
+        LocalDateTime.now().plusMinutes(30).format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) //否
     //private var limit_pay: String = "no_credit" // 指定支付方式
 
 
@@ -62,13 +63,13 @@ data class WxPrePayServerRequestData(
     fun getPrepayId(mchSecret: String): ApiResult<String> {
         val url = HttpUtil("https://api.mch.weixin.qq.com/pay/unifiedorder")
         url.setRequest {
-            it.setRequestProperty("Content-Type", "text/xml;charset=UTF-8")
+            it.contentType = "text/xml;charset=UTF-8"
         }
 
         val result = url.doPost(this.toWxAppPayXml(mchSecret))
-                .Xml2Json()
-                .get("xml")
-                ?.ConvertJson(WxPrePayServerResponseData::class.java)
+            .Xml2Json()
+            .get("xml")
+            ?.ConvertJson(WxPrePayServerResponseData::class.java)
 
         if (result == null) {
             return ApiResult("请求中出错!")

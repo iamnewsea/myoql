@@ -28,33 +28,33 @@ object WxSystemGroup {
     fun sign(mchSecret: String, wxModel: Any): String {
         var type = wxModel::class.java
         var list = type.AllFields
-                .sortedBy { it.name }
-                .map {
-                    if (it.getAnnotation(Ignore::class.java) != null) {
-                        return@map ""
-                    }
-
-                    var require = it.getAnnotation(Require::class.java) != null
-
-                    var value = it.get(wxModel)
-
-                    if (value == null) {
-                        if (require) {
-                            throw RuntimeException("微信小程序签名时，${it.name} 不能为空值");
-                        }
-                        return@map "";
-                    }
-                    if (value is String && value.isNullOrEmpty()) {
-                        if (require) {
-                            throw RuntimeException("微信小程序签名时，${it.name} 为必填项");
-                        }
-                        return@map ""
-                    }
-
-                    return@map it.name + "=" + value
+            .sortedBy { it.name }
+            .map {
+                if (it.getAnnotation(Ignore::class.java) != null) {
+                    return@map ""
                 }
-                .filter { it.isNotEmpty() }
-                .toMutableList();
+
+                var require = it.getAnnotation(Require::class.java) != null
+
+                var value = it.get(wxModel)
+
+                if (value == null) {
+                    if (require) {
+                        throw RuntimeException("微信小程序签名时，${it.name} 不能为空值");
+                    }
+                    return@map "";
+                }
+                if (value is String && value.isNullOrEmpty()) {
+                    if (require) {
+                        throw RuntimeException("微信小程序签名时，${it.name} 为必填项");
+                    }
+                    return@map ""
+                }
+
+                return@map it.name + "=" + value
+            }
+            .filter { it.isNotEmpty() }
+            .toMutableList();
 
         list.add("key=${mchSecret}");
         return Md5Util.getMd5(list.joinToString("&")).toUpperCase();
@@ -68,29 +68,29 @@ object WxSystemGroup {
         var type = wxModel::class.java;
 
         return "<xml>" + type.AllFields
-                .sortedBy { it.name }
-                .map {
+            .sortedBy { it.name }
+            .map {
 
-                    var value = it.get(wxModel)
-                    if (value == null) {
-                        return@map "" to ""
-                    }
+                var value = it.get(wxModel)
+                if (value == null) {
+                    return@map "" to ""
+                }
 
-                    if (value is String && value.isEmpty()) {
-                        return@map "" to ""
-                    }
+                if (value is String && value.isEmpty()) {
+                    return@map "" to ""
+                }
 
-                    return@map it.name to value
-                }
-                .filter { it.first.isNotEmpty() }
-                .toMutableList()
-                .apply {
-                    add("sign" to sign)
-                }
-                .map {
-                    return@map "<${it.first}><![CDATA[${it.second}]]></${it.first}>"
-                }
-                .joinToString("") + "</xml>";
+                return@map it.name to value
+            }
+            .filter { it.first.isNotEmpty() }
+            .toMutableList()
+            .apply {
+                add("sign" to sign)
+            }
+            .map {
+                return@map "<${it.first}><![CDATA[${it.second}]]></${it.first}>"
+            }
+            .joinToString("") + "</xml>";
     }
 
 
@@ -153,8 +153,8 @@ object WxSystemGroup {
         }
 
         var http = HttpUtil(requestUrl)
-                .setRequest { it.requestMethod == "POST" }
-                .setPostBody(postBody.ToJson());
+            .setRequest { it.requestMethod == "POST" }
+            .setPostBody(postBody.ToJson());
 
         var bytes = http.doNet();
         if (http.status != 200 || http.responseHeader.getByIgnoreCaseKey("content-type").AsString().contains("json")) {
@@ -257,7 +257,7 @@ object WxSystemGroup {
         }
 
         url.url = "${wx_url}${tokenData.data!!.token}"
-        url.setRequest { it.setRequestProperty("Content-Type", "application/json") }
+        url.setRequest { it.contentType = "application/json" }
 
         var ret = url.doPost(data.ToJson()).FromJson<wx_return_data>() ?: wx_return_data()
         if (ret.errcode != 0) {

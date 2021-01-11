@@ -25,6 +25,26 @@ data class FileMessage(
     var msg: String = ""
 );
 
+data class HttpRequestData(
+    var instanceFollowRedirects: Boolean = false,
+    var useCaches: Boolean = false,
+    var connectTimeout: Int = 5_000,
+    var readTimeout: Int = 30_000,
+    var chunkedStreamingMode: Int = 0,
+
+    var requestMethod: String = "",
+    var contentType: String = "",
+    var headers: StringMap = StringMap(),
+
+    ) {
+    init {
+        headers.set("Connection", "close")
+    }
+}
+
+data class HttpResponseData(
+    var contentType: String = ""
+)
 //@Configuration
 //class RestTemplateConfig {
 //    @Bean
@@ -122,8 +142,8 @@ class HttpUtil(var url: String = "") {
 
 
     var responseResult: ByteArray = byteArrayOf()
-    private var requestActions: MutableList<((HttpURLConnection) -> Unit)> = mutableListOf()
-    private var responseActions: MutableList<((HttpURLConnection) -> Unit)> = mutableListOf()
+    private var requestData = HttpRequestData()
+    private var responseData = HttpResponseData()
 
     /**
      * postAction 是上传专用
@@ -181,17 +201,17 @@ class HttpUtil(var url: String = "") {
 //    }
 
     fun setRequestHeader(key: String, value: String): HttpUtil {
-        this.setRequest { it.setRequestProperty(key, value) }
+        this.setRequest { it.headers.set(key, value) }
         return this;
     }
 
-    fun setRequest(action: ((HttpURLConnection) -> Unit)): HttpUtil {
-        this.requestActions.add(action)
+    fun setRequest(action: ((HttpRequestData) -> Unit)): HttpUtil {
+        action(this.requestData)
         return this;
     }
 
-    fun setResponse(action: ((HttpURLConnection) -> Unit)): HttpUtil {
-        this.responseActions.add(action);
+    fun setResponse(action: ((HttpResponseData) -> Unit)): HttpUtil {
+        action(this.responseData)
         return this;
     }
 
@@ -208,25 +228,19 @@ class HttpUtil(var url: String = "") {
      */
     fun doPost(postJson: JsonMap): String {
 
-        this.setRequest {
-            if (it.requestProperties.containsKey("Accept") == false) {
-                it.setRequestProperty("Accept", "application/json")
-            }
-            if (it.requestProperties.containsKey("Content-Type") == false) {
-                it.setRequestProperty("Content-Type", "application/json;charset=UTF-8")
-            }
-
-            var requestBody = "";
-            if (it.getRequestProperty("Content-Type").AsString().contains("json") == false) {
-                requestBody = postJson.map { it.key + "=" + it.value }.joinToString("&");
-            } else {
-                requestBody = postJson.ToJson();
-            }
-
-            this.setPostBody(requestBody)
+        if (this.requestData.contentType.isEmpty()) {
+            this.requestData.contentType = "application/json;charset=UTF-8"
         }
 
-        return doPost();
+        var requestBody = "";
+        if (this.requestData.contentType.contains("json")) {
+            requestBody = postJson.ToJson()
+        } else {
+            requestBody =
+                postJson.map { it.key + "=" + JsUtil.encodeURIComponent(it.value.AsString()) }.joinToString("&");
+        }
+
+        return doPost(requestBody);
     }
 
     /**
@@ -235,42 +249,27 @@ class HttpUtil(var url: String = "") {
     fun doPost(requestBody: String = ""): String {
 //        logger.Info { "[post]\t${url}\n${requestHeader.map { it.key + ":" + it.value }.joinToString("\n")}" }
 
-        this.setRequest { it.requestMethod = "POST" }
+        if (this.requestData.headers.containsKey("Accept") == false) {
+            this.requestData.headers.set("Accept", "application/json")
+        }
+
+        this.requestData.requestMethod = "POST"
 
         if (requestBody.HasValue) {
             this.setPostBody(requestBody)
         }
 
         var ret = doNet()
-//        { conn ->
-//            if (requestBody.HasValue) {
-//                logger.Info { "\t[post_body]${requestBody}" }
-//                //conn.setRequestProperty("Content-Length", requestBody.toByteArray().size.toString());
-//                //POST请求
-//                var out = OutputStreamWriter(conn.outputStream);
-//                out.write(requestBody);
-//
-//                out.flush();
-//                out.close();
-//            }
-//        }
-
-//        if (isTxt) {
-//            logger.info(ret.Slice(0, 4096));
-//        }
 
 
         return ret.toString(Charset.forName(responseCharset.AsString("UTF-8")));
     }
 
-    private var requestProperties: StringMap = StringMap();
     fun doNet(): ByteArray {
         var conn: HttpURLConnection? = null
 
-        this.requestProperties.clear();
 //        var lines = mutableListOf<String>()
 
-        var requestBodyValidate = false;
 
         var startAt = LocalDateTime.now();
         var respIsText = false;
@@ -278,53 +277,51 @@ class HttpUtil(var url: String = "") {
 
         conn = URL(url).openConnection() as HttpURLConnection;
 
-        //建立连接
-        conn.instanceFollowRedirects = false
-
-        conn.useCaches = false
-        conn.connectTimeout = 5000;     //5秒
-        conn.readTimeout = 30000;        //30秒
-        conn.setRequestProperty("Connection", "close")
-
         try {
-            this.requestActions.forEach {
-                it.invoke(conn!!);
+            conn.instanceFollowRedirects = this.requestData.instanceFollowRedirects
+            conn.useCaches = this.requestData.useCaches
+            conn.connectTimeout = this.requestData.connectTimeout
+            conn.readTimeout = this.requestData.readTimeout
+
+            conn.requestMethod = this.requestData.requestMethod
+            if (this.requestData.chunkedStreamingMode > 0) {
+                conn.setChunkedStreamingMode(this.requestData.chunkedStreamingMode)
             }
+
+            if (this.requestData.contentType.HasValue &&
+                (this.requestData.headers.containsKey("Content-Type") || this.requestData.headers.containsKey("ContentType"))
+            ) {
+                throw RuntimeException("请使用 contentType 属性")
+            }
+
+            if (this.requestData.contentType.HasValue) {
+                conn.setRequestProperty("Content-Type", this.requestData.contentType);
+            }
+
+            this.requestData.headers.keys.forEach { key ->
+                conn!!.setRequestProperty(key, this.requestData.headers.get(key))
+            }
+
 
             if (conn.requestMethod.isNullOrEmpty()) {
                 throw RuntimeException("没有设置 method！");
             }
 
-            if (conn.requestMethod.toLowerCase().IsIn("post", "put")) {
-                requestBodyValidate = true;
-            }
+
+            requestIsText = getTextTypeFromContentType(this.requestData.contentType);
 
             conn.doInput = true
 
             //https://bbs.csdn.net/topics/290053257
             //GET,HEAD,OPTIONS
-            if (requestBodyValidate) {
+            if (conn.requestMethod.toLowerCase().IsIn("post", "put")) {
                 conn.doOutput = true
-                conn.setChunkedStreamingMode(0)
-            }
-
-            conn.requestProperties.forEach { k, v ->
-                if (k == null) {
-                    return@forEach;
-                }
-                var value = v.joinToString(",");
-                if ((k VbSame "content-type") ||
-                    (k VbSame "ContentType")
-                ) {
-                    requestIsText = requestIsText || getTextTypeFromContentType(value);
-                }
-                this.requestProperties.put(k, value)
-            }
 
 
-            if (requestBodyValidate) {
                 //如果是 post 小数据
                 if (this.postBody.any()) {
+                    conn.setChunkedStreamingMode(0)
+
                     DataOutputStream(conn.outputStream).use { out ->
                         out.write(this.postBody);
                         out.flush();
@@ -347,9 +344,9 @@ class HttpUtil(var url: String = "") {
                 this.responseHeader[it.key.toLowerCase()] = value
             }
 
-            this.responseActions.forEach {
-                it.invoke(conn!!);
-            }
+//            this.responseActions.forEach {
+//                it.invoke(conn!!);
+//            }
 
             var char_parts = conn.contentType.AsString().split(";").last().split("=");
             if (char_parts.size == 2) {
@@ -375,7 +372,7 @@ class HttpUtil(var url: String = "") {
                     var msgs = mutableListOf<String>();
                     msgs.add("${conn!!.requestMethod} ${url}\t[status:${this.status}]");
 
-                    msgs.add(this.requestProperties.map {
+                    msgs.add(this.requestData.headers.map {
                         return@map "\t${it.key}:${it.value}"
                     }.joinToString(line_break))
 
@@ -509,74 +506,61 @@ class HttpUtil(var url: String = "") {
 
         var fileName = file.name;
 
-        var conn = URL(url).openConnection() as HttpURLConnection
+        var boundary = "------" + CodeUtil.getCode();
 
-            conn.setRequestProperty("Connection", "keep-alive")
-            conn.setRequestProperty("Content-Type", "multipart/form-data; file=${fileName}")
+        this.setRequest {
+            it.requestMethod = "POST"
+            it.connectTimeout = 1200_000
+            it.readTimeout = 1200_000
+            it.headers.set("Connection", "keep-alive")
+            it.headers.set("Content-Type", "multipart/form-data; boundary=${boundary}")
+        }
 
-            conn.doOutput = true;
-            conn.doInput = true;
-            conn.setChunkedStreamingMode(CACHESIZE);
-            conn.requestMethod = "POST";
-            conn.setRequestProperty("Charsert", "UTF-8");
+        var isTxt = false;
+        this.setResponse { conn ->
+            isTxt = getTextTypeFromContentType(conn.contentType)
+        }
 
-            //20分钟
-            conn.connectTimeout = 1200_000;
-            conn.readTimeout = 1200_000;
+        this.postAction = { out ->
+            out.write(
+                """--${boundary}
+Content-Disposition: form-data; name="${fileName}"; filename="blob"
+Content-Type: application/octet-stream
 
-        conn.connect();
-
-//        var content = mutableListOf<Byte>()
-//        content.addAll(
-//            """--${boundary}
-//Content-Disposition: form-data; name="${fileName}"; filename="blob"
-//Content-Type: application/octet-stream
-//
-//""".replace("\n", "\r\n").toByteArray().toList()
-//        )
-//
-//        var b_file = FileInputStream(filePath)
-//        content.addAll(b_file.readBytes().toList())
-//
-//        content.addAll("\r\n--${boundary}--".toByteArray().toList())
-
-//        var isTxt = false;
-//        this.setResponse { conn ->
-//            isTxt = getTextTypeFromContentType(conn.contentType)
-//        }
-
-        //流式上传
-         DataOutputStream(conn.outputStream).use { out ->
+""".replace("\n", "\r\n").toByteArray()
+            )
 
 
-             var bytes = ByteArray(CACHESIZE);
-             var bytes_len = 0;
-             var count = -1;
-             DataInputStream(FileInputStream(file)).use { input ->
-                 while (true) {
-                     bytes_len = input.read(bytes)
-                     if (bytes_len <= 0) {
-                         break;
-                     }
+            var bytes = ByteArray(CACHESIZE);
+            var bytes_len = 0;
+            var count = -1;
+            DataInputStream(FileInputStream(file)).use { input ->
+                while (true) {
+                    bytes_len = input.read(bytes)
+                    if (bytes_len <= 0) {
+                        break;
+                    }
 
-                     count++;
-                     try {
-                         out.write(bytes, 0, bytes_len)
-                     } catch (e: java.lang.Exception) {
-                         print(count)
-                         print(bytes_len);
-                         throw e;
-                     }
-                 }
-             }
-         }
+                    count++;
+                    try {
+                        out.write(bytes, 0, bytes_len)
+                    } catch (e: java.lang.Exception) {
+                        print(count)
+                        print(bytes_len);
+                        throw e;
+                    }
+                }
+            }
 
+            out.write("\r\n--${boundary}--".toByteArray())
+        }
 
-        var d= InputStreamReader( conn.inputStream).readText();
+        var ret = this.doNet()
+            .toString(Charset.forName(responseCharset))
 
-
-
-
-        return d;
+        if (isTxt) {
+            logger.info(ret.Slice(0, 4096))
+        }
+        return ret;
     }
 }

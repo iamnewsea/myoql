@@ -13,15 +13,15 @@ import javax.net.ssl.SSLSocketFactory
  * https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_4
  */
 data class WxRefundPayRequestData(
-        @Require
-        var out_trade_no: String,//是     商户订单号
-        var out_refund_no: String,   //商户退款单号
+    @Require
+    var out_trade_no: String,//是     商户订单号
+    var out_refund_no: String,   //商户退款单号
 
-        @Require
-        var total_fee: Int, //是, 订单总金额
-        var refund_fee: Int,//是        退款金额
+    @Require
+    var total_fee: Int, //是, 订单总金额
+    var refund_fee: Int,//是        退款金额
 
-        var refund_desc: String = ""   //退款原因   否
+    var refund_desc: String = ""   //退款原因   否
 
 ) {
     var appid: String = wx.appId
@@ -51,8 +51,8 @@ data class WxRefundPayRequestData(
 
         //创建向客户端提交的证书
         val sslcontext = SSLContexts.custom()
-                .loadKeyMaterial(keyStore, mchId.toCharArray()) //密码
-                .build()
+            .loadKeyMaterial(keyStore, mchId.toCharArray()) //密码
+            .build()
 
 
         return sslcontext.socketFactory;
@@ -72,19 +72,19 @@ data class WxRefundPayRequestData(
         var url = "https://api.mch.weixin.qq.com/secapi/pay/refund"
 
         val http = HttpUtil(url)
-        http.setRequest { it.setRequestProperty("Content-Type", "text/xml;charset=UTF-8") }
+        http.setRequest { it.contentType = "text/xml;charset=UTF-8" }
 
         var postData = wx.sys.toXml(mchSecret, this);
 
         http.setRequest {
             (it as javax.net.ssl.HttpsURLConnection)
-                    .setSSLSocketFactory(getSSLSocketFactory(mch_id))
+                .setSSLSocketFactory(getSSLSocketFactory(mch_id))
         }
         val result = http.doPost(postData)
-                .Xml2Json()
-                .get("xml")
-                ?.ConvertJson(WxRefundPayResponseData::class.java)
-                ?: return JsonResult("请求中出错!");
+            .Xml2Json()
+            .get("xml")
+            ?.ConvertJson(WxRefundPayResponseData::class.java)
+            ?: return JsonResult("请求中出错!");
 
         if (result.return_code != "SUCCESS" && result.result_code != "SUCCESS") {
             return JsonResult("退款错误:" + result.return_msg.AsString(result.err_code_des));
@@ -99,17 +99,17 @@ data class WxRefundPayRequestData(
  * 返回的参数很多，有很多是和请求参数相同的， 为了简单，只定义重要的返回参数
  */
 data class WxRefundPayResponseData(
-        var return_code: String = "",       //SUCCESS/FAIL
-        var return_msg: String = "",
+    var return_code: String = "",       //SUCCESS/FAIL
+    var return_msg: String = "",
 
 
-        var result_code: String = "",       //SUCCESS/FAIL
-        var err_code: String = "",
-        var err_code_des: String = "",
-        var out_trade_no: String = "",
-        var out_refund_no: String = "",
-        var refund_fee: Int = 0,  //退款金额
-        var settlement_refund_fee: Int = 0,  //应结退款金额
-        var total_fee: Int = 0,   //标价金额
-        var settlement_total_fee: Int = 0  //应结订单金额
+    var result_code: String = "",       //SUCCESS/FAIL
+    var err_code: String = "",
+    var err_code_des: String = "",
+    var out_trade_no: String = "",
+    var out_refund_no: String = "",
+    var refund_fee: Int = 0,  //退款金额
+    var settlement_refund_fee: Int = 0,  //应结退款金额
+    var total_fee: Int = 0,   //标价金额
+    var settlement_total_fee: Int = 0  //应结订单金额
 )
