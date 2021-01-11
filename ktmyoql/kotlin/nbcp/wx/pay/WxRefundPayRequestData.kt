@@ -72,14 +72,12 @@ data class WxRefundPayRequestData(
         var url = "https://api.mch.weixin.qq.com/secapi/pay/refund"
 
         val http = HttpUtil(url)
-        http.setRequest { it.contentType = "text/xml;charset=UTF-8" }
+        http.request.contentType = "text/xml;charset=UTF-8"
 
         var postData = wx.sys.toXml(mchSecret, this);
 
-        http.setRequest {
-            (it as javax.net.ssl.HttpsURLConnection)
-                .setSSLSocketFactory(getSSLSocketFactory(mch_id))
-        }
+        http.sslSocketFactory = getSSLSocketFactory(mch_id)
+
         val result = http.doPost(postData)
             .Xml2Json()
             .get("xml")

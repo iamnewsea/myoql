@@ -153,12 +153,12 @@ object WxSystemGroup {
         }
 
         var http = HttpUtil(requestUrl)
-            .setRequest { it.requestMethod == "POST" }
-            .setPostBody(postBody.ToJson());
+        http.request.requestMethod == "POST"
+        http.setPostBody(postBody.ToJson());
 
         var bytes = http.doNet();
         if (http.status != 200 || http.response.contentType.contains("json")) {
-            return ApiResult(bytes.toString(Charset.forName(http.response.charset.AsString("UTF-8"))))
+            return ApiResult(bytes)
         }
 
         return ApiResult.of(http)
@@ -257,7 +257,7 @@ object WxSystemGroup {
         }
 
         url.url = "${wx_url}${tokenData.data!!.token}"
-        url.setRequest { it.contentType = "application/json" }
+        url.request.contentType = "application/json"
 
         var ret = url.doPost(data.ToJson()).FromJson<wx_return_data>() ?: wx_return_data()
         if (ret.errcode != 0) {

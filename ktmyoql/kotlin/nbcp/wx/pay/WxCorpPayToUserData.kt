@@ -38,7 +38,7 @@ class WxCorpPayToUserData(
 
     private fun getSSLSocketFactory(pkcs12FilePath: InputStream): SSLSocketFactory {
         /**
-         * 注意PKCS12证书 是从微信商户平台-》账户设置-》 API安全 中下载的
+         * 注意 PKCS12 证书 是从微信商户平台-》账户设置-》 API安全 中下载的
          */
         //SSL认证
         val keyStore = KeyStore.getInstance("PKCS12")
@@ -62,16 +62,12 @@ class WxCorpPayToUserData(
     fun payToPerson(mchSecret: String, pkcs12FilePath: InputStream): JsonResult {
         var url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers"
         val http = HttpUtil(url)
-        http.setRequest {
-            it.contentType = "text/xml;charset=UTF-8"
-        }
+        http.request.contentType = "text/xml;charset=UTF-8"
+
 
         var postData = wx.sys.toXml(mchSecret, this);
 
-        http.setRequest {
-            (it as javax.net.ssl.HttpsURLConnection)
-                .setSSLSocketFactory(getSSLSocketFactory(pkcs12FilePath))
-        }
+        http.sslSocketFactory = getSSLSocketFactory(pkcs12FilePath);
 
         val result = http.doPost(postData)
             .Xml2Json()

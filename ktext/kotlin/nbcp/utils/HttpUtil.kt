@@ -5,6 +5,7 @@ package nbcp.utils
  */
 
 import nbcp.comm.*
+import org.apache.http.ssl.SSLContexts
 import org.slf4j.LoggerFactory
 import java.awt.image.BufferedImage
 import java.io.*
@@ -13,9 +14,11 @@ import java.net.URL
 import java.nio.charset.Charset
 import java.io.IOException
 import java.lang.RuntimeException
+import java.security.KeyStore
 import java.time.LocalDateTime
 import java.util.*
 import javax.imageio.ImageIO
+import javax.net.ssl.SSLSocketFactory
 
 
 data class FileMessage(
@@ -24,6 +27,16 @@ data class FileMessage(
     var extName: String = "",
     var msg: String = ""
 );
+
+/**
+ * http://tools.jb51.net/table/http_content_type/
+ */
+fun getTextTypeFromContentType(contentType: String): Boolean {
+    return contentType.contains("json", true) ||
+            contentType.contains("htm", true) ||
+            contentType.contains("text", true) ||
+            contentType.contains("urlencoded", true)
+}
 
 data class HttpRequestData(
     var instanceFollowRedirects: Boolean = false,
@@ -50,14 +63,36 @@ data class HttpRequestData(
      * post 小数据量
      */
     var postBody = ""
+
+    /**
+     * 请求内容是否是文字
+     */
+    val postIsText: Boolean
+        get() {
+            return getTextTypeFromContentType(this.contentType)
+        }
 }
 
 class HttpResponseData {
 
     /**
-     * 回发的原始内容。可能是大文件，待处理。
+     * 回发的原始内容。处理回发文本
      */
-    var result: ByteArray = byteArrayOf()
+    var resultBody: String = ""
+
+    /**
+     * 回发回调，处理下载大文件。
+     */
+    var resultAction: ((DataInputStream) -> Unit)? = null
+
+
+    /**
+     * 回发内容是否是文字
+     */
+    val resultIsText: Boolean
+        get() {
+            return getTextTypeFromContentType(this.contentType)
+        }
 
     var contentType: String = ""
         internal set;
@@ -182,6 +217,11 @@ class HttpUtil(var url: String = "") {
 
 
     /**
+     * 加密使用，可用于 PKCS12
+     */
+    var sslSocketFactory: SSLSocketFactory? = null
+
+    /**
      * 该次回发的状态码，只读
      */
     var status: Int = 0
@@ -204,34 +244,14 @@ class HttpUtil(var url: String = "") {
         this.request.postBody = postBody;
         return this
     }
-//    private var https = false;
-//
-//    fun setHttps(https:Boolean):HttpUtil{
-//        this.https = https;
-//        return this;
-//    }
 
-    fun setRequestHeader(key: String, value: String): HttpUtil {
-        this.setRequest { it.headers.set(key, value) }
-        return this;
-    }
-
-    fun setRequest(action: ((HttpRequestData) -> Unit)): HttpUtil {
-        action(this.request)
-        return this;
-    }
-
-    fun setResponse(action: ((HttpResponseData) -> Unit)): HttpUtil {
-        action(this.response)
-        return this;
-    }
 
     fun doGet(): String {
-        this.setRequest { it.requestMethod = "GET" }
+        this.request.requestMethod = "GET"
 
         var retData = doNet()
 
-        return retData.toString(Charset.forName(this.response.charset.AsString("UTF-8")));
+        return retData;
     }
 
     /**
@@ -273,22 +293,20 @@ class HttpUtil(var url: String = "") {
         var ret = doNet()
 
 
-        return ret.toString(Charset.forName(this.response.charset.AsString("UTF-8")));
+        return ret;
     }
 
-    fun doNet(): ByteArray {
-        var conn: HttpURLConnection? = null
-
-//        var lines = mutableListOf<String>()
-
-
+    fun doNet(): String {
         var startAt = LocalDateTime.now();
-        var respIsText = false;
-        var requestIsText = false;
 
-        conn = URL(url).openConnection() as HttpURLConnection;
+        var conn = URL(url).openConnection() as HttpURLConnection;
 
         try {
+            if (this.sslSocketFactory != null) {
+                (conn as javax.net.ssl.HttpsURLConnection)
+                    .setSSLSocketFactory(this.sslSocketFactory)
+            }
+
             conn.instanceFollowRedirects = this.request.instanceFollowRedirects
             conn.useCaches = this.request.useCaches
             conn.connectTimeout = this.request.connectTimeout
@@ -318,9 +336,6 @@ class HttpUtil(var url: String = "") {
                 throw RuntimeException("没有设置 method！");
             }
 
-
-            requestIsText = getTextTypeFromContentType(this.request.contentType);
-
             conn.doInput = true
 
             //https://bbs.csdn.net/topics/290053257
@@ -346,6 +361,7 @@ class HttpUtil(var url: String = "") {
             }
 
             this.status = conn.responseCode
+            this.response.contentType = conn.contentType
 
             conn.headerFields.forEach {
                 if (it.key == null) {
@@ -355,79 +371,72 @@ class HttpUtil(var url: String = "") {
                 this.response.headers[it.key.toLowerCase()] = value
             }
 
+
 //            this.responseActions.forEach {
 //                it.invoke(conn!!);
 //            }
 
-
-            respIsText = getTextTypeFromContentType(conn.contentType ?: "");
-
-            conn.inputStream.use { input -> this.response.result = toByteArray(input); }
+            if (this.response.resultAction != null) {
+                DataInputStream(conn.inputStream).use { input -> this.response.resultAction?.invoke(input) }
+            } else if (this.response.resultIsText) {
+                conn.inputStream.use { input ->
+                    this.response.resultBody =
+                        toByteArray(input).toString(Charset.forName(this.response.charset.AsString("UTF-8")));
+                }
+            }
 
             this.totalTime = LocalDateTime.now() - startAt
-            return this.response.result
+            return this.response.resultBody
         } finally {
             // 断开连接
             if (this.totalTime.totalMilliseconds == 0L) {
                 this.totalTime = LocalDateTime.now() - startAt
             }
 
-            if (conn != null) {
-                logger.InfoError(this.status != 200) {
-                    var msgs = mutableListOf<String>();
-                    msgs.add("${conn!!.requestMethod} ${url}\t[status:${this.status}]");
 
-                    msgs.add(this.request.headers.map {
+            logger.InfoError(this.status != 200) {
+                var msgs = mutableListOf<String>();
+                msgs.add("${conn!!.requestMethod} ${url}\t[status:${this.status}]");
+
+                msgs.add(this.request.headers.map {
+                    return@map "\t${it.key}:${it.value}"
+                }.joinToString(line_break))
+
+                if (this.status == 0) {
+                    msgs.add("[Timeout]");
+                } else {
+
+                    var k10Size = 10240
+                    //小于 10K
+                    if (this.request.postIsText && this.request.postBody.any()) {
+                        msgs.add("---")
+                        msgs.add(this.request.postBody.take(k10Size).toByteArray().toString(utf8))
+                    }
+
+                    msgs.add("---")
+
+                    msgs.add(this.response.headers.map {
                         return@map "\t${it.key}:${it.value}"
                     }.joinToString(line_break))
 
-                    if (this.status == 0) {
-                        msgs.add("[Timeout]");
-                    } else {
-
-                        var k10Size = 10240
-                        //小于 10K
-                        if (requestIsText && this.request.postBody.any()) {
-                            msgs.add("---")
-                            msgs.add(this.request.postBody.take(k10Size).toByteArray().toString(utf8))
-                        }
-
-                        msgs.add("---")
-
-                        msgs.add(this.response.headers.map {
-                            return@map "\t${it.key}:${it.value}"
-                        }.joinToString(line_break))
-
-                        //小于10K
-                        if (respIsText && this.response.result.any()) {
-                            msgs.add(
-                                this.response.result.take(k10Size).toByteArray()
-                                    .toString(Charset.forName(this.response.charset.AsString("UTF-8")))
-                            )
-                        }
+                    //小于10K
+                    if (this.response.resultIsText && this.response.resultBody.any()) {
+                        msgs.add(
+                            this.response.resultBody.take(k10Size).toByteArray()
+                                .toString(Charset.forName(this.response.charset.AsString("UTF-8")))
+                        )
                     }
-
-                    var content = msgs.joinToString(line_break);
-                    msgs.clear();
-                    return@InfoError content;
                 }
+
+                var content = msgs.joinToString(line_break);
+                msgs.clear();
+                return@InfoError content;
             }
 
-
-            conn?.disconnect();
-            conn = null;
+            conn.disconnect();
         }
     }
 
-    /**
-     * http://tools.jb51.net/table/http_content_type/
-     */
-    fun getTextTypeFromContentType(contentType: String): Boolean {
-        return contentType.contains("json", true) ||
-                contentType.contains("htm", true) ||
-                contentType.contains("text", true) ||
-                contentType.contains("urlencoded", true)
-    }
 
     fun toByteArray(input: InputStream): ByteArray {
         val output = ByteArrayOutputStream()
@@ -448,6 +457,8 @@ class HttpUtil(var url: String = "") {
      * @param filePath:保存位置，优先使用Url中的文件名，如果存在，则用唯一Code命名。
      */
     fun doDownloadFile(filePath: String): FileMessage {
+        var CACHESIZE = 1024 * 1024;
+
         var remoteImage = url;
         var ret = FileMessage();
         var extInfo = FileExtentionInfo(remoteImage);
@@ -480,11 +491,24 @@ class HttpUtil(var url: String = "") {
             return ret;
         }
 
-        this.setRequest { it.requestMethod = "GET" }
+        this.request.requestMethod = "GET"
 
-        var retData = doNet();
+        this.response.resultAction = { input ->
 
-        destFilePath.appendBytes(retData);
+            var bytes = ByteArray(CACHESIZE);
+            var bytes_len = 0;
+
+            while (true) {
+                bytes_len = input.read(bytes)
+                if (bytes_len <= 0) {
+                    break;
+                }
+
+                destFilePath.appendBytes(bytes.sliceArray(0 until bytes_len))
+            }
+        }
+
+        doNet();
 
         //判断是否存在原始文件
         if (File(oriFile).exists() == false) {
@@ -513,19 +537,17 @@ class HttpUtil(var url: String = "") {
 
         var boundary = "------" + CodeUtil.getCode();
 
-        this.setRequest {
-            it.requestMethod = "POST"
-            it.connectTimeout = 1200_000
-            it.readTimeout = 1200_000
-            it.headers.set("Connection", "keep-alive")
-            it.headers.set("Content-Type", "multipart/form-data; boundary=${boundary}")
-            it.chunkedStreamingMode = CACHESIZE
-        }
+        this.request.requestMethod = "POST"
+        this.request.connectTimeout = 1200_000
+        this.request.readTimeout = 1200_000
+        this.request.headers.set("Connection", "keep-alive")
+        this.request.headers.set("Content-Type", "multipart/form-data; boundary=${boundary}")
+        this.request.chunkedStreamingMode = CACHESIZE
 
-        var isTxt = false;
-        this.setResponse { conn ->
-            isTxt = getTextTypeFromContentType(conn.contentType)
-        }
+//        var isTxt = false;
+//        this.setResponse { conn ->
+//            isTxt = getTextTypeFromContentType(conn.contentType)
+//        }
 
         this.request.postAction = { out ->
             out.write(
@@ -554,11 +576,11 @@ Content-Type: application/octet-stream
         }
 
         var ret = this.doNet()
-            .toString(Charset.forName(this.response.charset))
 
-        if (isTxt) {
+        if (this.response.resultIsText) {
             logger.info(ret.Slice(0, 4096))
         }
+
         return ret;
     }
 }
