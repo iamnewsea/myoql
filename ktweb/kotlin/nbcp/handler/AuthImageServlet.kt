@@ -2,13 +2,10 @@ package nbcp.handler
 
 import ch.qos.logback.classic.Level
 import com.wf.captcha.ArithmeticCaptcha
-import com.wf.captcha.utils.CaptchaUtil
 import nbcp.comm.*
 import nbcp.db.db
-import nbcp.web.findParameterStringValue
 import nbcp.web.queryJson
 import nbcp.web.tokenValue
-import org.springframework.beans.factory.annotation.Value
 import java.lang.RuntimeException
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServletRequest

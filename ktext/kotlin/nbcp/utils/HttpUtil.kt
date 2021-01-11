@@ -40,11 +40,48 @@ data class HttpRequestData(
     init {
         headers.set("Connection", "close")
     }
+
+    /**
+     * postAction 是上传专用
+     */
+    var postAction: ((DataOutputStream) -> Unit)? = null
+
+    /**
+     * post 小数据量
+     */
+    var postBody = ""
 }
 
-data class HttpResponseData(
+class HttpResponseData {
+
+    /**
+     * 回发的原始内容。可能是大文件，待处理。
+     */
+    var result: ByteArray = byteArrayOf()
+
     var contentType: String = ""
-)
+        internal set;
+
+    /**
+     * 该次回发Header，只读 ,全小写
+     */
+    var headers: StringMap = StringMap()
+        internal set;
+
+    /**
+     * 回发的编码，只读
+     */
+    val charset: String
+        get() {
+            var char_parts = this.contentType.AsString().split(";").last().split("=");
+            if (char_parts.size == 2) {
+                if (char_parts[0].trim().VbSame("charset")) {
+                    return char_parts[1];
+                }
+            }
+            return "UTF-8"
+        }
+}
 //@Configuration
 //class RestTemplateConfig {
 //    @Bean
@@ -140,32 +177,9 @@ class HttpUtil(var url: String = "") {
         }
     }
 
+    var request = HttpRequestData()
+    var response = HttpResponseData()
 
-    var responseResult: ByteArray = byteArrayOf()
-    private var requestData = HttpRequestData()
-    private var responseData = HttpResponseData()
-
-    /**
-     * postAction 是上传专用
-     */
-    var postAction: ((DataOutputStream) -> Unit)? = null
-
-    /**
-     * post 小数据量
-     */
-    private var postBody = byteArrayOf()
-
-    /**
-     * 回发的编码，只读
-     */
-    var responseCharset: String = "UTF-8"
-        private set;
-
-    /**
-     * 该次回发Header，只读 ,全小写
-     */
-    var responseHeader: StringMap = StringMap()
-        private set;
 
     /**
      * 该次回发的状态码，只读
@@ -185,13 +199,10 @@ class HttpUtil(var url: String = "") {
     var msg: String = ""  //初始化失败的消息.用于对象传递
         private set;
 
-    fun setPostBody(postBody: ByteArray): HttpUtil {
-        this.postBody = postBody;
-        return this;
-    }
 
     fun setPostBody(postBody: String): HttpUtil {
-        return this.setPostBody(postBody.toByteArray(utf8))
+        this.request.postBody = postBody;
+        return this
     }
 //    private var https = false;
 //
@@ -206,12 +217,12 @@ class HttpUtil(var url: String = "") {
     }
 
     fun setRequest(action: ((HttpRequestData) -> Unit)): HttpUtil {
-        action(this.requestData)
+        action(this.request)
         return this;
     }
 
     fun setResponse(action: ((HttpResponseData) -> Unit)): HttpUtil {
-        action(this.responseData)
+        action(this.response)
         return this;
     }
 
@@ -220,7 +231,7 @@ class HttpUtil(var url: String = "") {
 
         var retData = doNet()
 
-        return retData.toString(Charset.forName(responseCharset.AsString("UTF-8")));
+        return retData.toString(Charset.forName(this.response.charset.AsString("UTF-8")));
     }
 
     /**
@@ -228,12 +239,12 @@ class HttpUtil(var url: String = "") {
      */
     fun doPost(postJson: JsonMap): String {
 
-        if (this.requestData.contentType.isEmpty()) {
-            this.requestData.contentType = "application/json;charset=UTF-8"
+        if (this.request.contentType.isEmpty()) {
+            this.request.contentType = "application/json;charset=UTF-8"
         }
 
         var requestBody = "";
-        if (this.requestData.contentType.contains("json")) {
+        if (this.request.contentType.contains("json")) {
             requestBody = postJson.ToJson()
         } else {
             requestBody =
@@ -249,11 +260,11 @@ class HttpUtil(var url: String = "") {
     fun doPost(requestBody: String = ""): String {
 //        logger.Info { "[post]\t${url}\n${requestHeader.map { it.key + ":" + it.value }.joinToString("\n")}" }
 
-        if (this.requestData.headers.containsKey("Accept") == false) {
-            this.requestData.headers.set("Accept", "application/json")
+        if (this.request.headers.containsKey("Accept") == false) {
+            this.request.headers.set("Accept", "application/json")
         }
 
-        this.requestData.requestMethod = "POST"
+        this.request.requestMethod = "POST"
 
         if (requestBody.HasValue) {
             this.setPostBody(requestBody)
@@ -262,7 +273,7 @@ class HttpUtil(var url: String = "") {
         var ret = doNet()
 
 
-        return ret.toString(Charset.forName(responseCharset.AsString("UTF-8")));
+        return ret.toString(Charset.forName(this.response.charset.AsString("UTF-8")));
     }
 
     fun doNet(): ByteArray {
@@ -278,28 +289,28 @@ class HttpUtil(var url: String = "") {
         conn = URL(url).openConnection() as HttpURLConnection;
 
         try {
-            conn.instanceFollowRedirects = this.requestData.instanceFollowRedirects
-            conn.useCaches = this.requestData.useCaches
-            conn.connectTimeout = this.requestData.connectTimeout
-            conn.readTimeout = this.requestData.readTimeout
+            conn.instanceFollowRedirects = this.request.instanceFollowRedirects
+            conn.useCaches = this.request.useCaches
+            conn.connectTimeout = this.request.connectTimeout
+            conn.readTimeout = this.request.readTimeout
 
-            conn.requestMethod = this.requestData.requestMethod
-            if (this.requestData.chunkedStreamingMode > 0) {
-                conn.setChunkedStreamingMode(this.requestData.chunkedStreamingMode)
+            conn.requestMethod = this.request.requestMethod
+            if (this.request.chunkedStreamingMode > 0) {
+                conn.setChunkedStreamingMode(this.request.chunkedStreamingMode)
             }
 
-            if (this.requestData.contentType.HasValue &&
-                (this.requestData.headers.containsKey("Content-Type") || this.requestData.headers.containsKey("ContentType"))
+            if (this.request.contentType.HasValue &&
+                (this.request.headers.containsKey("Content-Type") || this.request.headers.containsKey("ContentType"))
             ) {
                 throw RuntimeException("请使用 contentType 属性")
             }
 
-            if (this.requestData.contentType.HasValue) {
-                conn.setRequestProperty("Content-Type", this.requestData.contentType);
+            if (this.request.contentType.HasValue) {
+                conn.setRequestProperty("Content-Type", this.request.contentType);
             }
 
-            this.requestData.headers.keys.forEach { key ->
-                conn!!.setRequestProperty(key, this.requestData.headers.get(key))
+            this.request.headers.keys.forEach { key ->
+                conn!!.setRequestProperty(key, this.request.headers.get(key))
             }
 
 
@@ -308,7 +319,7 @@ class HttpUtil(var url: String = "") {
             }
 
 
-            requestIsText = getTextTypeFromContentType(this.requestData.contentType);
+            requestIsText = getTextTypeFromContentType(this.request.contentType);
 
             conn.doInput = true
 
@@ -319,16 +330,16 @@ class HttpUtil(var url: String = "") {
 
 
                 //如果是 post 小数据
-                if (this.postBody.any()) {
+                if (this.request.postBody.any()) {
                     conn.setChunkedStreamingMode(0)
 
                     DataOutputStream(conn.outputStream).use { out ->
-                        out.write(this.postBody);
+                        out.write(this.request.postBody.toByteArray(utf8));
                         out.flush();
                     }
-                } else if (this.postAction != null) {
+                } else if (this.request.postAction != null) {
                     DataOutputStream(conn.outputStream).use { out ->
-                        this.postAction?.invoke(out);
+                        this.request.postAction?.invoke(out);
                         out.flush();
                     }
                 }
@@ -341,26 +352,20 @@ class HttpUtil(var url: String = "") {
                     return@forEach
                 }
                 var value = it.value.joinToString(",")
-                this.responseHeader[it.key.toLowerCase()] = value
+                this.response.headers[it.key.toLowerCase()] = value
             }
 
 //            this.responseActions.forEach {
 //                it.invoke(conn!!);
 //            }
 
-            var char_parts = conn.contentType.AsString().split(";").last().split("=");
-            if (char_parts.size == 2) {
-                if (char_parts[0].trim().VbSame("charset")) {
-                    responseCharset = char_parts[1];
-                }
-            }
 
             respIsText = getTextTypeFromContentType(conn.contentType ?: "");
 
-            conn.inputStream.use { input -> this.responseResult = toByteArray(input); }
+            conn.inputStream.use { input -> this.response.result = toByteArray(input); }
 
             this.totalTime = LocalDateTime.now() - startAt
-            return this.responseResult;
+            return this.response.result
         } finally {
             // 断开连接
             if (this.totalTime.totalMilliseconds == 0L) {
@@ -372,7 +377,7 @@ class HttpUtil(var url: String = "") {
                     var msgs = mutableListOf<String>();
                     msgs.add("${conn!!.requestMethod} ${url}\t[status:${this.status}]");
 
-                    msgs.add(this.requestData.headers.map {
+                    msgs.add(this.request.headers.map {
                         return@map "\t${it.key}:${it.value}"
                     }.joinToString(line_break))
 
@@ -382,22 +387,22 @@ class HttpUtil(var url: String = "") {
 
                         var k10Size = 10240
                         //小于 10K
-                        if (requestIsText && postBody.any()) {
+                        if (requestIsText && this.request.postBody.any()) {
                             msgs.add("---")
-                            msgs.add(postBody.take(k10Size).toByteArray().toString(utf8))
+                            msgs.add(this.request.postBody.take(k10Size).toByteArray().toString(utf8))
                         }
 
                         msgs.add("---")
 
-                        msgs.add(this.responseHeader.map {
+                        msgs.add(this.response.headers.map {
                             return@map "\t${it.key}:${it.value}"
                         }.joinToString(line_break))
 
                         //小于10K
-                        if (respIsText && this.responseResult.any()) {
+                        if (respIsText && this.response.result.any()) {
                             msgs.add(
-                                this.responseResult.take(k10Size).toByteArray()
-                                    .toString(Charset.forName(this.responseCharset.AsString("UTF-8")))
+                                this.response.result.take(k10Size).toByteArray()
+                                    .toString(Charset.forName(this.response.charset.AsString("UTF-8")))
                             )
                         }
                     }
@@ -514,6 +519,7 @@ class HttpUtil(var url: String = "") {
             it.readTimeout = 1200_000
             it.headers.set("Connection", "keep-alive")
             it.headers.set("Content-Type", "multipart/form-data; boundary=${boundary}")
+            it.chunkedStreamingMode = CACHESIZE
         }
 
         var isTxt = false;
@@ -521,7 +527,7 @@ class HttpUtil(var url: String = "") {
             isTxt = getTextTypeFromContentType(conn.contentType)
         }
 
-        this.postAction = { out ->
+        this.request.postAction = { out ->
             out.write(
                 """--${boundary}
 Content-Disposition: form-data; name="${fileName}"; filename="blob"
@@ -533,7 +539,6 @@ Content-Type: application/octet-stream
 
             var bytes = ByteArray(CACHESIZE);
             var bytes_len = 0;
-            var count = -1;
             DataInputStream(FileInputStream(file)).use { input ->
                 while (true) {
                     bytes_len = input.read(bytes)
@@ -541,14 +546,7 @@ Content-Type: application/octet-stream
                         break;
                     }
 
-                    count++;
-                    try {
-                        out.write(bytes, 0, bytes_len)
-                    } catch (e: java.lang.Exception) {
-                        print(count)
-                        print(bytes_len);
-                        throw e;
-                    }
+                    out.write(bytes, 0, bytes_len)
                 }
             }
 
@@ -556,7 +554,7 @@ Content-Type: application/octet-stream
         }
 
         var ret = this.doNet()
-            .toString(Charset.forName(responseCharset))
+            .toString(Charset.forName(this.response.charset))
 
         if (isTxt) {
             logger.info(ret.Slice(0, 4096))

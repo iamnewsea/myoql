@@ -3,7 +3,7 @@
 
     <groupId>cn.dev8</groupId>
     <artifactId>ktmvc</artifactId>
-    <version>0.2.1.6</version>
+    <version>0.2.1.7</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
@@ -12,7 +12,7 @@
     <parent>
         <groupId>cn.dev8</groupId>
         <artifactId>kotlin</artifactId>
-        <version>0.2.1.6</version>
+        <version>0.2.1.7</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -56,12 +56,12 @@
 
 
         <!-- https://mvnrepository.com/artifact/org.bytedeco/javacv -->
-        <dependency>
-            <groupId>org.bytedeco</groupId>
-            <artifactId>javacv</artifactId>
-            <version>1.5.3</version>
-            <scope>provided</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.bytedeco</groupId>-->
+<!--            <artifactId>javacv</artifactId>-->
+<!--            <version>1.5.3</version>-->
+<!--            <scope>provided</scope>-->
+<!--        </dependency>-->
 
         <!-- https://mvnrepository.com/artifact/org.bytedeco.javacpp-presets/ffmpeg-platform -->
 <!--        <dependency>-->
@@ -113,20 +113,20 @@
 <!--        </dependency>-->
 
 
-        <dependency>
-            <groupId>com.github.whvcse</groupId>
-            <artifactId>easy-captcha</artifactId>
-            <version>1.6.2</version>
-            <scope>provided</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.github.whvcse</groupId>-->
+<!--            <artifactId>easy-captcha</artifactId>-->
+<!--            <version>1.6.2</version>-->
+<!--            <scope>provided</scope>-->
+<!--        </dependency>-->
 
 
 
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-            <scope>provided</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.aspectj</groupId>-->
+<!--            <artifactId>aspectjweaver</artifactId>-->
+<!--            <scope>provided</scope>-->
+<!--        </dependency>-->
         <!--        <dependency>-->
         <!--            <groupId>io.undertow</groupId>-->
         <!--            <artifactId>undertow-servlet</artifactId>-->
