@@ -21,7 +21,8 @@ object MyUtil {
     //    val OneHourSeconds: Int = 3600000;
 //    val OneDayMilliseconds: Int = 86400000;
     val OneDaySeconds: Int = 86400;
-    val SystemTimeZoneOffsetTotalSeconds = ZoneId.systemDefault().rules.getStandardOffset(Date().toInstant()).totalSeconds  //系统时区相差的秒数
+    val SystemTimeZoneOffsetTotalSeconds =
+        ZoneId.systemDefault().rules.getStandardOffset(Date().toInstant()).totalSeconds  //系统时区相差的秒数
 
     @JvmStatic
     private val random = Random();
@@ -60,35 +61,35 @@ object MyUtil {
      * https://www.w3school.com.cn/media/media_mimeref.asp
      */
     private val mimeLists = StringMap(
-            "" to "application/octet-stream",
-            "css" to "text/css",
-            "htm" to "text/html",
-            "html" to "text/html",
-            "js" to "application/javascript",
-            "xml" to "text/xml",
-            "gif" to "image/gif",
-            "jpg" to "image/jpeg",
-            "jpeg" to "image/jpeg",
-            "png" to "image/jpeg",
-            "tiff" to "image/tiff",
-            "json" to "application/json",
-            "txt" to "text/plain",
-            "mp3" to "audio/mpeg",
-            "avi" to "video/x-msvideo",
-            "mp4" to "video/mpeg4",
-            "doc" to "application/msword",
-            "docx" to "application/msword",
-            "pdf" to "application/pdf",
-            "xls" to "application/vnd.ms-excel",
-            "xlsx" to "application/vnd.ms-excel",
-            "ppt" to "application/vnd.ms-powerpoint",
-            "exe" to "application/octet-stream",
-            "zip" to "application/zip",
-            "m3u" to "audio/x-mpegurl",
-            "svg" to "image/svg+xml",
-            "h" to "text/plain",
-            "c" to "text/plain",
-            "dll" to "application/x-msdownload"
+        "" to "application/octet-stream",
+        "css" to "text/css",
+        "htm" to "text/html",
+        "html" to "text/html",
+        "js" to "application/javascript",
+        "xml" to "text/xml",
+        "gif" to "image/gif",
+        "jpg" to "image/jpeg",
+        "jpeg" to "image/jpeg",
+        "png" to "image/jpeg",
+        "tiff" to "image/tiff",
+        "json" to "application/json",
+        "txt" to "text/plain",
+        "mp3" to "audio/mpeg",
+        "avi" to "video/x-msvideo",
+        "mp4" to "video/mpeg4",
+        "doc" to "application/msword",
+        "docx" to "application/msword",
+        "pdf" to "application/pdf",
+        "xls" to "application/vnd.ms-excel",
+        "xlsx" to "application/vnd.ms-excel",
+        "ppt" to "application/vnd.ms-powerpoint",
+        "exe" to "application/octet-stream",
+        "zip" to "application/zip",
+        "m3u" to "audio/x-mpegurl",
+        "svg" to "image/svg+xml",
+        "h" to "text/plain",
+        "c" to "text/plain",
+        "dll" to "application/x-msdownload"
     )
 
     fun getMimeType(extName: String): String {
@@ -110,44 +111,46 @@ object MyUtil {
 
         var value = byteArray8.ToHexLowerString()
         var map = mapOf(
-                "4D546864" to "mid",
-                "FFD8FF" to "jpg",
-                "89504E47" to "png",
-                "47494638" to "gif",
-                "49492A00" to "tif",
-                "424D" to "bmp",
-                "41433130" to "dwg",
-                "38425053" to "psd",
-                "7B5C727466" to "rtf",
-                "3C3F786D6C" to "xml",
-                "68746D6C3E" to "html",
+            "4D546864" to "mid",
+            "FFD8FF" to "jpg",
+            "89504E47" to "png",
+            "47494638" to "gif",
+            "49492A00" to "tif",
+            "424D" to "bmp",
+            "41433130" to "dwg",
+            "38425053" to "psd",
+            "7B5C727466" to "rtf",
+            "3C3F786D6C" to "xml",
+            "68746D6C3E" to "html",
 //                "44656C69766572792D646174653A" to "eml",
 //                "CFAD12FEC5FD746F" to "dbx",
 //                "2142444E" to "pst",
-                "D0CF11E0" to "doc",
+            "D0CF11E0" to "doc",
 //                "5374616E64617264204A" to "mdb",
-                "FF575043" to "wpd",
+            "FF575043" to "wpd",
 //                "252150532D41646F6265" to "ps",
-                "255044462D312E" to "pdf",
-                "AC9EBD8F" to "qdf",
-                "E3828596" to "pwl",
-                "504B0304" to "zip",
-                "52617221" to "rar",
-                "57415645" to "wav",
-                "41564920" to "avi",
-                "2E7261FD" to "ram",
-                "2E524D46" to "rm",
-                "000001BA" to "mpg",
-                "000001B3" to "mpg",
-                "6D6F6F76" to "mov",
-                "3026B2758E66CF11" to "asf"
+            "255044462D312E" to "pdf",
+            "AC9EBD8F" to "qdf",
+            "E3828596" to "pwl",
+            "504B0304" to "zip",
+            "52617221" to "rar",
+            "57415645" to "wav",
+            "41564920" to "avi",
+            "2E7261FD" to "ram",
+            "2E524D46" to "rm",
+            "000001BA" to "mpg",
+            "000001B3" to "mpg",
+            "6D6F6F76" to "mov",
+            "3026B2758E66CF11" to "asf"
         );
 
         return map.filterKeys { value.startsWith(it) }.values.firstOrNull() ?: ""
     }
 
     fun isLocalIp(Ip: String): Boolean {
-        return Ip.isEmpty() || Ip.startsWith("192.168.") || Ip.startsWith("10.") || Ip.startsWith("172.") || Ip.startsWith("127.") || Ip.startsWith("0.") || Ip.startsWith("0:")
+        return Ip.isEmpty() || Ip.startsWith("192.168.") || Ip.startsWith("10.") || Ip.startsWith("172.") || Ip.startsWith(
+            "127."
+        ) || Ip.startsWith("0.") || Ip.startsWith("0:")
     }
 
     /**
@@ -257,7 +260,8 @@ object MyUtil {
             //值是： /D:/code/sites/server/admin/target/classes/
             //处理文件路径中中文的问题。
             var targetPath = File(path).parentFile
-            var mvn_file = targetPath.listFiles { it -> it.name == "maven-archiver" }.firstOrNull()?.listFiles { it -> it.name == "pom.properties" }?.firstOrNull()
+            var mvn_file = targetPath.listFiles { it -> it.name == "maven-archiver" }.firstOrNull()
+                ?.listFiles { it -> it.name == "pom.properties" }?.firstOrNull()
             if (mvn_file != null) {
                 var jarFile_lines = mvn_file.readLines()
                 var version = jarFile_lines.first { it.startsWith("version=") }.split("=").last()
@@ -369,7 +373,8 @@ object MyUtil {
     /**
      * 加载的类
      */
-    fun getLoadedClasses(): Vector<Class<*>> = MyUtil.getPrivatePropertyValue(Thread.currentThread().contextClassLoader, "classes") as Vector<Class<*>>
+    fun getLoadedClasses(): Vector<Class<*>> =
+        MyUtil.getPrivatePropertyValue(Thread.currentThread().contextClassLoader, "classes") as Vector<Class<*>>
 
     /**
      * 查找类。
@@ -382,10 +387,16 @@ object MyUtil {
         //通过当前线程得到类加载器从而得到URL的枚举
         var classLeader = Thread.currentThread().contextClassLoader
         val urlEnumeration = classLeader.getResources(basePackPath)
-        var jarPath = File(classLeader.getResource(oneClass.name.replace('.', '/') + ".class").path.Slice(0, 0 - oneClass.name.length - ".class".length)).path;
+        var jarPath = File(
+            classLeader.getResource(oneClass.name.replace('.', '/') + ".class").path.Slice(
+                0,
+                0 - oneClass.name.length - ".class".length
+            )
+        ).path;
 
         while (urlEnumeration.hasMoreElements()) {
-            val url = urlEnumeration.nextElement()//得到的结果大概是：jar:file:/C:/Users/ibm/.m2/repository/junit/junit/4.12/junit-4.12.jar!/org/junit
+            val url =
+                urlEnumeration.nextElement()//得到的结果大概是：jar:file:/C:/Users/ibm/.m2/repository/junit/junit/4.12/junit-4.12.jar!/org/junit
             val protocol = url.protocol//大概是jar
             if ("jar".equals(protocol, ignoreCase = true)) {
                 ret.addAll(getClassesFromJar(url, basePack))
@@ -431,7 +442,11 @@ object MyUtil {
         return list;
     }
 
-    private fun list_files_recursion(path: File, base: String, fileFilter: ((String) -> Boolean)? = null): MutableSet<String> {
+    private fun list_files_recursion(
+        path: File,
+        base: String,
+        fileFilter: ((String) -> Boolean)? = null
+    ): MutableSet<String> {
         var list = mutableSetOf<String>()
         path.listFiles { it ->
             var relativeName = it.FullName.substring(base.length).replace("\\", "/");
@@ -547,27 +562,36 @@ object MyUtil {
     }
 
     /**
+     * 短横线格式
+     */
+    fun getKebabCase(value: String): String {
+        return getSmallCamelCase(value).replace(Regex("[A-Z]"), {
+            return@replace "-" + it.value.toLowerCase()
+        })
+    }
+
+    /**
      * 连字符格式,全小写。
      */
     fun getHyphen(value: String): String {
         return value.split(Regex("""[\W_]"""))
-                .map { value ->
-                    var chars = mutableListOf<Char>()
+            .map { value ->
+                var chars = mutableListOf<Char>()
 
-                    value.forEach {
-                        if (it.isUpperCase()) {
-                            if (chars.any()) {
-                                chars.add('-')
-                            }
-                            chars.add(it.toLowerCase())
-                        } else {
-                            chars.add(it);
+                value.forEach {
+                    if (it.isUpperCase()) {
+                        if (chars.any()) {
+                            chars.add('-')
                         }
+                        chars.add(it.toLowerCase())
+                    } else {
+                        chars.add(it);
                     }
-
-                    return@map chars.joinToString("")
                 }
-                .joinToString("-")
+
+                return@map chars.joinToString("")
+            }
+            .joinToString("-")
     }
 }
 

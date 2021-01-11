@@ -10,9 +10,14 @@ import java.time.format.DateTimeFormatter
 class CodeTest : TestBase() {
     @Test
     fun test_code() {
-        var d = CodeUtil.getCode();
+        var sect = MyUtil.getBigCamelCase("AbcDefXyz").replace(Regex("[A-Z]"), {
+            if(it.range.first == 0){
+                return@replace it.value.toLowerCase()
+            }
+            return@replace "-" + it.value.toLowerCase()
+        })
 
-        println(CodeUtil.getDateTimeFromCode(d).AsString())
+        println(sect)
     }
 
     @Test
