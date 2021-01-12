@@ -562,7 +562,7 @@ object MyUtil {
     }
 
     /**
-     * 短横线格式
+     * 短横线格式，全小写
      */
     fun getKebabCase(value: String): String {
         return getSmallCamelCase(value).replace(Regex("[A-Z]"), {
@@ -570,28 +570,28 @@ object MyUtil {
         })
     }
 
-    /**
-     * 连字符格式,全小写。
-     */
-    fun getHyphen(value: String): String {
-        return value.split(Regex("""[\W_]"""))
-            .map { value ->
-                var chars = mutableListOf<Char>()
-
-                value.forEach {
-                    if (it.isUpperCase()) {
-                        if (chars.any()) {
-                            chars.add('-')
-                        }
-                        chars.add(it.toLowerCase())
-                    } else {
-                        chars.add(it);
-                    }
-                }
-
-                return@map chars.joinToString("")
-            }
-            .joinToString("-")
-    }
+//    /**
+//     * 连字符格式,全小写。
+//     */
+//    fun getHyphen(value: String): String {
+//        return value.split(Regex("""[\W_]"""))
+//            .map { value ->
+//                var chars = mutableListOf<Char>()
+//
+//                value.forEach {
+//                    if (it.isUpperCase()) {
+//                        if (chars.any()) {
+//                            chars.add('-')
+//                        }
+//                        chars.add(it.toLowerCase())
+//                    } else {
+//                        chars.add(it);
+//                    }
+//                }
+//
+//                return@map chars.joinToString("")
+//            }
+//            .joinToString("-")
+//    }
 }
 

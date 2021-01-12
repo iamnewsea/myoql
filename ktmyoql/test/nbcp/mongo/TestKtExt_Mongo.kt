@@ -10,6 +10,7 @@ import nbcp.db.mongo.entity.SysLog
 import nbcp.db.sql.doInsert
 import nbcp.db.sql.entity.s_annex
 import nbcp.db.sql.updateWithEntity
+import nbcp.tool.UserCodeGenerator
 import org.junit.Test
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.transaction.annotation.Transactional
@@ -25,6 +26,12 @@ class TestKtExt_Mongo : TestBase() {
     fun test_Transactional() {
 
 //        db.mor_base.basicUser.doInsert(BasicUser("udi"));
-        db.mor_base.sysLog.doInsert(SysLog("test","user"))
+        db.mor_base.sysLog.doInsert(SysLog("test", "user"))
+    }
+
+    @Test
+    fun genCode() {
+        var d = UserCodeGenerator.genMvc("MongoBase", db.mor_base.basicUser)
+        println(d)
     }
 }

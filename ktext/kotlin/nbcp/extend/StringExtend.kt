@@ -51,19 +51,19 @@ fun String.IsNumberic(): Boolean {
 
     var hasDot = false;
     if (self.all {
-                if (it == '.') {
-                    if (hasDot == false) {
-                        hasDot = true;
-                        return@all true;
-                    }
-                    return@all false;
-                }
-
-                if (it.isDigit()) {
+            if (it == '.') {
+                if (hasDot == false) {
+                    hasDot = true;
                     return@all true;
                 }
                 return@all false;
-            } == false) {
+            }
+
+            if (it.isDigit()) {
+                return@all true;
+            }
+            return@all false;
+        } == false) {
         return false;
     }
 
@@ -84,11 +84,11 @@ fun Char.NewString(count: Int): String {
 }
 
 data class CharFlowSetting(
-        var index: Int = 0,
-        var item: Char = 0.toChar(),
-        var prevCutIndex: Int = 0,
-        //休息状态，如在括号内部
-        var sleep: Boolean = false
+    var index: Int = 0,
+    var item: Char = 0.toChar(),
+    var prevCutIndex: Int = 0,
+    //休息状态，如在括号内部
+    var sleep: Boolean = false
 )
 
 /**
@@ -154,9 +154,9 @@ fun String.cutWith(callback: ((CharFlowSetting) -> Boolean)): List<String> {
  * 定义引用定义，开始符号，结束符号，逃逸符号。
  */
 data class TokenQuoteDefine(
-        var start: Char,
-        var end: Char = 0.toChar(),
-        var escape: Char = '\\'
+    var start: Char,
+    var end: Char = 0.toChar(),
+    var escape: Char = '\\'
 ) {
     init {
         if (end.toInt() == 0) {
@@ -228,13 +228,14 @@ fun String.nextIndexOf(startIndex: Int, until: (Char) -> Boolean): Int {
  * @return
  */
 fun String.Tokenizer(
-        wordSplit: ((Char) -> Boolean)? = null,
-        quoteDefines: Array<TokenQuoteDefine> = arrayOf(
-                TokenQuoteDefine('`'),
-                TokenQuoteDefine('[', ']'),
-                TokenQuoteDefine('"'),
-                TokenQuoteDefine('\'')),
-        only1Blank: Boolean = true
+    wordSplit: ((Char) -> Boolean)? = null,
+    quoteDefines: Array<TokenQuoteDefine> = arrayOf(
+        TokenQuoteDefine('`'),
+        TokenQuoteDefine('[', ']'),
+        TokenQuoteDefine('"'),
+        TokenQuoteDefine('\'')
+    ),
+    only1Blank: Boolean = true
 ): List<String> {
     var wordSplit = wordSplit;
     if (wordSplit == null) {
@@ -308,7 +309,12 @@ fun String.Tokenizer(
 /**
  * 找下一个分词的位置，不能==startIndex
  */
-private fun getNextSplitIndex(value: String, startIndex: Int, quoteDefines: Array<TokenQuoteDefine>, wordSplit: (Char) -> Boolean): Int {
+private fun getNextSplitIndex(
+    value: String,
+    startIndex: Int,
+    quoteDefines: Array<TokenQuoteDefine>,
+    wordSplit: (Char) -> Boolean
+): Int {
 
     var startQuoteKeys = quoteDefines.map { it.start }.toTypedArray();
     var firstChar = value[startIndex];
@@ -363,7 +369,6 @@ private fun getNextSplitIndex(value: String, startIndex: Int, quoteDefines: Arra
 
     return value.length;
 }
-
 
 
 fun String.Repeat(count: Int): String {
@@ -471,7 +476,8 @@ private fun getNodeText(node: Element): String? {
     for (index in 0..(childNode.length - 1)) {
         var subItem = childNode.item(index);
         if (subItem.nodeType != Node.TEXT_NODE &&
-                subItem.nodeType != Node.CDATA_SECTION_NODE) {
+            subItem.nodeType != Node.CDATA_SECTION_NODE
+        ) {
             hasNode = true;
             break;
         }
@@ -572,19 +578,19 @@ fun String.MatchPattern(pattern: String): StringMap {
     var tokens = mutableListOf<MatchPatternTokenItem>();
     var prevEndIndex = 0;
     Regex("""\b\w+\b""").findAll(pattern).toList()
-            .mapIndexed { index, it ->
-                var group = it.groups.firstOrNull();
-                if (group == null) {
-                    return@mapIndexed
-                }
-
-                if (group.range.first > prevEndIndex) {
-                    tokens.add(MatchPatternTokenItem(pattern.slice(prevEndIndex + 1..group.range.first - 1)))
-                }
-
-                tokens.add(MatchPatternTokenItem(group.value))
-                prevEndIndex = group.range.last;
+        .mapIndexed { index, it ->
+            var group = it.groups.firstOrNull();
+            if (group == null) {
+                return@mapIndexed
             }
+
+            if (group.range.first > prevEndIndex) {
+                tokens.add(MatchPatternTokenItem(pattern.slice(prevEndIndex + 1..group.range.first - 1)))
+            }
+
+            tokens.add(MatchPatternTokenItem(group.value))
+            prevEndIndex = group.range.last;
+        }
 
     if (prevEndIndex + 1 < this.length) {
         tokens.add(MatchPatternTokenItem(pattern.substring(prevEndIndex + 1)))
@@ -652,22 +658,28 @@ fun <T> String.ToEnum(enumClazz: Class<T>): T? {
 /**
  * 使用Json格式化
  */
-fun String.formatWithJson(json: Map<String, String>, style: String = "", itemCallback: ((String) -> String)? = null): String {
-    var style = style;
-    if (style.isEmpty()) {
-        style = "{}"
+fun String.formatWithJson(
+    json: Map<String, String>,
+    style: String = "",
+    keyCallback: ((String) -> String)? = null,  //参数：原始key , 返回: 取map值的key
+    valueCallback: ((String, String?) -> String?)? = null  //参数： 原始key,value , 返回value
+
+): String {
+    var styleValue = style;
+    if (styleValue.isEmpty()) {
+        styleValue = "{}"
     }
 
     var regexp = "";
 
-    if (style == "{}") {
+    if (styleValue == "{}") {
         regexp = "\\{([^{}]+)}"
-    } else if (style == "\${}") {
+    } else if (styleValue == "\${}") {
         regexp = "\\$\\{([^{}]+)}"
-    } else if (style == "@") {
+    } else if (styleValue == "@") {
         regexp = "@(\\w+)"
     } else {
-        throw java.lang.RuntimeException("不识别的样式 " + style)
+        throw java.lang.RuntimeException("不识别的样式 " + styleValue)
     }
 
 
@@ -676,16 +688,28 @@ fun String.formatWithJson(json: Map<String, String>, style: String = "", itemCal
             throw java.lang.RuntimeException("匹配出错!")
         }
 
-        var key = result.groupValues.last()
+        var oriKey = result.groupValues.last()
 
-        var value = json.getStringValue(*key.split(".").toTypedArray())
+        var key = oriKey
+        if (keyCallback != null) {
+            key = keyCallback(key);
+        }
+
+        var value: String? = null
+
+
         if (value == null) {
-            return@replace result.groupValues.first()
+            value = json.getStringValue(*key.split(".").toTypedArray())
         }
 
-        if (itemCallback != null) {
-            value = itemCallback(value)
+        if (valueCallback != null) {
+            value = valueCallback(oriKey, value)
         }
+
+        if (value == null) {
+            return@replace ""
+        }
+
         return@replace value;
     })
 }

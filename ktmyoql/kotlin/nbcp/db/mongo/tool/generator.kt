@@ -153,9 +153,7 @@ data class moer_map(val _pname:String)
      * 递归返回嵌入实体。
      */
     fun findEmbClasses(clazz: Class<*>, deep: Int = 0): List<Class<*>> {
-
         if (deep == 6) return listOf();
-
         var ret = clazz.AllFields
                 .filter {
                     if (it.type.IsSimpleType()) return@filter false;
