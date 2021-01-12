@@ -47,9 +47,8 @@ data class HttpRequestData(
 
     var requestMethod: String = "",
     var contentType: String = "",
-    var headers: StringMap = StringMap(),
-
-    ) {
+    var headers: StringMap = StringMap()
+) {
     init {
         headers.set("Connection", "close")
     }

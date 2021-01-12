@@ -1,5 +1,8 @@
 package nbcp.helper
 
+import nbcp.comm.StringMap
+import nbcp.comm.formatWithJson
+import nbcp.comm.line_break
 import java.lang.RuntimeException
 import javax.script.Compilable
 import javax.script.ScriptEngine
@@ -32,5 +35,28 @@ enum class ScriptLanguageEnum {
         }
 
         return engine.eval(script);
+    }
+
+    fun info(): String {
+        var factory = getScriptEngine().factory
+        return listOf(
+            "Name: {name}",
+            "Language name:{l_name}",
+            "Language version:{version}",
+            "Extensions:{extensions}",
+            "Mime types:{types}",
+            "Names:{names}",
+        )
+            .joinToString(line_break)
+            .formatWithJson(
+                StringMap(
+                    "name" to factory.engineName,
+                    "l_name" to factory.languageName,
+                    "version" to factory.engineVersion,
+                    "extensions" to factory.extensions.joinToString(","),
+                    "types" to factory.mimeTypes.joinToString(","),
+                    "names" to factory.names.joinToString(",")
+                )
+            )
     }
 }
