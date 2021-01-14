@@ -99,6 +99,18 @@ if __name__ == '__main__':
     if len(newVersion) == 0:
         print("myoql现在的版本: " + getVersionOnly())
         sys.exit(1)
+    elif newVersion == "+":
+        v_ary = getVersionOnly().split(".")
+        if( len(v_ary) < 4):
+            newVersion = newVersion + ".1"
+        else:
+            last = int(v_ary[len(v_ary)-1])
+            v_ary[len(v_ary)-1] = str( last + 1 )
+            newVersion = ".".join(v_ary)
+
+
+
+
     print("-----------------------------------------------")
     resetVersionOnly(newVersion)
     groupId, artifactId, version, modules = getVersionData()

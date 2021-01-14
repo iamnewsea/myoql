@@ -370,11 +370,6 @@ class HttpUtil(var url: String = "") {
                 this.response.headers[it.key.toLowerCase()] = value
             }
 
-
-//            this.responseActions.forEach {
-//                it.invoke(conn!!);
-//            }
-
             if (this.response.resultAction != null) {
                 DataInputStream(conn.inputStream).use { input -> this.response.resultAction?.invoke(input) }
             } else if (this.response.resultIsText) {
