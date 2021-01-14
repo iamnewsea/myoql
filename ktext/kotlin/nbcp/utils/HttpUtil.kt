@@ -360,7 +360,7 @@ class HttpUtil(var url: String = "") {
             }
 
             this.status = conn.responseCode
-            this.response.contentType = conn.contentType
+            this.response.contentType = conn.contentType ?: ""
 
             conn.headerFields.forEach {
                 if (it.key == null) {

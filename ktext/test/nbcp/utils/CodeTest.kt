@@ -20,14 +20,14 @@ class CodeTest : TestBase() {
         println(sect)
     }
 
-    @Test
-    fun ag() {
-        ZipUtil.listFile(File("""d:\opt\nginx-1.17.6.zip"""), "").forEach {
-            if (it.isDirectory) {
-                println("[" + it.fileName + "]")
-            } else {
-                println(it.fileName)
-            }
-        }
-    }
+//    @Test
+//    fun ag() {
+//        ZipUtil.listFile(File("""d:\opt\nginx-1.17.6.zip"""), "").forEach {
+//            if (it.isDirectory) {
+//                println("[" + it.fileName + "]")
+//            } else {
+//                println(it.fileName)
+//            }
+//        }
+//    }
 }
