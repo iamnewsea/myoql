@@ -1,4 +1,4 @@
-package nbcp.web.${group}
+package nbcp.web.${group|w}
 
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -14,11 +14,11 @@ import javax.servlet.http.HttpServletRequest
 import java.time.*
 
 /**
- * Created by CodeGenerator!
+ * Created by CodeGenerator at ${now}
  */
 @Api(description = "${title}", tags = arrayOf("${entity}"))
 @RestController
-@JsonpMapping("/${group}/${entity_url}")
+@JsonpMapping("${url}")
 class ${entity}AutoController {
 
     @ApiOperation("列表")

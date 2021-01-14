@@ -64,6 +64,7 @@ object UserCodeGenerator {
         return gen(group, entity, text);
     }
 
+
     private fun gen(group: String, metaEntity: BaseMetaData, text: String): String {
         var text = text;
         var entityClass = (metaEntity as MongoBaseMetaCollection<*>).entityClass
@@ -89,92 +90,18 @@ object UserCodeGenerator {
 //            entity_url = entity_url.substring((group + "-").length);
 //        }
 
-        var map: StringKeyMap<((String) -> String)> = StringKeyMap()
-        map.put("-", { MyUtil.getKebabCase(it) })
-        map.put("W", { MyUtil.getBigCamelCase(it) })
-        map.put("w", { MyUtil.getSmallCamelCase(it) })
-        map.put("U", { it.toUpperCase() })
-        map.put("u", { it.toLowerCase() })
 
-        var map2: StringKeyMap<((String).(String) -> String)> = StringKeyMap()
-        map2.put("trim", {
-            var v = this;
-            if (v.startsWith(it)) {
-                v = v.substring(it.length)
-            }
-            if (v.endsWith(it)) {
-                v = v.substring(0, v.length - it.length)
-            }
-            return@put v;
-        })
-
+        var url = "/${MyUtil.getKebabCase(group)}/${MyUtil.getKebabCase(entityClass.simpleName)}"
         var mapDefine = StringMap(
+            "url" to url,
             "group" to group,
             "entity" to entityClass.simpleName,
             "entityField" to MyUtil.getSmallCamelCase(entityClass.simpleName),
             "title" to title,
-            "now" to LocalDateTime.now().toString(),
+            "now" to LocalDateTime.now().AsString(),
             "status_enum_class" to status_enum_class
         )
-        return text.formatWithJson(
-            mapDefine, "\${}",
-            { key ->
-                key.split("|").first()
-            },
-            { fullKey, value ->
-                var sects = fullKey.split("|")
-                if (sects.size <= 1 || value == null) {
-                    return@formatWithJson value;
-                }
-
-                var key = sects.first();
-                var result = value!!;
-                sects.Skip(1).forEach { funcString ->
-                    //如：   substring:2,3
-                    var sects2 = funcString.split(":")
-                    var funcName = sects2.first();
-                    var params = listOf<String>()
-                    if (sects2.size > 2) {
-                        throw RuntimeException("表达式中多个冒号非法：${funcString}")
-                    } else if (sects2.size == 2) {
-                        // 如：   substring:2,3 中的 2,2 参数部分
-                        params = sects2[1].split(",")
-                    }
-
-
-                    if (params.size == 1) {
-                        var funcBody = map2.get(funcName)
-                        if (funcBody == null) {
-                            throw RuntimeException("找不到 ${funcName}")
-                        }
-                        var param = params[0];
-                        var paramValue = param;
-                        if  (param.startsWith("'") && param.endsWith("'")) {
-                            paramValue = param.substring(1,param.length-1);
-                        }
-                        else if( param.IsNumberic()){
-                            paramValue = param;
-                        }
-                        else {
-                            paramValue = mapDefine.get(param).AsString()
-                        }
-                        result = funcBody.invoke(result, paramValue)
-                    } else if (params.size == 0) {
-                        var funcBody = map.get(funcName)
-                        if (funcBody == null) {
-                            throw RuntimeException("找不到 ${funcName}")
-                        }
-                        result = funcBody.invoke(result)
-                    }
-
-                    return@forEach
-                }
-
-
-                return@formatWithJson result
-            }
-        )
-
+        return MyUtil.formatTemplateJson(text, mapDefine)
     }
 
     private fun procFor(entityFields: List<Field>, content: String): String {
@@ -200,13 +127,12 @@ object UserCodeGenerator {
             var t2 = entityFields.map {
 
                 var forExp2 = procIf("fif", entityFields, it, forExp);
-                return@map forExp2.formatWithJson(
+                return@map MyUtil.formatTemplateJson(
+                    forExp2,
                     StringMap(
                         "name" to it.name,
                         "remark" to CodeGeneratorHelper.getFieldCommentValue(it).AsString(it.name),
                         "type" to it.type.simpleName,
-                        "NAME" to MyUtil.getBigCamelCase(it.name),
-                        "name-" to MyUtil.getKebabCase(it.name),
                         "isSimpleType" to it.type.IsSimpleType().toString().toLowerCase()
                     ), "\${}"
                 )

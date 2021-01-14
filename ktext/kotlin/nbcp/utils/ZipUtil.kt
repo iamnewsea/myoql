@@ -13,8 +13,31 @@ import net.lingala.zip4j.model.*;
 import net.lingala.zip4j.model.enums.*;
 import java.lang.RuntimeException
 
+class ZipCompressData{
+    var password  = "";
 
-object ZipUtil {
+    fun withPassword(password:String):ZipCompressData{
+        this.password = password;
+        return this;
+    }
+
+}
+
+
+class ZipExtractData{
+
+}
+
+
+class ZipUtil {
+    fun compress():ZipCompressData{
+        return ZipCompressData()
+    }
+
+    fun extract():ZipExtractData{
+        return ZipExtractData()
+    }
+
     fun compress(destFileName: String, passwd: String, vararg files: String) {
         compress(destFileName, passwd, *files.map { File(it) }.toTypedArray())
     }

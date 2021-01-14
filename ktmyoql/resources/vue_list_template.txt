@@ -4,7 +4,7 @@
             <p>${title}</p>
             <el-button type="primary"  @click="add_click()">添加</el-button>
         </div>
-        <my-list ref="list" url="/${group}/${entity_url}/list" @param="preload" @loaded="procData" :page-size="pageSize" :store="true"
+        <my-list ref="list" url="${url}/list" @param="preload" @loaded="procData" :page-size="pageSize" :store="true"
             style="width: 100%;margin-top:20px;">
             <el-table-column type="index" clign="center" width="50"></el-table-column>
                         <!--<template slot-scope="scope"></template>-->
@@ -59,7 +59,7 @@ ${endif}
 </style>
 <script>
 /**
- * Created by CodeGenerator
+ * Created by CodeGenerator at ${now}
  */
     export default {
         components: {},
@@ -98,19 +98,19 @@ ${endfor}
                 this.$refs.list.loadData(pageNumber);
             },
             add_click() {
-                this.$router.push("/${group}/${entity_url}/add")
+                this.$router.push("${url}/add")
             },
             edit_click(row) {
                 //记录上次点击行
                 var rowId = row.id;
                 this.$refs.list.setLastRow(row);
-                this.$router.push("/${group}/${entity_url}/edit/" + rowId)
+                this.$router.push("${url}/edit/" + rowId)
             },
             delete_click(row) {
                 var rowId = row.id;
                 var rowName = row.name;
                 jv.confirm('确认删除 ' + rowName + ' 吗？').then(res => {
-                    this.$http.post("/${group}/${entity_url}/delete/" + rowId).then(res => {
+                    this.$http.post("${url}/delete/" + rowId).then(res => {
                         this.loadData();
                     })
                 });

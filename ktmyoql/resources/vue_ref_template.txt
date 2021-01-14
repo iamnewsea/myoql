@@ -1,5 +1,5 @@
 <template>
-  <my-ref url="/${group}/${entity_url}/list"
+  <my-ref url="${url}/list"
           v-model="value" @loaded="procData" :multi="multi" :page-size="10"
           ref="list" name="${title}" :store="true"  v-bind="[$attrs]" @input="v=>$emit('input',v)"
           :readOnly="readOnly"
@@ -40,6 +40,9 @@ ${endif}
   </my-ref>
 </template>
 <script>
+/**
+ * Created by CodeGenerator at ${now}
+ */
   export default {
     name: "ref-${entity_url}",
     props: {

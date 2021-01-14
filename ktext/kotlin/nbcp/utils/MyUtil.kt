@@ -570,28 +570,95 @@ object MyUtil {
         })
     }
 
-//    /**
-//     * 连字符格式,全小写。
-//     */
-//    fun getHyphen(value: String): String {
-//        return value.split(Regex("""[\W_]"""))
-//            .map { value ->
-//                var chars = mutableListOf<Char>()
-//
-//                value.forEach {
-//                    if (it.isUpperCase()) {
-//                        if (chars.any()) {
-//                            chars.add('-')
-//                        }
-//                        chars.add(it.toLowerCase())
-//                    } else {
-//                        chars.add(it);
-//                    }
-//                }
-//
-//                return@map chars.joinToString("")
-//            }
-//            .joinToString("-")
-//    }
+    fun trimStart(value: String, trimPart: String, ignoreCase: Boolean = false): String {
+        if (value.startsWith(trimPart, ignoreCase) == false) {
+            return value;
+        }
+        return trimStart(value.substring(trimPart.length), trimPart, ignoreCase)
+    }
+
+    fun trimEnd(value: String, trimPart: String, ignoreCase: Boolean = false): String {
+        if (value.endsWith(trimPart, ignoreCase) == false) {
+            return value;
+        }
+        return trimEnd(value.substring(0, value.length - trimPart.length), trimPart, ignoreCase)
+    }
+
+    fun trim(value: String, trimPart: String, ignoreCase: Boolean = false): String {
+        return trimEnd(trimStart(value, trimPart, ignoreCase), trimPart, ignoreCase)
+    }
+
+    /**
+     * 格式化模板
+     */
+    fun formatTemplateJson(text: String, json: StringMap, style: String = "\${}"): String {
+
+        var map: StringKeyMap<((String) -> String)> = StringKeyMap()
+        map.put("-", { MyUtil.getKebabCase(it) })
+        map.put("W", { MyUtil.getBigCamelCase(it) })
+        map.put("w", { MyUtil.getSmallCamelCase(it) })
+        map.put("U", { it.toUpperCase() })
+        map.put("u", { it.toLowerCase() })
+
+        var map2: StringKeyMap<((String).(String) -> String)> = StringKeyMap()
+        map2.put("trim", { MyUtil.trim(this, it) })
+
+
+        return text.formatWithJson(
+            json, style,
+            { key ->
+                key.split("|").first()
+            },
+            { fullKey, value ->
+                var sects = fullKey.split("|")
+                if (sects.size <= 1 || value == null) {
+                    return@formatWithJson value;
+                }
+
+                var key = sects.first();
+                var result = value!!;
+                sects.Skip(1).forEach { funcString ->
+                    //如：   substring:2,3
+                    var sects2 = funcString.split(":")
+                    var funcName = sects2.first();
+                    var params = listOf<String>()
+                    if (sects2.size > 2) {
+                        throw RuntimeException("表达式中多个冒号非法：${funcString}")
+                    } else if (sects2.size == 2) {
+                        // 如：   substring:2,3 中的 2,2 参数部分
+                        params = sects2[1].split(",")
+                    }
+
+
+                    if (params.size == 1) {
+                        var funcBody = map2.get(funcName)
+                        if (funcBody == null) {
+                            throw RuntimeException("找不到 ${funcName}")
+                        }
+                        var param = params[0];
+                        var paramValue = param;
+                        if (param.startsWith("'") && param.endsWith("'")) {
+                            paramValue = param.substring(1, param.length - 1);
+                        } else if (param.IsNumberic()) {
+                            paramValue = param;
+                        } else {
+                            paramValue = json.get(param).AsString()
+                        }
+                        result = funcBody.invoke(result, paramValue)
+                    } else if (params.size == 0) {
+                        var funcBody = map.get(funcName)
+                        if (funcBody == null) {
+                            throw RuntimeException("找不到 ${funcName}")
+                        }
+                        result = funcBody.invoke(result)
+                    }
+
+                    return@forEach
+                }
+
+
+                return@formatWithJson result
+            });
+    }
 }
 
