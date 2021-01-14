@@ -550,7 +550,7 @@ object MyUtil {
      * 大驼峰 ,仅保留字母，数字
      */
     fun getBigCamelCase(value: String): String {
-        return value.split(Regex("""[\W_]""")).map { it[0].toUpperCase() + it.substring(1) }.joinToString("")
+        return value.split(Regex("""[\W_]+""")).map { it[0].toUpperCase() + it.substring(1) }.joinToString("")
     }
 
     /**

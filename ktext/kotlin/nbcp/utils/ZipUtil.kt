@@ -14,9 +14,9 @@ import net.lingala.zip4j.model.enums.*;
 import java.io.InputStream
 import java.lang.RuntimeException
 
-class ZipCompressData(fileName: String) {
-    var password = ""
-    val zipFile = ZipFile(fileName)
+class ZipCompressData(file: File) {
+    private var password = ""
+    private val zipFile = ZipFile(file)
 
     fun withPassword(password: String): ZipCompressData {
         this.password = password;
@@ -68,59 +68,58 @@ class ZipCompressData(fileName: String) {
 }
 
 
-class ZipUtil {
-    fun compress(target: String): ZipCompressData {
+object ZipUtil {
+    fun beginCompress(target: File): ZipCompressData {
         return ZipCompressData(target)
     }
 
-    companion object {
-        fun deCompress(zipFile: String, destDir: String, passwd: String): String {
-            return deCompress(File(zipFile), File(destDir), passwd);
-        }
-
-        /**
-         * 根据所给密码解压zip压缩包到指定目录
-         * 如果指定目录不存在,可以自动创建,不合法的路径将导致异常被抛出
-         *
-         * @param zipFile zip压缩包绝对路径
-         * @param dest 指定解压文件夹位置
-         * @param passwd 密码(可为空)
-         * @return 解压后的文件数组
-         * @throws ZipException
-         */
-        fun deCompress(zipFile: File, destDir: File, passwd: String): String {
-            //1.判断指定目录是否存在
-            if (!destDir.exists()) {
-                destDir.mkdir()
-            }
-            //2.初始化zip工具
-            val zFile = ZipFile(zipFile)
-            zFile.charset = utf8
-            if (!zFile.isValidZipFile()) {
-                return "压缩文件不合法,可能被损坏."
-            }
-            //3.判断是否已加密
-            if (zFile.isEncrypted()) {
-                zFile.setPassword(passwd.toCharArray())
-            }
-            //4.解压所有文件
-            zFile.extractAll(destDir.FullName)
-            return "";
-        }
-
-        /**
-         * 获取zipFile的内容
-         */
-        fun listFile(zipFile: File, passwd: String): List<FileHeader> {
-            val zFile = ZipFile(zipFile)
-            zFile.charset = utf8
-            if (!zFile.isValidZipFile()) {
-                return listOf()
-            }
-            if (zFile.isEncrypted()) {
-                zFile.setPassword(passwd.toCharArray())
-            }
-            return zFile.fileHeaders;
-        }
+    fun deCompress(zipFile: String, destDir: String, passwd: String): String {
+        return deCompress(File(zipFile), File(destDir), passwd);
     }
+
+    /**
+     * 根据所给密码解压zip压缩包到指定目录
+     * 如果指定目录不存在,可以自动创建,不合法的路径将导致异常被抛出
+     *
+     * @param zipFile zip压缩包绝对路径
+     * @param dest 指定解压文件夹位置
+     * @param passwd 密码(可为空)
+     * @return 解压后的文件数组
+     * @throws ZipException
+     */
+    fun deCompress(zipFile: File, destDir: File, passwd: String): String {
+        //1.判断指定目录是否存在
+        if (!destDir.exists()) {
+            destDir.mkdir()
+        }
+        //2.初始化zip工具
+        val zFile = ZipFile(zipFile)
+        zFile.charset = utf8
+        if (!zFile.isValidZipFile()) {
+            return "压缩文件不合法,可能被损坏."
+        }
+        //3.判断是否已加密
+        if (zFile.isEncrypted()) {
+            zFile.setPassword(passwd.toCharArray())
+        }
+        //4.解压所有文件
+        zFile.extractAll(destDir.FullName)
+        return "";
+    }
+
+    /**
+     * 获取zipFile的内容
+     */
+    fun listFile(zipFile: File, passwd: String): List<FileHeader> {
+        val zFile = ZipFile(zipFile)
+        zFile.charset = utf8
+        if (!zFile.isValidZipFile()) {
+            return listOf()
+        }
+        if (zFile.isEncrypted()) {
+            zFile.setPassword(passwd.toCharArray())
+        }
+        return zFile.fileHeaders;
+    }
+
 }
