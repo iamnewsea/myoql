@@ -248,15 +248,20 @@ open class MyAllFilter : Filter, InitializingBean {
                 msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
                 msgs.add("[response] ${response.status} ${endAt - startAt}")
 
-                var cookie = response.getHeader("Set-Cookie")
-                if (cookie.HasValue) {
-                    msgs.add("Set-Cookie:" + cookie)
+
+                for (h in response.headerNames) {
+                    msgs.add("\t${h}:${response.getHeader(h)}")
                 }
 
-                var contentType = response.getHeader("Content-Type")
-                if (contentType.HasValue) {
-                    msgs.add("Content-Type:" + contentType)
-                }
+//                var cookie = response.getHeader("Set-Cookie")
+//                if (cookie.HasValue) {
+//                    msgs.add("Set-Cookie:" + cookie)
+//                }
+//
+//                var contentType = response.getHeader("Content-Type")
+//                if (contentType.HasValue) {
+//                    msgs.add("Content-Type:" + contentType)
+//                }
 
                 msgs.add("<----]]")
                 return@Info msgs.joinToString(line_break)
