@@ -75,7 +75,7 @@ object UserCodeGenerator {
         var status_enum_class = ""
         var statusField = entityFields.firstOrNull { it.name == "status" }
         if (statusField != null) {
-            status_enum_class = statusField.type.simpleName;
+            status_enum_class = statusField.type.kotlinTypeName;
         }
 
         text = procIf("if", entityFields, null, text);
