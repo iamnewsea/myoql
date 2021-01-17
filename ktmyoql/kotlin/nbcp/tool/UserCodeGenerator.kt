@@ -18,7 +18,7 @@ object UserCodeGenerator {
      * 生成基础的CRUD接口
      */
     fun genMvcCrud(group: String, entity: BaseMetaData): String {
-        var stream = this::class.java.getResourceAsStream("/kotlin_mvc_template_crud.txt")
+        var stream = this::class.java.getResourceAsStream("/kotlin_mvc_mongo_template_crud.txt")
         var text = stream.readBytes().toString(utf8)
 
         return gen(group, entity, text);
@@ -28,7 +28,7 @@ object UserCodeGenerator {
      * 生成空的Mvc类
      */
     fun genMvc(group: String, entity: BaseMetaData): String {
-        var stream = this::class.java.getResourceAsStream("/kotlin_mvc_template.txt")
+        var stream = this::class.java.getResourceAsStream("/kotlin_mvc_mongo_template.txt")
         var text = stream.readBytes().toString(utf8)
 
         return gen(group, entity, text);
