@@ -81,7 +81,7 @@ data class s_user(
     toListResult 返回列表数据，如果是第1页会带总页数。
     
 ## Sql 更新
-    var n = mor.组名.实体名.update()
+    var n = dbr.组名.实体名.update()
            .where{ it.列名 math 值 }
            .set{ it.列名 to 值 }
            .exec(); 
