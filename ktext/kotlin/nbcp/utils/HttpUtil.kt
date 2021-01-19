@@ -378,12 +378,14 @@ class HttpUtil(var url: String = "") {
                 responseStream = conn.errorStream;
             }
 
-            if (this.response.resultAction != null) {
-                DataInputStream(responseStream).use { input -> this.response.resultAction?.invoke(input) }
-            } else if (this.response.resultIsText) {
-                responseStream.use { input ->
-                    this.response.resultBody =
-                        toByteArray(input).toString(Charset.forName(this.response.charset.AsString("UTF-8")));
+            if( responseStream != null) {
+                if (this.response.resultAction != null) {
+                    DataInputStream(responseStream).use { input -> this.response.resultAction?.invoke(input) }
+                } else if (this.response.resultIsText) {
+                    responseStream.use { input ->
+                        this.response.resultBody =
+                            toByteArray(input).toString(Charset.forName(this.response.charset.AsString("UTF-8")));
+                    }
                 }
             }
 
