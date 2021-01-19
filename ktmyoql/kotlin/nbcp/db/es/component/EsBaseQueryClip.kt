@@ -67,7 +67,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
     /**
      * 核心功能，查询列表，原始数据对象是 Document
      */
-    fun <R> toList(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): MutableList<R> {
+    fun <R> toList(clazz: Class<R>, mapFunc: ((Map<String,Any?>) -> Unit)? = null): MutableList<R> {
         var isString = clazz.IsStringType();
 
         var error = false;
@@ -108,6 +108,11 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
             var lastKey = this.search._source.lastOrNull() ?: ""
 
             list.forEach {
+                if (mapFunc != null) {
+                    mapFunc(it);
+                }
+
+
                 if (isString) {
                     if (lastKey.isEmpty()) {
                         lastKey = it.keys.last()
@@ -153,7 +158,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
     }
 
 
-    fun <R> toListResult(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): ListResult<R> {
+    fun <R> toListResult(clazz: Class<R>, mapFunc: ((Map<String,Any?>) -> Unit)? = null): ListResult<R> {
         var ret = ListResult<R>();
         ret.data = toList(clazz, mapFunc);
         ret.total = this.total;

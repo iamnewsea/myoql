@@ -39,7 +39,7 @@ import javax.servlet.http.HttpServletResponse
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 //@Configuration
-@WebFilter(urlPatterns = arrayOf("/*", "/**"))
+@WebFilter(urlPatterns = ["/*", "/**"])
 //@WebFilter(urlPatterns = arrayOf("/**"), filterName = "MyAllFilter")
 //@ConfigurationProperties(prefix = "nbcp.filter")
 open class MyAllFilter : Filter, InitializingBean {
@@ -129,7 +129,7 @@ open class MyAllFilter : Filter, InitializingBean {
         }
 
         if (logLevel != null) {
-            usingScope(LogScope(logLevel.toInt())) {
+            usingScope(LogScope(logLevel.levelStr)) {
                 next(httpRequest, httpResponse, chain);
             }
         } else {

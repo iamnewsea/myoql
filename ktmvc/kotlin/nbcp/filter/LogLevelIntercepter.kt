@@ -30,7 +30,7 @@ open class LogLevelIntercepter {
         var method = targetType.getDeclaredMethod(signature.name, *signature.parameterTypes);
         var level = method.getAnnotationsByType(MyLogLevel::class.java).firstOrNull()
         if (level == null) {
-            level = targetType.getAnnotationsByType<MyLogLevel>(MyLogLevel::class.java).firstOrNull() as MyLogLevel
+            level = targetType.getAnnotationsByType<MyLogLevel>(MyLogLevel::class.java).firstOrNull() as MyLogLevel?
         }
 
         if (level == null) {
@@ -42,7 +42,7 @@ open class LogLevelIntercepter {
             }
         }
 
-        return usingScope(LogScope(level.value)) {
+        return usingScope(LogScope( level.value)) {
             var args = joinPoint.args
             if (args.any()) {
                 return joinPoint.proceed(args)

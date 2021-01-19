@@ -19,7 +19,7 @@ class DevYapiDataTypeController {
      * 修正 yapi 的数据类型,在 title 字段设置如下格式： :IdName,IdUrl,会对其下属性添加 id,name,url 字段。
      * @param typeMap , 形如： {"IdName": {id: {type:"string",description:"id",mock:"1"} ,name:{} }
      */
-    @RequestMapping("/user-types", method = arrayOf(RequestMethod.POST, RequestMethod.GET))
+    @RequestMapping("/user-types", method = [RequestMethod.POST, RequestMethod.GET])
     fun dbTypes(@Require connString: String, request: HttpServletRequest): ApiResult<JsonMap> {
         var typeMapObject = request.findParameterValue("typeMap")
 

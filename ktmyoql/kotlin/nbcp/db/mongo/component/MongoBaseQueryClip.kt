@@ -16,9 +16,11 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     protected var skip: Int = 0;
     protected var take: Int = -1;
     protected var sort: Document = Document()
+
     //    private var whereJs: String = "";
     protected var selectColumns = mutableSetOf<String>();
     protected var selectProjections = JsonMap();
+
     //    private var selectDbObjects = mutableSetOf<String>();
     protected var unSelectColumns = mutableSetOf<String>()
 
@@ -68,7 +70,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         }
 
         selectProjections.forEach {
-            projection.put(it.key,it.value)
+            projection.put(it.key, it.value)
         }
 
         unSelectColumns.forEach {
@@ -101,7 +103,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
 //        var mapper = mor.util.getMongoMapper(collectionName, clazz);
 
         var ret = mutableListOf<R>();
-        var lastKey = selectColumns.lastOrNull() ?:  selectProjections.map{it.key}.lastOrNull() ?: ""
+        var lastKey = selectColumns.lastOrNull() ?: selectProjections.map { it.key }.lastOrNull() ?: ""
 
         if (lastKey == "_id") {
             lastKey = "id"
@@ -113,9 +115,10 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         try {
             db.mongo.procResultData_id2Id(cursor);
             cursor.forEach {
-                //            if( it.containsField("_id")){
-//                it.put("id",it.get("_id").toString())
-//            }
+
+                if (mapFunc != null) {
+                    mapFunc(it);
+                }
 
                 if (isString) {
                     if (lastKey.isEmpty()) {
@@ -150,7 +153,12 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                 msgs.add("[query] " + this.collectionName);
                 msgs.add("[where] " + criteria.criteriaObject.ToJson())
                 if (selectColumns.any() || selectProjections.any()) {
-                    msgs.add("[select] " + arrayOf(selectColumns.joinToString(","), selectProjections.ToJson()).joinToString(","))
+                    msgs.add(
+                        "[select] " + arrayOf(
+                            selectColumns.joinToString(","),
+                            selectProjections.ToJson()
+                        ).joinToString(",")
+                    )
                 }
 
                 if (unSelectColumns.any()) {

@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse
  * width,height
  */
 @OpenAction
-@WebServlet(urlPatterns = arrayOf("/image/dynamic"))
+@WebServlet(urlPatterns = ["/image/dynamic"])
 open class ImageGetServlet : HttpServlet() {
 
     private val dbService by lazy {

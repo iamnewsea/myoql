@@ -101,7 +101,7 @@ inline val Logger.scopeInfoLevel: Boolean
     get() {
         var logs = scopes.getScopeTypes<LogScope>()
         if (logs.any()) {
-            return logs.any { ch.qos.logback.classic.Level.INFO_INT >= it.level }
+            return logs.any { ch.qos.logback.classic.Level.INFO_INT >= ch.qos.logback.classic.Level.toLevel(it.level).levelInt  }
         }
 
         return this.isInfoEnabled;
@@ -111,7 +111,7 @@ inline val Logger.scopeErrorLevel: Boolean
     get() {
         var logs = scopes.getScopeTypes<LogScope>()
         if (logs.any()) {
-            return logs.any { ch.qos.logback.classic.Level.ERROR_INT >= it.level }
+            return logs.any { ch.qos.logback.classic.Level.ERROR_INT >= ch.qos.logback.classic.Level.toLevel(it.level).levelInt }
         }
 
         return this.isErrorEnabled;

@@ -1,7 +1,6 @@
 package nbcp.db.mybatis
 
 import nbcp.utils.*
-import nbcp.db.mysql.MysqlConfig
 import org.apache.ibatis.executor.Executor
 import org.apache.ibatis.executor.keygen.SelectKeyGenerator
 import org.apache.ibatis.mapping.MappedStatement
@@ -51,8 +50,8 @@ class MyBatisInterceptor : Interceptor {
 
 
     private fun setReadMode(executor: Executor) {
-        if (MysqlConfig.hasSlave) {
-            var slave = SpringUtil.getBeanByName<DataSource>("slave");
+        if (SpringUtil.context.containsBean("slave")) {
+            val slave = SpringUtil.getBeanByName<DataSource>("slave");
             MyUtil.setPrivatePropertyValue(executor.transaction as SpringManagedTransaction, "dataSource", slave)
             return;
         }
@@ -78,7 +77,7 @@ class MyBatisInterceptor : Interceptor {
     }
 
     companion object {
-        private val REGEX = ".*insert\\s.*|.*delete\\s.*|.*update\\s.*"
+        private const val REGEX = ".*insert\\s.*|.*delete\\s.*|.*update\\s.*"
     }
 }
 

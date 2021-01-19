@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-@WebServlet(urlPatterns = arrayOf("/image/set"))
+@WebServlet(urlPatterns = ["/image/set"])
 open class ImageServlet : HttpServlet() {
     override fun doPost(req: HttpServletRequest?, resp: HttpServletResponse) {
         var ret = JsonResult();

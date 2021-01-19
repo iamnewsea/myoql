@@ -61,7 +61,17 @@ private val String.ContentTypeIsOctetContent: Boolean
         // https://www.iana.org/assignments/media-types/media-types.xhtml
 
 
-        for (c in arrayOf<String>("application/", "audio/", "font/", "example/", "image/", "message/", "model/", "multipart/", "video/")) {
+        for (c in arrayOf<String>(
+            "application/",
+            "audio/",
+            "font/",
+            "example/",
+            "image/",
+            "message/",
+            "model/",
+            "multipart/",
+            "video/"
+        )) {
             if (this.startsWith(c, 0, true)) return true;
         }
         return false;
@@ -119,10 +129,10 @@ private fun _getClientIp(request: HttpServletRequest): String {
     var remoteAddr = request.remoteAddr
     var realIp = request.getHeader("X-Real-IP") ?: "";
     var forwardIps = (request.getHeader("X-Forwarded-For") ?: "")
-            .split(",")
-            .map { it.trim() }
-            .filter { it.HasValue && !it.VbSame("unknown") && !MyUtil.isLocalIp(it) }
-            .toList();
+        .split(",")
+        .map { it.trim() }
+        .filter { it.HasValue && !it.VbSame("unknown") && !MyUtil.isLocalIp(it) }
+        .toList();
 
 
     if (MyUtil.isLocalIp(realIp)) {
@@ -176,9 +186,9 @@ val HttpServletRequest.ClientIp: String
 
 
 /**
- * token前缀
+ * token前缀,SnowFlakeToken
  */
-val tokenPrefix = "sf";
+val tokenPrefix = "st|";
 
 fun generateToken(): String {
     return tokenPrefix + CodeUtil.getCode();

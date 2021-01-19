@@ -26,7 +26,7 @@ import java.time.LocalDateTime
  */
 
 //@SpringBootApplication(exclude = arrayOf(MongoAutoConfiguration::class, RedisAutoConfiguration::class))
-@SpringBootApplication(exclude = arrayOf(DataSourceAutoConfiguration::class))
+@SpringBootApplication()
 @Import(SpringUtil::class)
 open class KtMyoqlTestApplication {
 
@@ -46,8 +46,8 @@ open class KtMyoqlTestApplication {
 
 @RunWith(SpringRunner::class)
 @WebAppConfiguration
-@SpringBootTest(classes = arrayOf(KtMyoqlTestApplication::class))
-@TestPropertySource(locations = arrayOf("classpath:application.yml"))
+@SpringBootTest(classes = [KtMyoqlTestApplication::class])
+@TestPropertySource(locations = ["classpath:application.yml"])
 //@ActiveProfiles("unittest","productprofile")
 //注释 pom.xml 中的  project.build.resources.resource 中的 excludes
 abstract class TestBase {

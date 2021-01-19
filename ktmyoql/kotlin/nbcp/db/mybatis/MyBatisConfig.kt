@@ -2,7 +2,6 @@ package nbcp.db.mybatis
 
 import nbcp.comm.config
 import nbcp.db.mysql.ExistsDataSourceConfigCondition
-import nbcp.db.mysql.MysqlConfig
 import nbcp.utils.*
 import org.apache.ibatis.session.SqlSessionFactory
 import org.mybatis.spring.SqlSessionFactoryBean
@@ -27,7 +26,7 @@ import javax.sql.DataSource
  */
 @Configuration
 @EnableTransactionManagement
-@AutoConfigureAfter(value = arrayOf(DataSourceAutoConfiguration::class))
+@AutoConfigureAfter(value = [DataSourceAutoConfiguration::class])
 @ConditionalOnProperty("app.mybatis.package")
 //@DependsOn(value = arrayOf("mysqlConfig", "primary", "springUtil"))
 @Conditional(ExistsDataSourceConfigCondition::class)
@@ -53,7 +52,7 @@ open class MyBatisConfig() : TransactionManagementConfigurer {
         return mapperScannerConfigurer
     }
 
-    @Bean(name = arrayOf("sqlSessionFactory"))
+    @Bean(name = ["sqlSessionFactory"])
     @Lazy
     open fun sqlSessionFactoryBean(): SqlSessionFactory? {
         val bean = SqlSessionFactoryBean()

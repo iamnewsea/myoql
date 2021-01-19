@@ -126,7 +126,6 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
 
             if (responseBody.error) {
                 throw RuntimeException(responseBody.toString())
-                return ret;
             }
 
             usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {

@@ -21,7 +21,7 @@ import java.time.LocalDateTime
 
 @RunWith(SpringRunner::class)
 @WebAppConfiguration
-@SpringBootTest(classes = arrayOf(PzxEntityTestApplication::class))
+@SpringBootTest(classes = [PzxEntityTestApplication::class])
 //@TestPropertySource(locations = arrayOf("classpath:application.yml"))
 //@ActiveProfiles("unittest","productprofile")
 //注释 pom.xml 中的  project.build.resources.resource 中的 excludes

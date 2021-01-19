@@ -12,6 +12,7 @@ import java.time.LocalDateTime
 import javax.servlet.http.HttpServletRequest
 
 private val logger = LoggerFactory.getLogger("ktweb.MyWebHelper")
+
 /**
  * 高并发系统不应该有Session。使用token即可。
  * 另外，由于跨域 SameSite 的限制，需要避免使用 Cookie 的方式。
@@ -91,29 +92,30 @@ val HttpServletRequest.tokenValue: String
 
         if (token.isNullOrEmpty()) {
             token = generateToken();
+        } else if (token.startsWith(tokenPrefix) == false) {
+            token = generateToken();
         } else {
-            if (token.startsWith(tokenPrefix)) {
-                var tokenTime: LocalDateTime? = null;
-                try {
-                    tokenTime = CodeUtil.getDateTimeFromCode(token.substring(tokenPrefix.length));
-                } catch (e: Exception) {
-                    logger.error("token格式非法:" + e.message);
-                }
+            var tokenTime: LocalDateTime? = null;
+            try {
+                tokenTime = CodeUtil.getDateTimeFromCode(token.substring(tokenPrefix.length));
+            } catch (e: Exception) {
+                logger.error("token格式非法:" + e.message);
+            }
 
-                if (tokenTime != null) {
-                    var now = LocalDateTime.now();
+            if (tokenTime == null) {
+                token = generateToken()
+            }
+            else{
+                var now = LocalDateTime.now();
 
-                    var diffSeconds = (now - tokenTime).totalSeconds
-                    if (diffSeconds > config.tokenKeyExpireSeconds) {
-                        db.rer_base.userSystem.deleteToken(token);
-                        token = generateToken();
-                    } else if (diffSeconds > config.tokenKeyRenewalSeconds) {
-                        var newToken = generateToken();
-                        WebUserTokenBeanInstance.instance!!.changeToken(token, newToken);
-                        token = newToken;
-                    }
-                } else {
-                    token = generateToken()
+                var diffSeconds = (now - tokenTime).totalSeconds
+                if (diffSeconds > config.tokenKeyExpireSeconds) {
+                    db.rer_base.userSystem.deleteToken(token);
+                    token = generateToken();
+                } else if (diffSeconds > config.tokenKeyRenewalSeconds) {
+                    var newToken = generateToken();
+                    WebUserTokenBeanInstance.instance!!.changeToken(token, newToken);
+                    token = newToken;
                 }
             }
         }

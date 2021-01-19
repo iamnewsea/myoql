@@ -18,8 +18,8 @@ import javax.servlet.http.HttpServlet
  * 事实上， HandlerInterceptorAdapter 不会拦截 HttpServlet
  */
 @OpenAction
-@MyLogLevel(Level.ERROR_INT)
-@WebServlet(urlPatterns = arrayOf("/open/validate-code-image"))
+@MyLogLevel("error")
+@WebServlet(urlPatterns = ["/open/validate-code-image"])
 open class AuthImageServlet : HttpServlet() {
 
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {

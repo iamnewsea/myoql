@@ -18,8 +18,8 @@ import javax.servlet.http.HttpServlet
  * Created by udi on 20-8-27.
  */
 @OpenAction
-@MyLogLevel(Level.WARN_INT)
-@WebServlet(urlPatterns = arrayOf("/open/code"))
+@MyLogLevel("warn")
+@WebServlet(urlPatterns = ["/open/code"])
 open class CodeServlet : HttpServlet() {
 
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {

@@ -18,8 +18,8 @@ import javax.servlet.http.HttpServlet
  * Created by udi on 20-8-27.
  */
 @OpenAction
-@MyLogLevel(Level.WARN_INT)
-@WebServlet(urlPatterns = arrayOf("/open/token"))
+@MyLogLevel("warn")
+@WebServlet(urlPatterns = ["/open/token"])
 open class TokenGeneratorServlet : HttpServlet() {
     /**
      * 由于 SameSite 阻止跨域 Set-Cookie 的问题，所以使用请求参数 token 代替 cookie

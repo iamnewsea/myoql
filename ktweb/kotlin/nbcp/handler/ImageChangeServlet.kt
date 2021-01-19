@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-@WebServlet(urlPatterns = arrayOf("/image/change"))
+@WebServlet(urlPatterns = ["/image/change"])
 open class ImageChangeServlet : HttpServlet() {
     override fun doPost(request: HttpServletRequest, resp: HttpServletResponse) {
         if (request is MyHttpRequestWrapper == false) {

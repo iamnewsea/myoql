@@ -1,6 +1,7 @@
 package nbcp.sql
 
 import ch.qos.logback.classic.Level
+import com.zaxxer.hikari.HikariDataSource
 import nbcp.TestBase
 import nbcp.comm.*
 import nbcp.db.IdName
@@ -8,8 +9,12 @@ import nbcp.db.db
 import nbcp.db.sql.doInsert
 import nbcp.db.sql.entity.s_annex
 import nbcp.db.sql.updateWithEntity
+import nbcp.utils.SpringUtil
 import org.junit.Test
 import org.junit.jupiter.api.BeforeEach
+import org.springframework.boot.jdbc.DataSourceBuilder
+import org.springframework.jdbc.core.JdbcTemplate
+import javax.sql.DataSource
 
 class TestKtExt_MySql : TestBase() {
     @BeforeEach
@@ -32,20 +37,20 @@ class TestKtExt_MySql : TestBase() {
     @Test
     fun test_update_ConverterValueToDb() {
         db.sql_base.s_annex.updateById("56fgk7ueam0w")
-                .set { it.id to "56Fgk7UEAm0Z" }
-                .exec();
+            .set { it.id to "56Fgk7UEAm0Z" }
+            .exec();
 
         println()
     }
 
     @Test
     fun test_update_spread() {
-        usingScope(LogScope(Level.DEBUG_INT)) {
+        usingScope(LogScope("debug")) {
             var ent = db.sql_base.s_annex.queryById("56fgk7ueam0w").toEntity()!!;
             ent.creator = IdName("2", "rr")
             db.sql_base.s_annex.updateWithEntity(ent)
-                    .set { it.name to "eee" }
-                    .exec();
+                .set { it.name to "eee" }
+                .exec();
 
             println()
         }
@@ -56,5 +61,12 @@ class TestKtExt_MySql : TestBase() {
         var ent = db.sql_base.s_annex.queryById("56fgk7ueam0w").toEntity()
 
         println(ent.ToJson())
+    }
+
+    @Test
+    fun test_ds() {
+        var ds_main = SpringUtil.getBean<DataSource>() as HikariDataSource
+
+        println(ds_main.maximumPoolSize)
     }
 }

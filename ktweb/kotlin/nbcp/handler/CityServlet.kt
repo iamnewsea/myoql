@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse
 data class cn_city_model(var c: Int, var n: String)
 
 @OpenAction
-@WebServlet(urlPatterns = arrayOf("/child-citys"))
+@WebServlet(urlPatterns = ["/child-citys"])
 open class CityServlet : HttpServlet() {
     override fun doPost(request: HttpServletRequest, response: HttpServletResponse) {
 

@@ -55,7 +55,6 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
     open fun exec(): Int {
         if (whereData.size == 0) {
             throw RuntimeException("更新条件为空，不允许更新")
-            return 0;
         }
 
         return execAll();

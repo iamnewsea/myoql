@@ -25,7 +25,7 @@ private val desers: MutableList<SimpleModule> = mutableListOf()
  */
 @Primary
 @Component
-@DependsOn(value = arrayOf("springUtil"))
+@DependsOn(value = ["springUtil"])
 open class DefaultMyJsonMapper : ObjectMapper(), InitializingBean {
     override fun afterPropertiesSet() {
         this.setStyle()

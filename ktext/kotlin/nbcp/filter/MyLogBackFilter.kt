@@ -24,7 +24,14 @@ class MyLogBackFilter : TurboFilter() {
     companion object {
     }
 
-    override fun decide(marker: Marker?, logger: Logger?, level: Level?, format: String?, params: Array<out Any>?, t: Throwable?): FilterReply {
+    override fun decide(
+        marker: Marker?,
+        logger: Logger?,
+        level: Level?,
+        format: String?,
+        params: Array<out Any>?,
+        t: Throwable?
+    ): FilterReply {
 
         if (level == null) {
             return FilterReply.NEUTRAL
@@ -32,14 +39,14 @@ class MyLogBackFilter : TurboFilter() {
 
         var log = scopes.getLatestScope<LogScope>()
         if (log != null) {
-            if (level.levelInt >= log.level) {
+            if (level.levelInt >= ch.qos.logback.classic.Level.toLevel(log.level).levelInt) {
                 return FilterReply.ACCEPT
             }
             return FilterReply.DENY;
         }
 
         //在获取 debug 期间，禁用Log
-        usingScope(LogScope(Level.OFF_INT)) {
+        usingScope(LogScope("off")) {
             if (config.debug) {
                 return FilterReply.ACCEPT
             }

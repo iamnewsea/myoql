@@ -33,26 +33,33 @@ object db_sql {
         }
     }
 
+//    /**
+//     * 根据表名，以及是不是读取操作，动态返回DataSource
+//     */
+//    var sqlDataSourceFunc: ((String, Boolean) -> DataSource)? = null
 
-    private var dynamicTableDataSource = StringKeyMap<DataSource>();
-    /**
-     * 指派集合到数据库
-     */
-    fun bindTableName2Database(tableName: String, data: DataSource) {
-        this.dynamicTableDataSource.set(tableName, data)
-    }
 
-    fun unbindTableName2Database(tableName: String) {
-        this.dynamicTableDataSource.remove(tableName)
-    }
-    /**
-     * 根据集合定义，获取 JdbcTemplate
-     */
-    fun getJdbcTemplateByTableName(tableName: String): JdbcTemplate? {
-        var dataSource = dynamicTableDataSource.get(tableName);
-        if (dataSource == null) return null;
-
-        return JdbcTemplate(dataSource, true)
-    }
+//    private var dynamicTableDataSource = StringKeyMap<DataSource>();
+//
+//    /**
+//     * 指派集合到数据库
+//     */
+//    fun bindTableName2Database(tableName: String, data: DataSource) {
+//        this.dynamicTableDataSource.set(tableName, data)
+//    }
+//
+//    fun unbindTableName2Database(tableName: String) {
+//        this.dynamicTableDataSource.remove(tableName)
+//    }
+//
+//    /**
+//     * 根据集合定义，获取 JdbcTemplate
+//     */
+//    fun getJdbcTemplateByTableName(tableName: String): JdbcTemplate? {
+//        var dataSource = dynamicTableDataSource.get(tableName);
+//        if (dataSource == null) return null;
+//
+//        return JdbcTemplate(dataSource, true)
+//    }
 
 }

@@ -116,8 +116,8 @@ spring:
     username: root
     password:
     type: com.zaxxer.hikari.HikariDataSource
-    hikari:
-      maximum-pool-size: 20
+    hikari2:
+      maximum-pool-size: 30
 
 security:
   oauth2:

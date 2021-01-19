@@ -10,7 +10,7 @@ import nbcp.db.cache.ProxyCache4SqlService
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
 import java.io.Serializable
 import java.time.LocalDateTime
-import nbcp.db.mysql.MysqlConfig
+import javax.sql.DataSource
 
 /**
  * ORM解决80%的问题即可. 对于 自连接,复杂的查询, 直接写Sql吧.
@@ -81,17 +81,23 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
      */
     val jdbcTemplate: JdbcTemplate
         get() {
-            var ret = db.sql.getJdbcTemplateByTableName(tableName) ?: scopes.getLatestScope<JdbcTemplate>();
-            if (ret != null) return ret;
+            var isRead = this is SqlBaseQueryClip;
+            var ds: DataSource? =
+                scopes.getLatestScope<DataSource>() ?: db.sql.sqlEvents.getDataSource(this.tableName, isRead)
 
+            if (ds != null) {
+                return JdbcTemplate(ds, true);
+            }
 
-            if (this is SqlBaseQueryClip) {
-                if (MysqlConfig.hasSlave) {
-                    return SpringUtil.getBeanByName<JdbcTemplate>("slaveJdbcTemplate")
+            if (isRead) {
+                if (SpringUtil.context.containsBean("slave")) {
+                    ds = SpringUtil.getBeanByName<DataSource>("slave")
+                    return JdbcTemplate(ds, true);
                 }
             }
 
-            return SpringUtil.getBean<JdbcTemplate>()
+            ds = SpringUtil.getBean<DataSource>()
+            return JdbcTemplate(ds);
         }
 
 
@@ -123,70 +129,70 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
     /**
      * 请使用 ConvertJson 方法
      */
-    @Deprecated("请使用 ConvertJson 方法")
-    fun <T3 : Any> mapToEntity(retJson: Map<String, Any?>, entityFunc: () -> T3): T3 {
-        var entity = entityFunc()
-
-        if (retJson.keys.any() == false) {
-            return entity
-        }
-
-        var clazz = entity::class.java
-
-        //只取第一列的值. JsonMap 也必须仅有一列.
-        if (clazz.IsSimpleType()) {
-            if (retJson.keys.size != 1) {
-                throw RuntimeException("查询单列数据时返回了多列数据!")
-            }
-            var ret2 = retJson.values.firstOrNull()
-            if (ret2 == null) {
-                return entity
-            }
-            return ret2.ConvertType(clazz) as T3
-        }
-
-        if (Map::class.java.isAssignableFrom(clazz)) {
-
-            //types[0] 必须是 String
-            var valueType = (clazz.genericSuperclass as ParameterizedTypeImpl).GetActualClass(1);
-
-            var entMap = entity as MutableMap<String, Any?>
-
-            if (valueType == String::class.java) {
-                retJson.forEach {
-                    entMap.put(it.key, it.value.AsString())
-                }
-            } else if (Number::class.java.isAssignableFrom(valueType)) {
-                retJson.forEach {
-                    entMap.put(it.key, it.value?.ConvertType(valueType))
-                }
-            } else {
-                retJson.forEach {
-                    entMap.put(it.key, it.value)
-                }
-            }
-            entMap.putAll(retJson)
-
-            return entity
-        }
-
-        clazz.AllFields.forEach {
-            if (retJson.containsKey(it.name) == false) {
-                return@forEach
-            }
-
-            var value = retJson[it.name]?.ConvertType(it.type)
-
-            if (value == null) {
-                return@forEach
-            }
-
-            it.isAccessible = true
-            it.set(entity, value);
-        }
-
-        return entity
-    }
+//    @Deprecated("请使用 ConvertJson 方法")
+//    fun <T3 : Any> mapToEntity(retJson: Map<String, Any?>, entityFunc: () -> T3): T3 {
+//        var entity = entityFunc()
+//
+//        if (retJson.keys.any() == false) {
+//            return entity
+//        }
+//
+//        var clazz = entity::class.java
+//
+//        //只取第一列的值. JsonMap 也必须仅有一列.
+//        if (clazz.IsSimpleType()) {
+//            if (retJson.keys.size != 1) {
+//                throw RuntimeException("查询单列数据时返回了多列数据!")
+//            }
+//            var ret2 = retJson.values.firstOrNull()
+//            if (ret2 == null) {
+//                return entity
+//            }
+//            return ret2.ConvertType(clazz) as T3
+//        }
+//
+//        if (Map::class.java.isAssignableFrom(clazz)) {
+//
+//            //types[0] 必须是 String
+//            var valueType = (clazz.genericSuperclass as ParameterizedTypeImpl).GetActualClass(1);
+//
+//            var entMap = entity as MutableMap<String, Any?>
+//
+//            if (valueType == String::class.java) {
+//                retJson.forEach {
+//                    entMap.put(it.key, it.value.AsString())
+//                }
+//            } else if (Number::class.java.isAssignableFrom(valueType)) {
+//                retJson.forEach {
+//                    entMap.put(it.key, it.value?.ConvertType(valueType))
+//                }
+//            } else {
+//                retJson.forEach {
+//                    entMap.put(it.key, it.value)
+//                }
+//            }
+//            entMap.putAll(retJson)
+//
+//            return entity
+//        }
+//
+//        clazz.AllFields.forEach {
+//            if (retJson.containsKey(it.name) == false) {
+//                return@forEach
+//            }
+//
+//            var value = retJson[it.name]?.ConvertType(it.type)
+//
+//            if (value == null) {
+//                return@forEach
+//            }
+//
+//            it.isAccessible = true
+//            it.set(entity, value);
+//        }
+//
+//        return entity
+//    }
 
     fun toMapList(): MutableList<JsonMap> {
         return toMapList(toSql());
@@ -229,7 +235,8 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
 
             var error = false;
             try {
-                retJsons = jdbcTemplate.queryForList(executeData.executeSql, *executeData.executeParameters).toMutableList()
+                retJsons =
+                    jdbcTemplate.queryForList(executeData.executeSql, *executeData.executeParameters).toMutableList()
                 db.executeTime = LocalDateTime.now() - startAt
 
                 if (retJsons.size > 0) {
@@ -242,9 +249,10 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
                 throw e;
             } finally {
                 logger.InfoError(error) {
-                    var msg_log = mutableListOf("" +
-                            "[select] ${executeData.executeSql}",
-                            "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}"
+                    var msg_log = mutableListOf(
+                        "" +
+                                "[select] ${executeData.executeSql}",
+                        "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}"
                     )
 
                     if (logger.debug) {
@@ -265,7 +273,7 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
         db.affectRowCount = retJsons.size
 
         settings.forEach {
-            it.first.select(this, it.second,retJsons);
+            it.first.select(this, it.second, retJsons);
         }
 
         if (retJsons.size == 0) {
