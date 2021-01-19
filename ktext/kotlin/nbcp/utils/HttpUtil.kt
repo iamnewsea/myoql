@@ -370,21 +370,20 @@ class HttpUtil(var url: String = "") {
                 this.response.headers[it.key.toLowerCase()] = value
             }
 
-            var responseStream:InputStream? = null
-            if( conn.responseCode.Between(200,299)) {
+            var responseStream: InputStream? = null
+            if (conn.responseCode.Between(200, 299)) {
                 responseStream = conn.inputStream;
-            }
-            else {
+            } else {
                 responseStream = conn.errorStream;
             }
 
-            if( responseStream != null) {
+            if (responseStream != null) {
                 if (this.response.resultAction != null) {
                     DataInputStream(responseStream).use { input -> this.response.resultAction?.invoke(input) }
                 } else if (this.response.resultIsText) {
-                    responseStream.use { input ->
+                    DataInputStream(responseStream).use { input ->
                         this.response.resultBody =
-                            toByteArray(input).toString(Charset.forName(this.response.charset.AsString("UTF-8")));
+                            toByteArray(input).toString(Charset.forName(this.response.charset));
                     }
                 }
             }
