@@ -39,14 +39,14 @@ class MyLogBackFilter : TurboFilter() {
 
         var log = scopes.getLatestScope<LogScope>()
         if (log != null) {
-            if (level.levelInt >= ch.qos.logback.classic.Level.toLevel(log.level).levelInt) {
+            if (level.levelInt >= Level.toLevel(log.name).levelInt) {
                 return FilterReply.ACCEPT
             }
             return FilterReply.DENY;
         }
 
         //在获取 debug 期间，禁用Log
-        usingScope(LogScope("off")) {
+        usingScope(LogScope.off) {
             if (config.debug) {
                 return FilterReply.ACCEPT
             }

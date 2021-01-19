@@ -129,7 +129,7 @@ open class MyAllFilter : Filter, InitializingBean {
         }
 
         if (logLevel != null) {
-            usingScope(LogScope(logLevel.levelStr)) {
+            usingScope(LogScope.valueOf(logLevel.levelStr.toLowerCase())) {
                 next(httpRequest, httpResponse, chain);
             }
         } else {

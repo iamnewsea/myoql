@@ -1,8 +1,10 @@
 package nbcp.utils
 
 import nbcp.TestBase
+import nbcp.comm.LogScope
 import nbcp.comm.StringMap
 import nbcp.comm.formatWithJson
+import nbcp.comm.usingScope
 import org.junit.Test
 
 
@@ -17,17 +19,17 @@ class HttpUtilTest : TestBase() {
 
     @Test
     fun abfc2() {
-        var http = HttpUtil("http://saas-demo.nancal.com:7003/c/login")
-        http.request.contentType = "application/x-www-form-urlencoded"
+        usingScope(LogScope.info) {
+            var http = HttpUtil("http://saas-demo.nancal.com:7003/c/login")
+            http.request.headers["Content-Type"] = "application/x-www-form-urlencoded"
 
-        var authInfoMap = StringMap(
-            "loginName" to "admin",
-            "password" to "Nancal1234"
-        )
+            println(http.request.contentType)
+            var authInfoMap = StringMap(
+                "loginName" to "admin",
+                "password" to "Nancal1234"
+            )
 
-
-        var msg = http.doPost("principal=@loginName&password=@password".formatWithJson(authInfoMap, "@"))
-
-        println(msg)
+            var msg = http.doPost("principal=@loginName&password=@password".formatWithJson(authInfoMap, "@"))
+        }
     }
 }

@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServlet
  * Created by udi on 20-8-27.
  */
 @OpenAction
-@MyLogLevel("warn")
+@MyLogLevel(LogScope.warn)
 @WebServlet(urlPatterns = ["/open/code"])
 open class CodeServlet : HttpServlet() {
 

@@ -6,24 +6,17 @@ import java.io.Closeable
 
 
 /**
- * value = Level.toLevel识别的参数，不区分大小写，如：all|trace|debug|info|error|off
+ * value = Level.toLevel识别的参数，不区分大小写，如：all|trace|debug|info|warn|error|off
  */
-class LogScope(val level: String) : Closeable {
-    companion object {
-        /**
-         * 记录所有的Info
-         */
-        fun ImportantInfo(): LogScope {
-            return LogScope("info");
-        }
+enum class LogScope() : Closeable {
+    all,
+    trace,
+    debug,
+    info,
+    warn,
+    error,
+    off;
 
-        /**
-         * 记录所有记录
-         */
-        fun AllTrace(): LogScope {
-            return LogScope("all");
-        }
-    }
 
     override fun close() {
     }

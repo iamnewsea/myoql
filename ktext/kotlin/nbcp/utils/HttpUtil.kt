@@ -46,12 +46,19 @@ data class HttpRequestData(
     var chunkedStreamingMode: Int = 0,
 
     var requestMethod: String = "",
-    var contentType: String = "",
     var headers: StringMap = StringMap()
 ) {
     init {
         headers.set("Connection", "close")
     }
+
+    var contentType: String
+        get() {
+            return this.headers.getByIgnoreCaseKey("Content-Type").AsString()
+        }
+        set(value) {
+            this.headers["Content-Type"] = value;
+        }
 
     /**
      * postAction 是上传专用
@@ -316,15 +323,6 @@ class HttpUtil(var url: String = "") {
                 conn.setChunkedStreamingMode(this.request.chunkedStreamingMode)
             }
 
-            if (this.request.contentType.HasValue &&
-                (this.request.headers.containsKey("Content-Type") || this.request.headers.containsKey("ContentType"))
-            ) {
-                throw RuntimeException("请使用 contentType 属性")
-            }
-
-            if (this.request.contentType.HasValue) {
-                conn.setRequestProperty("Content-Type", this.request.contentType);
-            }
 
             this.request.headers.keys.forEach { key ->
                 conn.setRequestProperty(key, this.request.headers.get(key))

@@ -17,9 +17,13 @@ class TestDuration : TestBase() {
     fun Test_Duration() {
         var d = Duration.parse("PT20M");
         println(d.seconds)
-        usingScope(LogScope.ImportantInfo()) {
+        usingScope(LogScope.info) {
             logger.info(d.seconds.toString())
         }
+
+        var info = LogScope.info;
+
+        println(info.name)
     }
 
     @Test

@@ -42,7 +42,7 @@ open class LogLevelIntercepter {
             }
         }
 
-        return usingScope(LogScope( level.value)) {
+        return usingScope(level.value) {
             var args = joinPoint.args
             if (args.any()) {
                 return joinPoint.proceed(args)

@@ -18,7 +18,7 @@ annotation class OpenAction
  */
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class MyLogLevel(val value:String)
+annotation class MyLogLevel(val value:LogScope)
 
 
 /**
