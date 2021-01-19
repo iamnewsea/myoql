@@ -8,7 +8,7 @@ import java.io.Serializable
 
 
 fun <M : SqlBaseMetaTable<T>, T : ISqlDbEntity> M.query(selectColumn: ((M) -> SqlColumnName)? = null): SqlQueryClip<M, T> {
-    var ret = SqlQueryClip<M, T>(this);
+    var ret = SqlQueryClip(this);
     if (selectColumn != null) {
         ret.select { selectColumn(this) }
     }
@@ -41,7 +41,7 @@ fun <M : SqlBaseMetaTable<out T>, T : ISqlDbEntity> M.batchInsert(): SqlInsertCl
 fun <M : SqlBaseMetaTable<T>, T : ISqlDbEntity> M.insertIfNotExists(entity: T, unionKey: ((M) -> SqlColumnNames)): Int {
     var map = entity.ConvertJson(JsonMap::class.java)
 
-    var query = this.query();
+    var query = this.query()
     var uks = unionKey(this);
 
     uks.forEach { key ->
