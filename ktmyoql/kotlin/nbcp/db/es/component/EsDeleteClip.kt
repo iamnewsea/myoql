@@ -1,12 +1,7 @@
 package nbcp.db.es
 
 
-import nbcp.comm.*
-import nbcp.db.*
-import nbcp.db.es.*
 import org.slf4j.LoggerFactory
-import java.lang.Exception
-import java.time.LocalDateTime
 
 /**
  * Created by udi on 17-4-17.
@@ -15,7 +10,7 @@ import java.time.LocalDateTime
 /**
  * EsDelete
  */
-class EsDeleteClip<M : EsBaseEntity<out IEsDocument>>(var eserEntity: M) : EsBaseDeleteClip(eserEntity.tableName), IEsWhereable {
+class EsDeleteClip<M : EsBaseMetaEntity<out IEsDocument>>(var eserEntity: M) : EsBaseDeleteClip(eserEntity.tableName), IEsWhereable {
     companion object {
         private var logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

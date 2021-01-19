@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
 
-class SqlQueryClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity: M) : SqlBaseQueryClip(mainEntity.tableName) {
+class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M) : SqlBaseQueryClip(mainEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -304,7 +304,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity
         return toList(this.mainEntity.tableClass, itemFunc);
     }
 
-    fun <R : Any> toList(entityClass: Class<R>, itemFunc: ((JsonMap) -> Unit)? = null): MutableList<R> {
+    fun <R> toList(entityClass: Class<R>, itemFunc: ((JsonMap) -> Unit)? = null): MutableList<R> {
         var ret = toMapList().map {
             if (itemFunc != null) {
                 itemFunc(it);
@@ -393,13 +393,13 @@ class SqlQueryClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity
         return n
     }
 
-    fun toListResult(mapFunc: ((JsonMap) -> Unit)? = null): ListResult<out T> {
+    fun toListResult(mapFunc: ((JsonMap) -> Unit)? = null): ListResult<T> {
         return toListResult(this.mainEntity.tableClass, mapFunc);
     }
 
     /**
      */
-    fun <R : Any> toListResult(entityClass: Class<R>, mapFunc: ((JsonMap) -> Unit)? = null): ListResult<R> {
+    fun <R> toListResult(entityClass: Class<R>, mapFunc: ((JsonMap) -> Unit)? = null): ListResult<R> {
         var ret = ListResult<R>()
         var data = toList(entityClass, mapFunc)
 

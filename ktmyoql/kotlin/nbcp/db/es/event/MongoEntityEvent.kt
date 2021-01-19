@@ -30,7 +30,7 @@ class EsEntityEvent : BeanPostProcessor {
          * 根据名称查找定义的集合。
          */
         @JvmStatic
-        fun getCollection(collectionName: String): EsBaseEntity<IEsDocument>? {
+        fun getCollection(collectionName: String): EsBaseMetaEntity<IEsDocument>? {
             var ret: BaseMetaData? = null
             db.es.groups.any { group ->
                 ret = group.getEntities().firstOrNull() { it.tableName == collectionName }
@@ -38,7 +38,7 @@ class EsEntityEvent : BeanPostProcessor {
                 return@any ret != null
             }
 
-            return ret as EsBaseEntity<IEsDocument>?
+            return ret as EsBaseMetaEntity<IEsDocument>?
         }
     }
 
@@ -48,7 +48,7 @@ class EsEntityEvent : BeanPostProcessor {
             db.es.groups.add(bean)
 
             bean.getEntities().forEach { moer ->
-                if (moer is EsBaseEntity<*>) {
+                if (moer is EsBaseMetaEntity<*>) {
                     var entityClass = moer.entityClass
 
                     addDustbin(entityClass)

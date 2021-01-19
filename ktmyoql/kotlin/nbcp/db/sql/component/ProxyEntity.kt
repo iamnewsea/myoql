@@ -7,7 +7,7 @@ import java.io.Serializable
 //import nbcp.db.mongo.entity.IMongoDocument
 
 
-fun <M : SqlBaseMetaTable<out T>, T : ISqlDbEntity> M.query(selectColumn: ((M) -> SqlColumnName)? = null): SqlQueryClip<M, T> {
+fun <M : SqlBaseMetaTable<T>, T : ISqlDbEntity> M.query(selectColumn: ((M) -> SqlColumnName)? = null): SqlQueryClip<M, T> {
     var ret = SqlQueryClip<M, T>(this);
     if (selectColumn != null) {
         ret.select { selectColumn(this) }
@@ -38,7 +38,7 @@ fun <M : SqlBaseMetaTable<out T>, T : ISqlDbEntity> M.batchInsert(): SqlInsertCl
 }
 
 
-fun <M : SqlBaseMetaTable<out T>, T : ISqlDbEntity> M.insertIfNotExists(entity: T, unionKey: ((M) -> SqlColumnNames)): Int {
+fun <M : SqlBaseMetaTable<T>, T : ISqlDbEntity> M.insertIfNotExists(entity: T, unionKey: ((M) -> SqlColumnNames)): Int {
     var map = entity.ConvertJson(JsonMap::class.java)
 
     var query = this.query();

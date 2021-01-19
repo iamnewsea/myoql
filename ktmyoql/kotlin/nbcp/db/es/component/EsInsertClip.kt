@@ -1,11 +1,7 @@
 package nbcp.db.es
 
 
-import nbcp.comm.*
-
-import nbcp.db.db
 import org.slf4j.LoggerFactory
-import java.lang.Exception
 
 /**
  * Created by udi on 17-4-17.
@@ -15,7 +11,7 @@ import java.lang.Exception
 /**
  * EsInsert
  */
-class EsInsertClip<M : EsBaseEntity<E>, E : IEsDocument>(var moerEntity: M)
+class EsInsertClip<M : EsBaseMetaEntity<E>, E : IEsDocument>(var moerEntity: M)
     : EsBaseInsertClip(moerEntity.tableName)  {
 
     companion object {
