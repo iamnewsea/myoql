@@ -327,7 +327,7 @@ class HttpUtil(var url: String = "") {
             }
 
             this.request.headers.keys.forEach { key ->
-                conn!!.setRequestProperty(key, this.request.headers.get(key))
+                conn.setRequestProperty(key, this.request.headers.get(key))
             }
 
 
@@ -370,10 +370,18 @@ class HttpUtil(var url: String = "") {
                 this.response.headers[it.key.toLowerCase()] = value
             }
 
+            var responseStream:InputStream? = null
+            if( conn.responseCode.Between(200,299)) {
+                responseStream = conn.inputStream;
+            }
+            else {
+                responseStream = conn.errorStream;
+            }
+
             if (this.response.resultAction != null) {
-                DataInputStream(conn.inputStream).use { input -> this.response.resultAction?.invoke(input) }
+                DataInputStream(responseStream).use { input -> this.response.resultAction?.invoke(input) }
             } else if (this.response.resultIsText) {
-                conn.inputStream.use { input ->
+                responseStream.use { input ->
                     this.response.resultBody =
                         toByteArray(input).toString(Charset.forName(this.response.charset.AsString("UTF-8")));
                 }
