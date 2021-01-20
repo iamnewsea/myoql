@@ -442,7 +442,7 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
         }
 
         var ent = """class ${entityTypeName}(collectionName:String="")
-    :EsBaseEntity<${entType.name}>(${entType.name}::class.java,collectionName.AsString("${dbName}")) {
+    :EsBaseMetaEntity<${entType.name}>(${entType.name}::class.java,collectionName.AsString("${dbName}")) {
 ${props.joinToString("\n")}
 ${idMethods.joinToString("\n")}
 }

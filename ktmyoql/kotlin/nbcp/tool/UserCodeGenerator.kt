@@ -3,32 +3,35 @@ package nbcp.tool
 import nbcp.comm.*
 import nbcp.db.BaseMetaData
 import nbcp.db.IdUrl
+import nbcp.db.es.EsBaseMetaEntity
 import nbcp.db.mongo.MongoBaseMetaCollection
+import nbcp.db.sql.SqlBaseMetaTable
 import nbcp.utils.MyUtil
 import java.lang.RuntimeException
 import java.lang.reflect.Field
-import java.lang.reflect.ParameterizedType
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.util.*
 
 object UserCodeGenerator {
     /**
      * 生成基础的CRUD接口
      */
-    fun genMvcCrud(group: String, entity: BaseMetaData): String {
+    fun genMongoMvcCrud(group: String, entity: BaseMetaData): String {
         var stream = this::class.java.getResourceAsStream("/kotlin_mvc_mongo_template_crud.txt")
         var text = stream.readBytes().toString(utf8)
 
         return gen(group, entity, text);
     }
 
-    /**
-     * 生成空的Mvc类
-     */
-    fun genMvc(group: String, entity: BaseMetaData): String {
-        var stream = this::class.java.getResourceAsStream("/kotlin_mvc_mongo_template.txt")
+    fun genMySqlMvcCrud(group: String, entity: BaseMetaData): String {
+        var stream = this::class.java.getResourceAsStream("/kotlin_mvc_mysql_template_crud.txt")
+        var text = stream.readBytes().toString(utf8)
+
+        return gen(group, entity, text);
+    }
+
+    fun genEsMvcCrud(group: String, entity: BaseMetaData): String {
+        var stream = this::class.java.getResourceAsStream("/kotlin_mvc_es_template_crud.txt")
         var text = stream.readBytes().toString(utf8)
 
         return gen(group, entity, text);
@@ -67,7 +70,15 @@ object UserCodeGenerator {
 
     private fun gen(group: String, metaEntity: BaseMetaData, text: String): String {
         var text = text;
-        var entityClass = (metaEntity as MongoBaseMetaCollection<*>).entityClass
+        lateinit var entityClass: Class<*>
+        if (metaEntity is MongoBaseMetaCollection<*>) {
+            entityClass = metaEntity.entityClass
+        } else if (metaEntity is SqlBaseMetaTable<*>) {
+            entityClass = metaEntity.tableClass
+        } else if (metaEntity is EsBaseMetaEntity<*>) {
+            entityClass = metaEntity.entityClass
+        }
+
         var entityFields = entityClass.AllFields.MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
         //先处理${for:fields}
 

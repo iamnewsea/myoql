@@ -2,14 +2,12 @@ package nbcp.db.es
 
 import nbcp.comm.*
 
-import org.slf4j.LoggerFactory
-
 
 /**
  * EsQuery
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/search.html
  */
-class EsQueryClip<M : EsBaseEntity<E>, E : IEsDocument>(var moerEntity: M)
+class EsQueryClip<M : EsBaseMetaEntity<E>, E : IEsDocument>(var moerEntity: M)
     : EsBaseQueryClip(moerEntity.tableName) {
 
     fun routing(routing: String = ""): EsQueryClip<M, E> {

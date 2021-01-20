@@ -186,9 +186,9 @@ val HttpServletRequest.ClientIp: String
 
 
 /**
- * token前缀,SnowFlakeToken
+ * token前缀,SnowFlakeToken, 加上了一个 encodeURIComponent 不会转义的字符： - _ . ! ~ * ' ( )
  */
-val tokenPrefix = "st|";
+val tokenPrefix = "st!";
 
 fun generateToken(): String {
     return tokenPrefix + CodeUtil.getCode();

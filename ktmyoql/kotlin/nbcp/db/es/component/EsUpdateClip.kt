@@ -1,11 +1,5 @@
 package nbcp.db.es
 
-import nbcp.comm.*
-import nbcp.utils.*
-import nbcp.db.db
-import org.slf4j.LoggerFactory
-import java.time.LocalDateTime
-
 /**
  * Created by udi on 17-4-7.
  */
@@ -16,7 +10,7 @@ import java.time.LocalDateTime
  * EsUpdate
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/docs-update-by-query.html
  */
-class EsUpdateClip<M : EsBaseEntity<E>,E : IEsDocument>(var moerEntity: M)
+class EsUpdateClip<M : EsBaseMetaEntity<E>,E : IEsDocument>(var moerEntity: M)
     : EsBaseUpdateClip(moerEntity.tableName) {
 
     fun add(entity: E): EsUpdateClip<M, E> {

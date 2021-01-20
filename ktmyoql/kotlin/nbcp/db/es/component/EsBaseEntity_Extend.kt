@@ -1,12 +1,9 @@
 package nbcp.db.es
 
-import nbcp.comm.*
-import nbcp.db.db
-
-fun <M : EsBaseEntity<T>, T : IEsDocument> M.query(): EsQueryClip<M, T> = EsQueryClip(this);
+fun <M : EsBaseMetaEntity<T>, T : IEsDocument> M.query(): EsQueryClip<M, T> = EsQueryClip(this);
 
 
-fun <M : EsBaseEntity<T>, T : IEsDocument> M.queryById(id: String): EsQueryClip<M, T> = this.query()
+fun <M : EsBaseMetaEntity<T>, T : IEsDocument> M.queryById(id: String): EsQueryClip<M, T> = this.query()
         .where("id" match id);
 
 
@@ -25,15 +22,15 @@ fun <M : EsBaseEntity<T>, T : IEsDocument> M.queryById(id: String): EsQueryClip<
 //    return EsSetEntityUpdateClip(this,entity);
 //}
 
-fun <M : EsBaseEntity<E>, E : IEsDocument> M.batchInsert(): EsInsertClip<M,E> {
+fun <M : EsBaseMetaEntity<E>, E : IEsDocument> M.batchInsert(): EsInsertClip<M,E> {
     return EsInsertClip(this);
 }
 
-fun <M : EsBaseEntity<E>, E : IEsDocument> M.update(): EsUpdateClip<M,E> {
+fun <M : EsBaseMetaEntity<E>, E : IEsDocument> M.update(): EsUpdateClip<M,E> {
     return EsUpdateClip(this);
 }
 
-fun <M : EsBaseEntity<E>, E : IEsDocument> M.delete(): EsDeleteClip<M> = EsDeleteClip(this)
+fun <M : EsBaseMetaEntity<E>, E : IEsDocument> M.delete(): EsDeleteClip<M> = EsDeleteClip(this)
 
 //fun <M : EsBaseEntity<E>, E : IEsDocument> M.deleteById(id: String): EsDeleteClip<M> {
 //    var ret = EsDeleteClip(this);
@@ -42,7 +39,7 @@ fun <M : EsBaseEntity<E>, E : IEsDocument> M.delete(): EsDeleteClip<M> = EsDelet
 //}
 
 
-fun <M : EsBaseEntity<E>, E : IEsDocument> M.aggregate(): EsAggregateClip<M, E> {
+fun <M : EsBaseMetaEntity<E>, E : IEsDocument> M.aggregate(): EsAggregateClip<M, E> {
     var ret = EsAggregateClip(this);
     return ret;
 }
