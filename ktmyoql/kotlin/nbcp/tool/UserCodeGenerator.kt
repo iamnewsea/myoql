@@ -260,6 +260,17 @@ object UserCodeGenerator {
         return valueElse;
     }
 
+    /**
+     * 处理 If
+     * ifKey:
+     * @ 开头表示字段类型;
+     *      == #Res 表示是否是可资源化;
+     *      #enum1表示数据库字段是否是单个枚举,
+     *      #enumList表示数据库字段是否是枚举列表.
+     *      #enum表示是否是枚举(单枚举或多枚举)
+     *      #IdUrlList 表示是否是文件
+     * 字符串:表示是否是该字段,比如: if:name 表示 field.name =?= name
+     */
     private fun decideIfExp(entityFields: List<Field>, field: Field?, ifKey: String): Boolean {
         if (ifKey.startsWith("@")) {
             return field!!.type.simpleName VbSame ifKey.substring(1);
@@ -267,10 +278,6 @@ object UserCodeGenerator {
             var name = ifKey.substring(1);
             if (name VbSame "Res") {
                 return field!!.type.isEnum ||
-//                        field.type == LocalDateTime::class.java ||
-//                        field.type == LocalDate::class.java ||
-//                        field.type == LocalTime::class.java ||
-//                        field.type == Date::class.java ||
                         field.type == Boolean::class.java
             }
 

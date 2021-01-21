@@ -62,6 +62,9 @@ object CodeGeneratorHelper {
 
     }
 
+    /**
+     * 是否是 List枚举
+     */
     fun IsListEnum(field: Field): Boolean {
         return (field.type.IsCollectionType() && (field.genericType as ParameterizedType).GetActualClass(0).isEnum) ||
                 (field.type.isArray && field.type.componentType.javaClass.isEnum)
