@@ -9,6 +9,7 @@ import nbcp.db.db
 import nbcp.db.sql.doInsert
 import nbcp.db.sql.entity.s_annex
 import nbcp.db.sql.updateWithEntity
+import nbcp.tool.UserCodeGenerator
 import nbcp.utils.SpringUtil
 import org.junit.Test
 import org.junit.jupiter.api.BeforeEach
@@ -68,5 +69,12 @@ class TestKtExt_MySql : TestBase() {
         var ds_main = SpringUtil.getBean<DataSource>() as HikariDataSource
 
         println(ds_main.maximumPoolSize)
+    }
+
+    @Test
+    fun test_gen() {
+        var file = UserCodeGenerator.genMySqlMvcCrud("base", db.sql_base.s_city);
+
+        println(file)
     }
 }

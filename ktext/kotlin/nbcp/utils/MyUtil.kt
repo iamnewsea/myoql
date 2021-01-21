@@ -591,7 +591,24 @@ object MyUtil {
     /**
      * 格式化模板
      */
-    fun formatTemplateJson(text: String, json: StringMap, style: String = "\${}"): String {
+    fun formatTemplateJson(
+        /**
+         * 如 dbr.${group|w}
+         */
+        text: String,
+        /**
+         * 如: {group:"abc"}
+         */
+        json: StringMap,
+        /**
+         * 不是默认函数的时候,调用 funcCallback 自定义处理.
+         * 第一个参数是key, 第二个是value, 第三个参数是函数名,第四个参数是函数参数 , 返回新值
+         * 如果模板使用了函数,而没有传递,抛出异常.
+         * 如: ${id|type} ,type(id) 不是默认定义,需要通过 funcCallback 传
+         */
+        funcCallback: ((String, String?, String, String) -> String?)? = null,
+        style: String = "\${}"
+    ): String {
 
         var map: StringKeyMap<((String) -> String)> = StringKeyMap()
         map.put("-", { MyUtil.getKebabCase(it) })
@@ -610,31 +627,31 @@ object MyUtil {
                 key.split("|").first()
             },
             { fullKey, value ->
+                // fullKey 即 ${fullKey} == group|w
+                // 如果 json中定义了值,使用json的.如: json == {"group|w": "大写第二个字母值"}
+                // value是group的原始值 == "wx"
                 var sects = fullKey.split("|")
-                if (sects.size <= 1 || value == null) {
+                if (sects.size <= 1) {
                     return@formatWithJson value;
                 }
 
+                // key == group
                 var key = sects.first();
-                var result = value!!;
+                var result: String? = value
                 sects.Skip(1).forEach { funcString ->
                     //如：   substring:2,3
-                    var sects2 = funcString.split(":")
-                    var funcName = sects2.first();
+                    var funcContent = funcString.split(":")
+                    var funcName = funcContent.first();
                     var params = listOf<String>()
-                    if (sects2.size > 2) {
+                    if (funcContent.size > 2) {
                         throw RuntimeException("表达式中多个冒号非法：${funcString}")
-                    } else if (sects2.size == 2) {
+                    } else if (funcContent.size == 2) {
                         // 如：   substring:2,3 中的 2,2 参数部分
-                        params = sects2[1].split(",")
+                        params = funcContent[1].split(",")
                     }
 
 
                     if (params.size == 1) {
-                        var funcBody = map2.get(funcName)
-                        if (funcBody == null) {
-                            throw RuntimeException("找不到 ${funcName}")
-                        }
                         var param = params[0];
                         var paramValue = param;
                         if (param.startsWith("'") && param.endsWith("'")) {
@@ -644,20 +661,36 @@ object MyUtil {
                         } else {
                             paramValue = json.get(param).AsString()
                         }
-                        result = funcBody.invoke(result, paramValue)
-                    } else if (params.size == 0) {
-                        var funcBody = map.get(funcName)
-                        if (funcBody == null) {
+
+                        //如果定义了默认的funcName
+                        if (value != null && map2.containsKey(funcName)) {
+                            var funcBody = map2.get(funcName)!!
+                            result = funcBody.invoke(value, paramValue)
+                        } else if (funcCallback != null) {
+                            result = funcCallback.invoke(key, value, funcName, paramValue)
+                        } else {
                             throw RuntimeException("找不到 ${funcName}")
                         }
-                        result = funcBody.invoke(result)
+                    } else if (params.size == 0) {
+                        if (value != null && map.containsKey(funcName)) {
+                            var funcBody = map.get(funcName)!!
+                            result = funcBody.invoke(value)
+                        } else if (funcCallback != null) {
+                            result = funcCallback.invoke(key, value, funcName, "")
+                        } else {
+                            throw RuntimeException("找不到 ${funcName}")
+                        }
+
                     }
 
                     return@forEach
                 }
 
+                if (result == null) {
+                    throw RuntimeException("无法处理 ${fullKey}")
+                }
 
-                return@formatWithJson result
+                return@formatWithJson result!!
             });
     }
 }

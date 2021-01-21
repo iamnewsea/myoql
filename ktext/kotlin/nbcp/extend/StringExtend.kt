@@ -690,19 +690,24 @@ fun String.formatWithJson(
 
         var oriKey = result.groupValues.last()
 
+        var value: String? = json.getStringValue(oriKey)
+
         var key = oriKey
         if (keyCallback != null) {
             key = keyCallback(key);
         }
 
-        var value: String? = null
 
+        if (value == null) {
+            value = json.getStringValue(key)
+        }
 
         if (value == null) {
             value = json.getStringValue(*key.split(".").toTypedArray())
         }
 
         if (valueCallback != null) {
+            //value 不能是 null.
             value = valueCallback(oriKey, value)
         }
 

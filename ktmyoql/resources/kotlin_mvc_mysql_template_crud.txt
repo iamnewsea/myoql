@@ -8,6 +8,8 @@ import nbcp.comm.*
 import nbcp.db.*
 import nbcp.db.sql.*
 import nbcp.db.sql.entity.*
+import nbcp.db.mysql.*
+import nbcp.db.mysql.entity.*
 import nbcp.web.*
 import javax.servlet.http.HttpServletRequest
 import java.time.*
@@ -23,7 +25,7 @@ class ${entity}AutoController {
     @ApiOperation("列表")
     @JsonpMapping("/list")
     fun list(
-        id: String, //当列表列新一条后，刷新时使用
+        ${id_name}: ${id_name|type}, //当列表列新一条后，刷新时使用
 ${if:name}
         name: String,
 ${endif}
@@ -32,10 +34,10 @@ ${endif}
         request: MyHttpRequestWrapper
     ): ListResult<${entity}> {
 
-        dbr.${group|w}.${entityField}.query()
+        dbr.${group|w}.${entity}.query()
             .apply{
-                if(id.HasValue){
-                    this.where{it.id match id}
+                if(${id_name}.HasValue){
+                    this.where{it.${id_name} match ${id_name}}
                 }
 ${if:name}
                 if(name.HasValue){
@@ -53,10 +55,10 @@ ${endif}
     @ApiOperation("详情")
     @JsonpMapping("/detail/{id}")
     fun detail(
-        @Require id: String,
+        @Require ${id_name}: ${id_name|type},
         request: MyHttpRequestWrapper
     ): ApiResult<${entity}> {
-        dbr.${group|w}.${entityField}.queryById(id)
+        dbr.${group|w}.${entity}.queryBy${id_name|W}(${id_name})
             .toEntity()
             .apply{
                 if( this == null){
@@ -72,16 +74,14 @@ ${endif}
     fun save(
       @JsonModel entity:${entity},
       request: MyHttpRequestWrapper
-    ): ApiResult<String> {
-
+    ): ApiResult<${id_name|type}> {
     //鉴权
     var userId = request.UserId;
 
-
-    dbr.${group|w}.${entityField}.updateWithEntity(entity)
+    dbr.${group|w}.${entity}.updateWithEntity(entity)
         .withRequestParams(request.json.keys)
         .run {
-            if (entity.id.HasValue){
+            if (entity.${id_name}.HasValue){
                 return@run  this.execUpdate()
             }
             else{
@@ -93,14 +93,14 @@ ${endif}
               return ApiResult("更新失败")
             }
 
-            return ApiResult.of(entity.id)
+            return ApiResult.of(entity.${id_name})
         }
     }
 ${if:status}
     @ApiOperation("更新状态，更新一个字段")
     @JsonpMapping("/set-status")
     fun set(
-        @Require id: String,
+        @Require ${id_name}: ${id_name|type},
         @Require status: ${status_enum_class},
         request: MyHttpRequestWrapper
     ): JsonResult {
@@ -108,7 +108,7 @@ ${if:status}
         var userId = request.UserId;
 
 
-        dbr.${group|w}.${entityField}.updateById(id)
+        dbr.${group|w}.${entity}.updateBy${id_name|W}(${id_name})
             .set{it.status to status}
             .set { it.updateAt to LocalDateTime.now() }
             .exec()
@@ -124,18 +124,18 @@ ${endif}
     @ApiOperation("删除")
     @JsonpMapping("/delete/{id}")
     fun delete(
-      @Require id:String,
+      @Require ${id_name}:${id_name|type},
       request: MyHttpRequestWrapper
     ): JsonResult {
     //鉴权
     var userId = request.UserId;
 
-    var entity = dbr.${group|w}.${entityField}.queryById(id).toEntity();
+    var entity = dbr.${group|w}.${entity}.queryBy${id_name|W}(${id_name}).toEntity();
     if(entity == null){
         return JsonResult("找不到数据")
     }
 
-    dbr.${group|w}.${entityField}.deleteById(id)
+    dbr.${group|w}.${entity}.deleteBy${id_name|W}(${id_name})
         .exec()
         .apply{
             if(this == 0){

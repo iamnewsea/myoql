@@ -159,7 +159,6 @@ fun Any?.AsFloat(defaultValue: Float = 0F): Float {
 }
 
 
-
 fun Any?.AsBigDecimal(): BigDecimal? {
     if (this == null) return null;
     if (this is BigDecimal) return this;
@@ -173,3 +172,12 @@ fun Any?.AsBigDecimal(): BigDecimal? {
 
     throw java.lang.RuntimeException("不识别的数据类型:${this::class.java}")
 }
+
+
+/**
+ * 为代码生成器而扩展
+ */
+val Number?.HasValue: Boolean
+    get() {
+        return this != null && this != 0
+    }

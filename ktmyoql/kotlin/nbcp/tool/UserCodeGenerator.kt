@@ -11,6 +11,7 @@ import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.time.LocalDateTime
 import java.util.*
+import kotlin.reflect.jvm.kotlinProperty
 
 object UserCodeGenerator {
     /**
@@ -70,13 +71,18 @@ object UserCodeGenerator {
 
     private fun gen(group: String, metaEntity: BaseMetaData, text: String): String {
         var text = text;
+        var id_name = ""
         lateinit var entityClass: Class<*>
+
         if (metaEntity is MongoBaseMetaCollection<*>) {
             entityClass = metaEntity.entityClass
+            id_name = "id"
         } else if (metaEntity is SqlBaseMetaTable<*>) {
             entityClass = metaEntity.tableClass
+            id_name = metaEntity.getAutoIncrementKey().AsString(metaEntity.getUks().first { it.size == 1 }[0])
         } else if (metaEntity is EsBaseMetaEntity<*>) {
             entityClass = metaEntity.entityClass
+            id_name = "id"
         }
 
         var entityFields = entityClass.AllFields.MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
@@ -91,7 +97,7 @@ object UserCodeGenerator {
 
         text = procIf("if", entityFields, null, text);
 
-        text = procFor(entityFields, text);
+        text = procFor(entityFields, text, id_name);
 
         var title = CodeGeneratorHelper.getEntityCommentValue(entityClass).AsString(metaEntity.tableName);
 
@@ -101,7 +107,6 @@ object UserCodeGenerator {
 //            entity_url = entity_url.substring((group + "-").length);
 //        }
 
-
         var url = "/${MyUtil.getKebabCase(group)}/${MyUtil.getKebabCase(entityClass.simpleName)}"
         var mapDefine = StringMap(
             "url" to url,
@@ -110,15 +115,20 @@ object UserCodeGenerator {
             "entityField" to MyUtil.getSmallCamelCase(entityClass.simpleName),
             "title" to title,
             "now" to LocalDateTime.now().AsString(),
-            "status_enum_class" to status_enum_class
+            "status_enum_class" to status_enum_class,
+            "id_name" to id_name
         )
-        return MyUtil.formatTemplateJson(text, mapDefine)
+        return MyUtil.formatTemplateJson(text, mapDefine, { key, value, func, funcParam ->
+            if (key == "id_name" && func == "type") {
+                return@formatTemplateJson entityFields.first { it.name == id_name }.type.kotlinTypeName
+            }
+            return@formatTemplateJson null
+        })
     }
 
-    private fun procFor(entityFields: List<Field>, content: String): String {
+    private fun procFor(entityFields: List<Field>, content: String, id_name: String): String {
         var text = content;
         var times = 0;
-
         while (true) {
             times++;
             if (times > 999) {
@@ -136,7 +146,6 @@ object UserCodeGenerator {
             forExp = removeNewLine(forExp);
 
             var t2 = entityFields.map {
-
                 var forExp2 = procIf("fif", entityFields, it, forExp);
                 return@map MyUtil.formatTemplateJson(
                     forExp2,
@@ -144,8 +153,15 @@ object UserCodeGenerator {
                         "name" to it.name,
                         "remark" to CodeGeneratorHelper.getFieldCommentValue(it).AsString(it.name),
                         "type" to it.type.simpleName,
-                        "isSimpleType" to it.type.IsSimpleType().toString().toLowerCase()
-                    ), "\${}"
+                        "isSimpleType" to it.type.IsSimpleType().toString().toLowerCase(),
+                        "id_name" to id_name
+                    ),
+                    { key, value, func, funcParam ->
+                        if (key == "id_name" && func == "type") {
+                            return@formatTemplateJson entityFields.first { it.name == id_name }.type.kotlinTypeName
+                        }
+                        return@formatTemplateJson null
+                    }, "\${}"
                 )
             }.filter { it.HasValue }.joinToString(line_break);
 
