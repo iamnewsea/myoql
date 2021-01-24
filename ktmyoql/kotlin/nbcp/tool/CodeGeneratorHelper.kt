@@ -7,6 +7,7 @@ import nbcp.utils.MyUtil
 import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
+import java.time.LocalDateTime
 
 object CodeGeneratorHelper {
     fun getEntityCommentOnly(entType: Class<*>): String {
@@ -269,5 +270,57 @@ object CodeGeneratorHelper {
             t = t.Slice(0, -1);
         }
         return t;
+    }
+
+    class CodeTemplateData(
+        var group: String,
+        var entityClass: Class<*>,
+        var tableName: String,
+        var idKey: String
+    )
+
+    fun proc(text: String, jsonValue: CodeTemplateData): String {
+        var entityClass = jsonValue.entityClass
+        var group = jsonValue.group
+        var id_key = jsonValue.idKey
+        var tableName = jsonValue.tableName
+
+
+        var entityFields = entityClass.AllFields
+            .MoveToFirst { it.name == "code" }
+            .MoveToFirst { it.name == "name" }
+            .MoveToFirst { it.name == "id" }
+        //先处理${for:fields}
+
+
+        var status_enum_class = ""
+        var statusField = entityFields.firstOrNull { it.name == "status" }
+        if (statusField != null) {
+            status_enum_class = statusField.type.kotlinTypeName;
+        }
+
+        var text = CodeGeneratorHelper.procIf(text, "if", entityFields, null);
+
+        text = CodeGeneratorHelper.procFor(text, entityFields, id_key);
+
+        var title = CodeGeneratorHelper.getEntityCommentValue(entityClass).AsString(tableName);
+
+        var url = "/${MyUtil.getKebabCase(group)}/${MyUtil.getKebabCase(entityClass.simpleName)}"
+        var mapDefine = StringMap(
+            "url" to url,
+            "group" to group,
+            "entity" to entityClass.simpleName,
+            "entityField" to MyUtil.getSmallCamelCase(entityClass.simpleName),
+            "title" to title,
+            "now" to LocalDateTime.now().AsString(),
+            "status_enum_class" to status_enum_class,
+            "id_name" to id_key
+        )
+        return MyUtil.formatTemplateJson(text, mapDefine, { key, value, func, funcParam ->
+            if (key == "id_name" && func == "type") {
+                return@formatTemplateJson entityFields.first { it.name == id_key }.type.kotlinTypeName
+            }
+            return@formatTemplateJson null
+        })
     }
 }

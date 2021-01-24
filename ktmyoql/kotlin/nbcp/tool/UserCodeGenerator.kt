@@ -71,58 +71,30 @@ object UserCodeGenerator {
 
     private fun gen(group: String, metaEntity: BaseMetaData, text: String): String {
         var text = text;
-        var id_name = ""
+        var id_key = ""
         lateinit var entityClass: Class<*>
 
         if (metaEntity is MongoBaseMetaCollection<*>) {
             entityClass = metaEntity.entityClass
-            id_name = "id"
+            id_key = "id"
         } else if (metaEntity is SqlBaseMetaTable<*>) {
             entityClass = metaEntity.tableClass
-            id_name = metaEntity.getAutoIncrementKey().AsString(metaEntity.getUks().first { it.size == 1 }[0])
+            id_key = metaEntity.getAutoIncrementKey().AsString(metaEntity.getUks().first { it.size == 1 }[0])
         } else if (metaEntity is EsBaseMetaEntity<*>) {
             entityClass = metaEntity.entityClass
-            id_name = "id"
+            id_key = "id"
         }
 
-        var entityFields = entityClass.AllFields.MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
-        //先处理${for:fields}
-
-
-        var status_enum_class = ""
-        var statusField = entityFields.firstOrNull { it.name == "status" }
-        if (statusField != null) {
-            status_enum_class = statusField.type.kotlinTypeName;
-        }
-
-        text = CodeGeneratorHelper.procIf(text,"if", entityFields, null);
-
-        text = CodeGeneratorHelper.procFor( text,entityFields, id_name);
-
-        var title = CodeGeneratorHelper.getEntityCommentValue(entityClass).AsString(metaEntity.tableName);
-
-//        var entity_url = MyUtil.getKebabCase(metaEntity.tableName);
-//
-//        if (entity_url.startsWith(group + "-")) {
-//            entity_url = entity_url.substring((group + "-").length);
-//        }
-
-        var url = "/${MyUtil.getKebabCase(group)}/${MyUtil.getKebabCase(entityClass.simpleName)}"
-        var mapDefine = StringMap(
-            "url" to url,
-            "group" to group,
-            "entity" to entityClass.simpleName,
-            "entityField" to MyUtil.getSmallCamelCase(entityClass.simpleName),
-            "title" to title,
-            "now" to LocalDateTime.now().AsString(),
-            "status_enum_class" to status_enum_class,
-            "id_name" to id_name
+        text = CodeGeneratorHelper.proc(
+            text,
+            CodeGeneratorHelper.CodeTemplateData(
+                group,
+                entityClass,
+                metaEntity.tableName,
+                id_key
+            )
         )
-        return MyUtil.formatTemplateJson(text, mapDefine, { key, value, func, funcParam ->
-            if (key == "id_name" && func == "type") {
-                return@formatTemplateJson entityFields.first { it.name == id_name }.type.kotlinTypeName
-            }
-            return@formatTemplateJson null
-        })
+
+        return text;
     }
 }
