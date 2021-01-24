@@ -78,7 +78,7 @@ object CodeGeneratorHelper {
     }
 
 
-    fun procFor(content: String, entityFields: List<Field>, id_name: String): String {
+    fun procFor(content: String, entityFields: List<Field>, idKey: String): String {
         var text = content;
         var times = 0;
         while (true) {
@@ -106,11 +106,11 @@ object CodeGeneratorHelper {
                         "remark" to getFieldCommentValue(it).AsString(it.name),
                         "type" to it.type.simpleName,
                         "isSimpleType" to it.type.IsSimpleType().toString().toLowerCase(),
-                        "id_name" to id_name
+                        "idKey" to idKey
                     ),
                     { key, value, func, funcParam ->
-                        if (key == "id_name" && func == "type") {
-                            return@formatTemplateJson entityFields.first { it.name == id_name }.type.kotlinTypeName
+                        if (key == "idKey" && func == "type") {
+                            return@formatTemplateJson entityFields.first { it.name == idKey }.type.kotlinTypeName
                         }
                         return@formatTemplateJson null
                     }, "\${}"
@@ -282,7 +282,7 @@ object CodeGeneratorHelper {
     fun proc(text: String, jsonValue: CodeTemplateData): String {
         var entityClass = jsonValue.entityClass
         var group = jsonValue.group
-        var id_key = jsonValue.idKey
+        var idKey = jsonValue.idKey
         var tableName = jsonValue.tableName
 
 
@@ -301,7 +301,7 @@ object CodeGeneratorHelper {
 
         var text = CodeGeneratorHelper.procIf(text, "if", entityFields, null);
 
-        text = CodeGeneratorHelper.procFor(text, entityFields, id_key);
+        text = CodeGeneratorHelper.procFor(text, entityFields, idKey);
 
         var title = CodeGeneratorHelper.getEntityCommentValue(entityClass).AsString(tableName);
 
@@ -314,11 +314,11 @@ object CodeGeneratorHelper {
             "title" to title,
             "now" to LocalDateTime.now().AsString(),
             "status_enum_class" to status_enum_class,
-            "id_name" to id_key
+            "idKey" to idKey
         )
         return MyUtil.formatTemplateJson(text, mapDefine, { key, value, func, funcParam ->
-            if (key == "id_name" && func == "type") {
-                return@formatTemplateJson entityFields.first { it.name == id_key }.type.kotlinTypeName
+            if (key == "idKey" && func == "type") {
+                return@formatTemplateJson entityFields.first { it.name == idKey }.type.kotlinTypeName
             }
             return@formatTemplateJson null
         })

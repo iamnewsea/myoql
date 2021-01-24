@@ -71,18 +71,18 @@ object UserCodeGenerator {
 
     private fun gen(group: String, metaEntity: BaseMetaData, text: String): String {
         var text = text;
-        var id_key = ""
+        var idKey = ""
         lateinit var entityClass: Class<*>
 
         if (metaEntity is MongoBaseMetaCollection<*>) {
             entityClass = metaEntity.entityClass
-            id_key = "id"
+            idKey = "id"
         } else if (metaEntity is SqlBaseMetaTable<*>) {
             entityClass = metaEntity.tableClass
-            id_key = metaEntity.getAutoIncrementKey().AsString(metaEntity.getUks().first { it.size == 1 }[0])
+            idKey = metaEntity.getAutoIncrementKey().AsString(metaEntity.getUks().first { it.size == 1 }[0])
         } else if (metaEntity is EsBaseMetaEntity<*>) {
             entityClass = metaEntity.entityClass
-            id_key = "id"
+            idKey = "id"
         }
 
         text = CodeGeneratorHelper.proc(
@@ -91,7 +91,7 @@ object UserCodeGenerator {
                 group,
                 entityClass,
                 metaEntity.tableName,
-                id_key
+                idKey
             )
         )
 
