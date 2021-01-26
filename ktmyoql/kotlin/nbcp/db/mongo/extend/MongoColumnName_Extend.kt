@@ -57,7 +57,7 @@ private fun proc_mongo_match(key: MongoColumnName, value: Any?): Pair<String, An
     } else if (type == LocalDateTime::class.java ||
             type == LocalDate::class.java) {
         value = value.AsLocalDateTime().AsDate()
-    } else if (type.IsStringType()) {
+    } else if (type.IsStringType) {
         if (keyIsId && value is String && ObjectId.isValid(value)) {
             value = ObjectId(value);
         }

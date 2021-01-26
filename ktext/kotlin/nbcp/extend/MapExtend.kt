@@ -99,7 +99,7 @@ fun Map<String, *>.getStringValue(vararg keys: String): String? {
     var v_type = v::class.java;
     if (v_type.isArray) {
         return (v as Array<Any>).map { it.AsString() }.joinToString(",")
-    } else if (v_type.IsCollectionType()) {
+    } else if (v_type.IsCollectionType) {
         return (v as Collection<Any>).map { it.AsString() }.joinToString(",")
     }
     return v.toString()
@@ -124,11 +124,11 @@ private fun get_array_querys(list: Collection<Any?>): List<String> {
                 return@map get_array_querys((value as Array<*>).toList())
                         .map { "[]=" + it }
                         .toTypedArray()
-            } else if (type.IsCollectionType()) {
+            } else if (type.IsCollectionType) {
                 return@map get_array_querys((value as Collection<*>))
                         .map { "[]=" + it }
                         .toTypedArray()
-            } else if (type.IsMapType()) {
+            } else if (type.IsMapType) {
                 return@map get_map_querys((value as Map<String, *>))
                         .map { "[]=" + it }
                         .toTypedArray()
@@ -159,11 +159,11 @@ private fun get_map_querys(map: Map<String, *>): List<String> {
                 return@map get_array_querys((value as Array<*>).toList())
                         .map { key + it }
                         .toTypedArray()
-            } else if (type.IsCollectionType()) {
+            } else if (type.IsCollectionType) {
                 return@map get_array_querys((value as Collection<*>))
                         .map { key + it }
                         .toTypedArray()
-            } else if (type.IsMapType()) {
+            } else if (type.IsMapType) {
                 return@map get_map_querys((value as Map<String, *>))
                         .map { key + "." + it }
                         .toTypedArray()

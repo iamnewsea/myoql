@@ -58,7 +58,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
      */
     fun <R> toList(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): MutableList<R> {
         db.affectRowCount = -1;
-        var isString = clazz.IsStringType();
+        var isString = clazz.IsStringType;
 //        if (clazz.IsSimpleType()) {
 //            isString = clazz.name == "java.lang.String";
 //        }

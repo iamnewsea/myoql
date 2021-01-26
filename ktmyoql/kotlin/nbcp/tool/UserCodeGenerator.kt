@@ -18,59 +18,41 @@ object UserCodeGenerator {
      * 生成基础的CRUD接口
      */
     fun genMongoMvcCrud(group: String, entity: BaseMetaData): String {
-        var stream = this::class.java.getResourceAsStream("/kotlin_mvc_mongo_template_crud.txt")
-        var text = stream.readBytes().toString(utf8)
-
-        return gen(group, entity, text);
+        return gen(group, entity, "kotlin_mvc_mongo_template_crud.ftl");
     }
 
     fun genMySqlMvcCrud(group: String, entity: BaseMetaData): String {
-        var stream = this::class.java.getResourceAsStream("/kotlin_mvc_mysql_template_crud.txt")
-        var text = stream.readBytes().toString(utf8)
-
-        return gen(group, entity, text);
+        return gen(group, entity, "kotlin_mvc_mysql_template_crud.ftl");
     }
 
     fun genEsMvcCrud(group: String, entity: BaseMetaData): String {
-        var stream = this::class.java.getResourceAsStream("/kotlin_mvc_es_template_crud.txt")
-        var text = stream.readBytes().toString(utf8)
-
-        return gen(group, entity, text);
+        return gen(group, entity, "kotlin_mvc_es_template_crud.ftl");
     }
 
     /**
      * 生成Vue列表页面
      */
     fun genVueList(group: String, entity: BaseMetaData): String {
-        var stream = this::class.java.getResourceAsStream("/vue_list_template.txt")
-        var text = stream.readBytes().toString(utf8)
-
-        return gen(group, entity, text);
+        return gen(group, entity, "vue_list_template.ftl");
     }
 
     /**
      * 生成Vue卡片页面
      */
     fun genVueCard(group: String, entity: BaseMetaData): String {
-        var stream = this::class.java.getResourceAsStream("/vue_card_template.txt")
-        var text = stream.readBytes().toString(utf8)
-
-        return gen(group, entity, text);
+        return gen(group, entity, "vue_card_template.ftl");
     }
 
     /**
      * 生成Vue引用
      */
     fun genVueRef(group: String, entity: BaseMetaData): String {
-        var stream = this::class.java.getResourceAsStream("/vue_ref_template.txt")
-        var text = stream.readBytes().toString(utf8)
-
-        return gen(group, entity, text);
+        return gen(group, entity, "vue_ref_template.txt");
     }
 
 
-    private fun gen(group: String, metaEntity: BaseMetaData, text: String): String {
-        var text = text;
+    private fun gen(group: String, metaEntity: BaseMetaData, fileName: String): String {
+
         var idKey = ""
         lateinit var entityClass: Class<*>
 
@@ -85,8 +67,8 @@ object UserCodeGenerator {
             idKey = "id"
         }
 
-        text = CodeGeneratorHelper.proc(
-            text,
+        return CodeGeneratorHelper.proc(
+            fileName,
             CodeGeneratorHelper.CodeTemplateData(
                 group,
                 entityClass,
@@ -94,7 +76,5 @@ object UserCodeGenerator {
                 idKey
             )
         )
-
-        return text;
     }
 }

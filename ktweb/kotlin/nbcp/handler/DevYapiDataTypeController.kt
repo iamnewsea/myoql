@@ -29,7 +29,7 @@ class DevYapiDataTypeController {
 
         var typeMap = mutableMapOf<String, Any?>()
         var typeMapClass = typeMapObject::class.java;
-        if (typeMapClass.IsStringType()) {
+        if (typeMapClass.IsStringType) {
             typeMap = typeMapObject.AsString().FromJson<MutableMap<String, Any?>>()!!
         } else {
             typeMap = typeMapObject as MutableMap<String, Any?>
@@ -132,7 +132,7 @@ class DevYapiDataTypeController {
         var v = typeMap.get(type)!!
         var v_class = v::class.java;
 
-        if (v_class.IsStringType()) {
+        if (v_class.IsStringType) {
             v.AsString().split(",").forEach {
                 userTypeDefine.put(it, JsonMap());
             }

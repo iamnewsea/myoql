@@ -221,7 +221,7 @@ data class ${tableName}(
                                 var dbType = DbType.of(it.type);
                                 var type = dbType.toMySqlTypeString()
 
-                                var item = """`${columnName}` ${type} not null ${if (dbType.isNumberic()) "default '0'" else if (propertyType.IsStringType()) "default ''" else ""} comment ''"""
+                                var item = """`${columnName}` ${type} not null ${if (dbType.isNumberic()) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment ''"""
                                 list.add(item);
                             }
 
@@ -229,7 +229,7 @@ data class ${tableName}(
                         }
                     }
 
-                    var item = """`${columnName}` ${type} not null ${if (propertyType.IsNumberType()) "default '0'" else if (propertyType.IsStringType()) "default ''" else ""} comment ''"""
+                    var item = """`${columnName}` ${type} not null ${if (propertyType.IsNumberType) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment ''"""
                     list.add(item);
                 }
 

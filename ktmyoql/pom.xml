@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cn.dev8</groupId>
@@ -60,11 +62,17 @@
             <scope>test</scope>
         </dependency>
 
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/io.lettuce/lettuce-core &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>io.lettuce</groupId>-->
-<!--            <artifactId>lettuce-core</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--        &lt;!&ndash; https://mvnrepository.com/artifact/io.lettuce/lettuce-core &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>io.lettuce</groupId>-->
+        <!--            <artifactId>lettuce-core</artifactId>-->
+        <!--        </dependency>-->
 
 
         <!-- https://mvnrepository.com/artifact/org.elasticsearch.client/elasticsearch-rest-high-level-client -->
@@ -145,24 +153,24 @@
             <groupId>cn.dev8</groupId>
             <artifactId>ktext</artifactId>
             <version>${project.version}</version>
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>com.fasterxml.jackson.core</groupId>-->
-<!--                    <artifactId>jackson-databind</artifactId>-->
-<!--                </exclusion>-->
-<!--                <exclusion>-->
-<!--                    <groupId>com.fasterxml.jackson.module</groupId>-->
-<!--                    <artifactId>jackson-module-kotlin</artifactId>-->
-<!--                </exclusion>-->
-<!--                <exclusion>-->
-<!--                    <groupId>org.jetbrains.kotlin</groupId>-->
-<!--                    <artifactId>kotlin-reflect</artifactId>-->
-<!--                </exclusion>-->
-<!--                <exclusion>-->
-<!--                    <groupId>org.jetbrains.kotlin</groupId>-->
-<!--                    <artifactId>kotlin-stdlib-jdk8</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
+            <!--            <exclusions>-->
+            <!--                <exclusion>-->
+            <!--                    <groupId>com.fasterxml.jackson.core</groupId>-->
+            <!--                    <artifactId>jackson-databind</artifactId>-->
+            <!--                </exclusion>-->
+            <!--                <exclusion>-->
+            <!--                    <groupId>com.fasterxml.jackson.module</groupId>-->
+            <!--                    <artifactId>jackson-module-kotlin</artifactId>-->
+            <!--                </exclusion>-->
+            <!--                <exclusion>-->
+            <!--                    <groupId>org.jetbrains.kotlin</groupId>-->
+            <!--                    <artifactId>kotlin-reflect</artifactId>-->
+            <!--                </exclusion>-->
+            <!--                <exclusion>-->
+            <!--                    <groupId>org.jetbrains.kotlin</groupId>-->
+            <!--                    <artifactId>kotlin-stdlib-jdk8</artifactId>-->
+            <!--                </exclusion>-->
+            <!--            </exclusions>-->
         </dependency>
 
         <dependency>
@@ -199,11 +207,11 @@
 
                 <configuration>
                     <outputDir>${project.build.directory}/apidocs</outputDir>
-<!--                    <externalDocumentationLinks>-->
-<!--                        <externalDocumentationLink>-->
-<!--                            <url>http://file.dev8.cn:8000/package-list</url>-->
-<!--                        </externalDocumentationLink>-->
-<!--                    </externalDocumentationLinks>-->
+                    <!--                    <externalDocumentationLinks>-->
+                    <!--                        <externalDocumentationLink>-->
+                    <!--                            <url>http://file.dev8.cn:8000/package-list</url>-->
+                    <!--                        </externalDocumentationLink>-->
+                    <!--                    </externalDocumentationLinks>-->
                 </configuration>
             </plugin>
 

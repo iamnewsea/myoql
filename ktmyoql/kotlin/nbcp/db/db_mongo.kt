@@ -235,7 +235,7 @@ object db_mongo {
         fun test(item: Any?): Boolean {
             if (item == null) return false;
             var type = item::class.java;
-            if (type.IsStringType() == false) return false;
+            if (type.IsStringType == false) return false;
             var v_string_value = item.toString()
             if (v_string_value.startsWith("Document{{") && v_string_value.endsWith("}}")) {
                 return true;

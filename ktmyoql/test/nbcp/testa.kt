@@ -5,6 +5,7 @@ import nbcp.comm.Define
 import nbcp.db.*
 import nbcp.db.es.IEsDocument
 import nbcp.db.es.tool.generator_mapping
+import nbcp.tool.MyTemplateProc
 import nbcp.tool.UserCodeGenerator
 import org.junit.Test
 import java.time.LocalDateTime
@@ -31,7 +32,7 @@ class testa : TestBase() {
     fun abc22() {
         var txt = """#{if:name}abc#{elseif:status2}d2#{elseif:status3}d3#{else}!#{endif}""".replace("#", "$")
         var f = db.mor_base.basicUser.entityClass.AllFields.firstOrNull { it.name == "d" };
-        var d = UserCodeGenerator.getIfExpression(txt, "if", db.mor_base.basicUser.entityClass::class.java.AllFields,
+        var d = MyTemplateProc.getIfExpression(txt, "if", db.mor_base.basicUser.entityClass::class.java.AllFields,
                 f);
         println(d)
     }

@@ -88,10 +88,10 @@ open class StringKeyMap<T> : LinkedHashMap<String, T>, Serializable {
         if (value == null) return "null"
         var type = value::class.java
         if (type.IsSimpleType()) {
-            if (type.IsNumberType()) {
+            if (type.IsNumberType) {
                 return "${value}"
             }
-            if (type.IsBooleanType()) {
+            if (type.IsBooleanType) {
                 return "${value}"
             } else {
                 return """"${value}""""

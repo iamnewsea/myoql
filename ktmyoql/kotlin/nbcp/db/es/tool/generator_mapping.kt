@@ -130,7 +130,7 @@ class generator_mapping {
         if (field.type.isArray) {
             return getActType(field.type.componentType)
         }
-        if (field.type.IsCollectionType()) {
+        if (field.type.IsCollectionType) {
             var actType = (field.genericType as ParameterizedType).GetActualClass(0);
             return getActType(actType)
         }
@@ -220,11 +220,11 @@ class generator_mapping {
 
     private fun getJsType(type: Class<*>): String {
         /*文本有两种： text,keyword*/
-        if (type.IsStringType()) return "keyword"
+        if (type.IsStringType) return "keyword"
         if (type.isEnum) return "keyword"
 
         //long、integer、short、byte、double、float
-        if (type.IsNumberType()) {
+        if (type.IsNumberType) {
             if (type == Long::class.java || type == java.lang.Long::class.java) {
                 return "long"
             }
@@ -254,7 +254,7 @@ class generator_mapping {
             return "date"
         }
 
-        if (type.IsBooleanType()) {
+        if (type.IsBooleanType) {
             return "bool"
         }
 

@@ -67,7 +67,7 @@ fun Any.ConvertType(clazz: Class<*>): Any? {
         //因为 set 也是 Collection,所以先转 set
         if (clazz is Set<*>) {
             return (this as Array<*>).toMutableSet();
-        } else if (clazz.IsCollectionType()) {
+        } else if (clazz.IsCollectionType) {
             return (this as Array<*>).toMutableList();
         }
     }

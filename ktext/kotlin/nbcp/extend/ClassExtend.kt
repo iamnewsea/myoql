@@ -73,54 +73,70 @@ val Class<*>.kotlinTypeName: String
     }
 
 /**
- * 类型是否是布尔： boolean,java.lang.Boolean
+ * 是否是类型，判断 endsWith
  */
-fun Class<*>.IsBooleanType(): Boolean {
-    if (this == Boolean::class.java) return true;
-    if (this == java.lang.Boolean::class.java) return true;
+fun Class<*>.IsType(value: String): Boolean {
+    if (this.name.endsWith(value)) return true;
+    if (this.superclass != null) {
+        return this.superclass.IsType(value)
+    }
     return false;
 }
+
+/**
+ * 类型是否是布尔： boolean,java.lang.Boolean
+ */
+val Class<*>.IsBooleanType: Boolean
+    get() {
+        if (this == Boolean::class.java) return true;
+        if (this == java.lang.Boolean::class.java) return true;
+        return false;
+    }
 
 /**
  * 类型是否是Collection, List,Set都是。
  */
-fun Class<*>.IsCollectionType(): Boolean {
-    return Collection::class.java.isAssignableFrom(this)
-}
+val Class<*>.IsCollectionType: Boolean
+    get() {
+        return Collection::class.java.isAssignableFrom(this)
+    }
 
 /**
  * 类型是否是 Map
  */
-fun Class<*>.IsMapType(): Boolean {
-    return Map::class.java.isAssignableFrom(this)
-}
+val Class<*>.IsMapType: Boolean
+    get() {
+        return Map::class.java.isAssignableFrom(this)
+    }
 
 /**
  * 类型是否是字符串：String,MyString
  */
-fun Class<*>.IsStringType(): Boolean {
-    return CharSequence::class.java.isAssignableFrom(this) || this == java.lang.String::class.java
-}
+val Class<*>.IsStringType: Boolean
+    get() {
+        return CharSequence::class.java.isAssignableFrom(this) || this == java.lang.String::class.java
+    }
 
 /**
  * 类型是否是数字：int,float,double,long,short,byte,Number
  */
-fun Class<*>.IsNumberType(): Boolean {
-    if (this.isPrimitive) {
-        if (this == Int::class.java) return true;
-        if (this == Float::class.java) return true;
-        if (this == Double::class.java) return true;
-        if (this == Long::class.java) return true;
-        if (this == Short::class.java) return true;
-        if (this == Byte::class.java) return true;
-    }
+val Class<*>.IsNumberType: Boolean
+    get() {
+        if (this.isPrimitive) {
+            if (this == Int::class.java) return true;
+            if (this == Float::class.java) return true;
+            if (this == Double::class.java) return true;
+            if (this == Long::class.java) return true;
+            if (this == Short::class.java) return true;
+            if (this == Byte::class.java) return true;
+        }
 
-    if (Number::class.java.isAssignableFrom(this)) {
-        return true;
-    }
+        if (Number::class.java.isAssignableFrom(this)) {
+            return true;
+        }
 
-    return false;
-}
+        return false;
+    }
 
 /**
  * 获取枚举类的所有成员
@@ -144,7 +160,7 @@ fun <T> Class<T>.GetEnumNumberField(): Field? {
     var ret_fields = this.declaredFields.filter {
         (it.modifiers and Modifier.PRIVATE) > 0 &&
                 (it.modifiers and Modifier.STATIC == 0) &&
-                it.type.IsNumberType()
+                it.type.IsNumberType
     }
     if (ret_fields.size == 1) {
         var ret = ret_fields.first();
@@ -164,7 +180,7 @@ fun <T> Class<T>.GetEnumStringField(): Field? {
     var ret_fields = this.declaredFields.filter {
         (it.modifiers and Modifier.PRIVATE) > 0 &&
                 it.modifiers and Modifier.STATIC == 0 &&
-                it.type.IsStringType()
+                it.type.IsStringType
     }
     if (ret_fields.size == 1) {
         var ret = ret_fields.first();

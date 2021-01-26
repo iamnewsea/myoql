@@ -150,9 +150,9 @@ object RecursionUtil {
                 return@ForEachExt true;
             } else if (type.isArray) {
                 return@ForEachExt recursionArray(value as Array<*>, key.AsString(), consumerMap, consumerList, consumerObject, deepth + 1);
-            } else if (type.IsCollectionType()) {
+            } else if (type.IsCollectionType) {
                 return@ForEachExt recursionList(value as Collection<*>, key.AsString(), consumerMap, consumerList, consumerObject, deepth + 1);
-            } else if (type.IsMapType()) {
+            } else if (type.IsMapType) {
                 return@ForEachExt recursionJson(value as Map<*, *>, key.AsString(), consumerMap, consumerList, consumerObject, deepth + 1);
             } else {
                 return@ForEachExt recursionObject(value, key.AsString(), consumerMap, consumerList, consumerObject, deepth + 1);
@@ -177,9 +177,9 @@ object RecursionUtil {
             return true;
         } else if (type.isArray) {
             return recursionArray(value as Array<*>, "", consumerMap, consumerList, consumerObject, deepth + 1);
-        } else if (type.IsCollectionType()) {
+        } else if (type.IsCollectionType) {
             return recursionList(value as Collection<*>, "", consumerMap, consumerList, consumerObject, deepth + 1);
-        } else if (type.IsMapType()) {
+        } else if (type.IsMapType) {
             return recursionJson(value as Map<*, *>, "", consumerMap, consumerList, consumerObject, deepth + 1);
         } else {
             return recursionObject(value, "", consumerMap, consumerList, consumerObject, deepth + 1);
@@ -216,9 +216,9 @@ object RecursionUtil {
                 return@ForEachExt true;
             } else if (type.isArray) {
                 return@ForEachExt recursionArray(value as Array<*>, key, consumerMap, consumerList, consumerObject, deepth + 1);
-            } else if (type.IsCollectionType()) {
+            } else if (type.IsCollectionType) {
                 return@ForEachExt recursionList(value as Collection<*>, key, consumerMap, consumerList, consumerObject, deepth + 1);
-            } else if (type.IsMapType()) {
+            } else if (type.IsMapType) {
                 return@ForEachExt recursionJson(value as Map<*, *>, key, consumerMap, consumerList, consumerObject, deepth + 1);
             } else {
                 return@ForEachExt recursionObject(value, key, consumerMap, consumerList, consumerObject, deepth + 1);
@@ -262,9 +262,9 @@ object RecursionUtil {
                 return@ForEachExt true;
             } else if (type.isArray) {
                 return@ForEachExt recursionArray(value as Array<*>, rootKey, consumerMap, consumerList, consumerObject, deepth + 1);
-            } else if (type.IsCollectionType()) {
+            } else if (type.IsCollectionType) {
                 return@ForEachExt recursionList(value as Collection<*>, rootKey, consumerMap, consumerList, consumerObject, deepth + 1);
-            } else if (type.IsMapType()) {
+            } else if (type.IsMapType) {
                 return@ForEachExt recursionJson(value as Map<*, *>, rootKey, consumerMap, consumerList, consumerObject, deepth + 1);
             } else {
                 return@ForEachExt recursionObject(value, rootKey, consumerMap, consumerList, consumerObject, deepth + 1);
