@@ -65,64 +65,64 @@
 /**
  * Created by CodeGenerator at ${now}
  */
-    export default {
-        components: {},
-        data() {
-            return {
-                pageSize:10,
+export default {
+    components: {},
+    data() {
+        return {
+            pageSize:10,
 <#list fields as field>
 <#if field.getType().isEnum() || is_enum_list(field)>
-                ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
+            ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
 </#if>
 </#list>
-            };
+        };
+    },
+    mounted() {
+        this.loadData();
+    },
+    methods: {
+        //处理请求参数
+        preload(param){
+            //添加查询参数，修改分页参数等。
+            //param.type = this.$route.params.type
         },
-        mounted() {
-            this.loadData();
-        },
-        methods: {
-            //处理请求参数
-            preload(param){
-                //添加查询参数，修改分页参数等。
-                //param.type = this.$route.params.type
-            },
-            //处理列表的数据
-            procData(res) {
-                res.data.data.forEach(it => {
-                    //如果是组合实体，设置 it.id=...
+        //处理列表的数据
+        procData(res) {
+            res.data.data.forEach(it => {
+                //如果是组合实体，设置 it.id=...
 <#list fields as field>
 <#if field.getType().isEnum()>
-                    jv.enum.${field.getType().getSimpleName()}.fillRes(it,"${field.getType().getSimpleName()}");
+                jv.enum.${field.getType().getSimpleName()}.fillRes(it,"${field.getType().getSimpleName()}");
 </#if>
 </#list>
-                });
-            },
-            //查询
-            loadData(pageNumber) {
-                this.$refs.list.loadData(pageNumber);
-            },
-            add_click() {
-                this.$router.push("${url}/add")
-            },
-            edit_click(row) {
-                //记录上次点击行
-                var rowId = row.id;
-                this.$refs.list.setLastRow(row);
-                this.$router.push("${url}/edit/" + rowId)
-            },
-            delete_click(row) {
-                var rowId = row.id;
-                var rowName = row.name;
-                jv.confirm('确认删除 ' + rowName + ' 吗？').then(res => {
-                    this.$http.post("${url}/delete/" + rowId).then(res => {
-                        this.loadData();
-                    })
-                });
-            },
-            set_click(row){
-                //设置事件
-                var rowId = row.id;
-            }
+            });
+        },
+        //查询
+        loadData(pageNumber) {
+            this.$refs.list.loadData(pageNumber);
+        },
+        add_click() {
+            this.$router.push("${url}/add")
+        },
+        edit_click(row) {
+            //记录上次点击行
+            var rowId = row.id;
+            this.$refs.list.setLastRow(row);
+            this.$router.push("${url}/edit/" + rowId)
+        },
+        delete_click(row) {
+            var rowId = row.id;
+            var rowName = row.name;
+            jv.confirm('确认删除 ' + rowName + ' 吗？').then(res => {
+                this.$http.post("${url}/delete/" + rowId).then(res => {
+                    this.loadData();
+                })
+            });
+        },
+        set_click(row){
+            //设置事件
+            var rowId = row.id;
         }
     }
+}
 </script>

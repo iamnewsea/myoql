@@ -106,62 +106,62 @@
     import Ref${W(field.getName())} from "../home/empty-ref"
 </#if>
 </#list>
-    export default {
-        components: {
+export default {
+    components: {
 <#list fields as field>
 <#if field.getName() == "creator" || field.getName() == "createBy">
 <#elseif field.getName() == "updater" || field.getName() == "updateBy">
 <#elseif is_type(field,"IdName")>
-            "ref-${k(field.getName())}": Ref${W(field.getName())},
+        "ref-${k(field.getName())}": Ref${W(field.getName())},
 </#if>
 </#list>
-        },
-        data() {
-            return {
+    },
+    data() {
+        return {
 <#list fields as field>
 <#if field.getType().isEnum() || is_enum_list(field)>
-                ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
+            ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
 </#if>
 </#list>
-                info: {}, //子对象需要声明。
+            info: {}, //子对象需要声明。
+        }
+    },
+    props: {
+        id: {type: String, default: ""}
+    },
+    computed:{
+        action() {
+            return this.id ? "edit" : "add";
+        },
+        action_name(){
+            return {add: "添加", edit: "修改"}[this.action]
+        }
+    },
+    mounted() {
+        this.loadData()
+    },
+    methods: {
+        loadData() {
+            if (!this.id) return;
+            this.$http.post("${url}/detail/" + this.id).then(res => {
+                this.info = res.data.data;
+            });
+        },
+        save_click() {
+            //校验
+            if (jv.main.chk() == false) {
+                return;
             }
-        },
-        props: {
-            id: {type: String, default: ""}
-        },
-        computed:{
-            action() {
-                return this.id ? "edit" : "add";
-            },
-            action_name(){
-                return {add: "添加", edit: "修改"}[this.action]
-            }
-        },
-        mounted() {
-            this.loadData()
-        },
-        methods: {
-            loadData() {
-                if (!this.id) return;
-                this.$http.post("${url}/detail/" + this.id).then(res => {
-                    this.info = res.data.data;
-                });
-            },
-            save_click() {
-                //校验
-                if (jv.main.chk() == false) {
-                    return;
-                }
 
-                this.$http.post("${url}/save", this.info).then(res => {
-                    jv.info(this.action_name + " 成功");
-                    if (this.action == "add") {
-                        this.$router.push("${url}/edit/" + res.data.data)
-                    } else if (this.action == "edit") {
-                        this.$router.push("${url}/list")
-                    }
-                })
-            }
+            this.$http.post("${url}/save", this.info).then(res => {
+                jv.info(this.action_name + " 成功");
+                if (this.action == "add") {
+                    this.$router.push("${url}/edit/" + res.data.data)
+                } else if (this.action == "edit") {
+                    this.$router.push("${url}/list")
+                }
+            })
         }
     }
+}
 </script>
