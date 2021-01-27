@@ -4,8 +4,15 @@
             <p>${title}</p>
             <el-button type="primary"  @click="add_click()">添加</el-button>
         </div>
-        <my-list ref="list" url="${url}/list" @param="preload" @loaded="procData" :page-size="pageSize" :store="true"
-            style="width: 100%;margin-top:20px;">
+        <my-list
+            ref="list"
+            url="${url}/list"
+            @param="preload"
+            @loaded="procData"
+            :page-size="pageSize"
+            :store="true"
+            style="width: 100%;margin-top:20px;"
+        >
             <el-table-column type="index" clign="center" width="50"></el-table-column>
                         <!--<template slot-scope="scope"></template>-->
 <#list fields as field>
@@ -42,15 +49,12 @@
                     </el-button>
                 </template>
             </el-table-column>
-
-
             <template #query="scope">
 <#if has("name")>
                 <kv label="名称">
                     <el-input v-model="scope.query.name"></el-input>
                 </kv>
 </#if>
-
             </template>
         </my-list>
     </div>
@@ -67,7 +71,7 @@
             return {
                 pageSize:10,
 <#list fields as field>
-<#if field.getType().isEnum()>
+<#if field.getType().isEnum() || is_enum_list(field)>
                 ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
 </#if>
 </#list>

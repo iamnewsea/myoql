@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="header-info">
-            <p>{{action_name}}-${title}</p>
+            <p>{{ action_name }}-${title}</p>
             <div>
                 <el-button size="mini" @click="$router.push('${url}/add')" v-if="action=='edit'">新建</el-button>
                 <el-button size="mini" @click="save_click" type="primary"> 保存</el-button>
@@ -17,65 +17,68 @@
     <#if field.getName() == "id">
     <#elseif field.getName() == "creator" || field.getName() == "createBy">
     <#elseif field.getName() == "updater" || field.getName() == "updateBy">
-
     <#elseif field.getName() == "createAt">
     <#elseif field.getName() == "updateAt">
     <#elseif field.getType().isEnum()>
-        <kv label="${cn(field)}">
-            <selector type="radio" v-model="info.${field.getName()}" enum="${field.getType().getSimpleName()}" />
-        </kv>
+                    <kv label="${cn(field)}">
+                        <selector type="radio" v-model="info.${field.getName()}" enum="${field.getType().getSimpleName()}" />
+                    </kv>
     <#elseif is_enum_list(field)>
-        <kv label="${cn(field)}">
-            <selector type="check" v-model="info.${field.getName()}" enum="${field.getType().getSimpleName()}" />
-        </kv>
+                    <kv label="${cn(field)}">
+                        <selector type="check" v-model="info.${field.getName()}" enum="${field.getType().getSimpleName()}" />
+                    </kv>
     <#elseif is_type(field,"IdUrl")>
-        <kv>
-            <label slot="k">${cn(field)}</label>
-            <upload
-                    :maxCount="1"
-                    v-model="info.${field.getName()}"
-                    fileType="img"
-                    scales="16:9"
-                    :maxWidth="1024"
-                    maxSize="5M"
-            ></upload>
-        </kv>
+                    <kv>
+                        <label slot="k">${cn(field)}</label>
+                        <upload
+                                :maxCount="1"
+                                v-model="info.${field.getName()}"
+                                fileType="img"
+                                scales="16:9"
+                                :maxWidth="1024"
+                                maxSize="5M"
+                        ></upload>
+                    </kv>
     <#elseif is_list(field,"IdUrl")>
-        <kv>
-            <label slot="k">${cn(field)}</label>
-            <upload
-                    :maxCount="99"
-                    v-model="info.${field.getName()}"
-                    fileType="img"
-                    scales="16:9"
-                    :maxWidth="1024"
-                    maxSize="5M"
-            ></upload>
-        </kv>
+                    <kv>
+                        <label slot="k">${cn(field)}</label>
+                        <upload
+                                :maxCount="99"
+                                v-model="info.${field.getName()}"
+                                fileType="img"
+                                scales="16:9"
+                                :maxWidth="1024"
+                                maxSize="5M"
+                        ></upload>
+                    </kv>
     <#elseif is_type(field,"IdName")>
-        <kv label="${cn(field)}">
-            <ref-${k(field.getName())} v-model="info.${field.getName()}"></ref-${k(field.getName())}>
-        </kv>
+                    <kv label="${cn(field)}">
+                        <ref-${k(field.getName())} v-model="info.${field.getName()}"></ref-${k(field.getName())}>
+                    </kv>
     <#elseif is_type(field,"Boolean")>
-        <kv label="${cn(field)}">
-            <selector type="radio" v-model="info.${field.getName()}" :data="{true:'是',false:'否','':'全部'}" />
-        </kv>
+                    <kv label="${cn(field)}">
+                        <selector type="radio" v-model="info.${field.getName()}" :data="{true:'是',false:'否','':'全部'}" />
+                    </kv>
     <#elseif is_type(field,"LocalDate")>
-        <kv label="${cn(field)}">
-            <el-date-picker v-model="info.${field.getName()}" placeholder="选择日期" />
-        </kv>
+                    <kv label="${cn(field)}">
+                        <el-date-picker v-model="info.${field.getName()}" placeholder="选择日期" />
+                    </kv>
     <#elseif is_type(field,"LocalDateTime")>
-        <kv label="${cn(field)}">
-            <el-date-picker v-model="info.${field.getName()}" placeholder="选择日期时间"  type="datetime" />
-        </kv>
+                    <kv label="${cn(field)}">
+                        <el-date-picker v-model="info.${field.getName()}" placeholder="选择日期时间"  type="datetime" />
+                    </kv>
     <#elseif is_type(field,"LocalTime")>
-        <kv label="${cn(field)}">
-            <el-time-select v-model="info.${field.getName()}" placeholder="选择时间" />
-        </kv>
+                    <kv label="${cn(field)}">
+                        <el-time-select v-model="info.${field.getName()}" placeholder="选择时间" />
+                    </kv>
     <#elseif field.getName() == "name">
-        <kv label="${cn(field)}"><el-input v-model="info.${field.getName()}" chk="*"/></kv>
+                    <kv label="${cn(field)}">
+                        <el-input v-model="info.${field.getName()}" chk="*"/>
+                    </kv>
     <#else>
-        <kv label="${cn(field)}"><el-input v-model="info.${field.getName()}" /></kv>
+                    <kv label="${cn(field)}">
+                        <el-input v-model="info.${field.getName()}"/>
+                    </kv>
 </#if>
 </#list>
                 </el-card>
@@ -100,7 +103,7 @@
 <#if field.getName() == "creator" || field.getName() == "createBy">
 <#elseif field.getName() == "updater" || field.getName() == "updateBy">
 <#elseif is_type(field,"IdName")>
-        import Ref${W(field.getName())} from "../home/empty-ref"
+    import Ref${W(field.getName())} from "../home/empty-ref"
 </#if>
 </#list>
     export default {
@@ -109,14 +112,14 @@
 <#if field.getName() == "creator" || field.getName() == "createBy">
 <#elseif field.getName() == "updater" || field.getName() == "updateBy">
 <#elseif is_type(field,"IdName")>
-        "ref-${k(field.getName())}": Ref${W(field.getName())},
+            "ref-${k(field.getName())}": Ref${W(field.getName())},
 </#if>
 </#list>
         },
         data() {
             return {
 <#list fields as field>
-<#if field.getType().isEnum()>
+<#if field.getType().isEnum() || is_enum_list(field)>
                 ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
 </#if>
 </#list>
@@ -154,13 +157,11 @@
                     jv.info(this.action_name + " 成功");
                     if (this.action == "add") {
                         this.$router.push("${url}/edit/" + res.data.data)
-                    }
-                    else if (this.action == "edit") {
+                    } else if (this.action == "edit") {
                         this.$router.push("${url}/list")
                     }
                 })
-            },
-
+            }
         }
     }
 </script>

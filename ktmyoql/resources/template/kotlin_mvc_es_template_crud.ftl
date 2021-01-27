@@ -34,20 +34,20 @@ class ${entity}AutoController {
     ): ListResult<${entity}> {
 
         mor.${w(group)}.${entityField}.query()
-            .apply{
-                if(id.HasValue){
-                    this.where{it.id match id}
+            .apply {
+                if (id.HasValue) {
+                    this.where { it.id match id }
                 }
 <#if has("name")>
-                if(name.HasValue){
-                    this.where{ it.name match_like name }
+                if (name.HasValue) {
+                    this.where { it.name match_like name }
                 }
 </#if>
             }
-            .limit(skip,take)
+            .limit(skip, take)
             .toListResult()
-            .apply{
-                return this;
+            .apply {
+                return this
             }
     }
 
@@ -59,8 +59,8 @@ class ${entity}AutoController {
     ): ApiResult<${entity}> {
         mor.${w(group)}.${entityField}.queryById(id)
             .toEntity()
-            .apply{
-                if( this == null){
+            .apply {
+                if (this == null) {
                     return ApiResult<${entity}>("找不到数据")
                 }
 
@@ -71,33 +71,31 @@ class ${entity}AutoController {
     @ApiOperation("更新")
     @JsonpMapping("/save")
     fun save(
-      @JsonModel entity:${entity},
-      request: MyHttpRequestWrapper
+        @JsonModel entity:${entity},
+        request: MyHttpRequestWrapper
     ): ApiResult<String> {
+        //鉴权
+        var userId = request.UserId
 
-    //鉴权
-    var userId = request.UserId;
-
-
-    mor.${w(group)}.${entityField}.updateWithEntity(entity)
-        .withRequestParams(request.json.keys)
-        .run {
-            if (entity.id.HasValue){
-                return@run  this.execUpdate()
+        mor.${w(group)}.${entityField}.updateWithEntity(entity)
+            .withRequestParams(request.json.keys)
+            .run {
+                if (entity.id.HasValue) {
+                    return@run this.execUpdate()
+                } else {
+                    return@run this.execInsert()
+                }
             }
-            else{
-                return@run  this.execInsert();
-            }
-        }
-        .apply{
-            if(this == 0){
-              return ApiResult("更新失败")
-            }
+            .apply {
+                if (this == 0) {
+                    return ApiResult("更新失败")
+                }
 
-            return ApiResult.of(entity.id)
-        }
+                return ApiResult.of(entity.id)
+            }
     }
 <#if has("status")>
+
     @ApiOperation("更新状态，更新一个字段")
     @JsonpMapping("/set-status")
     fun set(
@@ -106,11 +104,10 @@ class ${entity}AutoController {
         request: MyHttpRequestWrapper
     ): JsonResult {
         //鉴权
-        var userId = request.UserId;
-
+        var userId = request.UserId
 
         mor.${w(group)}.${entityField}.updateById(id)
-            .set{it.status to status}
+            .set { it.status to status }
             .set { it.updateAt to LocalDateTime.now() }
             .exec()
             .apply {
@@ -122,28 +119,30 @@ class ${entity}AutoController {
             }
     }
 </#if>
+
     @ApiOperation("删除")
     @JsonpMapping("/delete/{id}")
     fun delete(
-      @Require id:String,
-      request: MyHttpRequestWrapper
+        @Require id:String,
+        request: MyHttpRequestWrapper
     ): JsonResult {
-    //鉴权
-    var userId = request.UserId;
+        //鉴权
+        var userId = request.UserId
 
-    var entity = mor.${w(group)}.${entityField}.queryById(id).toEntity();
-    if(entity == null){
-        return JsonResult("找不到数据")
-    }
-
-    mor.${w(group)}.${entityField}.deleteById(id)
-        .exec()
-        .apply{
-            if(this == 0){
-                return JsonResult("删除失败")
-            }
-            //实体上配置垃圾箱功能，可物理删除，会自动移到垃圾箱。
-            return JsonResult()
+        var entity = mor.${w(group)}.${entityField}.queryById(id).toEntity()
+        if (entity == null) {
+            return JsonResult("找不到数据")
         }
+
+        mor.${w(group)}.${entityField}.deleteById(id)
+            .exec()
+            .apply {
+                if (this == 0) {
+                    return JsonResult("删除失败")
+                }
+                //实体上配置垃圾箱功能，可物理删除，会自动移到垃圾箱。
+                return JsonResult()
+            }
+
     }
 }
