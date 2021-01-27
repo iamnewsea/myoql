@@ -15,7 +15,7 @@
                     </div>
 <#list fields as field>
     <#if field.getName() == "id">
-    <#if field.getName() == "creator" || field.getName() == "createBy">
+    <#elseif field.getName() == "creator" || field.getName() == "createBy">
     <#elseif field.getName() == "updater" || field.getName() == "updateBy">
 
     <#elseif field.getName() == "createAt">
