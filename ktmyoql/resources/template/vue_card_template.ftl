@@ -14,64 +14,68 @@
                         <span>基本信息</span>
                     </div>
 <#list fields as field>
-<#if field.name == 'id'>
-    <#elseif field.name == 'createAt'>
-    <#elseif field.type.isEnum>
+    <#if field.getName() == "id">
+    <#if field.getName() == "creator" || field.getName() == "createBy">
+    <#elseif field.getName() == "updater" || field.getName() == "updateBy">
+
+    <#elseif field.getName() == "createAt">
+    <#elseif field.getName() == "updateAt">
+    <#elseif field.getType().isEnum()>
         <kv label="${cn(field)}">
-            <selector type="radio" v-model="info.${field.name}" enum="${field.type.simpleName}" />
+            <selector type="radio" v-model="info.${field.getName()}" enum="${field.getType().getSimpleName()}" />
         </kv>
     <#elseif is_enum_list(field)>
         <kv label="${cn(field)}">
-            <selector type="check" v-model="info.${field.name}" enum="${field.type.simpleName}" />
+            <selector type="check" v-model="info.${field.getName()}" enum="${field.getType().getSimpleName()}" />
         </kv>
-    <#elseif it.type.name == "IdUrl">
+    <#elseif is_type(field,"IdUrl")>
         <kv>
             <label slot="k">${cn(field)}</label>
             <upload
                     :maxCount="1"
-                    v-model="info.${field.name}"
+                    v-model="info.${field.getName()}"
                     fileType="img"
                     scales="16:9"
                     :maxWidth="1024"
                     maxSize="5M"
             ></upload>
         </kv>
-    <#elseif is_list(it,"IdUrl")>
+    <#elseif is_list(field,"IdUrl")>
         <kv>
             <label slot="k">${cn(field)}</label>
             <upload
                     :maxCount="99"
-                    v-model="info.${field.name}"
+                    v-model="info.${field.getName()}"
                     fileType="img"
                     scales="16:9"
                     :maxWidth="1024"
                     maxSize="5M"
             ></upload>
         </kv>
-    <#elseif it.type.name == "IdName">
+    <#elseif is_type(field,"IdName")>
         <kv label="${cn(field)}">
-            <ref-${k(name)} v-model="info.${field.name}"></ref-${k(field.name)}>
+            <ref-${k(field.getName())} v-model="info.${field.getName()}"></ref-${k(field.getName())}>
         </kv>
-    <#elseif it.type.name == "boolean">
+    <#elseif is_type(field,"Boolean")>
         <kv label="${cn(field)}">
-            <selector type="radio" v-model="info.${field.name}" :data="{true:'是',false:'否','':'全部'}" />
+            <selector type="radio" v-model="info.${field.getName()}" :data="{true:'是',false:'否','':'全部'}" />
         </kv>
-    <#elseif it.type.name == 'LocalDate'>
+    <#elseif is_type(field,"LocalDate")>
         <kv label="${cn(field)}">
-            <el-date-picker v-model="info.${field.name}" placeholder="选择日期" />
+            <el-date-picker v-model="info.${field.getName()}" placeholder="选择日期" />
         </kv>
-    <#elseif it.type.name == "LocalDateTime">
+    <#elseif is_type(field,"LocalDateTime")>
         <kv label="${cn(field)}">
-            <el-date-picker v-model="info.${field.name}" placeholder="选择日期时间"  type="datetime" />
+            <el-date-picker v-model="info.${field.getName()}" placeholder="选择日期时间"  type="datetime" />
         </kv>
-    <#elseif it.type.name == "LocalTime">
+    <#elseif is_type(field,"LocalTime")>
         <kv label="${cn(field)}">
-            <el-time-select v-model="info.${field.name}" placeholder="选择时间" />
+            <el-time-select v-model="info.${field.getName()}" placeholder="选择时间" />
         </kv>
-    <#elseif it.name == "name">
-        <kv label="${cn(field)}"><el-input v-model="info.${field.name}" chk="*"/></kv>
+    <#elseif field.getName() == "name">
+        <kv label="${cn(field)}"><el-input v-model="info.${field.getName()}" chk="*"/></kv>
     <#else>
-        <kv label="${cn(field)}"><el-input v-model="info.${field.name}" /></kv>
+        <kv label="${cn(field)}"><el-input v-model="info.${field.getName()}" /></kv>
 </#if>
 </#list>
                 </el-card>
@@ -93,23 +97,27 @@
  * Created by CodeGenerator  at ${now}
  */
 <#list fields as field>
-<#if is_type(field,"IdName")>
-        import Ref${W(field.name)} from "../home/empty-ref"
+<#if field.getName() == "creator" || field.getName() == "createBy">
+<#elseif field.getName() == "updater" || field.getName() == "updateBy">
+<#elseif is_type(field,"IdName")>
+        import Ref${W(field.getName())} from "../home/empty-ref"
 </#if>
 </#list>
     export default {
         components: {
 <#list fields as field>
-<#if is_type(field,"IdName")>
-        "ref-${k(field.name)}": Ref${W(field.name)},
+<#if field.getName() == "creator" || field.getName() == "createBy">
+<#elseif field.getName() == "updater" || field.getName() == "updateBy">
+<#elseif is_type(field,"IdName")>
+        "ref-${k(field.getName())}": Ref${W(field.getName())},
 </#if>
 </#list>
         },
         data() {
             return {
 <#list fields as field>
-<#if is_type(field,"IdName")>
-                ${field.type.name}: jv.enum.${field.type.name}.getData(),
+<#if field.getType().isEnum()>
+                ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
 </#if>
 </#list>
                 info: {}, //子对象需要声明。

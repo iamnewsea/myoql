@@ -9,16 +9,16 @@
             <el-table-column type="index" clign="center" width="50"></el-table-column>
                         <!--<template slot-scope="scope"></template>-->
 <#list fields as field>
-<#if has("id")><#elseif has("name")>
+<#if field.getName() == "id"><#elseif field.getName() == "name">
             <el-table-column label="${cn(field)}" align="center">
                 <template slot-scope="scope">
                     <div class="link" @click="edit_click(scope.row)">{{scope.row.name}}</div>
                 </template>
             </el-table-column>
 <#elseif is_res(field)>
-            <el-table-column align="center" label="${cn(field)}" prop="${field.name}_res"></el-table-column>
+            <el-table-column align="center" label="${cn(field)}" prop="${field.getName()}_res"></el-table-column>
 <#elseif is_type(field,"IdName")>
-            <el-table-column align="center" label="${cn(field)}" prop="${field.name}.name"></el-table-column>
+            <el-table-column align="center" label="${cn(field)}" prop="${field.getName()}.name"></el-table-column>
 <#elseif is_type(field,"IdUrl")>
             <el-table-column label="${cn(field)}" align="center">
                 <template slot-scope="scope">
@@ -26,7 +26,7 @@
                 </template>
             </el-table-column>
 <#else>
-            <el-table-column align="center" label="${cn(field)}" prop="${field.name}"></el-table-column>
+            <el-table-column align="center" label="${cn(field)}" prop="${field.getName()}"></el-table-column>
 </#if>
 </#list>
             <el-table-column label="操作" align="center" width="180">
@@ -67,8 +67,8 @@
             return {
                 pageSize:10,
 <#list fields as field>
-<#if field.type.isEnum || is_list(field,"Enum")>
-                ${type}: jv.enum.${type}.getData(),
+<#if field.getType().isEnum()>
+                ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
 </#if>
 </#list>
             };
@@ -87,8 +87,8 @@
                 res.data.data.forEach(it => {
                     //如果是组合实体，设置 it.id=...
 <#list fields as field>
-${fif:#enum1}
-                    jv.enum.${type}.fillRes(it,"${field.name}");
+<#if field.getType().isEnum()>
+                    jv.enum.${field.getType().getSimpleName()}.fillRes(it,"${field.getType().getSimpleName()}");
 </#if>
 </#list>
                 });

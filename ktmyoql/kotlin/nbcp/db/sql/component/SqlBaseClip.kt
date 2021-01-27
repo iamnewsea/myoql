@@ -83,7 +83,7 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
         get() {
             var isRead = this is SqlBaseQueryClip;
             var ds: DataSource? =
-                scopes.getLatestScope<DataSource>() ?: db.sql.sqlEvents.getDataSource(this.tableName, isRead)
+                scopes.GetLatest<DataSource>() ?: db.sql.sqlEvents.getDataSource(this.tableName, isRead)
 
             if (ds != null) {
                 return JdbcTemplate(ds, true);

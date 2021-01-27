@@ -7,9 +7,7 @@ import java.util.*
 import freemarker.cache.ClassTemplateLoader
 import freemarker.ext.beans.StringModel
 import freemarker.template.*
-import nbcp.comm.AsString
-import nbcp.comm.IsType
-import nbcp.comm.kotlinTypeName
+import nbcp.comm.*
 import nbcp.utils.MyUtil
 import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
@@ -103,7 +101,7 @@ class Freemarker_Has : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
         var paramValue = _get_value(p0);
         if (paramValue is String) {
-            return (FreemarkerUtil.contextData.get("fields") as List<Field>).any { it.name == paramValue }
+            return (scopes.GetLatest<JsonMap>()!!.get("fields") as List<Field>).any { it.name == paramValue }
         }
         throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
     }
@@ -112,7 +110,7 @@ class Freemarker_GetType : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
         var paramValue = _get_value(p0) ;
         if (paramValue is String) {
-            return (FreemarkerUtil.contextData.get("fields") as List<Field>).first { it.name == paramValue }.type.kotlinTypeName
+            return (scopes.GetLatest<JsonMap>()!!.get("fields") as List<Field>).first { it.name == paramValue }.type.kotlinTypeName
         }
         throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
     }

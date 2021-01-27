@@ -90,7 +90,7 @@ object db {
             return _affectRowCount.get()
         }
         set(value) {
-            if (scopes.getLatestScope(OrmLogScope.IgnoreAffectRow) != null) {
+            if (scopes.GetLatest(OrmLogScope.IgnoreAffectRow) != null) {
                 return;
             }
             _affectRowCount.set(value);
@@ -122,7 +122,7 @@ object db {
             return _executeTime.get()
         }
         set(value) {
-            if (scopes.getLatestScope(OrmLogScope.IgnoreExecuteTime) != null) {
+            if (scopes.GetLatest(OrmLogScope.IgnoreExecuteTime) != null) {
                 return;
             }
             _executeTime.set(value);

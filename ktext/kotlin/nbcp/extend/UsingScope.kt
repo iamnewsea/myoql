@@ -7,9 +7,11 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
 
-private val _scopes = ThreadLocal.withInitial { Stack<Any>() }
+class ScopeStack:Stack<Any>(){}
 
-val scopes: Stack<Any>
+private val _scopes = ThreadLocal.withInitial { ScopeStack() }
+
+val scopes: ScopeStack
     get() = _scopes.get();
 
 /**
@@ -48,7 +50,7 @@ inline fun <T, M : Any> usingScope(initObjects: M, body: () -> T, finally: ((M) 
         finally(initObjects)
         return ret;
     } finally {
-        for (i in 1..init_list.size) {
+        for (i in 0 until init_list.size) {
             if (scopes.isEmpty() == false) {
                 scopes.pop()
             }
@@ -60,7 +62,7 @@ inline fun <T, M : Any> usingScope(initObjects: M, body: () -> T, finally: ((M) 
 /**
  * 按类型获取当前域 ,  互斥枚举类型：枚举有 mutexGroup:String 属性。
  */
-inline fun <reified R> Stack<*>.getScopeTypes(): Set<R> {
+inline fun <reified R> ScopeStack.getScopeTypes(): Set<R> {
     if (this.size == 0) return setOf()
 
     var list = mutableSetOf<R>()
@@ -95,13 +97,12 @@ inline fun <reified R> Stack<*>.getScopeTypes(): Set<R> {
 }
 
 
-private var debug_value: Boolean? = null
 
 inline val Logger.scopeInfoLevel: Boolean
     get() {
         var logs = scopes.getScopeTypes<LogScope>()
         if (logs.any()) {
-            return logs.any { ch.qos.logback.classic.Level.INFO_INT >= ch.qos.logback.classic.Level.toLevel(it.name).levelInt  }
+            return logs.any { ch.qos.logback.classic.Level.INFO_INT >= ch.qos.logback.classic.Level.toLevel(it.name).levelInt }
         }
 
         return this.isInfoEnabled;

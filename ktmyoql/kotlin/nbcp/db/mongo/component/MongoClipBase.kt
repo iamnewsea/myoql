@@ -1,6 +1,6 @@
 package nbcp.db.mongo
 
-import nbcp.comm.getLatestScope
+import nbcp.comm.GetLatest
 import nbcp.comm.scopes
 import org.springframework.data.mongodb.core.MongoTemplate
 import nbcp.utils.*
@@ -19,7 +19,7 @@ open class MongoClipBase(var collectionName: String): Serializable {
 
     val mongoTemplate: MongoTemplate
         get() {
-            return db.mongo.getMongoTemplateByCollectionName(collectionName) ?: scopes.getLatestScope<MongoTemplate>() ?: SpringUtil.getBean<MongoTemplate>()
+            return db.mongo.getMongoTemplateByCollectionName(collectionName) ?: scopes.GetLatest<MongoTemplate>() ?: SpringUtil.getBean<MongoTemplate>()
         }
 
     fun getMongoCriteria(vararg where: Criteria): Criteria {

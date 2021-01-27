@@ -70,7 +70,7 @@ fun <T : Comparable<in T>> T.Between(start: T?, end: T?): Boolean {
  * 查找最近添加的。
  * @param enumValues: 如果有值，则精确查找该值进行返回。
  */
-inline fun <reified R> Stack<*>.getLatestScope(vararg enumValues: R): R? {
+inline fun <reified R> Stack<*>.GetLatest(vararg enumValues: R): R? {
     if (this.size == 0) return null
 
     for (i in this.indices.reversed()) {

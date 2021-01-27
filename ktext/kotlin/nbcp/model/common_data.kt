@@ -30,7 +30,7 @@ open class IdUrl() : java.io.Serializable {
     @Cn("网络资源地址")
     var url: String = ""
         get() {
-            var style = scopes.getLatestScope(JsonStyleEnumScope.FieldStyle, JsonStyleEnumScope.GetSetStyle)
+            var style = scopes.GetLatest(JsonStyleEnumScope.FieldStyle, JsonStyleEnumScope.GetSetStyle)
                     ?: JsonStyleEnumScope.FieldStyle;
 
 

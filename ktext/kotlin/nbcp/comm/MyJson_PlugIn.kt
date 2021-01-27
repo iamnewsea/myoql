@@ -27,7 +27,7 @@ class DateJsonSerializer : JsonSerializer<Date>() {
             generator.writeNull()
         } else {
             //使用上下文格式转换。 , 不使用传过来的  (serializers.config.dateFormat as SimpleDateFormat).toPattern()
-            var style = scopes.getLatestScope(
+            var style = scopes.GetLatest(
                 JsonStyleEnumScope.DateLocalStyle,
                 JsonStyleEnumScope.DateUtcStyle,
                 JsonStyleEnumScope.DateStandardStyle
@@ -47,7 +47,7 @@ class LocalDateJsonSerializer : JsonSerializer<LocalDate>() {
         } else {
             //使用上下文格式转换。 , 不使用传过来的  (serializers.config.dateFormat as SimpleDateFormat).toPattern()
             var format = "yyyy-MM-dd";
-            var style = scopes.getLatestScope(
+            var style = scopes.GetLatest(
                 JsonStyleEnumScope.DateLocalStyle,
                 JsonStyleEnumScope.DateUtcStyle,
                 JsonStyleEnumScope.DateStandardStyle
@@ -82,7 +82,7 @@ class LocalDateTimeJsonSerializer : JsonSerializer<LocalDateTime>() {
             //想办法在输出的时候，表示该字段是一个时间类型。 客户端收到后，统一转换。添加 _res
             //使用上下文格式转换。 , 不使用传过来的  (serializers.config.dateFormat as SimpleDateFormat).toPattern()
 
-            var style = scopes.getLatestScope(
+            var style = scopes.GetLatest(
                 JsonStyleEnumScope.DateLocalStyle,
                 JsonStyleEnumScope.DateUtcStyle,
                 JsonStyleEnumScope.DateStandardStyle
@@ -102,7 +102,7 @@ class TimestampJsonSerializer : JsonSerializer<Timestamp>() {
         } else {
             //使用上下文格式转换。 , 不使用传过来的  (serializers.config.dateFormat as SimpleDateFormat).toPattern()
 
-            var style = scopes.getLatestScope(
+            var style = scopes.GetLatest(
                 JsonStyleEnumScope.DateLocalStyle,
                 JsonStyleEnumScope.DateUtcStyle,
                 JsonStyleEnumScope.DateStandardStyle

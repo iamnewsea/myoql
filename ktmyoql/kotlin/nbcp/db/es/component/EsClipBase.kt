@@ -1,6 +1,6 @@
 package nbcp.db.es
 
-import nbcp.comm.getLatestScope
+import nbcp.comm.GetLatest
 import nbcp.comm.scopes
 import nbcp.utils.*
 import nbcp.db.db

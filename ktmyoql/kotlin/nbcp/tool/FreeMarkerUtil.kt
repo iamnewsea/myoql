@@ -8,6 +8,7 @@ import freemarker.cache.ClassTemplateLoader
 import freemarker.ext.beans.StringModel
 import freemarker.template.*
 import nbcp.comm.JsonMap
+import nbcp.comm.usingScope
 import nbcp.utils.MyUtil
 import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
@@ -61,12 +62,6 @@ object FreemarkerUtil {
         return result.toString()
     }
 
-    private val _contextData = ThreadLocal.withInitial { JsonMap() }
-    val contextData: JsonMap
-        get() {
-            return _contextData.get()
-        }
-
     /**
      * process String
      *
@@ -81,10 +76,6 @@ object FreemarkerUtil {
         params: JsonMap
     ): String {
         val template: Template = freemarkerConfig.getTemplate(templateName)
-
-        contextData.clear()
-        contextData.putAll(params)
-
         var all_params = JsonMap()
         all_params.putAll(params)
         all_params.put("is_enum_list", Freemarker_IsEnumList())
@@ -98,6 +89,8 @@ object FreemarkerUtil {
         all_params.put("type", Freemarker_GetType())
         all_params.put("has", Freemarker_Has())
 
-        return escapeString(process(template, all_params))
+        return usingScope(params){
+            return escapeString(process(template, all_params))
+        }
     }
 }

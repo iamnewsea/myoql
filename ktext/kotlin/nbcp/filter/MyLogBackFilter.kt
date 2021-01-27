@@ -37,7 +37,7 @@ class MyLogBackFilter : TurboFilter() {
             return FilterReply.NEUTRAL
         }
 
-        var log = scopes.getLatestScope<LogScope>()
+        var log = scopes.GetLatest<LogScope>()
         if (log != null) {
             if (level.levelInt >= Level.toLevel(log.name).levelInt) {
                 return FilterReply.ACCEPT
@@ -67,7 +67,7 @@ class MyLogBackFilter : TurboFilter() {
 //    }
 //
 //    override fun decide(event: ILoggingEvent?): FilterReply {
-//        var taskScope = scopes.getLatestScope<GroupLog>();
+//        var taskScope = scopes.GetLatest<GroupLog>();
 //        if (taskScope != null) {
 //            return FilterReply.DENY;
 //        }
@@ -87,7 +87,7 @@ class MyLogBackFilter : TurboFilter() {
 //    }
 //
 //    override fun decide(event: ILoggingEvent?): FilterReply {
-//        var groupScope = scopes.getLatestScope<GroupLog>();
+//        var groupScope = scopes.GetLatest<GroupLog>();
 //        if (groupScope == null) {
 //            return FilterReply.DENY;
 //        }
@@ -112,7 +112,7 @@ class MyGroupLogBackFilter : Filter<ILoggingEvent>() {
     var group: String = "";
 
     override fun decide(event: ILoggingEvent?): FilterReply {
-        var groupScope = scopes.getLatestScope<GroupLog>();
+        var groupScope = scopes.GetLatest<GroupLog>();
         if (groupScope == null) {
             return if (group.isEmpty()) FilterReply.ACCEPT else FilterReply.DENY
         }

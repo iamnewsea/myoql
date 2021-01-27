@@ -47,7 +47,7 @@ object UserCodeGenerator {
      * 生成Vue引用
      */
     fun genVueRef(group: String, entity: BaseMetaData): String {
-        return gen(group, entity, "vue_ref_template.txt");
+        return gen(group, entity, "vue_ref_template.ftl");
     }
 
 
