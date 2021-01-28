@@ -59,10 +59,10 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
         if (entity is BaseEntity) {
             if (entity.id.isEmpty()) {
                 entity.id = CodeUtil.getCode()
-                entity.createAt = LocalDateTime.now()
             }
+            entity.createAt = LocalDateTime.now()
+            entity.updateAt = entity.createAt
         }
-
 
         this.ori_entities.add(entity)
 
