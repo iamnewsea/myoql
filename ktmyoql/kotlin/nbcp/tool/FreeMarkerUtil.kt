@@ -88,6 +88,7 @@ object FreemarkerUtil {
         all_params.put("is_res", Freemarker_IsRes())
         all_params.put("type", Freemarker_GetType())
         all_params.put("has", Freemarker_Has())
+        all_params.put("has_dustbin", Freemarker_HasDustbin())
 
         return usingScope(params){
             return escapeString(process(template, all_params))

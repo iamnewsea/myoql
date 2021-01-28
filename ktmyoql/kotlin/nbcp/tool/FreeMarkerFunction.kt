@@ -8,6 +8,7 @@ import freemarker.cache.ClassTemplateLoader
 import freemarker.ext.beans.StringModel
 import freemarker.template.*
 import nbcp.comm.*
+import nbcp.db.RemoveToSysDustbin
 import nbcp.utils.MyUtil
 import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
@@ -97,27 +98,47 @@ class Freemarker_IsEnumList : TemplateMethodModelEx {
         throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
     }
 }
+
 class Freemarker_Has : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
         var paramValue = _get_value(p0);
         if (paramValue is String) {
-            return (scopes.GetLatest<JsonMap>()!!.get("fields") as List<Field>).any { it.name == paramValue }
+            return (scopes.GetLatest<JsonMap>()!!
+                .get("fields") as List<Field>)
+                .any { it.name == paramValue }
         }
         throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
     }
 }
+
+/**
+ * 实体上是否配置了垃圾箱
+ */
+class Freemarker_HasDustbin : TemplateMethodModelEx {
+    override fun exec(p0: MutableList<Any?>): Any {
+        return (scopes.GetLatest<JsonMap>()!!
+            .get("entity_type") as Class<*>)
+            .getAnnotation(RemoveToSysDustbin::class.java)
+    }
+}
+
 class Freemarker_GetType : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
-        var paramValue = _get_value(p0) ;
+        var paramValue = _get_value(p0);
         if (paramValue is String) {
-            return (scopes.GetLatest<JsonMap>()!!.get("fields") as List<Field>).first { it.name == paramValue }.type.kotlinTypeName
+            return (scopes.GetLatest<JsonMap>()!!
+                .get("fields") as List<Field>)
+                .first { it.name == paramValue }
+                .type
+                .kotlinTypeName
         }
         throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
     }
 }
+
 class Freemarker_IsRes : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
-        var paramValue = _get_value(p0) ;
+        var paramValue = _get_value(p0);
         if (paramValue is Field) {
             return paramValue!!.type.isEnum ||
                     paramValue.type == Boolean::class.java
@@ -125,6 +146,7 @@ class Freemarker_IsRes : TemplateMethodModelEx {
         throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
     }
 }
+
 class Freemarker_IsType : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
         var paramValue = _get_value(p0);

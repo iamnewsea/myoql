@@ -134,14 +134,18 @@ class ${entity}AutoController {
         if (entity == null) {
             return JsonResult("找不到数据")
         }
-
+<#if has_dustbin()>
+        //实体上配置了垃圾箱功能，物理删除后会自动移到垃圾箱。
+<#else>
+        //实体上没有配置垃圾箱功能，物理删除后会丢失数据！
+</#if>
         dbr.${w(group)}.${entity}.deleteBy${W(idKey)}(${idKey})
             .exec()
             .apply {
                 if (this == 0) {
                     return JsonResult("删除失败")
                 }
-                //实体上配置垃圾箱功能，可物理删除，会自动移到垃圾箱。
+
                 return JsonResult()
             }
     }

@@ -15,9 +15,8 @@ object CodeUtil {
     }
 
     /**
-     *  雪花算法生成Long型Id.
+     *  雪花算法生成Long型Id.尽量使用 getCode 方法生成String类型的编码！
      */
-    @Deprecated("尽量使用 getCode 方法生成String类型的编码！")
     fun getNumberValue(): Long {
         return snowFlake.nextId();
     }
