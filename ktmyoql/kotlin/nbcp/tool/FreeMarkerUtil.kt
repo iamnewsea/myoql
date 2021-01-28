@@ -7,12 +7,14 @@ import java.util.*
 import freemarker.cache.ClassTemplateLoader
 import freemarker.ext.beans.StringModel
 import freemarker.template.*
+import nbcp.comm.AsString
 import nbcp.comm.JsonMap
 import nbcp.comm.usingScope
 import nbcp.utils.MyUtil
 import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
 import java.lang.reflect.Field
+import java.time.LocalDateTime
 
 
 object FreemarkerUtil {
@@ -78,17 +80,19 @@ object FreemarkerUtil {
         val template: Template = freemarkerConfig.getTemplate(templateName)
         var all_params = JsonMap()
         all_params.putAll(params)
-        all_params.put("is_enum_list", Freemarker_IsEnumList())
+
+        all_params.put("now", LocalDateTime.now().AsString())
+        all_params.put("has_value", Freemarker_HasValue())
+
         all_params.put("k", Freemarker_KebabCase())
         all_params.put("W", Freemarker_BigCamelCase())
         all_params.put("w", Freemarker_SmallCamelCase())
+
+        all_params.put("is_enum_list", Freemarker_IsEnumList())
         all_params.put("cn", Freemarker_Cn())
         all_params.put("is_list", Freemarker_IsList())
         all_params.put("is_type", Freemarker_IsType())
         all_params.put("is_res", Freemarker_IsRes())
-        all_params.put("type", Freemarker_GetType())
-        all_params.put("has", Freemarker_Has())
-        all_params.put("has_dustbin", Freemarker_HasDustbin())
 
         return usingScope(params){
             return escapeString(process(template, all_params))

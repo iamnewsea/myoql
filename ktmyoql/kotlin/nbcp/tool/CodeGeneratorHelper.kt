@@ -123,9 +123,12 @@ object CodeGeneratorHelper {
             "fields" to entityClass.AllFields,
             "entityField" to MyUtil.getSmallCamelCase(entityClass.simpleName),
             "title" to title,
-            "now" to LocalDateTime.now().AsString(),
             "status_enum_class" to status_enum_class,
-            "idKey" to idKey
+            "idKey" to idKey,
+
+            "type" to Freemarker_GetType(),
+            "has" to Freemarker_Has(),
+            "has_dustbin" to Freemarker_HasDustbin()
         )
 
         return FreemarkerUtil.process(fileName, mapDefine)
