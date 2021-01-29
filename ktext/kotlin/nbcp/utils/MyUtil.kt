@@ -36,25 +36,102 @@ object MyUtil {
         }
 
     /**
-     * 按大写字母拆分
+     * 通过 path 获取 value,每级返回的值必须是 Map<String,V> 否则返回 null
+     * @param keys: 多个
      */
-    fun splitWithBigChar(value: String): List<String> {
-        var ret = mutableListOf<String>()
+    fun getPathValue(data: Any, vararg keys: String): Any? {
+        if (keys.any() == false) return null;
+        var key = keys.first();
+        var left_keys = keys.Slice(1);
 
-        var prevIndex = 0;
-        for (index in 1 until value.length) {
-            var item = value[index];
-
-            if (item.isUpperCase()) {
-                ret.add(value.substring(prevIndex, index))
-                prevIndex = index;
+        if (key.isEmpty()) {
+            throw RuntimeException("${keys}中包含空值")
+        }
+        var keys2 = key.split(".");
+        if( keys2.size >1){
+            var v =  getPathValue(data,*keys2.toTypedArray());
+            if( v == null){
+                return null;
             }
+
+            if( left_keys.any() == false){
+                return v;
+            }
+
+            return getPathValue(v,*left_keys.toTypedArray())
         }
 
-        ret.add(value.substring(prevIndex));
+        if (data is Map<*, *>) {
+            var v = data.get(key)
+            if (v == null) return null;
+            if (left_keys.any() == false) return v;
 
-        return ret.filter { it.HasValue };
+            return getPathValue(v,*left_keys.toTypedArray())
+        } else if (key == "[]") {
+            var data2: List<*>
+            if (data is Array<*>) {
+                data2 = data.filter { it != null }
+            } else if (data is Collection<*>) {
+                data2 = data.filter { it != null }
+            } else {
+                throw RuntimeException("数据类型不匹配,${keys} 中 ${key} 需要是数组类型")
+            }
+
+            if (left_keys.any() == false) return data2;
+
+            return data2
+                .map { MyUtil.getPathValue(it!!, *left_keys.toTypedArray()) }
+                .filter { it != null }
+
+        } else if (key.startsWith("[") && key.endsWith("]")) {
+            var index = key.substring(1, key.length - 1).AsInt()
+
+            var data2: Any? = null
+            if (data is Array<*>) {
+                data2 = data.indexOf(index)
+            } else if (data is Collection<*>) {
+                data2 = data.indexOf(index)
+            } else {
+                throw RuntimeException("数据类型不匹配,${keys} 中 ${key} 需要是数组类型")
+            }
+
+            if (left_keys.any() == false) return data2;
+
+            return MyUtil.getPathValue(data2, *left_keys.toTypedArray())
+
+        }
+
+        //如果是对象
+
+        var v = getPrivatePropertyValue(data, key)
+        if (v == null) return null;
+        if (left_keys.any() == false) {
+            return v;
+        }
+
+        return getPathValue(v, *left_keys.toTypedArray())
     }
+
+//    /**
+//     * 按大写字母拆分
+//     */
+//    fun splitWith(value: String,splitCallback:((Char)->Boolean)): List<String> {
+//        var ret = mutableListOf<String>()
+//
+//        var prevIndex = 0;
+//        for (index in 1 until value.length) {
+//            var item = value[index];
+//
+//            if (item.isUpperCase()) {
+//                ret.add(value.substring(prevIndex, index))
+//                prevIndex = index;
+//            }
+//        }
+//
+//        ret.add(value.substring(prevIndex));
+//
+//        return ret.filter { it.HasValue };
+//    }
 
 
     /**

@@ -79,7 +79,12 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
         return getMyRequest(requestWrapper.request as HttpServletRequest)
     }
 
-    override fun resolveArgument(parameter: MethodParameter, mavContainer: ModelAndViewContainer?, nativeRequest: NativeWebRequest, binderFactory: WebDataBinderFactory?): Any? {
+    override fun resolveArgument(
+        parameter: MethodParameter,
+        mavContainer: ModelAndViewContainer?,
+        nativeRequest: NativeWebRequest,
+        binderFactory: WebDataBinderFactory?
+    ): Any? {
         if (mavContainer == null || nativeRequest == null || binderFactory == null) return null
         var webRequest = (nativeRequest as ServletWebRequest).request
         var myRequest = getMyRequest(webRequest);
@@ -88,15 +93,35 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
 
 
         //获取 PathVariable 的值
-        value = (webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as Map<String, Any?>?)?.get(key);
+        value =
+            (webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as Map<String, Any?>?)?.get(key);
 
         if (value == null && webRequest.queryString != null) {
             value = getFromQuery(webRequest, parameter);
         }
 
         if (value == null && myRequest != null) {
-            if (parameter.hasParameterAnnotation(JsonModel::class.java)) {
-                return (myRequest.body ?: byteArrayOf()).toString(utf8).FromJson(parameter.parameterType);
+            var jsonModelValue = parameter.getParameterAnnotation(JsonModel::class.java)
+            if (jsonModelValue != null) {
+                var ret_value = (myRequest.body ?: byteArrayOf()).toString(utf8).FromJson(parameter.parameterType);
+
+                if( ret_value == null){
+                    throw RuntimeException("JsonModel实体不能为空!")
+                }
+                //检查必须项
+                jsonModelValue.value.forEach { key ->
+                    var chk_value = MyUtil.getPathValue(ret_value, *key.split(".").toTypedArray())
+                    if (chk_value == null) {
+                        throw RuntimeException("参数值:${key}不能为null!")
+                    }
+                    if (chk_value is String) {
+                        if (chk_value.length == 0) {
+                            throw RuntimeException("参数值:${key}不能为空字符串")
+                        }
+                    }
+                }
+
+                return ret_value;
             }
 
             value = myRequest.json.get(key)
@@ -148,7 +173,9 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
             var caller = ""
             if (parameter.executable is Method) {
                 var method = parameter.executable as Method
-                caller = "${method.name}(${method.parameters.map { it.toString() }.joinToString()}):${method.returnType.name}"
+                caller = "${method.name}(${
+                    method.parameters.map { it.toString() }.joinToString()
+                }):${method.returnType.name}"
             } else {
                 var method = parameter.executable
                 caller = "${method.name}(${method.parameters.map { it.toString() }.joinToString()})"
@@ -183,7 +210,8 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
                 if (parameter.parameterType.componentType.IsStringType) {
                     value = (value as Collection<String>).toTypedArray()
                 } else {
-                    value = (value as Collection<String>).map { it.ConvertType(parameter.parameterType.componentType) }.toTypedArray()
+                    value = (value as Collection<String>).map { it.ConvertType(parameter.parameterType.componentType) }
+                        .toTypedArray()
                 }
             } else if (parameter.parameterType.IsCollectionType) {
                 var genType = (parameter.genericParameterType as ParameterizedTypeImpl).GetActualClass(0);

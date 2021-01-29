@@ -12,10 +12,11 @@ import java.security.KeyPair
 /**
  * 把客户Post的Json,整体映射到Model上.如:
  * 客户端Post : { id: 1 , name: "ok" }  -> 服务器接收:  info: IdName
+ * value 表示必填值,支持 [] 以及 . 表示式。
  */
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class JsonModel
+annotation class JsonModel(vararg val value: String)
 
 
 /**

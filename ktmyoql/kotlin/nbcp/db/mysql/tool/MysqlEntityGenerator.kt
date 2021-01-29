@@ -20,15 +20,9 @@ object MysqlEntityGenerator {
      * 生成数据库表的实体代码。
      */
     class DbEntityBuilder(var db: String) {
-        private var group = "";
         private var tableLike = "";
         private var tables = listOf<String>()
         private var excludes = listOf<String>()
-
-        fun withGroupPattern(group: String = ""): DbEntityBuilder {
-            this.group = group;
-            return this;
-        }
 
         fun tableLike(tableLike: String = ""): DbEntityBuilder {
             this.tableLike = tableLike

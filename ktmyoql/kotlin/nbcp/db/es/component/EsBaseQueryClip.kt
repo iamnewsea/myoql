@@ -67,7 +67,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
     /**
      * 核心功能，查询列表，原始数据对象是 Document
      */
-    fun <R> toList(clazz: Class<R>, mapFunc: ((Map<String,Any?>) -> Unit)? = null): MutableList<R> {
+    fun <R> toList(clazz: Class<R>, mapFunc: ((Map<String, Any?>) -> Unit)? = null): MutableList<R> {
         var isString = clazz.IsStringType;
 
         var error = false;
@@ -98,9 +98,9 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
             }
 
             list = (hits.getTypeValue<Collection<*>>("hits") ?: listOf<Any>())
-                    .map { (it as Map<String, *>).getTypeValue<Map<String, Any>>("_source") }
-                    .filter { it != null }
-                    .map { it!! }
+                .map { (it as Map<String, *>).getTypeValue<Map<String, Any>>("_source") }
+                .filter { it != null }
+                .map { it!! }
 
 
             db.affectRowCount = list.size
@@ -118,13 +118,13 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
                         lastKey = it.keys.last()
                     }
 
-                    ret.add(it.getPathValue(*lastKey.split(".").toTypedArray()).AsString() as R)
+                    ret.add(MyUtil.getPathValue(it, *lastKey.split(".").toTypedArray()).AsString() as R)
                 } else if (clazz.IsSimpleType()) {
                     if (lastKey.isEmpty()) {
                         lastKey = it.keys.last()
                     }
 
-                    ret.add(it.getPathValue(*lastKey.split(".").toTypedArray()) as R);
+                    ret.add(MyUtil.getPathValue(it, *lastKey.split(".").toTypedArray()) as R);
                 } else {
                     var ent = it.ConvertJson(clazz)
                     ret.add(ent);
@@ -158,7 +158,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
     }
 
 
-    fun <R> toListResult(clazz: Class<R>, mapFunc: ((Map<String,Any?>) -> Unit)? = null): ListResult<R> {
+    fun <R> toListResult(clazz: Class<R>, mapFunc: ((Map<String, Any?>) -> Unit)? = null): ListResult<R> {
         var ret = ListResult<R>();
         ret.data = toList(clazz, mapFunc);
         ret.total = this.total;

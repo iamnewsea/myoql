@@ -4,9 +4,12 @@
 package nbcp.comm
 
 import nbcp.utils.JsUtil
+import nbcp.utils.MyUtil
 
 
-//顺序会变
+/**
+ * 先删除,再插入的方式修改,顺序会变
+ */
 fun <V> LinkedHashMap<String, V>.RenameKey(oldKey: String, newKey: String) {
     var index = this.keys.indexOf(oldKey);
     if (index < 0) {
@@ -16,35 +19,12 @@ fun <V> LinkedHashMap<String, V>.RenameKey(oldKey: String, newKey: String) {
     var value = this.get(oldKey)!!;
     this.remove(oldKey);
     this.put(newKey, value);
-
-//    var other = LinkedHashMap<String, V>();
-//
-//    for (i in this.keys.indices) {
-//        var k = this.keys.elementAt(i);
-//        if (k == oldKey) {
-//            var value = this[oldKey];
-//            for (j in i + 1..this.size - 1) {
-//                k = this.keys.elementAt(j);
-//                other.put(k, this[k]!!);
-//            }
-//
-//            for (j in i..this.size - 1) {
-//                k = this.keys.elementAt(i + 1);
-//                this.remove(k)
-//            }
-//
-//            this.put(newKey, value!!);
-//
-//            for (j in other.keys.indices) {
-//                k = other.keys.elementAt(j);
-//                this.put(k, other[k]!!);
-//            }
-//            break;
-//        }
-//    }
 }
 
-inline fun <reified K, reified V, reified RK, reified RV> Map<K, V>.ToMap(keyAct: ((Map.Entry<K, V>) -> RK), valueAct: ((Map.Entry<K, V>) -> RV)): LinkedHashMap<RK, RV> {
+inline fun <reified K, reified V, reified RK, reified RV> Map<K, V>.ToMap(
+    keyAct: ((Map.Entry<K, V>) -> RK),
+    valueAct: ((Map.Entry<K, V>) -> RV)
+): LinkedHashMap<RK, RV> {
     var map = linkedMapOf<RK, RV>()
     this.forEach {
         map[keyAct(it)] = valueAct(it);
@@ -52,7 +32,10 @@ inline fun <reified K, reified V, reified RK, reified RV> Map<K, V>.ToMap(keyAct
     return map;
 }
 
-inline fun <reified T, reified RK, reified RV> Collection<T>.ToMap(keyAct: ((T) -> RK), valueAct: ((T) -> RV)): LinkedHashMap<RK, RV> {
+inline fun <reified T, reified RK, reified RV> Collection<T>.ToMap(
+    keyAct: ((T) -> RK),
+    valueAct: ((T) -> RV)
+): LinkedHashMap<RK, RV> {
     var map = linkedMapOf<RK, RV>()
     this.forEach {
         map[keyAct(it)] = valueAct(it);
@@ -68,33 +51,14 @@ fun <V> MutableMap<String, V>.onlyHoldKeys(keys: Set<String>) {
 }
 
 inline fun <reified T> Map<String, *>.getTypeValue(vararg keys: String): T? {
-    var ret = this.getPathValue(*keys);
+    var ret = MyUtil.getPathValue(this, *keys);
     if (ret === null) return null;
     if (ret is T) return ret;
     return null;
 }
 
-/**
- * 通过 path 获取 value,每级返回的值必须是 Map<String,V> 否则返回 null
- * @param key:
- */
-fun Map<String, *>.getPathValue(vararg keys: String): Any? {
-    if (keys.any() == false) return null;
-    var key = keys.first();
-    var v = this.get(key)
-    if (v == null) return null;
-
-    var left_keys = keys.Slice(1);
-    if (left_keys.any() == false) return v;
-
-    if (v is Map<*, *>) {
-        return (v as Map<String, *>).getPathValue(*left_keys.toTypedArray())
-    }
-    return v.toString()
-}
-
-fun Map<String, *>.getStringValue(vararg keys: String): String? {
-    var v = this.getPathValue(*keys)
+fun Map<*, *>.getStringValue(vararg keys: String): String? {
+    var v = MyUtil.getPathValue(this, *keys)
     if (v == null) return null;
     var v_type = v::class.java;
     if (v_type.isArray) {
@@ -105,14 +69,13 @@ fun Map<String, *>.getStringValue(vararg keys: String): String? {
     return v.toString()
 }
 
-fun Map<String, *>.getIntValue(vararg keys: String): Int {
-    var v = getPathValue(*keys)
+fun Map<*, *>.getIntValue(vararg keys: String): Int {
+    var v = MyUtil.getPathValue(this, *keys)
     if (v == null) return 0;
     return v.AsInt()
 }
 
 //------------------
-
 
 private fun get_array_querys(list: Collection<Any?>): List<String> {
     return list.map { value ->
@@ -122,26 +85,26 @@ private fun get_array_querys(list: Collection<Any?>): List<String> {
         if (type.IsSimpleType() == false) {
             if (type.isArray) {
                 return@map get_array_querys((value as Array<*>).toList())
-                        .map { "[]=" + it }
-                        .toTypedArray()
-            } else if (type.IsCollectionType) {
-                return@map get_array_querys((value as Collection<*>))
-                        .map { "[]=" + it }
-                        .toTypedArray()
-            } else if (type.IsMapType) {
-                return@map get_map_querys((value as Map<String, *>))
-                        .map { "[]=" + it }
-                        .toTypedArray()
-            }
-            return@map get_map_querys(value.ConvertJson(JsonMap::class.java))
                     .map { "[]=" + it }
                     .toTypedArray()
+            } else if (type.IsCollectionType) {
+                return@map get_array_querys((value as Collection<*>))
+                    .map { "[]=" + it }
+                    .toTypedArray()
+            } else if (type.IsMapType) {
+                return@map get_map_querys((value as Map<String, *>))
+                    .map { "[]=" + it }
+                    .toTypedArray()
+            }
+            return@map get_map_querys(value.ConvertJson(JsonMap::class.java))
+                .map { "[]=" + it }
+                .toTypedArray()
         }
 
         return@map arrayOf(JsUtil.encodeURIComponent(value.toString()))
     }
-            .Unwind()
-            .filter { it.HasValue }
+        .Unwind()
+        .filter { it.HasValue }
 }
 
 private fun get_map_querys(map: Map<String, *>): List<String> {
@@ -157,26 +120,26 @@ private fun get_map_querys(map: Map<String, *>): List<String> {
         if (type.IsSimpleType() == false) {
             if (type.isArray) {
                 return@map get_array_querys((value as Array<*>).toList())
-                        .map { key + it }
-                        .toTypedArray()
+                    .map { key + it }
+                    .toTypedArray()
             } else if (type.IsCollectionType) {
                 return@map get_array_querys((value as Collection<*>))
-                        .map { key + it }
-                        .toTypedArray()
+                    .map { key + it }
+                    .toTypedArray()
             } else if (type.IsMapType) {
                 return@map get_map_querys((value as Map<String, *>))
-                        .map { key + "." + it }
-                        .toTypedArray()
-            }
-            return@map get_map_querys(value.ConvertJson(JsonMap::class.java))
                     .map { key + "." + it }
                     .toTypedArray()
+            }
+            return@map get_map_querys(value.ConvertJson(JsonMap::class.java))
+                .map { key + "." + it }
+                .toTypedArray()
         }
 
         return@map arrayOf(key + "=" + JsUtil.encodeURIComponent(value.toString()))
     }
-            .Unwind()
-            .filter { it.HasValue }
+        .Unwind()
+        .filter { it.HasValue }
 }
 
 
