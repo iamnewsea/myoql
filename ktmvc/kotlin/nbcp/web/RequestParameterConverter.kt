@@ -105,21 +105,28 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
             if (jsonModelValue != null) {
                 var ret_value = (myRequest.body ?: byteArrayOf()).toString(utf8).FromJson(parameter.parameterType);
 
-                if( ret_value == null){
-                    throw RuntimeException("JsonModel实体不能为空!")
-                }
-                //检查必须项
-                jsonModelValue.value.forEach { key ->
-                    var chk_value = MyUtil.getPathValue(ret_value, *key.split(".").toTypedArray())
-                    if (chk_value == null) {
-                        throw RuntimeException("参数值:${key}不能为null!")
-                    }
-                    if (chk_value is String) {
-                        if (chk_value.length == 0) {
-                            throw RuntimeException("参数值:${key}不能为空字符串")
-                        }
-                    }
-                }
+//                if (ret_value == null && jsonModelValue.value.any()) {
+//                    throw RuntimeException("JsonModel实体不能为空!")
+//                }
+//
+//                if (ret_value != null) {
+//                    //检查必须项
+//                    jsonModelValue.value
+//                        .filter { it.isNotEmpty() }
+//                        .map { it.split(",").toTypedArray() }
+//                        .Unwind()
+//                        .forEach { key ->
+//                            var chk_value = MyUtil.getPathValue(ret_value, *key.split(".").toTypedArray())
+//                            if (chk_value == null) {
+//                                throw RuntimeException("参数值:${key}不能为null!")
+//                            }
+//                            if (chk_value is String) {
+//                                if (chk_value.length == 0) {
+//                                    throw RuntimeException("参数值:${key}不能为空字符串")
+//                                }
+//                            }
+//                        }
+//                }
 
                 return ret_value;
             }

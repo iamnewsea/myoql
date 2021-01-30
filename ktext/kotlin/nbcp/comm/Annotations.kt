@@ -16,7 +16,7 @@ import java.security.KeyPair
  */
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class JsonModel(vararg val value: String)
+annotation class JsonModel()
 
 
 /**

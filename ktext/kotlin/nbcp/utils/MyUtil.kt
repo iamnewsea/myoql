@@ -48,17 +48,17 @@ object MyUtil {
             throw RuntimeException("${keys}中包含空值")
         }
         var keys2 = key.split(".");
-        if( keys2.size >1){
-            var v =  getPathValue(data,*keys2.toTypedArray());
-            if( v == null){
+        if (keys2.size > 1) {
+            var v = getPathValue(data, *keys2.toTypedArray());
+            if (v == null) {
                 return null;
             }
 
-            if( left_keys.any() == false){
+            if (left_keys.any() == false) {
                 return v;
             }
 
-            return getPathValue(v,*left_keys.toTypedArray())
+            return getPathValue(v, *left_keys.toTypedArray())
         }
 
         if (data is Map<*, *>) {
@@ -66,7 +66,7 @@ object MyUtil {
             if (v == null) return null;
             if (left_keys.any() == false) return v;
 
-            return getPathValue(v,*left_keys.toTypedArray())
+            return getPathValue(v, *left_keys.toTypedArray())
         } else if (key == "[]") {
             var data2: List<*>
             if (data is Array<*>) {
