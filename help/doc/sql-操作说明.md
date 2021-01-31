@@ -1,24 +1,21 @@
 # sql操作
 > 以mysql为例
 
-## 分库分表
-优先级：(?? 合理的优先级 ??)
+## 读写分离
 
+### 配置
+
+* 主数据库的配置和默认一样
+* 从库：把主库 spring.datasource 改为 spring.datasource-slave 即可。hikari 连接池同样生效。
+* 两个 bean :  dataSource（主） , slave 
+
+### 优先级：(?? 合理的优先级 ??)
     上下文DataSource > 自定义拦截器 >  读写分离配置的默认DataSource
 
 ### 灵活的上下文模式
 
-    var ds_main = DataSourceBuilder.create().build() as HikariDataSource;
-    ds_main.driverClassName = "";
-    ds_main.jdbcUrl = "jdbc://";
-    ds_main.username = "";
-    ds_main.password = "";
-
-    var ds_read = DataSourceBuilder.create().build() as HikariDataSource;
-    ds_read.driverClassName = "";
-    ds_read.jdbcUrl = "jdbc://";
-    ds_read.username = "";
-    ds_read.password = "";
+    var ds_main = SpringUtil.getBean<DataSource>()
+    var ds_read = SpringUtil.getBean<DataSource>("slave") 
     
     
     usingScope(ds_read){
@@ -34,11 +31,8 @@
     @Component
     public class MysqlDynamicDataSource:ISqlDataSource{
         override run(tableName:String,isRead:Boolean):DataSource?{
-            var ds_read = DataSourceBuilder.create().build() as HikariDataSource;
-            ds_read.driverClassName = "";
-            ds_read.jdbcUrl = "jdbc://";
-            ds_read.username = "";
-            ds_read.password = "";
+            var ds_main = SpringUtil.getBean<DataSource>()
+            var ds_read = SpringUtil.getBean<DataSource>("slave") 
 
             if(tableName.IsIn("product","order") ){
                 if(isRead == false){
@@ -52,10 +46,7 @@
         }
     }
 
-### 默认 DataSource
+# 分表
 
-主库是 hikari 数据源默认写法 ：spring.datasource.hikari
-从库: spring.datasource.slave.hikari
-    
 
     

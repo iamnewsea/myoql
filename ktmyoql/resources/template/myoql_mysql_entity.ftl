@@ -16,13 +16,13 @@ data class ${entity.getName()}(): ISqlDbEntity {
 <#list entity.getColumns() as field>
 <#if  field.getAuto_inc()>
     @SqlAutoIncrementKey
-<#elseif field.getAuto_id>
+<#elseif field.getAuto_id()>
     @ConverterValueToDb(AutoIdConverter::class)
 <#elseif field.getAuto_number()>
     @ConverterValueToDb(AutoNumberConverter::class)
 </#if>
     @Cn("${field.getComment()}")
-    var ${field.getName()}:${type(field.getKotlin_type())} = ${field.getDefault_value()}
+    var ${field.getName()}:${field.getKotlin_type()} = ${field.getDefault_value()}
 </#list>
 }
 </#list>

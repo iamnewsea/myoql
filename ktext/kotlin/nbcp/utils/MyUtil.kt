@@ -295,36 +295,7 @@ object MyUtil {
         return Thread.currentThread().contextClassLoader.getResource("/") != null;
     }
 
-    /**
-     * 获取启动Jar所的路径
-     * 调试时，会返回 target/classes/nbcp/base/utils
-     */
-    fun getStartingJarFile(): File {
-        /**
-        file:/opt/edu_report/admin-api-1.0.1.jar!/BOOT-INF/classes!/
-        /D:/code/edu_report/server/admin/target/classes/
-         */
-        /**
-         * 还有一种办法获取 file
-         * var file = Thread.currentThread().contextClassLoader.getResource("/").path
-         */
-//        var file = clazz.protectionDomain.codeSource.location.path
-        var classLoader = Thread.currentThread().contextClassLoader
-
-        /**
-         * jar -Dloader.path=libs 方式:
-         * 1. 使用 /, 表示启动的Jar包 !/BOOT-INF/classes!/
-         * 2. 使用 ./ 或 空串 表示 libs 目录
-         *
-         * jar 方式：
-         * 1. 使用 /, 表示启动的Jar包 !/BOOT-INF/classes!/
-         * 2. 使用 ./ 或 空串 表示Jar包
-         *
-         * 调试时：
-         * 1. 使用 / 返回 null
-         * 2. 使用 ./ 或 空串 ,返回 /D:/code/sites/server/admin/target/classes/
-         */
-        var url = classLoader.getResource("/") ?: classLoader.getResource("")
+    fun getStartingJarFile(url:URL): File{
         var path = JsUtil.decodeURIComponent(url.path)
         if (url.protocol == "jar") {
             //值是： file:/D:/code/sites/server/admin/target/admin-api-1.0.1.jar!/BOOT-INF/classes!/
@@ -350,6 +321,45 @@ object MyUtil {
             }
         }
         throw RuntimeException("不识别的协议类型 ${url.protocol}")
+    }
+
+    /**
+     * 获取启动Jar所的路径
+     * 调试时，会返回 target/classes/nbcp/base/utils
+     */
+    fun getStartingJarFile(): File {
+//        val stackTraceElements = RuntimeException().stackTrace
+//        for (stackTraceElement in stackTraceElements) {
+//            if ("main" == stackTraceElement.methodName) {
+//                return stackTraceElement.className
+//            }
+//        }
+        /**
+        file:/opt/edu_report/admin-api-1.0.1.jar!/BOOT-INF/classes!/
+        /D:/code/edu_report/server/admin/target/classes/
+         */
+        /**
+         * 还有一种办法获取 file
+         * var file = Thread.currentThread().contextClassLoader.getResource("/").path
+         */
+//        var file = clazz.protectionDomain.codeSource.location.path
+        var classLoader = Thread.currentThread().contextClassLoader
+
+        /**
+         * jar -Dloader.path=libs 方式:
+         * 1. 使用 /, 表示启动的Jar包 !/BOOT-INF/classes!/
+         * 2. 使用 ./ 或 空串 表示 libs 目录
+         *
+         * jar 方式：
+         * 1. 使用 /, 表示启动的Jar包 !/BOOT-INF/classes!/
+         * 2. 使用 ./ 或 空串 表示Jar包
+         *
+         * 调试时：
+         * 1. 使用 / 返回 null
+         * 2. 使用 ./ 或 空串 ,返回 /D:/code/sites/server/admin/target/classes/
+         */
+        var url = classLoader.getResource("/") ?: classLoader.getResource("")
+        return getStartingJarFile(url)
     }
 
     fun getPrivatePropertyValue(entity: Any, property: String): Any? {

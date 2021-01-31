@@ -3,11 +3,7 @@ package nbcp.db.mysql.tool
 import nbcp.comm.*
 import nbcp.db.sql.*
 import nbcp.tool.FreemarkerUtil
-import java.time.LocalDateTime
 import java.util.*
-import kotlin.reflect.KClass
-import kotlin.reflect.full.memberProperties
-import kotlin.reflect.jvm.javaField
 
 /**
  * MySql 实体生成器
@@ -52,7 +48,7 @@ object MysqlEntityGenerator {
                 var entitys = it.value
 
                 var map = JsonMap(
-                    "entitys" to it.value
+                    "entitys" to entitys
                 )
                 ret.add(FreemarkerUtil.process("myoql_mysql_entity.ftl", map))
             }
@@ -84,13 +80,13 @@ object MysqlEntityGenerator {
         }
 
         class EntityDbItemData {
-            var table_name = ""
-            var table_comment = ""
+            var name = ""
+            var comment = ""
             val group: String
                 get() {
                     var groups_all_value = Regex("""\(\s*([\w-_]+)\s*\)""")
                         .find(
-                            table_comment
+                            comment
                                 .replace("（", "(")
                                 .replace("）", "")
                         )
@@ -158,10 +154,10 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
             tables_map.forEach { tableMap ->
                 var tableData = EntityDbItemData()
 
-                tableData.table_name = tableMap.getStringValue("table_name")!!;
-                tableData.table_comment = tableMap.getStringValue("table_comment").AsString()
+                tableData.name = tableMap.getStringValue("table_name")!!;
+                tableData.comment = tableMap.getStringValue("table_comment").AsString()
 
-                columns_map.filter { it.getStringValue("table_name") == tableData.table_name }
+                columns_map.filter { it.getStringValue("table_name") == tableData.name }
                     .forEach colMap@{ columnMap ->
 
                         var columnName = columnMap.getStringValue("column_name")!!
@@ -244,7 +240,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                 var uks = mutableListOf<String>();
 
                 uks.add(columns_map.filter {
-                    it.getStringValue("table_name") == tableData.table_name && it.getStringValue(
+                    it.getStringValue("table_name") == tableData.name && it.getStringValue(
                         "column_key"
                     ) == "PRI"
                 }
@@ -253,7 +249,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                     .joinToString(",")
                 )
 
-                indexes_map.filter { it.getStringValue("table_name") == tableData.table_name }
+                indexes_map.filter { it.getStringValue("table_name") == tableData.name }
                     .groupBy { it.getStringValue("index_name") }
                     .forEach {
                         uks.add(it.value.map { it.getStringValue("column_name") }
