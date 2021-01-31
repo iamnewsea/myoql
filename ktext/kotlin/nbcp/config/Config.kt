@@ -106,13 +106,6 @@ object config {
         if (sql) {
 
             var conn = SpringUtil.context.environment.getProperty("spring.datasource.url");
-            if (conn.isNullOrEmpty()) {
-                conn = SpringUtil.context.environment.getProperty("spring.datasource.hikari.url")
-            }
-
-            if (conn.isNullOrEmpty()) {
-                conn = SpringUtil.context.environment.getProperty("spring.datasource.hikari.jdbc-url")
-            }
 
             if (conn.isNullOrEmpty()) {
                 return@lazy "Mysql"

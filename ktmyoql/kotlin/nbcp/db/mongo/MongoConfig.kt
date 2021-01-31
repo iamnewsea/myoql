@@ -1,7 +1,6 @@
 package nbcp.db.mongo
 
 import nbcp.comm.HasValue
-import nbcp.db.mysql.ExistsDataSourceConfigCondition
 import nbcp.utils.SpringUtil
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean

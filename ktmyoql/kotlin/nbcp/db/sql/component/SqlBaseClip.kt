@@ -18,9 +18,9 @@ import javax.sql.DataSource
  * 1. 读写分离
  * https://www.jianshu.com/p/f728e8c131a9
  * 配置： spring.datasource 是主库的数据库连接。
- * 额外增加： spring.datasource.slave 表示是从库连接。参数继承 spring.datasource
- * 额外增加： spring.datasource.slave.hikari 表示是从库连接池。参数继承 spring.datasource.hikari
- * 这样的好处是，当没有配置spring.datasource.slave，可当单库使用。
+ * 额外增加： spring.datasource-slave 表示是从库连接。参数继承 spring.datasource
+ * 额外增加： spring.datasource-slave 表示是从库连接池。参数继承 spring.datasource.hikari
+ * 这样的好处是，当没有配置 spring.datasource-slave，可当单库使用。
  *
  * 2. 切数据源
  *
@@ -90,7 +90,7 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
             }
 
             if (isRead) {
-                if (SpringUtil.context.containsBean("slave")) {
+                if (SpringUtil.containsBean("slave", DataSource::class.java)) {
                     ds = SpringUtil.getBeanByName<DataSource>("slave")
                     return JdbcTemplate(ds, true);
                 }

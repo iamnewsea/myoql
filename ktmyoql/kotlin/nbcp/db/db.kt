@@ -4,10 +4,9 @@ import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.comm.TimeSpan
 import nbcp.db.mongo.table.MongoBaseGroup
-import nbcp.db.mysql.ExistsDataSourceConfigCondition
-import nbcp.db.mysql.ExistsSlaveDataSourceConfigCondition
 import nbcp.db.redis.RedisBaseGroup
 import nbcp.db.sql.table.SqlBaseGroup
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 
 enum class DatabaseEnum {
     Mongo,
@@ -35,13 +34,13 @@ object db {
 
 
     val mainDatabaseType: DatabaseEnum by lazy {
-        var value: DatabaseEnum? = config.databaseType?.ToEnum(DatabaseEnum::class.java)
+        var value: DatabaseEnum? = config.databaseType.ToEnum(DatabaseEnum::class.java)
 
         if (value != null) {
-            return@lazy value!!
+            return@lazy value
         }
 
-        if (ExistsDataSourceConfigCondition().getValue(SpringUtil.context.environment)) {
+        if (SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration")) {
             value = DatabaseEnum.Mysql
         }
 

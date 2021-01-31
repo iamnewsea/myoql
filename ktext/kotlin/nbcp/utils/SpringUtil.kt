@@ -41,6 +41,18 @@ class SpringUtil : BeanPostProcessor, ApplicationContextAware {
         val isInited: Boolean
             get() = applicationContext != null
 
+        /**
+         * 判断是否存在某个Bean
+         */
+        fun containsBean(name: String, clazz: Class<*>, ignoreCase: Boolean = false): Boolean {
+            if (name.isEmpty()) return containsBean(clazz)
+            return context.getBeanNamesForType(clazz).firstOrNull { it.equals(name, ignoreCase) } != null
+        }
+
+        fun containsBean(clazz: Class<*>): Boolean {
+            return context.getBeanNamesForType(clazz).any()
+        }
+
         @JvmStatic
         fun getBeanObjectByArgs(name: String): Any {
             return context.getBean(name);
@@ -67,6 +79,12 @@ class SpringUtil : BeanPostProcessor, ApplicationContextAware {
             return context.getBean(T::class.java);
         }
 
+        @JvmStatic
+        fun <T> getBeanWithNull(clazz: Class<T>): T? {
+            if (containsBean(clazz) == false) return null
+            return Companion.context.getBean(clazz);
+        }
+
         /**
          * 通过 类型 获取Bean，并传递参数
          */
@@ -80,8 +98,15 @@ class SpringUtil : BeanPostProcessor, ApplicationContextAware {
             return context.getBean(name, T::class.java);
         }
 
+
         @JvmStatic
-        fun <T> getBeanByName(name: String, clazz: Class<T>): T {
+        inline fun <reified T> getBeanWithNull(name: String): T? {
+            return getBeanWithNull(name, T::class.java);
+        }
+
+        @JvmStatic
+        fun <T> getBeanWithNull(name: String, clazz: Class<T>): T? {
+            if (containsBean(name, clazz) == false) return null
             return context.getBean(name, clazz);
         }
     }

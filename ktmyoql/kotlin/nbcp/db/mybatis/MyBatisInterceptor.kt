@@ -50,7 +50,7 @@ class MyBatisInterceptor : Interceptor {
 
 
     private fun setReadMode(executor: Executor) {
-        if (SpringUtil.context.containsBean("slave")) {
+        if (SpringUtil.containsBean("slave",DataSource::class.java)) {
             val slave = SpringUtil.getBeanByName<DataSource>("slave");
             MyUtil.setPrivatePropertyValue(executor.transaction as SpringManagedTransaction, "dataSource", slave)
             return;
