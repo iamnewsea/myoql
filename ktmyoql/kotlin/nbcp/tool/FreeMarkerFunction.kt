@@ -195,7 +195,7 @@ class Freemarker_HasDustbin : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
         return (scopes.GetLatest<JsonMap>()!!
             .get("entity_type") as Class<*>)
-            .getAnnotation(RemoveToSysDustbin::class.java)
+            .getAnnotation(RemoveToSysDustbin::class.java) != null
     }
 }
 

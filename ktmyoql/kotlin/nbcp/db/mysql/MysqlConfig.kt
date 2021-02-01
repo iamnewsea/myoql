@@ -34,10 +34,7 @@ import javax.sql.DataSource
  *        maximum-pool-size: 70
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(HikariDataSource::class)
-@ConditionalOnMissingBean(
-    DataSource::class
-)
+@ConditionalOnBean(DataSourceAutoConfiguration::class)
 @ConditionalOnProperty(
     name = ["spring.datasource.type"],
     havingValue = "com.zaxxer.hikari.HikariDataSource",
