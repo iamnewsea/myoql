@@ -1,6 +1,7 @@
 package nbcp.db.mysql.tool
 
 import nbcp.comm.*
+import nbcp.db.IdName
 import nbcp.db.sql.*
 import nbcp.tool.FreemarkerUtil
 import java.util.*
@@ -9,11 +10,15 @@ import java.util.*
  * MySql 实体生成器
  */
 object MysqlEntityGenerator {
+    /**
+     * @param db: 数据库名
+     */
     fun db2Entity(db: String) = DbEntityBuilder(db);
 
 
     /**
      * 生成数据库表的实体代码。
+     * @param db: 数据库名
      */
     class DbEntityBuilder(var db: String) {
         private var tableLike = "";
@@ -38,20 +43,23 @@ object MysqlEntityGenerator {
         /**
          * 生成数据库表的实体代码。
          */
-        fun toKotlinCode(): List<String> {
-            var ret = mutableListOf<String>()
-            var data = getDbData();
+        fun toKotlinCode(): List<IdName> {
+            var ret = mutableListOf<IdName>()
+            var data = getTablesData();
 
             //先对 group分组
-            data.groupBy { it.group }.forEach {
-                var group = it.key
-                var entitys = it.value
+            data.groupBy { it.group }
+                .forEach {
+                    var group = it.key
+                    var entitys = it.value
 
-                var map = JsonMap(
-                    "entitys" to entitys
-                )
-                ret.add(FreemarkerUtil.process("myoql_mysql_entity.ftl", map))
-            }
+                    var map = JsonMap(
+                        "entitys" to entitys
+                    )
+
+                    var code = FreemarkerUtil.process("myoql_mysql_entity.ftl", map);
+                    ret.add(IdName(group, code));
+                }
 
             return ret;
         }
@@ -106,7 +114,7 @@ object MysqlEntityGenerator {
             var columns = mutableListOf<EntityDbItemFieldData>()
         }
 
-        fun getDbData(): List<EntityDbItemData> {
+        fun getTablesData(): List<EntityDbItemData> {
             var ret = mutableListOf<EntityDbItemData>()
 
             var tables_map = RawQuerySqlClip(
