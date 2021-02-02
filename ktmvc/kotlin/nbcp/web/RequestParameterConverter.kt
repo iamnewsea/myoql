@@ -165,7 +165,7 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
             return (value as Collection<*>).map { it?.ConvertType(genType) }
         } else if (parameter.parameterType.isArray) {
             var genType = parameter.parameterType.componentType;
-            return (value as Array<*>).map { it?.ConvertType(genType) }
+            return (value as Array<*>).map { it?.ConvertType(genType) }.toTypedArray()
         }
 
         //转换枚举、Map之类的。
