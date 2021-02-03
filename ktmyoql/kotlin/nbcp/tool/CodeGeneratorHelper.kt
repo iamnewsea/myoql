@@ -126,7 +126,7 @@ object CodeGeneratorHelper {
             "status_enum_class" to status_enum_class,
             "idKey" to idKey,
 
-            "type" to Freemarker_GetType(),
+            "kotlin_type" to Freemarker_GetKotlinType(),
             "has" to Freemarker_Has(),
             "has_dustbin" to Freemarker_HasDustbin()
         )

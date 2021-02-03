@@ -15,9 +15,7 @@ import java.lang.RuntimeException
 import java.lang.reflect.Field
 
 
-fun _get_value(p0: MutableList<Any?>, index: Int = 0): Any {
-    var p1 = p0[index];
-
+fun _get_value_item(p1: Any?): Any {
     if (p1 == null) {
         throw RuntimeException("参数不能为空")
     }
@@ -64,7 +62,7 @@ class Freemarker_HasValue : TemplateMethodModelEx {
 
 class Freemarker_Cn : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
-        var paramValue = _get_value(p0);
+        var paramValue = _get_value_item(p0[0]);
 
         if (paramValue is Field) {
             return CodeGeneratorHelper.getFieldCommentValue(paramValue).AsString(paramValue.name)
@@ -75,7 +73,7 @@ class Freemarker_Cn : TemplateMethodModelEx {
 
 class Freemarker_KebabCase : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
-        var paramValue = _get_value(p0);
+        var paramValue = _get_value_item(p0[0]);
 
         if (paramValue is Field) {
             return MyUtil.getKebabCase(paramValue.name)
@@ -89,7 +87,7 @@ class Freemarker_KebabCase : TemplateMethodModelEx {
 
 class Freemarker_BigCamelCase : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
-        var paramValue = _get_value(p0);
+        var paramValue = _get_value_item(p0[0]);
 
         if (paramValue is Field) {
             return MyUtil.getBigCamelCase(paramValue.name)
@@ -102,7 +100,7 @@ class Freemarker_BigCamelCase : TemplateMethodModelEx {
 
 class Freemarker_SmallCamelCase : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
-        var paramValue = _get_value(p0);
+        var paramValue = _get_value_item(p0[0]);
 
         if (paramValue is Field) {
             return MyUtil.getSmallCamelCase(paramValue.name)
@@ -118,7 +116,7 @@ class Freemarker_SmallCamelCase : TemplateMethodModelEx {
  */
 class Freemarker_IsEnumList : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
-        var paramValue = _get_value(p0);
+        var paramValue = _get_value_item(p0[0]);
         if (paramValue is Field) {
             return CodeGeneratorHelper.IsListEnum(paramValue)
         }
@@ -129,7 +127,7 @@ class Freemarker_IsEnumList : TemplateMethodModelEx {
 
 class Freemarker_IsRes : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
-        var paramValue = _get_value(p0);
+        var paramValue = _get_value_item(p0[0]);
         if (paramValue is Field) {
             return paramValue.type.isEnum ||
                     paramValue.type == Boolean::class.java
@@ -138,10 +136,19 @@ class Freemarker_IsRes : TemplateMethodModelEx {
     }
 }
 
+class Freemarker_IsIn : TemplateMethodModelEx {
+    override fun exec(p0: MutableList<Any?>): Any {
+        var paramValue = _get_value_item(p0[0]);
+        var list = p0.Skip(1).map { _get_value_item(it) }
+
+        return paramValue.IsIn(*list.toTypedArray())
+    }
+}
+
 class Freemarker_IsType : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
-        var paramValue = _get_value(p0);
-        var clazz = _get_value(p0, 1) as String;
+        var paramValue = _get_value_item(p0[0]);
+        var clazz = _get_value_item(p0[1]) as String;
         if (paramValue is Field) {
             return paramValue.type.IsType(clazz)
         }
@@ -151,8 +158,8 @@ class Freemarker_IsType : TemplateMethodModelEx {
 
 class Freemarker_IsList : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
-        var paramValue = _get_value(p0);
-        var clazz = _get_value(p0, 1) as String;
+        var paramValue = _get_value_item(p0[0])
+        var clazz = _get_value_item(p0[1]) as String;
         if (paramValue is Field) {
             return CodeGeneratorHelper.IsListType(paramValue, clazz)
         }
@@ -161,9 +168,9 @@ class Freemarker_IsList : TemplateMethodModelEx {
 }
 
 // --------私有------
-class Freemarker_GetType : TemplateMethodModelEx {
+class Freemarker_GetKotlinType : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
-        var paramValue = _get_value(p0);
+        var paramValue = _get_value_item(p0[0])
         if (paramValue is String) {
             return (scopes.GetLatest<JsonMap>()!!
                 .get("fields") as List<Field>)
@@ -178,7 +185,7 @@ class Freemarker_GetType : TemplateMethodModelEx {
 
 class Freemarker_Has : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
-        var paramValue = _get_value(p0);
+        var paramValue = _get_value_item(p0[0])
         if (paramValue is String) {
             return (scopes.GetLatest<JsonMap>()!!
                 .get("fields") as List<Field>)

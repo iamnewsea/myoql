@@ -64,6 +64,25 @@ object MysqlEntityGenerator {
             return ret;
         }
 
+        fun toJpaCode(packageName: String): List<IdName> {
+            var ret = mutableListOf<IdName>()
+            var data = getTablesData();
+
+            //先对 group分组
+            data.forEach {
+                var entity = it
+                var map = JsonMap(
+                    "package" to packageName,
+                    "package_base" to packageName.split(".").take(2).joinToString("."),
+                    "entity" to entity
+                )
+
+                var code = FreemarkerUtil.process("jpa_mysql_entity.ftl", map);
+                ret.add(IdName(entity.name, code));
+            }
+
+            return ret;
+        }
 
         class EntityDbItemFieldData {
             var remark = ""
@@ -72,6 +91,11 @@ object MysqlEntityGenerator {
             var db_type = ""
             var comment = ""
             var kotlin_type = ""
+
+            val java_type: String
+                get() {
+                    return kotlin_type
+                }
 
             var auto_id: Boolean = false
                 get() {

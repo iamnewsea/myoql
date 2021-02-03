@@ -40,7 +40,7 @@ inline fun <reified T> Collection<Array<T>>.Unwind(): Array<T> {
 
 
 /**
- * (startIndex,endIndex
+ * [startIndex,endIndex)
  * @param startIndex 包含startIndex
  * @param endIndex 不包含endIndex
  */
@@ -77,6 +77,9 @@ fun <T> Array<out T>.Slice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): List
     return this.slice(startIndex..(endIndex - 1))
 }
 
+/**
+ * [startIndex,endIndex)
+ */
 inline fun <reified T> Collection<out T>.Slice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): List<T> {
     return this.toTypedArray<T>().Slice(startIndex, endIndex)
 }

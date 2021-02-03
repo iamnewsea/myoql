@@ -25,7 +25,7 @@ class ${entity}AutoController {
     @ApiOperation("列表")
     @JsonpMapping("/list")
     fun list(
-        ${idKey}: ${type(idKey)}, //当列表列新一条后，刷新时使用
+        ${idKey}: ${kotlin_type(idKey)}, //当列表列新一条后，刷新时使用
 <#if has("name")>
         name: String,
 </#if>
@@ -55,7 +55,7 @@ class ${entity}AutoController {
     @ApiOperation("详情")
     @JsonpMapping("/detail/{id}")
     fun detail(
-        @Require ${idKey}: ${type(idKey)},
+        @Require ${idKey}: ${kotlin_type(idKey)},
         request: MyHttpRequestWrapper
     ): ApiResult<${entity}> {
         dbr.${w(group)}.${entity}.queryBy${W(idKey)}(${idKey})
@@ -74,7 +74,7 @@ class ${entity}AutoController {
     fun save(
         @JsonModel entity:${entity},
         request: MyHttpRequestWrapper
-    ): ApiResult<${type(idKey)}> {
+    ): ApiResult<${kotlin_type(idKey)}> {
         //鉴权
         var userId = request.UserId
 
@@ -100,7 +100,7 @@ class ${entity}AutoController {
     @ApiOperation("更新状态，更新一个字段")
     @JsonpMapping("/set-status")
     fun set(
-        @Require ${idKey}: ${type(idKey)},
+        @Require ${idKey}: ${kotlin_type(idKey)},
         @Require status: ${status_enum_class},
         request: MyHttpRequestWrapper
     ): JsonResult {
@@ -124,7 +124,7 @@ class ${entity}AutoController {
     @ApiOperation("删除")
     @JsonpMapping("/delete/{id}")
     fun delete(
-        @Require ${idKey}:${type(idKey)},
+        @Require ${idKey}:${kotlin_type(idKey)},
         request: MyHttpRequestWrapper
     ): JsonResult {
         //鉴权
