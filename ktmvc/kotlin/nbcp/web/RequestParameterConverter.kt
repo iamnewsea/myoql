@@ -162,10 +162,9 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
         //如果是列表。
         if (parameter.parameterType.IsCollectionType) {
             var genType = (parameter.genericParameterType as ParameterizedTypeImpl).GetActualClass(0);
-            return (value as Collection<*>).map { it?.ConvertType(genType) }
+            return value.ConvertType(parameter.parameterType, genType)
         } else if (parameter.parameterType.isArray) {
-            var genType = parameter.parameterType.componentType;
-            return (value as Array<*>).map { it?.ConvertType(genType) }.toTypedArray()
+            return value.ConvertType(parameter.parameterType)
         }
 
         //转换枚举、Map之类的。

@@ -4,100 +4,137 @@
 package nbcp.comm
 
 import nbcp.utils.MyUtil
-import java.math.BigDecimal
-import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.time.*
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 
 /**类型转换
  * 把数据转为  clazz 类型。
+ * @param targetClass 目标类
+ * @param genericClassIfTargetIsList 如果目标类是 List 泛型类， 泛型类类型。
  */
-fun Any.ConvertType(clazz: Class<*>): Any? {
+fun Any.ConvertType(targetClass: Class<*>, genericClassIfTargetIsList: Class<*>? = null): Any? {
     var theClass = this.javaClass;
-    if (clazz.isAssignableFrom(theClass)) {
+    if (targetClass.isAssignableFrom(theClass)) {
         return this;
     }
 
 //    var className = clazz.name;
-
-    if (clazz == Boolean::class.java || clazz == java.lang.Boolean::class.java) {
-        return this.AsBooleanWithNull()
-    }
-    if (clazz == Character::class.java || clazz == Char::class.java) {
+    if (targetClass == Character::class.java || targetClass == Char::class.java) {
         return this.toString()[0]
     }
-    if (clazz == Byte::class.java || clazz == java.lang.Byte::class.java) {
-        return this.AsInt().toByte()
-    }
-    if (clazz == Short::class.java || clazz == java.lang.Short::class.java) {
-        return this.AsInt().toShort()
-    }
-    if (clazz == Int::class.java ||
-            clazz == java.lang.Integer::class.java) {
-        return this.AsInt()
-    }
-    if (clazz == Long::class.java || clazz == java.lang.Long::class.java) {
-        return this.AsLong()
-    }
-    if (clazz == Float::class.java || clazz == java.lang.Float::class.java) {
-        return this.AsFloat()
-    }
-    if (clazz == Double::class.java || clazz == java.lang.Double::class.java) {
-        return this.AsDouble()
-    }
-    if (CharSequence::class.java.isAssignableFrom(clazz) || clazz == java.lang.String::class.java) {
+
+    if (CharSequence::class.java.isAssignableFrom(targetClass) || targetClass == java.lang.String::class.java) {
         return this.AsString()
     }
 
     //可以 Collection Array 互转
-    if (clazz.isArray) {
+    if (targetClass.isArray) {
         if (this is Collection<*>) {
-            var ret = java.lang.reflect.Array.newInstance(clazz.componentType, this.size) as Array<*>
+            var ret = java.lang.reflect.Array.newInstance(targetClass.componentType, this.size) as Array<*>
+
             this.forEachIndexed { index, it ->
-                java.lang.reflect.Array.set(ret, index, if (it == null) null else it.ConvertType(clazz.componentType));
+                java.lang.reflect.Array.set(
+                    ret,
+                    index,
+                    if (it == null) null else it.ConvertType(targetClass.componentType)
+                );
+            }
+            return ret;
+        } else if (this is Array<*>) {
+            var ret = java.lang.reflect.Array.newInstance(targetClass.componentType, this.size) as Array<*>
+
+            this.forEachIndexed { index, it ->
+                java.lang.reflect.Array.set(
+                    ret,
+                    index,
+                    if (it == null) null else it.ConvertType(targetClass.componentType)
+                );
             }
             return ret;
         }
-    }
+    } else if (targetClass.isAssignableFrom(Set::class.java)) {
 
-    if (theClass.isArray) {
-        //因为 set 也是 Collection,所以先转 set
-        if (clazz is Set<*>) {
-            return (this as Array<*>).toMutableSet();
-        } else if (clazz.IsCollectionType) {
-            return (this as Array<*>).toMutableList();
+        //因为 set 也是 Collection,所以先转set
+        if (theClass.isArray) {
+            return (this as Array<*>)
+                .map {
+                    if (genericClassIfTargetIsList !== null || it == null) return@map it;
+                    return@map it.ConvertType(genericClassIfTargetIsList!!)
+                }.toMutableSet();
+        } else if (theClass.IsCollectionType) {
+            return (this as Collection<*>)
+                .map {
+                    if (genericClassIfTargetIsList !== null || it == null) return@map it;
+                    return@map it.ConvertType(genericClassIfTargetIsList!!)
+                }.toMutableSet();
         }
-    }
-
-    if (clazz.isEnum) {
+    } else if (targetClass.IsCollectionType) {
+        if (theClass.isArray) {
+            return (this as Array<*>)
+                .map {
+                    if (genericClassIfTargetIsList !== null || it == null) return@map it;
+                    return@map it.ConvertType(genericClassIfTargetIsList!!)
+                }.toMutableList();
+        } else if (theClass.IsCollectionType) {
+            return (this as Collection<*>)
+                .map {
+                    if (genericClassIfTargetIsList !== null || it == null) return@map it;
+                    return@map it.ConvertType(genericClassIfTargetIsList!!)
+                }.toMutableList();
+        }
+    } else if (targetClass.isEnum) {
         if (this is Number) {
-            return this.AsInt().ToEnum(clazz)
+            return this.AsInt().ToEnum(targetClass)
         } else if (this is String) {
-            return this.toString().ToEnum(clazz)
+            return this.toString().ToEnum(targetClass)
         } else {
             return null;
         }
     }
 
-    if (clazz == LocalDate::class.java) {
+    if (targetClass == Boolean::class.java || targetClass == java.lang.Boolean::class.java) {
+        return this.AsBooleanWithNull()
+    }
+
+    if (targetClass == Byte::class.java || targetClass == java.lang.Byte::class.java) {
+        return this.AsInt().toByte()
+    }
+    if (targetClass == Short::class.java || targetClass == java.lang.Short::class.java) {
+        return this.AsInt().toShort()
+    }
+    if (targetClass == Int::class.java ||
+        targetClass == java.lang.Integer::class.java
+    ) {
+        return this.AsInt()
+    }
+    if (targetClass == Long::class.java || targetClass == java.lang.Long::class.java) {
+        return this.AsLong()
+    }
+    if (targetClass == Float::class.java || targetClass == java.lang.Float::class.java) {
+        return this.AsFloat()
+    }
+    if (targetClass == Double::class.java || targetClass == java.lang.Double::class.java) {
+        return this.AsDouble()
+    }
+
+    if (targetClass == LocalDate::class.java) {
         return this.AsLocalDate()
     }
-    if (clazz == LocalTime::class.java) {
+    if (targetClass == LocalTime::class.java) {
         return this.AsLocalTime()
     }
-    if (clazz == LocalDateTime::class.java) {
+    if (targetClass == LocalDateTime::class.java) {
         return this.AsLocalDateTime()
     }
-    if (clazz == Date::class.java) {
+    if (targetClass == Date::class.java) {
         var dt = this.AsLocalDateTime();
         if (dt == null) return dt;
         return Date.from(dt.atZone(ZoneId.systemDefault()).toInstant());
     }
 
-    return this.ConvertJson(clazz);
+    return this.ConvertJson(targetClass);
 }
 
 

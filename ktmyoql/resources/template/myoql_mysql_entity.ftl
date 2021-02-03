@@ -11,6 +11,7 @@ import java.time.*
 
 <#list entitys as entity>
 @DbEntityGroup("${entity.group}")
+@Cn("${entity.getComment()}")
 @DbUks(${entity.getUks()?join(",")})
 data class ${entity.getName()}(): ISqlDbEntity {
 <#list entity.getColumns() as field>
