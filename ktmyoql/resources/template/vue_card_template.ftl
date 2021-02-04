@@ -73,11 +73,11 @@
                     </kv>
     <#elseif field.getName() == "name">
                     <kv label="${cn(field)}">
-                        <el-input v-model="info.${field.getName()}" chk="*"/>
+                        <el-input v-model="info.${field.getName()}" chk="*" />
                     </kv>
     <#else>
                     <kv label="${cn(field)}">
-                        <el-input v-model="info.${field.getName()}"/>
+                        <el-input v-model="info.${field.getName()}" />
                     </kv>
 </#if>
 </#list>
@@ -107,15 +107,13 @@
 </#if>
 </#list>
 export default {
-    components: {
-<#list fields as field>
+    components: {<#list fields as field>
 <#if field.getName() == "creator" || field.getName() == "createBy">
 <#elseif field.getName() == "updater" || field.getName() == "updateBy">
 <#elseif is_type(field,"IdName")>
         "ref-${k(field.getName())}": Ref${W(field.getName())},
 </#if>
-</#list>
-    },
+</#list>},
     data() {
         return {
 <#list fields as field>
@@ -129,11 +127,11 @@ export default {
     props: {
         id: {type: String, default: ""}
     },
-    computed:{
+    computed: {
         action() {
             return this.id ? "edit" : "add";
         },
-        action_name(){
+        action_name() {
             return {add: "添加", edit: "修改"}[this.action]
         }
     },

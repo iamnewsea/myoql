@@ -44,7 +44,7 @@ class ${entity}AutoController {
                 }
 </#if>
             }
-            .limit(skip,take)
+            .limit(skip, take)
             .toListResult()
             .apply {
                 return this;
@@ -71,7 +71,7 @@ class ${entity}AutoController {
     @ApiOperation("更新")
     @JsonpMapping("/save")
     fun save(
-        @JsonModel entity:${entity},
+        @JsonModel entity: ${entity},
         request: MyHttpRequestWrapper
     ): ApiResult<String> {
         //鉴权
@@ -123,7 +123,7 @@ class ${entity}AutoController {
     @ApiOperation("删除")
     @JsonpMapping("/delete/{id}")
     fun delete(
-        @Require id:String,
+        @Require id: String,
         request: MyHttpRequestWrapper
     ): JsonResult {
         //鉴权

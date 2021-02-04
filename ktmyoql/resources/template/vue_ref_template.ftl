@@ -18,7 +18,7 @@
 <#if field.getName() == "id"><#elseif field.getName() == "name">
         <el-table-column label="${cn(field)}" align="center">
             <template slot-scope="scope">
-                <div class="link">{{scope.row.name}}</div>
+                <div class="link">{{ scope.row.name }}</div>
             </template>
         </el-table-column>
 <#elseif is_res(field)>
@@ -78,7 +78,7 @@ export default {
             //如果是组合实体，设置 it.id=...
 <#list fields as field>
 <#if field.getType().isEnum()>
-                    jv.enum.${field.getType().getSimpleName()}.fillRes(it,"${field.getType().getSimpleName()}");
+                    jv.enum.${field.getType().getSimpleName()}.fillRes(it, "${field.getType().getSimpleName()}");
 </#if>
 </#list>
         });

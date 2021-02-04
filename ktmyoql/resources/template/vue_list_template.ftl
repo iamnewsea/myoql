@@ -2,7 +2,7 @@
     <div class="list">
         <div class="header-info">
             <p>${title}</p>
-            <el-button type="primary"  @click="add_click()">添加</el-button>
+            <el-button type="primary" @click="add_click()">添加</el-button>
         </div>
         <my-list
             ref="list"
@@ -19,7 +19,7 @@
 <#if field.getName() == "id"><#elseif field.getName() == "name">
             <el-table-column label="${cn(field)}" align="center">
                 <template slot-scope="scope">
-                    <div class="link" @click="edit_click(scope.row)">{{scope.row.name}}</div>
+                    <div class="link" @click="edit_click(scope.row)">{{ scope.row.name }}</div>
                 </template>
             </el-table-column>
 <#elseif is_res(field)>
@@ -69,7 +69,7 @@ export default {
     components: {},
     data() {
         return {
-            pageSize:10,
+            pageSize: 10,
 <#list fields as field>
 <#if field.getType().isEnum() || is_enum_list(field)>
             ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
@@ -82,7 +82,7 @@ export default {
     },
     methods: {
         //处理请求参数
-        preload(param){
+        preload(param) {
             //添加查询参数，修改分页参数等。
             //param.type = this.$route.params.type
         },
@@ -92,7 +92,7 @@ export default {
                 //如果是组合实体，设置 it.id=...
 <#list fields as field>
 <#if field.getType().isEnum()>
-                jv.enum.${field.getType().getSimpleName()}.fillRes(it,"${field.getType().getSimpleName()}");
+                jv.enum.${field.getType().getSimpleName()}.fillRes(it, "${field.getType().getSimpleName()}");
 </#if>
 </#list>
             });
@@ -119,7 +119,7 @@ export default {
                 })
             });
         },
-        set_click(row){
+        set_click(row) {
             //设置事件
             var rowId = row.id;
         }

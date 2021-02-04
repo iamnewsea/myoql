@@ -23,7 +23,7 @@ data class ${entity.getName()}(): ISqlDbEntity {
     @ConverterValueToDb(AutoNumberConverter::class)
 </#if>
     @Cn("${field.getComment()}")
-    var ${field.getName()}:${field.getKotlin_type()} = ${field.getDefault_value()}
+    var ${field.getName()}: ${field.getKotlin_type()} = ${field.getDefault_value()}
 </#list>
 }
 </#list>
