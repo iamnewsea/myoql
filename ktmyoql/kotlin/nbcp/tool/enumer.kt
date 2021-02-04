@@ -23,14 +23,18 @@ object enumer {
 
             if (jsonList.size > 0) {
                 println("""jv.defEnum("${jsonEnumClass.simpleName}",{""" +
-                        jsonList.map { it.key + ":\"" + it.value + "\"" }.joinToString(",") + "});");
+                        jsonList.map { it.key + ":\"" + it.value + "\"" }.joinToString(",") + "});"
+                );
             }
         }
     }
 
 
     fun getClassName(packageName: String, extend: String): List<String> {
-        val filePath = ClassLoader.getSystemResource("").path.replace("test-classes", "classes") + packageName.replace(".", File.separator)
+        val filePath = ClassLoader.getSystemResource("").path.replace("test-classes", "classes") + packageName.replace(
+            ".",
+            File.separator
+        )
         val fileNames = getClassName(filePath, extend, false)
         return fileNames
     }
@@ -45,7 +49,10 @@ object enumer {
             //去除子文件名称的class
             if (childFile.isFile && childFileName.endsWith(extend)) {
                 var childFilePath = childFile.path
-                childFilePath = childFilePath.substring(childFilePath.indexOf(File.separator + "classes") + 9, childFilePath.lastIndexOf("."))
+                childFilePath = childFilePath.substring(
+                    childFilePath.indexOf(File.separator + "classes") + 9,
+                    childFilePath.lastIndexOf(".")
+                )
                 childFilePath = childFilePath.replace(File.separator, ".")
                 myClassName.add(childFilePath)
             }
@@ -58,22 +65,18 @@ object enumer {
         var result = StringMap()
         if (jsonEnumClass.isEnum == false) return result;
         var fs = jsonEnumClass.declaredFields;
-        var remark: Field
-        try {
-            remark = jsonEnumClass.getDeclaredField("remark");
-        } catch (e: Exception) {
-            println("${jsonEnumClass.name} 没有 remark 字段，跳过")
-            return result;
-        }
+        var remark: Field? = fs.firstOrNull { it.name == "remark" }
 
-        remark.isAccessible = true;
+
+        remark?.isAccessible = true;
+
         fs.all {
             if (it.name[0] == '$' && it.name.substring(1) == "VALUES") {
                 return@all true;
             }
             if (it.type != jsonEnumClass) return@all true;
             var value = it.get(null);
-            result.put(it.name, remark.get(value).toString());
+            result.put(it.name, remark?.get(value)?.toString() ?: it.name);
             true;
         }
         return result;
