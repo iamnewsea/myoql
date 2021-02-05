@@ -26,6 +26,17 @@
         dbr.system.product.updateById(1).set{ it.name to "abc"}.exec();
     }
 
+
+> 手动创建数据库连接
+
+```
+    var ds_main = DataSourceBuilder.create().build() as HikariDataSource;
+    ds_main.driverClassName = "";
+    ds_main.jdbcUrl = "jdbc://";
+    ds_main.username = "";
+    ds_main.password = ""; 
+```
+
 ### 定义的拦截器
 
     @Component
