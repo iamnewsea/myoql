@@ -96,7 +96,7 @@ export default {
 <#if field.getType().isEnum()>
                 jv.enum.${field.getType().getSimpleName()}.fillRes(it, "${field.getType().getSimpleName()}");
 <#elseif is_enum_list(field)>
-                ${list_type(field)}: jv.enum.${list_type(field)}.getData(),
+                jv.enum.${list_type(field)}.fillRes(it, "${field.getType().getSimpleName()}");
 </#if>
 </#list>
             });
