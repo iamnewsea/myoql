@@ -25,7 +25,7 @@
                     </kv>
     <#elseif is_enum_list(field)>
                     <kv label="${cn(field)}">
-                        <selector type="check" v-model="info.${field.getName()}" enum="${field.getType().getSimpleName()}" />
+                        <selector type="check" v-model="info.${field.getName()}" enum="${list_type(field)}" />
                     </kv>
     <#elseif is_type(field,"IdUrl")>
                     <kv>
@@ -117,8 +117,10 @@ export default {
     data() {
         return {
 <#list fields as field>
-<#if field.getType().isEnum() || is_enum_list(field)>
+<#if field.getType().isEnum()>
             ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
+<#elseif is_enum_list(field)>
+            ${list_type(field)}: jv.enum.${list_type(field)}.getData(),
 </#if>
 </#list>
             info: {}, //子对象需要声明。

@@ -13,6 +13,7 @@ import nbcp.utils.MyUtil
 import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
 import java.lang.reflect.Field
+import java.lang.reflect.ParameterizedType
 
 
 fun _get_value_item(p1: Any?): Any {
@@ -124,6 +125,15 @@ class Freemarker_IsEnumList : TemplateMethodModelEx {
     }
 }
 
+class Freemarker_ListType : TemplateMethodModelEx {
+    override fun exec(p0: MutableList<Any?>): Any {
+        var paramValue = _get_value_item(p0[0]);
+        if (paramValue is Field) {
+            return (paramValue.genericType as ParameterizedType).GetActualClass(0).simpleName
+        }
+        throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
+    }
+}
 
 class Freemarker_IsRes : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
