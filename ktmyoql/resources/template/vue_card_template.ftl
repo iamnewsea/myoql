@@ -1,11 +1,8 @@
 <template>
-    <div>
-        <div class="header-info">
-            <p>{{ action_name }}-${title}</p>
-            <div>
-                <el-button size="mini" @click="$router.push('${url}/add')" v-if="action=='edit'">新建</el-button>
-                <el-button size="mini" @click="save_click" type="primary"> 保存</el-button>
-            </div>
+    <div style="position: relative;padding-top: 16px;">
+        <div class="toolbar">
+            <el-button size="mini" @click="$router.push('${url}/add')" v-if="action=='edit'">新建</el-button>
+            <el-button size="mini" @click="save_click" type="primary"> 保存</el-button>
         </div>
         <el-row :gutter="12" type="flex">
             <el-col>
@@ -21,7 +18,7 @@
     <#elseif field.getName() == "updateAt">
     <#elseif field.getType().isEnum()>
                     <kv label="${cn(field)}">
-                        <selector type="radio" v-model="info.${field.getName()}" enum="${field.getType().getSimpleName()}" />
+                        <selector type="radio" v-model="info.${field.getName()}" enum="${field.getType().getSimpleName()}" chk="*"/>
                     </kv>
     <#elseif is_enum_list(field)>
                     <kv label="${cn(field)}">
@@ -134,7 +131,8 @@ export default {
         }
     },
     mounted() {
-        this.loadData()
+        this.$addNav(this.action_name + "${title}");
+        this.loadData();
     },
     methods: {
         loadData() {

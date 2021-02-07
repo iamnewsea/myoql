@@ -1,8 +1,7 @@
 <template>
     <div class="list">
-        <div class="header-info">
-            <p>${title}</p>
-            <el-button type="primary" @click="add_click()">添加</el-button>
+        <div class="toolbar">
+            <el-button @click="add_click()">添加</el-button>
         </div>
         <my-list
             ref="list"
@@ -11,7 +10,7 @@
             @loaded="procData"
             :page-size="pageSize"
             :store="true"
-            style="width: 100%;margin-top:20px;"
+            style="width: 100%;margin-top:10px;"
         >
             <el-table-column type="index" clign="center" width="50"></el-table-column>
                         <!--<template slot-scope="scope"></template>-->
@@ -80,6 +79,7 @@ export default {
         };
     },
     mounted() {
+        this.$addNav("${title}");
         this.loadData();
     },
     methods: {
