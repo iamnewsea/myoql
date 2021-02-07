@@ -31,7 +31,7 @@ class TestKtExt_Mongo : TestBase() {
 
     @Test
     fun genCode() {
-        var d = UserCodeGenerator.genMySqlMvcCrud("MongoBase", db.mor_base.basicUser)
+        var d = UserCodeGenerator.genVueCard("MongoBase", db.mor_base.basicUser)
         println(d)
     }
 }

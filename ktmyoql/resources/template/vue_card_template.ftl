@@ -107,13 +107,9 @@
 </#if>
 </#list>
 export default {
-    components: {<#list fields as field>
-<#if field.getName() == "creator" || field.getName() == "createBy">
-<#elseif field.getName() == "updater" || field.getName() == "updateBy">
-<#elseif is_type(field,"IdName")>
+    components: {<#list fields as field><#if field.getName() == "creator" || field.getName() == "createBy" || field.getName() == "updater" || field.getName() == "updateBy"><#elseif is_type(field,"IdName")>
         "ref-${k(field.getName())}": Ref${W(field.getName())},
-</#if>
-</#list>},
+</#if></#list>},
     data() {
         return {
 <#list fields as field>
