@@ -50,12 +50,21 @@ class EntityDbItemFieldData {
 
 class EntityDbItemData {
     var name = ""
-    var comment = ""
+
+    //原始的表注释
+    var commentString = ""
+
+    //去除 （）
+    val comment: String
+        get() {
+            return Regex("""(\s*\(\s*[\w-_]+\s*\)\s*)""").replace(commentString, "")
+        }
+
     val group: String
         get() {
             var groups_all_value = Regex("""\(\s*([\w-_]+)\s*\)""")
                 .find(
-                    comment
+                    commentString
                         .replace("（", "(")
                         .replace("）", "")
                 )
@@ -67,7 +76,15 @@ class EntityDbItemData {
 
             var groups_value = group_value.split(",").map { it.trim() }.filter { it.HasValue }
 
-            return groups_value.firstOrNull() ?: ""
+            if (groups_value.any()) {
+                return groups_value.first();
+            }
+            groups_value = name.split("_");
+            if (groups_value.size > 1) {
+                return groups_value.first()
+            }
+
+            return ""
         }
 
     var uks = arrayOf<String>()
@@ -203,7 +220,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                 var tableData = EntityDbItemData()
 
                 tableData.name = tableMap.getStringValue("table_name")!!;
-                tableData.comment = tableMap.getStringValue("table_comment").AsString()
+                tableData.commentString = tableMap.getStringValue("table_comment").AsString()
 
                 columns_map.filter { it.getStringValue("table_name") == tableData.name }
                     .forEach colMap@{ columnMap ->
