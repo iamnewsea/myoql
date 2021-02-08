@@ -91,6 +91,7 @@ object FreemarkerUtil {
         all_params.put("is_enum_list", Freemarker_IsEnumList())
         all_params.put("cn", Freemarker_Cn())
         all_params.put("is_list", Freemarker_IsList())
+        all_params.put("is_object", Freemarker_IsObject())
         all_params.put("is_type", Freemarker_IsType())
         all_params.put("list_type", Freemarker_ListType())
         all_params.put("is_res", Freemarker_IsRes())

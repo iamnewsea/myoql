@@ -116,7 +116,15 @@ export default {
             ${list_type(field)}: jv.enum.${list_type(field)}.getData(),
 </#if>
 </#list>
-            info: {}, //子对象需要声明。
+            info: {
+<#list fields as field>
+<#if is_list(field,"Object")>
+                ${field.getName()}: [],
+<#elseif is_object(field)>
+                ${field.getName()}: {},
+</#if>
+</#list>
+            }, //子对象需要声明。
         }
     },
     props: {

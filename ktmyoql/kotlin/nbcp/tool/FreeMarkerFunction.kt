@@ -177,6 +177,19 @@ class Freemarker_IsList : TemplateMethodModelEx {
     }
 }
 
+class Freemarker_IsObject : TemplateMethodModelEx {
+    override fun exec(p0: MutableList<Any?>): Any {
+        var paramValue = _get_value_item(p0[0])
+        if (paramValue is Field) {
+            if (paramValue.type.isArray) return false;
+            if (paramValue.type.IsCollectionType) return false;
+            if (paramValue.type.IsSimpleType()) return false;
+            return true
+        }
+        throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
+    }
+}
+
 // --------私有------
 class Freemarker_GetKotlinType : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
