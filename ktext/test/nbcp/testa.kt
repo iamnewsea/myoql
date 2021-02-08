@@ -64,9 +64,8 @@ class testa : TestBase() {
 
     @Test
     fun abcd() {
-        println("2020/06/16 20:05".AsLocalDate())
-        println("2020/06/16 20:05:06.888".AsLocalDateTime())
-        println("2020/06/16 20:05Z".AsLocalDateTime())
+        var clss = ByteArray::class.java
+        println(clss.typeName)
     }
 
     @Test

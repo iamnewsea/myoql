@@ -1,5 +1,5 @@
 <template>
-    <div class="list">
+    <div class="list-page">
         <div class="toolbar">
             <el-button @click="add_click()">添加</el-button>
         </div>
@@ -10,7 +10,6 @@
             @loaded="procData"
             :page-size="pageSize"
             :store="true"
-            style="width: 100%;margin-top:10px;"
         >
             <el-table-column type="index" clign="center" width="50"></el-table-column>
                         <!--<template slot-scope="scope"></template>-->

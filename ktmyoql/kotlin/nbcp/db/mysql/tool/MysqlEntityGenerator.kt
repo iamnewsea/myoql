@@ -6,6 +6,76 @@ import nbcp.db.sql.*
 import nbcp.tool.FreemarkerUtil
 import java.util.*
 
+class EntityDbItemFieldData {
+    var remark = ""
+    var name = ""
+    var db_type = DbType.Other
+    var comment = ""
+    val kotlin_type: String
+        get() {
+            return this.db_type.toKotlinType()
+        }
+
+    val java_type: String
+        get() {
+            return this.db_type.javaType.typeName
+        }
+
+    val kotlin_default_value: String
+        get() {
+            return this.db_type.toKotlinDefaultValue()
+        }
+
+    val java_default_value: String
+        get() {
+            if (this.db_type == DbType.Byte) {
+                return "new byte[0]"
+            }
+            return this.db_type.toKotlinDefaultValue()
+        }
+
+    var auto_id: Boolean = false
+        get() {
+            return comment.contains(Regex("\bauto_id\b", RegexOption.IGNORE_CASE))
+        }
+
+    var auto_number: Boolean = false
+        get() {
+            return comment.contains(Regex("\bauto_number\b", RegexOption.IGNORE_CASE))
+        }
+
+    /*下面四个属性表示该表的单键主键 或 唯一键*/
+    var auto_inc: Boolean = false
+}
+
+class EntityDbItemData {
+    var name = ""
+    var comment = ""
+    val group: String
+        get() {
+            var groups_all_value = Regex("""\(\s*([\w-_]+)\s*\)""")
+                .find(
+                    comment
+                        .replace("（", "(")
+                        .replace("）", "")
+                )
+                ?.groupValues ?: listOf()
+            var group_value = ""
+            if (groups_all_value.size > 0) {
+                group_value = groups_all_value[1];
+            }
+
+            var groups_value = group_value.split(",").map { it.trim() }.filter { it.HasValue }
+
+            return groups_value.firstOrNull() ?: ""
+        }
+
+    var uks = arrayOf<String>()
+
+    var columns = mutableListOf<EntityDbItemFieldData>()
+}
+
+
 /**
  * MySql 实体生成器
  */
@@ -84,60 +154,6 @@ object MysqlEntityGenerator {
             return ret;
         }
 
-        class EntityDbItemFieldData {
-            var remark = ""
-            var default_value = ""
-            var name = ""
-            var db_type = ""
-            var comment = ""
-            var kotlin_type = ""
-
-            val java_type: String
-                get() {
-                    return kotlin_type
-                }
-
-            var auto_id: Boolean = false
-                get() {
-                    return comment.contains(Regex("\bauto_id\b", RegexOption.IGNORE_CASE))
-                }
-
-            var auto_number: Boolean = false
-                get() {
-                    return comment.contains(Regex("\bauto_number\b", RegexOption.IGNORE_CASE))
-                }
-
-            /*下面四个属性表示该表的单键主键 或 唯一键*/
-            var auto_inc: Boolean = false
-        }
-
-        class EntityDbItemData {
-            var name = ""
-            var comment = ""
-            val group: String
-                get() {
-                    var groups_all_value = Regex("""\(\s*([\w-_]+)\s*\)""")
-                        .find(
-                            comment
-                                .replace("（", "(")
-                                .replace("）", "")
-                        )
-                        ?.groupValues ?: listOf()
-                    var group_value = ""
-                    if (groups_all_value.size > 0) {
-                        group_value = groups_all_value[1];
-                    }
-
-                    var groups_value = group_value.split(",").map { it.trim() }.filter { it.HasValue }
-
-                    return groups_value.firstOrNull() ?: ""
-                }
-
-            var uks = arrayOf<String>()
-
-            var columns = mutableListOf<EntityDbItemFieldData>()
-        }
-
         fun getTablesData(): List<EntityDbItemData> {
             var ret = mutableListOf<EntityDbItemData>()
 
@@ -196,8 +212,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                         var dataType = columnMap.getStringValue("data_type").AsString()
                         var columnComment = columnMap.getStringValue("column_comment").AsString()
 
-                        var kotlinType = dataType
-                        var defaultValue = "";
+                        var dbType = DbType.String
                         var remark = "";
 
                         if (dataType VbSame "varchar"
@@ -205,57 +220,44 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                             || dataType VbSame "text"
                             || dataType VbSame "mediumtext"
                             || dataType VbSame "longtext"
-                            || dataType VbSame "enum"
                         ) {
 
                             if (dataType VbSame "mediumtext" || dataType VbSame "longtext") {
                                 remark = "warning sql data type: ${dataType}";
                             }
 
-                            kotlinType = "String";
-                            defaultValue = "\"\"";
+                            dbType = DbType.String
+                        } else if (dataType VbSame "enum") {
+                            dbType = DbType.Enum
                         } else if (dataType VbSame "int") {
-                            kotlinType = "Int";
-                            defaultValue = "0";
+                            dbType = DbType.Int
                         } else if (dataType VbSame "bit") {
-                            kotlinType = "Boolean?";
-                            defaultValue = "null";
+                            dbType = DbType.Boolean
                         } else if (dataType VbSame "datetime" ||
                             dataType VbSame "timestamp"
                         ) {
-                            kotlinType = "LocalDateTime?"
-                            defaultValue = "null"
+                            dbType = DbType.DateTime
                         } else if (dataType VbSame "date") {
-                            kotlinType = "LocalDate?"
-                            defaultValue = "null"
+                            dbType = DbType.Date
                         } else if (dataType VbSame "float") {
-                            kotlinType = "Float"
-                            defaultValue = "0F"
+                            dbType = DbType.Float
                         } else if (dataType VbSame "double") {
-                            kotlinType = "Double"
-                            defaultValue = "0.0"
+                            dbType = DbType.Double
                         } else if (dataType VbSame "long") {
-                            kotlinType = "Long"
-                            defaultValue = "0L"
+                            dbType = DbType.Long
                         } else if (dataType VbSame "tinyint") {
-                            kotlinType = "Byte"
-                            defaultValue = "0"
+                            dbType = DbType.Byte
                         } else if (dataType VbSame "bigint") {
-                            kotlinType = "Long"
-                            defaultValue = "0L"
+                            dbType = DbType.Long
                         } else if (dataType VbSame "decimal") {
                             remark = "warning sql data type: ${dataType}";
-                            kotlinType = "BigDecimal"
-                            defaultValue = "BigDecimal.ZERO"
+                            dbType = DbType.Decimal
                         }
 
                         var columnData = EntityDbItemFieldData()
                         columnData.name = columnName
                         columnData.comment = columnComment
-                        columnData.db_type = dataType
-                        columnData.kotlin_type = kotlinType
-                        columnData.default_value = defaultValue
-
+                        columnData.db_type = dbType
 
                         if (columnMap.getStringValue("extra") == "auto_increment") {
                             columnData.auto_inc = true

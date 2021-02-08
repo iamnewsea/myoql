@@ -1,5 +1,5 @@
 <template>
-    <div style="position: relative;padding-top: 16px;">
+    <div class="card-page">
         <div class="toolbar">
             <el-button size="mini" @click="$router.push('${url}/add')" v-if="action=='edit'">新建</el-button>
             <el-button size="mini" @click="save_click" type="primary"> 保存</el-button>

@@ -23,7 +23,7 @@ public enum class DbType {
     Byte(kotlin.Byte::class.java, Types.TINYINT, java.lang.Byte::class.java),
     Short(kotlin.Short::class.java, Types.SMALLINT, java.lang.Short::class.java),
     Boolean(kotlin.Boolean::class.java, Types.BIT, java.lang.Boolean::class.java),
-    Decimal(BigDecimal::class.java,Types.DECIMAL),
+    Decimal(BigDecimal::class.java, Types.DECIMAL),
     Date(LocalDate::class.java, Types.DATE),
     Time(LocalTime::class.java, Types.TIME),
     DateTime(LocalDateTime::class.java, Types.TIMESTAMP),
@@ -35,7 +35,7 @@ public enum class DbType {
 
     var javaType: Class<*>;
     var javaRefType: Class<*>?;
-    var sqlType:kotlin.Int
+    var sqlType: kotlin.Int
 
     constructor(javaType: Class<*>, sqlType: kotlin.Int, javaRefType: Class<*>? = null) {
         this.javaType = javaType;
@@ -63,8 +63,11 @@ public enum class DbType {
         return this == DbType.Int || this == DbType.Long || this == DbType.Short || this == DbType.Byte || this == DbType.Boolean
     }
 
-    fun toMySqlTypeString(): kotlin.String{
-        return when(this){
+    /**
+     * 代码生成器用。
+     */
+    fun toMySqlTypeString(): kotlin.String {
+        return when (this) {
             String -> "varchar(200)"
             Enum -> "varchar(200)"
             Int -> "int"
@@ -83,6 +86,51 @@ public enum class DbType {
         }
     }
 
+    /**
+     * 代码生成器用。
+     */
+    fun toKotlinType(): kotlin.String {
+        if( this == DbType.Boolean){
+            return "Boolean?"
+        }
+        if( this == DbType.Date){
+            return "LocalDate?"
+        }
+        if ( this == DbType.Time){
+            return "LocalTime?"
+        }
+        if ( this == DbType.DateTime){
+            return "LocalDateTime?"
+        }
+        if( this == DbType.Other){
+            return "Any?"
+        }
+        return this.javaType.kotlinTypeName;
+    }
+
+    /**
+     * 代码生成器用
+     */
+    fun toKotlinDefaultValue(): kotlin.String {
+        return return when (this) {
+            String -> "\"\""
+            Enum -> "\"\""
+            Int -> "0"
+            Float -> "0F"
+            Long -> "0L"
+            Double -> "0.0"
+            Byte -> "Byte"
+            Short -> "0"
+            Boolean -> "false"
+            Decimal -> "BigDecimal.ZERO"
+            Date -> "null"
+            Time -> "null"
+            DateTime -> "null"
+            Binary -> "byteArrayOf()"
+            Other -> "null"
+        }
+    }
+
     companion object {
         @JvmStatic
         fun <T> of(clazz: Class<T>): DbType {
@@ -93,12 +141,12 @@ public enum class DbType {
 
 
             DbType.values()
-                    .firstOrNull { it.javaType == clazz || (it.javaRefType != null && it.javaRefType == clazz) }
-                    .apply {
-                        if (this != null) {
-                            return this;
-                        }
+                .firstOrNull { it.javaType == clazz || (it.javaRefType != null && it.javaRefType == clazz) }
+                .apply {
+                    if (this != null) {
+                        return this;
                     }
+                }
 
 
 

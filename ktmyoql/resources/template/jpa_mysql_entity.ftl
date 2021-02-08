@@ -24,7 +24,7 @@ public class ${W(entity.getName())} extends BaseEntity {
     /** ${field.getComment()} */
     @Cn("${field.getComment()}")
     @Column(name = "${field.getName()}")
-    private ${field.getJava_type()} ${field.getName()};
+    private ${field.getJava_type()} ${field.getName()} = ${field.getJava_default_value()};
 </#if>
 </#list>
 }

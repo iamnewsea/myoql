@@ -6,6 +6,7 @@ import nbcp.TestBase
 import nbcp.comm.*
 import nbcp.db.IdName
 import nbcp.db.db
+import nbcp.db.mysql.tool.MysqlEntityGenerator
 import nbcp.db.sql.doInsert
 import nbcp.db.sql.entity.s_annex
 import nbcp.db.sql.updateWithEntity
