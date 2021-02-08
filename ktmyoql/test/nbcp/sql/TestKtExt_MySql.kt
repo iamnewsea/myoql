@@ -71,12 +71,16 @@ class TestKtExt_MySql : TestBase() {
 
         println(ds_main.maximumPoolSize)
     }
+
     @Test
     fun test_gen2() {
         var file = "abc (def)"
 
-        println(Regex("""(\s*\(\s*[\w-_]+\s*\)\s*)""").replace(file, ""))
+        println(Regex("""\s*\(\s*[\w-_]+\s*\)\s*""").replace(file, ""))
+
+        println(Regex(Regex("""\s*\(\s*(auto_id|auto_number)\s*\)\s*""").replace("abc (auto_number) (dd)", "")))
     }
+
     @Test
     fun test_gen() {
         var file = UserCodeGenerator.genVueCard("base", db.sql_base.s_annex);

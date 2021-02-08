@@ -10,7 +10,12 @@ class EntityDbItemFieldData {
     var remark = ""
     var name = ""
     var db_type = DbType.Other
-    var comment = ""
+    var commentString = ""
+
+    val comment: String
+        get() {
+            return Regex("""\s*\(\s*(auto_id)|(auto_number)\s*\)\s*""").replace(commentString, "")
+        }
     val kotlin_type: String
         get() {
             return this.db_type.toKotlinType()
@@ -36,12 +41,12 @@ class EntityDbItemFieldData {
 
     var auto_id: Boolean = false
         get() {
-            return comment.contains(Regex("\bauto_id\b", RegexOption.IGNORE_CASE))
+            return commentString.contains(Regex("\bauto_id\b", RegexOption.IGNORE_CASE))
         }
 
     var auto_number: Boolean = false
         get() {
-            return comment.contains(Regex("\bauto_number\b", RegexOption.IGNORE_CASE))
+            return commentString.contains(Regex("\bauto_number\b", RegexOption.IGNORE_CASE))
         }
 
     /*下面四个属性表示该表的单键主键 或 唯一键*/
@@ -57,7 +62,7 @@ class EntityDbItemData {
     //去除 （）
     val comment: String
         get() {
-            return Regex("""(\s*\(\s*[\w-_]+\s*\)\s*)""").replace(commentString, "")
+            return Regex("""\s*\(\s*[\w-_]+\s*\)\s*""").replace(commentString, "")
         }
 
     val group: String
@@ -273,7 +278,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
 
                         var columnData = EntityDbItemFieldData()
                         columnData.name = columnName
-                        columnData.comment = columnComment
+                        columnData.commentString = columnComment
                         columnData.db_type = dbType
 
                         if (columnMap.getStringValue("extra") == "auto_increment") {
