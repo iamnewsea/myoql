@@ -33,6 +33,11 @@ fun ServletResponse.WriteJsonRawValue(json: String) {
 }
 
 fun ServletResponse.WriteTextValue(text: String) {
+    this.contentType = "text/plain;charset=UTF-8";
+    this.outputStream.write(text.toByteArray(utf8));
+}
+
+fun ServletResponse.WriteHtmlValue(text: String) {
     this.contentType = "text/html;charset=UTF-8";
     this.outputStream.write(text.toByteArray(utf8));
 }
@@ -290,5 +295,5 @@ fun HttpServletResponse.parentAlert(msg: String, title: String = "", targetOrigi
      *  }
      *  </pre>
      */
-    this.WriteTextValue("<script>window.parent.postMessage({event:'error',arguments:['${msg}','${title}']},'${targetOrigin}')</script>")
+    this.WriteHtmlValue("<script>window.parent.postMessage({event:'error',arguments:['${msg}','${title}']},'${targetOrigin}')</script>")
 }
