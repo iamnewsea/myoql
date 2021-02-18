@@ -280,7 +280,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
         }
 
         query.columns.clear()
-        query.columns.add(SqlColumnName.of("count(1) as cou"))
+        query.columns.add(SqlColumnName.of("count(*) as cou"))
         query.skip(-1);
         query.take(-1);
         query.orders.clear()
