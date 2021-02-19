@@ -114,7 +114,11 @@ class MyGroupLogBackFilter : Filter<ILoggingEvent>() {
     override fun decide(event: ILoggingEvent?): FilterReply {
         var groupScope = scopes.GetLatest<GroupLog>();
         if (groupScope == null) {
-            return if (group.isEmpty()) FilterReply.ACCEPT else FilterReply.DENY
+            if (group.isEmpty() || config.defAllScopeLog) {
+                return FilterReply.ACCEPT
+            } else {
+                return FilterReply.DENY
+            }
         }
         return if (groupScope.value == group) FilterReply.ACCEPT else FilterReply.DENY
     }

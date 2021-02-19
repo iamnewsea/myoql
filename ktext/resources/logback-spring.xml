@@ -12,7 +12,7 @@
     </appender>
 
     <appender name="FILE-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath:-logs}/${name:-log}.txt</file>
+        <file>${logPath:-logs}/${name:-log}.log</file>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss}] %level %X{group} %X{request_id} [%class:%line]:%n%m%n</pattern>
         </encoder>
@@ -27,7 +27,7 @@
         <filter class="nbcp.filter.MyGroupLogBackFilter"></filter>
     </appender>
     <appender name="FILE-TASK-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath:-logs}/${name:-log}-task.txt</file>
+        <file>${logPath:-logs}/${name:-log}-task.log</file>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss}] %level %X{group} %X{request_id} [%class:%line]:%n%m%n</pattern>
         </encoder>
@@ -46,7 +46,7 @@
 
 
     <appender name="FILE-MAIN-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath:-logs}/${name:-log}-main.txt</file>
+        <file>${logPath:-logs}/${name:-log}-main.log</file>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss}] %level %X{group} %X{request_id} [%class:%line]:%n%m%n</pattern>
         </encoder>

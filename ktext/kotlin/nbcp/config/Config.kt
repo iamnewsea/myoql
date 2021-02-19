@@ -39,14 +39,21 @@ object config {
             return _debug ?: false;
         }
 
+    /**
+     * 指定 ${app}.log 是否包含全部GroupLog日志。
+     */
+    val defAllScopeLog: Boolean by lazy {
+        return@lazy SpringUtil.context.environment.getProperty("app.def-all-scope-log")
+            .AsBoolean()
+    }
 
     /**
      * 上传到本地时使用该配置,最后不带 "/"
      */
     val uploadHost: String by lazy {
         return@lazy SpringUtil.context.environment.getProperty("app.upload.host")
-                .must { it.HasValue }
-                .elseThrow("必须指定 app.upload.host")
+            .must { it.HasValue }
+            .elseThrow("必须指定 app.upload.host")
     }
 
     /**
@@ -54,8 +61,8 @@ object config {
      */
     val uploadPath: String by lazy {
         return@lazy SpringUtil.context.environment.getProperty("app.upload.path")
-                .must { it.HasValue }
-                .elseThrow("必须指定 app.upload.path")
+            .must { it.HasValue }
+            .elseThrow("必须指定 app.upload.path")
     }
 
     val mybatisPackage: String by lazy {
@@ -85,7 +92,9 @@ object config {
      * 到指定时间后(未到过期时间)，返回新的token。默认4小时。会保存到Redis里。单位是秒
      */
     val tokenKeyRenewalSeconds: Int by lazy {
-        return@lazy Duration.parse(SpringUtil.context.environment.getProperty("app.token-key-renewal").AsString("PT4H")).seconds.toInt()
+        return@lazy Duration.parse(
+            SpringUtil.context.environment.getProperty("app.token-key-renewal").AsString("PT4H")
+        ).seconds.toInt()
     }
 
     /**
@@ -97,12 +106,14 @@ object config {
             return@lazy type;
         }
 
-        var mongo = SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration");
+        var mongo =
+            SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration");
         if (mongo) {
             return@lazy "Mongo"
         }
 
-        var sql = SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration");
+        var sql =
+            SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration");
         if (sql) {
 
             var conn = SpringUtil.context.environment.getProperty("spring.datasource.url");
@@ -132,8 +143,9 @@ object config {
 
     val maxHttpPostSize: DataSize by lazy {
         return@lazy DataSize.parse(
-                SpringUtil.context.environment.getProperty("server.servlet.max-http-post-size")
-                        ?: SpringUtil.context.environment.getProperty("server.tomcat.max-http-post-size") ?: "2MB")
+            SpringUtil.context.environment.getProperty("server.servlet.max-http-post-size")
+                ?: SpringUtil.context.environment.getProperty("server.tomcat.max-http-post-size") ?: "2MB"
+        )
     }
 
     val redisHost: String by lazy {
@@ -150,20 +162,20 @@ object config {
 
     val wxAppId: String by lazy {
         return@lazy SpringUtil.context.environment.getProperty("app.wx.appId")
-                .must { it.HasValue }
-                .elseThrow("必须指定 app.wx.appId")
+            .must { it.HasValue }
+            .elseThrow("必须指定 app.wx.appId")
     }
 
     val wxMchId: String by lazy {
         return@lazy SpringUtil.context.environment.getProperty("app.wx.mchId")
-                .must { it.HasValue }
-                .elseThrow("必须指定 app.wx.mchId")
+            .must { it.HasValue }
+            .elseThrow("必须指定 app.wx.mchId")
     }
 
     val applicationName: String by lazy {
         return@lazy SpringUtil.context.environment.getProperty("spring.application.name")
-                .must { it.HasValue }
-                .elseThrow("必须指定 spring.application.name")
+            .must { it.HasValue }
+            .elseThrow("必须指定 spring.application.name")
     }
 
     /**
@@ -171,7 +183,7 @@ object config {
      */
     val userSystem: String by lazy {
         return@lazy SpringUtil.context.environment.getProperty("app.user-system")
-                .must { it.HasValue }
-                .elseThrow("必须指定 app.user-system")
+            .must { it.HasValue }
+            .elseThrow("必须指定 app.user-system")
     }
 }
