@@ -7,11 +7,16 @@ import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.LoginUserModel
 import nbcp.db.db
+import nbcp.service.UserSystemService
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import javax.servlet.http.HttpServletRequest
 
 private val logger = LoggerFactory.getLogger("ktweb.MyWebHelper")
+
+private val userSystem by lazy {
+    return@lazy SpringUtil.getBean<UserSystemService>();
+}
 
 /**
  * 高并发系统不应该有Session。使用token即可。
@@ -54,7 +59,7 @@ var HttpServletRequest.LoginUser: LoginUserModel
         }
 
         this.setAttribute("[LoginUser]", value)
-        db.rer_base.userSystem.saveLoginUserInfo(value);
+        userSystem.saveLoginUserInfo(value);
     }
 
 
@@ -104,13 +109,12 @@ val HttpServletRequest.tokenValue: String
 
             if (tokenTime == null) {
                 token = generateToken()
-            }
-            else{
+            } else {
                 var now = LocalDateTime.now();
 
                 var diffSeconds = (now - tokenTime).totalSeconds
                 if (diffSeconds > config.tokenKeyExpireSeconds) {
-                    db.rer_base.userSystem.deleteToken(token);
+                    userSystem.deleteToken(token);
                     token = generateToken();
                 } else if (diffSeconds > config.tokenKeyRenewalSeconds) {
                     var newToken = generateToken();

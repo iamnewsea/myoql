@@ -177,13 +177,4 @@ object config {
             .must { it.HasValue }
             .elseThrow("必须指定 spring.application.name")
     }
-
-    /**
-     * 用户体系：一般分为： admin,corp,open
-     */
-    val userSystem: String by lazy {
-        return@lazy SpringUtil.context.environment.getProperty("app.user-system")
-            .must { it.HasValue }
-            .elseThrow("必须指定 app.user-system")
-    }
 }

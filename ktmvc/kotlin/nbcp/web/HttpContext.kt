@@ -22,10 +22,9 @@ import javax.servlet.http.HttpSession
 import kotlin.concurrent.getOrSet
 
 /**
- * Created by udi on 17-5-22.
+ * 当前连接的上下文信息
  */
 object HttpContext {
-
     var _request: ThreadLocal<HttpServletRequest?> = ThreadLocal.withInitial { null }
     var _response: ThreadLocal<HttpServletResponse?> = ThreadLocal.withInitial { null }
 
@@ -39,14 +38,14 @@ object HttpContext {
     val request: HttpServletRequest
         get() {
             return _request.get()
-                    ?: (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.request!!
+                ?: (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.request!!
         }
 
     @JvmStatic
     val response: HttpServletResponse
         get() {
             return _response.get()
-                    ?: (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.response!!
+                ?: (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.response!!
         }
 
     //(RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.response!!

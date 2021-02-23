@@ -7,12 +7,20 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
 
-class ScopeStack:Stack<Any>(){}
+class ScopeStack : Stack<Any>() {}
 
 private val _scopes = ThreadLocal.withInitial { ScopeStack() }
 
 val scopes: ScopeStack
     get() = _scopes.get();
+
+/**
+ * 在作用域中添加 String 类型的值。
+ * usingScope(StringScopeData("key","value")){
+ *  scopes.getLatestStringScope("key")
+ * }
+ */
+data class StringScopeData(var key: String, var value: String)
 
 /**
  * 用法:
@@ -96,7 +104,29 @@ inline fun <reified R> ScopeStack.getScopeTypes(): Set<R> {
     return list;
 }
 
+/**
+ * 获取指定 key 为 String 的 value
+ * usingScope(StringScopeData("key","value")){
+ *   scopes.getLatestStringScope("key")
+ * }
+ */
+fun ScopeStack.getLatestStringScope(key: String): String {
+    if (this.size == 0) return ""
+    if (key.isEmpty()) return ""
 
+    for (i in this.indices.reversed()) {
+        var item = this[i];
+        if (item is StringScopeData) {
+            if (item.key == key) {
+                return item.value;
+            } else {
+                continue;
+            }
+        }
+    }
+
+    return "";
+}
 
 inline val Logger.scopeInfoLevel: Boolean
     get() {

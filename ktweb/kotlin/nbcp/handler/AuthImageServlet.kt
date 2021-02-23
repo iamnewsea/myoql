@@ -4,8 +4,10 @@ import ch.qos.logback.classic.Level
 import com.wf.captcha.ArithmeticCaptcha
 import nbcp.comm.*
 import nbcp.db.db
+import nbcp.service.UserSystemService
 import nbcp.web.queryJson
 import nbcp.web.tokenValue
+import org.springframework.beans.factory.annotation.Autowired
 import java.lang.RuntimeException
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServletRequest
@@ -22,6 +24,9 @@ import javax.servlet.http.HttpServlet
 @WebServlet(urlPatterns = ["/open/validate-code-image"])
 open class AuthImageServlet : HttpServlet() {
 
+    @Autowired
+    lateinit var userSystem :UserSystemService;
+
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
         var request_id = request.tokenValue
         if (request_id.isNullOrEmpty()) {
@@ -34,7 +39,7 @@ open class AuthImageServlet : HttpServlet() {
         var captcha = ArithmeticCaptcha(width, height);
         var txt = captcha.text()
 
-        db.rer_base.userSystem.validateCode.set(request_id, txt);
+        userSystem.validateCode.set(request_id, txt);
         response.setHeader("content-type", "image/png")
 
 //        var set_cookie_ori = response.getHeader("Set-Cookie") ?: "";

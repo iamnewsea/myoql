@@ -1,7 +1,6 @@
 package nbcp.db.redis
 
 import nbcp.comm.*
-import nbcp.db.LoginUserModel
 import nbcp.db.db
 import nbcp.db.redis.proxy.*
 
@@ -45,43 +44,5 @@ class RedisBaseGroup {
 
     val sqlCache = SqlCacheGroup()
 
-    /**
-     * 表示 config.userSystem 配置的用户体系的 redis 项，格式如： {config.userSystem}token:{id}
-     */
-    val userSystem = UserSystemGroup()
 
-    class UserSystemGroup {
-        private val userSystemRedis
-            get() = RedisStringProxy(config.userSystem + "token", 900);
-
-        /**
-         * 用户体系的redis验证码，格式如：{config.userSystem}validateCode:{id}
-         */
-        val validateCode get() = RedisStringProxy(config.userSystem + "validateCode", 180);
-
-
-        /**
-         * 获取登录token
-         */
-        fun getLoginInfoFromToken(token: String): LoginUserModel? {
-            userSystemRedis.renewalKey(token);
-            return userSystemRedis.get(token).FromJson<LoginUserModel>();
-        }
-
-        /**
-         * 设置登录token,格式：{config.userSystem}token:{id}
-         */
-        fun saveLoginUserInfo(userInfo: LoginUserModel) {
-            if (userInfo.id.HasValue && userInfo.token.HasValue) {
-                userSystemRedis.set(userInfo.token, userInfo.ToJson())
-            }
-        }
-
-        /**
-         * 删除tokens
-         */
-        fun deleteToken(vararg tokens: String) {
-            userSystemRedis.deleteKeys(*tokens)
-        }
-    }
 }
