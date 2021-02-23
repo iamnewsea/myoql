@@ -6,6 +6,7 @@ import nbcp.db.redis.proxy.RedisStringProxy
 import nbcp.utils.SpringUtil
 import nbcp.web.HttpContext
 import nbcp.web.findParameterStringValue
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 /**
@@ -13,6 +14,9 @@ import org.springframework.stereotype.Component
  */
 @Component
 class UserSystemService {
+    @Value("\${app.user-system-header:user-system}")
+    var userSystemHeader: String = "";
+
     /**
      * 用户体系：一般分为： admin,corp,open, 用于 redis key = {userSystem}token:{token}
      * 从三个地方获取 userSystem:
@@ -28,7 +32,7 @@ class UserSystemService {
             }
 
 
-            value = HttpContext.request.findParameterStringValue("user-system")
+            value = HttpContext.request.findParameterStringValue(userSystemHeader)
             if (value.HasValue) {
                 return value;
             }
