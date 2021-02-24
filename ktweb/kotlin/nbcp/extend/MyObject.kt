@@ -6,7 +6,6 @@ package nbcp.web
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.LoginUserModel
-import nbcp.db.db
 import nbcp.service.UserSystemService
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
@@ -14,7 +13,7 @@ import javax.servlet.http.HttpServletRequest
 
 private val logger = LoggerFactory.getLogger("ktweb.MyWebHelper")
 
-private val userSystem by lazy {
+val HttpServletRequest.userSystemService by lazy {
     return@lazy SpringUtil.getBean<UserSystemService>();
 }
 
@@ -59,7 +58,7 @@ var HttpServletRequest.LoginUser: LoginUserModel
         }
 
         this.setAttribute("[LoginUser]", value)
-        userSystem.saveLoginUserInfo(value);
+        this.userSystemService.saveLoginUserInfo(value);
     }
 
 
@@ -114,7 +113,7 @@ val HttpServletRequest.tokenValue: String
 
                 var diffSeconds = (now - tokenTime).totalSeconds
                 if (diffSeconds > config.tokenKeyExpireSeconds) {
-                    userSystem.deleteToken(token);
+                    this.userSystemService.deleteToken(token);
                     token = generateToken();
                 } else if (diffSeconds > config.tokenKeyRenewalSeconds) {
                     var newToken = generateToken();

@@ -17,14 +17,14 @@ class UserSystemService {
     @Value("\${app.user-system-header:user-system}")
     var userSystemHeader: String = "";
 
-    /**
+    /**userSystem
      * 用户体系：一般分为： admin,corp,open, 用于 redis key = {userSystem}token:{token}
      * 从三个地方获取 userSystem:
      * 1. 上下文 app.user-system
      * 2. request 参数 user-system
      * 3. 系统配置 app.user-system
      */
-    private val userSystem: String
+    private val userSystemRedisPrefix: String
         get() {
             var value = scopes.getLatestStringScope("app.user-system")
             if (value.HasValue) {
@@ -45,12 +45,12 @@ class UserSystemService {
         }
 
     private val userSystemRedis
-        get() = RedisStringProxy(userSystem + "token", 900);
+        get() = RedisStringProxy(userSystemRedisPrefix + "token", 900);
 
     /**
      * 用户体系的redis验证码，格式如：{config.userSystem}validateCode:{id}
      */
-    val validateCode get() = RedisStringProxy(userSystem + "validateCode", 180);
+    val validateCode get() = RedisStringProxy(userSystemRedisPrefix + "validateCode", 180);
 
 
     /**
