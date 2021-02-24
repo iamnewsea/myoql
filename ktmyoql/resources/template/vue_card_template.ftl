@@ -158,6 +158,7 @@ export default {
             this.$http.post("${url}/save", this.info).then(res => {
                 jv.info(this.action_name + " 成功");
                 if (this.action == "add") {
+                    this.$popNav();
                     this.$router.push("${url}/edit/" + res.data.data)
                 } else if (this.action == "edit") {
                     this.$router.push("${url}/list")

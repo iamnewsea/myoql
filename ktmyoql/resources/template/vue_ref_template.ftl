@@ -80,9 +80,9 @@ export default {
             //如果是组合实体，设置 it.id=...
 <#list fields as field>
 <#if field.getType().isEnum()>
-                    jv.enum.${field.getType().getSimpleName()}.fillRes(it, "${field.getType().getSimpleName()}");
+                    jv.enum.${field.getType().getSimpleName()}.fillRes(it, "${field.getName()}");
 <#elseif is_enum_list(field)>
-                    jv.enum.${list_type(field)}.fillRes(it, "${list_type(field)}");
+                    jv.enum.${list_type(field)}.fillRes(it, "${field.getName()}");
 </#if>
 </#list>
         });

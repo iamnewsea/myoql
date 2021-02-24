@@ -34,7 +34,7 @@
             <el-table-column align="center" label="${cn(field)}" prop="${field.getName()}"></el-table-column>
 </#if>
 </#list>
-            <el-table-column label="操作" align="center" width="180">
+            <el-table-column label="操作" align="center" width="240">
                 <template slot-scope="scope">
                     <el-button @click="edit_click(scope.row)" size="small">
                         编辑
@@ -93,9 +93,9 @@ export default {
                 //如果是组合实体，设置 it.id=...
 <#list fields as field>
 <#if field.getType().isEnum()>
-                jv.enum.${field.getType().getSimpleName()}.fillRes(it, "${field.getType().getSimpleName()}");
+                jv.enum.${field.getType().getSimpleName()}.fillRes(it, "${field.getName()}");
 <#elseif is_enum_list(field)>
-                jv.enum.${list_type(field)}.fillRes(it, "${list_type(field)}");
+                jv.enum.${list_type(field)}.fillRes(it, "${field.getName()}");
 </#if>
 </#list>
             });
