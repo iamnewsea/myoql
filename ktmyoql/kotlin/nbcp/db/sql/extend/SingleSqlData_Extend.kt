@@ -19,11 +19,11 @@ fun SingleSqlData.toWhereData(): WhereData {
 //}
 
 fun SqlColumnNames.toSelectSql(): String =
-        this.map {
-            if (it.getAliasName() == it.name) it.fullName
-            else
-                it.fullName + " as " + db.sql.getSqlQuoteName(it.getAliasName())
-        }.joinToString(",")
+    this.map {
+        if (it.getAliasName() == it.name) it.fullName
+        else
+            it.fullName + " as " + db.sql.getSqlQuoteName(it.getAliasName())
+    }.joinToString(",")
 
 
 infix fun SqlColumnName.and(next: SqlColumnName): SqlColumnNames {
@@ -63,9 +63,18 @@ fun SqlColumnName.avg(alias: String = ""): SingleSqlData {
 }
 
 fun SqlColumnName.ifNull(elseValue: SingleSqlData, alias: String = ""): SingleSqlData {
-    return SingleSqlData("ifNull(${this.fullName},${elseValue.expression}) as ${alias.AsString(this.getAliasName())}", elseValue.values)
+    return SingleSqlData(
+        "ifNull(${this.fullName},${elseValue.expression}) as ${alias.AsString(this.getAliasName())}",
+        elseValue.values
+    )
 }
 
+/**
+ * 字符个数
+ */
+fun SqlColumnName.character_length(alias: String = ""): SingleSqlData {
+    return SingleSqlData("character_length(${this.fullName}) ${alias.AsString("len_" + this.name)}")
+}
 
 fun SingleSqlData.ifNull(elseValue: SingleSqlData, alias: String): SingleSqlData {
     var ret = this.CloneObject();
