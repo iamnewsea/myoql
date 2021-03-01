@@ -50,6 +50,9 @@ data class s_user(
 
     var list = dbr.组名.实体名.query()
        .where{ it.列名  match 值 }
+       .where{ it.列名.character_length()  match 值 }
+       .where{ it.列名  match 值 }
+       .where{ it.列名  match 值 }
        .where{ it.列名  like 值 }
        .where{ it.列名  match_ne 值 }
        .where{ it.列名  match_gte 值 } 

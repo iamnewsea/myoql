@@ -41,39 +41,53 @@ infix fun SqlColumnNames.and(next: SqlColumnName): SqlColumnNames {
 //val SqlColumnName.desc: SqlOrderBy
 //    get() = SqlOrderBy(false, SingleSqlData(this.fullName))
 
-
-fun SqlColumnName.sum(alias: String = ""): SingleSqlData {
-    return SingleSqlData("sum(${this.fullName}) ${alias.AsString("sum_" + this.name)}")
+private fun op_ext_sql(sqlData: SingleSqlData, op: String, alias: String): SingleSqlData {
+    var clone = sqlData.CloneObject()
+    var op = "sum"
+    var alias_value = alias;
+    if (alias_value.isEmpty()) {
+        if (clone is SqlColumnName) {
+            alias_value = "${op}_${clone.name}";
+        } else {
+            alias_value = "${op}_value"
+        }
+    }
+    clone.expression = "${op}(${clone.expression}) ${alias_value}"
+    return clone;
 }
 
-fun SqlColumnName.count(alias: String = ""): SingleSqlData {
-    return SingleSqlData("count(${this.fullName}) ${alias.AsString("count_" + this.name)}")
+fun SingleSqlData.sum(alias: String): SingleSqlData {
+    return op_ext_sql(this, "sum", alias);
+}
+
+fun SqlColumnName.count(alias: String): SingleSqlData {
+    return op_ext_sql(this, "count", alias);
 }
 
 fun SqlColumnName.min(alias: String = ""): SingleSqlData {
-    return SingleSqlData("min(${this.fullName}) ${alias.AsString("min_" + this.name)}")
+    return op_ext_sql(this, "min", alias);
 }
 
 fun SqlColumnName.max(alias: String = ""): SingleSqlData {
-    return SingleSqlData("max(${this.fullName}) ${alias.AsString("max_" + this.name)}")
+    return op_ext_sql(this, "max", alias);
 }
 
 fun SqlColumnName.avg(alias: String = ""): SingleSqlData {
-    return SingleSqlData("avg(${this.fullName}) ${alias.AsString("avg_" + this.name)}")
+    return op_ext_sql(this, "avg", alias);
 }
 
-fun SqlColumnName.ifNull(elseValue: SingleSqlData, alias: String = ""): SingleSqlData {
-    return SingleSqlData(
-        "ifNull(${this.fullName},${elseValue.expression}) as ${alias.AsString(this.getAliasName())}",
-        elseValue.values
-    )
-}
+//fun SqlColumnName.ifNull(elseValue: SingleSqlData, alias: String = ""): SingleSqlData {
+//    return SingleSqlData(
+//        "ifNull(${this.fullName},${elseValue.expression}) as ${alias.AsString(this.getAliasName())}",
+//        elseValue.values
+//    )
+//}
 
 /**
  * 字符个数
  */
 fun SqlColumnName.character_length(alias: String = ""): SingleSqlData {
-    return SingleSqlData("character_length(${this.fullName}) ${alias.AsString("len_" + this.name)}")
+    return op_ext_sql(this, "character_length", alias);
 }
 
 fun SingleSqlData.ifNull(elseValue: SingleSqlData, alias: String): SingleSqlData {

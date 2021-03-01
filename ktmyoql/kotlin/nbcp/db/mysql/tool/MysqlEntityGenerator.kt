@@ -7,6 +7,7 @@ import nbcp.tool.FreemarkerUtil
 import java.util.*
 
 class EntityDbItemFieldData {
+    var sql_type = ""
     var remark = ""
     var name = ""
     var db_type = DbType.Other
@@ -130,6 +131,30 @@ object MysqlEntityGenerator {
         fun excludes(vararg excludes: String): DbEntityBuilder {
             this.excludes = excludes.toList()
             return this
+        }
+
+        /**
+         * TODO: 需要好好整理一下。
+         */
+        fun toMarkdown(): List<IdName> {
+            var ret = mutableListOf<IdName>()
+            var data = getTablesData();
+
+            //先对 group分组
+            data.groupBy { it.group }
+                .forEach {
+                    var group = it.key
+                    var entitys = it.value
+
+                    var map = JsonMap(
+                        "entitys" to entitys
+                    )
+
+                    var code = FreemarkerUtil.process("mysql_markdown.ftl", map);
+                    ret.add(IdName(group, code));
+                }
+
+            return ret;
         }
 
         /**
@@ -279,6 +304,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                         var columnData = EntityDbItemFieldData()
                         columnData.name = columnName
                         columnData.commentString = columnComment
+                        columnData.sql_type = dataType
                         columnData.db_type = dbType
 
                         if (columnMap.getStringValue("extra") == "auto_increment") {

@@ -1,12 +1,14 @@
 package nbcp.sql
 
 import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.db.names.ColumnName
 import com.zaxxer.hikari.HikariDataSource
 import nbcp.TestBase
 import nbcp.comm.*
 import nbcp.db.IdName
 import nbcp.db.db
 import nbcp.db.mysql.tool.MysqlEntityGenerator
+import nbcp.db.sql.SqlColumnName
 import nbcp.db.sql.doInsert
 import nbcp.db.sql.entity.s_annex
 import nbcp.db.sql.updateWithEntity
@@ -86,5 +88,14 @@ class TestKtExt_MySql : TestBase() {
         var file = UserCodeGenerator.genVueCard("base", db.sql_base.s_annex);
 
         println(file)
+    }
+
+    @Test
+    fun test_ColumnName() {
+        var col = SqlColumnName.of("n");
+        println(col.expression)
+        col.tableName = "t"
+        col.name = "n2"
+        println(col.expression)
     }
 }

@@ -7,16 +7,42 @@ import nbcp.db.sql.*
 import java.io.Serializable
 
 
-data class SqlColumnName(val dbType: DbType, var tableName: String, var name: String) : Serializable {
+open class SqlColumnName(
+    val dbType: DbType,
+    tableName: String,
+    name: String
+) : SingleSqlData() {
+    var tableName: String = tableName
+        get() {
+            return field
+        }
+        set(value) {
+            field = value;
+            super.expression = this.fullName
+        }
+
+    var name: String = name
+        get() {
+            return field
+        }
+        set(value) {
+            field = value
+            super.expression = this.fullName
+        }
+
+    init {
+        super.expression = this.fullName
+    }
+
     companion object {
         @JvmStatic
         fun of(name: String): SqlColumnName {
-            return SqlColumnName(DbType.Other,"", name)
+            return SqlColumnName(DbType.Other, "", name)
         }
 
         @JvmStatic
-        fun of(dbType:DbType, name: String): SqlColumnName {
-            return SqlColumnName(dbType,"", name)
+        fun of(dbType: DbType, name: String): SqlColumnName {
+            return SqlColumnName(dbType, "", name)
         }
     }
 
@@ -82,6 +108,6 @@ data class SqlColumnName(val dbType: DbType, var tableName: String, var name: St
     }
 }
 
-fun Collection<SqlColumnName>.toArray() :SqlColumnNames{
+fun Collection<SqlColumnName>.toArray(): SqlColumnNames {
     return SqlColumnNames(*this.toTypedArray())
 }
