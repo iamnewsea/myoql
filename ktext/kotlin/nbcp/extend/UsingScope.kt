@@ -5,6 +5,7 @@ package nbcp.comm
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.io.Flushable
 import java.util.*
 
 class ScopeStack : Stack<Any>() {}
@@ -50,7 +51,11 @@ inline fun <T, M : Any> usingScope(initObjects: M, body: () -> T, finally: ((M) 
     try {
         var ret = body();
 
+        //自动释放
         init_list.asReversed().forEach {
+            if (it is Flushable) {
+                it.flush()
+            }
             if (it is AutoCloseable) {
                 it.close()
             }
