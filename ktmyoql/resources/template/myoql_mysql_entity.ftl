@@ -15,15 +15,15 @@ import java.time.*
 @DbUks(${entity.getUks()?join(",")})
 data class ${entity.getName()}(): ISqlDbEntity {
 <#list entity.getColumns() as field>
-<#if  field.getAuto_inc()>
+<#if  field.getAutoInc()>
     @SqlAutoIncrementKey
-<#elseif field.getAuto_id()>
+<#elseif field.getAutoId()>
     @ConverterValueToDb(AutoIdConverter::class)
-<#elseif field.getAuto_number()>
+<#elseif field.getAutoNumber()>
     @ConverterValueToDb(AutoNumberConverter::class)
 </#if>
     @Cn("${field.getComment()}")
-    var ${field.getName()}: ${field.getKotlin_type()} = ${field.getKotlin_default_value()}
+    var ${field.getName()}: ${field.getKotlinType()} = ${field.getKotlinDefaultValue()}
 </#list>
 }
 </#list>
