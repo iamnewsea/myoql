@@ -60,6 +60,14 @@ data class HttpRequestData(
             this.headers["Content-Type"] = value;
         }
 
+
+    fun setAuthorization(userName: String, password: String) {
+        this.headers.set(
+            "Authorization",
+            "Basic " + Base64.getEncoder().encodeToString("${userName}:${password}".toByteArray())
+        )
+    }
+
     /**
      * postAction 是上传专用
      */
