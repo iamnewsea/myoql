@@ -48,16 +48,37 @@ def getArgs():
 
     return file,groupId,artifactId
 
+
+def findNodes(es,paths):
+    ps = paths.split("/")
+    items = es
+    for x in ps :
+        items = list( filter( lambda  n:n.nodeType == 1 and n.nodeName == x, items) )
+        if (any(items) == False):
+            return ""
+        items2 = [];
+        for i in items:
+            items2.extend(i.childNodes)
+        items = items2
+    return items
+
+def findText(es,paths):
+    return findNodes(es,paths)[0].data
+
 def getModulesData():
 
     dom = xml.dom.minidom.parse('pom.xml')
     root = dom.documentElement
-    groupId = root.getElementsByTagName('groupId')[0].childNodes[0].data;
-    artifactId = root.getElementsByTagName('artifactId')[0].childNodes[0].data;
+    groupId = findText(root.childNodes,"groupId")
+
+    if(len(groupId) == 0):
+        groupId = findText(root.childNodes,"parent/groupId")
+
+    artifactId = findText(root.childNodes,"artifactId")
 
 
-    mns = filter(lambda x: x.nodeType == 1, root.getElementsByTagName('modules')[0].childNodes);
-    modules = list( map(lambda x: x.childNodes[0].data ,mns) )
+    mns = findNodes(root.childNodes,"modules")
+    modules = list(map( lambda x: x.childNodes[0].data, filter(lambda x:  x.nodeType == 1, mns )))
 
 
     return groupId,artifactId,modules
@@ -67,15 +88,15 @@ def resetGroupId(newGroupId,newArtifactId):
     dom = xml.dom.minidom.parse('pom.xml')
     root = dom.documentElement
 
-    groupIdDom = root.getElementsByTagName('groupId')[0].childNodes[0];
-    artifactIdDom = root.getElementsByTagName('artifactId')[0].childNodes[0];
+    groupId = findNodes(root.childNodes,"groupId")
+    artifactId = findNodes(root.childNodes,"artifactId")
 
 
     if  newGroupId:
-        groupIdDom.data = newGroupId
+        groupId[0].data = newGroupId
 
     if  newArtifactId:
-        artifactIdDom.data = newArtifactId
+        artifactId[0].data = newArtifactId
 
     with open('pom.xml','w',encoding='UTF-8') as fh:
         fh.write(dom.toxml())
@@ -91,22 +112,21 @@ def resetSubGroupId(module,groupId,artifactId,newGroupId,newArtifactId):
     dom = xml.dom.minidom.parse('pom.xml')
     root = dom.documentElement
 
-    groupIdDom = root.getElementsByTagName('groupId')[0].childNodes[0];
-    artifactIdDom = root.getElementsByTagName('artifactId')[0].childNodes[0];
+    groupId = findNodes(root.childNodes,"groupId")
+    artifactId = findNodes(root.childNodes,"artifactId")
 
 
-    mns = list(filter(lambda x: x.nodeType == 1, root.getElementsByTagName('parent')[0].childNodes));
-    t_groupIdDom= list(filter( lambda x: x.tagName == "groupId",mns ))[0].childNodes[0]
-    t_artifactIdDom= list(filter( lambda x: x.tagName == "artifactId",mns))[0].childNodes[0]
+    p_groupId = findNodes(root.childNodes,"parent/groupId")
+    p_artifactId = findNodes(root.childNodes,"parent/artifactId")
 
 
-    if t_groupIdDom.data == groupId and newGroupId:
-        t_groupIdDom.data = newGroupId
-        groupIdDom.data = newGroupId
+    if p_groupId[0].data == groupId and newGroupId:
+        p_groupId[0].data = newGroupId
+        groupId[0].data = newGroupId
 
-    if t_artifactIdDom.data == artifactId and newArtifactId:
-        artifactIdDom.data = newArtifactId
-        t_artifactIdDom.data = newArtifactId
+    if p_artifactId[0].data == artifactId and newArtifactId:
+        p_artifactId[0].data = newArtifactId
+        artifactId[0].data = newArtifactId
 
     with open('pom.xml','w',encoding='UTF-8') as fh:
         fh.write(dom.toxml())

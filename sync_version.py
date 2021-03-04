@@ -27,21 +27,34 @@ def setWorkPath():
     base_path = os.path.abspath(os.path.join(__file__, "../"))
     os.chdir(base_path)
 
+def findNodes(es,paths):
+    ps = paths.split("/")
+    items = es
+    for x in ps :
+        items = list( filter( lambda  n:n.nodeType == 1 and n.nodeName == x, items) )
+        if (any(items) == False):
+            return ""
+        items2 = [];
+        for i in items:
+            items2.extend(i.childNodes)
+        items = items2
+    return items
+
+def findText(es,paths):
+    return findNodes(es,paths)[0].data
 
 def getVersionOnly():
     dom = xml.dom.minidom.parse('pom.xml')
     root = dom.documentElement
-
-    vv_data = root.getElementsByTagName('version')[0].childNodes[0]
-    return vv_data.data
+    return findText(root.childNodes,"version")
 
 def resetVersionOnly(version):
     dom = xml.dom.minidom.parse('pom.xml')
     root = dom.documentElement
 
-    vv_data = root.getElementsByTagName('version')[0].childNodes[0]
-    ori_version = vv_data.data
-    vv_data.data = version
+    vv_data = findNodes(root.childNodes,"version")
+    ori_version = vv_data[0].data
+    vv_data[0].data = version
 
     with open('pom.xml', 'w', encoding='UTF-8') as fh:
         fh.write(dom.toxml())
@@ -54,12 +67,16 @@ def resetVersionOnly(version):
 def getVersionData():
     dom = xml.dom.minidom.parse('pom.xml')
     root = dom.documentElement
-    groupId = root.getElementsByTagName('groupId')[0].childNodes[0].data
-    artifactId = root.getElementsByTagName('artifactId')[0].childNodes[0].data
-    version = root.getElementsByTagName('version')[0].childNodes[0].data
+    groupId = findText(root.childNodes,"groupId")
 
-    mns = filter(lambda x: x.nodeType == 1, root.getElementsByTagName('modules')[0].childNodes)
-    modules = list(map(lambda x: x.childNodes[0].data, mns))
+    if(len(groupId) == 0):
+        groupId = findText(root.childNodes,"parent/groupId")
+
+    artifactId = findText(root.childNodes,"artifactId")
+    version = findText(root.childNodes,"version")
+
+    mns = findNodes(root.childNodes,"modules")
+    modules = list(map( lambda x: x.childNodes[0].data, filter(lambda x:  x.nodeType == 1, mns ) ))
 
     return groupId, artifactId, version, modules
 
@@ -71,20 +88,19 @@ def resetVersion(module, file, groupId, artifactId, version):
     dom = xml.dom.minidom.parse(file)
     root = dom.documentElement
 
-    vv_data = root.getElementsByTagName('version')[0].childNodes[0]
-    mns = list(filter(lambda x: x.nodeType == 1, root.getElementsByTagName('parent')[0].childNodes))
-    t_groupId = list(filter(lambda x: x.tagName == "groupId", mns))[0].childNodes[0].data
-    t_artifactId = list(filter(lambda x: x.tagName == "artifactId", mns))[0].childNodes[0].data
-    t_version_data = list(filter(lambda x: x.tagName == "version", mns))[0].childNodes[0]
+    vv_data = findNodes(root.childNodes,"version")
+    p_groupId = findNodes(root.childNodes,"parent/groupId")
+    p_artifactId = findNodes(root.childNodes,"parent/artifactId")
+    t_version_data = findNodes(root.childNodes,"parent/version")
 
-    if t_groupId != groupId:
+    if p_groupId[0].data != groupId:
         return
 
-    if t_artifactId != artifactId:
+    if p_artifactId[0].data != artifactId:
         return
 
-    vv_data.data = version
-    t_version_data.data = version
+    vv_data[0].data = version
+    t_version_data[0].data = version
 
     with open(file, 'w', encoding='UTF-8') as fh:
         fh.write(dom.toxml())
