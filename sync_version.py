@@ -33,7 +33,7 @@ def findNodes(es,paths):
     for x in ps :
         items = list( filter( lambda  n:n.nodeType == 1 and n.nodeName == x, items) )
         if (any(items) == False):
-            return ""
+            return []
         items2 = [];
         for i in items:
             items2.extend(i.childNodes)
@@ -41,7 +41,10 @@ def findNodes(es,paths):
     return items
 
 def findText(es,paths):
-    return findNodes(es,paths)[0].data
+    nodes = findNodes(es,paths)
+    if( any(nodes) == False):
+        return ""
+    return nodes[0].data
 
 def getVersionOnly():
     dom = xml.dom.minidom.parse('pom.xml')
