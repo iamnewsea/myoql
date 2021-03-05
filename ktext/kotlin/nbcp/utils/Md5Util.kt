@@ -29,7 +29,7 @@ object Md5Util {
         result.add((checksum ushr 8).toByte())
         result.add((checksum % 255).toByte())
 
-        return Base64.getEncoder().encodeToString(result.toByteArray())
+        return MyUtil.getBase64(result.toByteArray())
                 .replace('+', '!')
                 .replace('/', '_')
     }
@@ -103,7 +103,7 @@ object Md5Util {
         result.add((checksum ushr 8).toByte())
         result.add((checksum % 255).toByte())
 
-        return Base64.getEncoder().encodeToString(result.toByteArray())
+        return MyUtil.getBase64(result.toByteArray())
                 .replace('+', '!')
                 .replace('/', '_')
     }

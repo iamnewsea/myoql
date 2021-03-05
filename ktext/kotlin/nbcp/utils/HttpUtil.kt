@@ -64,7 +64,7 @@ data class HttpRequestData(
     fun setAuthorization(userName: String, password: String) {
         this.headers.set(
             "Authorization",
-            "Basic " + Base64.getEncoder().encodeToString("${userName}:${password}".toByteArray())
+            "Basic " + MyUtil.getBase64("${userName}:${password}".toByteArray())
         )
     }
 

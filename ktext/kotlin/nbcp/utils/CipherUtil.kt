@@ -13,25 +13,21 @@ object CipherUtil {
      * 返回 3des key base64格式的文本
      */
     fun get3desKey(): String {
-        var encoder = Base64.getEncoder();
-        return encoder.encodeToString(Des3Util.generateKey())
+        return MyUtil.getBase64(Des3Util.generateKey())
     }
 
     /**
      * 加密
      */
     fun encrypt3des(text: String, key: String): String {
-        var encoder = Base64.getEncoder();
-        var decoder = Base64.getDecoder();
-        return encoder.encodeToString(Des3Util.encrypt(text.toByteArray(), decoder.decode(key)))
+        return MyUtil.getBase64(Des3Util.encrypt(text.toByteArray(), MyUtil.getFromBase64(key)))
     }
 
     /**
      * 解密
      */
     fun decrypt3des(text: String, key: String): String {
-        var decoder = Base64.getDecoder();
-        return String(Des3Util.decrypt(decoder.decode(text), decoder.decode(key)))
+        return String(Des3Util.decrypt(MyUtil.getFromBase64(text), MyUtil.getFromBase64(key)))
     }
 
 
@@ -39,8 +35,7 @@ object CipherUtil {
      * 返回 3des key base64格式的文本
      */
     fun getDesKey(): String {
-        var encoder = Base64.getEncoder();
-        return encoder.encodeToString(DesUtil.generateKey())
+        return MyUtil.getBase64(DesUtil.generateKey())
     }
 
     /**
@@ -48,9 +43,7 @@ object CipherUtil {
      * @param key: 使用 get3desKey 生成的 key
      */
     fun encryptDes(text: String, key: String): String {
-        var encoder = Base64.getEncoder();
-        var decoder = Base64.getDecoder();
-        return encoder.encodeToString(DesUtil.encrypt(text.toByteArray(), decoder.decode(key)))
+        return MyUtil.getBase64(DesUtil.encrypt(text.toByteArray(), MyUtil.getFromBase64(key)))
     }
 
     /**
@@ -58,8 +51,7 @@ object CipherUtil {
      * @param key: 使用 get3desKey 生成的 key
      */
     fun decryptDes(text: String, key: String): String {
-        var decoder = Base64.getDecoder();
-        return String(DesUtil.decrypt(decoder.decode(text), decoder.decode(key)))
+        return String(DesUtil.decrypt(MyUtil.getFromBase64(text), MyUtil.getFromBase64(key)))
     }
 
     /**

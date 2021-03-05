@@ -97,6 +97,11 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
     }
 }
 
+val LocalTime.totalSeconds: Int
+    get() {
+        return this.hour * 3600 + this.minute * 60 + this.second
+    }
+
 /**
  * 字符串转为 LocalDateTime
  */
@@ -158,6 +163,21 @@ fun String.ConvertToLocalDateTime(dateTimeFormatter: DateTimeFormatter? = null):
     var zoneSecond = 0;
     if (withZ) {
         zoneSecond = ZoneId.systemDefault().rules.getOffset(Instant.EPOCH).totalSeconds
+    }
+
+    var timezoneOffset = 0
+    var timezoneValueMatch = """([+|-])(\d\d:\d\d)$""".toRegex().find(timePartString)
+    if (timezoneValueMatch != null && timezoneValueMatch.groupValues.size > 2) {
+        timezoneOffset = (timezoneValueMatch.groupValues[2] + ":00").AsLocalTime()?.totalSeconds ?: 0
+
+        if (timezoneValueMatch.groupValues[1] == "-") {
+            timezoneOffset = 0 - timezoneOffset
+        }
+
+        timePartString = timePartString.substring(0, timezoneValueMatch.range.start)
+
+
+        zoneSecond = ZoneId.systemDefault().rules.getOffset(Instant.EPOCH).totalSeconds - timezoneOffset
     }
 
     return datePartString.ConvertToLocalDate()?.atTime(timePartString.ConvertToLocalTime())?.plusSeconds(zoneSecond)

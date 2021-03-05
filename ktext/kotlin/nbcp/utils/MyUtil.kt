@@ -2,6 +2,7 @@ package nbcp.utils
 
 import nbcp.comm.*
 import java.io.File
+import java.io.Serializable
 import java.lang.RuntimeException
 import java.net.JarURLConnection
 import java.net.URL
@@ -251,6 +252,19 @@ object MyUtil {
         ret = ret.slice(0..length - 1);
         return ret;
     }
+
+    /**
+     * 获取 Base64
+     */
+    fun getBase64(target: String): String {
+        return Base64.getEncoder().encodeToString(target.toByteArray(utf8));
+    }
+    fun getBase64(bytes: ByteArray): String {
+        return Base64.getEncoder().encodeToString(bytes);
+    }
+    fun getFromBase64(base64: String): ByteArray {
+        return Base64.getDecoder().decode(base64);
+    }
 //
 //    /**
 //     * @param days: 从1开始的天数。（mongo dayOfYear 返回的天数）
@@ -295,7 +309,7 @@ object MyUtil {
         return Thread.currentThread().contextClassLoader.getResource("/") != null;
     }
 
-    fun getStartingJarFile(url:URL): File{
+    fun getStartingJarFile(url: URL): File {
         var path = JsUtil.decodeURIComponent(url.path)
         if (url.protocol == "jar") {
             //值是： file:/D:/code/sites/server/admin/target/admin-api-1.0.1.jar!/BOOT-INF/classes!/

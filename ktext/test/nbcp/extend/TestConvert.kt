@@ -38,8 +38,11 @@ class TestConvert : TestBase() {
 
     @Test
     fun test_type_convert() {
-        println("20111203101530".ConvertToLocalDateTime(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")))
-        //println(ConvertToLocalDateTime("2011-12-03T10:15:30Z", DateTimeFormatter.ISO_INSTANT))
+//        println("20111203101530".ConvertToLocalDateTime(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")))
+//
+//        println("2021-03-05T08:43:18.986Z".ConvertToLocalDateTime())
+//        println("Fri, 05 Mar 2021 07:46:57 GMT".ConvertToLocalDateTime(DateTimeFormatter.RFC_1123_DATE_TIME))
+        println("2021-03-05T15:45:14+07:00".ConvertToLocalDateTime())
     }
 
     @Test
