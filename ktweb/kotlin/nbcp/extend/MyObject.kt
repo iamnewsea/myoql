@@ -94,10 +94,12 @@ val HttpServletRequest.tokenValue: String
 
         token = this.findParameterValue(config.tokenKey).AsStringWithNull();
 
+        var newToken = ""
+
         if (token.isNullOrEmpty()) {
-            token = generateToken();
+            newToken = generateToken();
         } else if (token.startsWith(tokenPrefix) == false) {
-            token = generateToken();
+            newToken = generateToken();
         } else {
             var tokenTime: LocalDateTime? = null;
             try {
@@ -107,25 +109,31 @@ val HttpServletRequest.tokenValue: String
             }
 
             if (tokenTime == null) {
-                token = generateToken()
+                newToken = generateToken()
             } else {
                 var now = LocalDateTime.now();
 
                 var diffSeconds = (now - tokenTime).totalSeconds
                 if (diffSeconds > config.tokenKeyExpireSeconds) {
                     this.userSystemService.deleteToken(token);
-                    token = generateToken();
+                    newToken = generateToken();
                 } else if (diffSeconds > config.tokenKeyRenewalSeconds) {
                     var newToken = generateToken();
                     WebUserTokenBeanInstance.instance!!.changeToken(token, newToken);
-                    token = newToken;
                 }
             }
         }
 
-        this.setAttribute(cacheKey, token)
-        HttpContext.response.setHeader(config.tokenKey, token)
-        return token;
+        if (newToken.isEmpty()) {
+            newToken = token ?: generateToken()
+        }
+
+        this.setAttribute(cacheKey, newToken)
+
+        if (newToken != token) {
+            HttpContext.response.setHeader(config.tokenKey, newToken)
+        }
+        return newToken;
     }
 
 
