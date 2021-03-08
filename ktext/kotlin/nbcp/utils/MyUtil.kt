@@ -259,11 +259,17 @@ object MyUtil {
     fun getBase64(target: String): String {
         return Base64.getEncoder().encodeToString(target.toByteArray(utf8));
     }
+
     fun getBase64(bytes: ByteArray): String {
         return Base64.getEncoder().encodeToString(bytes);
     }
+
     fun getFromBase64(base64: String): ByteArray {
         return Base64.getDecoder().decode(base64);
+    }
+
+    fun getStringContentFromBase64(base64: String): String {
+        return String(getFromBase64(base64), utf8)
     }
 //
 //    /**
