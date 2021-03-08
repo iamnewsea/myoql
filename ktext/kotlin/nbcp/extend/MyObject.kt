@@ -19,14 +19,15 @@ import java.util.*
  */
 
 data class CheckMustExpresstion<T>(var condition: Boolean, var data: T?) {
+
     fun elseThrow(msg: String): T {
         if (condition) return data!!
         else throw RuntimeException(msg);
     }
 }
 
-fun <T> T?.must(trueCondition: ((T?) -> Boolean)): CheckMustExpresstion<T> {
-    return CheckMustExpresstion(trueCondition(this), this)
+fun <T> T?.must(trueCondition: ((T?) -> Boolean)? = null): CheckMustExpresstion<T> {
+    return CheckMustExpresstion(if (trueCondition == null) this != null else trueCondition(this), this)
 }
 
 fun <T> T.IsIn(vararg values: T): Boolean {
@@ -107,13 +108,13 @@ fun ByteArray.ToSerializableObject(): Serializable {
 }
 
 
-
 fun Temporal.BetweenSeconds(nextTime: Temporal): Int {
     return Duration.between(this.AsLocalDateTime(), nextTime.AsLocalDateTime()).getSeconds().AsInt();
 }
 
 fun Temporal.BetweenDays(nextTime: Temporal): Int {
-    return (Duration.between(this.AsLocalDateTime(), nextTime.AsLocalDateTime()).getSeconds() / MyUtil.OneDaySeconds).AsInt();
+    return (Duration.between(this.AsLocalDateTime(), nextTime.AsLocalDateTime())
+        .getSeconds() / MyUtil.OneDaySeconds).AsInt();
 }
 
 
@@ -124,7 +125,6 @@ fun Logger.Error(err: Throwable) {
 //返回非空的描述
 val Throwable.Detail: String
     get() = this.message.AsString(this::class.java.simpleName)
-
 
 
 //通过内存复制对象.
@@ -187,7 +187,8 @@ fun ByteArray.ToHexLowerString(): String {
 fun ch.qos.logback.classic.Logger.getLoggerFile(configName: String): String {
     var appenderList = this.iteratorForAppenders();
     if (appenderList.hasNext()) {
-        var fileAppender = (appenderList.Filter { it.name == configName }.first() as ch.qos.logback.core.rolling.RollingFileAppender)
+        var fileAppender =
+            (appenderList.Filter { it.name == configName }.first() as ch.qos.logback.core.rolling.RollingFileAppender)
         return (MyUtil.getPrivatePropertyValue(fileAppender, "currentlyActiveFile") as File).absolutePath
     }
 
