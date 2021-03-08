@@ -424,7 +424,7 @@ fun String.Remove(vararg removeChars: Char): String {
  * "abcdef".Slice(-300) == "abcdef"
  * "abcdef".Slice(-300,-1) == "abcde"
  */
-fun String.Slice(startIndex: Int, endIndex: Int): String {
+fun String.Slice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): String {
     var list = mutableListOf<Char>()
     this.toCharArray().forEach {
         list.add(it)
