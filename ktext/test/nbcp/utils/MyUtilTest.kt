@@ -13,6 +13,13 @@ class MyUtilTest : TestBase() {
     }
 
     @Test
+    fun getMethod() {
+        println(
+            MyUtil.getCurrentMethodInfo().methodName
+        )
+    }
+
+    @Test
     fun testformat() {
         var ret = MyUtil.formatTemplateJson("dbr.\${group|w}.\${entity}.queryById(id)",
             StringMap("group" to "wx", "entity" to "user"), { key, value, func, param ->

@@ -113,6 +113,13 @@ object MyUtil {
         return getPathValue(v, *left_keys.toTypedArray())
     }
 
+    /**
+     * 获取正在执行的方法信息
+     */
+    fun getCurrentMethodInfo(): StackTraceElement {
+        return Thread.currentThread().getStackTrace()[2]!!
+    }
+
 //    /**
 //     * 按大写字母拆分
 //     */
