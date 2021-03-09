@@ -29,15 +29,10 @@ import javax.servlet.http.HttpSession
  * 3. 如果定义了可空参数,需要默认值, 重写参数 var  productIds = productIds ?: mutableListOf<String>()
  * 4. 只解析没有注解的参数,有任何注解,都不使用该方式.
  */
-class RequestParameterConverter() : HandlerMethodArgumentResolver {
+class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
-
-//    private val packages by lazy {
-//        return@lazy SpringUtil.context.environment.getProperty("shop.mvc-parameter-packages").AsString().split(",").filter { it.isNotEmpty() }
-//    }
-
 
     override fun supportsParameter(parameter: MethodParameter): Boolean {
         if (ServletRequest::class.java.isAssignableFrom(parameter.parameterType)) return false
@@ -80,12 +75,12 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
     }
 
     override fun resolveArgument(
-            parameter: MethodParameter,
-            mavContainer: ModelAndViewContainer?,
-            nativeRequest: NativeWebRequest,
-            binderFactory: WebDataBinderFactory?
+        parameter: MethodParameter,
+        mavContainer: ModelAndViewContainer?,
+        nativeRequest: NativeWebRequest,
+        binderFactory: WebDataBinderFactory?
     ): Any? {
-        if (mavContainer == null || nativeRequest == null || binderFactory == null) return null
+        if (mavContainer == null || binderFactory == null) return null
         var webRequest = (nativeRequest as ServletWebRequest).request
         var myRequest = getMyRequest(webRequest);
         var value: Any? = null
@@ -94,7 +89,7 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
 
         //获取 PathVariable 的值
         value =
-                (webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as Map<String, Any?>?)?.get(key);
+            (webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as Map<String, Any?>?)?.get(key);
 
         if (value == null && webRequest.queryString != null) {
             value = getFromQuery(webRequest, parameter);
@@ -103,6 +98,12 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
         if (value == null && myRequest != null) {
             var jsonModelValue = parameter.getParameterAnnotation(JsonModel::class.java)
             if (jsonModelValue != null) {
+//                if (jsonModelValue.value.java.isInterface) {
+//                    return (myRequest.body ?: byteArrayOf()).toString(utf8).FromJson(parameter.parameterType);
+//                } else {
+//                    return jsonModelValue.value.java.newInstance().apply(webRequest)
+//                }
+
                 return (myRequest.body ?: byteArrayOf()).toString(utf8).FromJson(parameter.parameterType);
             }
 
@@ -205,7 +206,7 @@ class RequestParameterConverter() : HandlerMethodArgumentResolver {
                     value = (value as Collection<String>).toTypedArray()
                 } else {
                     value = (value as Collection<String>).map { it.ConvertType(parameter.parameterType.componentType) }
-                            .toTypedArray()
+                        .toTypedArray()
                 }
             } else if (parameter.parameterType.IsCollectionType) {
                 var genType = (parameter.genericParameterType as ParameterizedTypeImpl).GetActualClass(0);

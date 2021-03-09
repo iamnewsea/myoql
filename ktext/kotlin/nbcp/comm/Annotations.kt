@@ -4,19 +4,11 @@ import org.springframework.stereotype.Component
 import java.lang.annotation.ElementType
 import java.lang.annotation.Inherited
 import java.security.KeyPair
+import kotlin.reflect.KClass
 
 /**
  * Created by udi on 17-3-30.
  */
-
-/**
- * 把客户Post的Json,整体映射到Model上.如:
- * 客户端Post : { id: 1 , name: "ok" }  -> 服务器接收:  info: IdName
- * value 表示必填值,支持 [] 以及 . 表示式。
- */
-@Target(AnnotationTarget.VALUE_PARAMETER)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class JsonModel()
 
 
 /**
@@ -35,7 +27,7 @@ annotation class Require(val value: String = "")
 annotation class Ignore(val value: String = "")
 
 
-@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS, AnnotationTarget.FIELD)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Defines(val values: Array<Define>)
 
@@ -45,7 +37,7 @@ annotation class Defines(val values: Array<Define>)
 @java.lang.annotation.Repeatable(Defines::class)
 @Repeatable
 @Inherited
-@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS, AnnotationTarget.FIELD)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Define(val value: String, val key: String = "")
 

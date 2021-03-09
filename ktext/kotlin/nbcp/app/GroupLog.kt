@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 /**
  * 定时任务组件注解
  */
-@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class GroupLog(val value: String = "")
 

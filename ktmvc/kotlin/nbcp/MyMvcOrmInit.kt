@@ -8,7 +8,6 @@ import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
 import nbcp.web.*
 import org.springframework.boot.jackson.JsonComponent
-import org.springframework.boot.web.servlet.MultipartConfigFactory
 import org.springframework.context.ApplicationListener
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -18,37 +17,49 @@ import org.springframework.core.convert.support.GenericConversionService
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter
-import org.springframework.util.unit.DataSize
-import org.springframework.util.unit.DataUnit
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
+import org.springframework.web.method.support.HandlerMethodReturnValueHandler
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
-import javax.servlet.MultipartConfigElement
 
 
 @Configuration
 @DependsOn("springUtil")
 open class MyMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
+    companion object {
+        private var _inited = false;
 
-    val handerAdapter: RequestMappingHandlerAdapter by lazy {
+        fun isInited(): Boolean {
+            var tmp = _inited;
+            _inited = true;
+            return tmp
+        }
+    }
+
+    val handlerAdapter: RequestMappingHandlerAdapter by lazy {
         return@lazy SpringUtil.getBean<RequestMappingHandlerAdapter>();
     }
 
 
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
+        if (isInited()) return;
         initMvcRequest()
     }
 
     private fun initMvcRequest() {
-
         var listResolvers = mutableListOf<HandlerMethodArgumentResolver>()
-        listResolvers.add(RequestParameterConverter());
-        listResolvers.addAll(handerAdapter.argumentResolvers ?: listOf())
+        listResolvers.add(JsonModelParameterConverter());
+        listResolvers.addAll(handlerAdapter.argumentResolvers ?: listOf())
 
-        handerAdapter.argumentResolvers = listResolvers;
+        handlerAdapter.argumentResolvers = listResolvers;
 
+//        var listReturnHandlers = mutableListOf<HandlerMethodReturnValueHandler>()
+//        listReturnHandlers.add(JsonReturnModelHandler())
+//        listReturnHandlers.addAll(handlerAdapter.returnValueHandlers ?: listOf())
+//
+//        handlerAdapter.returnValueHandlers = listReturnHandlers
 
-        val initializer = handerAdapter.webBindingInitializer as ConfigurableWebBindingInitializer
+        val initializer = handlerAdapter.webBindingInitializer as ConfigurableWebBindingInitializer
         if (initializer.conversionService != null) {
             val genericConversionService = initializer.conversionService as GenericConversionService
             genericConversionService.addConverter(StringToDateConverter())
@@ -58,10 +69,14 @@ open class MyMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
         }
 
         //处理请求的消息体。
-        handerAdapter.messageConverters.forEach { converter ->
+        handlerAdapter.messageConverters.forEach { converter ->
             if (converter is MappingJackson2HttpMessageConverter) {
                 converter.defaultCharset = utf8
-                converter.objectMapper = DefaultMyJsonMapper.get(JsonStyleEnumScope.FieldStyle, JsonStyleEnumScope.IgnoreNull, JsonStyleEnumScope.Compress)
+                converter.objectMapper = DefaultMyJsonMapper.get(
+                    JsonStyleEnumScope.FieldStyle,
+                    JsonStyleEnumScope.IgnoreNull,
+                    JsonStyleEnumScope.Compress
+                )
                 return@forEach
             }
 
@@ -73,11 +88,18 @@ open class MyMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
             if (converter is AllEncompassingFormHttpMessageConverter) {
                 converter.setCharset(utf8)
 
-                (MyUtil.getPrivatePropertyValue(converter, "partConverters") as Collection<*>).forEach foreach2@{ sub_conveter ->
+                (MyUtil.getPrivatePropertyValue(
+                    converter,
+                    "partConverters"
+                ) as Collection<*>).forEach foreach2@{ sub_conveter ->
 
                     if (sub_conveter is MappingJackson2HttpMessageConverter) {
                         sub_conveter.defaultCharset = utf8
-                        sub_conveter.objectMapper = DefaultMyJsonMapper.get(JsonStyleEnumScope.FieldStyle, JsonStyleEnumScope.IgnoreNull, JsonStyleEnumScope.Compress)
+                        sub_conveter.objectMapper = DefaultMyJsonMapper.get(
+                            JsonStyleEnumScope.FieldStyle,
+                            JsonStyleEnumScope.IgnoreNull,
+                            JsonStyleEnumScope.Compress
+                        )
                     }
                     return@foreach2
                 }
@@ -92,7 +114,11 @@ open class MyMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
 class MyMvcJsonSerializerManage {
     @Bean
     fun jacksonObjectMapper(): ObjectMapper {
-        return DefaultMyJsonMapper.get(JsonStyleEnumScope.GetSetStyle, JsonStyleEnumScope.IgnoreNull, JsonStyleEnumScope.Compress)
+        return DefaultMyJsonMapper.get(
+            JsonStyleEnumScope.GetSetStyle,
+            JsonStyleEnumScope.IgnoreNull,
+            JsonStyleEnumScope.Compress
+        )
     }
 }
 

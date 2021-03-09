@@ -15,14 +15,14 @@ object CodeUtil {
     }
 
     /**
-     *  雪花算法生成Long型Id.尽量使用 getCode 方法生成String类型的编码！
+     *  雪花算法生成Long型Id.
      */
     fun getNumberValue(): Long {
         return snowFlake.nextId();
     }
 
     /**
-     * 雪花算法生成Code
+     * 雪花算法 生成36进制字符串形式
      */
     fun getCode(): String {
         //使用 java.lang.Long.valueOf(36进制数,36) 转化为Long

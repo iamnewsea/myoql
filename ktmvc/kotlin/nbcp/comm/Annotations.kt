@@ -1,24 +1,51 @@
 package nbcp.comm
 
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
+import kotlin.reflect.KClass
+
 /**
  * Created by udi on 17-3-30.
  */
+
+//interface JsonModelMessageConverter {
+//    fun apply(request: HttpServletRequest): Any?
+//}
+//
+//interface JsonReturnModelMessageConverter {
+//    fun apply(request: HttpServletRequest, value:Any?): Any?
+//}
 
 /**
  * 不需要权限的Action
  * 定义配置类，继承 HandlerInterceptorAdapter，判断是否有注解。
  */
-@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
+@Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class OpenAction
+
+/**
+ * 把客户Post的Json,整体映射到Model上.如:
+ * 客户端Post : { id: 1 , name: "ok" }  -> 服务器接收:  info: IdName
+ * value 表示必填值,支持 [] 以及 . 表示式。
+ */
+//AnnotationTarget.TYPE 表示返回值，但是无法被反射到。
+@Target(AnnotationTarget.VALUE_PARAMETER, AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class JsonModel()
+
+
+//@Target(AnnotationTarget.FUNCTION)
+//@Retention(AnnotationRetention.RUNTIME)
+//annotation class JsonReturnModel(val value: KClass<out JsonReturnModelMessageConverter> = JsonReturnModelMessageConverter::class)
 
 /**
  * 记录Action日志级别的注解，value = ch.qos.logback.classic.Level.级别
  * Level.toLevel识别的参数，不区分大小写，如：all|trace|debug|info|error|off
  */
-@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class MyLogLevel(val value:LogScope)
+annotation class MyLogLevel(val value: LogScope)
 
 
 /**
@@ -30,6 +57,6 @@ annotation class MyLogLevel(val value:LogScope)
  * user 的角色是 op_user
  * 如果 Controller注解角色是 admin,op_user,表示 admin 或者 op_user 可以访问
  */
-@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
+@Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class RoleAction(vararg val roleNames: String)

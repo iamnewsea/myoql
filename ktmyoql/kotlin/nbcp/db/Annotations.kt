@@ -10,14 +10,14 @@ import kotlin.reflect.KClass
 /**
  * 生成元数据的组
  */
-@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
+@Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class MetaDataGroup(val group: String)
 
 /**
  * 标记实体删除之前是否保存到垃圾箱
  */
-@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
+@Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class RemoveToSysDustbin()
 
@@ -25,7 +25,7 @@ annotation class RemoveToSysDustbin()
 /**
  * 记录当更新某些字段时,记录到日志表
  */
-@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
+@Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class DbEntityLogHistory(vararg val fields: String)
 
@@ -33,7 +33,7 @@ annotation class DbEntityLogHistory(vararg val fields: String)
  * 重复性
  */
 @Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
+@Target(AnnotationTarget.CLASS)
 annotation class DbEntityFieldRefs(val values: Array<DbEntityFieldRef>)
 
 /**
@@ -44,7 +44,7 @@ annotation class DbEntityFieldRefs(val values: Array<DbEntityFieldRef>)
  * DbEntityFieldRef("SysCorporation","corp.id","corp.name")
  * 当 SysCorporation.name 发生变化后， 该表自动更新。
  */
-@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
+@Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @java.lang.annotation.Repeatable(DbEntityFieldRefs::class)
 @Repeatable
