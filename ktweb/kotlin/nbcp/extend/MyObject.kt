@@ -98,12 +98,12 @@ val HttpServletRequest.tokenValue: String
 
         if (token.isNullOrEmpty()) {
             newToken = generateToken();
-        } else if (token.startsWith(tokenPrefix) == false) {
+        } else if (validateToken(token) == false) {
             newToken = generateToken();
         } else {
             var tokenTime: LocalDateTime? = null;
             try {
-                tokenTime = CodeUtil.getDateTimeFromCode(token.substring(tokenPrefix.length));
+                tokenTime = CodeUtil.getDateTimeFromCode(token.split("!")[2]);
             } catch (e: Exception) {
                 logger.error("token格式非法:" + e.message);
             }

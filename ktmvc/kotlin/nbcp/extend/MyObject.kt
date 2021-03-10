@@ -219,10 +219,14 @@ fun getUserSystemType(requestToken: String = ""): String {
 /**
  * token前缀,SnowFlakeToken, 加上了一个 encodeURIComponent 不会转义的字符： - _ . ! ~ * ' ( )
  */
-val tokenPrefix = "st!";
+private val tokenPrefix = "st!";
 
 fun generateToken(oldRequestToken: String = ""): String {
     return tokenPrefix + getUserSystemType(oldRequestToken) + "!" + CodeUtil.getCode();
+}
+
+fun validateToken(token: String): Boolean {
+    return token.startsWith(tokenPrefix) && (token.split("!").size == 3);
 }
 
 
