@@ -20,6 +20,12 @@ class MyUtilTest : TestBase() {
     }
 
     @Test
+    fun getCn() {
+        println('a'.toLong())
+        println('中'.toLong())
+    }
+
+    @Test
     fun testformat() {
         var ret = MyUtil.formatTemplateJson("dbr.\${group|w}.\${entity}.queryById(id)",
             StringMap("group" to "wx", "entity" to "user"), { key, value, func, param ->
