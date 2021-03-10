@@ -109,16 +109,16 @@ val HttpServletRequest.tokenValue: String
             }
 
             if (tokenTime == null) {
-                newToken = generateToken()
+                newToken = generateToken(token)
             } else {
                 var now = LocalDateTime.now();
 
                 var diffSeconds = (now - tokenTime).totalSeconds
                 if (diffSeconds > config.tokenKeyExpireSeconds) {
                     this.userSystemService.deleteToken(token);
-                    newToken = generateToken();
+                    newToken = generateToken(token);
                 } else if (diffSeconds > config.tokenKeyRenewalSeconds) {
-                    var newToken = generateToken();
+                    var newToken = generateToken(token);
                     WebUserTokenBeanInstance.instance!!.changeToken(token, newToken);
                 }
             }
@@ -135,5 +135,6 @@ val HttpServletRequest.tokenValue: String
         }
         return newToken;
     }
+
 
 

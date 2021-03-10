@@ -3,10 +3,7 @@ package nbcp.service
 import nbcp.comm.*
 import nbcp.db.LoginUserModel
 import nbcp.db.redis.proxy.RedisStringProxy
-import nbcp.utils.SpringUtil
-import nbcp.web.HttpContext
-import nbcp.web.findParameterStringValue
-import org.springframework.beans.factory.annotation.Value
+import nbcp.web.getUserSystemType
 import org.springframework.stereotype.Component
 
 /**
@@ -14,51 +11,26 @@ import org.springframework.stereotype.Component
  */
 @Component
 class UserSystemService {
-    @Value("\${app.user-system-header:user-system}")
-    var userSystemHeader: String = "";
 
-    /**userSystem
-     * 用户体系：一般分为： admin,corp,open, 用于 redis key = {userSystem}token:{token}
-     * 从三个地方获取 userSystem:
-     * 1. 上下文 app.user-system
-     * 2. request 参数 user-system
-     * 3. 系统配置 app.user-system
-     */
-    private val userSystemRedisPrefix: String
-        get() {
-            var value = scopes.getLatestStringScope("app.user-system")
-            if (value.HasValue) {
-                return value;
-            }
-
-
-            value = HttpContext.request.findParameterStringValue(userSystemHeader)
-            if (value.HasValue) {
-                return value;
-            }
-
-            value = SpringUtil.context.environment.getProperty("app.user-system") ?: ""
-            if (value.HasValue) {
-                return value;
-            }
-            throw RuntimeException("必须指定 app.user-system")
-        }
-
-    private val userSystemRedis
-        get() = RedisStringProxy(userSystemRedisPrefix + "token", 900);
+    private val userSystemRedisProxy
+        get() = RedisStringProxy("", 900)
+            .apply { this.dynamicGroup { "token:${getUserSystemType(it)}" } };
 
     /**
-     * 用户体系的redis验证码，格式如：{config.userSystem}validateCode:{id}
+     * 用户体系的redis验证码，格式如：{app.user-system}validateCode:{id}
      */
-    val validateCode get() = RedisStringProxy(userSystemRedisPrefix + "validateCode", 180);
+    val validateCode
+        get() = RedisStringProxy(
+            "", 180
+        ).apply { this.dynamicGroup { "validateCode:${getUserSystemType(it)}" } };
 
 
     /**
      * 获取登录token
      */
     fun getLoginInfoFromToken(token: String): LoginUserModel? {
-        userSystemRedis.renewalKey(token);
-        return userSystemRedis.get(token).FromJson<LoginUserModel>();
+        userSystemRedisProxy.renewalKey(token);
+        return userSystemRedisProxy.get(token).FromJson<LoginUserModel>();
     }
 
     /**
@@ -66,7 +38,7 @@ class UserSystemService {
      */
     fun saveLoginUserInfo(userInfo: LoginUserModel) {
         if (userInfo.id.HasValue && userInfo.token.HasValue) {
-            userSystemRedis.set(userInfo.token, userInfo.ToJson())
+            userSystemRedisProxy.set(userInfo.token, userInfo.ToJson())
         }
     }
 
@@ -74,6 +46,6 @@ class UserSystemService {
      * 删除tokens
      */
     fun deleteToken(vararg tokens: String) {
-        userSystemRedis.deleteKeys(*tokens)
+        userSystemRedisProxy.deleteKeys(*tokens)
     }
 }
