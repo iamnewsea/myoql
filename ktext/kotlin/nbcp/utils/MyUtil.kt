@@ -121,18 +121,19 @@ object MyUtil {
     }
 
     fun getCenterEachLine(lines: List<String>): List<String> {
-        var map = lines.associate { it to it.sumBy { if (it.toLong() < 256) 1 else 2 } }
+        var map = lines.map { it to it.sumBy { if (it.toLong() < 256) 1 else 2 } }
 
-        var max = map.values.maxOrNull() ?: 0
+        var max = map.map { it.second }.maxOrNull() ?: 0
         if (max % 2 == 1) {
             max++;
         }
 
         return map.map {
-            if (it.value == 0) return@map it.key
+            if (it.second == 0) return@map it.first
 
-            var harf = ((max - it.value) / 2).AsInt()
-            return@map  it.key.padStart(harf)
+            var harf = ((max - it.second) / 2).AsInt()
+            var part = ' '.NewString(harf)
+            return@map part + it.first
         }
     }
 

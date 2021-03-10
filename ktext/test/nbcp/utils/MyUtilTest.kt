@@ -20,9 +20,13 @@ class MyUtilTest : TestBase() {
     }
 
     @Test
-    fun getCn() {
-        println('a'.toLong())
-        println('中'.toLong())
+    fun getCenterLines() {
+        var txt = """
+================================================
+TomcatWebServer:8002 -- nacos: saas-dev.nancal.com:8848(yuxh) -- nacos-config:none -- admin-api:yuxh
+================================================
+         """
+        println(MyUtil.getCenterEachLine(txt.split("\n")).joinToString("\n"))
     }
 
     @Test
