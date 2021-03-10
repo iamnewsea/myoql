@@ -8,6 +8,7 @@ import nbcp.utils.*
 import nbcp.db.LoginUserModel
 import nbcp.service.UserSystemService
 import org.slf4j.LoggerFactory
+import java.lang.RuntimeException
 import java.time.LocalDateTime
 import javax.servlet.http.HttpServletRequest
 
@@ -94,7 +95,7 @@ val HttpServletRequest.tokenValue: String
 
         token = this.findParameterValue(config.tokenKey).AsStringWithNull();
 
-        var newToken = ""
+        var newToken: String;
 
         if (token.isNullOrEmpty()) {
             newToken = generateToken();
@@ -120,17 +121,19 @@ val HttpServletRequest.tokenValue: String
                 } else if (diffSeconds > config.tokenKeyRenewalSeconds) {
                     newToken = generateToken(token);
                     WebUserTokenBeanInstance.instance!!.changeToken(token, newToken);
+                } else {
+                    newToken = token
                 }
             }
         }
 
         if (newToken.isEmpty()) {
-            newToken = token ?: generateToken()
+            throw RuntimeException("找不到新token")
         }
 
         this.setAttribute(cacheKey, newToken)
 
-        if (newToken != token) {
+        if (newToken != token && newToken.HasValue) {
             HttpContext.response.setHeader(config.tokenKey, newToken)
         }
         return newToken;
