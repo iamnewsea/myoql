@@ -118,7 +118,7 @@ val HttpServletRequest.tokenValue: String
                     this.userSystemService.deleteToken(token);
                     newToken = generateToken(token);
                 } else if (diffSeconds > config.tokenKeyRenewalSeconds) {
-                    var newToken = generateToken(token);
+                    newToken = generateToken(token);
                     WebUserTokenBeanInstance.instance!!.changeToken(token, newToken);
                 }
             }
