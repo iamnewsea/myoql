@@ -213,7 +213,8 @@ fun getUserSystemType(requestToken: String = ""): String {
     if (value.HasValue) {
         return value;
     }
-    throw RuntimeException("需要配置 app.user-system")
+
+    return ""
 }
 
 /**
@@ -222,7 +223,9 @@ fun getUserSystemType(requestToken: String = ""): String {
 private val tokenPrefix = "st!";
 
 fun generateToken(oldRequestToken: String = ""): String {
-    return tokenPrefix + getUserSystemType(oldRequestToken) + "!" + CodeUtil.getCode();
+    var userType = getUserSystemType(oldRequestToken)
+    if (userType.isEmpty()) return ""
+    return tokenPrefix + userType + "!" + CodeUtil.getCode();
 }
 
 fun validateToken(token: String): Boolean {

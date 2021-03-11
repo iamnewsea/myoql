@@ -128,8 +128,9 @@ val HttpServletRequest.tokenValue: String
         }
 
         if (newToken.isEmpty()) {
-            throw RuntimeException("找不到新token")
+            return ""
         }
+
 
         this.setAttribute(cacheKey, newToken)
 
