@@ -118,6 +118,7 @@ export default {
             var rowName = row.name;
             jv.confirm('确认删除 ' + rowName + ' 吗？').then(res => {
                 this.$http.post("${url}/delete/" + rowId).then(res => {
+                    //[axios拦截器中已处理了异常]。
                     this.loadData();
                 })
             });
