@@ -13,15 +13,15 @@ import org.springframework.stereotype.Component
 class UserSystemService {
 
     private val userSystemRedisProxy
-        get() = RedisStringProxy("", 900)
-            .apply { this.dynamicGroup { "token:${getUserSystemType(it)}" } };
+        get() = RedisStringProxy("", config.tokenCacheSeconds)
+            .apply { this.dynamicGroup { "${config.tokenKey}:${getUserSystemType(it)}" } };
 
     /**
      * 用户体系的redis验证码，格式如：{app.user-system}validateCode:{id}
      */
     val validateCode
         get() = RedisStringProxy(
-            "", 180
+            "", config.validateCodeCacheSeconds
         ).apply { this.dynamicGroup { "validateCode:${getUserSystemType(it)}" } };
 
 

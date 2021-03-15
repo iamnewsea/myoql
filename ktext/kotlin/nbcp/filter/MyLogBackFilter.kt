@@ -107,19 +107,27 @@ class MyLogBackFilter : TurboFilter() {
  * <filter class="nbcp.filter.MyMainGroupLogBackFilter">
  *     <group>main</group>
  * </filter>
+ *
+ * 配置: app.def-all-scope-log 表示默认日志文件接受所有分组。
  */
 class MyGroupLogBackFilter : Filter<ILoggingEvent>() {
     var group: String = "";
 
     override fun decide(event: ILoggingEvent?): FilterReply {
         var groupScope = scopes.GetLatest<GroupLog>();
-        if (groupScope == null) {
-            if (group.isEmpty() || config.defAllScopeLog) {
-                return FilterReply.ACCEPT
-            } else {
-                return FilterReply.DENY
-            }
+        if (groupScope != null) {
+            return if (groupScope.value == group) FilterReply.ACCEPT else FilterReply.DENY
         }
-        return if (groupScope.value == group) FilterReply.ACCEPT else FilterReply.DENY
+
+
+        if (group.HasValue) {
+            return FilterReply.DENY
+        }
+
+        if (config.defAllScopeLog) {
+            return FilterReply.ACCEPT
+        } else {
+            return FilterReply.DENY
+        }
     }
 }

@@ -39,6 +39,7 @@ object config {
             return _debug ?: false;
         }
 
+
     /**
      * 指定 ${app}.log 是否包含全部GroupLog日志。
      */
@@ -71,29 +72,40 @@ object config {
 
     /**
      * 由于 SameSite 限制，避免使用 Cookie，定义一个额外值来保持会话。
-     * 如果设置为空，则使用 set-cookie方式
+     * 如果设置为空，则使用 set-cookie方式， 用于以下两个地方：
+     * header["token"]
+     * redis: admin:token
      */
     val tokenKey: String by lazy {
         return@lazy SpringUtil.context.environment.getProperty("app.token-key") ?: "token"
     }
 
     /**
-     * 强制 token 过期时间。单位是秒,默认是72小时
+     * token 缓存时间，默认四个小时
+     */
+    val tokenCacheSeconds: Int by lazy {
+        return@lazy Duration.parse(
+            SpringUtil.context.environment.getProperty("app.token-cache-seconds").AsString("PT4H")
+        ).seconds.toInt()
+    }
+
+    /**
+     * 强制 token 过期时间。单位是秒,默认是72小时，过期后不再续期
      */
     val tokenKeyExpireSeconds: Int by lazy {
         var ret = Duration.parse(SpringUtil.context.environment.getProperty("app.token-key-expire").AsString("P3D"));
-        if (ret.seconds < tokenKeyRenewalSeconds * 3) {
-            return@lazy tokenKeyRenewalSeconds * 3
+        if (ret.seconds < tokenCacheSeconds * 3) {
+            return@lazy tokenCacheSeconds * 3
         }
         return@lazy ret.seconds.toInt()
     }
 
     /**
-     * 到指定时间后(未到过期时间)，返回新的token。默认4小时。会保存到Redis里。单位是秒
+     * token 缓存时间，默认四个小时
      */
-    val tokenKeyRenewalSeconds: Int by lazy {
+    val validateCodeCacheSeconds: Int by lazy {
         return@lazy Duration.parse(
-            SpringUtil.context.environment.getProperty("app.token-key-renewal").AsString("PT4H")
+            SpringUtil.context.environment.getProperty("app.validate-code-cache-seconds").AsString("PT4H")
         ).seconds.toInt()
     }
 
