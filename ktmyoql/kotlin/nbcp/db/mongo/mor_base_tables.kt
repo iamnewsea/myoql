@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2020-12-06 15:15:53
+//generate auto @2021-03-15 13:47:15
 
 class IdUrlMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
@@ -331,20 +331,20 @@ class MongoBaseGroup : IDataGroup{
         @Cn("授权码")
         val authorizeCode=MongoColumnName("authorizeCode")
         /**
-        * 令牌
-        */
-        @Cn("令牌")
-        val token=MongoColumnName("token")
-        /**
-        * 刷新令牌
-        */
-        @Cn("刷新令牌")
-        val freshToken=MongoColumnName("freshToken")
-        /**
         * 授权码创建时间
         */
         @Cn("授权码创建时间")
         val authorizeCodeCreateAt=MongoColumnName("authorizeCodeCreateAt")
+        /**
+        * 第三方应用的令牌(登录用户的token只在redis里)
+        */
+        @Cn("第三方应用的令牌(登录用户的token只在redis里)")
+        val token=MongoColumnName("token")
+        /**
+        * 第三方应用的刷新令牌
+        */
+        @Cn("第三方应用的刷新令牌")
+        val freshToken=MongoColumnName("freshToken")
         /**
         * 授权应用
         */
