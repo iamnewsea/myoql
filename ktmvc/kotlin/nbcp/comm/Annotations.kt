@@ -57,6 +57,6 @@ annotation class MyLogLevel(val value: LogScope)
  * user 的角色是 op_user
  * 如果 Controller注解角色是 admin,op_user,表示 admin 或者 op_user 可以访问
  */
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class RoleAction(vararg val roleNames: String)
