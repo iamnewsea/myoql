@@ -49,7 +49,7 @@ var HttpServletRequest.LoginUser: LoginUserModel
             ret = LoginUserModel.ofToken(token);
         }
 
-        this.LoginUser = ret!!;
+        this.LoginUser = ret;
         return ret;
     }
     set(value) {
@@ -98,9 +98,9 @@ val HttpServletRequest.tokenValue: String
         var newToken: String;
 
         if (token.isNullOrEmpty()) {
-            newToken = generateToken();
-        } else if (validateToken(token) == false) {
-            newToken = generateToken();
+            newToken = TokenUtil.generateToken();
+        } else if (TokenUtil.validateToken(token) == false) {
+            newToken = TokenUtil.generateToken();
         } else {
             var tokenTime: LocalDateTime? = null;
             try {
@@ -110,16 +110,16 @@ val HttpServletRequest.tokenValue: String
             }
 
             if (tokenTime == null) {
-                newToken = generateToken(token)
+                newToken = TokenUtil.generateToken(token)
             } else {
                 var now = LocalDateTime.now();
 
                 var diffSeconds = (now - tokenTime).totalSeconds
                 if (diffSeconds > config.tokenKeyExpireSeconds) {
                     this.userSystemService.deleteToken(token);
-                    newToken = generateToken(token);
+                    newToken = TokenUtil.generateToken(token);
                 } else if (diffSeconds > config.tokenCacheSeconds) {
-                    newToken = generateToken(token);
+                    newToken = TokenUtil.generateToken(token);
                     WebUserTokenBeanInstance.instance!!.changeToken(token, newToken);
                 } else {
                     newToken = token

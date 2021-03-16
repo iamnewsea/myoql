@@ -3,7 +3,7 @@ package nbcp.service
 import nbcp.comm.*
 import nbcp.db.LoginUserModel
 import nbcp.db.redis.proxy.RedisStringProxy
-import nbcp.web.getUserSystemType
+import nbcp.utils.TokenUtil
 import org.springframework.stereotype.Component
 
 /**
@@ -13,16 +13,15 @@ import org.springframework.stereotype.Component
 class UserSystemService {
 
     private val userSystemRedisProxy
-        get() = RedisStringProxy("", config.tokenCacheSeconds)
-            .apply { this.dynamicGroup { "${config.tokenKey}:${getUserSystemType(it)}" } };
+        get() = RedisStringProxy(config.tokenKey, config.tokenCacheSeconds)
 
     /**
      * 用户体系的redis验证码，格式如：{app.user-system}validateCode:{id}
      */
     val validateCode
         get() = RedisStringProxy(
-            "", config.validateCodeCacheSeconds
-        ).apply { this.dynamicGroup { "validateCode:${getUserSystemType(it)}" } };
+            "validateCode", config.validateCodeCacheSeconds
+        )
 
 
     /**

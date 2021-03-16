@@ -38,7 +38,7 @@ class RedisListProxy(
     /**
      * RPush，在最尾部添加。
      */
-    fun Push(key: String, vararg members: String): Int {
+    fun push(key: String, vararg members: String): Int {
         var cacheKey = getFullKey(key);
         return anyTypeCommand.opsForList().rightPushAll(cacheKey, *members).AsInt()
     }
@@ -46,12 +46,12 @@ class RedisListProxy(
     /**
      * RPop，在最尾部移除一个。
      */
-    fun Pop(key: String): String {
+    fun pop(key: String): String {
         var cacheKey = getFullKey(key);
         return anyTypeCommand.opsForList().rightPop(cacheKey).AsString()
     }
 
-    fun PopPush(key: String, targetGroup: String, targetKey: String): String {
+    fun popPush(key: String, targetGroup: String, targetKey: String): String {
         var cacheKey = getFullKey(key);
         var targetKey = BaseRedisProxy.getFullKey(targetGroup, targetKey)
         return anyTypeCommand.opsForList().rightPopAndLeftPush(cacheKey, targetKey).AsString()

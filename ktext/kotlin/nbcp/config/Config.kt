@@ -3,6 +3,7 @@
 
 package nbcp.comm
 
+import nbcp.utils.CodeUtil
 import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
 import org.slf4j.Logger
@@ -38,7 +39,6 @@ object config {
             _debug = SpringUtil.context.environment.getProperty("debug").AsBoolean();
             return _debug ?: false;
         }
-
 
     /**
      * 指定 ${app}.log 是否包含全部GroupLog日志。

@@ -37,17 +37,17 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
         return@lazy SpringUtil.getBean<AnyTypeRedisTemplate>()
     }
 
-    /**
-     * 参数是 key,动态生成新的fullKey
-     */
-    private var _dynamic_group: ((String) -> String)? = null
-
-    /**
-     * 动态组，根据key
-     */
-    fun dynamicGroup(callback: ((String) -> String)) {
-        this._dynamic_group = callback
-    }
+//    /**
+//     * 参数是 key,动态生成新的fullKey
+//     */
+//    private var _dynamic_group: ((String) -> String)? = null
+//
+//    /**
+//     * 动态组，根据key
+//     */
+//    fun dynamicGroup(callback: ((String) -> String)) {
+//        this._dynamic_group = callback
+//    }
 
 //    protected fun readRenewalEvent(key: String) {
 //        if (renewalType == RedisRenewalTypeEnum.Read ||
@@ -79,16 +79,16 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
 //    }
 
     fun getFullKey(key: String): String {
-        var group2 = "";
-        if( _dynamic_group != null){
-            group2 = _dynamic_group!!.invoke(key)
-        }
-        else{
-            group2 = group
-        }
+//        var group2 = "";
+//        if( _dynamic_group != null){
+//            group2 = _dynamic_group!!.invoke(key)
+//        }
+//        else{
+//            group2 = group
+//        }
 
-        if (key.startsWith(group2 + ":")) return key;
-        return arrayOf(group2, key).filter { it.isNotEmpty() }.joinToString(":");
+        if (key.startsWith(group + ":")) return key;
+        return arrayOf(group, key).filter { it.isNotEmpty() }.joinToString(":");
     }
 
 
