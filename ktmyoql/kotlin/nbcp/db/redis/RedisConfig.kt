@@ -174,7 +174,6 @@ class AnyTypeRedisTemplate() : RedisTemplate<String, Any>() {
 @AutoConfigureAfter(RedisAutoConfiguration::class)
 //@ConditionalOnProperty("spring.redis.host")
 @ConditionalOnProperty("spring.redis.host")
-@EnableCaching
 class RedisConfig {
     @Bean
     fun redisTemplate(connectionFactory: RedisConnectionFactory): AnyTypeRedisTemplate {
