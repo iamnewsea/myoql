@@ -510,7 +510,7 @@ object MyUtil {
     /**
      * 查找类。
      */
-    fun findClasses(basePack: String, oneClass: Class<*>): List<Class<*>> {
+    fun findClasses(basePack: String, oneClass: Class<*>, filter: ((Class<*>) -> Boolean)? = null): List<Class<*>> {
 
         var basePackPath = basePack.replace(".", "/")
         var ret = mutableListOf<Class<*>>();
@@ -530,9 +530,9 @@ object MyUtil {
                 urlEnumeration.nextElement()//得到的结果大概是：jar:file:/C:/Users/ibm/.m2/repository/junit/junit/4.12/junit-4.12.jar!/org/junit
             val protocol = url.protocol//大概是jar
             if ("jar".equals(protocol, ignoreCase = true)) {
-                ret.addAll(getClassesFromJar(url, basePack))
+                ret.addAll(getClassesFromJar(url, basePack, filter))
             } else if ("file".equals(protocol, ignoreCase = true)) {
-                ret.addAll(getClassesFromFile(url.path, basePack, jarPath))
+                ret.addAll(getClassesFromFile(url.path, basePack, jarPath, filter))
             }
         }
 
@@ -612,14 +612,22 @@ object MyUtil {
         return path2.Slice(0, 0 - ".class".length)
     }
 
-    private fun getClassesFromFile(fullPath: String, basePack: String, jarPath: String): List<Class<*>> {
+    private fun getClassesFromFile(
+        fullPath: String,
+        basePack: String,
+        jarPath: String,
+        filter: ((Class<*>) -> Boolean)? = null
+    ): List<Class<*>> {
         var list = mutableListOf<Class<*>>()
         var className = ""
         var file = File(fullPath)
         if (file.isFile) {
             className = getClassName(file.name, basePack, jarPath);
             if (className.HasValue) {
-                list.add(Class.forName(className));
+                var cls = Class.forName(className)
+                if (filter?.invoke(cls) ?: true) {
+                    list.add(cls);
+                }
             }
             return list;
         } else {
@@ -627,17 +635,20 @@ object MyUtil {
                 if (it.isFile) {
                     className = getClassName(it.path, basePack, jarPath);
                     if (className.HasValue) {
-                        list.add(Class.forName(className));
+                        var cls = Class.forName(className);
+                        if (filter?.invoke(cls) ?: true) {
+                            list.add(cls);
+                        }
                     }
                 } else {
-                    list.addAll(getClassesFromFile(it.path, basePack, jarPath))
+                    list.addAll(getClassesFromFile(it.path, basePack, jarPath, filter))
                 }
             }
         }
         return list;
     }
 
-    private fun getClassesFromJar(url: URL, basePack: String): List<Class<*>> {
+    private fun getClassesFromJar(url: URL, basePack: String, filter: ((Class<*>) -> Boolean)? = null): List<Class<*>> {
         //转换为JarURLConnection
         val connection = url.openConnection() as JarURLConnection
         if (connection == null) {
@@ -670,7 +681,9 @@ object MyUtil {
 
             val cls = Class.forName(className)
 
-            list.add(cls);
+            if (filter?.invoke(cls) ?: true) {
+                list.add(cls);
+            }
         }
 
         return list;

@@ -6,6 +6,7 @@ package nbcp.db.redis
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.DefaultStringRedisConnection
@@ -173,9 +174,10 @@ class AnyTypeRedisTemplate() : RedisTemplate<String, Any>() {
 @AutoConfigureAfter(RedisAutoConfiguration::class)
 //@ConditionalOnProperty("spring.redis.host")
 @ConditionalOnProperty("spring.redis.host")
+@EnableCaching
 class RedisConfig {
     @Bean
-    fun redisKeyCommand(connectionFactory: RedisConnectionFactory): AnyTypeRedisTemplate {
+    fun redisTemplate(connectionFactory: RedisConnectionFactory): AnyTypeRedisTemplate {
         var template  = AnyTypeRedisTemplate()
         template.connectionFactory = connectionFactory;
         template.afterPropertiesSet();
