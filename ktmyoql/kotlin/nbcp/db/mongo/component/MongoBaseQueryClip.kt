@@ -58,6 +58,12 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
      */
     fun <R> toList(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): MutableList<R> {
         db.affectRowCount = -1;
+
+        var settingResult = db.mongo.mongoEvents.onQuering(this)
+        if (settingResult.any { it.second.result == false }) {
+            return mutableListOf();
+        }
+
         var isString = clazz.IsStringType;
 //        if (clazz.IsSimpleType()) {
 //            isString = clazz.name == "java.lang.String";
@@ -144,6 +150,14 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             }
 
             db.affectRowCount = cursor.size;
+
+
+            usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+                settingResult.forEach {
+                    it.first.query(this, it.second)
+                }
+            }
+
         } catch (e: Exception) {
             error = true;
             throw e;

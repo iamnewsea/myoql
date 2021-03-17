@@ -13,17 +13,25 @@ class MongoEntityEvent : BeanPostProcessor {
         //需要删 除后放入垃圾箱的实体
         @JvmStatic
         val dustbinEntitys = mutableSetOf<Class<*>>()  //mongo entity class
+
         @JvmStatic
         val logHistoryMap = linkedMapOf<Class<*>, Array<String>>()
+
         // 冗余字段的引用。如 user.corp.name 引用的是  corp.name
         @JvmStatic
         val refsMap = mutableListOf<DbEntityFieldRefData>()
+
         //注册的 Update Bean
         @JvmStatic
+        val queryEvent = mutableListOf<IMongoEntityQuery>()
+
+        @JvmStatic
         val insertEvent = mutableListOf<IMongoEntityInsert>()
+
         //注册的 Update Bean
         @JvmStatic
         val updateEvent = mutableListOf<IMongoEntityUpdate>()
+
         //注册的 Delete Bean
         @JvmStatic
         val deleteEvent = mutableListOf<IMongoEntityDelete>()
@@ -62,6 +70,10 @@ class MongoEntityEvent : BeanPostProcessor {
                     addLogHistory(entityClass);
                 }
             }
+        }
+
+        if (bean is IMongoEntityQuery) {
+            queryEvent.add(bean)
         }
 
         if (bean is IMongoEntityInsert) {
@@ -106,6 +118,22 @@ class MongoEntityEvent : BeanPostProcessor {
         if (dustbin != null) {
             dustbinEntitys.add(entityClass)
         }
+    }
+
+    fun onQuering(query: MongoBaseQueryClip): Array<Pair<IMongoEntityQuery, EventResult>> {
+        //先判断是否进行了类拦截.
+        var list = mutableListOf<Pair<IMongoEntityQuery, EventResult>>()
+        usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+            queryEvent.ForEachExt { it, index ->
+                var ret = it.beforeQuery(query);
+                if (ret.result == false) {
+                    return@ForEachExt false;
+                }
+                list.add(it to ret)
+                return@ForEachExt true
+            }
+        }
+        return list.toTypedArray()
     }
 
     fun onInserting(insert: MongoBaseInsertClip): Array<Pair<IMongoEntityInsert, EventResult>> {

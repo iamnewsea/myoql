@@ -3,6 +3,14 @@ package nbcp.db.mongo.event;
 import nbcp.db.mongo.*;
 import nbcp.db.EventResult
 
+
+interface IMongoEntityQuery {
+    fun beforeQuery(query: MongoBaseQueryClip): EventResult
+
+    fun query(query: MongoBaseQueryClip, eventData: EventResult)
+}
+
+
 interface IMongoEntityInsert {
     fun beforeInsert(insert: MongoBaseInsertClip): EventResult
 
