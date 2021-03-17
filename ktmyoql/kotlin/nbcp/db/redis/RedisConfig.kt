@@ -143,31 +143,7 @@ import org.springframework.data.redis.serializer.RedisSerializer
 //    }
 //}
 
-class AnyTypeRedisTemplate() : RedisTemplate<String, Any>() {
-    init {
-        //使用Jackson2JsonRedisSerializer来序列化和反序列化redis的value值
-//        var serializer = Jackson2JsonRedisSerializer(Any::class.java);
-//        serializer.setObjectMapper(FieldTypeJsonMapper.instance);
 
-        this.keySerializer = RedisSerializer.string()
-        this.valueSerializer = RedisSerializer.json()
-        this.hashKeySerializer = RedisSerializer.string()
-        this.hashValueSerializer = RedisSerializer.json()
-    }
-
-    constructor(connectionFactory: RedisConnectionFactory) : this() {
-        this.connectionFactory = connectionFactory
-        this.afterPropertiesSet()
-    }
-
-    override fun preProcessConnection(connection: RedisConnection, existingConnection: Boolean): RedisConnection {
-        return DefaultStringRedisConnection(connection)
-    }
-
-    override fun opsForSet(): SetOperations<String, Any> {
-        return super.opsForSet()
-    }
-}
 
 
 @Configuration

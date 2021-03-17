@@ -2,6 +2,8 @@ package nbcp.db.cache
 
 import nbcp.comm.Defines
 import nbcp.comm.StringMap
+import nbcp.comm.line_break
+import nbcp.utils.Md5Util
 import java.lang.annotation.Inherited
 
 /**
@@ -16,30 +18,14 @@ annotation class CacheForSelect(
     //隔离键
     val key: String = "",
     //隔离值
-    val value: String = "",
-    val md5: String = ""
-)
+    val value: String = ""
+) {
+}
 
 /**
- * Sql Update Cache
+ * Sql Update/Insert/Delete Cache
  */
 @Inherited
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class CacheForUpdate(val table: String, val key: String = "", val value: String = "")
-
-/**
- * Sql Insert Cache
- */
-@Inherited
-@Target(AnnotationTarget.FUNCTION)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class CacheForInsert(val table: String, val key: String = "", val value: String = "")
-
-/**
- * Sql Delete Cache
- */
-@Inherited
-@Target(AnnotationTarget.FUNCTION)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class CacheForDelete(val table: String, val key: String = "", val value: String = "")
+annotation class CacheForBroke(val table: String, val key: String = "", val value: String = "")

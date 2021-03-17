@@ -164,13 +164,13 @@ object config {
         return@lazy SpringUtil.context.environment.getProperty("spring.redis.host");
     }
 
-    val redisTaskSize: Int by lazy {
-        return@lazy SpringUtil.context.environment.getProperty("app.redis.task.size").AsInt(1024)
-    }
-
-    val redisTaskDelay: Int by lazy {
-        return@lazy SpringUtil.context.environment.getProperty("app.redis.task.delay").AsInt(15)
-    }
+//    val redisTaskSize: Int by lazy {
+//        return@lazy SpringUtil.context.environment.getProperty("app.redis.task.size").AsInt(1024)
+//    }
+//
+//    val redisTaskDelay: Int by lazy {
+//        return@lazy SpringUtil.context.environment.getProperty("app.redis.task.delay").AsInt(15)
+//    }
 
     val wxAppId: String by lazy {
         return@lazy SpringUtil.context.environment.getProperty("app.wx.appId")

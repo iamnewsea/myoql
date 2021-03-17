@@ -71,8 +71,8 @@ spring:
   redis:
     timeout: 3000
     database: 0
-    host: 172.72.0.20
-    password:
+    host: saas-dev.nancal.com
+    password: 1@#4
     port: 6379
   rabbitmq:
     host:

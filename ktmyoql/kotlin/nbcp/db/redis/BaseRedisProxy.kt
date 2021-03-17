@@ -92,29 +92,7 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
     }
 
 
-    /**
-     * 使用 scan 替代 keys
-     */
-    fun scan(pattern: String, limit: Int = 999): Set<String> {
-        var list = mutableSetOf<String>()
-        anyTypeCommand
-            .connectionFactory
-            .clusterConnection
-            .use { conn ->
-                conn.scan(
-                    ScanOptions
-                        .scanOptions()
-                        .match(group + pattern)
-                        .count(limit.AsLong())
-                        .build()
-                ).use { result ->
-                    while (result.hasNext()) {
-                        list.add(result.next().toString())
-                    }
-                }
-            }
-        return list;
-    }
+
 
 //    /**
 //     * 对 group 键值续期
