@@ -25,7 +25,7 @@ data class CacheKey(
         var dependencies: Set<String> = setOf(),   //缓存依赖
         // 保留字段: 主表主键值. 当且仅当 dependencies.size == 1 时,且查询条件有主键时.多主键 ,用逗号分隔
         //在哪里定义表的主键 ???
-        var whereJson: JsonMap = JsonMap() //形如: id=1&name=2&
+        var whereJson: JsonMap = JsonMap() //形如: id=1&name=2
 ) {
     companion object {
         @JvmStatic

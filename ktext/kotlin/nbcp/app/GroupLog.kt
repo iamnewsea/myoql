@@ -39,10 +39,6 @@ class GroupLogIntercepter {
 
     private fun invoke(joinPoint: ProceedingJoinPoint): Any? {
         var args = joinPoint.args
-        if (args.any()) {
-            return joinPoint.proceed(args)
-        } else {
-            return joinPoint.proceed()
-        }
+        return joinPoint.proceed(args)
     }
 }

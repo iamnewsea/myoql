@@ -26,29 +26,21 @@ open class LogLevelIntercepter {
     @Around("@within(nbcp.comm.MyLogLevel) || @annotation(nbcp.comm.MyLogLevel)")
     fun logPoint(joinPoint: ProceedingJoinPoint): Any? {
         var signature = joinPoint.signature as MethodSignature;
-        var targetType = signature.declaringType
-        var method = targetType.getDeclaredMethod(signature.name, *signature.parameterTypes);
+        var method = signature.method
         var level = method.getAnnotationsByType(MyLogLevel::class.java).firstOrNull()
         if (level == null) {
+            var targetType = signature.declaringType
             level = targetType.getAnnotationsByType<MyLogLevel>(MyLogLevel::class.java).firstOrNull() as MyLogLevel?
         }
 
         if (level == null) {
             var args = joinPoint.args
-            if (args.any()) {
-                return joinPoint.proceed(args)
-            } else {
-                return joinPoint.proceed()
-            }
+            return joinPoint.proceed(args)
         }
 
         return usingScope(level.value) {
             var args = joinPoint.args
-            if (args.any()) {
-                return joinPoint.proceed(args)
-            } else {
-                return joinPoint.proceed()
-            }
+            return joinPoint.proceed(args)
         }
     }
 }
