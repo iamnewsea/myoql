@@ -32,10 +32,21 @@ open class RedisCacheIntercepter {
         private var cache = MasterAlternateStack<CacheForBroke>() {
             var pattern = "";
             if (it.key.HasValue && it.value.HasValue) {
-                pattern = "sc:${it.table}:*(${it.key}-${it.value})";
+                pattern = "sc:${it.table}:*(${it.key}-${it.value})*";
             } else {
                 pattern = "sc:${it.table}:*";
             }
+
+            for (i in 0..99) {
+                var list = redisTemplate.scan(pattern);
+                if (list.any() == false) {
+                    break;
+                }
+
+                redisTemplate.delete(list);
+            }
+
+            pattern = "sc:*[${it.table}]*"
 
             for (i in 0..99) {
                 var list = redisTemplate.scan(pattern);
