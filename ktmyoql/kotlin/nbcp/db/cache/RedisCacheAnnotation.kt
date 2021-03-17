@@ -11,12 +11,13 @@ import java.lang.annotation.Inherited
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class CacheForSelect(
-    val tables: Array<String>,
-    val md5: String = "",
+    val table: String,
+    val joinTables: Array<String>,
     //隔离键
     val key: String = "",
     //隔离值
-    val value: String = ""
+    val value: String = "",
+    val md5: String = ""
 )
 
 /**

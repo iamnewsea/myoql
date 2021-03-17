@@ -26,15 +26,6 @@ import java.time.LocalDateTime
 //@ActiveProfiles("unittest","productprofile")
 //注释 pom.xml 中的  project.build.resources.resource 中的 excludes
 abstract class TestBase {
-
-    init {
-//        GenericXmlApplicationContext().environment.setActiveProfiles("test")
-
-//        println(SpringUtil.context.environment.activeProfiles)
-        //ParserConfig.getGlobalInstance().putDeserializer(ObjectId::class.java, ObjectIdDeserializer())
-    }
-
-
     fun execTimes(name: String, times: Int, func: (Int) -> String) {
         println("${name} 执行1000次:")
         var startAt = LocalDateTime.now()
