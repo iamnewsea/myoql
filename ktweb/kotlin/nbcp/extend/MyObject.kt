@@ -114,7 +114,7 @@ val HttpServletRequest.tokenValue: String
             } else {
                 var now = LocalDateTime.now();
 
-                var diffSeconds = (now - tokenTime).totalSeconds
+                var diffSeconds = (now - tokenTime).seconds
                 if (diffSeconds > config.tokenKeyExpireSeconds) {
                     this.userSystemService.deleteToken(token);
                     newToken = TokenUtil.generateToken(token);
