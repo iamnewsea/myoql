@@ -1,5 +1,6 @@
 @file:JvmName("MyHelper")
 @file:JvmMultifileClass
+package nbcp.comm
 
 import nbcp.comm.*
 import nbcp.utils.*
