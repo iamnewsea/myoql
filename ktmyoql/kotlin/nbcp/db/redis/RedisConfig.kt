@@ -144,17 +144,19 @@ import org.springframework.data.redis.serializer.RedisSerializer
 //}
 
 
-
-
 @Configuration
 @AutoConfigureAfter(RedisAutoConfiguration::class)
 //@ConditionalOnProperty("spring.redis.host")
 @ConditionalOnProperty("spring.redis.host")
 class RedisConfig {
     @Bean
-    fun redisTemplate(connectionFactory: RedisConnectionFactory): AnyTypeRedisTemplate {
-        var template  = AnyTypeRedisTemplate()
+    fun redisTemplate(connectionFactory: RedisConnectionFactory): RedisTemplate<String, Any> {
+        var template = RedisTemplate<String, Any>()
         template.connectionFactory = connectionFactory;
+        template.keySerializer = RedisSerializer.string()
+        template.valueSerializer = RedisSerializer.string()
+        template.hashKeySerializer = RedisSerializer.string()
+        template.hashValueSerializer = RedisSerializer.json()
         template.afterPropertiesSet();
         return template;
     }

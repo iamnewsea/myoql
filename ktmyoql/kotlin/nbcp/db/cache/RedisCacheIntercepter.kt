@@ -1,7 +1,6 @@
 package nbcp.db.cache
 
 import nbcp.comm.*
-import nbcp.db.redis.AnyTypeRedisTemplate
 import nbcp.db.redis.RedisTask
 import nbcp.model.MasterAlternateStack
 import nbcp.utils.Md5Util
@@ -13,6 +12,7 @@ import org.aspectj.lang.reflect.MethodSignature
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
 import java.time.Duration
@@ -31,7 +31,7 @@ open class RedisCacheIntercepter {
 
     @Autowired
     @Lazy
-    lateinit var redisTemplate: AnyTypeRedisTemplate
+    lateinit var redisTemplate: RedisTemplate<String,Any>
 
     fun getCacheKey(cache: CacheForSelect, ext: String): String {
 

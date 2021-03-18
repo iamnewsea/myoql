@@ -3,6 +3,7 @@ package nbcp.db.redis
 import nbcp.comm.AsInt
 import nbcp.utils.*
 import nbcp.comm.*
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.StringRedisTemplate
 
 enum class RedisRenewalTypeEnum {
@@ -31,8 +32,8 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
         return@lazy SpringUtil.getBean<StringRedisTemplate>()
     }
 
-    protected val anyTypeCommand: AnyTypeRedisTemplate by lazy {
-        return@lazy SpringUtil.getBean<AnyTypeRedisTemplate>()
+    protected val anyTypeCommand: RedisTemplate<String, Any> by lazy {
+        return@lazy SpringUtil.getBean<RedisTemplate<String, Any>>()
     }
 
 //    /**
@@ -88,8 +89,6 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
         if (key.startsWith(group + ":")) return key;
         return arrayOf(group, key).filter { it.isNotEmpty() }.joinToString(":");
     }
-
-
 
 
 //    /**
