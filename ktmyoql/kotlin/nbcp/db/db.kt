@@ -2,11 +2,11 @@ package nbcp.db
 
 import nbcp.comm.*
 import nbcp.utils.*
-import nbcp.comm.TimeSpan
 import nbcp.db.mongo.table.MongoBaseGroup
 import nbcp.db.redis.RedisBaseGroup
 import nbcp.db.sql.table.SqlBaseGroup
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+import java.time.Duration
 
 enum class DatabaseEnum {
     Mongo,
@@ -110,13 +110,13 @@ object db {
             _lastAutoId.set(value);
         }
 
-    private val _executeTime: ThreadLocal<TimeSpan> = ThreadLocal.withInitial { return@withInitial TimeSpan(0); }
+    private val _executeTime: ThreadLocal<Duration> = ThreadLocal.withInitial { return@withInitial Duration.ZERO; }
 
     /**
      * 记录最后一次操作的执行时间，单位毫秒
      */
     @JvmStatic
-    var executeTime: TimeSpan
+    var executeTime: Duration
         get() {
             return _executeTime.get()
         }

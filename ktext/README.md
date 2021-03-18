@@ -15,7 +15,6 @@
 - JsonResult ，普通接口返回对象。 msg , cause
 - ApiResult<> ： JsonResult, 普通接口返回对象。 添加 data:<?>
 - ListResult<> ： JsonResult ，列表返回对象。添加 total:Int, data :[], value:?
-- TimeSpan：时间间隔
 - BufferTailReader 从末尾读取流
 - SnowFlake 雪花算法
 - SysConst : 系统常量， utf8

@@ -98,12 +98,34 @@ fun LocalDateTime.ToLong(): Long {
  * 返回描述信息
  */
 fun Duration.toSummary(): String {
-    return TimeSpan(this.toMillis()).toString();
+    var ret = mutableListOf<String>();
+    var seconds = this.seconds
+    var days = seconds / 86400;
+    seconds = seconds % 86400;
+    var hours = seconds / 3600;
+    seconds = seconds % 3600;
+    var minutes = seconds / 60;
+    seconds = seconds % 60;
+
+    if (days > 0) {
+        ret.add("${days}天")
+    }
+
+    if (hours > 0) {
+        ret.add("${hours}小时")
+    }
+    if (minutes > 0) {
+        ret.add("${minutes}分钟")
+    }
+    if (seconds > 0) {
+        ret.add("${seconds}秒")
+    }
+    return ret.joinToString("");
 }
 
 /**
  * 重载运算符， 两个时间相减： time1 - time2
  */
-operator fun LocalDateTime.minus(beforeTime: LocalDateTime): TimeSpan {
-    return TimeSpan(Duration.between(beforeTime, this).toMillis())
+operator fun LocalDateTime.minus(beforeTime: LocalDateTime): Duration {
+    return Duration.between(beforeTime, this)
 }

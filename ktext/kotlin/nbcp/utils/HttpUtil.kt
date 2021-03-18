@@ -15,6 +15,7 @@ import java.nio.charset.Charset
 import java.io.IOException
 import java.lang.RuntimeException
 import java.security.KeyStore
+import java.time.Duration
 import java.time.LocalDateTime
 import java.util.*
 import javax.imageio.ImageIO
@@ -244,7 +245,7 @@ class HttpUtil(var url: String = "") {
     /**
      * 请求耗时时间
      */
-    var totalTime: TimeSpan = TimeSpan(0)
+    var totalTime: Duration = Duration.ZERO
         private set;
 
     /**
@@ -398,14 +399,14 @@ class HttpUtil(var url: String = "") {
             return this.response.resultBody
         } finally {
             // 断开连接
-            if (this.totalTime.totalMilliseconds == 0L) {
+            if (this.totalTime.seconds == 0L) {
                 this.totalTime = LocalDateTime.now() - startAt
             }
 
 
             logger.InfoError(this.status != 200) {
                 var msgs = mutableListOf<String>();
-                msgs.add("${conn!!.requestMethod} ${url}\t[status:${this.status}]");
+                msgs.add("${conn.requestMethod} ${url}\t[status:${this.status}]");
 
                 msgs.add(this.request.headers.map {
                     return@map "\t${it.key}:${it.value}"
