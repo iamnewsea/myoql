@@ -81,7 +81,9 @@ open class RedisCacheIntercepter {
         }
 
         var ret = joinPoint.proceed(args)
-        redisTemplate.opsForValue().set(cacheKey, ret, Duration.ofMinutes(15));
+        if (ret != null) {
+            redisTemplate.opsForValue().set(cacheKey, ret.ToJson(), Duration.ofMinutes(15));
+        }
         return ret;
     }
 
