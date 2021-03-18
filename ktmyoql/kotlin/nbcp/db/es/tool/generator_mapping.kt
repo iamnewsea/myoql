@@ -22,11 +22,12 @@ class generator_mapping {
     private var nameMapping: StringMap = StringMap();
 
 
-    fun work(targetFileName: String,  //目标文件
-             basePackage: String,   //实体的包名
-             anyEntityClass: Class<*>,  //任意实体的类名
-             nameMapping: StringMap = StringMap(), // 名称转换
-             ignoreGroups: List<String> = listOf()  //忽略的包名
+    fun work(
+        targetFileName: String,  //目标文件
+        basePackage: String,   //实体的包名
+        anyEntityClass: Class<*>,  //任意实体的类名
+        nameMapping: StringMap = StringMap(), // 名称转换
+        ignoreGroups: List<String> = listOf()  //忽略的包名
     ) {
         this.nameMapping = nameMapping;
 
@@ -34,7 +35,7 @@ class generator_mapping {
 
 //        var path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0]
 //        var moer_Path = File(path).parentFile.path + "/shop-orm/kotlin/nbcp/db/mongo/mor_tables.kt".replace("/", p);
-        var moer_Path = targetFileName.replace("/", p).replace("\\",p);
+        var moer_Path = targetFileName.replace("/", p).replace("\\", p);
 
 
         File(moer_Path).deleteRecursively();
@@ -57,11 +58,10 @@ class generator_mapping {
                 groupEntities.forEach {
                     count++;
                     var entType = it;
-                    var dbName = entType.getAnnotation(DbName::class.java)?.value ?: ""
+                    var dbName = entType.getAnnotation(DbName::class.java)?.value.AsString(entType.simpleName)
 
-                    if (dbName.isEmpty()) {
-                        dbName = MyUtil.getSmallCamelCase(entType.simpleName)
-                    }
+                    dbName = MyUtil.getKebabCase(dbName)
+
                     println("${count.toString().padStart(2, ' ')} 生成Mapping：${groupName}.${dbName}".ToTab(1))
 
                     var json = genEntity(it)
@@ -100,17 +100,17 @@ class generator_mapping {
 
 
         MyUtil.findClasses(basePackage, anyEntityClass)
-                .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
-                .forEach {
+            .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
+            .forEach {
 
-                    var groupName = it.getAnnotation(DbEntityGroup::class.java).value;
+                var groupName = it.getAnnotation(DbEntityGroup::class.java).value;
 
-                    if (ret.containsKey(groupName) == false) {
-                        ret[groupName] = mutableListOf();
-                    }
-
-                    ret[groupName]!!.add(it)
+                if (ret.containsKey(groupName) == false) {
+                    ret[groupName] = mutableListOf();
                 }
+
+                ret[groupName]!!.add(it)
+            }
 
 
         return ret
@@ -153,67 +153,71 @@ class generator_mapping {
         var json = JsonMap();
 
         entType.AllFields
-                .filter { it.name != "Companion" }
-                .forEach {
-                    var type = getActType(it);
+            .filter { it.name != "Companion" }
+            .forEach {
+                var type = getActType(it);
 
-                    var defines = getDefines(it);
-                    var defineJson = JsonMap();
+                var defines = getDefines(it);
+                var defineJson = JsonMap();
 
-                    if (type.IsSimpleType()) {
-                        if (defines.filter { it.key.HasValue }.any()) {
-                            throw RuntimeException("简单类型不允许指定key：${it.name},:${defines.filter { it.key.HasValue }.map { it.key }.joinToString(",")}")
+                if (type.IsSimpleType()) {
+                    if (defines.filter { it.key.HasValue }.any()) {
+                        throw RuntimeException(
+                            "简单类型不允许指定key：${it.name},:${
+                                defines.filter { it.key.HasValue }.map { it.key }.joinToString(",")
+                            }"
+                        )
+                    }
+
+                    var define = defines.filter { it.key.isNullOrEmpty() }.entries.firstOrNull()
+
+                    defineJson = (define?.value ?: "").FromJson<JsonMap>() ?: JsonMap();
+
+                    if (parentDefines.containsKey(it.name)) {
+                        if (defineJson.any()) {
+                            throw RuntimeException("重复定义key:" + it.name)
                         }
-
-                        var define = defines.filter { it.key.isNullOrEmpty() }.entries.firstOrNull()
-
-                        defineJson = (define?.value ?: "").FromJson<JsonMap>() ?: JsonMap();
-
-                        if (parentDefines.containsKey(it.name)) {
-                            if (defineJson.any()) {
-                                throw RuntimeException("重复定义key:" + it.name)
-                            }
-                            defineJson = (parentDefines.get(it.name) ?: "").FromJson<JsonMap>() ?: JsonMap();
-                        }
-
-
-                        if (defineJson.containsKey("type") == false) {
-                            defineJson.put("type", getJsType(it.type))
-                        }
-                    } else {
-                        var define = defines.filter { it.key.isNullOrEmpty() }.entries.firstOrNull()
-
-                        if (define != null) {
-                            defineJson = (define?.value ?: "").FromJson<JsonMap>() ?: JsonMap();
-                        }
-
-                        var theDefines = StringMap(parentDefines
-                                .filter { d -> d.key == it.name || d.key.startsWith(it.name + ".") }
-                                .map { d -> d.key.substring(it.name.length + 1) to d.value }
-                                .toMap())
-
-                        if (theDefines.filter { it.key.isNullOrEmpty() }.any()) {
-                            if (defineJson.any()) {
-                                throw RuntimeException("重复定义key:" + it.name)
-                            }
-
-                            defineJson = JsonMap(theDefines.filter { it.key.isNullOrEmpty() })
-                        }
-
-                        if (defineJson.containsKey("type") == false) {
-                            defineJson.put("type", "nested")
-                        }
-
-                        defineJson.put("properties", genEntity(type, defines
-                                .filter { it.key.isNotEmpty() }
-                                +
-                                theDefines.filter { it.key.isNotEmpty() }
-                        ))
+                        defineJson = (parentDefines.get(it.name) ?: "").FromJson<JsonMap>() ?: JsonMap();
                     }
 
 
-                    json.put(it.name, defineJson)
+                    if (defineJson.containsKey("type") == false) {
+                        defineJson.put("type", getJsType(it.type))
+                    }
+                } else {
+                    var define = defines.filter { it.key.isNullOrEmpty() }.entries.firstOrNull()
+
+                    if (define != null) {
+                        defineJson = (define?.value ?: "").FromJson<JsonMap>() ?: JsonMap();
+                    }
+
+                    var theDefines = StringMap(parentDefines
+                        .filter { d -> d.key == it.name || d.key.startsWith(it.name + ".") }
+                        .map { d -> d.key.substring(it.name.length + 1) to d.value }
+                        .toMap())
+
+                    if (theDefines.filter { it.key.isNullOrEmpty() }.any()) {
+                        if (defineJson.any()) {
+                            throw RuntimeException("重复定义key:" + it.name)
+                        }
+
+                        defineJson = JsonMap(theDefines.filter { it.key.isNullOrEmpty() })
+                    }
+
+                    if (defineJson.containsKey("type") == false) {
+                        defineJson.put("type", "nested")
+                    }
+
+                    defineJson.put("properties", genEntity(type, defines
+                        .filter { it.key.isNotEmpty() }
+                            +
+                            theDefines.filter { it.key.isNotEmpty() }
+                    ))
                 }
+
+
+                json.put(it.name, defineJson)
+            }
 
         return json;
     }

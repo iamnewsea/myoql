@@ -82,11 +82,9 @@ class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
             groupEntities.forEach {
                 count++;
 
-                var dbName = it.getAnnotation(DbName::class.java)?.value ?: ""
+                var dbName = it.getAnnotation(DbName::class.java)?.value.AsString(it.simpleName)
 
-                if (dbName.isEmpty()) {
-                    dbName = MyUtil.getKebabCase(it.simpleName)
-                }
+                dbName = MyUtil.getKebabCase(dbName)
 
                 println("${count.toString().padStart(2, ' ')} 生成实体：${groupName}.${dbName}".ToTab(1))
                 writeToFile(genVarEntity(it).ToTab(1))
@@ -404,11 +402,9 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
         var entityTypeName = entTypeName + "Entity"
 //        var entityVarName = getEntityName(entTypeName)
 
-        var dbName = entType.getAnnotation(DbName::class.java)?.value ?: ""
+        var dbName = entType.getAnnotation(DbName::class.java)?.value.AsString(entType.simpleName)
+        dbName = MyUtil.getKebabCase(dbName)
 
-        if (dbName.isEmpty()) {
-            dbName = MyUtil.getKebabCase(entType.simpleName)
-        }
 
         var idMethods = mutableListOf<String>()
 
@@ -435,46 +431,47 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
                 }
             }
 
-            idMethods.add("""
+            idMethods.add(
+                """
     fun queryBy${
-                keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
-            } (${
-                keys.map {
-                    "${MyUtil.getSmallCamelCase(it)}: ${
-                        entType.GetFieldPath(
-                            *it.split(".").toTypedArray()
-                        )!!.type.kotlinTypeName
-                    }"
-                }.joinToString(",")
-            }): EsQueryClip<${entityTypeName}, ${entType.name}> {
+                    keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
+                } (${
+                    keys.map {
+                        "${MyUtil.getSmallCamelCase(it)}: ${
+                            entType.GetFieldPath(
+                                *it.split(".").toTypedArray()
+                            )!!.type.kotlinTypeName
+                        }"
+                    }.joinToString(",")
+                }): EsQueryClip<${entityTypeName}, ${entType.name}> {
         return this.query()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
     fun deleteBy${
-                keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
-            } (${
-                keys.map {
-                    "${MyUtil.getSmallCamelCase(it)}: ${
-                        entType.GetFieldPath(
-                            *it.split(".").toTypedArray()
-                        )!!.type.kotlinTypeName
-                    }"
-                }.joinToString(",")
-            }): EsDeleteClip<${entityTypeName}> {
+                    keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
+                } (${
+                    keys.map {
+                        "${MyUtil.getSmallCamelCase(it)}: ${
+                            entType.GetFieldPath(
+                                *it.split(".").toTypedArray()
+                            )!!.type.kotlinTypeName
+                        }"
+                    }.joinToString(",")
+                }): EsDeleteClip<${entityTypeName}> {
         return this.delete()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
     fun updateBy${
-                keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
-            } (${
-                keys.map {
-                    "${MyUtil.getSmallCamelCase(it)}: ${
-                        entType.GetFieldPath(
-                            *it.split(".").toTypedArray()
-                        )!!.type.kotlinTypeName
-                    }"
-                }.joinToString(",")
-            }): EsUpdateClip<${entityTypeName}> {
+                    keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
+                } (${
+                    keys.map {
+                        "${MyUtil.getSmallCamelCase(it)}: ${
+                            entType.GetFieldPath(
+                                *it.split(".").toTypedArray()
+                            )!!.type.kotlinTypeName
+                        }"
+                    }.joinToString(",")
+                }): EsUpdateClip<${entityTypeName}> {
         return this.update()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 """
