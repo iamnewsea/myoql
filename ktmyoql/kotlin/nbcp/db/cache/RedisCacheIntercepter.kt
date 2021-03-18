@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
+import java.time.Duration
 
 /**
  * #数字表示参数名，如: #0 == userName
@@ -26,15 +27,11 @@ import org.springframework.stereotype.Component
 open class RedisCacheIntercepter {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
-
-        private val redisTemplate: AnyTypeRedisTemplate by lazy {
-            return@lazy SpringUtil.getBean<AnyTypeRedisTemplate>()
-        }
     }
 
     @Autowired
     @Lazy
-    lateinit var redisTemplate: StringRedisTemplate
+    lateinit var redisTemplate: AnyTypeRedisTemplate
 
     fun getCacheKey(cache: CacheForSelect, ext: String): String {
 
@@ -77,12 +74,15 @@ open class RedisCacheIntercepter {
         var cacheKey =
             getCacheKey(cache, signature.declaringType.name + ":" + signature.parameterNames.joinToString(","))
 
-        var cacheValue = redisTemplate.opsForValue().get(cacheKey)
+        var cacheValue = redisTemplate.opsForValue().get(cacheKey).AsString()
 
         if (cacheValue.HasValue) {
             return cacheValue.FromJson(signature.returnType)
         }
-        return joinPoint.proceed(args)
+
+        var ret = joinPoint.proceed(args)
+        redisTemplate.opsForValue().set(cacheKey, ret, Duration.ofMinutes(15));
+        return ret;
     }
 
 
