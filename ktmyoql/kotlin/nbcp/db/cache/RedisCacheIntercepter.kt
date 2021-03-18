@@ -2,6 +2,7 @@ package nbcp.db.cache
 
 import nbcp.comm.*
 import nbcp.db.redis.AnyTypeRedisTemplate
+import nbcp.db.redis.RedisTask
 import nbcp.model.MasterAlternateStack
 import nbcp.utils.Md5Util
 import nbcp.utils.SpringUtil
@@ -28,38 +29,6 @@ open class RedisCacheIntercepter {
 
         private val redisTemplate: AnyTypeRedisTemplate by lazy {
             return@lazy SpringUtil.getBean<AnyTypeRedisTemplate>()
-        }
-        private var cache = MasterAlternateStack<CacheForBroke>() {
-            var pattern = "";
-            if (it.key.HasValue && it.value.HasValue) {
-                pattern = "sc:${it.table}:*(${it.key}-${it.value})*";
-            } else {
-                pattern = "sc:${it.table}:*";
-            }
-
-            for (i in 0..99) {
-                var list = redisTemplate.scan(pattern);
-                if (list.any() == false) {
-                    break;
-                }
-
-                redisTemplate.delete(list);
-            }
-
-            pattern = "sc:*[${it.table}]*"
-
-            for (i in 0..99) {
-                var list = redisTemplate.scan(pattern);
-                if (list.any() == false) {
-                    break;
-                }
-
-                redisTemplate.delete(list);
-            }
-        }
-
-        fun pushBrokeKey(key: CacheForBroke) {
-            cache.push(key)
         }
     }
 
@@ -130,7 +99,7 @@ open class RedisCacheIntercepter {
         if (cache == null || cache.table.isEmpty()) {
             return joinPoint.proceed(args)
         }
-        pushBrokeKey(cache)
+        RedisTask.setDelayBrokeCacheKey(cache)
         return joinPoint.proceed(args)
     }
 }

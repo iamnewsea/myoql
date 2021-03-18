@@ -1,59 +1,84 @@
 package nbcp.db.redis
 
 import nbcp.comm.AsLong
-import nbcp.comm.config
+import nbcp.comm.HasValue
+import nbcp.db.cache.CacheForBroke
 import nbcp.model.MasterAlternateStack
-import nbcp.utils.*
-import org.slf4j.LoggerFactory
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
-import org.springframework.context.annotation.DependsOn
-import org.springframework.scheduling.annotation.Scheduled
-import org.springframework.stereotype.Service
-import java.lang.Exception
-import java.time.LocalDateTime
+import nbcp.utils.SpringUtil
 import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 
-/**
- * 使用缓存的方式，把要续期的键集中起来，每10秒执行一次续期。
- * 用处是用户的token，用户每次访问都应该使用缓存的方式续期。
- */
-@Service
-@DependsOn("springUtil")
-@ConditionalOnProperty("spring.redis.host")
-@ConditionalOnBean(RedisAutoConfiguration::class)
-class RedisTask {
-    companion object {
-        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+object RedisTask {
+    /**
+     * 定时任务，使键续期。
+     */
+    fun setDelayRenewalKey(key: String, cacheSecond: Int) {
+        renewal_cache.push(key to cacheSecond);
+    }
 
-        /**
-         * 续期的 keys，value=过期时间，单位秒
-         */
-        private var cache = MasterAlternateStack<Pair<String, Int>>() {
-            var keyCommand = SpringUtil.getBean<AnyTypeRedisTemplate>();
+    fun clearDelayRenewalKeys(vararg keys: String) {
+        keys.forEach {
+            renewal_cache.removeAll(it);
+        }
+    }
 
-            var key = it.first;
-            var cacheSecond = it.second;
 
-            if (cacheSecond <= 0) {
-                return@MasterAlternateStack
-            }
+    fun setDelayBrokeCacheKey(key: CacheForBroke) {
+        broke_cache.push(key)
+    }
 
-            keyCommand.expire(key, cacheSecond.AsLong(), TimeUnit.SECONDS)
-        };
 
-        /**
-         * 定时任务，使键续期。
-         */
-        fun setRenewalKey(key: String, cacheSecond: Int) {
-            cache.push(key to cacheSecond);
+    private val redisTemplate by lazy {
+        return@lazy SpringUtil.getBean<AnyTypeRedisTemplate>()
+    }
+
+    /**
+     * 续期的 keys，value=过期时间，单位秒
+     */
+    private var renewal_cache = MasterAlternateStack<Pair<String, Int>>() {
+        var key = it.first;
+        var cacheSecond = it.second;
+
+        if (cacheSecond <= 0) {
+            return@MasterAlternateStack
         }
 
-        fun deleteKeys(vararg keys: String) {
-            keys.forEach {
-                cache.removeAll(it);
+        redisTemplate.expire(key, cacheSecond.AsLong(), TimeUnit.SECONDS)
+    };
+    private var broke_cache = MasterAlternateStack<CacheForBroke>() {
+        var pattern = "";
+        if (it.key.HasValue && it.value.HasValue) {
+            pattern = "sc:${it.table}:*(${it.key}-${it.value})*";
+        } else {
+            pattern = "sc:${it.table}:*";
+        }
+
+        for (i in 0..99) {
+            var list = redisTemplate.scan(pattern);
+            if (list.any() == false) {
+                break;
             }
+
+            redisTemplate.delete(list);
+        }
+
+        pattern = "sc:*[${it.table}]*"
+
+        for (i in 0..99) {
+            var list = redisTemplate.scan(pattern);
+            if (list.any() == false) {
+                break;
+            }
+
+            redisTemplate.delete(list);
+        }
+    }
+
+    private var thread = thread(start = true, isDaemon = true, name = "MyOqlRedisTask") {
+        while (true) {
+            Thread.sleep(1000)
+            renewal_cache.consumeTask()
+            broke_cache.consumeTask()
         }
     }
 }

@@ -10,17 +10,16 @@ import kotlin.concurrent.thread
  *
  *
  */
-open class MasterAlternateStack<T>(var consumer: Consumer<T>) {
+open class MasterAlternateStack<T>(private var consumer: Consumer<T>) {
     private var masterOpen = false;
     private val masterStack = Stack<T>()
     private val alternateStack = Stack<T>()
-    private var sleep: Long = 1000;
 
     fun isEmpty(): Boolean {
         return this.masterStack.isEmpty() && this.alternateStack.isEmpty()
     }
 
-    var thread = thread {
+    fun consumeTask() {
         var consumerStack: (Stack<T>) -> Unit = {
             var len = it.count();
             for (i in 1..len) {
@@ -28,21 +27,17 @@ open class MasterAlternateStack<T>(var consumer: Consumer<T>) {
             }
         }
 
-        while (true) {
-            Thread.sleep(sleep)
-            if (isEmpty()) {
-                continue;
-            }
+        if (isEmpty()) {
+            return
+        }
 
-            masterOpen = !masterOpen
-
-            if (masterOpen) {
-                consumerStack(alternateStack);
-                consumerStack(masterStack);
-            } else {
-                consumerStack(masterStack);
-                consumerStack(alternateStack);
-            }
+        masterOpen = !masterOpen
+        if (masterOpen) {
+            consumerStack(alternateStack);
+            consumerStack(masterStack);
+        } else {
+            consumerStack(masterStack);
+            consumerStack(alternateStack);
         }
     }
 

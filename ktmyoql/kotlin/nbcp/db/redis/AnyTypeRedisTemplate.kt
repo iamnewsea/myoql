@@ -1,6 +1,12 @@
 package nbcp.db.redis
 
 import nbcp.comm.AsLong
+import nbcp.comm.HasValue
+import nbcp.db.cache.CacheForBroke
+import nbcp.db.cache.RedisCacheIntercepter
+import nbcp.model.MasterAlternateStack
+import nbcp.utils.MyUtil
+import nbcp.utils.SpringUtil
 import org.springframework.data.redis.connection.DefaultStringRedisConnection
 import org.springframework.data.redis.connection.RedisConnection
 import org.springframework.data.redis.connection.RedisConnectionFactory
@@ -8,6 +14,10 @@ import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ScanOptions
 import org.springframework.data.redis.core.SetOperations
 import org.springframework.data.redis.serializer.RedisSerializer
+import java.util.*
+import java.util.concurrent.TimeUnit
+import java.util.function.Consumer
+import kotlin.concurrent.thread
 
 class AnyTypeRedisTemplate() : RedisTemplate<String, Any>() {
     init {
