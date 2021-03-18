@@ -6,6 +6,7 @@ import nbcp.db.cache.CacheForBroke
 import nbcp.model.MasterAlternateStack
 import nbcp.utils.SpringUtil
 import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.core.StringRedisTemplate
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
@@ -30,7 +31,7 @@ object RedisTask {
 
 
     private val redisTemplate by lazy {
-        return@lazy SpringUtil.getBean<RedisTemplate<String, Any>>()
+        return@lazy SpringUtil.getBean<StringRedisTemplate>()
     }
 
     /**

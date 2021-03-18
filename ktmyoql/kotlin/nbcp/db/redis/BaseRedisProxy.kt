@@ -32,8 +32,8 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
         return@lazy SpringUtil.getBean<StringRedisTemplate>()
     }
 
-    protected val anyTypeCommand: RedisTemplate<String, Any> by lazy {
-        return@lazy SpringUtil.getBean<RedisTemplate<String, Any>>()
+    protected val anyTypeCommand: AnyTypeRedisTemplate by lazy {
+        return@lazy SpringUtil.getBean<AnyTypeRedisTemplate>()
     }
 
 //    /**

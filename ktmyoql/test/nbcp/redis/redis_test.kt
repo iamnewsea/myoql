@@ -18,9 +18,10 @@ import java.time.LocalDateTime
 class testa : TestBase() {
 
     @Autowired
-    lateinit var template: RedisTemplate<String,String>
+    lateinit var template: RedisTemplate<String, String>
+
     @Test
     fun abc() {
-        template.opsForValue().set("a","a")
+        template.opsForValue().set("a", "a")
     }
 }

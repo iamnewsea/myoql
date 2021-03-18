@@ -31,7 +31,7 @@ open class RedisCacheIntercepter {
 
     @Autowired
     @Lazy
-    lateinit var redisTemplate: RedisTemplate<String,Any>
+    lateinit var redisTemplate: StringRedisTemplate
 
     fun getCacheKey(cache: CacheForSelect, ext: String): String {
 

@@ -150,8 +150,8 @@ import org.springframework.data.redis.serializer.RedisSerializer
 @ConditionalOnProperty("spring.redis.host")
 class RedisConfig {
     @Bean
-    fun redisTemplate(connectionFactory: RedisConnectionFactory): RedisTemplate<String, Any> {
-        var template = RedisTemplate<String, Any>()
+    fun redisTemplate(connectionFactory: RedisConnectionFactory): AnyTypeRedisTemplate {
+        var template = AnyTypeRedisTemplate()
         template.connectionFactory = connectionFactory;
         template.keySerializer = RedisSerializer.string()
         template.valueSerializer = RedisSerializer.string()
