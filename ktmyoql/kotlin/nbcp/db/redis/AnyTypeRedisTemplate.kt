@@ -48,7 +48,7 @@ import kotlin.concurrent.thread
 /**
  * 使用 scan 替代 keys
  */
-fun RedisTemplate<*,*>.scan(pattern: String, limit: Int = 999): Set<String> {
+fun RedisTemplate<*,*>.scanKeys(pattern: String, limit: Int = 999): Set<String> {
     var list = mutableSetOf<String>()
 
     this.connectionFactory

@@ -55,7 +55,7 @@ object RedisTask {
         }
 
         for (i in 0..99) {
-            var list = redisTemplate.scan(pattern);
+            var list = redisTemplate.scanKeys(pattern);
             if (list.any() == false) {
                 break;
             }
@@ -66,7 +66,7 @@ object RedisTask {
         pattern = "sc:*[${it.table}]*"
 
         for (i in 0..99) {
-            var list = redisTemplate.scan(pattern);
+            var list = redisTemplate.scanKeys(pattern);
             if (list.any() == false) {
                 break;
             }
