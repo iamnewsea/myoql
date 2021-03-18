@@ -1,10 +1,7 @@
 @file:JvmName("MyHelper")
 @file:JvmMultifileClass
 
-package nbcp.comm
-
 import nbcp.comm.*
-
 import nbcp.utils.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
