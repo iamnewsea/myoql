@@ -21,13 +21,14 @@
             <!-- 30 days -->
             <maxHistory>30</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>64MB</maxFileSize>
+                <maxFileSize>16MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
         <filter class="nbcp.filter.MyGroupLogBackFilter"></filter>
     </appender>
+
     <appender name="FILE-TASK-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath:-logs}/${name:-log}-task.log</file>
+        <file>${logPath:-logs}/${name:-log}-task.txt</file>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss}] %level %X{group} %X{request_id} [%class:%line]:%n%m%n</pattern>
         </encoder>
@@ -36,7 +37,7 @@
             <!-- 30 days -->
             <maxHistory>30</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>64MB</maxFileSize>
+                <maxFileSize>16MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
         <filter class="nbcp.filter.MyGroupLogBackFilter">
@@ -44,9 +45,8 @@
         </filter>
     </appender>
 
-
     <appender name="FILE-MAIN-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath:-logs}/${name:-log}-main.log</file>
+        <file>${logPath:-logs}/${name:-log}-main.txt</file>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss}] %level %X{group} %X{request_id} [%class:%line]:%n%m%n</pattern>
         </encoder>
@@ -54,7 +54,7 @@
             <fileNamePattern>${logPath:-logs}/${name:-log}-main.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
             <maxHistory>30</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>64MB</maxFileSize>
+                <maxFileSize>16MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
         <filter class="nbcp.filter.MyGroupLogBackFilter">
@@ -63,7 +63,7 @@
     </appender>
 
     <appender name="ERROR-FILE-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath:-logs}/${name:-log}-error.log</file>
+        <file>${logPath:-logs}/${name:-log}-error.txt</file>
         <immediateFlush>true</immediateFlush>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss}] %level %X{group} %X{request_id} [%class:%line]:%n%m%n</pattern>
@@ -73,13 +73,14 @@
             <!-- 30 days -->
             <maxHistory>30</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>64MB</maxFileSize>
+                <maxFileSize>16MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
         </filter>
     </appender>
+
     <root level="${logLevel}">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE-OUT" />
