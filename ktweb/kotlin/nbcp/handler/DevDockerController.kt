@@ -58,7 +58,7 @@ class DevDockerController {
 
 
     val path: String
-        get() = config.uploadPath + File.separator + "docker-" + LocalDate.now().Format("YYYY-MM-dd") + File.separator
+        get() = config.uploadPath + File.separator + "docker-" + LocalDate.now().Format("yyyy-MM-dd") + File.separator
 
     /**
      * 把文件拷到宿主机

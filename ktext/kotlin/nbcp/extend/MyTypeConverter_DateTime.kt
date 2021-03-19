@@ -186,11 +186,11 @@ fun String.ConvertToLocalDateTime(dateTimeFormatter: DateTimeFormatter? = null):
 
 /**
  * 转换为 LocalDate,自动识别以下格式
-YYYYMMDD
-YYYY-MM-DD
-YYYY/MM/DD
-YYYY_MM_DD
-YYYY.MM.DD
+yyyyMMdd
+yyyy-MM-dd
+yyyy/MM/dd
+yyyy_MM_dd
+yyyy.MM.dd
  */
 fun String.ConvertToLocalDate(dateFormatter: DateTimeFormatter? = null): LocalDate? {
     var strValue = this.trim();
