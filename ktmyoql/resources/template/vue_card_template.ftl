@@ -151,7 +151,7 @@ export default {
         },
         save_click() {
             //校验
-            if (jv.main.chk() == false) {
+            if (this.chk() == false) {
                 return;
             }
 
