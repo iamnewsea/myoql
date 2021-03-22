@@ -36,13 +36,13 @@
 </#list>
             <el-table-column label="操作" align="center" width="240">
                 <template slot-scope="scope">
-                    <el-button @click="edit_click(scope.row)" size="small">
-                        编辑
-                    </el-button>
+<#--                    <el-button @click="edit_click(scope.row)" size="small">-->
+<#--                        编辑-->
+<#--                    </el-button>--><#if has("status")>
                     <el-button @click="set_click(scope.row)" size="small">
                         设置状态
                     </el-button>
-                    <el-button @click="delete_click(scope.row)" size="small">
+                    </#if><el-button @click="delete_click(scope.row)" size="small">
                         删除
                     </el-button>
                 </template>
@@ -122,11 +122,11 @@ export default {
                     this.loadData();
                 })
             });
-        },
+        }<#if has("status")>,
         set_click(row) {
             //设置事件
             var rowId = row.id;
-        }
+        }</#if>
     }
 }
 </script>
