@@ -1,9 +1,6 @@
 package nbcp.db.es.tool
 
-import nbcp.comm.AsInt
-import nbcp.comm.AsString
-import nbcp.comm.HasValue
-import nbcp.comm.Slice
+import nbcp.comm.*
 import nbcp.utils.*
 import org.apache.http.Header
 import org.apache.http.HttpHost
@@ -35,8 +32,7 @@ class EsConfig {
     @Bean
     @Lazy
     fun dataSource(): RestClient {
-        var configs = SpringUtil.context.environment.getProperty("spring.elasticsearch.rest.uris")
-                .AsString()
+        var configs = config.getConfig("spring.elasticsearch.rest.uris")
                 .split(",")
                 .map { it.trim() }
                 .filter { it.HasValue }
@@ -64,7 +60,7 @@ class EsConfig {
 //        val defaultHeaders = arrayOf<Header>(BasicHeader("header", "value"))
 //        builder.setDefaultHeaders(defaultHeaders)
 
-        var pathPrefix = SpringUtil.context.environment.getProperty("spring.elasticsearch.path-prefix")
+        var pathPrefix = config.getConfig("spring.elasticsearch.path-prefix")
         if (pathPrefix.HasValue) {
             builder.setPathPrefix(pathPrefix)
         }
@@ -79,7 +75,7 @@ class EsConfig {
             }
         });
 
-        var timeout = SpringUtil.context.environment.getProperty("spring.elasticsearch.timeout").AsInt()
+        var timeout = config.getConfig("spring.elasticsearch.timeout").AsInt()
         if (timeout > 0) {
             builder.setRequestConfigCallback { requestConfigBuilder ->
                 //设置允许修改默认请求配置的回调

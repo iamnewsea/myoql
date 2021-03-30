@@ -36,38 +36,41 @@ object config {
             }
 
             if (SpringUtil.isInited == false) return false;
-            _debug = SpringUtil.context.environment.getProperty("debug").AsBoolean();
+            _debug = getConfig("debug").AsBoolean();
             return _debug ?: false;
         }
+
+    fun getConfig(key: String): String {
+        return SpringUtil.context.environment.getProperty(key) ?: ""
+    }
 
     /**
      * 指定 ${app}.log 是否包含全部GroupLog日志。
      */
     val defAllScopeLog: Boolean by lazy {
-        return@lazy SpringUtil.context.environment.getProperty("app.def-all-scope-log")
-            .AsBoolean()
+        return@lazy getConfig("app.def-all-scope-log").AsBoolean()
     }
 
     /**
      * 上传到本地时使用该配置,最后不带 "/"
      */
     val uploadHost: String by lazy {
-        return@lazy SpringUtil.context.environment.getProperty("app.upload.host")
-            .must { it.HasValue }
-            .elseThrow("必须指定 app.upload.host")
+        return@lazy getConfig("app.upload.host")
+                .must { it.HasValue }
+                .elseThrow("必须指定 app.upload.host")
     }
 
     /**
      * 上传到本地时使用该配置,最后不带 "/"
      */
     val uploadPath: String by lazy {
-        return@lazy SpringUtil.context.environment.getProperty("app.upload.path")
-            .must { it.HasValue }
-            .elseThrow("必须指定 app.upload.path")
+        return@lazy getConfig("app.upload.path")
+                .must { it.HasValue }
+                .elseThrow("必须指定 app.upload.path")
     }
 
     val mybatisPackage: String by lazy {
-        return@lazy SpringUtil.context.environment.getProperty("app.mybatis.package") ?: ""
+        return@lazy getConfig("app.mybatis.package")
     }
 
     /**
@@ -77,7 +80,7 @@ object config {
      * redis: admin:token
      */
     val tokenKey: String by lazy {
-        return@lazy SpringUtil.context.environment.getProperty("app.token-key") ?: "token"
+        return@lazy getConfig("app.token-key") ?: "token"
     }
 
     /**
@@ -85,7 +88,7 @@ object config {
      */
     val tokenCacheSeconds: Int by lazy {
         return@lazy Duration.parse(
-            SpringUtil.context.environment.getProperty("app.token-cache-seconds").AsString("PT4H")
+                getConfig("app.token-cache-seconds").AsString("PT4H")
         ).seconds.toInt()
     }
 
@@ -93,7 +96,7 @@ object config {
      * 强制 token 过期时间。单位是秒,默认是72小时，过期后不再续期
      */
     val tokenKeyExpireSeconds: Int by lazy {
-        var ret = Duration.parse(SpringUtil.context.environment.getProperty("app.token-key-expire").AsString("P3D"));
+        var ret = Duration.parse(getConfig("app.token-key-expire").AsString("P3D"));
         if (ret.seconds < tokenCacheSeconds * 3) {
             return@lazy tokenCacheSeconds * 3
         }
@@ -105,7 +108,7 @@ object config {
      */
     val validateCodeCacheSeconds: Int by lazy {
         return@lazy Duration.parse(
-            SpringUtil.context.environment.getProperty("app.validate-code-cache-seconds").AsString("PT4H")
+                getConfig("app.validate-code-cache-seconds").AsString("PT4H")
         ).seconds.toInt()
     }
 
@@ -113,22 +116,22 @@ object config {
      * 映射到 DatabaseEnum 枚举上
      */
     val databaseType: String by lazy {
-        var type = SpringUtil.context.environment.getProperty("app.database-type")
+        var type = getConfig("app.database-type")
         if (type.HasValue) {
             return@lazy type;
         }
 
         var mongo =
-            SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration");
+                SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration");
         if (mongo) {
             return@lazy "Mongo"
         }
 
         var sql =
-            SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration");
+                SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration");
         if (sql) {
 
-            var conn = SpringUtil.context.environment.getProperty("spring.datasource.url");
+            var conn = getConfig("spring.datasource.url");
 
             if (conn.isNullOrEmpty()) {
                 return@lazy "Mysql"
@@ -155,13 +158,13 @@ object config {
 
     val maxHttpPostSize: DataSize by lazy {
         return@lazy DataSize.parse(
-            SpringUtil.context.environment.getProperty("server.servlet.max-http-post-size")
-                ?: SpringUtil.context.environment.getProperty("server.tomcat.max-http-post-size") ?: "2MB"
+                getConfig("server.servlet.max-http-post-size")
+                        .AsString(getConfig("server.tomcat.max-http-post-size")).AsString("2MB")
         )
     }
 
     val redisHost: String by lazy {
-        return@lazy SpringUtil.context.environment.getProperty("spring.redis.host");
+        return@lazy getConfig("spring.redis.host");
     }
 
 //    val redisTaskSize: Int by lazy {
@@ -173,20 +176,20 @@ object config {
 //    }
 
     val wxAppId: String by lazy {
-        return@lazy SpringUtil.context.environment.getProperty("app.wx.appId")
-            .must { it.HasValue }
-            .elseThrow("必须指定 app.wx.appId")
+        return@lazy getConfig("app.wx.appId")
+                .must { it.HasValue }
+                .elseThrow("必须指定 app.wx.appId")
     }
 
     val wxMchId: String by lazy {
-        return@lazy SpringUtil.context.environment.getProperty("app.wx.mchId")
-            .must { it.HasValue }
-            .elseThrow("必须指定 app.wx.mchId")
+        return@lazy getConfig("app.wx.mchId")
+                .must { it.HasValue }
+                .elseThrow("必须指定 app.wx.mchId")
     }
 
     val applicationName: String by lazy {
-        return@lazy SpringUtil.context.environment.getProperty("spring.application.name")
-            .must { it.HasValue }
-            .elseThrow("必须指定 spring.application.name")
+        return@lazy getConfig("spring.application.name")
+                .must { it.HasValue }
+                .elseThrow("必须指定 spring.application.name")
     }
 }

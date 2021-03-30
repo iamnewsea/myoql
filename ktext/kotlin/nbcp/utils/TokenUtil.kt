@@ -1,6 +1,7 @@
 package nbcp.utils
 
 import nbcp.comm.HasValue
+import nbcp.comm.config
 
 object TokenUtil {
 
@@ -24,7 +25,7 @@ object TokenUtil {
             }
         }
 
-        value = SpringUtil.context.environment.getProperty("app.user-system") ?: ""
+        value = config.getConfig("app.user-system")
         if (value.HasValue) {
             return value;
         }
