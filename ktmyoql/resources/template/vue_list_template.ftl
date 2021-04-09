@@ -8,7 +8,7 @@
             url="${url}/list"
             @param="preload"
             @loaded="procData"
-            :page-size="pageSize"
+            :page-size="10"
             :store="true"
         >
             <el-table-column type="index" clign="center" width="50"></el-table-column>
@@ -67,7 +67,6 @@ export default {
     components: {},
     data() {
         return {
-            pageSize: 10,
 <#list fields as field>
 <#if field.getType().isEnum()>
             ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),

@@ -73,10 +73,11 @@ val Class<*>.kotlinTypeName: String
     }
 
 /**
- * 是否是类型，判断 endsWith
+ * 是否是类型
  */
 fun Class<*>.IsType(value: String): Boolean {
-    if (this.name.endsWith(value)) return true;
+    if (this.name == value || this.simpleName == value) return true;
+
     if (this.superclass != null) {
         return this.superclass.IsType(value)
     }

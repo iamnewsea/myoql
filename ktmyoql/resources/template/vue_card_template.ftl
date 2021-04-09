@@ -52,7 +52,7 @@
                     <kv label="${cn(field)}">
                         <ref-${k(field.getName())} v-model="info.${field.getName()}"></ref-${k(field.getName())}>
                     </kv>
-    <#elseif is_type(field,"Boolean")>
+    <#elseif is_type(field,"boolean")>
                     <kv label="${cn(field)}">
                         <selector type="radio" v-model="info.${field.getName()}" :data="{true:'是',false:'否','':'全部'}" />
                     </kv>

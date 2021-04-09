@@ -32,7 +32,7 @@ class TestKtExt_Mongo : TestBase() {
     @Test
     fun genCode() {
 
-        var d = UserCodeGenerator.genVueCard("MongoBase", db.mor_base.sysApplication)
+        var d = UserCodeGenerator.genVueCard("MongoBase", db.mor_base.basicUserLoginInfo)
         println(d)
     }
 }
