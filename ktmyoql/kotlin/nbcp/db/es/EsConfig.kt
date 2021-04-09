@@ -32,7 +32,7 @@ class EsConfig {
     @Bean
     @Lazy
     fun dataSource(): RestClient {
-        var configs = config.getConfig("spring.elasticsearch.rest.uris")
+        var configs = config.getConfig("spring.elasticsearch.rest.uris","")
                 .split(",")
                 .map { it.trim() }
                 .filter { it.HasValue }

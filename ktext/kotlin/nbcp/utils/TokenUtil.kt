@@ -25,7 +25,7 @@ object TokenUtil {
             }
         }
 
-        value = config.getConfig("app.user-system")
+        value = config.getConfig("app.user-system","")
         if (value.HasValue) {
             return value;
         }

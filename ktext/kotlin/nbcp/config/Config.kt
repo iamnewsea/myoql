@@ -40,8 +40,12 @@ object config {
             return _debug ?: false;
         }
 
-    fun getConfig(key: String): String {
-        return SpringUtil.context.environment.getProperty(key) ?: ""
+    fun getConfig(key: String, defaultValue: String): String {
+        return SpringUtil.context.environment.getProperty(key) ?: defaultValue
+    }
+
+    fun getConfig(key: String): String? {
+        return SpringUtil.context.environment.getProperty(key)
     }
 
     /**
@@ -56,8 +60,8 @@ object config {
      */
     val uploadHost: String by lazy {
         return@lazy getConfig("app.upload.host")
-                .must { it.HasValue }
-                .elseThrow("必须指定 app.upload.host")
+            .must { it.HasValue }
+            .elseThrow("必须指定 app.upload.host")
     }
 
     /**
@@ -65,12 +69,12 @@ object config {
      */
     val uploadPath: String by lazy {
         return@lazy getConfig("app.upload.path")
-                .must { it.HasValue }
-                .elseThrow("必须指定 app.upload.path")
+            .must { it.HasValue }
+            .elseThrow("必须指定 app.upload.path")
     }
 
     val mybatisPackage: String by lazy {
-        return@lazy getConfig("app.mybatis.package")
+        return@lazy getConfig("app.mybatis.package", "")
     }
 
     /**
@@ -88,7 +92,7 @@ object config {
      */
     val tokenCacheSeconds: Int by lazy {
         return@lazy Duration.parse(
-                getConfig("app.token-cache-seconds").AsString("PT4H")
+            getConfig("app.token-cache-seconds").AsString("PT4H")
         ).seconds.toInt()
     }
 
@@ -108,7 +112,7 @@ object config {
      */
     val validateCodeCacheSeconds: Int by lazy {
         return@lazy Duration.parse(
-                getConfig("app.validate-code-cache-seconds").AsString("PT4H")
+            getConfig("app.validate-code-cache-seconds").AsString("PT4H")
         ).seconds.toInt()
     }
 
@@ -116,19 +120,19 @@ object config {
      * 映射到 DatabaseEnum 枚举上
      */
     val databaseType: String by lazy {
-        var type = getConfig("app.database-type")
+        var type = getConfig("app.database-type", "")
         if (type.HasValue) {
             return@lazy type;
         }
 
         var mongo =
-                SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration");
+            SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration");
         if (mongo) {
             return@lazy "Mongo"
         }
 
         var sql =
-                SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration");
+            SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration");
         if (sql) {
 
             var conn = getConfig("spring.datasource.url");
@@ -158,13 +162,13 @@ object config {
 
     val maxHttpPostSize: DataSize by lazy {
         return@lazy DataSize.parse(
-                getConfig("server.servlet.max-http-post-size")
-                        .AsString(getConfig("server.tomcat.max-http-post-size")).AsString("2MB")
+            getConfig("server.servlet.max-http-post-size")
+                .AsString(getConfig("server.tomcat.max-http-post-size", "")).AsString("2MB")
         )
     }
 
     val redisHost: String by lazy {
-        return@lazy getConfig("spring.redis.host");
+        return@lazy getConfig("spring.redis.host", "");
     }
 
 //    val redisTaskSize: Int by lazy {
@@ -177,19 +181,19 @@ object config {
 
     val wxAppId: String by lazy {
         return@lazy getConfig("app.wx.appId")
-                .must { it.HasValue }
-                .elseThrow("必须指定 app.wx.appId")
+            .must { it.HasValue }
+            .elseThrow("必须指定 app.wx.appId")
     }
 
     val wxMchId: String by lazy {
         return@lazy getConfig("app.wx.mchId")
-                .must { it.HasValue }
-                .elseThrow("必须指定 app.wx.mchId")
+            .must { it.HasValue }
+            .elseThrow("必须指定 app.wx.mchId")
     }
 
     val applicationName: String by lazy {
         return@lazy getConfig("spring.application.name")
-                .must { it.HasValue }
-                .elseThrow("必须指定 spring.application.name")
+            .must { it.HasValue }
+            .elseThrow("必须指定 spring.application.name")
     }
 }
