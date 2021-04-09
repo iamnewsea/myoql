@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 class UserSystemService {
 
     private val userSystemRedisProxy
-        get() = RedisStringProxy(config.tokenKey, config.tokenCacheSeconds)
+        get() = RedisStringProxy(config.tokenKey, config.tokenKeyExpireSeconds)
 
     /**
      * 用户体系的redis验证码，格式如：{app.user-system}validateCode:{id}
