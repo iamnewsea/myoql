@@ -15,7 +15,12 @@
         <el-table-column type="index" clign="center" width="50"></el-table-column>
         <!--<template slot-scope="scope"></template>-->
 <#list fields as field>
-<#if field.getName() == "id"><#elseif field.getName() == "name">
+<#if field.getName() == "id">
+<#elseif field.getName() == "creator" || field.getName() == "createBy">
+<#elseif field.getName() == "updater" || field.getName() == "updateBy">
+<#elseif field.getName() == "createAt">
+<#elseif field.getName() == "updateAt">
+<#elseif field.getName() == "name">
         <el-table-column label="${cn(field)}" align="center">
             <template slot-scope="scope">
                 <div class="link">{{ scope.row.name }}</div>
