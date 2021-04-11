@@ -72,6 +72,10 @@
                     <kv label="${cn(field)}">
                         <el-input v-model="info.${field.getName()}" chk="*" />
                     </kv>
+    <#elseif field.getName() == "remark">
+        <kv label="${cn(field)}">
+            <el-input v-model="info.${field.getName()}" type="textarea"/>
+        </kv>
     <#else>
                     <kv label="${cn(field)}">
                         <el-input v-model="info.${field.getName()}" />
