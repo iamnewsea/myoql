@@ -39,15 +39,14 @@
             <el-table-column align="center" label="${cn(field)}" prop="${field.getName()}"></el-table-column>
 </#if>
 </#list>
-            <el-table-column label="操作" align="center" width="240">
+            <el-table-column label="操作" align="center">
                 <template slot-scope="scope">
-<#--                    <el-button @click="edit_click(scope.row)" size="small">-->
-<#--                        编辑-->
-<#--                    </el-button>--><#if has("status")>
+                    <#if has("status")>
                     <el-button @click="set_click(scope.row)" size="small">
                         设置状态
                     </el-button>
-                    </#if><el-button @click="delete_click(scope.row)" size="small">
+                    </#if>
+                    <el-button @click="delete_click(scope.row)" size="small">
                         删除
                     </el-button>
                 </template>
