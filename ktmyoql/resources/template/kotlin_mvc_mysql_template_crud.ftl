@@ -1,4 +1,4 @@
-package nbcp.web.${w(group)}
+package nbcp.mvc.${w(group)}
 
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
