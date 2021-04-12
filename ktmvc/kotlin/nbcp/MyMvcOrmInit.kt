@@ -73,7 +73,7 @@ open class MyMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
             if (converter is MappingJackson2HttpMessageConverter) {
                 converter.defaultCharset = utf8
                 converter.objectMapper = DefaultMyJsonMapper.get(
-                    JsonStyleEnumScope.FieldStyle,
+                    JsonStyleEnumScope.GetSetStyle,
                     JsonStyleEnumScope.IgnoreNull,
                     JsonStyleEnumScope.Compress
                 )
@@ -96,7 +96,7 @@ open class MyMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
                     if (sub_conveter is MappingJackson2HttpMessageConverter) {
                         sub_conveter.defaultCharset = utf8
                         sub_conveter.objectMapper = DefaultMyJsonMapper.get(
-                            JsonStyleEnumScope.FieldStyle,
+                            JsonStyleEnumScope.GetSetStyle,
                             JsonStyleEnumScope.IgnoreNull,
                             JsonStyleEnumScope.Compress
                         )
@@ -110,16 +110,16 @@ open class MyMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
 }
 
 
-@JsonComponent
-class MyMvcJsonSerializerManage {
-    @Bean
-    fun jacksonObjectMapper(): ObjectMapper {
-        return DefaultMyJsonMapper.get(
-            JsonStyleEnumScope.GetSetStyle,
-            JsonStyleEnumScope.IgnoreNull,
-            JsonStyleEnumScope.Compress
-        )
-    }
-}
+//@JsonComponent
+//class MyMvcJsonSerializerManage {
+//    @Bean
+//    fun jacksonObjectMapper(): ObjectMapper {
+//        return DefaultMyJsonMapper.get(
+//            JsonStyleEnumScope.GetSetStyle,
+//            JsonStyleEnumScope.IgnoreNull,
+//            JsonStyleEnumScope.Compress
+//        )
+//    }
+//}
 
 
