@@ -163,8 +163,10 @@ export default {
                 //[axios拦截器中已处理了异常]。
                 jv.info(this.action_name + " 成功");
                 if (this.action == "add") {
+                    var id = res.data.data
                     this.$popNav();
-                    this.$router.push("${url}/edit/" + res.data.data)
+                    jv.setLastRowId("${url}/list", "list", id);
+                    this.$router.push("${url}/edit/" + id)
                 } else if (this.action == "edit") {
                     this.$router.push("${url}/list")
                 }
