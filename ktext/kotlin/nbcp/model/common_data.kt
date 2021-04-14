@@ -68,6 +68,7 @@ open class LoginUserModel(
     var loginName: String = "",
     name: String = "",
     var token: String = "",
+    var isAdmin: Boolean = false,
     var organization: IdName = IdName(),
     var roles: List<String> = listOf() //角色
 ) : IdName(id, name) {
