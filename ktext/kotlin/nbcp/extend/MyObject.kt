@@ -1,5 +1,6 @@
 @file:JvmName("MyHelper")
 @file:JvmMultifileClass
+
 package nbcp.comm
 
 import nbcp.comm.*
@@ -18,9 +19,9 @@ import java.util.*
 
 data class CheckMustExpresstion<T>(var condition: Boolean, var data: T?) {
 
-    fun elseThrow(msg: String): T {
+    fun elseThrow(msg: ((T?) -> String)): T {
         if (condition) return data!!
-        else throw RuntimeException(msg);
+        else throw RuntimeException(msg(data));
     }
 }
 

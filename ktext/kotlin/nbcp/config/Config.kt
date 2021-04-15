@@ -61,7 +61,7 @@ object config {
     val uploadHost: String by lazy {
         return@lazy getConfig("app.upload.host")
             .must { it.HasValue }
-            .elseThrow("必须指定 app.upload.host")
+            .elseThrow { "必须指定 app.upload.host" }
     }
 
     /**
@@ -70,7 +70,7 @@ object config {
     val uploadPath: String by lazy {
         return@lazy getConfig("app.upload.path")
             .must { it.HasValue }
-            .elseThrow("必须指定 app.upload.path")
+            .elseThrow { "必须指定 app.upload.path" }
     }
 
     val mybatisPackage: String by lazy {
@@ -182,18 +182,18 @@ object config {
     val wxAppId: String by lazy {
         return@lazy getConfig("app.wx.appId")
             .must { it.HasValue }
-            .elseThrow("必须指定 app.wx.appId")
+            .elseThrow { "必须指定 app.wx.appId" }
     }
 
     val wxMchId: String by lazy {
         return@lazy getConfig("app.wx.mchId")
             .must { it.HasValue }
-            .elseThrow("必须指定 app.wx.mchId")
+            .elseThrow { "必须指定 app.wx.mchId" }
     }
 
     val applicationName: String by lazy {
         return@lazy getConfig("spring.application.name")
             .must { it.HasValue }
-            .elseThrow("必须指定 spring.application.name")
+            .elseThrow { "必须指定 spring.application.name" }
     }
 }
