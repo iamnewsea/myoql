@@ -23,7 +23,7 @@
 <#elseif field.getName() == "name">
         <el-table-column label="${cn(field)}" align="center">
             <template slot-scope="scope">
-                <div class="link">{{ scope.row.name }}</div>
+                {{ scope.row.name }}
             </template>
         </el-table-column>
 <#elseif is_res(field)>
