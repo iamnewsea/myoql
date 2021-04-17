@@ -53,6 +53,8 @@ open class IdNameUrl(var id: String = "", name: String = "", url: String = "") :
 
 open class NamePath(@Cn("名称") var name: String = "", @Cn("路径") var path: String = "") : java.io.Serializable {}
 
+open class IdNamePath(id: String, name: String = "", var path: String = "") : IdName(id, name) {}
+
 open class CodeName(@Cn("编码") var code: String = "", @Cn("名称") var name: String = "") : java.io.Serializable {}
 
 open class CodeValue(@Cn("编码") var code: String = "", @Cn("值") var value: String = "") : java.io.Serializable {}
