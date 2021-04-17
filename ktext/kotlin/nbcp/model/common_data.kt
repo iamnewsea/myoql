@@ -51,7 +51,7 @@ open class NameUrl() : BaseUrlModel() {
 
 open class IdNameUrl(var id: String = "", name: String = "", url: String = "") : NameUrl(name, url)
 
-open class IdNamePath(id: String, name: String = "", @Cn("路径")  var path: String = "") : IdName(id, name) {}
+open class IdNamePath(id: String = "", name: String = "", @Cn("路径") var path: String = "") : IdName(id, name) {}
 
 open class CodeName(@Cn("编码") var code: String = "", @Cn("名称") var name: String = "") : java.io.Serializable {}
 
