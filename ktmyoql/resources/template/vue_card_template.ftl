@@ -18,11 +18,11 @@
     <#elseif field.getName() == "updateAt">
     <#elseif field.getType().isEnum()>
                     <kv label="${cn(field)}">
-                        <selector type="radio" v-model="info.${field.getName()}" enum="${field.getType().getSimpleName()}" chk="*"/>
+                        <selector v-model="info.${field.getName()}" enum="${field.getType().getSimpleName()}" chk="*"/>
                     </kv>
     <#elseif is_enum_list(field)>
                     <kv label="${cn(field)}">
-                        <selector type="check" v-model="info.${field.getName()}" enum="${list_type(field)}" />
+                        <selector multi v-model="info.${field.getName()}" enum="${list_type(field)}" />
                     </kv>
     <#elseif is_type(field,"IdUrl")>
                     <kv>
@@ -54,7 +54,7 @@
                     </kv>
     <#elseif is_type(field,"boolean")>
                     <kv label="${cn(field)}">
-                        <selector type="radio" v-model="info.${field.getName()}" :data="{true:'是',false:'否','':'全部'}" />
+                        <selector v-model="info.${field.getName()}" :data="{true:'是',false:'否','':'全部'}" />
                     </kv>
     <#elseif is_type(field,"LocalDate")>
                     <kv label="${cn(field)}">
