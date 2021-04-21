@@ -446,7 +446,7 @@ fun String.IsIn(vararg ts: String, ignoreCase: Boolean): Boolean {
  */
 fun String.ToTab(deepth: Int): String {
     if (deepth == 0) return this;
-    return this.Remove('\r').split("\n").map { "    ".Repeat(deepth) + it }.joinToString("\n")
+    return this.prependIndent("    ".Repeat(deepth))
 }
 
 
