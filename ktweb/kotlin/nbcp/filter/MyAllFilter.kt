@@ -33,7 +33,10 @@ import javax.servlet.http.HttpServletResponse
  * Created by udi on 2017.3.11.
  * 拦截所有请求，过滤普通的GET及上传下载。
  * 需要配置 ：
- * 0. 标注 @SpringBootApplication 的启动类，还需要添加 @ServletComponentScan 注解（如果不是 nbcp包，@ServletComponentScan(value = {"nbcp.**"})）。
+ * 0. 标注 @SpringBootApplication 的启动类，还需要添加 @ServletComponentScan 注解。
+ *    如果不是 nbcp包,以下两种方法任选一种。
+ *        A) @ServletComponentScan(value = {"nbcp.**"})）。
+ *        B) @Import({SpringUtil.class, MyAllFilter.class})
  * 1. app.filter.allow-origins
  * 2. app.filter.headers
  * 3. 通过 Url参数 log-level 控制 Log级别,可以是数字，也可以是被 ch.qos.logback.classic.Level.toLevel识别的参数，不区分大小写，如：all|trace|debug|info|error|off
@@ -43,7 +46,6 @@ import javax.servlet.http.HttpServletResponse
 @WebFilter(urlPatterns = ["/*", "/**"])
 //@WebFilter(urlPatterns = arrayOf("/**"), filterName = "MyAllFilter")
 //@ConfigurationProperties(prefix = "nbcp.filter")
-@DependsOn("springUtil")
 open class MyAllFilter : Filter, InitializingBean {
     override fun destroy() {
         MDC.remove("request_id")
