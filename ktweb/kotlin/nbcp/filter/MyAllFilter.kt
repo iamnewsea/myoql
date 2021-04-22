@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.DependsOn
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
@@ -42,6 +43,7 @@ import javax.servlet.http.HttpServletResponse
 @WebFilter(urlPatterns = ["/*", "/**"])
 //@WebFilter(urlPatterns = arrayOf("/**"), filterName = "MyAllFilter")
 //@ConfigurationProperties(prefix = "nbcp.filter")
+@DependsOn("springUtil")
 open class MyAllFilter : Filter, InitializingBean {
     override fun destroy() {
         MDC.remove("request_id")
