@@ -96,16 +96,16 @@ open class MyAllFilter : Filter, InitializingBean {
 
         if (!(request is HttpServletRequest) ||
 //                FileExtentionInfo(request.requestURI).isStaticURI ||
-                request.method == "HEAD" ||
-                (request is MyHttpRequestWrapper)
+            request.method == "HEAD" ||
+            (request is MyHttpRequestWrapper)
         ) {
             chain?.doFilter(request, response)
             return;
         }
 
+        procCORS(httpRequest, httpResponse)
 
         if (httpRequest.method == "OPTIONS") {
-            procCORS(httpRequest, httpResponse)
             httpResponse.status = 204
             return;
         }
@@ -158,7 +158,6 @@ open class MyAllFilter : Filter, InitializingBean {
 //                request.session.setAttribute(SystemContext.loginSessionKey, data)
 //            }
 //        }
-
 
         var queryMap = request.queryJson
 
@@ -251,7 +250,6 @@ open class MyAllFilter : Filter, InitializingBean {
 //                logNewSession(request, response);
             }
 
-            procCORS(request, response)
 
             var endAt = LocalDateTime.now()
 
@@ -308,10 +306,10 @@ open class MyAllFilter : Filter, InitializingBean {
 //    }
 
     private fun procFilter(
-            request: MyHttpRequestWrapper,
-            response: MyHttpResponseWrapper,
-            chain: FilterChain?,
-            startAt: LocalDateTime
+        request: MyHttpRequestWrapper,
+        response: MyHttpResponseWrapper,
+        chain: FilterChain?,
+        startAt: LocalDateTime
     ) {
         RequestContextHolder.setRequestAttributes(ServletRequestAttributes(request, response))
 
@@ -330,7 +328,7 @@ open class MyAllFilter : Filter, InitializingBean {
                 var errorInfo = mutableListOf<String>()
                 errorInfo.add(err::class.java.simpleName + ": " + errorMsg)
                 errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }
-                        .take(24))
+                    .take(24))
 
                 return@Error errorInfo.joinToString(line_break)
             }
@@ -342,7 +340,6 @@ open class MyAllFilter : Filter, InitializingBean {
 //            response.outputStream.write("""{"msg":${errorMsg}}""".toByteArray(utf8))
         }
 
-        procCORS(request, response);
         afterComplete(request, response, "", startAt, errorMsg);
     }
 
@@ -414,6 +411,7 @@ open class MyAllFilter : Filter, InitializingBean {
                 originClient.contains("127.0.0.1");
 
         if (allow == false) {
+            logger.warn("跨域阻止:${originClient}")
             return;
         }
 
@@ -432,7 +430,7 @@ open class MyAllFilter : Filter, InitializingBean {
 
         if (request.method == "OPTIONS") {
             allowHeaders.addAll(
-                    request.getHeader("Access-Control-Request-Headers").AsString().split(",").filter { it.HasValue })
+                request.getHeader("Access-Control-Request-Headers").AsString().split(",").filter { it.HasValue })
         }
 
         if (allowHeaders.any() == false) {
@@ -441,21 +439,21 @@ open class MyAllFilter : Filter, InitializingBean {
 
             //https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
             var standardHeaders = arrayOf(
-                    "referer",
-                    "expires",
-                    "cache-control",
-                    "content-language",
-                    "last-modified",
-                    "pragma",
-                    "origin",
-                    "accept",
-                    "user-agent",
-                    "connection",
-                    "host",
-                    "accept-language",
-                    "accept-encoding",
-                    "content-length",
-                    "content-type"
+                "referer",
+                "expires",
+                "cache-control",
+                "content-language",
+                "last-modified",
+                "pragma",
+                "origin",
+                "accept",
+                "user-agent",
+                "connection",
+                "host",
+                "accept-language",
+                "accept-encoding",
+                "content-length",
+                "content-type"
             )
             //移除标准 header
             allowHeaders.removeAll { standardHeaders.contains(it.toLowerCase()) }
@@ -469,11 +467,11 @@ open class MyAllFilter : Filter, InitializingBean {
     }
 
     fun afterComplete(
-            request: MyHttpRequestWrapper,
-            response: MyHttpResponseWrapper,
-            callback: String,
-            startAt: LocalDateTime,
-            errorMsg: String
+        request: MyHttpRequestWrapper,
+        response: MyHttpResponseWrapper,
+        callback: String,
+        startAt: LocalDateTime,
+        errorMsg: String
     ) {
 //设置 Set-Cookie:PZXTK=59160c3a-5443-490f-a94f-db1e83f041fd; Path=/; HttpOnly
 //        var setCookieValue = myResponse.getHeader("Set-Cookie")
@@ -531,9 +529,9 @@ open class MyAllFilter : Filter, InitializingBean {
     }
 
     private fun setResponseBid(
-            resValue: ByteArray,
-            request: MyHttpRequestWrapper,
-            response: MyHttpResponseWrapper
+        resValue: ByteArray,
+        request: MyHttpRequestWrapper,
+        response: MyHttpResponseWrapper
     ): Boolean {
         if (resValue.isEmpty()) return false;
         var ori_md5 = request.getHeader("_bid_");
