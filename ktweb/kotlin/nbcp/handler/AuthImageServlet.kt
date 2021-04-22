@@ -34,8 +34,8 @@ open class AuthImageServlet : HttpServlet() {
             throw RuntimeException("找不到token")
         }
 
-        var width = request.queryJson.get("width").AsInt(130)
-        var height = request.queryJson.get("height").AsInt(48)
+        var width = request.queryJson.get("width").AsInt().Iif(0, 130)
+        var height = request.queryJson.get("height").AsInt().Iif(0, 48)
 
         var captcha = ArithmeticCaptcha(width, height);
         var txt = captcha.text()

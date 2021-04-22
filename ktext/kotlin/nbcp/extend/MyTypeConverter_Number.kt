@@ -52,11 +52,7 @@ fun Any?.AsInt(defaultValue: Int = 0): Int {
                 }
             }
         }
-
-        if (ret != 0) {
-            return ret;
-        }
-        return defaultValue
+        return ret;
     } catch (e: java.lang.Exception) {
         return defaultValue;
     }
@@ -86,13 +82,10 @@ fun Any?.AsLong(defaultValue: Long = 0): Long {
                 } else {
                     ret = strValue.toLongOrNull() ?: defaultValue
                 }
+                return ret;
             }
         }
-
-        if (ret != 0L) {
-            return ret;
-        }
-        return defaultValue;
+        return ret;
     } catch (e: Exception) {
         return defaultValue;
     }
@@ -119,11 +112,7 @@ fun Any?.AsDouble(defaultValue: Double = 0.0): Double {
                 ret = strValue.toDoubleOrNull() ?: defaultValue
             }
         }
-
-        if (ret != 0.0) {
-            return ret;
-        }
-        return defaultValue;
+        return ret;
     } catch (e: Exception) {
         return defaultValue;
     }
@@ -148,11 +137,7 @@ fun Any?.AsFloat(defaultValue: Float = 0F): Float {
                 ret = strValue.toFloatOrNull() ?: defaultValue
             }
         }
-
-        if (ret != 0F) {
-            return ret;
-        }
-        return defaultValue;
+        return ret;
     } catch (e: Exception) {
         return defaultValue;
     }
@@ -181,3 +166,8 @@ val Number?.HasValue: Boolean
     get() {
         return this != null && this != 0
     }
+
+fun <T : Number> T.Iif(conditionValue: T, retValue: T): T {
+    if (this == conditionValue) return retValue
+    return conditionValue
+}

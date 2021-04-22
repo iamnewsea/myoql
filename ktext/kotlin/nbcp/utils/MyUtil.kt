@@ -39,7 +39,7 @@ object MyUtil {
 
     /**
      * 通过 path 获取 value,每级返回的值必须是 Map<String,V> 否则返回 null
-     * @param keys: 多个
+     * @param keys: 可以传多个key，也可以使用 . 分隔；如果查询数组，使用 products[],products[0], products.[] 或 products.[0] 或 "products","[]"
      */
     fun getPathValue(data: Any, vararg keys: String): Any? {
         if (keys.any() == false) return null;
@@ -61,6 +61,17 @@ object MyUtil {
             }
 
             return getPathValue(v, *left_keys.toTypedArray())
+        }
+
+
+        if (key.endsWith("]")) {
+            if (key != "[]" && key.endsWith("[]")) {
+                return getPathValue(data, key.Slice(0, -2), "[]");
+            }
+            var start_index = key.lastIndexOf('[');
+            if (start_index > 0) {
+                return getPathValue(data, key.slice(0 until start_index), key.Slice(start_index))
+            }
         }
 
         if (data is Map<*, *>) {
@@ -86,21 +97,27 @@ object MyUtil {
                 .filter { it != null }
 
         } else if (key.startsWith("[") && key.endsWith("]")) {
-            var index = key.substring(1, key.length - 1).AsInt()
+            var index = key.substring(1, key.length - 1).AsInt(-1)
+            if (index < 0) {
+                throw RuntimeException("索引值错误:${key}")
+            }
 
             var data2: Any? = null
             if (data is Array<*>) {
-                data2 = data.indexOf(index)
+                data2 = data.get(index)
             } else if (data is Collection<*>) {
-                data2 = data.indexOf(index)
+                data2 = data.elementAt(index)
             } else {
                 throw RuntimeException("数据类型不匹配,${keys} 中 ${key} 需要是数组类型")
+            }
+
+            if (data2 == null) {
+                return null;
             }
 
             if (left_keys.any() == false) return data2;
 
             return MyUtil.getPathValue(data2, *left_keys.toTypedArray())
-
         }
 
         //如果是对象
