@@ -1,9 +1,9 @@
 <template>
     <div class="card-page">
-        <div class="toolbar">
+        <bool-bar nav="">
             <el-button size="mini" @click="$router.push('${url}/add')" v-if="action=='edit'">新建</el-button>
             <el-button size="mini" @click="save_click" type="primary"> 保存</el-button>
-        </div>
+        </bool-bar>
         <el-row :gutter="12" type="flex">
             <el-col>
                 <el-card shadow="always">
@@ -22,7 +22,7 @@
                     </kv>
     <#elseif is_enum_list(field)>
                     <kv label="${cn(field)}">
-                        <selector multi v-model="info.${field.getName()}" enum="${list_type(field)}" />
+                        <selector multi value-is-object v-model="info.${field.getName()}" enum="${list_type(field)}" />
                     </kv>
     <#elseif is_type(field,"IdUrl")>
                     <kv>

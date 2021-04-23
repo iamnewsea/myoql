@@ -1,8 +1,8 @@
 <template>
     <div class="list-page">
-        <div class="toolbar">
+        <tool-bar nav="">
             <el-button @click="add_click()">添加</el-button>
-        </div>
+        </tool-bar>
         <my-list
             ref="list"
             url="${url}/list"
@@ -81,7 +81,6 @@ export default {
         };
     },
     mounted() {
-        this.$addNav("${title}");
         this.loadData();
     },
     methods: {
