@@ -1,6 +1,6 @@
 <template>
     <div class="list-page">
-        <tool-bar nav="">
+        <tool-bar nav="" title="${title}">
             <el-button @click="add_click()">添加</el-button>
         </tool-bar>
         <my-list

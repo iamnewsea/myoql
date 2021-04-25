@@ -1,6 +1,6 @@
 <template>
     <div class="card-page">
-        <bool-bar nav="">
+        <bool-bar nav="" :title="action_name + '${title}'">
             <el-button size="mini" @click="$router.push('${url}/add')" v-if="action=='edit'">新建</el-button>
             <el-button size="mini" @click="save_click" type="primary"> 保存</el-button>
         </bool-bar>
@@ -143,7 +143,6 @@ export default {
         }
     },
     mounted() {
-        this.$addNav(this.action_name + "${title}");
         this.loadData();
     },
     methods: {
@@ -164,7 +163,6 @@ export default {
                 jv.info(this.action_name + " 成功");
                 if (this.action == "add") {
                     var id = res.data.data
-                    this.$popNav();
                     jv.setLastRowId("${url}/list", "list", id);
                     this.$router.push("${url}/edit/" + id)
                 } else if (this.action == "edit") {
