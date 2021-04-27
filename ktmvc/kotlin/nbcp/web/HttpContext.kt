@@ -25,14 +25,33 @@ import kotlin.concurrent.getOrSet
  * 当前连接的上下文信息
  */
 object HttpContext {
-    var _request: ThreadLocal<HttpServletRequest?> = ThreadLocal.withInitial { null }
-    var _response: ThreadLocal<HttpServletResponse?> = ThreadLocal.withInitial { null }
+    private var _request: ThreadLocal<HttpServletRequest?> = ThreadLocal.withInitial { null }
+    private var _response: ThreadLocal<HttpServletResponse?> = ThreadLocal.withInitial { null }
 
     fun init(request: HttpServletRequest, response: HttpServletResponse) {
         this._request.set(request);
         this._response.set(response);
     }
 
+    @JvmStatic
+    val hasRquest: Boolean
+        get() {
+            if (_request.get() != null) return true;
+            if ((RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.request != null) {
+                return true;
+            }
+            return false;
+        }
+
+    @JvmStatic
+    val hasResponse: Boolean
+        get() {
+            if (_response.get() != null) return true;
+            if ((RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.response != null) {
+                return true;
+            }
+            return false;
+        }
 
     @JvmStatic
     val request: HttpServletRequest
