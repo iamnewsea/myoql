@@ -22,7 +22,6 @@ abstract class BaseUrlModel() : java.io.Serializable {
     @Cn("网络资源地址")
     var url: String = ""
 
-    @Cn("全路径")
     val fullUrl: String
         get() {
             return this.url.PatchHostUrl(config.uploadHost)
