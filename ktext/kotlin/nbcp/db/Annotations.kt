@@ -15,7 +15,7 @@ annotation class DbName(val value: String)
 /**
  * 中文化名称
  */
-@Target(AnnotationTarget.FIELD, AnnotationTarget.CLASS)
+@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Cn(val value: String)
 
