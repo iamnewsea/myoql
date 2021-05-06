@@ -139,7 +139,7 @@
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
             <scope>provided</scope>
-            <version>1.66</version>
+            <version>1.67</version>
         </dependency>
 
         <dependency>
