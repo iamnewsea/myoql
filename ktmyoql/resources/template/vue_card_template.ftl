@@ -1,9 +1,9 @@
 <template>
     <div class="card-page">
-        <bool-bar nav="" :title="action_name + '${title}'">
+        <tool-bar nav="" :title="action_name + '${title}'">
             <el-button size="mini" @click="$router.push('${url}/add')" v-if="action=='edit'">新建</el-button>
             <el-button size="mini" @click="save_click" type="primary"> 保存</el-button>
-        </bool-bar>
+        </tool-bar>
         <el-row :gutter="12" type="flex">
             <el-col>
                 <el-card shadow="always">
