@@ -93,7 +93,7 @@ ${endfor}
  */
 ${for:fields}
 ${fif:@IdName}
-        import Ref${name|W} from "../home/empty-ref"
+import Ref${name|W} from "@/component/empty-ref"
 ${endif}
 ${endfor}
     export default {

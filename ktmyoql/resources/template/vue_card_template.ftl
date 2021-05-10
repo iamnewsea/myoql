@@ -104,7 +104,7 @@
 <#if field.getName() == "creator" || field.getName() == "createBy">
 <#elseif field.getName() == "updater" || field.getName() == "updateBy">
 <#elseif is_type(field,"IdName")>
-    import Ref${W(field.getName())} from "../home/empty-ref"
+import Ref${W(field.getName())} from "@/component/empty-ref"
 </#if>
 </#list>
 export default {
