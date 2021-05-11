@@ -36,7 +36,16 @@ object RecursionUtil {
     fun <T> execute(
         container: MutableList<T>,
         producer: (T) -> MutableList<T>,
-        consumer: (T, MutableList<T>, Int) -> RecursionReturnEnum
+        consumer: (T, T?, Int) -> RecursionReturnEnum
+    ): Int {
+        return _execute(container, producer, consumer, null);
+    }
+
+    private fun <T> _execute(
+        container: MutableList<T>,
+        producer: (T) -> MutableList<T>,
+        consumer: (T, T?, Int) -> RecursionReturnEnum,
+        parent: T? = null
     ): Int {
         if (container.size == 0) return 0
         var counted = 0;
@@ -45,7 +54,7 @@ object RecursionUtil {
         for (i in container.indices) {
             val item = container[i]
             counted++;
-            val ret = consumer(item, container, i)
+            val ret = consumer(item, parent, i)
 
             if (ret == RecursionReturnEnum.StopSub)
                 continue
@@ -55,7 +64,7 @@ object RecursionUtil {
                 continue;
             }
 
-            counted += execute(producer(item), producer, consumer);
+            counted += _execute(producer(item), producer, consumer, item);
         }
 
         for (i in removeIndeies.reversed()) {
