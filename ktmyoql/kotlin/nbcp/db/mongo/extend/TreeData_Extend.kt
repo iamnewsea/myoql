@@ -20,7 +20,7 @@ data class TreeResultData(var root: ITreeData<*>, var parent: ITreeData<*>?, var
 
 
 /**
- * 返回 root , current
+ * 在数据库中遍历查找树节点。返回所在树中的 根，父，本身。
  */
 private fun <M : MongoBaseMetaCollection<T>, T> M.findTreeById(id: String): TreeResultData?
         where T : IMongoDocument,
@@ -47,7 +47,7 @@ private fun <M : MongoBaseMetaCollection<T>, T> M.findTreeById(id: String): Tree
 }
 
 /**
- * 返回影响行数
+ * 删除树节点，可能删除的是根节点，也可能删除的是子级节点
  */
 fun <M : MongoBaseMetaCollection<T>, T> M.deleteTreeNodeById(id: String): ApiResult<String>
         where T : IMongoDocument,
