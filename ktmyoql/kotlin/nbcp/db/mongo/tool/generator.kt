@@ -19,12 +19,13 @@ class generator {
 
     private lateinit var moer_File: FileWriter
 
-    fun work(targetFileName: String,  //目标文件
-             basePackage: String,   //实体的包名
-             anyEntityClass: Class<*>,  //任意实体的类名
-             packages: Array<String> = arrayOf(),   //import 包名
-             nameMapping: StringMap = StringMap(), // 名称转换
-             ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
+    fun work(
+        targetFileName: String,  //目标文件
+        basePackage: String,   //实体的包名
+        anyEntityClass: Class<*>,  //任意实体的类名
+        packages: Array<String> = arrayOf(),   //import 包名
+        nameMapping: StringMap = StringMap(), // 名称转换
+        ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
     ) {
         this.nameMapping = nameMapping;
 
@@ -45,7 +46,8 @@ class generator {
 
         println("开始生成 mor...")
 
-        writeToFile("""package nbcp.db.mongo.table
+        writeToFile(
+            """package nbcp.db.mongo.table
 
 import nbcp.db.*
 import nbcp.db.mongo.*
@@ -57,7 +59,8 @@ import org.springframework.stereotype.Component
 ${packages.map { "import" + it }.joinToString("\n")}
 
 //generate auto @${LocalDateTime.now().AsString()}
-""")
+"""
+        )
         embClasses.forEach {
             writeToFile(genEmbEntity(it));
         }
@@ -67,12 +70,14 @@ ${packages.map { "import" + it }.joinToString("\n")}
             var groupName = group.key
             var groupEntities = group.value
 
-            writeToFile("""
+            writeToFile(
+                """
 @Component("mongo.${groupName}")
 @MetaDataGroup("${groupName}")
 class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
     override fun getEntities():Set<BaseMetaData> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
-""")
+"""
+            )
             println("${groupName}:")
             groupEntities.forEach {
                 writeToFile(genVarEntity(it).ToTab(1))
@@ -89,7 +94,8 @@ class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
             writeToFile("""}""")
         }
 
-        writeToFile("""
+        writeToFile(
+            """
 
 
 private fun join(vararg args:String): MongoColumnName{
@@ -107,7 +113,8 @@ data class moer_map(val _pname:String)
     }
 }
 
-""")
+"""
+        )
 
         println("生成 mor 完成!")
     }
@@ -133,17 +140,17 @@ data class moer_map(val _pname:String)
 
 
         MyUtil.findClasses(basePackage, anyEntityClass)
-                .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
-                .forEach {
+            .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
+            .forEach {
 
-                    var groupName = it.getAnnotation(DbEntityGroup::class.java).value;
+                var groupName = it.getAnnotation(DbEntityGroup::class.java).value;
 
-                    if (ret.containsKey(groupName) == false) {
-                        ret[groupName] = mutableListOf();
-                    }
-
-                    ret[groupName]!!.add(it)
+                if (ret.containsKey(groupName) == false) {
+                    ret[groupName] = mutableListOf();
                 }
+
+                ret[groupName]!!.add(it)
+            }
 
 
         return ret
@@ -155,31 +162,31 @@ data class moer_map(val _pname:String)
     fun findEmbClasses(clazz: Class<*>, deep: Int = 0): List<Class<*>> {
         if (deep == 6) return listOf();
         var ret = clazz.AllFields
-                .filter {
-                    if (it.type.IsSimpleType()) return@filter false;
-                    if (Map::class.java.isAssignableFrom(it.type)) {
-                        return@filter false;
-                    }
-
-                    return@filter true;
-                }.map {
-                    if (it.type.isArray) {
-                        return@map it.type.componentType;
-                    }
-                    if (List::class.java.isAssignableFrom(it.type)) {
-                        return@map (it.genericType as ParameterizedType).GetActualClass(0)
-                    }
-                    return@map it.type;
-                }.filter {
-                    if (it.IsSimpleType()) return@filter false;
-                    if (Map::class.java.isAssignableFrom(it)) {
-                        return@filter false;
-                    }
-
-                    return@filter true;
+            .filter {
+                if (it.type.IsSimpleType()) return@filter false;
+                if (Map::class.java.isAssignableFrom(it.type)) {
+                    return@filter false;
                 }
-                .distinctBy { it.name }
-                .toMutableList()
+
+                return@filter true;
+            }.map {
+                if (it.type.isArray) {
+                    return@map it.type.componentType;
+                }
+                if (List::class.java.isAssignableFrom(it.type)) {
+                    return@map (it.genericType as ParameterizedType).GetActualClass(0)
+                }
+                return@map it.type;
+            }.filter {
+                if (it.IsSimpleType()) return@filter false;
+                if (Map::class.java.isAssignableFrom(it)) {
+                    return@filter false;
+                }
+
+                return@filter true;
+            }
+            .distinctBy { it.name }
+            .toMutableList()
 
         var subClasses = mutableListOf<Class<*>>()
         ret.forEach {
@@ -276,12 +283,14 @@ data class moer_map(val _pname:String)
         }
 
         if (clazz.IsSimpleType() ||
-                Map::class.java.isAssignableFrom(clazz)) {
+            Map::class.java.isAssignableFrom(clazz)
+        ) {
             return "\"${name}\"" to retTypeIsBasicType
         }
 
         if (List::class.java.isAssignableFrom(clazz) ||
-                clazz.isArray) {
+            clazz.isArray
+        ) {
             //应该递归调用自己.
             return "" to retTypeIsBasicType
         }
@@ -315,18 +324,19 @@ data class moer_map(val _pname:String)
         }
 
         var props = entType.AllFields
-                .filter { it.name != "Companion" }
-                .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
-                .map {
-                    var v1 = getMetaValue(it, entTypeName, 1)
+            .filter { it.name != "Companion" }
+            .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
+            .map {
+                var v1 = getMetaValue(it, entTypeName, 1)
 
-                    return@map "${CodeGeneratorHelper.getFieldComment(it)}val ${it.name}=${v1}".ToTab(1)
-                }
+                return@map "${CodeGeneratorHelper.getFieldComment(it)}val ${it.name}=${v1}".ToTab(1)
+            }
 
         var entityTypeName = entTypeName;
 
 
-        var ent = """${CodeGeneratorHelper.getEntityComment(entType)}class ${entityTypeName}Meta (private val _pname:String):MongoColumnName() {
+        var ent =
+            """${CodeGeneratorHelper.getEntityComment(entType)}class ${entityTypeName}Meta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
 
 ${props.joinToString("\n")}
@@ -363,6 +373,9 @@ ${props.joinToString("\n")}
     }
 
 
+    /**
+     * 核心，生成一个实体
+     */
     fun genEntity(entType: Class<*>): String {
 
         var entTypeName = entType.name.split(".").last();
@@ -370,24 +383,26 @@ ${props.joinToString("\n")}
             return "";
         }
 
-        var pks = mutableListOf<String>()
+        var pks = mutableSetOf<String>()
 
         var props = entType.AllFields
-                .filter { it.name != "Companion" }
-                .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
-                .map {
+            .filter { it.name != "Companion" }
+            .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
+            .map {
 
-                    if (it.getAnnotation(DbKey::class.java) != null) {
-                        pks.add(it.name);
-                    }
-
-                    var (retValue, retTypeIsBasicType) = getEntityValue(it)
-                    if (retTypeIsBasicType) {
-                        return@map "${CodeGeneratorHelper.getFieldComment(it)}val ${it.name}=MongoColumnName(${retValue})".ToTab(1)
-                    } else {
-                        return@map "${CodeGeneratorHelper.getFieldComment(it)}val ${it.name}=${retValue}".ToTab(1)
-                    }
+                if (it.getAnnotation(DbKey::class.java) != null) {
+                    pks.add(it.name);
                 }
+
+                var (retValue, retTypeIsBasicType) = getEntityValue(it)
+                if (retTypeIsBasicType) {
+                    return@map "${CodeGeneratorHelper.getFieldComment(it)}val ${it.name}=MongoColumnName(${retValue})".ToTab(
+                        1
+                    )
+                } else {
+                    return@map "${CodeGeneratorHelper.getFieldComment(it)}val ${it.name}=${retValue}".ToTab(1)
+                }
+            }
 
         var entityTypeName = entTypeName + "Entity"
         var dbName = entType.getAnnotation(DbName::class.java)?.value ?: ""
@@ -399,17 +414,14 @@ ${props.joinToString("\n")}
         var idMethods = mutableListOf<String>()
 
         //每一项是 用逗号分隔的主键组合
-        var uks = mutableListOf<String>();
+        var uks = mutableSetOf<String>();
         if (pks.any()) {
             uks.add(pks.joinToString(","))
         }
 
-        kotlin.run {
-            var uks_define = entType.getAnnotation(DbUks::class.java)
-            if (uks_define != null) {
-                uks.addAll(uks_define.ukColumns)
-            }
-        }
+
+        uks.addAll(getUks(entType))
+
 
         uks.forEach { uk ->
             var keys = uk.split(",")
@@ -422,19 +434,51 @@ ${props.joinToString("\n")}
             }
 
 
-            idMethods.add("""
-    fun queryBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${MyUtil.getSmallCamelCase(it)}: ${entType.GetFieldPath(*it.split(".").toTypedArray())!!.type.kotlinTypeName}" }.joinToString(",")}): MongoQueryClip<${entityTypeName}, ${entType.name}> {
+            idMethods.add(
+                """
+    fun queryBy${
+                    keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
+                } (${
+                    keys.map {
+                        "${MyUtil.getSmallCamelCase(it)}: ${
+                            entType.GetFieldPath(
+                                *it.split(".").toTypedArray()
+                            )!!.type.kotlinTypeName
+                        }"
+                    }.joinToString(",")
+                }): MongoQueryClip<${entityTypeName}, ${entType.name}> {
         return this.query()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
-    fun deleteBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${MyUtil.getSmallCamelCase(it)}: ${entType.GetFieldPath(*it.split(".").toTypedArray())!!.type.kotlinTypeName}" }.joinToString(",")}): MongoDeleteClip<${entityTypeName}> {
+    fun deleteBy${
+                    keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
+                } (${
+                    keys.map {
+                        "${MyUtil.getSmallCamelCase(it)}: ${
+                            entType.GetFieldPath(
+                                *it.split(".").toTypedArray()
+                            )!!.type.kotlinTypeName
+                        }"
+                    }.joinToString(",")
+                }): MongoDeleteClip<${entityTypeName}> {
         return this.delete()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
-    fun updateBy${keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")} (${keys.map { "${MyUtil.getSmallCamelCase(it)}: ${entType.GetFieldPath(*it.split(".").toTypedArray())!!.type.kotlinTypeName}" }.joinToString(",")}): MongoUpdateClip<${entityTypeName}> {
+    fun updateBy${
+                    keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
+                } (${
+                    keys.map {
+                        "${MyUtil.getSmallCamelCase(it)}: ${
+                            entType.GetFieldPath(
+                                *it.split(".").toTypedArray()
+                            )!!.type.kotlinTypeName
+                        }"
+                    }.joinToString(",")
+                }): MongoUpdateClip<${entityTypeName}> {
         return this.update()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
-""")
+"""
+            )
         }
 
         var ent = """${CodeGeneratorHelper.getEntityComment(entType)}class ${entityTypeName}(collectionName:String="")
@@ -445,5 +489,23 @@ ${idMethods.joinToString("\n")}
 """
 
         return ent;
+    }
+
+
+    /**
+     * 获取类及父类的注解 DbUks
+     */
+    private fun getUks(entType: Class<*>, procedClasses: MutableSet<String> = mutableSetOf()): Set<String> {
+        procedClasses.add(entType.name)
+
+        var uks = mutableSetOf<String>()
+        var uks_define = entType.getAnnotation(DbUks::class.java)
+        if (uks_define != null) {
+            uks.addAll(uks_define.ukColumns)
+        }
+        if (entType.superclass != null && !procedClasses.contains(entType.superclass)) {
+            uks.addAll(getUks(entType.superclass, procedClasses))
+        }
+        return uks;
     }
 }

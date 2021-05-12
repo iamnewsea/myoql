@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2021-03-15 13:47:15
+//generate auto @2021-05-12 19:51:24
 
 class IdUrlMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
@@ -286,6 +286,44 @@ class MongoBaseGroup : IDataGroup{
         @Cn("更新时间")
         val updateAt=MongoColumnName("updateAt")
     
+        fun queryByLoginName (loginName: String): MongoQueryClip<BasicUserEntity, nbcp.db.mongo.entity.BasicUser> {
+            return this.query().where{ it.loginName match loginName }
+        }
+    
+        fun deleteByLoginName (loginName: String): MongoDeleteClip<BasicUserEntity> {
+            return this.delete().where{ it.loginName match loginName }
+        }
+    
+        fun updateByLoginName (loginName: String): MongoUpdateClip<BasicUserEntity> {
+            return this.update().where{ it.loginName match loginName }
+        }
+    
+    
+        fun queryByMobile (mobile: String): MongoQueryClip<BasicUserEntity, nbcp.db.mongo.entity.BasicUser> {
+            return this.query().where{ it.mobile match mobile }
+        }
+    
+        fun deleteByMobile (mobile: String): MongoDeleteClip<BasicUserEntity> {
+            return this.delete().where{ it.mobile match mobile }
+        }
+    
+        fun updateByMobile (mobile: String): MongoUpdateClip<BasicUserEntity> {
+            return this.update().where{ it.mobile match mobile }
+        }
+    
+    
+        fun queryByEmail (email: String): MongoQueryClip<BasicUserEntity, nbcp.db.mongo.entity.BasicUser> {
+            return this.query().where{ it.email match email }
+        }
+    
+        fun deleteByEmail (email: String): MongoDeleteClip<BasicUserEntity> {
+            return this.delete().where{ it.email match email }
+        }
+    
+        fun updateByEmail (email: String): MongoUpdateClip<BasicUserEntity> {
+            return this.update().where{ it.email match email }
+        }
+    
     }
     
     /**
@@ -370,6 +408,57 @@ class MongoBaseGroup : IDataGroup{
         */
         @Cn("更新时间")
         val updateAt=MongoColumnName("updateAt")
+    
+        fun queryByUserId (userId: String): MongoQueryClip<BasicUserLoginInfoEntity, nbcp.db.mongo.entity.BasicUserLoginInfo> {
+            return this.query().where{ it.userId match userId }
+        }
+    
+        fun deleteByUserId (userId: String): MongoDeleteClip<BasicUserLoginInfoEntity> {
+            return this.delete().where{ it.userId match userId }
+        }
+    
+        fun updateByUserId (userId: String): MongoUpdateClip<BasicUserLoginInfoEntity> {
+            return this.update().where{ it.userId match userId }
+        }
+    
+    
+        fun queryByLoginName (loginName: String): MongoQueryClip<BasicUserLoginInfoEntity, nbcp.db.mongo.entity.BasicUserLoginInfo> {
+            return this.query().where{ it.loginName match loginName }
+        }
+    
+        fun deleteByLoginName (loginName: String): MongoDeleteClip<BasicUserLoginInfoEntity> {
+            return this.delete().where{ it.loginName match loginName }
+        }
+    
+        fun updateByLoginName (loginName: String): MongoUpdateClip<BasicUserLoginInfoEntity> {
+            return this.update().where{ it.loginName match loginName }
+        }
+    
+    
+        fun queryByMobile (mobile: String): MongoQueryClip<BasicUserLoginInfoEntity, nbcp.db.mongo.entity.BasicUserLoginInfo> {
+            return this.query().where{ it.mobile match mobile }
+        }
+    
+        fun deleteByMobile (mobile: String): MongoDeleteClip<BasicUserLoginInfoEntity> {
+            return this.delete().where{ it.mobile match mobile }
+        }
+    
+        fun updateByMobile (mobile: String): MongoUpdateClip<BasicUserLoginInfoEntity> {
+            return this.update().where{ it.mobile match mobile }
+        }
+    
+    
+        fun queryByEmail (email: String): MongoQueryClip<BasicUserLoginInfoEntity, nbcp.db.mongo.entity.BasicUserLoginInfo> {
+            return this.query().where{ it.email match email }
+        }
+    
+        fun deleteByEmail (email: String): MongoDeleteClip<BasicUserLoginInfoEntity> {
+            return this.delete().where{ it.email match email }
+        }
+    
+        fun updateByEmail (email: String): MongoUpdateClip<BasicUserLoginInfoEntity> {
+            return this.update().where{ it.email match email }
+        }
     
     }
     

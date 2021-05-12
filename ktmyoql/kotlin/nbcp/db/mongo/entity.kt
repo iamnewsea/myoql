@@ -13,6 +13,7 @@ import nbcp.db.mongo.*
 @DbEntityGroup("MongoBase")
 @RemoveToSysDustbin
 @Cn("用户信息")
+@DbUks("loginName", "mobile", "email")
 open class BasicUser(
     @Cn("昵称")
     var name: String = "",      //这里的名称=自定义昵称
@@ -53,6 +54,7 @@ open class BasicUser(
 @Document
 @DbEntityGroup("MongoBase")
 @Cn("用户登录信息")
+@DbUks("userId", "loginName", "mobile", "email")
 open class BasicUserLoginInfo(
     @Cn("用户唯一Id")
     var userId: String = "",    //用户Id,唯一

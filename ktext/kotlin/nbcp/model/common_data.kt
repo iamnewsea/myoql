@@ -82,3 +82,11 @@ open class LoginUserModel(
     }
 }
 
+
+/**
+ * 树型数据
+ */
+interface ITreeData<T> {
+    var id: String;
+    fun getChildren(): MutableList<T>;
+}
