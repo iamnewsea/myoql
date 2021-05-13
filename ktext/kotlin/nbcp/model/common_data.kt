@@ -88,5 +88,5 @@ open class LoginUserModel(
  */
 interface ITreeData<T> {
     var id: String;
-    fun getChildren(): MutableList<T>;
+    fun children(): MutableList<T>;
 }

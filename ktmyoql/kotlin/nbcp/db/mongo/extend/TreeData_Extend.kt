@@ -7,9 +7,6 @@ import nbcp.comm.ApiResult
 import nbcp.comm.BatchReader
 import nbcp.comm.HasValue
 import nbcp.db.ITreeData
-import nbcp.db.db
-import nbcp.db.mongo.entity.BasicUserLoginInfo
-import nbcp.db.mongo.table.MongoBaseGroup
 import nbcp.utils.RecursionReturnEnum
 import nbcp.utils.RecursionUtil
 import org.bson.types.ObjectId
@@ -34,7 +31,7 @@ private fun <M : MongoBaseMetaCollection<T>, T> M.findTreeById(id: String): Tree
 
         RecursionUtil.execute<ITreeData<*>>(
             mutableListOf(current),
-            { it.getChildren() as MutableList<ITreeData<*>> },
+            { it.children() as MutableList<ITreeData<*>> },
             { item, container, index ->
                 if (item.id == id) {
                     ret = TreeResultData(current, container, item);
@@ -64,7 +61,7 @@ fun <M : MongoBaseMetaCollection<T>, T> M.deleteTreeNodeById(id: String): ApiRes
         return ApiResult();
     }
 
-    (parent!!.getChildren() as MutableList<ITreeData<*>>).removeIf { it.id == id }
+    (parent!!.children() as MutableList<ITreeData<*>>).removeIf { it.id == id }
 
     this.updateWithEntity(root as T).execUpdate();
     return ApiResult();
@@ -123,7 +120,7 @@ private fun <M : MongoBaseMetaCollection<T>, T> M.addTreeToTree(
     var root = targetTreeResult.root;
     var targetNode = targetTreeResult.current;
 
-    (targetNode.getChildren() as MutableList<ITreeData<*>>).add(saveEntity);
+    (targetNode.children() as MutableList<ITreeData<*>>).add(saveEntity);
 
     this.updateWithEntity(root as T).execUpdate();
     return ApiResult.of(root.id)
