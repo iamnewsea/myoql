@@ -2,6 +2,8 @@ package nbcp.config
 
 import nbcp.web.MyHttpRequestWrapper
 import nbcp.web.MyHttpResponseWrapper
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
@@ -24,7 +26,11 @@ import springfox.documentation.spring.web.plugins.Docket
  */
 @Configuration
 open class MySwaggerConfig : WebMvcConfigurer {
+    @Value("\${app.swagger.basePackage:}")
+    var basePackage: String = ""
+
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
+        if (basePackage.isEmpty()) return;
         registry.addResourceHandler("/statics/**")
             .addResourceLocations("classpath:/statics/");
         // 解决 SWAGGER 404报错
@@ -34,17 +40,14 @@ open class MySwaggerConfig : WebMvcConfigurer {
             .addResourceLocations("classpath:/META-INF/resources/webjars/springfox-swagger-ui/");
     }
 
-
-
-
-
     @Bean
+    @ConditionalOnProperty("app.swagger.basePackage")
     open fun petApi(): Docket {
         return Docket(DocumentationType.SWAGGER_2)
             .useDefaultResponseMessages(false)
             .ignoredParameterTypes(*arrayOf(MyHttpRequestWrapper::class.java, MyHttpResponseWrapper::class.java))
             .select()
-            .apis(RequestHandlerSelectors.any())
+            .apis(RequestHandlerSelectors.basePackage(basePackage))
             .paths(PathSelectors.any())
             .build()
             .pathMapping("/")
