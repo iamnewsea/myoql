@@ -3,7 +3,7 @@
 
     <groupId>cn.dev8</groupId>
     <artifactId>ktweb</artifactId>
-    <version>0.2.1.52</version>
+    <version>0.2.1.53</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
@@ -12,15 +12,24 @@
     <parent>
         <groupId>cn.dev8</groupId>
         <artifactId>kotlin</artifactId>
-        <version>0.2.1.52</version>
+        <version>0.2.1.53</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
+    <properties>
+        <springfox-swagger.version>2.9.2</springfox-swagger.version>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>cn.dev8</groupId>
             <artifactId>ktmyoql</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${springfox-swagger.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>cn.dev8</groupId>
