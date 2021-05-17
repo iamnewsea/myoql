@@ -19,7 +19,16 @@ data class TreeResultData(var root: ITreeData<*>, var parent: ITreeData<*>?, var
 /**
  * 在数据库中遍历查找树节点。返回所在树中的 根，父，本身。
  */
-private fun <M : MongoBaseMetaCollection<T>, T> M.findTreeById(id: String): TreeResultData?
+fun <M : MongoBaseMetaCollection<T>, T> M.findTreeById(id: String): TreeResultData?
+        where T : IMongoDocument,
+              T : ITreeData<*> {
+    return this.findTree { it.id == id };
+}
+
+/**
+ * 在数据库中遍历查找树节点。返回所在树中的 根，父，本身。
+ */
+fun <M : MongoBaseMetaCollection<T>, T> M.findTree(callback: ((ITreeData<*>) -> Boolean)): TreeResultData?
         where T : IMongoDocument,
               T : ITreeData<*> {
     var reader = BatchReader.init(5, { skip, take ->
@@ -33,7 +42,7 @@ private fun <M : MongoBaseMetaCollection<T>, T> M.findTreeById(id: String): Tree
             mutableListOf(current),
             { it.children() as MutableList<ITreeData<*>> },
             { item, container, index ->
-                if (item.id == id) {
+                if (callback(item)) {
                     ret = TreeResultData(current, container, item);
                     return@execute RecursionReturnEnum.Abord;
                 }
