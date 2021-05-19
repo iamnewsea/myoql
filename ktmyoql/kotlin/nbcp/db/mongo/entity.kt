@@ -4,6 +4,7 @@ import nbcp.db.*
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
 import nbcp.db.mongo.*
+import java.io.Serializable
 
 //--------------------------------------------------------
 /**
@@ -244,7 +245,7 @@ open class SysDustbin(
     @Cn("创建者")
     var creator: IdName = IdName(),
     @Cn("数据")
-    var data: Any = Object()
+    var data: Serializable? = null
 ) : BaseEntity(), IMongoDocument
 
 

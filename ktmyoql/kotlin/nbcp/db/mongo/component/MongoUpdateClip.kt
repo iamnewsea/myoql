@@ -1,6 +1,7 @@
 package nbcp.db.mongo
 
 import org.springframework.data.mongodb.core.query.Criteria
+import java.io.Serializable
 
 /**
  * Created by udi on 17-4-7.
@@ -92,7 +93,7 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out IMongoDocument>>(var moerE
      * key:是实体的属性，内容是数组，如 roles。
      * value是要插入实体值。如： UserRole
      */
-    fun push(pair: (M) -> Pair<MongoColumnName, Any>): MongoUpdateClip<M> {
+    fun push(pair: (M) -> Pair<MongoColumnName, Serializable>): MongoUpdateClip<M> {
         var pairObject = pair(this.moerEntity);
         this.pushData.put(pairObject.first.toString(), pairObject.second);
         return this;
