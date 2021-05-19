@@ -7,6 +7,7 @@ import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.BasicQuery
 import org.springframework.stereotype.Component
+import java.io.Serializable
 
 
 /**
@@ -34,7 +35,7 @@ class MongoDustbinEvent : IMongoEntityDelete {
         var dustbin = SysDustbin()
         dustbin.id = ObjectId().toString()
         dustbin.table = delete.collectionName
-        dustbin.data = data;
+        dustbin.data = data as Serializable?;
         db.mor_base.sysDustbin.doInsert(dustbin)
     }
 }
