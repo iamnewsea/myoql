@@ -6,7 +6,7 @@
         </div>
         <my-list ref="list" url="${url}/list" @param="preload" @loaded="procData" :page-size="pageSize" :store="true"
             style="width: 100%;margin-top:20px;">
-            <el-table-column type="index" clign="center" width="50"></el-table-column>
+            <el-table-column type="index" align="center" width="50"></el-table-column>
                         <!--<template slot-scope="scope"></template>-->
 ${for:fields}
 ${fif:id}${elseif:name}

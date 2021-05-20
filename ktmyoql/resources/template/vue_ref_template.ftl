@@ -12,7 +12,7 @@
         @input="v=>$emit('input',v)"
         :readOnly="readOnly"
     >
-        <el-table-column type="index" clign="center" width="50"></el-table-column>
+        <el-table-column type="index" align="center" width="50"></el-table-column>
         <!--<template slot-scope="scope"></template>-->
 <#list fields as field>
 <#if field.getName() == "id">
