@@ -146,29 +146,27 @@ export default {
         this.loadData();
     },
     methods: {
-        loadData() {
+        async loadData() {
             if (!this.id) return;
-            this.$http.post("${url}/detail/" + this.id).then(res => {
-                this.info = res.data.data;
-            });
+            var res = await this.$http.post("${url}/detail/" + this.id)
+            this.info = res.data.data;
         },
-        save_click() {
+        async save_click() {
             //校验
             if (this.chk() == false) {
                 return;
             }
 
-            this.$http.post("${url}/save", this.info).then(res => {
-                //[axios拦截器中已处理了异常]。
-                jv.info(this.action_name + " 成功");
-                if (this.action == "add") {
-                    var id = res.data.data
-                    jv.setLastRowId("${url}/list", "list", id);
-                    this.$router.push("${url}/edit/" + id)
-                } else if (this.action == "edit") {
-                    this.$router.push("${url}/list")
-                }
-            })
+            var res =await this.$http.post("${url}/save", this.info)
+            //[axios拦截器中已处理了异常]。
+            jv.info(this.action_name + " 成功");
+            if (this.action == "add") {
+                var id = res.data.data
+                jv.setLastRowId("${url}/list", "list", id);
+                this.$router.push("${url}/edit/" + id)
+            } else if (this.action == "edit") {
+                this.$router.push("${url}/list")
+            }
         }
     }
 }
