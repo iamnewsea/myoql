@@ -115,15 +115,12 @@ export default {
             this.$refs.list.setLastRow(row);
             this.$router.push("${url}/edit/" + rowId)
         },
-        delete_click(row) {
-            var rowId = row.id;
-            var rowName = row.name;
-            jv.confirm('确认删除 ' + rowName + ' 吗？').then(res => {
-                this.$http.post("${url}/delete/" + rowId).then(res => {
-                    //[axios拦截器中已处理了异常]。
-                    this.loadData();
-                })
-            });
+        async delete_click(row) {
+            var rowId = row.id,rowName = row.name;
+            await jv.confirm('确认删除 ' + rowName + ' 吗？');
+
+            var res = await this.$http.post("${url}/delete/" + rowId)
+            this.loadData();
         }<#if has("status")>,
         set_click(row) {
             //设置事件
