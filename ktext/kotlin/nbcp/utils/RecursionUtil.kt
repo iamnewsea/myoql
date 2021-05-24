@@ -1,6 +1,7 @@
 package nbcp.utils
 
 import nbcp.comm.*
+import nbcp.db.ITreeData
 
 /**
  * Created by udi on 17-4-10.
@@ -27,6 +28,61 @@ enum class RecursionReturnEnum private constructor(val value: Int) {
  * 递归执行工具类。
  */
 object RecursionUtil {
+
+    fun <T> filter(
+        container: MutableList<T>,
+        producer: (T) -> MutableList<T>,
+        idCallback: (T) -> String,
+        callback: (T, T?, Int) -> Boolean
+    ) {
+        var list_queryed_ids = mutableListOf<String>();
+        var list_wbs_ids = mutableSetOf<String>();
+
+        //如果菜单树中有匹配项，则显示向上的路径，显示下级所有节点。
+        RecursionUtil.execute<T>(
+            container,
+            producer,
+            { item, parent, index ->
+                if (callback(item, parent, index) == false) {
+                    return@execute RecursionReturnEnum.Go
+                }
+
+                list_queryed_ids.add(idCallback(item))
+
+                if (container != null) {
+                    list_wbs_ids.addAll(
+                        RecursionUtil.getWbs(
+                            container,
+                            producer,
+                            { item2 ->
+                                return@getWbs idCallback(item2) == idCallback(item)
+                            }).map { idCallback(it) }
+                    )
+                } else {
+                    list_wbs_ids.add(idCallback(item));
+                }
+                return@execute RecursionReturnEnum.StopSub
+            });
+
+
+        RecursionUtil.execute<T>(
+            container,
+            producer,
+            { item, parent, index ->
+                if (list_wbs_ids.contains(idCallback(item)) == false) {
+                    return@execute RecursionReturnEnum.Remove;
+                }
+
+                if (list_queryed_ids.contains(idCallback(item))) {
+                    return@execute RecursionReturnEnum.StopSub;
+                }
+
+                return@execute RecursionReturnEnum.Go;
+            }
+        );
+    }
+
+
     /** 递归执行
      * @param container:递归的集合。
      * @param producer: 生产者，获取下级集合。
