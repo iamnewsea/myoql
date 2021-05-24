@@ -108,6 +108,9 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out IMongoDocument>>(var moerE
      * .pull( it.roles, "id" match "def")
      * ==>
      * { $pull: { "menus":{"id:"ab"} , "roles":{"id:"def"} } }
+     *
+     * @param key , 移除的数组列。
+     * @param pullWhere , where条件的列，是从 @key 字段开始的列。
      */
     fun pull(key: (M) -> MongoColumnName, pullWhere: Criteria): MongoUpdateClip<M> {
         this.pullData.put(key(this.moerEntity).toString(), pullWhere);
