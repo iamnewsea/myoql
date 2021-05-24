@@ -27,7 +27,6 @@ enum class RecursionReturnEnum private constructor(val value: Int) {
  * 递归执行工具类。
  */
 object RecursionUtil {
-
     /** 递归执行
      * @param container:递归的集合。
      * @param producer: 生产者，获取下级集合。
@@ -92,7 +91,26 @@ object RecursionUtil {
         return null
     }
 
-
+    /**
+     * 查找从节点到当前节点的路径
+     */
+    fun <T> getWbs(
+        container: Collection<T>,
+        producer: (T) -> Collection<T>,
+        consumer: (T) -> Boolean,
+        parents: MutableList<T> = mutableListOf()
+    ): MutableList<T> {
+        for (i in container.indices) {
+            val item = container.elementAt(i)
+            var retVal = consumer(item)
+            var path = parents.union(listOf(item)).toMutableList()
+            if (retVal == true) return path;
+            var subVal = getWbs(producer(item), producer, consumer, path)
+            if (subVal.any())
+                return subVal;
+        }
+        return mutableListOf()
+    }
 //    fun <T> remove(Container: MutableList<T>, Subs: (T) -> MutableList<T>, Exec: (T) -> Boolean) {
 //        var index = -1;
 //        while (true) {
