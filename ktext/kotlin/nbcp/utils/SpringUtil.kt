@@ -125,6 +125,9 @@ class SpringUtil : BeanPostProcessor, ApplicationContextAware {
      * 在所有Bean初始化之前执行
      */
     private fun init_app() {
+
+        DefaultMyJsonMapper.addSerializer(MyString::class.java, MyStringSerializer(), MyStringDeserializer())
+        DefaultMyJsonMapper.addSerializer(MyRawString::class.java, MyRawStringSerializer(), MyRawStringDeserializer())
         DefaultMyJsonMapper.addSerializer(Date::class.java, DateJsonSerializer(), DateJsonDeserializer())
         DefaultMyJsonMapper.addSerializer(LocalDate::class.java, LocalDateJsonSerializer(), LocalDateJsonDeserializer())
         DefaultMyJsonMapper.addSerializer(LocalTime::class.java, LocalTimeJsonSerializer(), LocalTimeJsonDeserializer())

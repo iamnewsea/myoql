@@ -559,7 +559,6 @@ fun String.Xml2Json(): JsonMap {
 //    return CharArray(bytes.size, { bytes[it].toChar() });
 //}
 
-
 class MatchPatternTokenItem(value: String) : MyString(value) {
     var isToken: Boolean = false
         get() = field

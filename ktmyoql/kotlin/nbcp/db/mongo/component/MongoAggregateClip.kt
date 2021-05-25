@@ -15,7 +15,8 @@ import java.time.LocalDateTime
 /**
  * MongoAggregate
  */
-class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : IMongoDocument>(var moerEntity: M) : MongoClipBase(moerEntity.tableName) {
+class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : IMongoDocument>(var moerEntity: M) :
+    MongoClipBase(moerEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass);
     }
@@ -153,10 +154,10 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : IMongoDocument>(var
                 return@map """{$key:${value.toString().toOIdJson().ToJson().AsString("null")}}"""
             } else if (value is Criteria) {
 
-                var c_value = value.criteriaObject.procWithMongoScript();
+                var c_value = value.criteriaObject //.procWithMongoScript();
 
-                return@map """{$key:${c_value.ToJson().AsString("null")}}"""
-            } else if (value is Number) {
+                return@map """{$key:${c_value.toJson().AsString("null")}}"""
+            } else if (value is Number || value is MyRawString) {
                 return@map "{$key:$value}";
             } else if (value is String) {
 //                if( key == "_id" || key.endsWith("._id")){

@@ -6,37 +6,12 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
-import nbcp.comm.DefaultMyJsonMapper
-import nbcp.comm.HasValue
-import nbcp.comm.clazzesIsSimpleDefine
+import nbcp.comm.*
+import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component
 
-
-class ObjectIdJsonSerializer : JsonSerializer<ObjectId>() {
-    override fun serialize(o: ObjectId?, j: JsonGenerator, s: SerializerProvider) {
-        if (o == null) {
-            j.writeNull()
-        } else {
-            j.writeString(o.toString())
-        }
-    }
-}
-
-class ObjectIdJsonDeserializer : JsonDeserializer<ObjectId>() {
-    override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): ObjectId? {
-        if (json == null) {
-            return null;
-        }
-
-        if (json.valueAsString.HasValue == false) {
-            return null;
-        }
-
-        return ObjectId(json.valueAsString)
-    }
-}
 
 @Component
 class ObjectIdJsonMapperBeforeInitBean : BeanPostProcessor {
@@ -61,5 +36,6 @@ class ObjectIdJsonMapperBeforeInitBean : BeanPostProcessor {
         clazzesIsSimpleDefine.add(ObjectId::class.java)
 
         DefaultMyJsonMapper.addSerializer(ObjectId::class.java, ObjectIdJsonSerializer(), ObjectIdJsonDeserializer())
+        DefaultMyJsonMapper.addSerializer(Document::class.java, DocumentJsonSerializer(), DocumentJsonDeserializer())
     }
 }

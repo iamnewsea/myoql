@@ -114,75 +114,22 @@ class TimestampJsonSerializer : JsonSerializer<Timestamp>() {
     }
 }
 
-//---------------------------------------------------------
-
-class DateJsonDeserializer : JsonDeserializer<Date>() {
-    override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): Date? {
-        if (json == null) {
-            return null;
+class MyStringSerializer : JsonSerializer<MyString>() {
+    override fun serialize(value: MyString?, generator: JsonGenerator, p2: SerializerProvider?) {
+        if (value == null) {
+            generator.writeNull()
+        } else {
+            generator.writeString(value.toString())
         }
-        var stringValue = json.valueAsString
-        if (stringValue.contains("-") || stringValue.contains("/")) {
-            return stringValue.AsDate();
-        }
-
-        return Date(json.longValue);
     }
 }
 
-
-class LocalDateJsonDeserializer : JsonDeserializer<LocalDate>() {
-    override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): LocalDate? {
-        if (json == null) {
-            return null;
+class MyRawStringSerializer : JsonSerializer<MyRawString>() {
+    override fun serialize(value: MyRawString?, generator: JsonGenerator, p2: SerializerProvider?) {
+        if (value == null) {
+            generator.writeNull()
+        } else {
+            generator.writeRawValue(value.toString())
         }
-
-        if (json.valueAsString.contains("-")) {
-            return json.valueAsString.AsLocalDate();
-        }
-
-        return Date(json.longValue).AsLocalDate();
-    }
-}
-
-
-class LocalTimeJsonDeserializer : JsonDeserializer<LocalTime>() {
-    override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): LocalTime? {
-        if (json == null) {
-            return null;
-        }
-
-        return json.valueAsString.AsLocalTime();
-    }
-}
-
-
-class LocalDateTimeJsonDeserializer : JsonDeserializer<LocalDateTime>() {
-    override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): LocalDateTime? {
-        if (json == null) {
-            return null;
-        }
-
-        if (json.valueAsString.contains("-") || json.valueAsString.contains("/")) {
-            return json.valueAsString.AsLocalDateTime();
-        }
-
-
-        return Date(json.longValue).AsLocalDateTime();
-    }
-}
-
-
-class TimestampJsonDeserializer : JsonDeserializer<Timestamp>() {
-    override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): Timestamp? {
-        if (json == null) {
-            return null;
-        }
-
-        if (json.valueAsString.contains("-") || json.valueAsString.contains("/")) {
-            return Timestamp.valueOf(json.valueAsString.AsLocalDateTime());
-        }
-
-        return Timestamp.valueOf(Date(json.longValue).AsLocalDateTime());
     }
 }
