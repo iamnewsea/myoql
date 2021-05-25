@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import nbcp.comm.*
+import nbcp.component.DbJsonMapper
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.config.BeanPostProcessor
@@ -35,7 +36,7 @@ class ObjectIdJsonMapperBeforeInitBean : BeanPostProcessor {
     private fun init_app() {
         clazzesIsSimpleDefine.add(ObjectId::class.java)
 
-        DefaultMyJsonMapper.addSerializer(ObjectId::class.java, ObjectIdJsonSerializer(), ObjectIdJsonDeserializer())
-        DefaultMyJsonMapper.addSerializer(Document::class.java, DocumentJsonSerializer(), DocumentJsonDeserializer())
+        DbJsonMapper.addSerializer(ObjectId::class.java, ObjectIdJsonSerializer(), ObjectIdJsonDeserializer())
+        DbJsonMapper.addSerializer(Document::class.java, DocumentJsonSerializer(), DocumentJsonDeserializer())
     }
 }

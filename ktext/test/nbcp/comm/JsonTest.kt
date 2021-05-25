@@ -21,7 +21,7 @@ class JsonTest : TestBase() {
         var a = abc("udi")
         a.r = MyRawString("<abc?");
 
-        usingScope(JsonStyleEnumScope.GetSetStyle) {
+        usingScope(JsonStyleEnumScope.DateUtcStyle) {
             println(a.ToJson())
 
             println(a.ToJson().FromJson<abc>()!!.r)

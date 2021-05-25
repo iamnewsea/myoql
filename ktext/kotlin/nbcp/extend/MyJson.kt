@@ -3,24 +3,7 @@
 
 package nbcp.comm
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.PropertyAccessor
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.*
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import nbcp.utils.*
-import nbcp.comm.*
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.InitializingBean
-import org.springframework.context.annotation.DependsOn
-import org.springframework.stereotype.Component
 import java.lang.RuntimeException
-import java.sql.Timestamp
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 /**
@@ -60,11 +43,12 @@ import java.util.*
 /**
  * 样式请使用 usingScope(listOf(JsonStyleEnum.FieldStyle)){}
  */
-fun <T> T.ToJson(): String {
+fun <T> T.ToJson(style: JsonSceneEnumScope? = null): String {
     if (this is String) return this;
 
+    var mapper = style.getJsonMapper();
+
     var styles = scopes.getScopeTypes<JsonStyleEnumScope>()
-    var mapper = DefaultMyJsonMapper.get(*styles.toTypedArray())
     if (styles.contains(JsonStyleEnumScope.Pretty)) {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this) ?: ""
     }
@@ -86,15 +70,16 @@ fun <T> T.ToJson(): String {
 //    return getJsonInstance(getSetStyle, withNull).writeValueAsString(this) ?: "null"
 //}
 
-fun <T> String.FromJsonWithDefaultValue(collectionClass: Class<T>, getSetStyle: Boolean = false, withNullValue: Boolean = false): T {
-    return this.FromJson<T>(collectionClass, getSetStyle, withNullValue) ?: collectionClass.newInstance()
+fun <T> String.FromJsonWithDefaultValue(
+    collectionClass: Class<T>,
+    style: JsonSceneEnumScope? = null
+): T {
+    return this.FromJson<T>(collectionClass, style) ?: collectionClass.newInstance()
 }
 
-fun <T> String.FromJson(collectionClass: Class<T>): T? {
-    return this.FromJson(collectionClass, false, false);
-}
 
-fun <T> String.FromJson(collectionClass: Class<T>, getSetStyle: Boolean, withNullValue: Boolean): T? {
+
+fun <T> String.FromJson(collectionClass: Class<T>, style: JsonSceneEnumScope? = null): T? {
     if (this.isEmpty()) return null
 
     if (collectionClass == String::class.java) {
@@ -105,22 +90,12 @@ fun <T> String.FromJson(collectionClass: Class<T>, getSetStyle: Boolean, withNul
     if (jsonString.isEmpty()) {
         return null;
     }
-    var styles = mutableListOf<JsonStyleEnumScope>()
-    if (getSetStyle) {
-        styles.add(JsonStyleEnumScope.GetSetStyle)
-    } else {
-        styles.add(JsonStyleEnumScope.FieldStyle)
-    }
 
-    if (withNullValue) {
-        styles.add(JsonStyleEnumScope.WithNull)
-    } else {
-        styles.add(JsonStyleEnumScope.IgnoreNull)
-    }
+    var mapper = style.getJsonMapper();
 
     var ret: T? = null
     try {
-        ret = DefaultMyJsonMapper.get(*styles.toTypedArray()).readValue(jsonString, collectionClass)
+        ret = mapper.readValue(jsonString, collectionClass)
     } catch (e: Exception) {
         var msg = "Json转换出错！Json数据：${jsonString}\n 类型:${collectionClass.name} \n 错误消息:" + e.message;
         throw RuntimeException(msg, e);
@@ -129,11 +104,11 @@ fun <T> String.FromJson(collectionClass: Class<T>, getSetStyle: Boolean, withNul
 }
 
 
-fun <T> Any.ConvertJson(clazz: Class<T>): T {
+fun <T> Any.ConvertJson(clazz: Class<T>,style: JsonSceneEnumScope? = null): T {
     if (clazz.isAssignableFrom(this::class.java)) {
         return this as T;
     }
-    return DefaultMyJsonMapper.get().convertValue(this, clazz)
+    return style.getJsonMapper().convertValue(this, clazz)
 }
 
 inline fun <reified T> String.FromJson(): T? {

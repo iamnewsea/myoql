@@ -151,7 +151,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : IMongoDocument>(var
             var key = it.first;
             var value = it.second;
             if (value is ObjectId) {
-                return@map """{$key:${value.toString().toOIdJson().ToJson().AsString("null")}}"""
+                return@map """{$key:${value.toString().toOIdJson().ToJson(JsonSceneEnumScope.Db).AsString("null")}}"""
             } else if (value is Criteria) {
 
                 var c_value = value.criteriaObject //.procWithMongoScript();
@@ -165,11 +165,11 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : IMongoDocument>(var
 //                }
                 return@map """{$key:"${value}"}"""
             } else if (value is Map<*, *>) {
-                return@map "{$key:${value.procWithMongoScript().ToJson().AsString("null")}}"
+                return@map "{$key:${value.procWithMongoScript().ToJson(JsonSceneEnumScope.Db).AsString("null")}}"
             }
 
             logger.warn("不识别的类型：${value::class.java.name}")
-            return@map "{$key:${value.ToJson().AsString("null")}}"
+            return@map "{$key:${value.ToJson(JsonSceneEnumScope.Db).AsString("null")}}"
         }.joinToString(",") + "]"
 
         var exp = """{
@@ -212,7 +212,7 @@ cursor: {} } """
             logger.InfoError(result == null) {
                 """[aggregate] ${this.moerEntity.tableName}
 [语句] ${queryJson}
-${if (logger.debug) "[result] ${result?.ToJson()}" else "[result.size] ${result?.size}"}
+${if (logger.debug) "[result] ${result?.ToJson(JsonSceneEnumScope.Db)}" else "[result.size] ${result?.size}"}
 [耗时] ${db.executeTime}"""
             }
         }
@@ -221,7 +221,7 @@ ${if (logger.debug) "[result] ${result?.ToJson()}" else "[result.size] ${result?
             throw RuntimeException("mongo aggregate执行错误!")
         }
         if (result.containsKey("ok") == false) {
-            throw RuntimeException("mongo aggregate执行错误!" + result.ToJson())
+            throw RuntimeException("mongo aggregate执行错误!" + result.ToJson(JsonSceneEnumScope.Db))
         }
 
         var ret = mutableListOf<Document>()

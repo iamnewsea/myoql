@@ -1,6 +1,8 @@
 package nbcp.utils
 
 import nbcp.comm.*
+import nbcp.component.BaseJsonMapper
+import nbcp.component.DbJsonMapper
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
@@ -126,17 +128,18 @@ class SpringUtil : BeanPostProcessor, ApplicationContextAware {
      */
     private fun init_app() {
 
-        DefaultMyJsonMapper.addSerializer(MyString::class.java, MyStringSerializer(), MyStringDeserializer())
-        DefaultMyJsonMapper.addSerializer(MyRawString::class.java, MyRawStringSerializer(), MyRawStringDeserializer())
-        DefaultMyJsonMapper.addSerializer(Date::class.java, DateJsonSerializer(), DateJsonDeserializer())
-        DefaultMyJsonMapper.addSerializer(LocalDate::class.java, LocalDateJsonSerializer(), LocalDateJsonDeserializer())
-        DefaultMyJsonMapper.addSerializer(LocalTime::class.java, LocalTimeJsonSerializer(), LocalTimeJsonDeserializer())
-        DefaultMyJsonMapper.addSerializer(
+        DbJsonMapper.addSerializer(MyRawString::class.java, MyRawStringSerializer(), MyRawStringDeserializer())
+
+        BaseJsonMapper.addSerializer(MyString::class.java, MyStringSerializer(), MyStringDeserializer())
+        BaseJsonMapper.addSerializer(Date::class.java, DateJsonSerializer(), DateJsonDeserializer())
+        BaseJsonMapper.addSerializer(LocalDate::class.java, LocalDateJsonSerializer(), LocalDateJsonDeserializer())
+        BaseJsonMapper.addSerializer(LocalTime::class.java, LocalTimeJsonSerializer(), LocalTimeJsonDeserializer())
+        BaseJsonMapper.addSerializer(
             LocalDateTime::class.java,
             LocalDateTimeJsonSerializer(),
             LocalDateTimeJsonDeserializer()
         )
-        DefaultMyJsonMapper.addSerializer(Timestamp::class.java, TimestampJsonSerializer(), TimestampJsonDeserializer())
+        BaseJsonMapper.addSerializer(Timestamp::class.java, TimestampJsonSerializer(), TimestampJsonDeserializer())
     }
 
     override fun setApplicationContext(context: ApplicationContext?) {

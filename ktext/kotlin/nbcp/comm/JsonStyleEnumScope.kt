@@ -1,12 +1,43 @@
 package nbcp.comm
 
+import nbcp.component.AppJsonMapper
+import nbcp.component.BaseJsonMapper
+import nbcp.component.DbJsonMapper
+import nbcp.component.WebJsonMapper
+import nbcp.utils.SpringUtil
+
 
 /**
  * 默认：FieldStyle，IgnoreNull，Compress，DateStandardStyle
  */
+enum class JsonSceneEnumScope {
+    Web,
+    Db,
+    App;
+}
+
+
+fun JsonSceneEnumScope?.getJsonMapper(): BaseJsonMapper {
+    var style: JsonSceneEnumScope? = this;
+    if (style == null) {
+        style = scopes.GetLatest<JsonSceneEnumScope>()
+    }
+
+    if (style == null) {
+        return SpringUtil.getBean<AppJsonMapper>()
+    }
+
+    if (style == JsonSceneEnumScope.App) {
+        return SpringUtil.getBean<AppJsonMapper>()
+    } else if (style == JsonSceneEnumScope.Db) {
+        return SpringUtil.getBean<DbJsonMapper>();
+    } else if (style == JsonSceneEnumScope.Web) {
+        return SpringUtil.getBean<WebJsonMapper>();
+    }
+    return SpringUtil.getBean<AppJsonMapper>()
+}
+
 enum class JsonStyleEnumScope private constructor(val mutexGroup: String) {
-    GetSetStyle("item"),
-    FieldStyle("item"),
     WithNull("null"),
     IgnoreNull("null"),
     Pretty("format"),

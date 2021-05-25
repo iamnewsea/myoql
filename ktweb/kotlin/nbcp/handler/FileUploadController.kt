@@ -8,7 +8,6 @@ import nbcp.db.*
 import nbcp.service.UploadService
 import nbcp.web.*
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -42,7 +41,8 @@ class FileUploadController {
     @PostMapping("/sys/upload")
     fun fileUpload(request: HttpServletRequest, response: HttpServletResponse) {
 
-        var ret = uploadService.upload(request, IdName(request.UserId, request.UserName), request.LoginUser.organization.id);
+        var ret =
+            uploadService.upload(request, IdName(request.UserId, request.UserName), request.LoginUser.organization.id);
 
         if (ret.msg.HasValue) {
             response.WriteJsonRawValue(JsonResult(ret.msg).ToJson())
@@ -52,7 +52,7 @@ class FileUploadController {
         var ids = ret.data;
 
         response.contentType = "application/json;charset=UTF-8"
-        usingScope(JsonStyleEnumScope.GetSetStyle) {
+        usingScope(JsonSceneEnumScope.Web) {
             if (ids.size == 0) {
                 response.outputStream.write(JsonResult("上传失败").ToJson().toByteArray(utf8));
             } else if (ids.size == 1) {
@@ -75,6 +75,10 @@ class FileUploadController {
     //如果存在，返回 id  url
     @JsonpMapping("/sys/check_upload")
     fun fileCheckUpload(md5: String, request: HttpServletRequest): ApiResult<IdUrl> {
-        return uploadService.onFileMd5Check(md5, IdName(request.UserId, request.UserName), request.LoginUser.organization.id);
+        return uploadService.onFileMd5Check(
+            md5,
+            IdName(request.UserId, request.UserName),
+            request.LoginUser.organization.id
+        );
     }
 }

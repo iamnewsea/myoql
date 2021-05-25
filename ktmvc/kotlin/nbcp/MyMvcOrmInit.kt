@@ -1,9 +1,9 @@
 package nbcp
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import nbcp.comm.DefaultMyJsonMapper
 import nbcp.comm.JsonStyleEnumScope
 import nbcp.comm.utf8
+import nbcp.component.WebJsonMapper
 import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
 import nbcp.web.*
@@ -72,11 +72,7 @@ open class MyMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
         handlerAdapter.messageConverters.forEach { converter ->
             if (converter is MappingJackson2HttpMessageConverter) {
                 converter.defaultCharset = utf8
-                converter.objectMapper = DefaultMyJsonMapper.get(
-                    JsonStyleEnumScope.GetSetStyle,
-                    JsonStyleEnumScope.IgnoreNull,
-                    JsonStyleEnumScope.Compress
-                )
+                converter.objectMapper = SpringUtil.getBean<WebJsonMapper>()
                 return@forEach
             }
 
@@ -95,11 +91,7 @@ open class MyMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
 
                     if (sub_conveter is MappingJackson2HttpMessageConverter) {
                         sub_conveter.defaultCharset = utf8
-                        sub_conveter.objectMapper = DefaultMyJsonMapper.get(
-                            JsonStyleEnumScope.GetSetStyle,
-                            JsonStyleEnumScope.IgnoreNull,
-                            JsonStyleEnumScope.Compress
-                        )
+                        sub_conveter.objectMapper = SpringUtil.getBean<WebJsonMapper>()
                     }
                     return@foreach2
                 }

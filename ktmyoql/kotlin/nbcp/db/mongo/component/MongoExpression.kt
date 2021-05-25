@@ -3,6 +3,7 @@ package nbcp.db.mongo
 
 import nbcp.comm.ToJson
 import nbcp.comm.JsonMap
+import nbcp.comm.JsonSceneEnumScope
 import org.springframework.data.mongodb.core.query.Criteria
 import java.lang.RuntimeException
 
@@ -23,7 +24,7 @@ fun Criteria.toExpression(): JsonMap {
                 var first = value.entries.first()
                 ret.set(first.key.toString(), arrayOf(key, first.value))
             } else {
-                throw RuntimeException("不识别的表达式: " + value.ToJson())
+                throw RuntimeException("不识别的表达式: " + value.ToJson(JsonSceneEnumScope.Db))
             }
         }
         //简单类型

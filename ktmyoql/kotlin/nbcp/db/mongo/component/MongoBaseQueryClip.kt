@@ -165,12 +165,12 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             fun getMsgs(): String {
                 var msgs = mutableListOf<String>()
                 msgs.add("[query] " + this.collectionName);
-                msgs.add("[where] " + criteria.criteriaObject.ToJson())
+                msgs.add("[where] " + criteria.criteriaObject.ToJson(JsonSceneEnumScope.Db))
                 if (selectColumns.any() || selectProjections.any()) {
                     msgs.add(
                         "[select] " + arrayOf(
                             selectColumns.joinToString(","),
-                            selectProjections.ToJson()
+                            selectProjections.ToJson(JsonSceneEnumScope.Db)
                         ).joinToString(",")
                     )
                 }
@@ -179,7 +179,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                     msgs.add("[unselect] " + unSelectColumns.joinToString(","))
                 }
                 if (sort.any()) {
-                    msgs.add("[sort] " + sort.ToJson())
+                    msgs.add("[sort] " + sort.ToJson(JsonSceneEnumScope.Db))
                 }
                 if (skip > 0 || take > 0) {
                     msgs.add("[limit] ${skip},${take}")
@@ -227,7 +227,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         } finally {
             logger.InfoError(ret < 0) {
                 return@InfoError """[count] ${this.collectionName}
-[query] ${query.queryObject.ToJson()}
+[query] ${query.queryObject.ToJson(JsonSceneEnumScope.Db)}
 [result] ${ret}
 [耗时] ${db.executeTime}"""
             }
@@ -248,7 +248,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         } finally {
             logger.InfoError(ret == null) {
                 return@InfoError """[exists] ${this.collectionName}
-[query] ${query.queryObject.ToJson()}
+[query] ${query.queryObject.ToJson(JsonSceneEnumScope.Db)}
 [result] ${ret}
 [耗时] ${db.executeTime}"""
             }
