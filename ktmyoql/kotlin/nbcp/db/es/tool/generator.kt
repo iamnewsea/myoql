@@ -181,7 +181,9 @@ data class moer_map(val _pname:String)
                     return@map it.type.componentType;
                 }
                 if (List::class.java.isAssignableFrom(it.type)) {
-                    return@map (it.genericType as ParameterizedType).GetActualClass(0)
+                    return@map (it.genericType as ParameterizedType).GetActualClass(0, {
+                        return@GetActualClass clazz.GetFirstTypeArguments()[0] as Class<*>;
+                    })
                 }
                 return@map it.type;
             }.filter {
@@ -255,7 +257,7 @@ data class moer_map(val _pname:String)
         return """${fieldType.name.split(".").last()}Meta(join(this._pname,"${fieldName}"))""";
     }
 
-    private fun getMetaValue(field: Field, parentTypeName: String, deepth: Int): String {
+    private fun getMetaValue(field: Field, parentType: Class<*>, parentTypeName: String, deepth: Int): String {
 
         if (deepth > maxLevel) {
             writeToFile("-------------------已超过最大深度${field.name}:${field.type.name}-----------------");
@@ -267,7 +269,9 @@ data class moer_map(val _pname:String)
 
 
         if (List::class.java.isAssignableFrom(field.type)) {
-            var actType = (field.genericType as ParameterizedType).GetActualClass(0)
+            var actType = (field.genericType as ParameterizedType).GetActualClass(0, {
+                return@GetActualClass parentType.GetFirstTypeArguments()[0] as Class<*>;
+            })
 
 
             var ret = getMetaValue(field.name, actType, parentTypeName);
@@ -333,7 +337,7 @@ data class moer_map(val _pname:String)
         var props = entType.AllFields
             .filter { it.name != "Companion" }
             .map {
-                var v1 = getMetaValue(it, entTypeName, 1)
+                var v1 = getMetaValue(it, entType, entTypeName, 1)
 
                 return@map "val ${it.name}=${v1}".ToTab(1)
             }

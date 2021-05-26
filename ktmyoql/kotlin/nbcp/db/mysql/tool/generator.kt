@@ -158,7 +158,9 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                 return@map it.type.componentType;
             }
             if (List::class.java.isAssignableFrom(it.type)) {
-                return@map (it.genericType as ParameterizedType).GetActualClass(0);
+                return@map (it.genericType as ParameterizedType).GetActualClass(0,{
+                    return@GetActualClass clazz.GetFirstTypeArguments()[0] as Class<*>;
+                });
             }
             return@map it.type;
         }.filter {
