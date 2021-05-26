@@ -4,6 +4,7 @@ import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.*
 import nbcp.tool.CodeGeneratorHelper
+import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
 import java.io.File
 import java.io.FileWriter
 import java.lang.RuntimeException
@@ -174,7 +175,9 @@ data class moer_map(val _pname:String)
                     return@map it.type.componentType;
                 }
                 if (List::class.java.isAssignableFrom(it.type)) {
-                    return@map (it.genericType as ParameterizedType).GetActualClass(0)
+                    return@map (it.genericType as ParameterizedType).GetActualClass(0, {
+                        return@GetActualClass clazz.GetFirstTypeArguments()[0] as Class<*>;
+                    })
                 }
                 return@map it.type;
             }.filter {
@@ -248,7 +251,7 @@ data class moer_map(val _pname:String)
         return """${fieldType.name.split(".").last()}Meta(join(this._pname,"${fieldName}"))""";
     }
 
-    private fun getMetaValue(field: Field, parentTypeName: String, deepth: Int): String {
+    private fun getMetaValue(field: Field,parentType:Class<*>, parentTypeName: String, deepth: Int): String {
 
         if (deepth > maxLevel) {
             writeToFile("-------------------已超过最大深度${field.name}:${field.type.name}-----------------");
@@ -260,7 +263,9 @@ data class moer_map(val _pname:String)
 
 
         if (List::class.java.isAssignableFrom(field.type)) {
-            var actType = (field.genericType as ParameterizedType).GetActualClass(0)
+            var actType = (field.genericType as ParameterizedType).GetActualClass(0, {
+                return@GetActualClass parentType.GetFirstTypeArguments()[0] as Class<*>;
+            })
 
 
             var ret = getMetaValue(field.name, actType, parentTypeName);
@@ -299,13 +304,15 @@ data class moer_map(val _pname:String)
     }
 
 
-    private fun getEntityValue(field: Field): Pair<String, Boolean> {
+    private fun getEntityValue1(field: Field,parentType:Class<*>): Pair<String, Boolean> {
         var (ret, retTypeIsBasicType) = getEntityValue(field.name, field.type);
         if (ret.HasValue) return ret to retTypeIsBasicType;
 
 
         if (List::class.java.isAssignableFrom(field.type)) {
-            var actType = (field.genericType as ParameterizedType).GetActualClass(0);
+            var actType = (field.genericType as ParameterizedType).GetActualClass(0, {
+                return@GetActualClass parentType.GetFirstTypeArguments()[0] as Class<*>;
+            });
 
             var (ret2, retTypeIsBasicType2) = getEntityValue(field.name, actType);
             if (ret2.HasValue) return ret2 to retTypeIsBasicType2;
@@ -327,7 +334,7 @@ data class moer_map(val _pname:String)
             .filter { it.name != "Companion" }
             .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
             .map {
-                var v1 = getMetaValue(it, entTypeName, 1)
+                var v1 = getMetaValue(it, entType, entTypeName, 1)
 
                 return@map "${CodeGeneratorHelper.getFieldComment(it)}val ${it.name}=${v1}".ToTab(1)
             }
@@ -394,7 +401,7 @@ ${props.joinToString("\n")}
                     pks.add(it.name);
                 }
 
-                var (retValue, retTypeIsBasicType) = getEntityValue(it)
+                var (retValue, retTypeIsBasicType) = getEntityValue1(it,entType)
                 if (retTypeIsBasicType) {
                     return@map "${CodeGeneratorHelper.getFieldComment(it)}val ${it.name}=MongoColumnName(${retValue})".ToTab(
                         1

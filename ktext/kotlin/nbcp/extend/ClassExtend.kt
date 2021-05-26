@@ -3,11 +3,9 @@
 
 package nbcp.comm
 
+import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
 import java.lang.RuntimeException
-import java.lang.reflect.Field
-import java.lang.reflect.Modifier
-import java.lang.reflect.ParameterizedType
-import java.lang.reflect.WildcardType
+import java.lang.reflect.*
 
 val clazzesIsSimpleDefine = mutableSetOf<Class<*>>()
 
@@ -252,7 +250,7 @@ fun Class<*>.GetFieldPath(vararg fieldNames: String): Field? {
 /**
  * 获取泛型参数的实际类型，兼容枚举类型
  */
-fun ParameterizedType.GetActualClass(index: Int): Class<*> {
+fun ParameterizedType.GetActualClass(index: Int, callback: (() -> Class<*>?)? = null): Class<*> {
     var a1 = this.actualTypeArguments[index];
     if (a1 is Class<*>) {
         return a1 as Class<*>
@@ -260,5 +258,17 @@ fun ParameterizedType.GetActualClass(index: Int): Class<*> {
         //类型是 List<枚举> 时，返回
         return a1.upperBounds[0] as Class<*>
     }
-    throw RuntimeException("不识别的类型:${a1.typeName}")
+    var ret = callback?.invoke();
+    if (ret == null) {
+        throw RuntimeException("不识别的类型:${a1.typeName}")
+    }
+    return ret;
+}
+
+fun Class<*>.GetFirstTypeArguments(): Array<Type> {
+    if (this.genericSuperclass is ParameterizedTypeImpl) {
+        return (this.genericSuperclass as ParameterizedTypeImpl).actualTypeArguments
+    }
+    if (this.superclass == null) return arrayOf()
+    return this.superclass.GetFirstTypeArguments();
 }
