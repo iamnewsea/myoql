@@ -235,6 +235,7 @@ ${if (logger.debug) "[result] ${result?.ToJson(JsonSceneEnumScope.Db)}" else "[r
         db.affectRowCount = list.size;
 
         list.forEach {
+            db.mongo.procResultData_id2Id(it);
             //            db.change_id2Id(it);
             //value 可能会是： Document{{answerRole=Patriarch}}
             db.mongo.procResultDocumentJsonData(it);
