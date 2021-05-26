@@ -212,7 +212,7 @@ cursor: {} } """
             logger.InfoError(result == null) {
                 """[aggregate] ${this.moerEntity.tableName}
 [语句] ${queryJson}
-${if (logger.debug) "[result] ${result?.ToJson(JsonSceneEnumScope.Db)}" else "[result.size] ${result?.size}"}
+${if (logger.debug) "[result] ${result?.ToJson()}" else "[result.size] ${result?.size}"}
 [耗时] ${db.executeTime}"""
             }
         }
@@ -221,7 +221,7 @@ ${if (logger.debug) "[result] ${result?.ToJson(JsonSceneEnumScope.Db)}" else "[r
             throw RuntimeException("mongo aggregate执行错误!")
         }
         if (result.containsKey("ok") == false) {
-            throw RuntimeException("mongo aggregate执行错误!" + result.ToJson(JsonSceneEnumScope.Db))
+            throw RuntimeException("mongo aggregate执行错误!" + result.ToJson())
         }
 
         var ret = mutableListOf<Document>()

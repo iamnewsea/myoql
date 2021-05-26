@@ -24,7 +24,7 @@ fun Criteria.toExpression(): JsonMap {
                 var first = value.entries.first()
                 ret.set(first.key.toString(), arrayOf(key, first.value))
             } else {
-                throw RuntimeException("不识别的表达式: " + value.ToJson(JsonSceneEnumScope.Db))
+                throw RuntimeException("不识别的表达式: " + value.ToJson())
             }
         }
         //简单类型

@@ -76,7 +76,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out IMongoDocument>>(var moerE
             ret = -1;
             throw e;
         } finally {
-            logger.InfoError(ret < 0) { "delete:[" + this.collectionName + "] " + criteria.criteriaObject.ToJson(JsonSceneEnumScope.Db) + ",result:${ret}" };
+            logger.InfoError(ret < 0) { "delete:[" + this.collectionName + "] " + criteria.criteriaObject.ToJson() + ",result:${ret}" };
         }
 
 

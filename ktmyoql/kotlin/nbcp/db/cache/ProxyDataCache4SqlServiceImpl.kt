@@ -166,7 +166,7 @@ class ProxyDataCache4SqlServiceImpl : ProxyCache4SqlService {
         var tableName = getUnquoteName(from.tableName)
 
         var set = getFromJoinTables(sql.expression)
-        var md5 = Md5Util.getBase64Md5(sql.expression + "\n" + sql.values.ToJson(JsonSceneEnumScope.Db))
+        var md5 = Md5Util.getBase64Md5(sql.expression + "\n" + sql.values.ToJson())
 
         var ret = CacheKey(CacheKeyTypeEnum.Normal, md5, tableName, set)
 

@@ -161,8 +161,8 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         } finally {
             logger.InfoError(ret < 0) {
                 """[update] ${this.collectionName}
-[where] ${criteria.criteriaObject.ToJson(JsonSceneEnumScope.Db)}
-[set] ${update.updateObject.ToJson(JsonSceneEnumScope.Db)}
+[where] ${criteria.criteriaObject.ToJson()}
+[set] ${update.updateObject.ToJson()}
 [result] ${ret}
 [耗时] ${db.executeTime}"""
             }
