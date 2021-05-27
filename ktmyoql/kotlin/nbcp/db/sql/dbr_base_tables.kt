@@ -9,7 +9,7 @@ import nbcp.comm.*
 import nbcp.utils.*
 import org.springframework.stereotype.Component
 
-//generate auto @2020-12-06 16:14:56
+//generate auto @2021-05-27 11:47:36
 
 
 @Component("sql.SqlBase")
@@ -26,8 +26,6 @@ class SqlBaseGroup : IDataGroup{
     
     class s_annex_table(datasource:String="")
         :SqlBaseMetaTable<nbcp.db.sql.entity.s_annex>(nbcp.db.sql.entity.s_annex::class.java,"s_annex") {
-        @ConverterValueToDb(nbcp.db.sql.AutoIdConverter::class)
-        val id=SqlColumnName(DbType.String,this.getAliaTableName(),"id")
         val name=SqlColumnName(DbType.String,this.getAliaTableName(),"name")
         val tags=SqlColumnName(DbType.String,this.getAliaTableName(),"tags")
         val ext=SqlColumnName(DbType.String,this.getAliaTableName(),"ext")
@@ -40,11 +38,13 @@ class SqlBaseGroup : IDataGroup{
         val creator_name=SqlColumnName(DbType.String,this.getAliaTableName(),"creator_name")
         val corpId=SqlColumnName(DbType.String,this.getAliaTableName(),"corpId")
         val errorMsg=SqlColumnName(DbType.String,this.getAliaTableName(),"errorMsg")
+        @ConverterValueToDb(nbcp.db.sql.AutoIdConverter::class)
+        val id=SqlColumnName(DbType.String,this.getAliaTableName(),"id")
         val createAt=SqlColumnName(DbType.DateTime,this.getAliaTableName(),"createAt")
     
         override fun getSpreadColumns(): Array<String> { return arrayOf<String>("creator")}
         override fun getConvertValueColumns(): Array<String> { return arrayOf<String>("id")}
-        override fun getColumns(): SqlColumnNames { return SqlColumnNames(id,name,tags,ext,size,checkCode,imgWidth,imgHeight,url,creator_id,creator_name,corpId,errorMsg,createAt)}
+        override fun getColumns(): SqlColumnNames { return SqlColumnNames(name,tags,ext,size,checkCode,imgWidth,imgHeight,url,creator_id,creator_name,corpId,errorMsg,id,createAt)}
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}
         override fun getRks(): Array<Array<String>>{ return arrayOf( arrayOf("corpId")  )}
@@ -103,33 +103,33 @@ class SqlBaseGroup : IDataGroup{
     
     class s_dustbin_table(datasource:String="")
         :SqlBaseMetaTable<nbcp.db.sql.entity.s_dustbin>(nbcp.db.sql.entity.s_dustbin::class.java,"s_dustbin") {
-        @ConverterValueToDb(nbcp.db.sql.AutoIdConverter::class)
-        val id=SqlColumnName(DbType.String,this.getAliaTableName(),"id")
         val table=SqlColumnName(DbType.String,this.getAliaTableName(),"table")
         val remark=SqlColumnName(DbType.String,this.getAliaTableName(),"remark")
         val creator_id=SqlColumnName(DbType.String,this.getAliaTableName(),"creator_id")
         val creator_name=SqlColumnName(DbType.String,this.getAliaTableName(),"creator_name")
         val data=SqlColumnName(DbType.String,this.getAliaTableName(),"data")
+        @ConverterValueToDb(nbcp.db.sql.AutoNumberConverter::class)
+        val id=SqlColumnName(DbType.Long,this.getAliaTableName(),"id")
         val createAt=SqlColumnName(DbType.DateTime,this.getAliaTableName(),"createAt")
     
         override fun getSpreadColumns(): Array<String> { return arrayOf<String>("creator")}
         override fun getConvertValueColumns(): Array<String> { return arrayOf<String>("id")}
-        override fun getColumns(): SqlColumnNames { return SqlColumnNames(id,table,remark,creator_id,creator_name,data,createAt)}
+        override fun getColumns(): SqlColumnNames { return SqlColumnNames(table,remark,creator_id,creator_name,data,id,createAt)}
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}
         override fun getRks(): Array<Array<String>>{ return arrayOf( )}
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
     
     
-        fun queryById (id: String): SqlQueryClip<s_dustbin_table, nbcp.db.sql.entity.s_dustbin> {
+        fun queryById (id: Long): SqlQueryClip<s_dustbin_table, nbcp.db.sql.entity.s_dustbin> {
             return this.query().where{ it.id match id }
         }
     
-        fun deleteById (id: String): SqlDeleteClip<s_dustbin_table,nbcp.db.sql.entity.s_dustbin> {
+        fun deleteById (id: Long): SqlDeleteClip<s_dustbin_table,nbcp.db.sql.entity.s_dustbin> {
             return this.delete().where{ it.id match id }
         }
     
-        fun updateById (id: String): SqlUpdateClip<s_dustbin_table,nbcp.db.sql.entity.s_dustbin> {
+        fun updateById (id: Long): SqlUpdateClip<s_dustbin_table,nbcp.db.sql.entity.s_dustbin> {
             return this.update().where{ it.id match id }
         }
     
@@ -137,8 +137,6 @@ class SqlBaseGroup : IDataGroup{
     
     class s_log_table(datasource:String="")
         :SqlBaseMetaTable<nbcp.db.sql.entity.s_log>(nbcp.db.sql.entity.s_log::class.java,"s_log") {
-        @ConverterValueToDb(nbcp.db.sql.AutoIdConverter::class)
-        val id=SqlColumnName(DbType.String,this.getAliaTableName(),"id")
         val module=SqlColumnName(DbType.String,this.getAliaTableName(),"module")
         val type=SqlColumnName(DbType.String,this.getAliaTableName(),"type")
         val key=SqlColumnName(DbType.String,this.getAliaTableName(),"key")
@@ -146,27 +144,29 @@ class SqlBaseGroup : IDataGroup{
         val data=SqlColumnName(DbType.String,this.getAliaTableName(),"data")
         val remark=SqlColumnName(DbType.String,this.getAliaTableName(),"remark")
         val clientIp=SqlColumnName(DbType.String,this.getAliaTableName(),"clientIp")
-        val creatAt=SqlColumnName(DbType.DateTime,this.getAliaTableName(),"creatAt")
         val creatorId=SqlColumnName(DbType.String,this.getAliaTableName(),"creatorId")
+        @ConverterValueToDb(nbcp.db.sql.AutoNumberConverter::class)
+        val id=SqlColumnName(DbType.Long,this.getAliaTableName(),"id")
+        val createAt=SqlColumnName(DbType.DateTime,this.getAliaTableName(),"createAt")
     
         override fun getSpreadColumns(): Array<String> { return arrayOf<String>()}
         override fun getConvertValueColumns(): Array<String> { return arrayOf<String>("id")}
-        override fun getColumns(): SqlColumnNames { return SqlColumnNames(id,module,type,key,msg,data,remark,clientIp,creatAt,creatorId)}
+        override fun getColumns(): SqlColumnNames { return SqlColumnNames(module,type,key,msg,data,remark,clientIp,creatorId,id,createAt)}
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}
         override fun getRks(): Array<Array<String>>{ return arrayOf( )}
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
     
     
-        fun queryById (id: String): SqlQueryClip<s_log_table, nbcp.db.sql.entity.s_log> {
+        fun queryById (id: Long): SqlQueryClip<s_log_table, nbcp.db.sql.entity.s_log> {
             return this.query().where{ it.id match id }
         }
     
-        fun deleteById (id: String): SqlDeleteClip<s_log_table,nbcp.db.sql.entity.s_log> {
+        fun deleteById (id: Long): SqlDeleteClip<s_log_table,nbcp.db.sql.entity.s_log> {
             return this.delete().where{ it.id match id }
         }
     
-        fun updateById (id: String): SqlUpdateClip<s_log_table,nbcp.db.sql.entity.s_log> {
+        fun updateById (id: Long): SqlUpdateClip<s_log_table,nbcp.db.sql.entity.s_log> {
             return this.update().where{ it.id match id }
         }
     
