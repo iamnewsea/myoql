@@ -29,7 +29,6 @@ class TestKtExt_MySql : TestBase() {
     @Test
     fun test_Insert_ConverterValueToDb() {
         var file = s_annex();
-        file.id = "56Fgk7UEAm0w"
         file.creator = IdName("1", "abc");
         file.name = "OK";
 
@@ -40,7 +39,7 @@ class TestKtExt_MySql : TestBase() {
 
     @Test
     fun test_update_ConverterValueToDb() {
-        db.sql_base.s_annex.updateById("56fgk7ueam0w")
+        db.sql_base.s_annex.updateById("56Fgk7UEAm0Z")
             .set { it.id to "56Fgk7UEAm0Z" }
             .exec();
 
@@ -50,7 +49,7 @@ class TestKtExt_MySql : TestBase() {
     @Test
     fun test_update_spread() {
         usingScope(LogScope.debug) {
-            var ent = db.sql_base.s_annex.queryById("56fgk7ueam0w").toEntity()!!;
+            var ent = db.sql_base.s_annex.queryById("56Fgk7UEAm0Z").toEntity()!!;
             ent.creator = IdName("2", "rr")
             db.sql_base.s_annex.updateWithEntity(ent)
                 .set { it.name to "eee" }
@@ -62,7 +61,7 @@ class TestKtExt_MySql : TestBase() {
 
     @Test
     fun test_select_spread() {
-        var ent = db.sql_base.s_annex.queryById("56fgk7ueam0w").toEntity()
+        var ent = db.sql_base.s_annex.queryById("56Fgk7UEAm0Z").toEntity()
 
         println(ent.ToJson())
     }

@@ -31,7 +31,7 @@ class SqlDustbinEvent : ISqlEntityDelete {
         if (data == null) return
 
         var dustbin = s_dustbin()
-        dustbin.id = CodeUtil.getCode()
+        dustbin.id = CodeUtil.getNumberValue()
         dustbin.table = delete.mainEntity.tableName
         dustbin.data = data.ToJson()
 
