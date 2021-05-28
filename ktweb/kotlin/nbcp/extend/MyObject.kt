@@ -31,7 +31,7 @@ var HttpServletRequest.LoginUser: LoginUserModel
             return ret;
         }
 
-        if (WebUserTokenBeanInstance.instance == null) {
+        if (WebUserTokenBeanInstance.instances.any() == false) {
             ret = this.session.getAttribute("[LoginUser]") as LoginUserModel?;
 
             if (ret != null) {
@@ -44,16 +44,18 @@ var HttpServletRequest.LoginUser: LoginUserModel
 
         var token = this.tokenValue;
 
-        ret = WebUserTokenBeanInstance.instance!!.getUserInfo(token);
+
+        WebUserTokenBeanInstance.instances.forEach { ret = it.getUserInfo(token) };
+
         if (ret == null) {
             ret = LoginUserModel.ofToken(token);
         }
 
-        this.LoginUser = ret;
-        return ret;
+        this.LoginUser = ret!!;
+        return ret!!;
     }
     set(value) {
-        if (WebUserTokenBeanInstance.instance == null) {
+        if (WebUserTokenBeanInstance.instances.any() == false) {
             this.session.setAttribute("[LoginUser]", value);
             return;
         }
@@ -84,7 +86,7 @@ val HttpServletRequest.UserName: String
  */
 val HttpServletRequest.tokenValue: String
     get() {
-        if (WebUserTokenBeanInstance.instance == null) {
+        if (WebUserTokenBeanInstance.instances.any() == false) {
             return this.requestedSessionId ?: "";
         }
         var cacheKey = "_Token_Value_";
@@ -120,7 +122,7 @@ val HttpServletRequest.tokenValue: String
                     newToken = TokenUtil.generateToken(token);
                 } else if (diffSeconds > config.tokenCacheSeconds) {
                     newToken = TokenUtil.generateToken(token);
-                    WebUserTokenBeanInstance.instance!!.changeToken(token, newToken);
+                    WebUserTokenBeanInstance.instances.forEach { it.changeToken(token, newToken) };
                 } else {
                     newToken = token
                 }

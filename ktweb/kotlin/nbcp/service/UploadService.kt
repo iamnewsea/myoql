@@ -13,17 +13,13 @@ import nbcp.utils.HttpUtil
 import nbcp.utils.Md5Util
 import nbcp.utils.SpringUtil
 import org.bytedeco.javacv.FFmpegFrameGrabber
-import org.bytedeco.javacv.Frame
-import org.bytedeco.javacv.Java2DFrameConverter
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
-import java.awt.image.BufferedImage
 import java.io.File
-import java.io.FileInputStream
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.imageio.ImageIO
@@ -73,7 +69,10 @@ open class UploadService {
         }
 
         fun getTargetFileNames(): Array<String> {
-            return arrayOf(*this.getTargetPaths(), CodeUtil.getCode() + (if (extName.HasValue) ("." + extName) else ""));
+            return arrayOf(
+                *this.getTargetPaths(),
+                CodeUtil.getCode() + (if (extName.HasValue) ("." + extName) else "")
+            );
         }
 
         fun getTargetFileName(corpId: String): String {
@@ -101,16 +100,16 @@ open class UploadService {
     @Value("\${app.upload.checkType:md5}")
     private var checkType = "md5"
 
-    fun downloadImage(url: String, corp: IdName, user: IdName, maxWidth: Int = 1200): ApiResult<IdUrl> {
-        var fileMsg = HttpUtil.getImage(url, config.uploadPath + File.separator + "_temp_", maxWidth);
-        if (fileMsg.msg.HasValue) {
-            return ApiResult<IdUrl>(msg = fileMsg.msg);
-        }
-
-
-        var vFile = File.separator + "_temp_" + File.separator + fileMsg.name + "." + fileMsg.extName;
-        return doUpload(vFile, user, corp.id)
-    }
+//    fun downloadImage(url: String, corp: IdName, user: IdName, maxWidth: Int = 1200): ApiResult<IdUrl> {
+//        var fileMsg = HttpUtil.getImage(url, config.uploadPath + File.separator + "_temp_", maxWidth);
+//        if (fileMsg.msg.HasValue) {
+//            return ApiResult<IdUrl>(msg = fileMsg.msg);
+//        }
+//
+//
+//        var vFile = File.separator + "_temp_" + File.separator + fileMsg.name + "." + fileMsg.extName;
+//        return doUpload(vFile, user, corp.id)
+//    }
 
 
     private fun getFileInfo(fileName1: String, fileName2: String): FileExtentionInfo {
@@ -230,8 +229,8 @@ open class UploadService {
 
         fileData.imgWidth = annexInfo.imgWidth;
         fileData.imgHeight = annexInfo.imgHeight;
-        var targetFileName = fileData.getTargetFileName(if (saveCorp) corpId else "")
-        annexInfo.url = renameFile(vTempFile, targetFileName).replace("\\", "/")
+
+        annexInfo.url = saveFile(vTempFile, fileData, saveCorp, corpId).replace("\\", "/")
 
 //        if (extInfo.extType == FileExtentionTypeEnum.Video) {
 //            setVideoUrlTime(annexInfo, vFile, fileData);
@@ -276,7 +275,20 @@ open class UploadService {
      * 3. 第三级目录,是 后缀名
      * 4. 如果是图片，第四级目录是原图片的像素数/万 ，如 800*600 = 480000,则文件夹名为 48 。 忽略小数部分。这样对大部分图片大体归类。
      */
-    private fun renameFile(tempPath: String, targetPath: String): String {
+    fun saveFile(tempPath: String, fileData: FileNameData, saveCorp: Boolean, corpId: String): String {
+        if (SaveFileForUploadServiceBeanInstance.instances.any()) {
+            var lastTargetPath = "";
+            SaveFileForUploadServiceBeanInstance.instances.forEach {
+                lastTargetPath = it.save(tempPath, fileData, saveCorp, corpId)
+            }
+            return lastTargetPath;
+        }
+        return renameFile(tempPath, fileData, saveCorp, corpId)
+    }
+
+    private fun renameFile(tempPath: String, fileData: FileNameData, saveCorp: Boolean, corpId: String): String {
+
+        var targetPath = fileData.getTargetFileName(if (saveCorp) corpId else "")
         if (tempPath == targetPath) {
             return targetPath;
         }
@@ -286,7 +298,7 @@ open class UploadService {
         if (localFile.exists() == false) {
             throw Exception("找不到保存的文件")
         }
-//        var targetFileSects = fileData.getTargetFileName() targetFileSects.joinToString(File.separator)
+        //        var targetFileSects = fileData.getTargetFileName() targetFileSects.joinToString(File.separator)
 
         var targetFile = File(config.uploadPath + targetPath)
         if (targetFile.parentFile.exists() == false && targetFile.parentFile.mkdirs() == false) {
@@ -399,7 +411,12 @@ open class UploadService {
     /**
      * 文件上传
      */
-    fun upload(request: HttpServletRequest, user: IdName, corpId: String, processFile: ((String, FileExtentionTypeEnum) -> Unit)? = null): ListResult<IdUrl> {
+    fun upload(
+        request: HttpServletRequest,
+        user: IdName,
+        corpId: String,
+        processFile: ((String, FileExtentionTypeEnum) -> Unit)? = null
+    ): ListResult<IdUrl> {
 
         var ret = ListResult<IdUrl>();
         var list = mutableListOf<IdUrl>()

@@ -25,12 +25,12 @@ interface WebUserTokenBean {
 class WebUserTokenBeanInstance : BeanPostProcessor {
     companion object {
         //如果没有配置WebUserTokenBean,那么使用session
-        var instance: WebUserTokenBean? = null;
+        var instances: MutableList<WebUserTokenBean> = mutableListOf()
     }
 
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
         if (bean is WebUserTokenBean) {
-            instance = bean;
+            instances.add(bean)
         }
 
         return super.postProcessAfterInitialization(bean, beanName)
