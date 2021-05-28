@@ -145,8 +145,6 @@ open class UploadService {
      * @return 返回相对于 uploadPath 的路径.
      */
     private fun saveTempFile(file: MultipartFile, extName: String): String {
-        var ret = ApiResult<String>();
-
         if (file.size == 0L) {
             throw  Exception("上传的是空文件！");
         }
@@ -163,7 +161,7 @@ open class UploadService {
         }
 
         file.transferTo(localFile)
-        return vFile;
+        return localFile.FullName;
     }
 
 
@@ -184,8 +182,7 @@ open class UploadService {
      * @param vTempFile , 相对于 uploadPath 的相对路径.
      */
     private fun doUpload(vTempFile: String, user: IdName, corpId: String, oriFileName: String = ""): ApiResult<IdUrl> {
-
-        var vFile = File(config.uploadPath + vTempFile);
+        var vFile = File(vTempFile);
         if (vFile.exists() == false) {
             return ApiResult<IdUrl>("找不到文件:${vFile.FullName}")
         }
@@ -287,13 +284,12 @@ open class UploadService {
     }
 
     private fun renameFile(tempPath: String, fileData: FileNameData, saveCorp: Boolean, corpId: String): String {
-
         var targetPath = fileData.getTargetFileName(if (saveCorp) corpId else "")
-        if (tempPath == targetPath) {
-            return targetPath;
-        }
+//        if (tempPath == targetPath) {
+//            return targetPath;
+//        }
 
-        var localFile = File(config.uploadPath + tempPath);
+        var localFile = File(tempPath);
 
         if (localFile.exists() == false) {
             throw Exception("找不到保存的文件")
@@ -415,7 +411,7 @@ open class UploadService {
         request: HttpServletRequest,
         user: IdName,
         corpId: String,
-        processFile: ((String, FileExtentionTypeEnum) -> Unit)? = null
+//        processFile: ((String, FileExtentionTypeEnum) -> Unit)? = null
     ): ListResult<IdUrl> {
 
         var ret = ListResult<IdUrl>();
@@ -435,9 +431,9 @@ open class UploadService {
                 }
 
                 var vTempFile = saveTempFile(file, oriFileExtentionInfo.extName);
-                if (processFile != null) {
-                    processFile(config.uploadPath + vTempFile, oriFileExtentionInfo.extType)
-                }
+//                if (processFile != null) {
+//                    processFile(config.uploadPath + vTempFile, oriFileExtentionInfo.extType)
+//                }
 
                 var ret1 = doUpload(vTempFile, user, corpId, oriFileExtentionInfo.toString());
                 if (ret1.msg.HasValue) {
