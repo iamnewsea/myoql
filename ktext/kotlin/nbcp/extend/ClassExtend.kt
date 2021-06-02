@@ -170,7 +170,7 @@ fun <T> Class<T>.GetEnumNumberField(): Field? {
 }
 
 /**
- * 获取枚举类的String类型的字段。
+ * 获取枚举类的第一个String类型的字段。
  */
 fun <T> Class<T>.GetEnumStringField(): Field? {
     if (this.isEnum == false) return null
@@ -181,7 +181,8 @@ fun <T> Class<T>.GetEnumStringField(): Field? {
                 it.modifiers and Modifier.STATIC == 0 &&
                 it.type.IsStringType
     }
-    if (ret_fields.size == 1) {
+
+    if (ret_fields.any()) {
         var ret = ret_fields.first();
         ret.isAccessible = true;
         return ret;

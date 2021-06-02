@@ -4,6 +4,7 @@ import nbcp.comm.*
 import java.io.File
 import java.io.Serializable
 import java.lang.RuntimeException
+import java.lang.reflect.Field
 import java.net.JarURLConnection
 import java.net.URL
 import java.time.*
@@ -424,6 +425,11 @@ object MyUtil {
         return getStartingJarFile(url)
     }
 
+    fun getPrivatePropertyValue(entity: Any, type: Field): Any? {
+        type.isAccessible = true;
+        return type.get(entity);
+    }
+
     fun getPrivatePropertyValue(entity: Any, property: String): Any? {
         var type = entity::class.java.FindField(property);
         if (type != null) {
@@ -522,8 +528,11 @@ object MyUtil {
     /**
      * 加载的类
      */
-    fun getLoadedClasses(): Vector<Class<*>> =
-        MyUtil.getPrivatePropertyValue(Thread.currentThread().contextClassLoader, "classes") as Vector<Class<*>>
+    fun getLoadedClasses(): List<Class<*>> =
+        (MyUtil.getPrivatePropertyValue(
+            Thread.currentThread().contextClassLoader,
+            "classes"
+        ) as Vector<Class<*>>).toList()
 
     /**
      * 查找类。
