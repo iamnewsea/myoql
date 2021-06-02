@@ -29,6 +29,8 @@ public enum class DbType {
     DateTime(LocalDateTime::class.java, Types.TIMESTAMP),
     Binary(ByteArray::class.java, Types.VARBINARY),
 
+    Text(kotlin.String::class.java, Types.LONGVARCHAR),
+
     //比如sql表达式.
     Other(Any::class.java, Types.OTHER);
 
@@ -46,7 +48,7 @@ public enum class DbType {
     //是否是Text类型. 需要 单引号包裹
     //Other 是复合列。
     fun needTextWrap(): kotlin.Boolean {
-        return this == DbType.String || this == DbType.Enum || this.isDateOrTime();//|| this == DbType.Other;
+        return this == DbType.String || this == DbType.Text || this == DbType.Enum || this.isDateOrTime();//|| this == DbType.Other;
     }
 
     //是否是数字格式.
@@ -68,8 +70,9 @@ public enum class DbType {
      */
     fun toMySqlTypeString(): kotlin.String {
         return when (this) {
-            String -> "varchar(200)"
-            Enum -> "varchar(200)"
+            String -> "varchar(800)"
+            Text -> "text(65535)"
+            Enum -> "varchar(800)"
             Int -> "int"
             Float -> "float"
             Long -> "bigint"
@@ -90,20 +93,23 @@ public enum class DbType {
      * 代码生成器用。
      */
     fun toKotlinType(): kotlin.String {
-        if( this == DbType.Boolean){
+        if (this == DbType.Boolean) {
             return "Boolean?"
         }
-        if( this == DbType.Date){
+        if (this == DbType.Date) {
             return "LocalDate?"
         }
-        if ( this == DbType.Time){
+        if (this == DbType.Time) {
             return "LocalTime?"
         }
-        if ( this == DbType.DateTime){
+        if (this == DbType.DateTime) {
             return "LocalDateTime?"
         }
-        if( this == DbType.Other){
+        if (this == DbType.Other) {
             return "Any?"
+        }
+        if (this == DbType.Text) {
+            return "String"
         }
         return this.javaType.kotlinTypeName;
     }
@@ -114,6 +120,7 @@ public enum class DbType {
     fun toKotlinDefaultValue(): kotlin.String {
         return return when (this) {
             String -> "\"\""
+            Text -> "\"\""
             Enum -> "\"\""
             Int -> "0"
             Float -> "0F"
@@ -139,7 +146,6 @@ public enum class DbType {
                 return DbType.Enum;
             }
 
-
             DbType.values()
                 .firstOrNull { it.javaType == clazz || (it.javaRefType != null && it.javaRefType == clazz) }
                 .apply {
@@ -147,8 +153,6 @@ public enum class DbType {
                         return this;
                     }
                 }
-
-
 
             if (clazz == Character::class.java || clazz == java.lang.Character::class.java) {
                 return DbType.String
