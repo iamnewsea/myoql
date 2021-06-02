@@ -13,20 +13,30 @@ object enumer {
     /**
      * 入口
      */
-    fun work(basePackage: String) {
+    fun work(basePackage: String): List<String> {
         println(ClassLoader.getSystemResource("").path)
 
+        var ret = mutableListOf<String>()
         val fileList = getClassName(basePackage, "Enum")
         fileList.forEach {
             val jsonEnumClass = Class.forName(it);
-            var jsonList = getEnums(jsonEnumClass);
-
-            if (jsonList.size > 0) {
-                println("""jv.defEnum("${jsonEnumClass.simpleName}",{""" +
-                        jsonList.map { it.key + ":\"" + it.value + "\"" }.joinToString(",") + "});"
-                );
-            }
+            ret.add(work(jsonEnumClass))
         }
+        return ret;
+    }
+
+    fun work(jsonEnumClass: Class<*>): String {
+        var jsonList = getEnums(jsonEnumClass);
+
+        var ret = "";
+        if (jsonList.size > 0) {
+            ret = """jv.defEnum("${jsonEnumClass.simpleName}",{""" +
+                    jsonList.map { it.key + ":\"" + it.value + "\"" }.joinToString(",") + "});"
+
+            println(ret);
+        }
+
+        return ret;
     }
 
 
