@@ -1,6 +1,7 @@
 package nbcp.utils
 
 import nbcp.comm.*
+import sun.misc.Launcher
 import java.io.File
 import java.io.Serializable
 import java.lang.RuntimeException
@@ -526,13 +527,24 @@ object MyUtil {
 
 
     /**
-     * 加载的类
+     * 获取 AppClassLoader 。
+     */
+    fun getAppClassLoader(loader: ClassLoader? = null): ClassLoader? {
+        var loader = loader ?: Thread.currentThread().contextClassLoader
+        if (loader == null) return null;
+
+        if (loader::class.java.name == "sun.misc.Launcher\$AppClassLoader") {
+            return loader;
+        }
+
+        return getAppClassLoader(loader.parent);
+    }
+
+    /**
+     * 加载的类,加载 AppClassLoader 下的类。
      */
     fun getLoadedClasses(): List<Class<*>> =
-        (MyUtil.getPrivatePropertyValue(
-            Thread.currentThread().contextClassLoader,
-            "classes"
-        ) as Vector<Class<*>>).toList()
+        (MyUtil.getPrivatePropertyValue(getAppClassLoader()!!, "classes") as Vector<Class<*>>).toList()
 
     /**
      * 查找类。
