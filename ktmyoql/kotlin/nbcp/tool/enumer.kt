@@ -25,6 +25,9 @@ object enumer {
     }
 
     fun work(jsonEnumClass: Class<*>): String {
+        if (jsonEnumClass.isEnum == false) {
+            return "";
+        }
         var jsonList = jsonEnumClass.GetEnumList()
 
         var ret = "";

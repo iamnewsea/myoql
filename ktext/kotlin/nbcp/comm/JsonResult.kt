@@ -63,18 +63,24 @@ open class ListQueryModel {
 /**
  * 列表返回对象
  */
-open class ListResult<T>(msg: String = "",
-                         var total: Int = -1,
-                         var data: List<T> = listOf()
+open class ListResult<T>(
+    msg: String = "",
+    var total: Int = -1,
+    var data: List<T> = listOf()
 ) : JsonResult(msg) {
     var value: Any? = null
     var valueRemark: String = ""
+
     companion object {
         @JvmStatic
-        fun <T> of(data: List<T>): ListResult<T> {
+        fun <T> of(data: List<T>, total: Int = -1): ListResult<T> {
             var ret = ListResult<T>();
             ret.data = data;
-            ret.total = data.size;
+            if (total < 0) {
+                ret.total = data.size;
+            } else {
+                ret.total = total;
+            }
             return ret;
         }
     }
