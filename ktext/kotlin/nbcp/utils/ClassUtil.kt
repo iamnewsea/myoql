@@ -58,7 +58,7 @@ object ClassUtil {
                 // /D:/nancal/yun/lowcode-api/portal/admin/target/classes/
                 list2 = file.ListRecursionFiles()
                     .filter { it.endsWith(".class") }
-                    .map { it.substring(file_len, it.length - 6).replace('/', '.') }
+                    .map { it.substring(file_len + 1, it.length - 6).replace(File.separatorChar, '.') }
             }
 
 
