@@ -177,8 +177,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         }
 
         logger.Error { require.value.AsString("请求:${webRequest.fullUrl} --> 方法:${caller} 中，找不到参数${parameter.parameterName}") }
-        throw RuntimeException("找不到参数${parameter.parameterName}")
-
+        throw RequireException(parameter.parameterName)
     }
 
     private fun getFromQuery(webRequest: HttpServletRequest, parameter: MethodParameter): Any? {

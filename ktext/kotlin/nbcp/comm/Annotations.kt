@@ -51,3 +51,5 @@ annotation class Define(val value: String, val key: String = "")
 //@Target(AnnotationTarget.FIELD,AnnotationTarget.TYPE, AnnotationTarget.CLASS)
 //@Retention(AnnotationRetention.RUNTIME)
 //annotation class Setting(val settingFunc: String = "")
+
+open class RequireException(var key:String) : Exception("${key} 为必填项")
