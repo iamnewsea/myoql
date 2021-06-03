@@ -123,7 +123,7 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
         var ret = HashMap<String, MutableList<Class<*>>>();
 
 
-        MyUtil.findClasses(basePackage, anyEntityClass)
+        ClassUtil.findClasses(basePackage, anyEntityClass)
                 .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
                 .forEach {
                     var groupName = it.getAnnotation(DbEntityGroup::class.java).value;

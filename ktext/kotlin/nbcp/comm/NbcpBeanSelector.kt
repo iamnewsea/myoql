@@ -1,5 +1,6 @@
 package nbcp.comm
 
+import nbcp.utils.ClassUtil
 import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
 import org.springframework.beans.factory.BeanFactory
@@ -24,7 +25,7 @@ class NbcpBeanSelector : DeferredImportSelector, BeanFactoryAware {
     private lateinit var beanFactory: BeanFactory;
     override fun selectImports(p0: AnnotationMetadata): Array<String> {
 
-        var ret = MyUtil.findClasses("nbcp", SpringUtil::class.java, {
+        var ret = ClassUtil.findClasses("nbcp", SpringUtil::class.java, {
             try {
                 var anns = it.annotations;
                 if (anns.any() == false) return@findClasses false;

@@ -144,7 +144,7 @@ data class moer_map(val _pname:String)
         var ret = HashMap<String, MutableList<Class<*>>>();
 
 
-        MyUtil.findClasses(basePackage, anyEntityClass)
+        ClassUtil.findClasses(basePackage, anyEntityClass)
             .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
             .forEach {
 

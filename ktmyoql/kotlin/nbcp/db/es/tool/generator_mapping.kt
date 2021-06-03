@@ -99,7 +99,7 @@ class generator_mapping {
         var ret = HashMap<String, MutableList<Class<*>>>();
 
 
-        MyUtil.findClasses(basePackage, anyEntityClass)
+        ClassUtil.findClasses(basePackage, anyEntityClass)
             .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
             .forEach {
 

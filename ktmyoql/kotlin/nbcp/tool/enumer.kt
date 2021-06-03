@@ -1,6 +1,7 @@
 package nbcp.tool
 
 import nbcp.comm.*
+import nbcp.utils.ClassUtil
 import nbcp.utils.MyUtil
 import java.io.File
 import java.lang.RuntimeException
@@ -17,7 +18,7 @@ object enumer {
      */
     fun work(basePackage: String): List<String> {
         var ret = mutableListOf<String>()
-        val fileList = MyUtil.getLoadedClasses().filter { it.isEnum && it.name.startsWith(basePackage) }
+        val fileList = ClassUtil.getLoadedClasses().filter { it.isEnum && it.name.startsWith(basePackage) }
         fileList.forEach {
             ret.add(work(it))
         }

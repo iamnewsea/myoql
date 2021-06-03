@@ -563,7 +563,7 @@ open class MyAllFilter : Filter, InitializingBean {
 
     //收集静态资源
     override fun afterPropertiesSet() {
-        MyUtil.listResourceFiles {
+        ClassUtil.listResourceFiles {
             if (it.startsWith("${htmlPath}/") == false) {
                 return@listResourceFiles false
             }
