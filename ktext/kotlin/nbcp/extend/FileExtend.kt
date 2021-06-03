@@ -3,6 +3,7 @@
 
 package nbcp.comm
 
+import nbcp.utils.RecursionUtil
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream
@@ -16,6 +17,30 @@ val File.FullName: String
         return this.path
     }
 
+
+/**
+ * 递归列出所有文件及子文件。
+ */
+fun File.ListRecursionFiles(
+    pathCallback: ((String) -> Boolean)? = null,
+    fileCallback: ((String) -> Boolean)? = null
+): List<String> {
+    var ret = mutableSetOf<String>()
+    if (this.isFile) {
+        if (fileCallback?.invoke(this.FullName) ?: true) {
+            ret.add(this.FullName)
+        }
+        return ret.toList();
+    }
+
+    if (pathCallback?.invoke(this.FullName) ?: true) {
+        //遍历子
+        this.listFiles().map {
+            ret.addAll(it.ListRecursionFiles(pathCallback, fileCallback))
+        }
+    }
+    return ret.toList();
+}
 
 /**
  * 读取文件最后N行

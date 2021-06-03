@@ -2,12 +2,15 @@ package nbcp.utils
 
 import nbcp.comm.FullName
 import nbcp.comm.HasValue
+import nbcp.comm.ListRecursionFiles
 import nbcp.comm.Slice
 import java.io.File
 import java.lang.RuntimeException
 import java.net.JarURLConnection
 import java.net.URL
+import java.net.URLClassLoader
 import java.util.*
+import java.util.jar.JarFile
 
 object ClassUtil {
 
@@ -25,12 +28,64 @@ object ClassUtil {
         return getAppClassLoader(loader.parent);
     }
 
+    fun getAllJarUrl(): List<String> {
+        return (getAppClassLoader() as URLClassLoader).urLs.map {
+            return@map File(JsUtil.decodeURIComponent(it.file)).FullName
+        }
+    }
+
     /**
      * 加载的类,加载 AppClassLoader 下的类。
      */
-    fun getLoadedClasses(): List<Class<*>> =
-        (MyUtil.getPrivatePropertyValue(getAppClassLoader()!!, "classes") as Vector<Class<*>>).toList()
+    fun getLoadedClasses(
+        packageCallback: ((String) -> Boolean)? = null,
+        fileCallback: ((String) -> Boolean)? = null
+    ): List<String> {
+        var list = mutableListOf<String>()
+        getAllJarUrl().forEach { path ->
+            var list2 = listOf<String>()
 
+            // /C:/Users/zhang/.m2/repository/com/alibaba/nacos/nacos-api/1.4.1/nacos-api-1.4.1.jar
+            if (path.endsWith(".jar", true)) {
+                list2 = JarFile(path).entries()
+                    .toList()
+                    .filter { it.name.endsWith(".class") }
+                    .map { it.name.take(it.name.length - 6).replace('/', '.') }
+
+            } else {
+                var file = File(path);
+                var file_len = file.FullName.length;
+                // /D:/nancal/yun/lowcode-api/portal/admin/target/classes/
+                list2 = file.ListRecursionFiles()
+                    .filter { it.endsWith(".class") }
+                    .map { it.substring(file_len, it.length - 6).replace('/', '.') }
+            }
+
+
+            list2 = list2.filter {
+                if (it.contains('$')) {
+                    return@filter false;
+                }
+                if (packageCallback != null) {
+                    var packageName = it.split(".").Slice(0, -1).joinToString(".");
+                    if (packageCallback(packageName) == false) {
+                        return@filter false;
+                    }
+                }
+
+                if (!(fileCallback?.invoke(it) ?: true)) {
+                    return@filter false;
+                }
+
+                return@filter true;
+            }
+
+            list.addAll(list2);
+        }
+
+
+        return list;
+    }
 
 
     /**
