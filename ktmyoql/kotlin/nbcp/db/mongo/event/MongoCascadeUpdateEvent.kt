@@ -6,21 +6,23 @@ import nbcp.comm.getStringValue
 import nbcp.utils.*
 import nbcp.db.*
 import org.springframework.stereotype.Component
+import java.io.Serializable
 
 /**
  * 同步处理，更新的实体，级联更新引用的冗余字段。
  */
 
 data class CascadeUpdateEventDataModel(
-        var ref: DbEntityFieldRefData,
-        var masterIdValues: Array<String>,
-        var masterNameValue: String
+    var ref: DbEntityFieldRefData,
+    var masterIdValues: Array<String>,
+    var masterNameValue: Any?
 )
 
 @Component
 class MongoCascadeUpdateEvent : IMongoEntityUpdate {
     override fun beforeUpdate(update: MongoBaseUpdateClip): EventResult {
-        var refs = MongoEntityEvent.refsMap.filter { MyUtil.getSmallCamelCase(it.masterEntityClass.simpleName) == update.collectionName }
+        var refs =
+            MongoEntityEvent.refsMap.filter { MyUtil.getSmallCamelCase(it.masterEntityClass.simpleName) == update.collectionName }
         if (refs.any() == false) {
             return EventResult(true, null)
         }
@@ -58,10 +60,13 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
                 }
             }
 
-            list.add(CascadeUpdateEventDataModel(ref,
+            list.add(
+                CascadeUpdateEventDataModel(
+                    ref,
                     idValue,
-                    setData.getStringValue(ref.masterNameField).AsString()
-            ))
+                    setData.getValue(ref.masterNameField)
+                )
+            )
         }
 
 
@@ -78,10 +83,16 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
 
 
         ret.forEach { ref ->
-            var update2 = MongoBaseUpdateClip(MyUtil.getSmallCamelCase(ref.ref.entityClass.simpleName))
-            update2.whereData.add(MongoColumnName(ref.ref.idField) match_in ref.masterIdValues)
-            update2.setValue(ref.ref.nameField, ref.masterNameValue)
-            update2.exec();
+            if (ref.masterIdValues.any()) {
+                var update2 = MongoBaseUpdateClip(MyUtil.getSmallCamelCase(ref.ref.entityClass.simpleName))
+                update2.whereData.add(MongoColumnName(ref.ref.idField) match_in ref.masterIdValues.map {
+                    getObjectIdValueTypeIfNeed(
+                        it
+                    )
+                })
+                update2.setValue(ref.ref.nameField, ref.masterNameValue)
+                update2.exec();
+            }
         }
     }
 

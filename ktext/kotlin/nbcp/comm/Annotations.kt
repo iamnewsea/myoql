@@ -27,20 +27,6 @@ annotation class Require(val value: String = "")
 annotation class Ignore(val value: String = "")
 
 
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FIELD)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class Defines(val values: Array<Define>)
-
-/**
- * 字段定义，用于 Es实体 生成 Mapping
- */
-@java.lang.annotation.Repeatable(Defines::class)
-@Repeatable
-@Inherited
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FIELD)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class Define(val value: String, val key: String = "")
-
 //@Repeatable
 //@Target(AnnotationTarget.FIELD, AnnotationTarget.TYPE, AnnotationTarget.CLASS )
 //@Retention(AnnotationRetention.RUNTIME)

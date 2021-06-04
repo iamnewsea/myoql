@@ -29,6 +29,15 @@ import java.util.regex.Pattern
 //    return key.toString();
 //}
 
+fun getObjectIdValueTypeIfNeed(value: Any?): Any? {
+    if (value == null) return null;
+    if (value is String && ObjectId.isValid(value)) {
+        return ObjectId(value);
+    }
+
+    return value;
+}
+
 private fun proc_mongo_match(key: MongoColumnName, value: Any?): Pair<String, Any?> {
     var key = key
     var keyString = key.toString();
@@ -55,11 +64,12 @@ private fun proc_mongo_match(key: MongoColumnName, value: Any?): Pair<String, An
     if (type.isEnum) {
         value = value.toString();
     } else if (type == LocalDateTime::class.java ||
-            type == LocalDate::class.java) {
+        type == LocalDate::class.java
+    ) {
         value = value.AsLocalDateTime().AsDate()
     } else if (type.IsStringType) {
-        if (keyIsId && value is String && ObjectId.isValid(value)) {
-            value = ObjectId(value);
+        if (keyIsId) {
+            value = getObjectIdValueTypeIfNeed(value);
         }
     } else if (type.isArray) {
         value = (value as Array<*>).map {
@@ -73,6 +83,10 @@ private fun proc_mongo_match(key: MongoColumnName, value: Any?): Pair<String, An
             if (it != null && it::class.java.isEnum) {
                 return@map it.toString()
             }
+
+            if (keyIsId) {
+                return@map getObjectIdValueTypeIfNeed(it);
+            }
             return@map it
         }
     } else if (value is Pair<*, *>) {
@@ -85,6 +99,11 @@ private fun proc_mongo_match(key: MongoColumnName, value: Any?): Pair<String, An
         if (v2 != null && v2::class.java.isEnum) {
             v2 = v2.toString()
         }
+
+        if (keyIsId) {
+            v2 = getObjectIdValueTypeIfNeed(v2);
+        }
+
         value = Pair<Any?, Any?>(v1, v2);
     }
 

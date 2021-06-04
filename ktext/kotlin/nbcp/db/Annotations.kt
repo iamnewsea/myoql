@@ -2,6 +2,7 @@ package nbcp.db
 
 import org.springframework.core.annotation.AliasFor
 import org.springframework.stereotype.Component
+import java.lang.annotation.Inherited
 
 
 /**
@@ -43,3 +44,19 @@ annotation class DbEntityGroup(val value: String)
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class DbUks(vararg val ukColumns: String)
+
+
+
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Defines(val values: Array<Define>)
+
+/**
+ * 字段定义，用于 Es实体 生成 Mapping
+ */
+@java.lang.annotation.Repeatable(Defines::class)
+@Repeatable
+@Inherited
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Define(val value: String, val key: String = "")

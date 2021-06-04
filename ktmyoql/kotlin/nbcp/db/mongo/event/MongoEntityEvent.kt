@@ -99,7 +99,7 @@ class MongoEntityEvent : BeanPostProcessor {
     }
 
 
-    private fun addRef(entityClass: Class<out IMongoDocument>) {
+    private fun addRef(entityClass: Class<*>) {
         var refs = entityClass.getAnnotation(DbEntityFieldRefs::class.java)
         if (refs != null && refs.values.any()) {
             refs.values.forEach {
@@ -110,6 +110,10 @@ class MongoEntityEvent : BeanPostProcessor {
         var ref = entityClass.getAnnotation(DbEntityFieldRef::class.java)
         if (ref != null) {
             refsMap.add(DbEntityFieldRefData(entityClass, ref))
+        }
+
+        if( entityClass.superclass !=null) {
+            addRef(entityClass.superclass);
         }
     }
 

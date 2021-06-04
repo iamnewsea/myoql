@@ -81,7 +81,7 @@ class EsEntityEvent : BeanPostProcessor {
     }
 
 
-    private fun addRef(entityClass: Class<out IEsDocument>) {
+    private fun addRef(entityClass: Class<*>) {
         var refs = entityClass.getAnnotation(DbEntityFieldRefs::class.java)
         if (refs != null && refs.values.any()) {
             refs.values.forEach {
@@ -92,6 +92,10 @@ class EsEntityEvent : BeanPostProcessor {
         var ref = entityClass.getAnnotation(DbEntityFieldRef::class.java)
         if (ref != null) {
             refsMap.add(DbEntityFieldRefData(entityClass, ref))
+        }
+
+        if( entityClass.superclass !=null) {
+            addRef(entityClass.superclass);
         }
     }
 
