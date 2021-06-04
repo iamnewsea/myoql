@@ -5,6 +5,7 @@ import nbcp.db.*
 import nbcp.db.mongo.entity.*
 import org.bson.Document
 import org.bson.types.ObjectId
+import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.BasicQuery
 import org.springframework.stereotype.Component
 import java.io.Serializable
@@ -15,6 +16,10 @@ import java.io.Serializable
  */
 @Component
 class MongoDustbinEvent : IMongoEntityDelete {
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    }
+
     override fun beforeDelete(delete: MongoDeleteClip<*>): EventResult {
         var contains = MongoEntityEvent.dustbinEntitys.contains(delete.moerEntity.entityClass)
         if (contains == false) {
@@ -37,5 +42,7 @@ class MongoDustbinEvent : IMongoEntityDelete {
         dustbin.table = delete.collectionName
         dustbin.data = data as Serializable?;
         db.mor_base.sysDustbin.doInsert(dustbin)
+
+        logger.info("${delete.collectionName}.${(data as Document).getString("_id").toString()} 进了垃圾桶")
     }
 }

@@ -2,9 +2,12 @@ package nbcp.db.mongo.event;
 
 import nbcp.db.mongo.*;
 import nbcp.comm.AsString
+import nbcp.comm.LogScope
 import nbcp.comm.getStringValue
+import nbcp.comm.usingScope
 import nbcp.utils.*
 import nbcp.db.*
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.io.Serializable
 
@@ -20,6 +23,11 @@ data class CascadeUpdateEventDataModel(
 
 @Component
 class MongoCascadeUpdateEvent : IMongoEntityUpdate {
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    }
+
+
     override fun beforeUpdate(update: MongoBaseUpdateClip): EventResult {
         var refs =
             MongoEntityEvent.refsMap.filter { MyUtil.getSmallCamelCase(it.masterEntityClass.simpleName) == update.collectionName }
@@ -84,7 +92,8 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
 
         ret.forEach { ref ->
             if (ref.masterIdValues.any()) {
-                var update2 = MongoBaseUpdateClip(MyUtil.getSmallCamelCase(ref.ref.entityClass.simpleName))
+                var targetCollection = MyUtil.getSmallCamelCase(ref.ref.entityClass.simpleName)
+                var update2 = MongoBaseUpdateClip(targetCollection)
                 update2.whereData.add(MongoColumnName(ref.ref.idField) match_in ref.masterIdValues.map {
                     getObjectIdValueTypeIfNeed(
                         it
@@ -92,6 +101,10 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
                 })
                 update2.setValue(ref.ref.nameField, ref.masterNameValue)
                 update2.exec();
+
+                usingScope(LogScope.info) {
+                    logger.info("因为更新 ${update.collectionName}: ${ref.masterIdValues.joinToString(",")} + ${ref.masterNameValue} 而导致级联更新 ${targetCollection}：${ref.ref.idField} + ${ref.ref.nameField}")
+                }
             }
         }
     }

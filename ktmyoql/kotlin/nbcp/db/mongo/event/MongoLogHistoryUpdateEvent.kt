@@ -67,9 +67,6 @@ class MongoLogHistoryUpdateEvent : IMongoEntityUpdate {
             batchInsert.add(log);
         }
 
-
-                batchInsert.exec();
-
+        batchInsert.exec();
     }
-
 }
