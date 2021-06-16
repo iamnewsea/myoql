@@ -58,7 +58,7 @@ object FreemarkerUtil {
      * @throws IOException
      * @throws TemplateException
      */
-    fun process(template: Template, model: Any): String {
+    fun processTemplate(template: Template, model: Any): String {
         val result = StringWriter()
         template.process(model, result)
         return result.toString()
@@ -98,7 +98,7 @@ object FreemarkerUtil {
         all_params.put("is_in", Freemarker_IsIn())
 
         return usingScope(params){
-            return escapeString(process(template, all_params))
+            return escapeString(processTemplate(template, all_params))
         }
     }
 }
