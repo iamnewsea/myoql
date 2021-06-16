@@ -17,16 +17,16 @@
     <#elseif field.getName() == "createAt">
     <#elseif field.getName() == "updateAt">
     <#elseif field.getType().isEnum()>
-                    <kv label="${cn(field)}">
+                    <kv label="${field_cn(field)}">
                         <selector v-model="info.${field.getName()}" enum="${field.getType().getSimpleName()}" chk="*"/>
                     </kv>
-    <#elseif is_enum_list(field)>
-                    <kv label="${cn(field)}">
-                        <selector multi value-is-object v-model="info.${field.getName()}" enum="${list_type(field)}" />
+    <#elseif field_is_enum_list(field)>
+                    <kv label="${field_cn(field)}">
+                        <selector multi value-is-object v-model="info.${field.getName()}" enum="${field_list_type(field)}" />
                     </kv>
     <#elseif is_type(field,"IdUrl")>
                     <kv>
-                        <label slot="k">${cn(field)}</label>
+                        <label slot="k">${field_cn(field)}</label>
                         <upload
                                 :maxCount="1"
                                 v-model="info.${field.getName()}"
@@ -36,9 +36,9 @@
                                 maxSize="5M"
                         ></upload>
                     </kv>
-    <#elseif is_list(field,"IdUrl")>
+    <#elseif field_is_list(field,"IdUrl")>
                     <kv>
-                        <label slot="k">${cn(field)}</label>
+                        <label slot="k">${field_cn(field)}</label>
                         <upload
                                 :maxCount="99"
                                 v-model="info.${field.getName()}"
@@ -49,35 +49,35 @@
                         ></upload>
                     </kv>
     <#elseif is_type(field,"IdName")>
-                    <kv label="${cn(field)}">
+                    <kv label="${field_cn(field)}">
                         <ref-${k(field.getName())} v-model="info.${field.getName()}"></ref-${k(field.getName())}>
                     </kv>
     <#elseif is_type(field,"boolean")>
-                    <kv label="${cn(field)}">
+                    <kv label="${field_cn(field)}">
                         <selector v-model="info.${field.getName()}" :data="{true:'是',false:'否','':'全部'}" />
                     </kv>
     <#elseif is_type(field,"LocalDate")>
-                    <kv label="${cn(field)}">
+                    <kv label="${field_cn(field)}">
                         <el-date-picker v-model="info.${field.getName()}" placeholder="选择日期" />
                     </kv>
     <#elseif is_type(field,"LocalDateTime")>
-                    <kv label="${cn(field)}">
+                    <kv label="${field_cn(field)}">
                         <el-date-picker v-model="info.${field.getName()}" placeholder="选择日期时间"  type="datetime" />
                     </kv>
     <#elseif is_type(field,"LocalTime")>
-                    <kv label="${cn(field)}">
+                    <kv label="${field_cn(field)}">
                         <el-time-select v-model="info.${field.getName()}" placeholder="选择时间" />
                     </kv>
     <#elseif field.getName() == "name">
-                    <kv label="${cn(field)}">
+                    <kv label="${field_cn(field)}">
                         <el-input v-model="info.${field.getName()}" chk="*" />
                     </kv>
     <#elseif field.getName() == "remark">
-        <kv label="${cn(field)}">
+        <kv label="${field_cn(field)}">
             <el-input v-model="info.${field.getName()}" type="textarea"/>
         </kv>
     <#else>
-                    <kv label="${cn(field)}">
+                    <kv label="${field_cn(field)}">
                         <el-input v-model="info.${field.getName()}" />
                     </kv>
 </#if>
@@ -116,13 +116,13 @@ export default {
 <#list fields as field>
 <#if field.getType().isEnum()>
             ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
-<#elseif is_enum_list(field)>
-            ${list_type(field)}: jv.enum.${list_type(field)}.getData(),
+<#elseif field_is_enum_list(field)>
+            ${field_list_type(field)}: jv.enum.${field_list_type(field)}.getData(),
 </#if>
 </#list>
             info: {
 <#list fields as field>
-<#if is_list(field,"Object")>
+<#if field_is_list(field,"Object")>
                 ${field.getName()}: [],
 <#elseif is_object(field)>
                 ${field.getName()}: {},

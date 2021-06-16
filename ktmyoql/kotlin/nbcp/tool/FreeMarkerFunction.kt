@@ -61,7 +61,7 @@ class Freemarker_HasValue : TemplateMethodModelEx {
     }
 }
 
-class Freemarker_Cn : TemplateMethodModelEx {
+class Freemarker_Field_Cn : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
         var paramValue = _get_value_item(p0[0]);
 
@@ -115,7 +115,7 @@ class Freemarker_SmallCamelCase : TemplateMethodModelEx {
 /**
  *
  */
-class Freemarker_IsEnumList : TemplateMethodModelEx {
+class Freemarker_Field_IsEnumList : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
         var paramValue = _get_value_item(p0[0]);
         if (paramValue is Field) {
@@ -125,7 +125,7 @@ class Freemarker_IsEnumList : TemplateMethodModelEx {
     }
 }
 
-class Freemarker_ListType : TemplateMethodModelEx {
+class Freemarker_Field_ListType : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
         var paramValue = _get_value_item(p0[0]);
         if (paramValue is Field) {
@@ -141,6 +141,9 @@ class Freemarker_IsRes : TemplateMethodModelEx {
         if (paramValue is Field) {
             return paramValue.type.isEnum ||
                     paramValue.type == Boolean::class.java
+        } else if (paramValue is Class<*>) {
+            return paramValue.isEnum ||
+                    paramValue == Boolean::class.java
         }
         throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
     }
@@ -161,8 +164,7 @@ class Freemarker_IsType : TemplateMethodModelEx {
         var clazz = _get_value_item(p0[1]) as String;
         if (paramValue is Field) {
             return paramValue.type.IsType(clazz)
-        }
-        else if( paramValue is Class<*>){
+        } else if (paramValue is Class<*>) {
             return paramValue.IsType(clazz)
         }
         throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
@@ -187,6 +189,11 @@ class Freemarker_IsObject : TemplateMethodModelEx {
             if (paramValue.type.isArray) return false;
             if (paramValue.type.IsCollectionType) return false;
             if (paramValue.type.IsSimpleType()) return false;
+            return true
+        } else if (paramValue is Class<*>) {
+            if (paramValue.isArray) return false;
+            if (paramValue.IsCollectionType) return false;
+            if (paramValue.IsSimpleType()) return false;
             return true
         }
         throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")

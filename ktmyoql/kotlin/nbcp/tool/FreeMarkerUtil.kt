@@ -72,14 +72,16 @@ object FreemarkerUtil {
         all_params.put("W", Freemarker_BigCamelCase())
         all_params.put("w", Freemarker_SmallCamelCase())
 
-        all_params.put("is_enum_list", Freemarker_IsEnumList())
-        all_params.put("cn", Freemarker_Cn())
-        all_params.put("is_list", Freemarker_IsList())
-        all_params.put("is_object", Freemarker_IsObject())
-        all_params.put("is_type", Freemarker_IsType())
-        all_params.put("list_type", Freemarker_ListType())
+        all_params.put("field_is_enum_list", Freemarker_Field_IsEnumList())
+        all_params.put("field_cn", Freemarker_Field_Cn())
+        all_params.put("field_is_list", Freemarker_IsList())
+        all_params.put("field_list_type", Freemarker_Field_ListType())
+
         all_params.put("is_res", Freemarker_IsRes())
         all_params.put("is_in", Freemarker_IsIn())
+        all_params.put("is_object", Freemarker_IsObject())
+        all_params.put("is_type", Freemarker_IsType())
+
 
         template.process(all_params, result)
         return result.toString()

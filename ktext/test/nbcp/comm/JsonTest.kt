@@ -18,13 +18,7 @@ class JsonTest : TestBase() {
 
     @Test
     fun test_get_json() {
-        var a = abc("udi")
-        a.r = MyRawString("<abc?");
-
-        usingScope(JsonStyleEnumScope.DateUtcStyle) {
-            println(a.ToJson())
-
-            println(a.ToJson().FromJson<abc>()!!.r)
-        }
+        var cls = mutableListOf<String>()::class.java
+        println()
     }
 }
