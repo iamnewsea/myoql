@@ -162,6 +162,9 @@ class Freemarker_IsType : TemplateMethodModelEx {
         if (paramValue is Field) {
             return paramValue.type.IsType(clazz)
         }
+        else if( paramValue is Class<*>){
+            return paramValue.IsType(clazz)
+        }
         throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
     }
 }

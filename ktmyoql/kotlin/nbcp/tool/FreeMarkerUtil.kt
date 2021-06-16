@@ -12,6 +12,7 @@ import nbcp.comm.JsonMap
 import nbcp.comm.usingScope
 import nbcp.utils.MyUtil
 import org.slf4j.LoggerFactory
+import java.io.StringReader
 import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.time.LocalDateTime
@@ -32,7 +33,7 @@ object FreemarkerUtil {
         get() {
             var ret = Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS)
 
-            ret.setClassForTemplateLoading(FreemarkerUtil::class.java, "/templates/code-generator")
+            ret.setClassForTemplateLoading(FreemarkerUtil::class.java, "/template")
             ret.setTemplateLoader(
                 ClassTemplateLoader(
                     FreemarkerUtil::class.java,
@@ -58,26 +59,9 @@ object FreemarkerUtil {
      * @throws IOException
      * @throws TemplateException
      */
-    fun processTemplate(template: Template, model: Any): String {
+    private fun processTemplate(template: Template, params: JsonMap): String {
         val result = StringWriter()
-        template.process(model, result)
-        return result.toString()
-    }
 
-    /**
-     * process String
-     *
-     * @param templateName
-     * @param params
-     * @return
-     * @throws IOException
-     * @throws TemplateException
-     */
-    fun process(
-        templateName: String,
-        params: JsonMap
-    ): String {
-        val template: Template = freemarkerConfig.getTemplate(templateName)
         var all_params = JsonMap()
         all_params.putAll(params)
 
@@ -97,8 +81,36 @@ object FreemarkerUtil {
         all_params.put("is_res", Freemarker_IsRes())
         all_params.put("is_in", Freemarker_IsIn())
 
-        return usingScope(params){
-            return escapeString(processTemplate(template, all_params))
+        template.process(all_params, result)
+        return result.toString()
+    }
+
+    fun processContent(
+        content: String,
+        params: JsonMap
+    ): String {
+        val template: Template = Template("template", StringReader(content), freemarkerConfig, "utf-8")
+        return usingScope(params) {
+            return escapeString(processTemplate(template, params))
+        }
+    }
+
+    /**
+     * process String
+     *
+     * @param templateName
+     * @param params
+     * @return
+     * @throws IOException
+     * @throws TemplateException
+     */
+    fun process(
+        templateName: String,
+        params: JsonMap
+    ): String {
+        val template: Template = freemarkerConfig.getTemplate(templateName)
+        return usingScope(params) {
+            return escapeString(processTemplate(template, params))
         }
     }
 }
