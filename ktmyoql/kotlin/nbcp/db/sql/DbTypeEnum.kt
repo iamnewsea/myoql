@@ -14,32 +14,34 @@ import java.sql.Types;
 
 //站在开发角度,泛泛的数据类型.
 public enum class DbType {
-    String(kotlin.String::class.java, Types.VARCHAR),
-    Enum(kotlin.String::class.java, Types.VARCHAR),
-    Int(kotlin.Int::class.java, Types.INTEGER, java.lang.Integer::class.java),
-    Float(kotlin.Float::class.java, Types.FLOAT, java.lang.Float::class.java),
-    Long(kotlin.Long::class.java, Types.BIGINT, java.lang.Long::class.java),
-    Double(kotlin.Double::class.java, Types.DOUBLE, java.lang.Double::class.java),
-    Byte(kotlin.Byte::class.java, Types.TINYINT, java.lang.Byte::class.java),
-    Short(kotlin.Short::class.java, Types.SMALLINT, java.lang.Short::class.java),
-    Boolean(kotlin.Boolean::class.java, Types.BIT, java.lang.Boolean::class.java),
-    Decimal(BigDecimal::class.java, Types.DECIMAL),
-    Date(LocalDate::class.java, Types.DATE),
-    Time(LocalTime::class.java, Types.TIME),
-    DateTime(LocalDateTime::class.java, Types.TIMESTAMP),
-    Binary(ByteArray::class.java, Types.VARBINARY),
+    String("字符串", kotlin.String::class.java, Types.VARCHAR),
+    Enum("枚举", kotlin.String::class.java, Types.VARCHAR),
+    Int("整数", kotlin.Int::class.java, Types.INTEGER, java.lang.Integer::class.java),
+    Float("浮点数", kotlin.Float::class.java, Types.FLOAT, java.lang.Float::class.java),
+    Long("长整数", kotlin.Long::class.java, Types.BIGINT, java.lang.Long::class.java),
+    Double("双精度", kotlin.Double::class.java, Types.DOUBLE, java.lang.Double::class.java),
+    Byte("字节", kotlin.Byte::class.java, Types.TINYINT, java.lang.Byte::class.java),
+    Short("短整数", kotlin.Short::class.java, Types.SMALLINT, java.lang.Short::class.java),
+    Boolean("布尔", kotlin.Boolean::class.java, Types.BIT, java.lang.Boolean::class.java),
+    Decimal("大数字", BigDecimal::class.java, Types.DECIMAL),
+    Date("日期", LocalDate::class.java, Types.DATE),
+    Time("时间", LocalTime::class.java, Types.TIME),
+    DateTime("日期时间", LocalDateTime::class.java, Types.TIMESTAMP),
+    Binary("二进制数据", ByteArray::class.java, Types.VARBINARY),
 
-    Text(kotlin.String::class.java, Types.LONGVARCHAR),
+    Text("大文本", kotlin.String::class.java, Types.LONGVARCHAR),
 
     //比如sql表达式.
-    Other(Any::class.java, Types.OTHER);
+    Other("表达式类型", Any::class.java, Types.OTHER);
 
 
+    var remark: kotlin.String = "";
     var javaType: Class<*>;
     var javaRefType: Class<*>?;
     var sqlType: kotlin.Int
 
-    constructor(javaType: Class<*>, sqlType: kotlin.Int, javaRefType: Class<*>? = null) {
+    constructor(remark: kotlin.String, javaType: Class<*>, sqlType: kotlin.Int, javaRefType: Class<*>? = null) {
+        this.remark = remark;
         this.javaType = javaType;
         this.sqlType = sqlType;
         this.javaRefType = javaRefType;
