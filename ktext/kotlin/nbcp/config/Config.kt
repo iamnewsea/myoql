@@ -58,20 +58,20 @@ object config {
     /**
      * 上传到本地时使用该配置,最后不带 "/"
      */
-    val uploadHost: String by lazy {
-        return@lazy getConfig("app.upload.host")
-            .must { it.HasValue }
-            .elseThrow { "必须指定 app.upload.host" }
-    }
+//    val uploadHost: String by lazy {
+//        return@lazy getConfig("app.upload.host")
+//            .must { it.HasValue }
+//            .elseThrow { "必须指定 app.upload.host" }
+//    }
 
     /**
      * 上传到本地时使用该配置,最后不带 "/"
      */
-    val uploadPath: String by lazy {
-        return@lazy getConfig("app.upload.path")
-            .must { it.HasValue }
-            .elseThrow { "必须指定 app.upload.path" }
-    }
+//    val uploadPath: String by lazy {
+//        return@lazy getConfig("app.upload.path")
+//            .must { it.HasValue }
+//            .elseThrow { "必须指定 app.upload.path" }
+//    }
 
     val mybatisPackage: String by lazy {
         return@lazy getConfig("app.mybatis.package", "")

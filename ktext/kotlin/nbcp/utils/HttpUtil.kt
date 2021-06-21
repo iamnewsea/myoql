@@ -157,36 +157,11 @@ class HttpUtil(var url: String = "") {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
         /**远程下载图片,并压缩
-         * @param imagePath :图片的目录,系统下载后, 会先尝试 remoteImage 名字进行保存,如果失败,则使用唯一Id进行保存.
          */
         @JvmStatic
-        fun getImage(remoteImage: String, imagePath: String, maxWidth: Int = 1200): FileMessage {
-            var imagePathFile = File(imagePath)
-            if (imagePathFile.exists() == false) {
-                imagePathFile.mkdirs();
-            }
-
-            var ret = FileMessage();
-            var extInfo = FileExtentionInfo(remoteImage);
-            if (extInfo.extName.isEmpty()) {
-                extInfo.extName = "png";
-                extInfo.extType = FileExtentionTypeEnum.Image;
-            }
-
-            ret.name = CodeUtil.getCode();
-            ret.extName = extInfo.extName;
-
-            var tempFile = imagePath + File.separatorChar + ret.name + "." + extInfo.extName;
-
-            ret.fullPath = tempFile;
-
+        fun getImage(remoteImage: String, maxWidth: Int = 1200): ByteArray {
             var oriImage: BufferedImage
-            try {
-                oriImage = ImageIO.read(URL(remoteImage));
-            } catch (e: Exception) {
-                ret.msg = "读取图片错误：" + remoteImage + "." + e.Detail;
-                return ret;
-            }
+            oriImage = ImageIO.read(URL(remoteImage));
 
             var height = oriImage.height;
             var width = oriImage.width;
@@ -208,22 +183,9 @@ class HttpUtil(var url: String = "") {
     * 和 JRE 产品的组成部分。虽然其它获得许可方可能选择发布这些类，但开发人员不能寄 希望于从非 Sun
     * 实现的软件中得到它们。我们期望相同的功能最终可以在核心 API 或标准扩 展中得到。
     */
-            var baos = FileOutputStream(tempFile);
+            var baos = ByteArrayOutputStream()
             ImageIO.write(destImageData, "jpeg", baos);
-
-
-
-            if (extInfo.name.length > 1) {
-                var oriFile = imagePath + File.separatorChar + extInfo.name + "." + extInfo.extName;
-                //判断是否存在原始文件
-                if (File(oriFile).exists() == false) {
-                    File(tempFile).renameTo(File(oriFile));
-
-                    ret.fullPath = oriFile;
-                }
-            }
-
-            return ret;
+            return baos.toByteArray();
         }
     }
 

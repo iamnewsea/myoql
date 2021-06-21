@@ -3,7 +3,7 @@
 
     <groupId>cn.dev8</groupId>
     <artifactId>kotlin</artifactId>
-    <version>0.2.1.67</version>
+    <version>0.2.1.68</version>
     <packaging>pom</packaging>
     <name>kotlin-myoql-component</name>
 

@@ -18,16 +18,12 @@ import javax.servlet.http.HttpServletResponse
 
 /**
  * 客户端上传流程：
- *  1. 客户端调用 /sys/check_upload 方法，判断服务器是否有该文件，有则返回文件Id，没有返回空字符串表示客户端需要上传。
- *  2. 如果需要上传，客户端调用 /sys/upload 方法，返回文件Id
- *  3. 客户端调用 业务方法，把文件Id和业务关联。
+ *  1. 如果需要上传，客户端调用 /sys/upload 方法，返回文件Id
+ *  2. 客户端调用 业务方法，把文件Id和业务关联。
  */
 @RestController
 @ConditionalOnBean(UploadService::class)
 class FileUploadController {
-//    @Value("\${server.upload.host}")
-//    var imgHost: String = "";
-
     @Autowired
     lateinit var uploadService: UploadService;
 
@@ -62,23 +58,5 @@ class FileUploadController {
             }
         }
         return
-    }
-
-
-    //没用. 请使用 fileCheckUpload
-//    @JsonpMapping("/sys/fileCheck")
-//    fun fileCheck(md5: String, request: HttpServletRequest): JsonResult {
-//        return ApiResult(data = mor.base.sysAnnex.query(mor.base.sysAnnex.checkCode match md5).exists())//"checkCode"
-//    }
-
-
-    //如果存在，返回 id  url
-    @JsonpMapping("/sys/check_upload")
-    fun fileCheckUpload(md5: String, request: HttpServletRequest): ApiResult<IdUrl> {
-        return uploadService.onFileMd5Check(
-            md5,
-            IdName(request.UserId, request.UserName),
-            request.LoginUser.organization.id
-        );
     }
 }

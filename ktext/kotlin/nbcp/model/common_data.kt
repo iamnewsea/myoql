@@ -21,11 +21,6 @@ open class KeyValueString(@Cn("键") var key: String = "", @Cn("值") var value:
 abstract class BaseUrlModel() : java.io.Serializable {
     @Cn("网络资源地址")
     var url: String = ""
-
-    val fullUrl: String
-        get() {
-            return this.url.PatchHostUrl(config.uploadHost)
-        }
 }
 
 

@@ -12,13 +12,14 @@ open class s_annex(
     var tags: String = "",
     var ext: String = "",           //后缀名。
     var size: Int = 0,              //大小
-    var checkCode: String = "",     //Md5,Sha1
+
     var imgWidth: Int = 0,          // 图像宽度值。
     var imgHeight: Int = 0,         // 图像宽度值。
-    var url: String = "",           //下载的路径。没有 host
+    var url: String = "",           //下载的路径。有 host
 
     @SqlSpreadColumn()
     var creator: IdName = IdName(), //创建者
+    var group: String = "",
     var corpId: String = "", //企业Id
     var errorMsg: String = ""       //文件处理时的错误消息
 

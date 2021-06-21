@@ -24,7 +24,7 @@ object ImageUtil {
      * @param maxHeight: 新图高度
      * @return 返回文件类型。
      */
-    fun zoomImageScale(sourceImage: BufferedInputStream, target: OutputStream, maxWidth: Int, maxHeight: Int): ApiResult<String> {
+    fun zoomImageScale(sourceImage:InputStream, target: OutputStream, maxWidth: Int, maxHeight: Int): ApiResult<String> {
         if (maxWidth < 1) {
             return ApiResult("目标宽度参数不合法");
         }

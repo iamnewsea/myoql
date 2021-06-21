@@ -9,7 +9,7 @@ import nbcp.comm.*
 import nbcp.utils.*
 import org.springframework.stereotype.Component
 
-//generate auto @2021-05-27 11:47:36
+//generate auto @2021-06-21 16:17:32
 
 
 @Component("sql.SqlBase")
@@ -30,12 +30,12 @@ class SqlBaseGroup : IDataGroup{
         val tags=SqlColumnName(DbType.String,this.getAliaTableName(),"tags")
         val ext=SqlColumnName(DbType.String,this.getAliaTableName(),"ext")
         val size=SqlColumnName(DbType.Int,this.getAliaTableName(),"size")
-        val checkCode=SqlColumnName(DbType.String,this.getAliaTableName(),"checkCode")
         val imgWidth=SqlColumnName(DbType.Int,this.getAliaTableName(),"imgWidth")
         val imgHeight=SqlColumnName(DbType.Int,this.getAliaTableName(),"imgHeight")
         val url=SqlColumnName(DbType.String,this.getAliaTableName(),"url")
         val creator_id=SqlColumnName(DbType.String,this.getAliaTableName(),"creator_id")
         val creator_name=SqlColumnName(DbType.String,this.getAliaTableName(),"creator_name")
+        val group=SqlColumnName(DbType.String,this.getAliaTableName(),"group")
         val corpId=SqlColumnName(DbType.String,this.getAliaTableName(),"corpId")
         val errorMsg=SqlColumnName(DbType.String,this.getAliaTableName(),"errorMsg")
         @ConverterValueToDb(nbcp.db.sql.AutoIdConverter::class)
@@ -44,7 +44,7 @@ class SqlBaseGroup : IDataGroup{
     
         override fun getSpreadColumns(): Array<String> { return arrayOf<String>("creator")}
         override fun getConvertValueColumns(): Array<String> { return arrayOf<String>("id")}
-        override fun getColumns(): SqlColumnNames { return SqlColumnNames(name,tags,ext,size,checkCode,imgWidth,imgHeight,url,creator_id,creator_name,corpId,errorMsg,id,createAt)}
+        override fun getColumns(): SqlColumnNames { return SqlColumnNames(name,tags,ext,size,imgWidth,imgHeight,url,creator_id,creator_name,group,corpId,errorMsg,id,createAt)}
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}
         override fun getRks(): Array<Array<String>>{ return arrayOf( arrayOf("corpId")  )}

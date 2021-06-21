@@ -1,27 +1,25 @@
 package nbcp.service
 
+import io.minio.MinioClient
 import nbcp.comm.*
 import nbcp.db.DatabaseEnum
 import nbcp.db.IdName
-import nbcp.db.IdUrl
 import nbcp.db.db
 import nbcp.db.mongo.entity.SysAnnex
 import nbcp.db.mongo.service.UploadFileMongoService
 import nbcp.db.mysql.service.UploadFileMysqlService
 import nbcp.utils.CodeUtil
-import nbcp.utils.HttpUtil
-import nbcp.utils.Md5Util
 import nbcp.utils.SpringUtil
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
 import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 import java.time.LocalDate
-import java.time.LocalDateTime
 import javax.imageio.ImageIO
 import javax.servlet.http.HttpServletRequest
 
@@ -30,7 +28,6 @@ import javax.servlet.http.HttpServletRequest
  * 参数传递过程中,都没有 uploadPath 部分.
  */
 @Service
-@ConditionalOnProperty("app.upload.path")
 open class UploadService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -40,8 +37,10 @@ open class UploadService {
         var oriName: String = ""
         var extName: String = ""
         var extType: FileExtentionTypeEnum = FileExtentionTypeEnum.Other
-        var imgWidth: Int = 0
-        var imgHeight: Int = 0
+//        var imgWidth: Int = 0
+//        var imgHeight: Int = 0
+        var needCorp: Boolean = true
+        var corpId: String = ""
 
         /*
      * 把文件转移到相应的文件夹下.
@@ -52,32 +51,33 @@ open class UploadService {
      * 3. 第三级目录,如果是非图片是 extType , 如果是图片是 宽-高
      * 4. 第四级是,如果是图片,是256宽度像素大小的缩略图.
          */
-        fun getTargetPaths(): Array<String> {
+        private fun getTargetPaths(): Array<String> {
             var list = mutableListOf<String>()
             list.add(LocalDate.now().Format("yyyy-MM"));
-            var pixelTotal = imgWidth * imgHeight;
-
-
-            if (pixelTotal > 0) {
-                var pixel = (pixelTotal / 10000.0).toInt();
-                //按图片像素文件夹命名。不足1万 = 0
-                list.add(pixel.toString())
-            } else {
-                list.add(this.extType.toString())
-            }
+//            var pixelTotal = imgWidth * imgHeight;
+//
+//
+//            if (pixelTotal > 0) {
+//                var pixel = (pixelTotal / 10000.0).toInt();
+//                //按图片像素文件夹命名。不足1万 = 0
+//                list.add(pixel.toString())
+//            } else {
+//                list.add(this.extType.toString())
+//            }
             return list.toTypedArray();
         }
 
-        fun getTargetFileNames(): Array<String> {
+        private fun getTargetFileNames(): Array<String> {
             return arrayOf(
                 *this.getTargetPaths(),
                 CodeUtil.getCode() + (if (extName.HasValue) ("." + extName) else "")
             );
         }
 
-        fun getTargetFileName(corpId: String): String {
+        fun getTargetFileName(): String {
             var targetFileName = mutableListOf<String>()
-            if (corpId.HasValue) {
+
+            if (needCorp && corpId.HasValue) {
                 targetFileName.add(corpId);
             }
             targetFileName.addAll(getTargetFileNames())
@@ -85,39 +85,38 @@ open class UploadService {
         }
     }
 
-
     @Value("\${app.upload.saveCorp:true}")
-    private var saveCorp = false
+    private var UPLOAD_SAVECORP = false
 
-
-//小图，在上传时不生成。 在请求时在内存中压缩即时生成。
-//    @Value("\${server.upload.logoSize:0}")
-//    private var logoSize = 0
+    @Value("\${app.upload.group:}")
+    private var UPLOAD_GROUP = ""
 
     /**
-     * checkCode 生成方式，md5,mymd5,两种
+     * 上传到本地时使用该配置,最后不带 "/"
      */
-    @Value("\${app.upload.checkType:md5}")
-    private var checkType = "md5"
+    @Value("\${app.upload.local.host:}")
+    var UPLOAD_LOCAL_HOST: String = ""
 
-//    fun downloadImage(url: String, corp: IdName, user: IdName, maxWidth: Int = 1200): ApiResult<IdUrl> {
-//        var fileMsg = HttpUtil.getImage(url, config.uploadPath + File.separator + "_temp_", maxWidth);
-//        if (fileMsg.msg.HasValue) {
-//            return ApiResult<IdUrl>(msg = fileMsg.msg);
-//        }
-//
-//
-//        var vFile = File.separator + "_temp_" + File.separator + fileMsg.name + "." + fileMsg.extName;
-//        return doUpload(vFile, user, corp.id)
-//    }
+    /**
+     * 上传到本地时使用该配置,最后不带 "/"
+     */
+    @Value("\${app.upload.local.path:}")
+    var UPLOAD_LOCAL_PATH: String = ""
+
+    @Value("\${app.upload.minio.endpoint:}")
+    var MINIO_ENDPOINT: String = ""
+
+    @Value("\${app.upload.minio.key:}")
+    var MINIO_ACCESSKEY: String = ""
+
+    @Value("\${app.upload.minio.secret:}")
+    var MINIO_SECRETKEY: String = ""
 
 
-    private fun getFileInfo(fileName1: String, fileName2: String): FileExtentionInfo {
+    private fun getFileInfo(fileName1: String): FileExtentionInfo {
         var fileName = "";
         if (fileName1.contains('.')) {
             fileName = fileName1;
-        } else if (fileName2.contains('.')) {
-            fileName = fileName2
         } else {
             return FileExtentionInfo("")
         }
@@ -131,117 +130,52 @@ open class UploadService {
         return extInfo;
     }
 
-//    fun getFileInfo(request: HttpServletRequest): FileExtentionInfo {
-//        var oriFileName = request.getHeader("File-Name");
-//        oriFileName = oriFileName.Remove("/", "\\", "?", "#", "\"", "'", " ", "%", "&", ":", "@", "<", ">")
-//        var extInfo = FileExtentionInfo(oriFileName);
-//        if (oriFileName.length < 4) {
-//            extInfo.name = "";
-//        }
-//        return extInfo;
-//    }
-
-    /**
-     * @return 返回相对于 uploadPath 的路径.
-     */
-    private fun saveTempFile(file: MultipartFile, extName: String): String {
-        if (file.size == 0L) {
-            throw  Exception("上传的是空文件！");
-        }
-
-        var vFile = File.separatorChar + "_temp_" + File.separator + CodeUtil.getCode();
-        if (extName.HasValue) {
-            vFile = vFile + "." + extName
-        }
-
-        var localFile = File(config.uploadPath + File.separator + vFile)
-
-        if (localFile.parentFile.exists() == false && localFile.parentFile.mkdirs() == false) {
-            throw Exception("创建文件夹失败:${localFile.parent}");
-        }
-
-        file.transferTo(localFile)
-        return localFile.FullName;
-    }
-
-
-    /**
-     * @return 返回相对于 uploadPath 的路径.
-     */
-//    private fun saveTempFile(file: InputStream, extName: String): String {
-//
-//        var vFile = File.separatorChar + "_temp_" + File.separator + CodeUtil.getCode() + "." + extName;
-//        var localFile = File(uploadPath + vFile)
-//
-//        file.copyTo(localFile.outputStream())
-//        return vFile
-//    }
-
-
     /**
      * @param vTempFile , 相对于 uploadPath 的相对路径.
      */
     private fun doUpload(
-        vTempFile: String,
+        file: MultipartFile,
+        fileName: String,
         user: IdName,
-        corpId: String,
-        oriFileName: String = ""
+        corpId: String
     ): ApiResult<SysAnnex> {
-        var vFile = File(vTempFile);
-        if (vFile.exists() == false) {
-            return ApiResult("找不到文件:${vFile.FullName}")
+        var fileStream = file.inputStream;
+
+        var extInfo = getFileInfo(fileName)
+        if (extInfo.name.isEmpty()) {
+            extInfo.name = CodeUtil.getCode()
         }
-
-        var oriMd5 = getMd5(vFile)
-        if (oriMd5.isEmpty()) {
-            return ApiResult("计算 Md5 出错:${vFile.FullName}")
-        }
-
-        //仅在当前企业下判断,如果重复,则不记录到数据库.
-        var md5Annex = dbService.getByMd5(oriMd5);
-
-        if (md5Annex != null) {
-            return ApiResult.of(md5Annex)
-        }
-
-        var extInfo = FileExtentionInfo(vTempFile);
 
         var fileData = FileNameData();
-        fileData.oriName = oriFileName
+        fileData.oriName = extInfo.toString()
         fileData.extName = extInfo.extName
         fileData.extType = extInfo.extType
-
+        fileData.needCorp = UPLOAD_SAVECORP;
+        fileData.corpId = corpId;
 
         var annexInfo = SysAnnex();
         annexInfo.ext = extInfo.extName
-        annexInfo.size = vFile.length().AsInt()
-        annexInfo.checkCode = oriMd5
+        annexInfo.size = file.size.toInt()
         annexInfo.creator = user
+        annexInfo.group = UPLOAD_GROUP
+        annexInfo.corpId = corpId
 
 
-        if (extInfo.extType == FileExtentionTypeEnum.Image) {
-            val bufferedImage = ImageIO.read(vFile)
-
-            annexInfo.imgWidth = bufferedImage.getWidth();
-            annexInfo.imgHeight = bufferedImage.getHeight();
-        } else if (extInfo.extType == FileExtentionTypeEnum.Video) {
-
-            fillVideoWidthHeight(annexInfo, vFile);
-        }
-
-        fileData.imgWidth = annexInfo.imgWidth;
-        fileData.imgHeight = annexInfo.imgHeight;
-
-        annexInfo.url = saveFile(vTempFile, fileData, saveCorp, corpId).replace("\\", "/")
-
-//        if (extInfo.extType == FileExtentionTypeEnum.Video) {
-//            setVideoUrlTime(annexInfo, vFile, fileData);
+        //流不可重复读！！
+//        if (extInfo.extType == FileExtentionTypeEnum.Image) {
+//            val bufferedImage = ImageIO.read(fileStream)
+//            annexInfo.imgWidth = bufferedImage.getWidth();
+//            annexInfo.imgHeight = bufferedImage.getHeight();
+//        } else if (extInfo.extType == FileExtentionTypeEnum.Video) {
+//            fillVideoWidthHeight(annexInfo, fileStream);
 //        }
 
+//        fileData.imgWidth = annexInfo.imgWidth;
+//        fileData.imgHeight = annexInfo.imgHeight;
 
-        if (saveCorp) {
-            annexInfo.corpId = corpId
-        }
+        annexInfo.url = saveFile(fileStream, UPLOAD_GROUP, fileData).replace("\\", "/")
+
+        annexInfo.corpId = corpId
 
         if (dbService.insert(annexInfo) == 0) {
             return ApiResult("记录到数据出错")
@@ -249,8 +183,8 @@ open class UploadService {
         return ApiResult.of(annexInfo)
     }
 
-    private fun fillVideoWidthHeight(annexInfo: SysAnnex, vFile: File) {
-        FFmpegFrameGrabber(vFile).use { fFmpegFrameGrabber ->
+    private fun fillVideoWidthHeight(annexInfo: SysAnnex, file: InputStream) {
+        FFmpegFrameGrabber(file).use { fFmpegFrameGrabber ->
             fFmpegFrameGrabber.start();
             val ftp = fFmpegFrameGrabber.lengthInFrames
 
@@ -277,49 +211,58 @@ open class UploadService {
      * 3. 第三级目录,是 后缀名
      * 4. 如果是图片，第四级目录是原图片的像素数/万 ，如 800*600 = 480000,则文件夹名为 48 。 忽略小数部分。这样对大部分图片大体归类。
      */
-    fun saveFile(tempPath: String, fileData: FileNameData, saveCorp: Boolean, corpId: String): String {
-        if (SaveFileForUploadServiceBeanInstance.instances.any()) {
-            var lastTargetPath = "";
-            SaveFileForUploadServiceBeanInstance.instances.forEach {
-                lastTargetPath = it.save(tempPath, fileData, saveCorp, corpId)
+    fun saveFile(fileStream: InputStream, group: String, fileData: FileNameData): String {
+        if (MINIO_ENDPOINT.HasValue && MINIO_ACCESSKEY.HasValue) {
+            return saveToMinIo(fileStream, group, fileData)
+        } else if (UPLOAD_LOCAL_HOST.HasValue && UPLOAD_LOCAL_PATH.HasValue) {
+            return saveToLocal(fileStream, group, fileData)
+        }
+
+        throw java.lang.RuntimeException("请配置上传方式，MinIO方式：app.upload.minio.endpoint,app.upload.minio.accessKey; 本地文件方式：app.upload.local.host,app.upload.local.path")
+    }
+
+    private fun saveToLocal(fileStream: InputStream, group: String, fileData: FileNameData): String {
+        var targetFileName = fileData.getTargetFileName()
+        var targetFile = File(listOf(UPLOAD_LOCAL_PATH, group, fileData.getTargetFileName()).filter { it.HasValue }
+            .joinToString(File.separator));
+
+        if (targetFile.parentFile.exists() == false) {
+            if (targetFile.parentFile.mkdirs() == false) {
+                throw java.lang.RuntimeException("创建文件夹失败： ${targetFile.parentFile.FullName}")
             }
-            return lastTargetPath;
         }
-        return renameFile(tempPath, fileData, saveCorp, corpId)
+
+        FileOutputStream(targetFile).use {
+            if (fileStream.copyTo(it) <= 0) {
+                throw java.lang.RuntimeException("保存文件失败： ${targetFile.parentFile.FullName}")
+            }
+        }
+        return UPLOAD_LOCAL_HOST + targetFileName;
     }
 
-    private fun renameFile(tempPath: String, fileData: FileNameData, saveCorp: Boolean, corpId: String): String {
-        var targetPath = fileData.getTargetFileName(if (saveCorp) corpId else "")
-//        if (tempPath == targetPath) {
-//            return targetPath;
-//        }
-
-        var localFile = File(tempPath);
-
-        if (localFile.exists() == false) {
-            throw Exception("找不到保存的文件")
-        }
-        //        var targetFileSects = fileData.getTargetFileName() targetFileSects.joinToString(File.separator)
-
-        var targetFile = File(config.uploadPath + targetPath)
-        if (targetFile.parentFile.exists() == false && targetFile.parentFile.mkdirs() == false) {
-            return "创建文件夹失败： ${targetFile.parentFile.FullName}"
+    private fun saveToMinIo(fileStream: InputStream, group: String, fileData: FileNameData): String {
+        if (!MINIO_ENDPOINT.HasValue || !MINIO_ACCESSKEY.HasValue) {
+            return "";
         }
 
-        if (localFile.renameTo(targetFile) == false) {
-            return "文件重命令名错误: ${localFile.FullName} ,${targetFile.FullName}";
+        val minioClient = MinioClient(MINIO_ENDPOINT, MINIO_ACCESSKEY, MINIO_SECRETKEY)
+        // bucket 不存在，创建
+        if (!minioClient.bucketExists(group)) {
+            minioClient.makeBucket(group)
         }
 
+        val fileName = fileData.getTargetFileName()
+            .replace(File.separatorChar, '/')
 
-        return targetPath
-    }
+        //类型
+        val contentType = fileData.extType.toString()
+        //把文件放置MinIo桶(文件夹)
 
-
-    private fun getMd5(localFile: File): String {
-        if (checkType VbSame "md5") {
-            return Md5Util.getFileMD5(localFile);
+        fileStream.use {
+            minioClient.putObject(group, fileName, it, contentType)
         }
-        return Md5Util.getFileBase64MD5(localFile);
+
+        return minioClient.getObjectUrl(group, fileName)
     }
 
     private val dbService by lazy {
@@ -330,85 +273,6 @@ open class UploadService {
         }
     }
 
-
-    /**
-     * 按原始的Md5查询文件是否存在。
-     */
-    fun onFileMd5Check(md5: String, user: IdName, corpId: String): ApiResult<IdUrl> {
-        if (md5.isEmpty()) {
-            return ApiResult<IdUrl>();
-        }
-
-        if (saveCorp) {
-            var annex = dbService.getByMd5(md5, corpId);
-
-            if (annex != null) {
-                if (File(config.uploadPath + annex.url).exists()) {
-                    return ApiResult.of(IdUrl(annex.id, annex.url));
-                } else {
-                    dbService.clearMd5ById(annex.id);
-                }
-            }
-        }
-
-        var annex = dbService.getByMd5(md5)
-
-        if (annex == null) {
-            return ApiResult();
-        }
-
-        if (File(config.uploadPath + annex.url).exists() == false) {
-            dbService.clearMd5ById(annex.id)
-            return ApiResult();
-        }
-
-
-        if (saveCorp == false) {
-            return ApiResult.of(IdUrl(annex.id, annex.url));
-        }
-
-        //copy file & copy record
-        var fileData = FileNameData();
-        fileData.oriName = annex.name
-        fileData.extName = annex.ext
-        fileData.extType = FileExtentionInfo(annex.url).extType
-        fileData.imgWidth = annex.imgWidth
-        fileData.imgHeight = annex.imgHeight
-
-
-        var targetFileName = fileData.getTargetFileName(if (saveCorp) corpId else "")
-
-
-        var r = File(config.uploadPath + annex.url).copyTo(File(config.uploadPath + targetFileName))
-        if (r.exists() == false) {
-            return ApiResult()
-        }
-
-//        if (annex.videoLogoUrl.HasValue) {
-//            var targetLogoFileName = File.separator + fileData.getTargetPaths().joinToString(File.separator) + File.separator + CodeUtil.getCode() + "." + fileData.extName;
-//            annex.videoLogoUrl = targetLogoFileName;
-//
-//            var r2 = File(uploadPath + annex.videoLogoUrl).copyTo(File(uploadPath + targetLogoFileName))
-//            if (r2.exists() == false) {
-//                return ApiResult()
-//            }
-//        }
-
-
-        annex.url = targetFileName;
-        annex.id = "";
-        annex.corpId = corpId;
-        annex.createAt = LocalDateTime.now()
-
-
-        if (dbService.insert(annex) == 0) {
-            return ApiResult<IdUrl>()
-        }
-
-        return ApiResult.of(IdUrl(annex.id, annex.url));
-    }
-
-
     /**
      * 文件上传
      */
@@ -416,7 +280,6 @@ open class UploadService {
         request: HttpServletRequest,
         user: IdName,
         corpId: String,
-//        processFile: ((String, FileExtentionTypeEnum) -> Unit)? = null
     ): ListResult<SysAnnex> {
         var list = mutableListOf<SysAnnex>()
         if (request is StandardMultipartHttpServletRequest == false) {
@@ -433,17 +296,7 @@ open class UploadService {
                 var files = it.second;
 
                 files.ForEachExt for2@{ file, _ ->
-                    var oriFileExtentionInfo = getFileInfo(file.originalFilename, fileName)
-                    if (oriFileExtentionInfo.name.isEmpty()) {
-                        oriFileExtentionInfo.name = CodeUtil.getCode()
-                    }
-
-                    var vTempFile = saveTempFile(file, oriFileExtentionInfo.extName);
-//                if (processFile != null) {
-//                    processFile(config.uploadPath + vTempFile, oriFileExtentionInfo.extType)
-//                }
-
-                    var ret1 = doUpload(vTempFile, user, corpId, oriFileExtentionInfo.toString());
+                    var ret1 = doUpload(file, fileName, user, corpId);
                     if (ret1.msg.HasValue) {
                         msg = ret1.msg;
                         return@ForEachExt false

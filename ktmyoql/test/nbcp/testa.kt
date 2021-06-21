@@ -1,7 +1,7 @@
 package nbcp
 
 import nbcp.comm.AllFields
-import nbcp.comm.Define
+import nbcp.db.Define
 import nbcp.db.*
 import nbcp.db.es.IEsDocument
 import nbcp.db.es.tool.generator_mapping

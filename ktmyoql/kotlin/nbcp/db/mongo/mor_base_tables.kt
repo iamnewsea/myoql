@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2021-05-12 19:51:24
+//generate auto @2021-06-21 16:17:11
 
 class IdUrlMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
@@ -89,6 +89,16 @@ class IdNameMeta (private val _pname:String):MongoColumnName() {
     */
     @Cn("名称")
     val name=join(this._pname, "name")
+
+    override fun toString(): String {
+        return join(this._pname).toString()
+    }
+}
+
+class SerializableMeta (private val _pname:String):MongoColumnName() {
+    constructor(_val:MongoColumnName):this(_val.toString()) {}
+
+
 
     override fun toString(): String {
         return join(this._pname).toString()
@@ -490,11 +500,6 @@ class MongoBaseGroup : IDataGroup{
         @Cn("大小")
         val size=MongoColumnName("size")
         /**
-        * 校验码
-        */
-        @Cn("校验码")
-        val checkCode=MongoColumnName("checkCode")
-        /**
         * 图像宽度
         */
         @Cn("图像宽度")
@@ -510,15 +515,20 @@ class MongoBaseGroup : IDataGroup{
         @Cn("时长")
         val videoTime=MongoColumnName("videoTime")
         /**
-        * 短路径
+        * 网络路径
         */
-        @Cn("短路径")
+        @Cn("网络路径")
         val url=MongoColumnName("url")
         /**
         * 创建者
         */
         @Cn("创建者")
         val creator=IdNameMeta("creator")
+        /**
+        * 组
+        */
+        @Cn("组")
+        val group=MongoColumnName("group")
         /**
         * 所属企业
         */
@@ -720,7 +730,7 @@ class MongoBaseGroup : IDataGroup{
         * 数据
         */
         @Cn("数据")
-        val data=ObjectMeta("data")
+        val data=SerializableMeta("data")
         /**
         * 创建时间
         */

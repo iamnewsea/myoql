@@ -38,7 +38,7 @@ open class ImageGetServlet : HttpServlet() {
         //附件数据库表中的Id
         var id = request.findParameterStringValue("id") ;
 
-        //不带 host 头部的地址
+        //带 host 头部的地址
         var url = request.findParameterStringValue("url") ;
         if (id.isEmpty() && url.isEmpty()) {
             throw ParameterInvalidException("参数非法", "id")
@@ -60,7 +60,7 @@ open class ImageGetServlet : HttpServlet() {
             url = JsUtil.decodeURIComponent(url);
         }
 
-        var ret = ImageUtil.zoomImageScale(File(config.uploadPath + url).inputStream().buffered(), response.outputStream, width, height)
+        var ret = ImageUtil.zoomImageScale(HttpUtil.getImage(url).inputStream(), response.outputStream, width, height)
         if (ret.msg.HasValue) {
             response.WriteTextValue(ret.msg)
             return;
