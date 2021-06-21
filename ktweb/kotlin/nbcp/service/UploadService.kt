@@ -181,22 +181,27 @@ open class UploadService {
     /**
      * @param vTempFile , 相对于 uploadPath 的相对路径.
      */
-    private fun doUpload(vTempFile: String, user: IdName, corpId: String, oriFileName: String = ""): ApiResult<IdUrl> {
+    private fun doUpload(
+        vTempFile: String,
+        user: IdName,
+        corpId: String,
+        oriFileName: String = ""
+    ): ApiResult<SysAnnex> {
         var vFile = File(vTempFile);
         if (vFile.exists() == false) {
-            return ApiResult<IdUrl>("找不到文件:${vFile.FullName}")
+            return ApiResult("找不到文件:${vFile.FullName}")
         }
 
         var oriMd5 = getMd5(vFile)
         if (oriMd5.isEmpty()) {
-            return ApiResult<IdUrl>("计算 Md5 出错:${vFile.FullName}")
+            return ApiResult("计算 Md5 出错:${vFile.FullName}")
         }
 
         //仅在当前企业下判断,如果重复,则不记录到数据库.
         var md5Annex = dbService.getByMd5(oriMd5);
 
         if (md5Annex != null) {
-            return ApiResult.of(IdUrl(md5Annex.id, md5Annex.url))
+            return ApiResult.of(md5Annex)
         }
 
         var extInfo = FileExtentionInfo(vTempFile);
@@ -239,9 +244,9 @@ open class UploadService {
         }
 
         if (dbService.insert(annexInfo) == 0) {
-            return ApiResult<IdUrl>("记录到数据出错")
+            return ApiResult("记录到数据出错")
         }
-        return ApiResult.of(IdUrl(annexInfo.id, annexInfo.url))
+        return ApiResult.of(annexInfo)
     }
 
     private fun fillVideoWidthHeight(annexInfo: SysAnnex, vFile: File) {
@@ -412,43 +417,49 @@ open class UploadService {
         user: IdName,
         corpId: String,
 //        processFile: ((String, FileExtentionTypeEnum) -> Unit)? = null
-    ): ListResult<IdUrl> {
-
-        var ret = ListResult<IdUrl>();
-        var list = mutableListOf<IdUrl>()
+    ): ListResult<SysAnnex> {
+        var list = mutableListOf<SysAnnex>()
         if (request is StandardMultipartHttpServletRequest == false) {
             throw RuntimeException("request非StandardMultipartHttpServletRequest类型")
         }
 
-        (request as StandardMultipartHttpServletRequest).multiFileMap.toList().ForEachExt { it, _ ->
-            var fileName = it.first;
-            var files = it.second;
+        var msg = ""
 
-            files.ForEachExt for2@{ file, _ ->
-                var oriFileExtentionInfo = getFileInfo(file.originalFilename, fileName)
-                if (oriFileExtentionInfo.name.isEmpty()) {
-                    oriFileExtentionInfo.name = CodeUtil.getCode()
-                }
+        (request as StandardMultipartHttpServletRequest)
+            .multiFileMap
+            .toList()
+            .ForEachExt { it, _ ->
+                var fileName = it.first;
+                var files = it.second;
 
-                var vTempFile = saveTempFile(file, oriFileExtentionInfo.extName);
+                files.ForEachExt for2@{ file, _ ->
+                    var oriFileExtentionInfo = getFileInfo(file.originalFilename, fileName)
+                    if (oriFileExtentionInfo.name.isEmpty()) {
+                        oriFileExtentionInfo.name = CodeUtil.getCode()
+                    }
+
+                    var vTempFile = saveTempFile(file, oriFileExtentionInfo.extName);
 //                if (processFile != null) {
 //                    processFile(config.uploadPath + vTempFile, oriFileExtentionInfo.extType)
 //                }
 
-                var ret1 = doUpload(vTempFile, user, corpId, oriFileExtentionInfo.toString());
-                if (ret1.msg.HasValue) {
-                    ret.msg = ret1.msg;
-                    return@ForEachExt false
+                    var ret1 = doUpload(vTempFile, user, corpId, oriFileExtentionInfo.toString());
+                    if (ret1.msg.HasValue) {
+                        msg = ret1.msg;
+                        return@ForEachExt false
+                    }
+                    list.add(ret1.data!!);
+                    return@for2 true
                 }
-                list.add(ret1.data!!);
-                return@for2 true
+
+                return@ForEachExt true;
             }
 
-            return@ForEachExt true;
+
+        if (msg.HasValue) {
+            return ListResult(msg);
         }
 
-
-        ret.data = list
-        return ret;
+        return ListResult.of(list)
     }
 }
