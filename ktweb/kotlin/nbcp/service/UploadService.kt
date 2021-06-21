@@ -37,7 +37,8 @@ open class UploadService {
         var oriName: String = ""
         var extName: String = ""
         var extType: FileExtentionTypeEnum = FileExtentionTypeEnum.Other
-//        var imgWidth: Int = 0
+
+        //        var imgWidth: Int = 0
 //        var imgHeight: Int = 0
         var needCorp: Boolean = true
         var corpId: String = ""
@@ -134,6 +135,7 @@ open class UploadService {
      * @param vTempFile , 相对于 uploadPath 的相对路径.
      */
     private fun doUpload(
+        request: HttpServletRequest,
         file: MultipartFile,
         fileName: String,
         user: IdName,
@@ -150,14 +152,14 @@ open class UploadService {
         fileData.oriName = extInfo.toString()
         fileData.extName = extInfo.extName
         fileData.extType = extInfo.extType
-        fileData.needCorp = UPLOAD_SAVECORP;
+        fileData.needCorp = request.getHeader("save-corp").AsBooleanWithNull() ?: UPLOAD_SAVECORP;
         fileData.corpId = corpId;
 
         var annexInfo = SysAnnex();
         annexInfo.ext = extInfo.extName
         annexInfo.size = file.size.toInt()
         annexInfo.creator = user
-        annexInfo.group = UPLOAD_GROUP
+        annexInfo.group = request.getHeader("group").AsStringWithNull() ?: UPLOAD_GROUP
         annexInfo.corpId = corpId
 
 
@@ -173,7 +175,7 @@ open class UploadService {
 //        fileData.imgWidth = annexInfo.imgWidth;
 //        fileData.imgHeight = annexInfo.imgHeight;
 
-        annexInfo.url = saveFile(fileStream, UPLOAD_GROUP, fileData).replace("\\", "/")
+        annexInfo.url = saveFile(fileStream, annexInfo.group, fileData).replace("\\", "/")
 
         annexInfo.corpId = corpId
 
@@ -296,7 +298,7 @@ open class UploadService {
                 var files = it.second;
 
                 files.ForEachExt for2@{ file, _ ->
-                    var ret1 = doUpload(file, fileName, user, corpId);
+                    var ret1 = doUpload(request, file, fileName, user, corpId);
                     if (ret1.msg.HasValue) {
                         msg = ret1.msg;
                         return@ForEachExt false
