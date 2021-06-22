@@ -33,11 +33,11 @@ object FreemarkerUtil {
         get() {
             var ret = Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS)
 
-            ret.setClassForTemplateLoading(FreemarkerUtil::class.java, "/template")
+            ret.setClassForTemplateLoading(FreemarkerUtil::class.java, "/myoql-template")
             ret.setTemplateLoader(
                 ClassTemplateLoader(
                     FreemarkerUtil::class.java,
-                    "/template"
+                    "/myoql-template"
                 )
             )
             //freemarkerConfig.setDirectoryForTemplateLoading(new File(templatePath, "templates/code-generator"));
