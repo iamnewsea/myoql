@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false" scan="true" scanPeriod="30 seconds">
+    <springProperty scope="context" name="logLevel" source="logging.level.root"/>
+    <springProperty scope="context" name="logPath" source="logging.file.path"/>
+    <springProperty scope="context" name="name" source="spring.application.name"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss}] %level %X{group} %X{request_id} [%class:%line]:%n%m%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath:-logs}/${name:-log}.log</file>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.TraceIdPatternLogbackLayout">
+                <pattern>[%d{yyyy-MM-dd HH:mm:ss}] %level %X{group} %X{request_id} [%class:%line]:%n%m%n</pattern>
+            </layout>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath:-logs}/${name:-log}.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+            <!-- 30 days -->
+            <maxHistory>30</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>16MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <root level="${logLevel}">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE-OUT"/>
+    </root>
+</configuration>
