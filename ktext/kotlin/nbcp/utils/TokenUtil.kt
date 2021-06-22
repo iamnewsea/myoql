@@ -2,6 +2,7 @@ package nbcp.utils
 
 import nbcp.comm.HasValue
 import nbcp.comm.config
+import java.lang.RuntimeException
 
 object TokenUtil {
 
@@ -11,12 +12,7 @@ object TokenUtil {
      * 1. request 参数 token中  (st!{user-system}!{token值}
      * 3. 系统配置 app.user-system
      */
-    fun getUserSystemType(requestToken: String = ""): String {
-//    var value = scopes.getLatestStringScope("app.user-system")
-//    if (value.HasValue) {
-//        return value;
-//    }
-
+    private fun getUserSystemType(requestToken: String = ""): String {
         var value = requestToken
         if (value.HasValue) {
             var sects = value.split("!");
@@ -25,7 +21,7 @@ object TokenUtil {
             }
         }
 
-        value = config.getConfig("app.user-system","")
+        value = config.getConfig("app.user-system", "")
         if (value.HasValue) {
             return value;
         }
@@ -39,9 +35,14 @@ object TokenUtil {
      */
     private val tokenPrefix = "st!";
 
+    /**
+     * 根据用户体系生成新的 token， 用户体系指定参数可以使用 !corp! , 或 !admin! 进行指定，如果没有参数，取 app.user-system 的值。
+     */
     fun generateToken(oldRequestToken: String = ""): String {
         var userType = getUserSystemType(oldRequestToken)
-        if (userType.isEmpty()) return ""
+        if (userType.isEmpty()) {
+            throw RuntimeException("找不到用户体系的值")
+        }
         return tokenPrefix + userType + "!" + CodeUtil.getCode();
     }
 
