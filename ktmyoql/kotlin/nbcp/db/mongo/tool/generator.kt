@@ -136,11 +136,11 @@ data class moer_map(val _pname:String)
         return name[0].toLowerCase() + name.substring(1);
     }
 
-    fun getGroups(basePackage: String ): HashMap<String, MutableList<Class<*>>> {
+    fun getGroups(basePackage: String): HashMap<String, MutableList<Class<*>>> {
         var ret = HashMap<String, MutableList<Class<*>>>();
 
 
-        ClassUtil.getClassesWithAnnotationType(basePackage, DbEntityGroup::class.java )
+        ClassUtil.getClassesWithAnnotationType(basePackage, DbEntityGroup::class.java)
             .forEach {
                 var groupName = it.getAnnotation(DbEntityGroup::class.java).value;
 
@@ -250,7 +250,7 @@ data class moer_map(val _pname:String)
         return """${fieldType.name.split(".").last()}Meta(join(this._pname,"${fieldName}"))""";
     }
 
-    private fun getMetaValue(field: Field,parentType:Class<*>, parentTypeName: String, deepth: Int): String {
+    private fun getMetaValue(field: Field, parentType: Class<*>, parentTypeName: String, deepth: Int): String {
 
         if (deepth > maxLevel) {
             writeToFile("-------------------已超过最大深度${field.name}:${field.type.name}-----------------");
@@ -303,7 +303,7 @@ data class moer_map(val _pname:String)
     }
 
 
-    private fun getEntityValue1(field: Field,parentType:Class<*>): Pair<String, Boolean> {
+    private fun getEntityValue1(field: Field, parentType: Class<*>): Pair<String, Boolean> {
         var (ret, retTypeIsBasicType) = getEntityValue(field.name, field.type);
         if (ret.HasValue) return ret to retTypeIsBasicType;
 
@@ -400,7 +400,7 @@ ${props.joinToString("\n")}
                     pks.add(it.name);
                 }
 
-                var (retValue, retTypeIsBasicType) = getEntityValue1(it,entType)
+                var (retValue, retTypeIsBasicType) = getEntityValue1(it, entType)
                 if (retTypeIsBasicType) {
                     return@map "${CodeGeneratorHelper.getFieldComment(it)}val ${it.name}=MongoColumnName(${retValue})".ToTab(
                         1

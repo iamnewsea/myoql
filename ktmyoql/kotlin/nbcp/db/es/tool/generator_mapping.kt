@@ -22,10 +22,10 @@ class generator_mapping {
     private var nameMapping: StringMap = StringMap();
 
 
-    @JvmOverloads
     fun work(
         targetFileName: String,  //目标文件
         basePackage: String,   //实体的包名
+        anyEntityClass: Class<*>,  //任意实体的类名
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf()  //忽略的包名
     ) {
@@ -41,7 +41,7 @@ class generator_mapping {
         File(moer_Path).deleteRecursively();
 
 
-        var groups = getGroups(basePackage).filter { ignoreGroups.contains(it.key) == false };
+        var groups = getGroups(basePackage, anyEntityClass).filter { ignoreGroups.contains(it.key) == false };
 
         println("开始生成 es mapping ...")
 
@@ -95,11 +95,14 @@ class generator_mapping {
     var maxLevel = 9;
 
 
-    fun getGroups(basePackage: String): HashMap<String, MutableList<Class<*>>> {
+    fun getGroups(basePackage: String, anyEntityClass: Class<*>): HashMap<String, MutableList<Class<*>>> {
         var ret = HashMap<String, MutableList<Class<*>>>();
 
-        ClassUtil.getClassesWithAnnotationType(basePackage,DbEntityGroup::class.java)
+
+        ClassUtil.findClasses(basePackage, anyEntityClass)
+            .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
             .forEach {
+
                 var groupName = it.getAnnotation(DbEntityGroup::class.java).value;
 
                 if (ret.containsKey(groupName) == false) {
@@ -146,7 +149,6 @@ class generator_mapping {
         return mapOf()
     }
 
-    @JvmOverloads
     fun genEntity(entType: Class<*>, parentDefines: Map<String, String> = mapOf()): JsonMap {
         var json = JsonMap();
 
