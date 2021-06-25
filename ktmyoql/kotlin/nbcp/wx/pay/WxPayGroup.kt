@@ -26,6 +26,7 @@ object WxPayGroup {
     /**
      * 退款
      */
+    @JvmOverloads
     fun refundPay(
             out_trade_no: String,//是     商户订单号
             out_refund_no: String,   //商户退款单号
@@ -53,6 +54,7 @@ object WxPayGroup {
      * https://pay.weixin.qq.com/wiki/doc/api/H5.php?chapter=9_7&index=8
      * @param msg: 错误消息。
      */
+    @JvmOverloads
     fun payReplyWeixin(msg: String = ""): String {
         var code = if (msg.HasValue) "FAIL" else "SUCCESS"
 
@@ -66,6 +68,7 @@ object WxPayGroup {
     /**
      * 预付
      */
+    @JvmOverloads
     fun prepay(
             body:String,
             spbill_create_ip: String,

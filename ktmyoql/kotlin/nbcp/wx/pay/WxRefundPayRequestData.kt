@@ -12,7 +12,7 @@ import javax.net.ssl.SSLSocketFactory
  * 退款
  * https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_4
  */
-data class WxRefundPayRequestData(
+data class WxRefundPayRequestData @JvmOverloads constructor(
     @Require
     var out_trade_no: String,//是     商户订单号
     var out_refund_no: String,   //商户退款单号
@@ -96,7 +96,7 @@ data class WxRefundPayRequestData(
 /**
  * 返回的参数很多，有很多是和请求参数相同的， 为了简单，只定义重要的返回参数
  */
-data class WxRefundPayResponseData(
+data class WxRefundPayResponseData @JvmOverloads constructor(
     var return_code: String = "",       //SUCCESS/FAIL
     var return_msg: String = "",
 

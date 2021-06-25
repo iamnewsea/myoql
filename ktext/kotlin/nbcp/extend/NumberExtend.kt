@@ -94,6 +94,7 @@ fun <T> Int.ToEnum(enumClazz: Class<T>): T? {
  * 百分数(两位小数)： ##.00%
  * 百分数（不带小数）： ##%
  */
+@JvmOverloads
 fun Number.Format(format:String = ""):String{
     if( format.isEmpty()){
         return this.toString();

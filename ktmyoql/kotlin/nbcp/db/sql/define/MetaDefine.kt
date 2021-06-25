@@ -9,7 +9,7 @@ import java.util.*
 /**
  * 外键定义
  */
-data class FkDefine(
+data class FkDefine @JvmOverloads constructor(
         var table: String = "",
         var column: String = "",
         var refTable: String = "",
@@ -19,7 +19,7 @@ data class FkDefine(
 /**
  * 表示表的一个唯一键项.
  */
-data class UnionKeyDefine(
+data class UnionKeyDefine @JvmOverloads constructor(
         var table: String = "",
         var unionKeys:  Set<String> = setOf()
 )
@@ -27,7 +27,7 @@ data class UnionKeyDefine(
 /**
  * 表示表的一个隔离维度项
  */
-data class RegionKeyDefine(
+data class RegionKeyDefine @JvmOverloads constructor(
         var table: String = "",
         var regionKeys: Set<String> = setOf()
 )

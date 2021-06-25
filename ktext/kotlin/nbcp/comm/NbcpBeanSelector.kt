@@ -25,25 +25,8 @@ class NbcpBeanSelector : DeferredImportSelector, BeanFactoryAware {
     private lateinit var beanFactory: BeanFactory;
     override fun selectImports(p0: AnnotationMetadata): Array<String> {
 
-        var ret = ClassUtil.findClasses("nbcp", SpringUtil::class.java, {
-            try {
-                var anns = it.annotations;
-                if (anns.any() == false) return@findClasses false;
-
-                //如果该类注解是 Component
-                if (anns.any { it.annotationClass.java == Component::class.java }) return@findClasses true;
-                //如果该类注解的注解是 Component
-                for (i in (0 until anns.size)) {
-                    var clazz = anns.get(i).annotationClass.java;
-                    if (clazz.getAnnotation(Component::class.java) != null) {
-                        return@findClasses true;
-                    }
-                }
-            } catch (e: Exception) {
-                return@findClasses false
-            }
-            return@findClasses false;
-        }).map { it.name }.toTypedArray();
+        var ret = ClassUtil.getClassesWithAnnotationType("nbcp", Component::class.java)
+            .map { it.name }.toTypedArray();
 
         return ret;
     }

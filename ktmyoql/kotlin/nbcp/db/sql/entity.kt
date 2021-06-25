@@ -7,7 +7,7 @@ import nbcp.db.sql.*
 @DbEntityGroup("SqlBase")
 @DbUks("id")
 @SqlRks("corpId")
-open class s_annex(
+open class s_annex @JvmOverloads constructor(
     var name: String = "",          //显示的名字,友好的名称
     var tags: String = "",
     var ext: String = "",           //后缀名。
@@ -28,7 +28,7 @@ open class s_annex(
 
 
 @DbEntityGroup("SqlBase")
-open class s_log(
+open class s_log @JvmOverloads constructor(
     var module: String = "", //模块
     var type: String = "",  //类型
     var key: String = "",   //实体标志, 查询用： module + key
@@ -41,7 +41,7 @@ open class s_log(
 
 
 @DbEntityGroup("SqlBase")
-open class s_city(
+open class s_city @JvmOverloads constructor(
     @DbKey
     var code: Int = 0,
     @Cn("城市短名称")
@@ -65,7 +65,7 @@ open class s_city(
 ) : ISqlDbEntity
 
 @DbEntityGroup("SqlBase")
-open class s_dustbin(
+open class s_dustbin @JvmOverloads constructor(
     var table: String = "",
     var remark: String = "",
     @SqlSpreadColumn()

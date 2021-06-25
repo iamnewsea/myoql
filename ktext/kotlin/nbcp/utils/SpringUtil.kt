@@ -46,6 +46,7 @@ class SpringUtil : BeanPostProcessor, ApplicationContextAware {
         /**
          * 判断是否存在某个Bean
          */
+        @JvmOverloads
         fun containsBean(name: String, clazz: Class<*>, ignoreCase: Boolean = false): Boolean {
             if (name.isEmpty()) return containsBean(clazz)
             return context.getBeanNamesForType(clazz).firstOrNull { it.equals(name, ignoreCase) } != null

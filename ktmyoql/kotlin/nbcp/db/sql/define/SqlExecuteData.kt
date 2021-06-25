@@ -14,7 +14,7 @@ data class SqlParameterData(
 /**
  * 自定义可执行部分。
  */
-data class SqlExecuteData(
+data class SqlExecuteData @JvmOverloads constructor(
         var executeSql: String = "",
         //程序自己标记的命名参数。不能直接使用它来执行。
         var parameters: Array<SqlParameterData> = arrayOf()

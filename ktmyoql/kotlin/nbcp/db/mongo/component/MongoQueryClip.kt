@@ -119,10 +119,12 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : IMongoDocument>(var moe
     }
 
 
+    @JvmOverloads
     fun toList(mapFunc: ((Document) -> Unit)? = null): MutableList<E> {
         return toList(moerEntity.entityClass, mapFunc)
     }
 
+    @JvmOverloads
     fun toEntity(mapFunc: ((Document) -> Unit)? = null): E? {
         this.take = 1;
         return toList(moerEntity.entityClass, mapFunc).firstOrNull();
@@ -132,12 +134,13 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : IMongoDocument>(var moe
 //        return toEntity(R::class.java);
 //    }
 
+    @JvmOverloads
     fun <R> toEntity(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): R? {
         this.take = 1;
         return toList(clazz, mapFunc).firstOrNull();
     }
 
-
+    @JvmOverloads
     fun toListResult(mapFunc: ((Document) -> Unit)? = null): ListResult<E> {
         return toListResult(this.moerEntity.entityClass, mapFunc);
     }

@@ -50,40 +50,6 @@ open class StringKeyMap<T> : LinkedHashMap<String, T>, Serializable {
         return this[key2];
     }
 
-//    operator fun plus(other: StringTypedMap<T>): StringTypedMap<T> {
-//        var ret = StringTypedMap<T>()
-//        ret.putAll(this)
-//        ret.putAll(other)
-//        return ret;
-//    }
-
-
-//    private fun getIndexs(key: String): Array<Int> {
-//        if (key.length < 0) {
-//            return arrayOf()
-//        }
-//        var index = key.indexOf('[');
-//        if (index < 0) {
-//            return arrayOf()
-//        }
-//        if (key.last() != ']') {
-//            return arrayOf()
-//        }
-//        var source = key.Slice(index + 1, -1);
-//        var endIndex = source.indexOf("...", 0);
-//        if (endIndex >= 0) {
-//            var list = mutableListOf<Int>()
-//            var item = source.Slice(0, endIndex).AsInt(0);
-//            var num4 = source.Slice((endIndex + 3)).AsInt(0);
-//            while (item <= num4) {
-//                list.add(item);
-//                item++;
-//            }
-//            return list.toTypedArray()
-//        }
-//        return source.split(',').map { it.AsInt() }.distinct().toTypedArray()
-//    }
-
     private fun toJsonValueString(value: Any?): String {
         if (value == null) return "null"
         var type = value::class.java

@@ -7,7 +7,7 @@ import java.time.LocalDateTime
  * 微信小程序所需要的用户信息。 小程序调用 wx.getUserInfo 返回的结构。
  * https://developers.weixin.qq.com/miniprogram/dev/api/open-api/user-info/wx.getUserInfo.html
  */
-data class WxMiniProgramUserData(
+data class WxMiniProgramUserData @JvmOverloads constructor(
 //        var code: String = "",  //微信登录时产生的临时Code，用于验证用户登录信息
 
         var session_key: String = "",

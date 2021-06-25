@@ -10,7 +10,7 @@ import org.springframework.data.redis.core.ScanOptions
  * Created by yuxh on 2018/6/7
  */
 
-open class RedisSetProxy(
+open class RedisSetProxy @JvmOverloads constructor(
         group: String,
         defaultCacheSeconds: Int = 0) :
         BaseRedisProxy(group, defaultCacheSeconds) {

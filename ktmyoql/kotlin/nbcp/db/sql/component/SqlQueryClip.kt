@@ -84,6 +84,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
         return this;
     }
 
+    @JvmOverloads
     fun withLock(lockType:SqlLockType, lockSeconds:Int = -1):SqlQueryClip<M, T>{
         this.lockType = lockType;
         this.lockSeconds = lockSeconds;
@@ -91,7 +92,6 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
     }
 
     private fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> getJoinOnWhere(joinTable: M2): WhereData {
-
         var fks = this.mainEntity.getFks().filter { it.refTable == joinTable.tableName }
         if (fks.size == 0) {
             throw RuntimeException("找不到 ${this.mainEntity.tableName}->${joinTable.tableName} 的外键定义")
@@ -103,6 +103,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
         return WhereData("${db.sql.getSqlQuoteName(fk.table)}.${db.sql.getSqlQuoteName(fk.column)} = ${db.sql.getSqlQuoteName(fk.refTable)}.${db.sql.getSqlQuoteName(fk.refColumn)}")
     }
 
+    @JvmOverloads
     fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> join(joinTable: M2, onWhere: (M, M2) -> WhereData, select: ((M2) -> SqlColumnNames)? = null): SqlQueryClip<M, T> {
         this.joins.add(JoinTableData("join", joinTable, onWhere(this.mainEntity, joinTable), if (select == null) SqlColumnNames() else select(joinTable)))
         return this
@@ -111,11 +112,13 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
     /**
      * 根据外键自动 onWhere
      */
+    @JvmOverloads
     fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> join(joinTable: M2, select: ((M2) -> SqlColumnNames)? = null): SqlQueryClip<M, T> {
         this.join(joinTable, { a, b -> getJoinOnWhere(joinTable) }, select)
         return this
     }
 
+    @JvmOverloads
     fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> left_join(joinTable: M2, onWhere: (M, M2) -> WhereData, select: ((M2) -> SqlColumnNames)? = null): SqlQueryClip<M, T> {
         this.joins.add(JoinTableData("left join", joinTable, onWhere(this.mainEntity, joinTable), select?.invoke(joinTable)
                 ?: SqlColumnNames()))
@@ -125,6 +128,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
     /**
      * 根据外键自动 onWhere
      */
+    @JvmOverloads
     fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> left_join(joinTable: M2, select: ((M2) -> SqlColumnNames)? = null): SqlQueryClip<M, T> {
         this.left_join(joinTable, { a, b -> getJoinOnWhere(joinTable) }, select)
         return this
@@ -273,6 +277,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
      * 忽略 skip , take
      * @param countQuery 回调可以二次处理查询
      */
+    @JvmOverloads
     fun count(countQuery: ((SqlQueryClip<M, T>) -> Unit)? = null): Int {
         var query = this.CloneObject();
         query.joins.forEach {
@@ -299,11 +304,12 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
         return mapList.first().values.first().AsInt()
     }
 
-
+    @JvmOverloads
     fun toList(itemFunc: ((JsonMap) -> Unit)? = null): List<T> {
         return toList(this.mainEntity.tableClass, itemFunc);
     }
 
+    @JvmOverloads
     fun <R> toList(entityClass: Class<R>, itemFunc: ((JsonMap) -> Unit)? = null): MutableList<R> {
         var ret = toMapList().map {
             if (itemFunc != null) {
@@ -317,10 +323,12 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
         return ret
     }
 
+    @JvmOverloads
     fun toEntity(mapFunc: ((JsonMap) -> Unit)? = null): T? {
         return toEntity(this.mainEntity.tableClass, mapFunc)
     }
 
+    @JvmOverloads
     fun <R : Any> toEntity(entityClass: Class<R>, mapFunc: ((JsonMap) -> Unit)? = null): R? {
         this.take = 1
         return toMapList().map {
@@ -393,12 +401,14 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
         return n
     }
 
+    @JvmOverloads
     fun toListResult(mapFunc: ((JsonMap) -> Unit)? = null): ListResult<T> {
         return toListResult(this.mainEntity.tableClass, mapFunc);
     }
 
     /**
      */
+    @JvmOverloads
     fun <R> toListResult(entityClass: Class<R>, mapFunc: ((JsonMap) -> Unit)? = null): ListResult<R> {
         var ret = ListResult<R>()
         var data = toList(entityClass, mapFunc)

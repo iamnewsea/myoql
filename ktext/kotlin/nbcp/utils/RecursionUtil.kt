@@ -28,7 +28,7 @@ enum class RecursionReturnEnum private constructor(val value: Int) {
  * 递归执行工具类。
  */
 object RecursionUtil {
-
+    @JvmOverloads
     fun <T> filter(
         container: MutableList<T>,
         producer: (T) -> MutableList<T>,
@@ -88,6 +88,7 @@ object RecursionUtil {
      * @param producer: 生产者，获取下级集合。
      * @param consumer: 消费者，参数：当前对象，父集合，当前对象的索引。
      */
+    @JvmOverloads
     fun <T> execute(
         container: MutableList<T>,
         producer: (T) -> MutableList<T>,
@@ -135,6 +136,7 @@ object RecursionUtil {
      * @param producer: 生产者，获取下级集合。
      * @param consumer: 生产者
      */
+    @JvmOverloads
     fun <T> findOne(container: Collection<T>, producer: (T) -> Collection<T>, consumer: (T) -> Boolean): T? {
         for (i in container.indices) {
             val item = container.elementAt(i)
@@ -150,6 +152,7 @@ object RecursionUtil {
     /**
      * 查找从节点到当前节点的路径
      */
+    @JvmOverloads
     fun <T> getWbs(
         container: Collection<T>,
         producer: (T) -> Collection<T>,
@@ -215,6 +218,7 @@ object RecursionUtil {
      * @param consumer:  消费每一个Json
      * @param consumerObject 如果遍历到非 Map，调用该回调
      */
+    @JvmOverloads
     fun recursionJson(
         json: Map<*, *>,
         rootKey: String,
@@ -284,6 +288,7 @@ object RecursionUtil {
      * @param consumerList : 发现一个List, 第一个参数是发现的List,第二个参数是父key
      * @param consumerObject: 发现一个 Object, 第一个参数是发现的Object,第二个参数是父key
      */
+    @JvmOverloads
     fun recursionAny(
         value: Any,
         consumerMap: (Map<*, *>, String) -> Boolean,
@@ -368,6 +373,7 @@ object RecursionUtil {
         }
     }
 
+    @JvmOverloads
     fun recursionArray(
         array: Array<*>,
         rootKey: String,
@@ -380,6 +386,7 @@ object RecursionUtil {
         return recursionList(array.toList(), rootKey, consumerMap, consumerList, consumerObject, deepth);
     }
 
+    @JvmOverloads
     fun recursionList(
         array: Collection<*>,
         rootKey: String,

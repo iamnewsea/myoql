@@ -8,7 +8,7 @@ import java.io.Serializable
 /**
  * 列表，主要做队列用。
  */
-class RedisListProxy(
+class RedisListProxy @JvmOverloads constructor(
         group: String,
         defaultCacheSeconds: Int = 0)
     : BaseRedisProxy(group, defaultCacheSeconds) {

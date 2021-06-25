@@ -17,7 +17,7 @@ class markdown {
 
     private lateinit var moer_File: FileWriter
 
-    fun work(targetFileName: String,basePackage:String,anyEntityClass:Class<*>,nameMapping:StringMap) {
+    fun work(targetFileName: String,basePackage:String,nameMapping:StringMap) {
         this.nameMapping = nameMapping;
 
         var p = File.separator;
@@ -32,7 +32,7 @@ class markdown {
 
         moer_File = FileWriter(moer_Path, true);
 
-        var groups = getGroups(basePackage,anyEntityClass);
+        var groups = getGroups(basePackage);
         var embClasses = getEmbClasses(groups);
         var enums = getEnums(groups);
         enums.addAll(getEnums(hashMapOf("" to embClasses)));
@@ -174,14 +174,11 @@ body table thead th{
         return name[0].toLowerCase() + name.substring(1);
     }
 
-    fun getGroups(basePackage:String,anyEntityClass:Class<*>): HashMap<String, MutableList<Class<*>>> {
+    fun getGroups(basePackage:String): HashMap<String, MutableList<Class<*>>> {
         var ret = HashMap<String, MutableList<Class<*>>>();
 
-
-        ClassUtil.findClasses(basePackage, anyEntityClass)
-                .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
+        ClassUtil.getClassesWithAnnotationType(basePackage, DbEntityGroup::class.java )
                 .forEach {
-
                     var groupName = it.getAnnotation(DbEntityGroup::class.java).value;
 
                     if (ret.containsKey(groupName) == false) {
@@ -198,6 +195,7 @@ body table thead th{
     /**
      * 递归返回嵌入实体。
      */
+    @JvmOverloads
     fun findEmbClasses(clazz: Class<*>, deep: Int = 0): List<Class<*>> {
 
         if (deep == 6) return listOf();
@@ -240,6 +238,7 @@ body table thead th{
         return ret.distinctBy { it.name }
     }
 
+    @JvmOverloads
     fun findEnumClasses(clazz: Class<*>, deep: Int = 0): List<Class<*>> {
 
         if (deep == 6) return listOf();

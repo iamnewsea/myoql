@@ -41,6 +41,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
     /**
      * 批量插入时， 指定每次插入的条数。 会分成多次任务插入。
      */
+    @JvmOverloads
     fun useMultiBatch(multiBatchSize: Int = 256): SqlInsertClip<M, T> {
         this.multiBatchSize = multiBatchSize;
         return this;

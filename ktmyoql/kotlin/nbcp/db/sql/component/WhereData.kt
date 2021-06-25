@@ -18,7 +18,7 @@ class WhereData : Serializable {
 
     val values: JsonMap = JsonMap()
 
-    constructor(expression: String = "", values: JsonMap = JsonMap()) {
+    @JvmOverloads constructor(expression: String = "", values: JsonMap = JsonMap()) {
         this.expression = expression
         this.values.putAll(values)
     }

@@ -5,7 +5,7 @@ import nbcp.comm.MyString
 /**
  * Mongo列
  */
-open class MongoColumnName(value: String = "") : MyString(value) {
+open class MongoColumnName @JvmOverloads constructor(value: String = "") : MyString(value) {
 
 //    val asc: MongoOrderBy
 //        get() = MongoOrderBy(true, this)
@@ -25,8 +25,8 @@ open class MongoColumnName(value: String = "") : MyString(value) {
         return MongoColumnName(this.toString().slice(startIndex))
     }
 
-    infix fun and (other: MongoColumnName) :MongoColumns{
-        var ret= MongoColumns()
+    infix fun and(other: MongoColumnName): MongoColumns {
+        var ret = MongoColumns()
         ret.add(this);
         ret.add(other);
         return ret;

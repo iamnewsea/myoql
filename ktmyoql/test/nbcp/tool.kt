@@ -19,7 +19,7 @@ class tool : TestBase() {
         nbcp.db.mysql.tool.generator().work(
                 File(path).parentFile.path + "/ktmyoql/kotlin/nbcp/db/sql/dbr_base_tables.kt",
                 "nbcp.db.sql.entity.",
-                s_annex::class.java, StringMap(), listOf()
+                 StringMap(), listOf()
         )
     }
 
@@ -30,7 +30,6 @@ class tool : TestBase() {
         nbcp.db.mongo.tool.generator().work(
                 File(path).parentFile.path + "/ktmyoql/kotlin/nbcp/db/mongo/mor_base_tables.kt",
                 "nbcp.db.mongo.entity.",
-                SysAnnex::class.java,
                 arrayOf(),
                 StringMap(), listOf()
         )

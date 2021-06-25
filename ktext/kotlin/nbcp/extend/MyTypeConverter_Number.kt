@@ -17,6 +17,7 @@ import java.util.*
  * Boolean，tru -> 1 , false->0
  * 字符串，先转 toBigDecimal 再转 Int
  */
+@JvmOverloads
 fun Any?.AsInt(defaultValue: Int = 0): Int {
     if (this == null) return defaultValue;
     var ret = defaultValue;
@@ -58,7 +59,7 @@ fun Any?.AsInt(defaultValue: Int = 0): Int {
     }
 }
 
-
+@JvmOverloads
 fun Any?.AsLong(defaultValue: Long = 0): Long {
     if (this == null) return defaultValue;
 
@@ -89,9 +90,9 @@ fun Any?.AsLong(defaultValue: Long = 0): Long {
     } catch (e: Exception) {
         return defaultValue;
     }
-
 }
 
+@JvmOverloads
 fun Any?.AsDouble(defaultValue: Double = 0.0): Double {
     if (this == null) return defaultValue;
     var ret = defaultValue;
@@ -118,6 +119,7 @@ fun Any?.AsDouble(defaultValue: Double = 0.0): Double {
     }
 }
 
+@JvmOverloads
 fun Any?.AsFloat(defaultValue: Float = 0F): Float {
     if (this == null) return defaultValue;
     var ret = defaultValue;

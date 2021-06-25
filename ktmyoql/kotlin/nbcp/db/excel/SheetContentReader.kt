@@ -7,7 +7,7 @@ import org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler
 import org.apache.poi.xssf.usermodel.XSSFComment
 import org.xml.sax.XMLReader
 
-class SheetContentReader(
+class SheetContentReader @JvmOverloads constructor(
         var xmlReader: XMLReader,
         var columns: List<String>,
         var filter: ((JsonMap,Map<Int, String>) -> Boolean),

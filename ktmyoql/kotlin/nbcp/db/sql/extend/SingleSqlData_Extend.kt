@@ -64,14 +64,17 @@ fun SqlColumnName.count(alias: String): SingleSqlData {
     return op_ext_sql(this, "count", alias);
 }
 
+@JvmOverloads
 fun SqlColumnName.min(alias: String = ""): SingleSqlData {
     return op_ext_sql(this, "min", alias);
 }
 
+@JvmOverloads
 fun SqlColumnName.max(alias: String = ""): SingleSqlData {
     return op_ext_sql(this, "max", alias);
 }
 
+@JvmOverloads
 fun SqlColumnName.avg(alias: String = ""): SingleSqlData {
     return op_ext_sql(this, "avg", alias);
 }
@@ -86,6 +89,7 @@ fun SqlColumnName.avg(alias: String = ""): SingleSqlData {
 /**
  * 字符个数
  */
+@JvmOverloads
 fun SqlColumnName.character_length(alias: String = ""): SingleSqlData {
     return op_ext_sql(this, "character_length", alias);
 }

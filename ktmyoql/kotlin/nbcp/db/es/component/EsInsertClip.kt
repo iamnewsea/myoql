@@ -23,11 +23,13 @@ class EsInsertClip<M : EsBaseMetaEntity<E>, E : IEsDocument>(var moerEntity: M)
         return this;
     }
 
+    @JvmOverloads
     fun routing(routing:String = ""):  EsInsertClip<M, E> {
         this.withRouting(routing)
         return this;
     }
 
+    @JvmOverloads
     fun pipeline(pipeline:String = ""): EsInsertClip<M, E> {
         this.withPipeLine(pipeline)
         return this;

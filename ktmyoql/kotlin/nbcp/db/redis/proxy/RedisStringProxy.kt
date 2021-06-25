@@ -12,7 +12,7 @@ import java.time.Duration
 /**
  * Created by udi on 17-7-14.
  */
-class RedisStringProxy(
+class RedisStringProxy @JvmOverloads constructor(
         group: String,
         defaultCacheSeconds: Int = 0) :
         BaseRedisProxy(group, defaultCacheSeconds) {

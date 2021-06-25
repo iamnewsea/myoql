@@ -15,7 +15,7 @@ import java.io.Serializable
 @RemoveToSysDustbin
 @Cn("用户信息")
 @DbUks("loginName", "mobile", "email")
-open class BasicUser(
+open class BasicUser @JvmOverloads constructor(
     @Cn("昵称")
     var name: String = "",      //这里的名称=自定义昵称
     @Cn("登录名")
@@ -56,7 +56,7 @@ open class BasicUser(
 @DbEntityGroup("MongoBase")
 @Cn("用户登录信息")
 @DbUks("userId", "loginName", "mobile", "email")
-open class BasicUserLoginInfo(
+open class BasicUserLoginInfo @JvmOverloads constructor(
     @Cn("用户唯一Id")
     var userId: String = "",    //用户Id,唯一
     @Cn("登录名")
@@ -95,7 +95,7 @@ open class BasicUserLoginInfo(
 @DbEntityGroup("MongoBase")
 @RemoveToSysDustbin
 @Cn("组织信息")
-open class SysOrganization(
+open class SysOrganization @JvmOverloads constructor(
     @Cn("组织名称")
     var name: String = "",          //这里的名称=自定义昵称
     @Cn("网站地址")
@@ -121,7 +121,7 @@ open class SysOrganization(
 @Document
 @DbEntityGroup("MongoBase")
 @Cn("系统应用")
-open class SysApplication(
+open class SysApplication @JvmOverloads constructor(
     @Cn("键")
     var key: String = "",                    // 应用Id，CodeUtil.getCode()
     @Cn("应用名称")
@@ -149,7 +149,7 @@ open class SysApplication(
 @Document
 @DbEntityGroup("MongoBase")
 @Cn("系统附件")
-open class SysAnnex(
+open class SysAnnex @JvmOverloads constructor(
     @Cn("文件名")
     var name: String = "",          //显示的名字,友好的名称
     @Cn("标签")
@@ -188,7 +188,7 @@ open class SysAnnex(
 @Document
 @DbEntityGroup("MongoBase")
 @Cn("城市令牌")
-open class SysCity(
+open class SysCity @JvmOverloads constructor(
     @DbKey
     @Cn("城市编码")
     var code: Int = 0,
@@ -215,7 +215,7 @@ open class SysCity(
 @Document
 @DbEntityGroup("MongoBase")
 @Cn("系统日志")
-open class SysLog(
+open class SysLog @JvmOverloads constructor(
     @Cn("模块")
     var module: String = "", //模块
     @Cn("类型")
@@ -241,7 +241,7 @@ open class SysLog(
 @Document
 @DbEntityGroup("MongoBase")
 @Cn("数据垃圾箱")
-open class SysDustbin(
+open class SysDustbin @JvmOverloads constructor(
     @Cn("表名")
     var table: String = "",
     @Cn("备注")

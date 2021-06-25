@@ -39,6 +39,6 @@ class testa : TestBase() {
     @Test
     fun abc() {
         var m = generator_mapping();
-        m.work("mapping", "nbcp", e_test::class.java)
+        m.work("mapping", "nbcp")
     }
 }

@@ -55,7 +55,7 @@ class ZipCompressData(file: File) {
         return this;
     }
 
-
+    @JvmOverloads
     fun addFile(stream: InputStream, fileNameInZip: String, fileComment: String = ""): ZipCompressData {
         var param = getParam();
         param.fileComment = fileComment

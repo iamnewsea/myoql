@@ -33,7 +33,7 @@ open class UploadService {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    data class FileNameData(var msg: String = "") {
+    data class FileNameData @JvmOverloads constructor(var msg: String = "") {
         var oriName: String = ""
         var extName: String = ""
         var extType: FileExtentionTypeEnum = FileExtentionTypeEnum.Other

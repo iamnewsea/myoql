@@ -9,13 +9,14 @@ import java.text.SimpleDateFormat
 import java.time.*
 import java.util.*
 
-
+@JvmOverloads
 fun LocalDate.Format(pattern: String = ""): String {
     if (this == LocalDate.MIN) return "";
     return this.format(java.time.format.DateTimeFormatter.ofPattern(pattern.AsString("yyyy-MM-dd")));
 }
 
 
+@JvmOverloads
 fun LocalDateTime.Format(pattern: String = ""): String {
     if (this == LocalDateTime.MIN) return "";
     if (this.hour == 0 && this.minute == 0 && this.second == 0) {
@@ -32,6 +33,7 @@ fun LocalDateTime.Format(pattern: String = ""): String {
 /**
  * @param pattern: 最全格式 HH:mm:ss.SSS
  */
+@JvmOverloads
 fun LocalTime.Format(pattern: String = ""): String {
     if (this == LocalTime.MIN) {
         return "";
@@ -80,7 +82,7 @@ infix fun LocalDate.max(other: LocalDate): LocalDate {
     return this;
 }
 
-
+@JvmOverloads
 fun LocalDateTime.AsDate(defaultValue: Date = Date(0)): Date {
     if (this.year < 0) return defaultValue
     return Date.from(this.atZone(ZoneId.systemDefault()).toInstant());

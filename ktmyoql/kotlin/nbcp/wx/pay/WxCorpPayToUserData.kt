@@ -17,7 +17,7 @@ import javax.net.ssl.SSLSocketFactory
  * 微信企业付款
  * https://pay.weixin.qq.com/wiki/doc/api/tools/mch_pay.php?chapter=14_2
  */
-class WxCorpPayToUserData(
+class WxCorpPayToUserData @JvmOverloads constructor(
     var spbill_create_ip: String, // 终端IP
     var amount: Int,
     var openid: String,  //用户openid

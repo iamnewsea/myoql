@@ -227,6 +227,7 @@ fun String.nextIndexOf(startIndex: Int, until: (Char) -> Boolean): Int {
  * @param only1Blank 去除连续的空白，只保留一个。空白包括： 空格，制表，回车
  * @return
  */
+@JvmOverloads
 fun String.Tokenizer(
     wordSplit: ((Char) -> Boolean)? = null,
     quoteDefines: Array<TokenQuoteDefine> = arrayOf(
@@ -424,6 +425,7 @@ fun String.Remove(vararg removeChars: Char): String {
  * "abcdef".Slice(-300) == "abcdef"
  * "abcdef".Slice(-300,-1) == "abcde"
  */
+@JvmOverloads
 fun String.Slice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): String {
     var list = mutableListOf<Char>()
     this.toCharArray().forEach {
@@ -657,6 +659,7 @@ fun <T> String.ToEnum(enumClazz: Class<T>): T? {
 /**
  * 使用Json格式化
  */
+@JvmOverloads
 fun String.formatWithJson(
     json: Map<String, String>,
     style: String = "",

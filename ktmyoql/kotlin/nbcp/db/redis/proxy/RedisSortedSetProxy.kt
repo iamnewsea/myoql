@@ -11,7 +11,7 @@ import org.springframework.data.redis.core.ZSetOperations
 /**
  * 有序集合，是按 分值排序。
  */
-open class RedisSortedSetProxy(
+open class RedisSortedSetProxy @JvmOverloads constructor(
         group: String,
         defaultCacheSeconds: Int = 0) :
         BaseRedisProxy(group, defaultCacheSeconds) {

@@ -6,7 +6,7 @@ import nbcp.db.mysql.*
 import java.io.Serializable
 import java.util.LinkedHashSet
 
-open class SingleSqlData(
+open class SingleSqlData @JvmOverloads constructor(
     // 使用 {变量名} 表示 变量
     var expression: String = "",
 

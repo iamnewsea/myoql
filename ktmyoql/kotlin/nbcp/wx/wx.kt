@@ -19,27 +19,28 @@ import java.time.LocalDateTime
  * 和
  * 小程序：https://developers.weixin.qq.com/miniprogram/dev/api/open-api/user-info/UserInfo.html
  */
-data class WxUserData(
-        var openid: String = "",
-        var access_token: String = "",
-        var nickName: String = "",
+data class WxUserData @JvmOverloads constructor(
+    var openid: String = "",
+    var access_token: String = "",
+    var nickName: String = "",
 
-        var sex: UserSexEnum? = null, //性别
-        var logoUrl: String = "",    //头像
-        var city: String = "",
-        var province: String = "",
-        var country: String = "",
+    var sex: UserSexEnum? = null, //性别
+    var logoUrl: String = "",    //头像
+    var city: String = "",
+    var province: String = "",
+    var country: String = "",
 
-        /**
-         * 获取手机号
-         * https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/getPhoneNumber.html
-         */
-        var phoneNumber: String = ""
+    /**
+     * 获取手机号
+     * https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/getPhoneNumber.html
+     */
+    var phoneNumber: String = ""
 ) {
     companion object {
         /**
          * 我真想用中文表示 公众号
          */
+        @JvmOverloads
         fun fromH5UserInfo(h5UserInfo: WxH5UserInfoData, access_token: String = ""): WxUserData {
             var ret = WxUserData()
             ret.access_token = access_token;

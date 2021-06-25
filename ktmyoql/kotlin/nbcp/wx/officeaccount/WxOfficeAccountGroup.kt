@@ -42,7 +42,7 @@ object WxOfficeAccountGroup {
         return ret;
     }
 
-    data class wx_access_token(
+    data class wx_access_token @JvmOverloads constructor(
             var token: String = "",
             var expires_in: Int = 7200
     )

@@ -274,6 +274,7 @@ val HttpServletRequest.fullUrl: String
  * @param msg: 错误消息
  * @param title: 消息标题
  */
+@JvmOverloads
 fun HttpServletResponse.parentAlert(msg: String, title: String = "", targetOrigin: String = "*") {
     /**
      * <pre>{@code

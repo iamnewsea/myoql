@@ -131,6 +131,7 @@ object WxSystemGroup {
      * 生成带参数二维码,C端展示  base64
      * https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/qr-code/wxacode.getUnlimited.html
      */
+    @JvmOverloads
     fun getMiniCode(appSecret: String, scene: String, page: String, width: Int = 0): ApiResult<HttpUtil> {
         require(appSecret.HasValue) { "缺少appSecret!" }
 

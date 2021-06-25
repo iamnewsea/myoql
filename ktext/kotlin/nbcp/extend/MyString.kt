@@ -7,7 +7,7 @@ package nbcp.comm
 /**
  * 自定义字符串
  */
-open class MyString(private val value: String = "") : Comparable<String>, CharSequence {
+open class MyString @JvmOverloads constructor(private val value: String = "") : Comparable<String>, CharSequence {
     override val length: Int = this.value.length
 
     override fun get(index: Int): Char = this.value.get(index)
@@ -24,4 +24,4 @@ open class MyString(private val value: String = "") : Comparable<String>, CharSe
 /**
  * 不解析字符串
  */
-class MyRawString(value: String = "") : MyString(value) {}
+class MyRawString @JvmOverloads constructor(value: String = "") : MyString(value) {}

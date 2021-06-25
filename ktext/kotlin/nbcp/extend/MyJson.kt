@@ -43,6 +43,7 @@ import java.lang.RuntimeException
 /**
  * 样式请使用 usingScope(listOf(JsonStyleEnum.FieldStyle)){}
  */
+@JvmOverloads
 fun <T> T.ToJson(style: JsonSceneEnumScope? = null): String {
     if (this is String) return this;
 
@@ -70,6 +71,7 @@ fun <T> T.ToJson(style: JsonSceneEnumScope? = null): String {
 //    return getJsonInstance(getSetStyle, withNull).writeValueAsString(this) ?: "null"
 //}
 
+@JvmOverloads
 fun <T> String.FromJsonWithDefaultValue(
     collectionClass: Class<T>,
     style: JsonSceneEnumScope? = null
@@ -78,7 +80,7 @@ fun <T> String.FromJsonWithDefaultValue(
 }
 
 
-
+@JvmOverloads
 fun <T> String.FromJson(collectionClass: Class<T>, style: JsonSceneEnumScope? = null): T? {
     if (this.isEmpty()) return null
 
@@ -103,13 +105,14 @@ fun <T> String.FromJson(collectionClass: Class<T>, style: JsonSceneEnumScope? = 
     return ret!!;
 }
 
-
+@JvmOverloads
 fun <T> Any.ConvertJson(clazz: Class<T>,style: JsonSceneEnumScope? = null): T {
     if (clazz.isAssignableFrom(this::class.java)) {
         return this as T;
     }
     return style.getJsonMapper().convertValue(this, clazz)
 }
+
 
 inline fun <reified T> String.FromJson(): T? {
     return this.FromJson(T::class.java)

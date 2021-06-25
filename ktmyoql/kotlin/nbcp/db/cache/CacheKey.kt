@@ -16,7 +16,7 @@ enum class CacheKeyTypeEnum {
 /**
  * 缓存Key
  */
-data class CacheKey(
+data class CacheKey @JvmOverloads constructor(
         var key: CacheKeyTypeEnum = CacheKeyTypeEnum.Normal,
         //md5 + chksum
         var md5: String = "",

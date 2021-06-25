@@ -38,6 +38,7 @@ object TokenUtil {
     /**
      * 根据用户体系生成新的 token， 用户体系指定参数可以使用 !corp! , 或 !admin! 进行指定，如果没有参数，取 app.user-system 的值。
      */
+    @JvmOverloads
     fun generateToken(oldRequestToken: String = ""): String {
         var userType = getUserSystemType(oldRequestToken)
         if (userType.isEmpty()) {

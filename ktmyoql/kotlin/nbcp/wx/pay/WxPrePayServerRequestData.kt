@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatter
  * 主要参数做为实体初始化参数。
  * 微信请求做成实体方法。
  */
-data class WxPrePayServerRequestData(
+data class WxPrePayServerRequestData @JvmOverloads constructor(
     var body: String,
     var spbill_create_ip: String,// 终端IP
     var notify_url: String,

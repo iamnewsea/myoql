@@ -14,6 +14,7 @@ import java.util.*
  * @param targetClass 目标类
  * @param genericClassIfTargetIsList 如果目标类是 List 泛型类， 泛型类类型。
  */
+@JvmOverloads
 fun Any.ConvertType(targetClass: Class<*>, genericClassIfTargetIsList: Class<*>? = null): Any? {
     var theClass = this.javaClass;
     if (targetClass.isAssignableFrom(theClass)) {
@@ -137,7 +138,7 @@ fun Any.ConvertType(targetClass: Class<*>, genericClassIfTargetIsList: Class<*>?
     return this.ConvertJson(targetClass);
 }
 
-
+@JvmOverloads
 fun Any?.AsString(defaultValue: String = ""): String {
     var ret = this.AsStringWithNull();
     if (ret.isNullOrEmpty()) return defaultValue;
@@ -188,6 +189,7 @@ fun Any?.AsStringWithNull(): String? {
 }
 
 
+@JvmOverloads
 fun Any?.AsBoolean(defaultValue: Boolean = false): Boolean {
     return this.AsBooleanWithNull() ?: defaultValue
 }

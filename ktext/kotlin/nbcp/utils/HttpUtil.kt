@@ -22,7 +22,7 @@ import javax.imageio.ImageIO
 import javax.net.ssl.SSLSocketFactory
 
 
-data class FileMessage(
+data class FileMessage @JvmOverloads constructor(
     var fullPath: String = "",
     var name: String = "",
     var extName: String = "",
@@ -39,7 +39,7 @@ fun getTextTypeFromContentType(contentType: String): Boolean {
             contentType.contains("urlencoded", true)
 }
 
-data class HttpRequestData(
+data class HttpRequestData @JvmOverloads constructor(
     var instanceFollowRedirects: Boolean = false,
     var useCaches: Boolean = false,
     var connectTimeout: Int = 5_000,
@@ -152,13 +152,14 @@ class HttpResponseData {
  * 尽量使用 RestTemplate.
  * 封装了 HttpURLConnection 进行网络请求。
  */
-class HttpUtil(var url: String = "") {
+class HttpUtil @JvmOverloads constructor(var url: String = "") {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
         /**远程下载图片,并压缩
          */
         @JvmStatic
+        @JvmOverloads
         fun getImage(remoteImage: String, maxWidth: Int = 1200): ByteArray {
             var oriImage: BufferedImage
             oriImage = ImageIO.read(URL(remoteImage));
@@ -254,6 +255,7 @@ class HttpUtil(var url: String = "") {
     /**
      * Post请求
      */
+    @JvmOverloads
     fun doPost(requestBody: String = ""): String {
 //        logger.Info { "[post]\t${url}\n${requestHeader.map { it.key + ":" + it.value }.joinToString("\n")}" }
 

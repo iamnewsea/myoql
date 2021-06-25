@@ -100,6 +100,7 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
      * 使用 RedisTask.setExpireKey 设置续期时间
      * @param key:不带group
      */
+    @JvmOverloads
     fun renewalKey(key: String, cacheSeconds: Int = defaultCacheSeconds) {
         var cs = cacheSeconds.AsInt();
         if (cs <= 0) {

@@ -3,17 +3,17 @@ package nbcp.wx.system
 import java.io.Serializable
 
 
-open class wx_return_data(
+open class wx_return_data @JvmOverloads constructor(
         var errcode: Int = 0,
         var errmsg: String = ""
 ): Serializable
 
-data class wx_msg_data_value(
+data class wx_msg_data_value @JvmOverloads constructor(
         var value: String = "",
         var color: String = "#000000"
 )
 
-data class wx_msg_data(
+data class wx_msg_data @JvmOverloads constructor(
         var touser: String = "",// 	是 	接收者（用户）的 openid
         var template_id: String = "",// 	是 	所需下发的模板消息的id
         var page: String = "",// 	否 	点击模板卡片后的跳转页面，仅限本小程序内的页面。支持带参数,（示例index?foo=bar）。该字段不填则模板无跳转。

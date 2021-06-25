@@ -19,6 +19,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
         search._source.add(column);
     }
 
+    @JvmOverloads
     fun withRouting(routing: String = "") {
         this.routing = routing;
     }
@@ -67,6 +68,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
     /**
      * 核心功能，查询列表，原始数据对象是 Document
      */
+    @JvmOverloads
     fun <R> toList(clazz: Class<R>, mapFunc: ((Map<String, Any?>) -> Unit)? = null): MutableList<R> {
         var isString = clazz.IsStringType;
 

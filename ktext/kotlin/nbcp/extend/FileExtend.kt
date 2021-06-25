@@ -21,6 +21,7 @@ val File.FullName: String
 /**
  * 递归列出所有文件及子文件。
  */
+@JvmOverloads
 fun File.ListRecursionFiles(
     pathCallback: ((String) -> Boolean)? = null,
     fileCallback: ((String) -> Boolean)? = null
@@ -148,6 +149,7 @@ fun File.ReadHeadLines(action: ((String, Int) -> Boolean)): Int {
 /**
  * 过滤行，读取每一行。
  */
+@JvmOverloads
 fun File.FilterLines(
     matchLines: Int,
     extCount: Int = 0,

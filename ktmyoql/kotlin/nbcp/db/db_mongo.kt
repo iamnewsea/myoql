@@ -140,6 +140,7 @@ object db_mongo {
     /**
      * 把 _id 转换为 id
      */
+    @JvmOverloads
     fun procResultData_id2Id(value: Collection<*>, remove_id: Boolean = true) {
         value.forEach { v ->
             if (v == null) {
@@ -160,6 +161,7 @@ object db_mongo {
     /**
      * 把 _id 转换为 id
      */
+    @JvmOverloads
     fun procResultData_id2Id(value: Array<*>, remove_id: Boolean = true) {
         value.forEach { v ->
             if (v == null) {
@@ -176,6 +178,7 @@ object db_mongo {
         }
     }
 
+    @JvmOverloads
     fun procResultData_id2Id(value: MutableMap<*, *>, remove_id: Boolean = true) {
         var keys = value.keys.toTypedArray();
         var needReplace = keys.contains("_id") && !keys.contains("id")

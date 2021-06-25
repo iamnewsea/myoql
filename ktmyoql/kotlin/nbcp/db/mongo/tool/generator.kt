@@ -20,10 +20,10 @@ class generator {
 
     private lateinit var moer_File: FileWriter
 
+    @JvmOverloads
     fun work(
         targetFileName: String,  //目标文件
         basePackage: String,   //实体的包名
-        anyEntityClass: Class<*>,  //任意实体的类名
         packages: Array<String> = arrayOf(),   //import 包名
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
@@ -42,7 +42,7 @@ class generator {
 
         moer_File = FileWriter(moer_Path, true);
 
-        var groups = getGroups(basePackage, anyEntityClass).filter { ignoreGroups.contains(it.key) == false };
+        var groups = getGroups(basePackage).filter { ignoreGroups.contains(it.key) == false };
         var embClasses = getEmbClasses(groups);
 
         println("开始生成 mor...")
@@ -136,14 +136,12 @@ data class moer_map(val _pname:String)
         return name[0].toLowerCase() + name.substring(1);
     }
 
-    fun getGroups(basePackage: String, anyEntityClass: Class<*>): HashMap<String, MutableList<Class<*>>> {
+    fun getGroups(basePackage: String ): HashMap<String, MutableList<Class<*>>> {
         var ret = HashMap<String, MutableList<Class<*>>>();
 
 
-        ClassUtil.findClasses(basePackage, anyEntityClass)
-            .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
+        ClassUtil.getClassesWithAnnotationType(basePackage, DbEntityGroup::class.java )
             .forEach {
-
                 var groupName = it.getAnnotation(DbEntityGroup::class.java).value;
 
                 if (ret.containsKey(groupName) == false) {
@@ -160,6 +158,7 @@ data class moer_map(val _pname:String)
     /**
      * 递归返回嵌入实体。
      */
+    @JvmOverloads
     fun findEmbClasses(clazz: Class<*>, deep: Int = 0): List<Class<*>> {
         if (deep == 6) return listOf();
         var ret = clazz.AllFields

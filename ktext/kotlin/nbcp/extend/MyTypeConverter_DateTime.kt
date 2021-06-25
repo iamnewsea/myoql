@@ -105,6 +105,7 @@ val LocalTime.totalSeconds: Int
 /**
  * 字符串转为 LocalDateTime
  */
+@JvmOverloads
 fun String.ConvertToLocalDateTime(dateTimeFormatter: DateTimeFormatter? = null): LocalDateTime? {
     //关于 160空格：https://blog.csdn.net/lewky_liu/article/details/79353151
     //本函数不做处理。
@@ -192,6 +193,7 @@ yyyy/MM/dd
 yyyy_MM_dd
 yyyy.MM.dd
  */
+@JvmOverloads
 fun String.ConvertToLocalDate(dateFormatter: DateTimeFormatter? = null): LocalDate? {
     var strValue = this.trim();
 
@@ -226,6 +228,7 @@ fun String.ConvertToLocalDate(dateFormatter: DateTimeFormatter? = null): LocalDa
 /**
  * 转换为 LocalTime
  */
+@JvmOverloads
 fun String.ConvertToLocalTime(timeFormatter: DateTimeFormatter? = null): LocalTime {
     var timeString = this.trim();
 

@@ -21,11 +21,13 @@ class EsDeleteClip<M : EsBaseMetaEntity<out IEsDocument>>(var eserEntity: M) : E
         return this;
     }
 
+    @JvmOverloads
     fun routing(routing:String = ""):  EsDeleteClip<M> {
         this.withRouting(routing)
         return this;
     }
 
+    @JvmOverloads
     fun pipeline(pipeline:String = ""): EsDeleteClip<M> {
         this.withPipeLine(pipeline)
         return this;

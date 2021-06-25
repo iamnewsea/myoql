@@ -18,11 +18,13 @@ class EsUpdateClip<M : EsBaseMetaEntity<E>,E : IEsDocument>(var moerEntity: M)
         return this;
     }
 
+    @JvmOverloads
     fun routing(routing:String = ""):  EsUpdateClip<M, E> {
         this.withRouting(routing)
         return this;
     }
 
+    @JvmOverloads
     fun pipeline(pipeline:String = ""): EsUpdateClip<M, E> {
         this.withPipeLine(pipeline)
         return this;

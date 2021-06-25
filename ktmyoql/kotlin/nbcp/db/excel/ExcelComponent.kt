@@ -126,6 +126,7 @@ class ExcelComponent() {
     /**
      * 读取数据
      */
+    @JvmOverloads
     fun <T : Any> getDataTable(clazz: Class<T>,
                                filter: ((JsonMap, Map<Int, String>) -> Boolean)? = null): DataTable<T> {
         var dt = DataTable<T>(clazz)

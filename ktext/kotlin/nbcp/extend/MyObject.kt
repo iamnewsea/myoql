@@ -24,7 +24,7 @@ data class CheckMustExpresstion<T>(var condition: Boolean, var data: T?) {
         else throw RuntimeException(msg(data));
     }
 }
-
+@JvmOverloads
 fun <T> T?.must(trueCondition: ((T?) -> Boolean)? = null): CheckMustExpresstion<T> {
     return CheckMustExpresstion(if (trueCondition == null) this != null else trueCondition(this), this)
 }
@@ -33,7 +33,8 @@ fun <T> T.IsIn(vararg values: T): Boolean {
     return this.IsIn(null, *values);
 }
 
-fun <T> T.IsIn(equalFunc: ((T, T) -> Boolean)? = null, vararg values: T): Boolean {
+@JvmOverloads
+fun <T> T.IsIn(equalFunc: ((T, T) -> Boolean)?, vararg values: T): Boolean {
     for (i in values) {
         if (equalFunc == null) {
             if (this == i) return true;

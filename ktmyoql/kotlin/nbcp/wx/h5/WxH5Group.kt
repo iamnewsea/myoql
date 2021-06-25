@@ -35,7 +35,7 @@ object WxH5Group {
     }
 
 
-    class H5AccessTokenData(
+    class H5AccessTokenData @JvmOverloads constructor(
             var access_token: String = "",
             var expires_in: Int = 0,
             var refresh_token: String = "",

@@ -490,6 +490,7 @@ object MyUtil {
         })
     }
 
+    @JvmOverloads
     fun trimStart(value: String, trimPart: String, ignoreCase: Boolean = false): String {
         if (value.startsWith(trimPart, ignoreCase) == false) {
             return value;
@@ -497,6 +498,7 @@ object MyUtil {
         return trimStart(value.substring(trimPart.length), trimPart, ignoreCase)
     }
 
+    @JvmOverloads
     fun trimEnd(value: String, trimPart: String, ignoreCase: Boolean = false): String {
         if (value.endsWith(trimPart, ignoreCase) == false) {
             return value;
@@ -504,6 +506,7 @@ object MyUtil {
         return trimEnd(value.substring(0, value.length - trimPart.length), trimPart, ignoreCase)
     }
 
+    @JvmOverloads
     fun trim(value: String, trimPart: String, ignoreCase: Boolean = false): String {
         return trimEnd(trimStart(value, trimPart, ignoreCase), trimPart, ignoreCase)
     }

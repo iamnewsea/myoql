@@ -10,7 +10,7 @@ import java.io.Serializable
  */
 
 
-class RedisHashProxy(
+class RedisHashProxy @JvmOverloads constructor(
         group: String,
         defaultCacheSeconds: Int = 0)
     : BaseRedisProxy(group, defaultCacheSeconds) {

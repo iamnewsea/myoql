@@ -44,6 +44,7 @@ inline fun <reified T> Collection<Array<T>>.Unwind(): Array<T> {
  * @param startIndex 包含startIndex
  * @param endIndex 不包含endIndex
  */
+@JvmOverloads
 fun <T> Array<out T>.Slice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): List<T> {
     var endIndex = endIndex;
     if (endIndex == 0) return listOf()
@@ -80,6 +81,7 @@ fun <T> Array<out T>.Slice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): List
 /**
  * [startIndex,endIndex)
  */
+@JvmOverloads
 inline fun <reified T> Collection<out T>.Slice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): List<T> {
     return this.toTypedArray<T>().Slice(startIndex, endIndex)
 }
@@ -101,6 +103,7 @@ inline fun <T> Iterator<T>.Filter(predicate: (T) -> Boolean): MutableList<T> {
 比较两个数组的内容是否相同, 去除相同数据进行比较 .如:
 [1,1,2] .equalArrayContent( [1,2,2] )  == true
  */
+@JvmOverloads
 fun Array<*>.EqualArrayContent(other: Array<*>, withIndex: Boolean = false): Boolean {
     return this.toList().EqualArrayContent(other.toList(), withIndex);
 }
@@ -110,6 +113,7 @@ fun Array<*>.EqualArrayContent(other: Array<*>, withIndex: Boolean = false): Boo
 比较两个数组的内容是否相同, 去除相同数据进行比较 .如:
 [1,1,2] .equalArrayContent( [1,2,2] )  == true
  */
+@JvmOverloads
 fun Collection<*>.EqualArrayContent(other: Collection<*>, withIndex: Boolean = false): Boolean {
     if (this.size == 0 && other.size == 0) return true;
     else if (this.size == 0) return false;

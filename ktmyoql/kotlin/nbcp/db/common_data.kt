@@ -22,7 +22,7 @@ enum class UserSexEnum(var remark: String) {
  * 身份证内容
  */
 @Cn("身份证信息")
-open class IdentityCardData(
+open class IdentityCardData @JvmOverloads constructor(
         @Cn("头像")
         var photo: IdUrl = IdUrl(),
         @Cn("姓名")
@@ -41,7 +41,7 @@ open class IdentityCardData(
  * 营业执照内容
  */
 @Cn("营业执照信息")
-open class BusinessLicenseData(
+open class BusinessLicenseData @JvmOverloads constructor(
         @Cn("统一社会信用代码")
         var code: String = "",
         @Cn("企业名称")
@@ -67,5 +67,5 @@ open class BusinessLicenseData(
 )
 
 
-open class CityCodeName(var code: Int = 0, var name: String = "") : java.io.Serializable {
+open class CityCodeName @JvmOverloads constructor(var code: Int = 0, var name: String = "") : java.io.Serializable {
 }

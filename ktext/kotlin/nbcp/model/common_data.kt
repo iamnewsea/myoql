@@ -7,11 +7,11 @@ import nbcp.utils.*
  * Created by yuxh on 2018/11/13
  */
 
-open class IdValue(var id: String = "", var value: String = "") : java.io.Serializable {}
+open class IdValue @JvmOverloads constructor(var id: String = "", var value: String = "") : java.io.Serializable {}
 
-open class IdName(var id: String = "", @Cn("名称") var name: String = "") : java.io.Serializable {}
+open class IdName @JvmOverloads constructor(var id: String = "", @Cn("名称") var name: String = "") : java.io.Serializable {}
 
-open class KeyValueString(@Cn("键") var key: String = "", @Cn("值") var value: String = "") : java.io.Serializable {}
+open class KeyValueString @JvmOverloads constructor(@Cn("键") var key: String = "", @Cn("值") var value: String = "") : java.io.Serializable {}
 
 /**
  * 表示Mongo数据库里 Id，Url 的附件实体引用。
@@ -43,21 +43,21 @@ open class NameUrl() : BaseUrlModel() {
     }
 }
 
-open class IdNameUrl(var id: String = "", name: String = "", url: String = "") : NameUrl(name, url)
+open class IdNameUrl @JvmOverloads constructor(var id: String = "", name: String = "", url: String = "") : NameUrl(name, url)
 
-open class IdNamePath(id: String = "", name: String = "", @Cn("路径") var path: String = "") : IdName(id, name) {}
+open class IdNamePath @JvmOverloads constructor(id: String = "", name: String = "", @Cn("路径") var path: String = "") : IdName(id, name) {}
 
-open class CodeName(@Cn("编码") var code: String = "", @Cn("名称") var name: String = "") : java.io.Serializable {}
+open class CodeName @JvmOverloads constructor(@Cn("编码") var code: String = "", @Cn("名称") var name: String = "") : java.io.Serializable {}
 
-open class CodeValue(@Cn("编码") var code: String = "", @Cn("值") var value: String = "") : java.io.Serializable {}
+open class CodeValue @JvmOverloads constructor(@Cn("编码") var code: String = "", @Cn("值") var value: String = "") : java.io.Serializable {}
 
-open class IdCodeName(var id: String = "", code: String = "", name: String = "") : CodeName(code, name) {}
+open class IdCodeName @JvmOverloads constructor(var id: String = "", code: String = "", name: String = "") : CodeName(code, name) {}
 
 
 /**
  * 登录用户数据
  */
-open class LoginUserModel(
+open class LoginUserModel @JvmOverloads constructor(
     id: String = "",
     var loginName: String = "",
     name: String = "",

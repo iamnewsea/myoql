@@ -10,6 +10,7 @@ import nbcp.comm.*
 class EsQueryClip<M : EsBaseMetaEntity<E>, E : IEsDocument>(var moerEntity: M)
     : EsBaseQueryClip(moerEntity.tableName) {
 
+    @JvmOverloads
     fun routing(routing: String = ""): EsQueryClip<M, E> {
         this.routing = routing;
         return this;
@@ -101,21 +102,25 @@ class EsQueryClip<M : EsBaseMetaEntity<E>, E : IEsDocument>(var moerEntity: M)
     }
 
 
+    @JvmOverloads
     fun toList(mapFunc: ((Map<String, Any?>) -> Unit)? = null): MutableList<E> {
         return toList(moerEntity.entityClass, mapFunc)
     }
 
+    @JvmOverloads
     fun toEntity(mapFunc: ((Map<String, Any?>) -> Unit)? = null): E? {
         this.search.take = 1;
         return toList(moerEntity.entityClass, mapFunc).firstOrNull();
     }
 
+    @JvmOverloads
     fun <R> toEntity(clazz: Class<R>, mapFunc: ((Map<String, Any?>) -> Unit)? = null): R? {
         this.search.take = 1;
         return toList(clazz, mapFunc).firstOrNull();
     }
 
 
+    @JvmOverloads
     fun toListResult(mapFunc: ((Map<String, Any?>) -> Unit)? = null): ListResult<E> {
         return toListResult(this.moerEntity.entityClass, mapFunc);
     }
