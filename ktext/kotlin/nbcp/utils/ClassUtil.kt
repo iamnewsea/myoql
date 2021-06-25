@@ -101,6 +101,14 @@ object ClassUtil {
         return Date(File(fileName).lastModified()).AsLocalDateTime()
     }
 
+    /**
+     * 判断类是否是指定的Jar中
+     */
+    fun classIsInJar(clazz: Class<*>, jarFileName: String): Boolean {
+        var sects = clazz.protectionDomain.codeSource.location.path.split("/")
+        return sects.contains(jarFileName) && sects.last().contains(jarFileName)
+    }
+
 
     /**
      * 查找类。
