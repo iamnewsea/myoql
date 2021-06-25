@@ -5,6 +5,7 @@ import nbcp.db.Define
 import nbcp.db.*
 import nbcp.db.es.IEsDocument
 import nbcp.db.es.tool.generator_mapping
+import nbcp.db.sql.entity.s_city
 import nbcp.tool.UserCodeGenerator
 import org.junit.Test
 import java.time.LocalDateTime
@@ -39,6 +40,6 @@ class testa : TestBase() {
     @Test
     fun abc() {
         var m = generator_mapping();
-        m.work("mapping", "nbcp")
+        m.work("mapping", "nbcp", s_city::class.java)
     }
 }
