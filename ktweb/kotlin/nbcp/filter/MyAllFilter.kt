@@ -8,6 +8,8 @@ import nbcp.utils.*
 import nbcp.comm.JsonMap
 import nbcp.comm.*
 import nbcp.web.*
+import org.reflections.Reflections
+import org.reflections.util.ClasspathHelper
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.InitializingBean
@@ -46,7 +48,7 @@ import javax.servlet.http.HttpServletResponse
 @WebFilter(urlPatterns = ["/*", "/**"])
 //@WebFilter(urlPatterns = arrayOf("/**"), filterName = "MyAllFilter")
 //@ConfigurationProperties(prefix = "nbcp.filter")
-open class MyAllFilter : Filter, InitializingBean {
+open class MyAllFilter : Filter {
     override fun destroy() {
         MDC.remove("request_id")
     }
@@ -75,17 +77,34 @@ open class MyAllFilter : Filter, InitializingBean {
         /**
          * 以public开头的（以"/"开头） 文件夹下的静态资源文件，不包括目录
          */
-        @JvmStatic
-        var htmlFiles = mutableSetOf<String>()
-
-        /**
-         * 以public开头的（以"/"开头） 文件夹下目录，以 "/" 结尾
-         */
-        @JvmStatic
-        var htmlPaths = mutableMapOf<String, String>()
-
-        @JvmStatic
-        var htmlIndexFiles = setOf("index.html", "index.htm", "home.html", "home.htm", "default.html", "default.htm");
+//        @JvmStatic
+//        val htmlFiles:Set<String> by lazy{
+//
+//            var htmlPath = System.getProperty("app.filter.html-path").AsString("public")
+//            htmlFiles = ClasspathHelper.forResource("${htmlPath}/").map { it.path }.toMutableSet()
+//
+//            //
+//            htmlIndexFiles.forEach { htmlIndexFile ->
+//                htmlFiles.filter { file -> file.endsWith("/" + htmlIndexFile, true) }.forEach { indexFile ->
+//                    var lastIndex = indexFile.lastIndexOf("/");
+//                    if (lastIndex >= 0) {
+//                        htmlPaths.set(indexFile.substring(0, lastIndex), htmlIndexFile);
+//                    }
+//                }
+//            }
+//
+//
+//            return@lazy
+//        }
+//
+//        /**
+//         * 以public开头的（以"/"开头） 文件夹下目录，以 "/" 结尾
+//         */
+//        @JvmStatic
+//        var htmlPaths = mutableMapOf<String, String>()
+//
+//        @JvmStatic
+//        var htmlIndexFiles = setOf("index.html", "index.htm", "home.html", "home.htm", "default.html", "default.htm");
     }
 
     override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
@@ -194,40 +213,40 @@ open class MyAllFilter : Filter, InitializingBean {
                 afterComplete(myRequest, myResponse, queryMap.getStringValue("callback").AsString(), startAt, "");
             } else {
 
-                //如果是静态资源
-                var file = htmlFiles.firstOrNull { request.requestURI.startsWith(it, true) }
-                if (file == null) {
-                    var browsePath = request.requestURI;
-                    if (browsePath.endsWith("/")) {
-                        browsePath = browsePath.substring(0, browsePath.length - 1);
-                    }
-                    var path = htmlPaths.keys.firstOrNull { it VbSame browsePath };
-                    if (path != null) {
-                        file = path + "/" + htmlPaths.get(path);
-                    }
-                }
-
-                if (file != null) {
-                    file = htmlPath + file;
-                    response.status = 200;
-
-                    var extention = FileExtentionInfo(file)
-                    var contentType = MyUtil.getMimeType(extention.extName)
-                    if (contentType.HasValue) {
-                        response.contentType = contentType
-                    }
-
-                    var resourceResolver = PathMatchingResourcePatternResolver()
-                    var resource = resourceResolver.getResource(file)
-                    resource.inputStream.copyTo(response.outputStream)
-
-                    logger.Info {
-                        var msgs = mutableListOf<String>()
-                        msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl} <----]]")
-                        return@Info msgs.joinToString(line_break)
-                    }
-                    return;
-                }
+//                //如果是静态资源
+//                var file = htmlFiles.firstOrNull { request.requestURI.startsWith(it, true) }
+//                if (file == null) {
+//                    var browsePath = request.requestURI;
+//                    if (browsePath.endsWith("/")) {
+//                        browsePath = browsePath.substring(0, browsePath.length - 1);
+//                    }
+//                    var path = htmlPaths.keys.firstOrNull { it VbSame browsePath };
+//                    if (path != null) {
+//                        file = path + "/" + htmlPaths.get(path);
+//                    }
+//                }
+//
+//                if (file != null) {
+//                    file = htmlPath + file;
+//                    response.status = 200;
+//
+//                    var extention = FileExtentionInfo(file)
+//                    var contentType = MyUtil.getMimeType(extention.extName)
+//                    if (contentType.HasValue) {
+//                        response.contentType = contentType
+//                    }
+//
+//                    var resourceResolver = PathMatchingResourcePatternResolver()
+//                    var resource = resourceResolver.getResource(file)
+//                    resource.inputStream.copyTo(response.outputStream)
+//
+//                    logger.Info {
+//                        var msgs = mutableListOf<String>()
+//                        msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl} <----]]")
+//                        return@Info msgs.joinToString(line_break)
+//                    }
+//                    return;
+//                }
 
 
                 try {
@@ -549,38 +568,15 @@ open class MyAllFilter : Filter, InitializingBean {
     }
 
 
-    private fun getAllFiles(file: File, filter: ((String) -> Boolean)): List<String> {
-        if (file.isDirectory == false) {
-            if (filter.invoke(file.FullName) == false) {
-                return listOf()
-            }
-
-            return listOf(file.FullName)
-        }
-
-        return file.listFiles().map { getAllFiles(it, filter).toTypedArray() }.Unwind().toList()
-    }
-
-    //收集静态资源
-    override fun afterPropertiesSet() {
-        ClassUtil.listResourceFiles {
-            if (it.startsWith("${htmlPath}/") == false) {
-                return@listResourceFiles false
-            }
-            if (it.endsWith("/") == false) {
-                htmlFiles.add(it.substring(htmlPath.length));
-            }
-            return@listResourceFiles true
-        }
-
-        //
-        htmlIndexFiles.forEach { htmlIndexFile ->
-            htmlFiles.filter { file -> file.endsWith("/" + htmlIndexFile, true) }.forEach { indexFile ->
-                var lastIndex = indexFile.lastIndexOf("/");
-                if (lastIndex >= 0) {
-                    htmlPaths.set(indexFile.substring(0, lastIndex), htmlIndexFile);
-                }
-            }
-        }
-    }
+//    private fun getAllFiles(file: File, filter: ((String) -> Boolean)): List<String> {
+//        if (file.isDirectory == false) {
+//            if (filter.invoke(file.FullName) == false) {
+//                return listOf()
+//            }
+//
+//            return listOf(file.FullName)
+//        }
+//
+//        return file.listFiles().map { getAllFiles(it, filter).toTypedArray() }.Unwind().toList()
+//    }
 }
