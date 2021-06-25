@@ -18,11 +18,7 @@ object enumer {
      */
     fun work(basePackage: String): List<String> {
         var ret = mutableListOf<String>()
-        val fileList = ClassUtil.getLoadedClasses({ it.startsWith(basePackage) })
-            .map { Class.forName(it) }
-            .filter {
-                return@filter it.isEnum
-            }
+        val fileList = ClassUtil.getClasses(basePackage, Enum::class.java)
 
         fileList.forEach {
             ret.add(work(it))

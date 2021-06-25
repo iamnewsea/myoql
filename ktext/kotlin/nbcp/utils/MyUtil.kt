@@ -358,11 +358,24 @@ object MyUtil {
         return type.get(entity);
     }
 
-    fun getPrivatePropertyValue(entity: Any, property: String): Any? {
-        var type = entity::class.java.FindField(property);
+    /**
+     * @param properties 多级属性
+     */
+    fun getPrivatePropertyValue(entity: Any?, vararg properties: String): Any? {
+        if (entity == null) return null;
+        if (properties.any() == false) return null;
+
+        var type = entity::class.java.FindField(properties.first());
         if (type != null) {
             type.isAccessible = true;
-            return type.get(entity);
+
+            var ret = type.get(entity);
+            if (properties.size == 1) {
+                return ret
+            } else {
+                var leftProperties = properties.slice(1 until properties.size).toTypedArray();
+                return getPrivatePropertyValue(ret, *leftProperties)
+            }
         }
         return null;
     }
@@ -451,7 +464,6 @@ object MyUtil {
 
         return null;
     }
-
 
 
     /**

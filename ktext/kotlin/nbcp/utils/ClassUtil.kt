@@ -4,89 +4,162 @@ import nbcp.comm.FullName
 import nbcp.comm.HasValue
 import nbcp.comm.ListRecursionFiles
 import nbcp.comm.Slice
+import org.reflections.Reflections
+import org.reflections.scanners.ResourcesScanner
+import org.reflections.scanners.SubTypesScanner
+import org.reflections.util.ConfigurationBuilder
+import org.springframework.util.ClassUtils
 import java.io.File
+import java.lang.Exception
 import java.lang.RuntimeException
 import java.net.JarURLConnection
 import java.net.URL
 import java.net.URLClassLoader
 import java.util.*
 import java.util.jar.JarFile
+import java.util.ArrayList
 
+import java.util.jar.JarEntry
+
+import java.util.Enumeration
+
+
+/**
+ * windows下：
+ * 启动Jar loader.path里Jar包是: file:/D:/nancal/yun/lowcode-api/portal/admin/target/lib/zip4j-2.6.4.jar ， protocol=file
+ * Jar包里依赖的Jar包是: jar:file:/D:/nancal/yun/lowcode-api/portal/admin/target/lowcode-admin-api-1.0.1.jar!/BOOT-INF/lib/shop-entity-1.0.1.jar!/  , protocol=jar
+ */
 object ClassUtil {
 
     /**
      * 获取 AppClassLoader 。
      */
-    fun getAppClassLoader(loader: ClassLoader? = null): ClassLoader? {
-        var loader = loader ?: Thread.currentThread().contextClassLoader
+    private fun getLaunchedURLClassLoader(loader: ClassLoader? = null): ClassLoader? {
+        var loader = loader ?: ClassUtils.getDefaultClassLoader()
+        if (loader == null) return null;
+
+        if (loader::class.java.name == "org.springframework.boot.loader.LaunchedURLClassLoader") {
+            return loader;
+        }
+
+        if (loader.parent == null) {
+            return null;
+        }
+        return getLaunchedURLClassLoader(loader.parent);
+    }
+
+    private fun getAppClassLoader(loader: ClassLoader? = null): ClassLoader? {
+        var loader = loader ?: ClassUtils.getDefaultClassLoader()
         if (loader == null) return null;
 
         if (loader::class.java.name == "sun.misc.Launcher\$AppClassLoader") {
             return loader;
         }
 
+        if (loader.parent == null) {
+            return null;
+        }
         return getAppClassLoader(loader.parent);
     }
 
-    fun getAllJarUrl(): List<String> {
-        return (getAppClassLoader() as URLClassLoader).urLs.map {
-            return@map File(JsUtil.decodeURIComponent(it.file)).FullName
-        }
+    fun getDefaultClassLoader(): ClassLoader? {
+        return getLaunchedURLClassLoader() ?: getAppClassLoader()
     }
 
-    /**
-     * 加载的类,加载 AppClassLoader 下的类。
-     */
-    fun getLoadedClasses(
-        packageCallback: ((String) -> Boolean)? = null,
-        fileCallback: ((String) -> Boolean)? = null
-    ): List<String> {
-        var list = mutableListOf<String>()
-        getAllJarUrl().forEach { path ->
-            var list2 = listOf<String>()
+//    /**
+//     * 加载的类,加载 AppClassLoader 下的类。
+//     */
+//    private fun getLoadedClasses(
+//        fileCallback: ((String) -> Boolean)? = null
+//    ): List<String> {
+//        var list = mutableListOf<String>()
+//
+//        var loader = getDefaultClassLoader() as URLClassLoader
+//        var classes = (MyUtil.getPrivatePropertyValue(loader, "classes") as List<Class<*>>?)?.map { it.name }
+//
+//        if (classes != null) {
+//            list.addAll(classes.filter {
+//                if (!(fileCallback?.invoke(it) ?: true)) {
+//                    return@filter false;
+//                }
+//                return@filter true;
+//            })
+//
+//        } else {
+//            loader.urLs
+//                .filter { it.protocol == "jar" }
+//                .forEach { url ->
+//                    var jarFile = MyUtil.getPrivatePropertyValue(url, "handler", "jarFile") as JarFile?
+//                    if (jarFile == null) {
+//                        //url.path= file:/D:/nancal/yun/lowcode-api/portal/admin/target/lowcode-admin-api-1.0.1.jar!/BOOT-INF/classes!/
+//                        var path = url.path;
+//                        if (path.startsWith("file:")) {
+//                            path = path.substring(5);
+//                        } else {
+//                            throw RuntimeException("期待以 file: 开头 ${path}")
+//                        }
+//
+//                        var index1 = path.indexOf(".jar!/");
+//                        if (index1 > 0) {
+//                            path = path.substring(0, index1);
+//                        }
+//
+//                        jarFile = JarFile(path);
+//                    }
+//
+//                    //nbcp/mvc/admin/CorpUserController$list$$inlined$apply$lambda$1.class
+//                    //nbcp/mvc/admin/CorpUserController.class
+//                    var list2 = jarFile.entries().toList()
+//                        .filter { it.name.contains("$") == false && it.name.endsWith(".class") }
+//                        .map { it.name.take(it.name.length - 6).replace('/', '.') }
+//
+//                    // /C:/Users/zhang/.m2/repository/com/alibaba/nacos/nacos-api/1.4.1/nacos-api-1.4.1.jar
+////            if (path.endsWith(".jar", true)) {
+////                list2 = JarFile(path).entries()
+////                    .toList()
+////                    .filter { it.name.endsWith(".class") }
+////                    .map { it.name.take(it.name.length - 6).replace('/', '.') }
+////
+////            } else {
+////                var file = File(path);
+////                var file_len = file.FullName.length;
+////                // /D:/nancal/yun/lowcode-api/portal/admin/target/classes/
+////                list2 = file.ListRecursionFiles()
+////                    .filter { it.endsWith(".class") }
+////                    .map { it.substring(file_len + 1, it.length - 6).replace(File.separatorChar, '.') }
+////            }
+//
+//
+//                    list2 = list2.filter {
+//                        if (!(fileCallback?.invoke(it) ?: true)) {
+//                            return@filter false;
+//                        }
+//
+//                        return@filter true;
+//                    }
+//
+//                    list.addAll(list2);
+//                }
+//        }
+//        return list;
+//    }
 
-            // /C:/Users/zhang/.m2/repository/com/alibaba/nacos/nacos-api/1.4.1/nacos-api-1.4.1.jar
-            if (path.endsWith(".jar", true)) {
-                list2 = JarFile(path).entries()
-                    .toList()
-                    .filter { it.name.endsWith(".class") }
-                    .map { it.name.take(it.name.length - 6).replace('/', '.') }
 
-            } else {
-                var file = File(path);
-                var file_len = file.FullName.length;
-                // /D:/nancal/yun/lowcode-api/portal/admin/target/classes/
-                list2 = file.ListRecursionFiles()
-                    .filter { it.endsWith(".class") }
-                    .map { it.substring(file_len + 1, it.length - 6).replace(File.separatorChar, '.') }
-            }
-
-
-            list2 = list2.filter {
-                if (it.contains('$')) {
-                    return@filter false;
-                }
-                if (packageCallback != null) {
-                    var packageName = it.split(".").Slice(0, -1).joinToString(".");
-                    if (packageCallback(packageName) == false) {
-                        return@filter false;
-                    }
-                }
-
-                if (!(fileCallback?.invoke(it) ?: true)) {
-                    return@filter false;
-                }
-
-                return@filter true;
-            }
-
-            list.addAll(list2);
-        }
-
-
-        return list;
+    fun getClasses(basePackage: String): Set<String> {
+        return Reflections(
+            ConfigurationBuilder()
+                .forPackages(basePackage)
+                .setScanners(SubTypesScanner(false))
+        ).allTypes
     }
 
+    fun getClasses(basePackage: String, baseType: Class<*>): Set<Class<*>> {
+        return Reflections(
+            ConfigurationBuilder()
+                .forPackages(basePackage)
+                .setScanners(SubTypesScanner())
+        ).getSubTypesOf(baseType)
+    }
 
     /**
      * 判断是否是 Jar包启动。

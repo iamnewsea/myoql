@@ -17,4 +17,11 @@ class ReflectUtils : TestBase() {
         var field = type.getDeclaredField("list");
         println((field.genericType as ParameterizedType).GetActualClass(0).simpleName)
     }
+
+    @Test
+    fun r2() {
+         ClassUtil.getClasses("nbcp").forEach {
+             println(it)
+         }
+    }
 }
