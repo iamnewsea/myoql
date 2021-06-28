@@ -17,14 +17,11 @@ import java.util.*;
 @Builder
 @Entity(name = "${entity.getName()}")
 @Cn("${entity.getComment()}")
-public class ${W(entity.getName())} extends BaseEntity {
+public class ${W(entity.getName())} {
 <#list entity.getColumns() as field>
-<#if is_in(field.getName(),"id","create_at","update_at","create_user_id","create_user_name","update_user_id","update_user_name","del_flag")>
-<#else>
     /** ${field.getComment()} */
     @Cn("${field.getComment()}")
     @Column(name = "${field.getName()}")
-    private ${field.getJavaType()} ${field.getName()} = ${field.getJavaDefaultValue()};
-</#if>
+    public ${field.getJavaType()} ${field.getName()} = ${field.getJavaDefaultValue()};
 </#list>
 }

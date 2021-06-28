@@ -18,6 +18,7 @@ import org.junit.Test
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.jdbc.core.JdbcTemplate
+import java.io.FileWriter
 import javax.sql.DataSource
 
 class TestKtExt_MySql : TestBase() {
@@ -90,11 +91,20 @@ class TestKtExt_MySql : TestBase() {
     }
 
     @Test
-    fun test_ColumnName() {
+    fun test_jpa() {
         var col = SqlColumnName.of("n");
         println(col.expression)
         col.tableName = "t"
         col.name = "n2"
         println(col.expression)
+    }
+
+    @Test
+    fun test_ColumnName() {
+        MysqlEntityGenerator.db2Entity("zhks").toJpaCode("com.kjwt.gis.entity").forEach {
+            FileWriter("d:\\ent\\" + it.id + ".java").use { f ->
+                f.write(it.name);
+            }
+        }
     }
 }

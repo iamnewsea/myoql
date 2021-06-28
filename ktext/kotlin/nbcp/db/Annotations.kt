@@ -6,12 +6,11 @@ import java.lang.annotation.Inherited
 
 
 /**
- * 指定数据库中表的名字
+ * 指定数据库中表或列的名字
  */
-@Target(AnnotationTarget.CLASS)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class DbName(val value: String)
-
 
 /**
  * 中文化名称
@@ -44,7 +43,6 @@ annotation class DbEntityGroup(val value: String)
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class DbUks(vararg val ukColumns: String)
-
 
 
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FIELD)
