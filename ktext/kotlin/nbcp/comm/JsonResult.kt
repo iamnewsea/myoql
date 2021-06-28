@@ -20,7 +20,7 @@ open class JsonResult @JvmOverloads constructor(var msg: String = "", var cause:
 open class ApiResult<T> @JvmOverloads constructor(msg: String = "", cause: String = "") : JsonResult(msg, cause) {
     var data: T? = null
     var value: Any? = null
-    var valueRemark: String = ""
+    var valueRemark: String? = null
 
     companion object {
         @JvmStatic
@@ -43,13 +43,17 @@ open class ApiResult<T> @JvmOverloads constructor(msg: String = "", cause: Strin
 }
 
 
-class ParameterInvalidException @JvmOverloads constructor(msg: String, cause: String) : RuntimeException(msg.AsString("参数非法"))
+class ParameterInvalidException @JvmOverloads constructor(msg: String, cause: String) :
+    RuntimeException(msg.AsString("参数非法"))
 
-class NoDataException @JvmOverloads constructor(msg: String, cause: String = "") : RuntimeException(msg.AsString("找不到数据"))
+class NoDataException @JvmOverloads constructor(msg: String, cause: String = "") :
+    RuntimeException(msg.AsString("找不到数据"))
 
-class ExecuteDbException @JvmOverloads constructor(msg: String, cause: String = "") : RuntimeException(msg.AsString("操作数据库失败"))
+class ExecuteDbException @JvmOverloads constructor(msg: String, cause: String = "") :
+    RuntimeException(msg.AsString("操作数据库失败"))
 
-class ServerException @JvmOverloads constructor(msg: String, cause: String = "") : RuntimeException(msg.AsString("服务器异常"))
+class ServerException @JvmOverloads constructor(msg: String, cause: String = "") :
+    RuntimeException(msg.AsString("服务器异常"))
 
 /**
  * 查询对象
@@ -69,7 +73,7 @@ open class ListResult<T>(
     var data: List<T> = listOf()
 ) : JsonResult(msg) {
     var value: Any? = null
-    var valueRemark: String = ""
+    var valueRemark: String? = null
 
     companion object {
         @JvmStatic
