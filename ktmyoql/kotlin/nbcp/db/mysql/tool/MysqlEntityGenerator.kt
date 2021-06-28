@@ -82,7 +82,7 @@ object MysqlEntityGenerator {
                         "entitys" to entitys
                     )
 
-                    var code = FreemarkerUtil.process("myoql_mysql_entity.ftl", map);
+                    var code = FreemarkerUtil.process("mysql_myoql_entity.ftl", map);
                     ret.add(IdName(group, code));
                 }
 
@@ -102,7 +102,27 @@ object MysqlEntityGenerator {
                     "entity" to entity
                 )
 
-                var code = FreemarkerUtil.process("jpa_mysql_entity.ftl", map);
+                var code = FreemarkerUtil.process("mysql_jpa_entity.ftl", map);
+                ret.add(IdName(entity.name, code));
+            }
+
+            return ret;
+        }
+
+        fun toMyBatisCode(packageName: String): List<IdName> {
+            var ret = mutableListOf<IdName>()
+            var data = getTablesData();
+
+            //先对 group分组
+            data.forEach {
+                var entity = it
+                var map = JsonMap(
+                    "package" to packageName,
+                    "package_base" to packageName.split(".").take(2).joinToString("."),
+                    "entity" to entity
+                )
+
+                var code = FreemarkerUtil.process("mysql_mybatis_entity.ftl", map);
                 ret.add(IdName(entity.name, code));
             }
 

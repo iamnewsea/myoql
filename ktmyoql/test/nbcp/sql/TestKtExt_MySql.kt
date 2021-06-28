@@ -13,6 +13,7 @@ import nbcp.db.sql.doInsert
 import nbcp.db.sql.entity.s_annex
 import nbcp.db.sql.updateWithEntity
 import nbcp.tool.UserCodeGenerator
+import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
 import org.junit.Test
 import org.junit.jupiter.api.BeforeEach
@@ -92,19 +93,20 @@ class TestKtExt_MySql : TestBase() {
 
     @Test
     fun test_jpa() {
-        var col = SqlColumnName.of("n");
-        println(col.expression)
-        col.tableName = "t"
-        col.name = "n2"
-        println(col.expression)
-    }
-
-    @Test
-    fun test_ColumnName() {
         MysqlEntityGenerator.db2Entity("zhks").toJpaCode("com.kjwt.gis.entity").forEach {
-            FileWriter("d:\\ent\\" + it.id + ".java").use { f ->
+            FileWriter("d:\\ent\\" + MyUtil.getBigCamelCase(it.id) + ".java").use { f ->
                 f.write(it.name);
             }
         }
     }
+
+    @Test
+    fun test_mybatis() {
+        MysqlEntityGenerator.db2Entity("zhks").toMyBatisCode("com.kjwt.gis.entity").forEach {
+            FileWriter("d:\\ent\\" + MyUtil.getBigCamelCase(it.id) + ".java").use { f ->
+                f.write(it.name);
+            }
+        }
+    }
+
 }
