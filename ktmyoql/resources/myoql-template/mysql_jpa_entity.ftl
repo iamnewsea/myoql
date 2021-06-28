@@ -1,11 +1,10 @@
-package ${package}
+package ${package};
 
 import ${package_base}.*;
 import lombok.*;
-import javax.persistence.*;
-import javax.persistence.*;
 import java.time.*;
 import java.util.*;
+import nbcp.db.*;
 
 /**
 * Created by CodeGenerator at ${now}

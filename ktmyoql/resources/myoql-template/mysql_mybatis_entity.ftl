@@ -1,11 +1,10 @@
-package ${package}
+package ${package};
 
 import ${package_base}.*;
 import lombok.*;
-import javax.persistence.*;
-import javax.persistence.*;
 import java.time.*;
 import java.util.*;
+import nbcp.db.*;
 
 /**
 * Created by CodeGenerator at ${now}
@@ -21,7 +20,7 @@ public class ${W(entity.getName())} {
 <#list entity.getColumns() as field>
     /** ${field.getComment()} */
     @Cn("${field.getComment()}")
-    @DbName(name = "${field.getName()}")
+    @DbName("${field.getName()}")
     public ${field.getJavaType()} ${w(field.getName())} = ${field.getJavaDefaultValue()};
 </#list>
 }

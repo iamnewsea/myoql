@@ -179,6 +179,12 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
 
                 tableData.name = tableMap.getStringValue("table_name")!!;
                 tableData.commentString = tableMap.getStringValue("table_comment").AsString()
+                    .replace("\r\n", " ")
+                    .replace('\n', ' ')
+                    .replace('\"', '＂')
+                    .replace('\$', '＄')
+                    .replace('#', '＃')
+
 
                 columns_map.filter { it.getStringValue("table_name") == tableData.name }
                     .forEach colMap@{ columnMap ->
@@ -186,6 +192,11 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                         var columnName = columnMap.getStringValue("column_name")!!
                         var dataType = columnMap.getStringValue("data_type").AsString()
                         var columnComment = columnMap.getStringValue("column_comment").AsString()
+                            .replace("\r\n", " ")
+                            .replace('\n', ' ')
+                            .replace('\"', '＂')
+                            .replace('\$', '＄')
+                            .replace('#', '＃')
 
                         var dbType = DbType.String
                         var remark = "";
