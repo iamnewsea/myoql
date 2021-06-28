@@ -5,6 +5,7 @@ import lombok.*;
 import java.time.*;
 import java.util.*;
 import nbcp.db.*;
+import java.lang.*;
 
 /**
 * Created by CodeGenerator at ${now}
@@ -13,7 +14,6 @@ import nbcp.db.*;
 @NoArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@Builder
 @Entity(name = "${entity.getName()}")
 @Cn("${entity.getComment()}")
 public class ${W(entity.getName())} {
@@ -21,6 +21,6 @@ public class ${W(entity.getName())} {
     /** ${field.getComment()} */
     @Cn("${field.getComment()}")
     @Column(name = "${field.getName()}")
-    public ${field.getJavaType()} ${field.getName()} = ${field.getJavaDefaultValue()};
+    public ${field.getJavaType()} ${field_name(field.getName())};
 </#list>
 }
