@@ -5,26 +5,19 @@
     <springProperty scope="context" name="name" source="spring.application.name"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss}] %level %X{group} %X{request_id} [%class:%line]:%n%m%n</pattern>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.mdc.TraceIdMDCPatternLogbackLayout">
+                <pattern>[%d{yyyy-MM-dd HH:mm:ss}] %level [%X{tid}] [%class:%line]:%n%m%n</pattern>
+            </layout>
         </encoder>
     </appender>
 
-    <appender name="FILE-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath:-logs}/${name:-log}.log</file>
+    <appender name="FILE-OUT" class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.log.GRPCLogClientAppender">
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.TraceIdPatternLogbackLayout">
-                <pattern>[%d{yyyy-MM-dd HH:mm:ss}] %level %X{group} %X{request_id} [%class:%line]:%n%m%n</pattern>
+            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.mdc.TraceIdMDCPatternLogbackLayout">
+                <pattern>[%d{yyyy-MM-dd HH:mm:ss}] %level [%X{tid}] [%class:%line]:%n%m%n</pattern>
             </layout>
         </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${logPath:-logs}/${name:-log}.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
-            <!-- 30 days -->
-            <maxHistory>30</maxHistory>
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>16MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
-        </rollingPolicy>
     </appender>
 
     <root level="${logLevel}">
