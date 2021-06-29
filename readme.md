@@ -9,6 +9,10 @@
 
 > 发布到私服：mvn clean deploy -Dmaven.test.skip=true -P nancal-dev
 
+> mvn clean package -Dmaven.test.skip=true  -P release
+> mvn clean install -Dmaven.test.skip=true  -P release
+> mvn clean deploy -Dmaven.test.skip=true -P release
+
 ## 发布到私服
 maven的 setting.xml 增加
 
