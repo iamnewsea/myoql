@@ -40,7 +40,7 @@ class DevFileController {
         var target = File(work_path);
         if (target.exists()) {
             if (target.isFile == false) {
-                return JsonResult("path已存在且是目录", "path");
+                return JsonResult("path已存在且是目录");
             }
         } else {
             if (target.parentFile.exists() == false) {

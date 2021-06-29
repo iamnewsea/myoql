@@ -15,12 +15,14 @@ import java.util.ArrayList
 /**
  * 普通的返回对象。
  */
-open class JsonResult @JvmOverloads constructor(var msg: String = "", var cause: String = "") : Serializable {}
+open class JsonResult @JvmOverloads constructor(var msg: String = "") : Serializable {
+    var code: Int? = null
+    var cause: String? = null
+}
 
-open class ApiResult<T> @JvmOverloads constructor(msg: String = "", cause: String = "") : JsonResult(msg, cause) {
+open class ApiResult<T> @JvmOverloads constructor(msg: String = "") : JsonResult(msg) {
     var data: T? = null
     var value: Any? = null
-    var valueRemark: String? = null
 
     companion object {
         @JvmStatic
@@ -32,11 +34,9 @@ open class ApiResult<T> @JvmOverloads constructor(msg: String = "", cause: Strin
     }
 
     /** 设置额外value的值。
-     * @param valueRemark value值的含义
      * @param value value的值
      */
-    fun setValue(valueRemark: String, value: Any): ApiResult<T> {
-        this.valueRemark = valueRemark;
+    fun setValue(value: Any): ApiResult<T> {
         this.value = value;
         return this;
     }
@@ -73,7 +73,6 @@ open class ListResult<T>(
     var data: List<T> = listOf()
 ) : JsonResult(msg) {
     var value: Any? = null
-    var valueRemark: String? = null
 
     companion object {
         @JvmStatic
@@ -91,11 +90,9 @@ open class ListResult<T>(
     }
 
     /** 设置额外value的值。
-     * @param valueRemark value值的含义
      * @param value value的值
      */
-    fun setValue(valueRemark: String, value: Serializable): ListResult<T> {
-        this.valueRemark = valueRemark;
+    fun setValue(value: Serializable): ListResult<T> {
         this.value = value;
         return this;
     }
