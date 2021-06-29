@@ -39,7 +39,7 @@ open class CityServlet : HttpServlet() {
         }
 
         if (pcode % 100 != 0) {
-            throw ParameterInvalidException("城市code非法", "pcode")
+            throw ParameterInvalidException("城市code非法")
         }
 
         var list = db.mor_base.sysCity.query()

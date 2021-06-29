@@ -15,11 +15,11 @@ import java.util.ArrayList
 /**
  * 普通的返回对象。
  */
-open class JsonResult @JvmOverloads constructor(var msg: String = "", var code: Int? = null) : Serializable {
+open class JsonResult @JvmOverloads constructor(var msg: String = "", var code: Int = 0) : Serializable {
     var cause: String? = null
 }
 
-open class ApiResult<T> @JvmOverloads constructor(msg: String = "", code: Int? = null) : JsonResult(msg, code) {
+open class ApiResult<T> @JvmOverloads constructor(msg: String = "", code: Int = 0) : JsonResult(msg, code) {
     var data: T? = null
     var value: Any? = null
 
@@ -42,16 +42,16 @@ open class ApiResult<T> @JvmOverloads constructor(msg: String = "", code: Int? =
 }
 
 
-class ParameterInvalidException @JvmOverloads constructor(msg: String, cause: String) :
+class ParameterInvalidException @JvmOverloads constructor(msg: String) :
     RuntimeException(msg.AsString("参数非法"))
 
-class NoDataException @JvmOverloads constructor(msg: String, cause: String = "") :
+class NoDataException @JvmOverloads constructor(msg: String) :
     RuntimeException(msg.AsString("找不到数据"))
 
-class ExecuteDbException @JvmOverloads constructor(msg: String, cause: String = "") :
+class ExecuteDbException @JvmOverloads constructor(msg: String) :
     RuntimeException(msg.AsString("操作数据库失败"))
 
-class ServerException @JvmOverloads constructor(msg: String, cause: String = "") :
+class ServerException @JvmOverloads constructor(msg: String) :
     RuntimeException(msg.AsString("服务器异常"))
 
 /**
@@ -67,7 +67,7 @@ open class ListQueryModel {
  * 列表返回对象
  */
 open class ListResult<T>() : JsonResult() {
-    constructor(msg: String, code: Int? = null) : this() {
+    constructor(msg: String, code: Int = 0) : this() {
         this.msg = msg;
         this.code = code;
     }

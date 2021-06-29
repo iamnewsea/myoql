@@ -41,14 +41,14 @@ open class ImageGetServlet : HttpServlet() {
         //带 host 头部的地址
         var url = request.findParameterStringValue("url") ;
         if (id.isEmpty() && url.isEmpty()) {
-            throw ParameterInvalidException("参数非法", "id")
+            throw ParameterInvalidException("参数非法")
         }
 
         var width = request.findParameterIntValue("width")
         var height = request.findParameterIntValue("height")
 
         if (width <= 0 && height <= 0) {
-            throw ParameterInvalidException("参数不正确", "width")
+            throw ParameterInvalidException("参数不正确")
 //            response.status = 500;
 //            response.WriteTextValue("参数不正确")
 //            return;

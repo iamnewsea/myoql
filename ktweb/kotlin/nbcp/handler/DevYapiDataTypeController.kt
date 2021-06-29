@@ -24,7 +24,7 @@ class DevYapiDataTypeController {
         var typeMapObject = request.findParameterValue("typeMap")
 
         if (typeMapObject == null) {
-            throw ParameterInvalidException("需要 typeMap 参数", "typeMap")
+            throw ParameterInvalidException("需要 typeMap 参数")
         }
 
         var typeMap = mutableMapOf<String, Any?>()
