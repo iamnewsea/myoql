@@ -15,12 +15,11 @@ import java.util.ArrayList
 /**
  * 普通的返回对象。
  */
-open class JsonResult @JvmOverloads constructor(var msg: String = "") : Serializable {
-    var code: Int? = null
+open class JsonResult @JvmOverloads constructor(var msg: String = "", var code: Int? = null) : Serializable {
     var cause: String? = null
 }
 
-open class ApiResult<T> @JvmOverloads constructor(msg: String = "") : JsonResult(msg) {
+open class ApiResult<T> @JvmOverloads constructor(msg: String = "", code: Int? = null) : JsonResult(msg, code) {
     var data: T? = null
     var value: Any? = null
 
@@ -67,11 +66,14 @@ open class ListQueryModel {
 /**
  * 列表返回对象
  */
-open class ListResult<T>(
-    msg: String = "",
-    var total: Int = -1,
+open class ListResult<T>() : JsonResult() {
+    constructor(msg: String, code: Int? = null) : this() {
+        this.msg = msg;
+        this.code = code;
+    }
+
+    var total: Int = -1
     var data: List<T> = listOf()
-) : JsonResult(msg) {
     var value: Any? = null
 
     companion object {

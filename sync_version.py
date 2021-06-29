@@ -120,13 +120,15 @@ if __name__ == '__main__':
         sys.exit(1)
     elif newVersion == "+":
         v_ary = getVersionOnly().split(".")
-        if( len(v_ary) < 4):
-            newVersion = newVersion + ".1"
+        if(len(v_ary) < 4):
+            newVersion = ".".join(v_ary) + ".1"
         else:
             last = int(v_ary[len(v_ary)-1])
             v_ary[len(v_ary)-1] = str( last + 1 )
             newVersion = ".".join(v_ary)
-
+    elif newVersion == "+!":
+        v_ary = getVersionOnly().split(".")
+        newVersion = v_ary[0] +"." + v_ary[1] +"." + str(int(v_ary[2])+1)
 
 
 
