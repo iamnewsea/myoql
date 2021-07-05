@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
 import org.springframework.context.event.ContextRefreshedEvent
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
 import org.springframework.core.convert.support.GenericConversionService
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
@@ -122,6 +124,7 @@ open class MyMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
 
 @ConditionalOnBean(WebMvcConfigurationSupport::class)
 @Component
+@Order(Ordered.LOWEST_PRECEDENCE)
 class CheckWebMvcConfigurationSupport : InitializingBean {
     override fun afterPropertiesSet() {
         throw RuntimeException("Spring Boot中只能有一个WebMvcConfigurationSupport配置类,请改用 WebMvcConfigurer")
