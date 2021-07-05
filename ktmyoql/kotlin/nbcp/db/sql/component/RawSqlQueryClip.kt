@@ -15,6 +15,11 @@ class RawQuerySqlClip(var sql: SingleSqlData, tableName: String) : SqlBaseQueryC
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
+    constructor(sqlWithVar: String, sqlValue: JsonMap = JsonMap(), tableName: String = "")
+            : this(SingleSqlData(sqlWithVar, sqlValue), tableName) {
+
+    }
+
     override fun toSql(): SingleSqlData {
         return this.sql;
     }
@@ -24,6 +29,11 @@ class RawQuerySqlClip(var sql: SingleSqlData, tableName: String) : SqlBaseQueryC
 class RawExecuteSqlClip(var sql: SingleSqlData, tableName: String) : SqlBaseExecuteClip(tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    }
+
+    constructor(sqlWithVar: String, sqlValue: JsonMap = JsonMap(), tableName: String = "")
+            : this(SingleSqlData(sqlWithVar, sqlValue), tableName) {
+
     }
 
     override fun toSql(): SingleSqlData {

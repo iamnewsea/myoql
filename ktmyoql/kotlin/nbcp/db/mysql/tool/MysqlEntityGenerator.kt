@@ -137,8 +137,7 @@ object MysqlEntityGenerator {
             var ret = mutableListOf<EntityDbItemData>()
 
             var tables_map = RawQuerySqlClip(
-                    SingleSqlData(
-                            """
+                    """
 SELECT table_name,table_comment
 FROM INFORMATION_SCHEMA.TABLES
 where table_schema = {db} 
@@ -147,12 +146,10 @@ ${if (tables.any()) " and table_name in (${tables.map { "'" + it + "'" }.joinToS
 ${if (excludes.any()) " and table_name not in (${excludes.map { "'" + it + "'" }.joinToString(",")})" else ""}
 order by table_name
 """, JsonMap("db" to db)
-                    ), "TABLES"
             ).toMapList()
 
             var columns_map = RawQuerySqlClip(
-                    SingleSqlData(
-                            """
+                    """
 SELECT table_name , column_name , data_type , column_type, column_comment, column_key,extra
 FROM INFORMATION_SCHEMA.COLUMNS
 where table_schema = {db}  
@@ -161,12 +158,10 @@ ${if (tables.any()) " and table_name in (${tables.map { "'" + it + "'" }.joinToS
 ${if (excludes.any()) " and table_name not in (${excludes.map { "'" + it + "'" }.joinToString(",")})" else ""}
 order by table_name , ordinal_position
 """, JsonMap("db" to db)
-                    ), "COLUMNS"
             ).toMapList()
 
             var indexes_map = RawQuerySqlClip(
-                    SingleSqlData(
-                            """
+                    """
 SELECT table_name ,index_name,seq_in_index,column_name 
 FROM INFORMATION_SCHEMA.STATISTICS
 where table_schema = {db} AND non_unique = 0 AND INDEX_name != 'PRIMARY' 
@@ -175,7 +170,6 @@ ${if (tables.any()) " and table_name in (${tables.map { "'" + it + "'" }.joinToS
 ${if (excludes.any()) " and table_name not in (${excludes.map { "'" + it + "'" }.joinToString(",")})" else ""}
 ORDER BY TABLE_NAME , index_name , seq_in_index
 """, JsonMap("db" to db)
-                    ), "COLUMNS"
             ).toMapList()
 
             tables_map.forEach { tableMap ->
