@@ -315,7 +315,7 @@
             <distributionManagement>
                 <repository>
                     <id>nancal-dev</id>
-                    <url>http://nexus.na/repository/maven-releases/</url>
+                    <url>http://git.cloudnk.cn/repository/maven-releases/</url>
                 </repository>
             </distributionManagement>
         </profile>
