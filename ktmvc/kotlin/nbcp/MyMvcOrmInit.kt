@@ -7,6 +7,8 @@ import nbcp.component.WebJsonMapper
 import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
 import nbcp.web.*
+import org.springframework.beans.factory.InitializingBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.jackson.JsonComponent
 import org.springframework.context.ApplicationListener
 import org.springframework.context.annotation.Bean
@@ -17,10 +19,13 @@ import org.springframework.core.convert.support.GenericConversionService
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter
+import org.springframework.stereotype.Component
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
+import java.lang.RuntimeException
 
 
 @Configuration
@@ -115,3 +120,11 @@ open class MyMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
 //}
 
 
+@ConditionalOnBean(WebMvcConfigurationSupport::class)
+@Component
+class CheckWebMvcConfigurationSupport : InitializingBean {
+    override fun afterPropertiesSet() {
+        throw RuntimeException("Spring Boot中只能有一个WebMvcConfigurationSupport配置类,请改用 WebMvcConfigurer")
+    }
+
+}

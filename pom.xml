@@ -3,7 +3,7 @@
 
     <groupId>cn.dev8</groupId>
     <artifactId>kotlin</artifactId>
-    <version>0.2.4</version>
+    <version>0.2.4.1</version>
     <packaging>pom</packaging>
     <name>kotlin-myoql-component</name>
 
@@ -315,7 +315,7 @@
             <distributionManagement>
                 <repository>
                     <id>nancal-dev</id>
-                    <url>http://git.cloudnk.cn/repository/maven-releases/</url>
+                    <url>http://nexus.cloudnk.cn/repository/maven-releases/</url>
                 </repository>
             </distributionManagement>
         </profile>
