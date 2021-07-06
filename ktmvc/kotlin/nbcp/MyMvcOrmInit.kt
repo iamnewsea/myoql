@@ -1,12 +1,14 @@
 package nbcp
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import nbcp.comm.AsString
 import nbcp.comm.JsonStyleEnumScope
 import nbcp.comm.utf8
 import nbcp.component.WebJsonMapper
 import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
 import nbcp.web.*
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.jackson.JsonComponent
@@ -126,8 +128,17 @@ open class MyMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
 @Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 class CheckWebMvcConfigurationSupport : InitializingBean {
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    }
+
     override fun afterPropertiesSet() {
-        throw RuntimeException("Spring Boot中只能有一个WebMvcConfigurationSupport配置类,请改用 WebMvcConfigurer")
+        var level = SpringUtil.context.environment.getProperty("app.webMvcConfigurationSupport.level").AsString("error")
+        if (level == "error") {
+            throw RuntimeException("Spring Boot中只能有一个 WebMvcConfigurationSupport 配置类,请改用 WebMvcConfigurer")
+        } else if (level == "warn") {
+            logger.warn("Spring Boot中只能有一个 WebMvcConfigurationSupport 配置类,请改用 WebMvcConfigurer");
+        }
     }
 
 }
