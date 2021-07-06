@@ -35,7 +35,7 @@
 
         <poi.version>4.1.2</poi.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-        <dokka.version>0.10.1</dokka.version>
+        <dokka.version>1.4.32</dokka.version>
         <aspectjweaver.version>1.9.6</aspectjweaver.version>
         <cglib.version>3.3.0</cglib.version>
         <zip4j.version>2.6.4</zip4j.version>
