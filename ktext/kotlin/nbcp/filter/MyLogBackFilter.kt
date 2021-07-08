@@ -32,6 +32,9 @@ class MyLogBackFilter : TurboFilter() {
         params: Array<out Any>?,
         t: Throwable?
     ): FilterReply {
+        if (config.debug) {
+            return FilterReply.ACCEPT
+        }
 
         if (level == null) {
             return FilterReply.NEUTRAL
@@ -45,12 +48,6 @@ class MyLogBackFilter : TurboFilter() {
             return FilterReply.DENY;
         }
 
-        //在获取 debug 期间，禁用Log
-        usingScope(LogScope.off) {
-            if (config.debug) {
-                return FilterReply.ACCEPT
-            }
-        }
         return FilterReply.NEUTRAL
     }
 }
