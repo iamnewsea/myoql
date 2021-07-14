@@ -21,8 +21,6 @@ import javax.servlet.http.HttpServlet
  * https://gitee.com/whvse/EasyCaptcha
  * 事实上， HandlerInterceptorAdapter 不会拦截 HttpServlet
  */
-@OpenAction
-@MyLogLevel(LogScope.error)
 @WebServlet(urlPatterns = ["/open/validate-code-image"])
 open class AuthImageServlet : HttpServlet() {
     @Autowired

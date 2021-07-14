@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletResponse
  * id,url: 两者必传其一
  * width,height
  */
-@OpenAction
 @WebServlet(urlPatterns = ["/image/dynamic"])
 open class ImageGetServlet : HttpServlet() {
 

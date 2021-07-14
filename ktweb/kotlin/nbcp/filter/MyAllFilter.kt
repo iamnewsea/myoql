@@ -59,7 +59,7 @@ open class MyAllFilter : Filter {
     @Value("\${app.filter.allow-origins:}")
     var allowOrigins: String = "";
 
-    @Value("\${app.filter.headers:}")
+    @Value("\${app.filter.headers:/health}")
     var headers: List<String> = listOf()
 
     /**
@@ -68,8 +68,8 @@ open class MyAllFilter : Filter {
     @Value("\${app.filter.html-path:public}")
     var htmlPath: String = "public"
 
-//    @Value("\${server.session.cookie.name}")
-//    var cookieName = "";
+    @Value("\${app.filter.ignore-log-urls:}")
+    var ignoreLogUrls: List<String> = listOf()
 
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -140,6 +140,7 @@ open class MyAllFilter : Filter {
 
         var logLevel: ch.qos.logback.classic.Level? = null
 
+
         if (logLevelString.HasValue) {
             if (logLevelString.IsNumberic()) {
                 var logLevelInt = logLevelString.AsInt()
@@ -148,6 +149,18 @@ open class MyAllFilter : Filter {
                 }
             } else {
                 logLevel = Level.toLevel(logLevelString, Level.WARN)
+            }
+        } else {
+            var ignoreLog = ignoreLogUrls.any {
+                if (it.endsWith("*")) {
+                    return@any httpRequest.requestURI.startsWith(it.Slice(0, -1), true)
+                } else {
+                    return@any httpRequest.requestURI.equals(it, true)
+                }
+            }
+
+            if (ignoreLog) {
+                logLevel = ch.qos.logback.classic.Level.OFF;
             }
         }
 

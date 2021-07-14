@@ -17,27 +17,25 @@ import javax.servlet.http.HttpServlet
 
 /**
  * Created by udi on 17-4-6.
- * https://gitee.com/whvse/EasyCaptcha
- * 事实上， HandlerInterceptorAdapter 不会拦截 HttpServlet
+ * 1. HandlerInterceptorAdapter 不会拦截 HttpServlet。
+ * 2. 不使用 @Controller 注解，不能生成Bean，不能使用 Aop
  */
-@OpenAction
-@MyLogLevel(LogScope.off)
 @WebServlet(urlPatterns = ["/health"])
 open class HealthServlet : HttpServlet() {
 
-    override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
+    public override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
         response.status = 200;
     }
 
-    override fun doPost(req: HttpServletRequest, resp: HttpServletResponse) {
+    public override fun doPost(req: HttpServletRequest, resp: HttpServletResponse) {
         resp.status = 200;
     }
 
-    override fun doHead(req: HttpServletRequest, resp: HttpServletResponse) {
+    public override fun doHead(req: HttpServletRequest, resp: HttpServletResponse) {
         resp.status = 200;
     }
 
-    override fun doOptions(req: HttpServletRequest, resp: HttpServletResponse) {
+    public override fun doOptions(req: HttpServletRequest, resp: HttpServletResponse) {
         resp.status = 200;
     }
 }
