@@ -42,6 +42,17 @@ fun ServletResponse.WriteHtmlValue(text: String) {
     this.outputStream.write(text.toByteArray(utf8));
 }
 
+fun ServletResponse.WriteHtmlBodyValue(text: String) {
+    this.contentType = "text/html;charset=UTF-8";
+    this.outputStream.write(
+        """<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"></head>
+<body>${text}</body>
+</html>""".toByteArray(utf8)
+    );
+}
+
 fun HttpServletResponse.setDownloadFileName(fileName: String) {
     this.setHeader("Content-Disposition", "attachment; filename=" + JsUtil.encodeURIComponent(fileName));
     this.contentType = "application/octet-stream"
