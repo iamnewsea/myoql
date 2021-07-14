@@ -3,6 +3,7 @@
     <springProperty scope="context" name="logLevel" source="logging.level.root"/>
     <springProperty scope="context" name="logPath" source="logging.file.path"/>
     <springProperty scope="context" name="name" source="spring.application.name"/>
+    <turboFilter class="nbcp.filter.MyLogBackFilter"></turboFilter>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
