@@ -27,10 +27,10 @@ open class HiServlet : HttpServlet() {
         var json = JsonMap();
 
         var jarFile = ClassUtil.getStartingJarFile();
-        json["发版时间"] = Date(jarFile.lastModified()).AsString();
-        json["启动文件名"] = jarFile.name;
         json["spring.application.name"] = SpringUtil.context.environment.getProperty("spring.application.name");
         json["当前配置"] = SpringUtil.context.environment.getProperty("spring.profiles.active");
+        json["发版时间"] = Date(jarFile.lastModified()).AsString();
+        json["启动文件名"] = jarFile.name;
         json["登录用户Id"] = request.UserId;
         json["登录用户名称"] = request.UserName;
         json["JAVA_VERSION"] = System.getenv("JAVA_VERSION");
