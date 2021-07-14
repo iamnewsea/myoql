@@ -37,7 +37,7 @@ open class HiServlet : HttpServlet() {
         json["Git提交时间"] = "20" + System.getenv("VERSION").AsString();
         json["POD名称"] = System.getenv("HOSTNAME");
 
-        response.WriteTextValue(json.map { it.key + " : " + it.value }.joinToString("<br />"));
+        response.WriteHtmlValue(json.map { it.key + " : " + it.value }.joinToString("<br />"));
     }
 }
 
