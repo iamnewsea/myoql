@@ -29,16 +29,22 @@ open class HiServlet : HttpServlet() {
         var jarFile = ClassUtil.getStartingJarFile();
         json["发版时间"] = Date(jarFile.lastModified()).AsString();
         json["启动文件名"] = jarFile.name;
+        json["spring.application.name"] = SpringUtil.context.environment.getProperty("spring.application.name");
         json["当前配置"] = SpringUtil.context.environment.getProperty("spring.profiles.active");
         json["登录用户Id"] = request.UserId;
         json["登录用户名称"] = request.UserName;
         json["JAVA_VERSION"] = System.getenv("JAVA_VERSION");
         json["JAVA_OPTS"] = System.getenv("JAVA_OPTS");
-        json["Git提交时间"] = "20" + System.getenv("VERSION").AsString();
         json["POD名称"] = System.getenv("HOSTNAME");
+        var version = System.getenv("VERSION").AsString();
+
+        if (version.HasValue) {
+            json["Git提交时间"] = "20" + version;
+        }
 
         response.WriteHtmlBodyValue("""<style>div{margin:10px;} span{margin:5px;font-size:16px;display:inline-block}</style>""" +
-                "<div>" + json.map { "<span>" + it.key + " : " + it.value + "</span>" }
+                "<div>" + json
+            .map { "<span>" + it.key + " : " + it.value.AsString() + "</span>" }
             .joinToString("<br />") + "</div>");
     }
 }
