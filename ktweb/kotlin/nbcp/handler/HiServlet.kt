@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServlet
 @WebServlet(urlPatterns = ["/hi"])
 open class HiServlet : HttpServlet() {
     public override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
-        var json = StringMap();
+        var json = JsonMap();
 
         var jarFile = ClassUtil.getStartingJarFile();
         json["发版时间"] = Date(jarFile.lastModified()).AsString();
