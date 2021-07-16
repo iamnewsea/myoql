@@ -1,3 +1,42 @@
+# 依赖
+
+## skywalking 日志
+
+>https://skywalking.apache.org/docs/main/v8.5.0/en/setup/service-agent/java-agent/application-toolkit-logback-1.x/#logback-plugin
+
+在启动类上添加依赖
+```
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-logging</artifactId>
+</dependency>
+        
+<dependency>
+	<groupId>org.apache.skywalking</groupId>
+	<artifactId>apm-toolkit-logback-1.x</artifactId>
+	<version>8.5.0</version>
+</dependency>
+```
+
+配置项：
+```
+logging:
+  config: classpath:logback-skywalking.xml
+  file:
+    path: logs
+  level:
+    root: WARN
+```
+
+
+skywalking agent:
+```
+plugin.toolkit.log.grpc.reporter.server_host=${SW_GRPC_LOG_SERVER_HOST:192.168.5.213}
+plugin.toolkit.log.grpc.reporter.server_port=${SW_GRPC_LOG_SERVER_PORT:11800}
+plugin.toolkit.log.grpc.reporter.max_message_size=${SW_GRPC_LOG_MAX_MESSAGE_SIZE:10485760}
+plugin.toolkit.log.grpc.reporter.upstream_timeout=${SW_GRPC_LOG_GRPC_UPSTREAM_TIMEOUT:30}
+```
+
 # kotlin extension
 
 扩展了基础的用法，包括以下对象：

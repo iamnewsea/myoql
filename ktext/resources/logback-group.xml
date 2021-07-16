@@ -5,16 +5,18 @@
     <springProperty scope="context" name="name" source="spring.application.name"/>
     <turboFilter class="nbcp.filter.MyLogBackFilter"></turboFilter>
 
+    <property name="pattern" value="[%d{yyyy-MM-dd HH:mm:ss}] %-5level %X{group} %X{request_id} [%class:%line]:%n%m%n" />
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss}] %level %X{group} %X{request_id} [%class:%line]:%n%m%n</pattern>
+            <pattern>${pattern}</pattern>
         </encoder>
     </appender>
 
     <appender name="FILE-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logPath:-logs}/${name:-log}.log</file>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss}] %level %X{group} %X{request_id} [%class:%line]:%n%m%n</pattern>
+            <pattern>${pattern}</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${logPath:-logs}/${name:-log}.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>

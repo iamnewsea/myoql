@@ -3,18 +3,21 @@
     <springProperty scope="context" name="logLevel" source="logging.level.root"/>
     <springProperty scope="context" name="logPath" source="logging.file.path"/>
     <springProperty scope="context" name="name" source="spring.application.name"/>
+
+    <property name="pattern" value="[%d{yyyy-MM-dd HH:mm:ss}] %-5level %X{group} %X{request_id} [%class:%line]:%n%m%n" />
+
     <turboFilter class="nbcp.filter.MyLogBackFilter"></turboFilter>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss}] %level %X{group} %X{request_id} [%class:%line]:%n%m%n</pattern>
+            <pattern>${pattern}</pattern>
         </encoder>
     </appender>
 
     <appender name="FILE-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logPath:-logs}/${name:-log}.log</file>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss}] %level %X{group} %X{request_id} [%class:%line]:%n%m%n</pattern>
+            <pattern>${pattern}</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${logPath:-logs}/${name:-log}.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
