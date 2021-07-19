@@ -531,7 +531,7 @@ open class MyAllFilter : Filter {
                 response.contentType = "application/javascript;charset=UTF-8"
                 response.result = """${callback}(${resStringValue})""".toByteArray(utf8)
             } else {
-                setResponseBid(resValue, request, response);
+//                setResponseBid(resValue, request, response);
 
                 if (response.status == 280) {
                     response.result = byteArrayOf();
@@ -560,25 +560,25 @@ open class MyAllFilter : Filter {
         }
     }
 
-    private fun setResponseBid(
-        resValue: ByteArray,
-        request: MyHttpRequestWrapper,
-        response: MyHttpResponseWrapper
-    ): Boolean {
-        if (resValue.isEmpty()) return false;
-        var ori_md5 = request.getHeader("_bid_");
-        if (ori_md5 == null) return false;
-        if (response.status >= 400 || resValue.size < 32) return false;
-
-        var md5 = Md5Util.getBase64Md5(resValue);
-        //body id
-        response.addHeader("_bid_", md5);
-        if (ori_md5.HasValue && ori_md5 == md5) {
-            response.status = 280
-            return true;
-        }
-        return false;
-    }
+//    private fun setResponseBid(
+//        resValue: ByteArray,
+//        request: MyHttpRequestWrapper,
+//        response: MyHttpResponseWrapper
+//    ): Boolean {
+//        if (resValue.isEmpty()) return false;
+//        var ori_md5 = request.getHeader("_bid_");
+//        if (ori_md5 == null) return false;
+//        if (response.status >= 400 || resValue.size < 32) return false;
+//
+//        var md5 = Md5Util.getBase64Md5(resValue);
+//        //body id
+//        response.addHeader("_bid_", md5);
+//        if (ori_md5.HasValue && ori_md5 == md5) {
+//            response.status = 280
+//            return true;
+//        }
+//        return false;
+//    }
 
 
 //    private fun getAllFiles(file: File, filter: ((String) -> Boolean)): List<String> {
