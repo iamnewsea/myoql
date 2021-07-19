@@ -29,39 +29,8 @@ servers
       <username>admin</username>
       <password>xxx</password>
     </server>
-	<server>
-       <id>nancal-test</id>
-      <username>admin</username>
-      <password>xxx</password>
-    </server>
-	<server>
-       <id>nancal-main</id>
-      <username>admin</username>
-      <password>xxx</password>
-    </server>
 ```
 
-mirrors
-```
-	<mirror>
-        <id>nancal-dev</id>
-		<mirrorOf>nancal-dev</mirrorOf>
-        <name>nancal-dev</name>
-        <url>http://saas-dev.nancal.com:31016/repository/maven-public/</url>
-    </mirror>
-	<mirror>
-        <id>nancal-test</id>
-		<mirrorOf>nancal-test</mirrorOf>
-        <name>nancal-test</name>
-        <url>http://saas-dev.nancal.com:32016/repository/maven-public/</url>
-    </mirror>
-	<mirror>
-        <id>nancal-main</id>
-		<mirrorOf>nancal-main</mirrorOf>
-        <name>nancal-main</name>
-        <url>http://saas-dev.nancal.com:33016/repository/maven-public/</url>
-    </mirror>
-```
 
 
 pom.xml 文件设置：(以后想办法把这一段移到 setting.xml 中)
@@ -72,24 +41,6 @@ pom.xml 文件设置：(以后想办法把这一段移到 setting.xml 中)
 			<repository>
 				<id>nancal-dev</id>
 				<url>http://saas-dev.nancal.com:31016/repository/maven-releases/</url>
-			</repository>
-		</distributionManagement>
-	</profile>
-	<profile>
-		<id>nancal-test</id>
-		<distributionManagement>
-			<repository>
-				<id>nancal-test</id>
-				<url>http://saas-dev.nancal.com:32016/repository/maven-releases/</url>
-			</repository>
-		</distributionManagement>
-	</profile>
-	<profile>
-		<id>nancal-main</id>
-		<distributionManagement>
-			<repository>
-				<id>nancal-main</id>
-				<url>http://saas-dev.nancal.com:33016/repository/maven-releases/</url>
 			</repository>
 		</distributionManagement>
 	</profile>
