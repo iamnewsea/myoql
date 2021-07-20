@@ -33,7 +33,7 @@ object RecursionUtil {
         container: MutableList<T>,
         producer: (T) -> MutableList<T>,
         idCallback: (T) -> String,
-        callback: (T, T?, Int) -> Boolean
+        callback: (Set<T>, Int) -> Boolean
     ) {
         var list_queryed_ids = mutableListOf<String>();
         var list_wbs_ids = mutableSetOf<String>();
@@ -42,12 +42,14 @@ object RecursionUtil {
         RecursionUtil.execute<T>(
             container,
             producer,
-            { item, parent, index ->
-                if (callback(item, parent, index) == false) {
+            { wbs, index ->
+                if (callback(wbs, index) == false) {
                     return@execute RecursionReturnEnum.Go
                 }
 
-                list_queryed_ids.add(idCallback(item))
+                var item = wbs.last();
+                var item_id = idCallback(item)
+                list_queryed_ids.add(item_id)
 
                 if (container != null) {
                     list_wbs_ids.addAll(
@@ -55,11 +57,11 @@ object RecursionUtil {
                             container,
                             producer,
                             { item2 ->
-                                return@getWbs idCallback(item2) == idCallback(item)
+                                return@getWbs idCallback(item2) == item_id
                             }).map { idCallback(it) }
                     )
                 } else {
-                    list_wbs_ids.add(idCallback(item));
+                    list_wbs_ids.add(item_id);
                 }
                 return@execute RecursionReturnEnum.StopSub
             });
@@ -68,12 +70,14 @@ object RecursionUtil {
         RecursionUtil.execute<T>(
             container,
             producer,
-            { item, parent, index ->
-                if (list_wbs_ids.contains(idCallback(item)) == false) {
+            { wbs, index ->
+                var item = wbs.last();
+                var item_id = idCallback(item)
+                if (list_wbs_ids.contains(item_id) == false) {
                     return@execute RecursionReturnEnum.Remove;
                 }
 
-                if (list_queryed_ids.contains(idCallback(item))) {
+                if (list_queryed_ids.contains(item_id)) {
                     return@execute RecursionReturnEnum.StopSub;
                 }
 
@@ -92,16 +96,16 @@ object RecursionUtil {
     fun <T> execute(
         container: MutableList<T>,
         producer: (T) -> MutableList<T>,
-        consumer: (T, T?, Int) -> RecursionReturnEnum
+        consumer: (Set<T>, Int) -> RecursionReturnEnum
     ): Int {
-        return _execute(container, producer, consumer, null);
+        return _execute(container, producer, consumer);
     }
 
     private fun <T> _execute(
         container: MutableList<T>,
         producer: (T) -> MutableList<T>,
-        consumer: (T, T?, Int) -> RecursionReturnEnum,
-        parent: T? = null
+        consumer: (Set<T>, Int) -> RecursionReturnEnum,
+        parents: Set<T> = setOf()
     ): Int {
         if (container.size == 0) return 0
         var counted = 0;
@@ -110,7 +114,8 @@ object RecursionUtil {
         for (i in container.indices) {
             val item = container[i]
             counted++;
-            val ret = consumer(item, parent, i)
+            var setT = parents.union(listOf(item));
+            val ret = consumer(setT, i)
 
             if (ret == RecursionReturnEnum.StopSub)
                 continue
@@ -120,7 +125,7 @@ object RecursionUtil {
                 continue;
             }
 
-            counted += _execute(producer(item), producer, consumer, item);
+            counted += _execute(producer(item), producer, consumer, setT);
         }
 
         for (i in removeIndeies.reversed()) {
@@ -137,7 +142,11 @@ object RecursionUtil {
      * @param consumer: 生产者
      */
     @JvmOverloads
-    fun <T> findOne(container: Collection<T>, producer: (T) -> Collection<T>, consumer: (T) -> Boolean): T? {
+    fun <T> findOne(
+        container: Collection<T>,
+        producer: (T) -> Collection<T>,
+        consumer: (T) -> Boolean
+    ): T? {
         for (i in container.indices) {
             val item = container.elementAt(i)
             var retVal = consumer(item)
@@ -157,7 +166,7 @@ object RecursionUtil {
         container: Collection<T>,
         producer: (T) -> Collection<T>,
         consumer: (T) -> Boolean,
-        parents: MutableList<T> = mutableListOf()
+        parents:  List<T> = listOf()
     ): MutableList<T> {
         for (i in container.indices) {
             val item = container.elementAt(i)
