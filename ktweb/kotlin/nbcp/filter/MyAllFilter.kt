@@ -59,7 +59,7 @@ open class MyAllFilter : Filter {
     @Value("\${app.filter.allow-origins:}")
     var allowOrigins: String = "";
 
-    @Value("\${app.filter.headers:/health}")
+    @Value("\${app.filter.headers:token}")
     var headers: List<String> = listOf()
 
     /**
@@ -68,7 +68,7 @@ open class MyAllFilter : Filter {
     @Value("\${app.filter.html-path:public}")
     var htmlPath: String = "public"
 
-    @Value("\${app.filter.ignore-log-urls:}")
+    @Value("\${app.filter.ignore-log-urls:/health}")
     var ignoreLogUrls: List<String> = listOf()
 
     companion object {

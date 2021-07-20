@@ -1,16 +1,20 @@
 package nbcp.db.mongo
 
 
+import nbcp.comm.AsString
+import nbcp.comm.FindField
 import org.springframework.data.mongodb.core.query.Criteria
 import org.slf4j.LoggerFactory
 import nbcp.db.*;
+import java.lang.RuntimeException
 
 typealias mongoQuery = org.springframework.data.mongodb.core.query.Query
 
 /**
  * mongo 元数据实体的基类
  */
-abstract class MongoBaseMetaCollection<T : IMongoDocument>(val entityClass: Class<T>, entityName: String) : BaseMetaData(entityName) {
+abstract class MongoBaseMetaCollection<T : IMongoDocument>(val entityClass: Class<T>, entityName: String) :
+    BaseMetaData(entityName) {
     //    abstract fun getColumns(): Array<String>;
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java)
@@ -24,7 +28,18 @@ abstract class MongoBaseMetaCollection<T : IMongoDocument>(val entityClass: Clas
         var batchInsert = MongoBaseInsertClip(this.tableName)
         batchInsert.addEntity(entity)
         batchInsert.exec();
-        return entity.id
+
+        if (entity is BaseEntity) {
+            return entity.id
+        }
+
+        var idField = entity.javaClass.FindField("id")
+        if (idField != null) {
+            idField.isAccessible = true;
+            return idField.get(entity).AsString();
+        }
+
+        throw RuntimeException("找不到 id")
     }
 
 

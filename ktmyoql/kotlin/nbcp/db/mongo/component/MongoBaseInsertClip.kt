@@ -2,6 +2,7 @@ package nbcp.db.mongo
 
 import com.mongodb.BasicDBObject
 import nbcp.comm.*
+import nbcp.db.BaseEntity
 import nbcp.db.db
 import nbcp.db.mongo.*
 import org.bson.Document
@@ -79,15 +80,24 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
         } finally {
             logger.InfoError(ret < 0) {
                 """[insert] ${this.collectionName}
-${if (logger.debug) "[entities] ${entities.ToJson()}" else "[enities.ids] ${entities.map {
-                    if (it is IMongoDocument) {
-                        return@map it.id
-                    } else if (it is Map<*, *>) {
-                        return@map it.get("id").AsString()
-                    }
-                    return@map ""
-                }.joinToString(",")
-                }"}
+${
+                    if (logger.debug) "[entities] ${entities.ToJson()}" else "[enities.ids] ${
+                        entities.map {
+                            if (it is BaseEntity) {
+                                return@map it.id
+                            } else if (it is Map<*, *>) {
+                                return@map it.get("id").AsString()
+                            }
+                            //反射 id.
+                            var idField = it.javaClass.FindField("id")
+                            if (idField != null) {
+                                idField.isAccessible = true;
+                                return@map idField.get(it);
+                            }
+                            return@map ""
+                        }.joinToString(",")
+                    }"
+                }
 [result] ${ret}
 [耗时] ${db.executeTime}
 """

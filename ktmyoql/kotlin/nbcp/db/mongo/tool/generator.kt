@@ -1,6 +1,7 @@
 package nbcp.db.mongo.tool
 
 import nbcp.comm.*
+import nbcp.data.Sys
 import nbcp.utils.*
 import nbcp.db.*
 import nbcp.tool.CodeGeneratorHelper
@@ -19,6 +20,17 @@ class generator {
     private var nameMapping: StringMap = StringMap();
 
     private lateinit var moer_File: FileWriter
+
+    private fun String.GetSafeKotlinName(): String {
+        if (this.isEmpty()) return this;
+
+        return this.split(".").map {
+            if( Sys.devKeywords.contains(it)){
+                return@map """`${it}`"""
+            }
+            return@map it;
+        }.joinToString(".")
+    }
 
     fun work(
         targetFileName: String,  //目标文件
@@ -76,7 +88,9 @@ ${packages.map { "import" + it }.joinToString("\n")}
 @Component("mongo.${groupName}")
 @MetaDataGroup("${groupName}")
 class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
-    override fun getEntities():Set<BaseMetaData> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
+    override fun getEntities():Set<BaseMetaData> = setOf(${
+                    group.value.map { genVarName(it).GetSafeKotlinName() }.joinToString(",")
+                })
 """
             )
             println("${groupName}:")
@@ -251,7 +265,7 @@ data class moer_map(val _pname:String)
         return """${fieldType.name.split(".").last()}Meta(join(this._pname,"${fieldName}"))""";
     }
 
-    private fun getMetaValue(field: Field,parentType:Class<*>, parentTypeName: String, deepth: Int): String {
+    private fun getMetaValue(field: Field, parentType: Class<*>, parentTypeName: String, deepth: Int): String {
 
         if (deepth > maxLevel) {
             writeToFile("-------------------已超过最大深度${field.name}:${field.type.name}-----------------");
@@ -304,7 +318,7 @@ data class moer_map(val _pname:String)
     }
 
 
-    private fun getEntityValue1(field: Field,parentType:Class<*>): Pair<String, Boolean> {
+    private fun getEntityValue1(field: Field, parentType: Class<*>): Pair<String, Boolean> {
         var (ret, retTypeIsBasicType) = getEntityValue(field.name, field.type);
         if (ret.HasValue) return ret to retTypeIsBasicType;
 
@@ -375,7 +389,7 @@ ${props.joinToString("\n")}
         var entityTypeName = entTypeName + "Entity";
         var entityVarName = getEntityName(entTypeName);
 
-        return """${CodeGeneratorHelper.getEntityCommentOnly(entType)}val ${entityVarName} get() = ${entityTypeName}();"""
+        return """${CodeGeneratorHelper.getEntityCommentOnly(entType)}val ${entityVarName.GetSafeKotlinName()} get() = ${entityTypeName}();"""
 //fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""";
     }
 
@@ -401,7 +415,7 @@ ${props.joinToString("\n")}
                     pks.add(it.name);
                 }
 
-                var (retValue, retTypeIsBasicType) = getEntityValue1(it,entType)
+                var (retValue, retTypeIsBasicType) = getEntityValue1(it, entType)
                 if (retTypeIsBasicType) {
                     return@map "${CodeGeneratorHelper.getFieldComment(it)}val ${it.name}=MongoColumnName(${retValue})".ToTab(
                         1
@@ -489,7 +503,7 @@ ${props.joinToString("\n")}
         }
 
         var ent = """${CodeGeneratorHelper.getEntityComment(entType)}class ${entityTypeName}(collectionName:String="")
-    :MongoBaseMetaCollection<${entType.name}>(${entType.name}::class.java,collectionName.AsString("${dbName}")) {
+    :MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java,collectionName.AsString("${dbName}")) {
 ${props.joinToString("\n")}
 ${idMethods.joinToString("\n")}
 }

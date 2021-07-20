@@ -17,7 +17,7 @@ class MongoInsertEvent : IMongoEntityInsert {
             db.fillCityName(entity);
 
 
-            if (entity is IMongoDocument) {
+            if (entity is BaseEntity) {
                 if (entity.id.isEmpty()) {
                     entity.id = ObjectId().toString()
                 }
