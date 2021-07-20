@@ -9,7 +9,7 @@ import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.core.convert.support.GenericConversionService
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory
+import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory
 import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter
@@ -68,7 +68,7 @@ object db_mongo {
         if (ret != null) {
             return ret;
         }
-        var dbFactory = SimpleMongoClientDbFactory(uri);
+        var dbFactory = SimpleMongoClientDatabaseFactory(uri);
         val converter = MappingMongoConverter(DefaultDbRefResolver(dbFactory), SpringUtil.getBean<MongoMappingContext>())
         converter.setTypeMapper(DefaultMongoTypeMapper(null));
         (converter.conversionService as GenericConversionService).addConverter(Date2LocalDateTimeConverter())
