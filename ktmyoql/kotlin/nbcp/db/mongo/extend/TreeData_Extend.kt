@@ -4,6 +4,7 @@
 package nbcp.db.mongo
 
 import nbcp.comm.ApiResult
+import nbcp.comm.AsInt
 import nbcp.comm.BatchReader
 import nbcp.comm.HasValue
 import nbcp.db.ITreeData
@@ -13,13 +14,30 @@ import org.bson.types.ObjectId
 import java.lang.RuntimeException
 
 
-data class TreeResultData(var root: ITreeData<*>, var parent: ITreeData<*>?, var current: ITreeData<*>)
+/**
+ * wbs,从根开始，到当前节点
+ */
+class TreeResultData() : LinkedHashSet<ITreeData<*>>() {
+    constructor(value: Set<ITreeData<*>>) : this() {
+        this.addAll(value);
+    }
+
+    val root: ITreeData<*>
+        get() = this.first();
+
+    val parent: ITreeData<*>?
+        get() =
+            if (this.size < 2) null else this.elementAt(this.size - 2)
+
+    val current: ITreeData<*>
+        get() = this.last()
+}
 
 
 /**
  * 在数据库中遍历查找树节点。返回所在树中的 根，父，本身。
  */
-fun <M : MongoBaseMetaCollection<T>, T> M.findTreeById(id: String): TreeResultData?
+fun <M : MongoBaseMetaCollection<T>, T> M.findTreeById(id: String): TreeResultData
         where T : IMongoDocument,
               T : ITreeData<*> {
     return this.findTree { it.id == id };
@@ -28,22 +46,23 @@ fun <M : MongoBaseMetaCollection<T>, T> M.findTreeById(id: String): TreeResultDa
 /**
  * 在数据库中遍历查找树节点。返回所在树中的 根，父，本身。
  */
-fun <M : MongoBaseMetaCollection<T>, T> M.findTree(callback: ((ITreeData<*>) -> Boolean)): TreeResultData?
+fun <M : MongoBaseMetaCollection<T>, T> M.findTree(callback: ((ITreeData<*>) -> Boolean)): TreeResultData
         where T : IMongoDocument,
               T : ITreeData<*> {
     var reader = BatchReader.init(5, { skip, take ->
         this.query().limit(skip, take).toList()
     });
-    var ret: TreeResultData? = null;
+    var ret: TreeResultData = TreeResultData();
     while (reader.hasNext()) {
         var current = reader.next();
 
         RecursionUtil.execute<ITreeData<*>>(
             mutableListOf(current),
             { it.children() as MutableList<ITreeData<*>> },
-            { item, container, index ->
+            { wbs, index ->
+                var item = wbs.last()
                 if (callback(item)) {
-                    ret = TreeResultData(current, container, item);
+                    ret = TreeResultData(wbs);
                     return@execute RecursionReturnEnum.Abord;
                 }
                 return@execute RecursionReturnEnum.Go
