@@ -13,6 +13,7 @@ import nbcp.db.redis.RedisTask
 import nbcp.utils.*
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -44,8 +45,17 @@ open class NacosService {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    @Value("\${app.nacos.host:}")
-    var serverHost: String = "http://127.0.0.1:8848/nacos"
+    @Value("\${spring.cloud.nacos.discovery.server-addr:}")
+    var nacosServerAddress: String = "http://127.0.0.1:8848/nacos"
+
+    val serverHost: String
+        get() {
+            if (nacosServerAddress.startsWith("http://", true) || nacosServerAddress.startsWith("https://", true)) {
+                return nacosServerAddress
+            }
+
+            return "http://${nacosServerAddress}"
+        }
 
     /**
      * 获取配置项
@@ -265,4 +275,5 @@ open class NacosService {
         }
 
     }
+
 }
