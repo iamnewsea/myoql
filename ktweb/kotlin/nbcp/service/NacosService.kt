@@ -2,12 +2,14 @@ package nbcp.service
 
 import io.minio.MinioClient
 import nbcp.comm.*
+import nbcp.component.SnowFlake
 import nbcp.db.DatabaseEnum
 import nbcp.db.IdName
 import nbcp.db.db
 import nbcp.db.mongo.entity.SysAnnex
 import nbcp.db.mongo.service.UploadFileMongoService
 import nbcp.db.mysql.service.UploadFileMysqlService
+import nbcp.db.redis.RedisTask
 import nbcp.utils.*
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.slf4j.LoggerFactory
@@ -30,6 +32,7 @@ import java.net.InetAddress
 import java.util.Enumeration
 
 import java.net.NetworkInterface
+import kotlin.concurrent.thread
 
 
 /**
@@ -41,6 +44,7 @@ open class NacosService {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
+    @Value("\${app.nacos.host:}")
     var serverHost: String = "http://127.0.0.1:8848/nacos"
 
     /**
@@ -168,9 +172,8 @@ open class NacosService {
         namespaceId: String,
         serviceName: String,
         group: String = "DEFAULT_GROUP"
-    ): ApiResult<String> {
-        var appName = SpringUtil.context.environment.getProperty("spring.application.name");
-
+    ): ApiResult<Int> {
+        var appName = namespaceId + "-" + serviceName;
         var nacosInstances = getInstances(namespaceId, serviceName, group)
             .apply {
                 if (this.msg.HasValue) return ApiResult(this.msg);
@@ -194,8 +197,11 @@ open class NacosService {
         var redisNacosInstance = db.rer_base.nacosInstance.getMap(appName)
         var randomNumber = MyUtil.getRandomWithMaxValue(10);
         if (redisNacosInstance.isNullOrEmpty() || !redisNacosInstance.containsKey(localUseIp)) {
-            db.rer_base.nacosInstance.setItem(appName, localUseIp, 10 + randomNumber);
-            return ApiResult();
+            var machineId = 10 + randomNumber;
+            SpringUtil.getBean<SnowFlake>().machineId = machineId
+
+            db.rer_base.nacosInstance.setItem(appName, localUseIp, machineId);
+            return ApiResult.of(machineId);
         }
 
         var redisNacosInstanceNewData = redisNacosInstance.filter { nacosInstanceIps.contains(it.key) }.toMutableMap()
@@ -206,9 +212,17 @@ open class NacosService {
             return ApiResult();
         }
 
+
+        //先设置到自己。
+        var machineId = redisNacosInstanceNewData.get(localUseIp).AsInt();
+
+        if (machineId > 0) {
+            SpringUtil.getBean<SnowFlake>().machineId = machineId;
+        }
+
         db.rer_base.nacosInstance.setMap(appName, redisNacosInstanceNewData);
 
-        return ApiResult();
+        return ApiResult.of(machineId);
     }
 
 
