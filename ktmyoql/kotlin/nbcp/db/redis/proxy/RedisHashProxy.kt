@@ -11,9 +11,9 @@ import java.io.Serializable
 
 
 class RedisHashProxy @JvmOverloads constructor(
-        group: String,
-        defaultCacheSeconds: Int = 0)
-    : BaseRedisProxy(group, defaultCacheSeconds) {
+    group: String,
+    defaultCacheSeconds: Int = 0
+) : BaseRedisProxy(group, defaultCacheSeconds) {
 
 
     fun keys(key: String): Set<String> {
@@ -78,6 +78,15 @@ class RedisHashProxy @JvmOverloads constructor(
         var cacheKey = getFullKey(key)
 
         anyTypeCommand.opsForHash<String, Any>().putAll(cacheKey, value)
+    }
+
+    /**
+     * 设置一个字段的值。
+     */
+    fun setItem(key: String, field: String, value: Any) {
+        var cacheKey = getFullKey(key)
+
+        anyTypeCommand.opsForHash<String, Any>().put(cacheKey, field, value)
     }
 
     fun removeItems(key: String, vararg members: String) {

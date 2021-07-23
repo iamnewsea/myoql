@@ -19,6 +19,8 @@ class RedisBaseGroup {
     //城市数据，缓存两个小时
     val cityCodeName get() = RedisStringProxy("city-code-name", 7200)
 
+    val nacosInstance get() = RedisHashProxy("nacos-ins")
+
     /**
      * 获取城市
      */

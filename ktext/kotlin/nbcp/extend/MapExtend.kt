@@ -154,3 +154,39 @@ fun Map<String, *>.toUrlQuery(): String {
 fun Map<String, Any?>.getKeyByValue(value: Any): String? {
     return this.entries.firstOrNull { it.value == value }?.key
 }
+
+
+/**
+ * 判断数据是否相同， 不区分顺序。只关心内容，对值进行简单比较
+ */
+fun Map<*, *>.EqualMapContent(value: Map<*, *>, compare: ((Any?, Any?) -> Boolean)? = null): Boolean {
+    if (this.size == 0 && value.size == 0) return true;
+    else if (this.size == 0) return false;
+    else if (value.size == 0) return false;
+
+    if (this.size != value.size) return false;
+
+    if (this.keys.EqualArrayContent(value.keys) == false) return false;
+
+    if (this.all {
+            var value1 = it.value;
+            var value2 = value.get(it.key);
+
+            if (value1 is Array<*> && value2 is Array<*>) {
+                return@all value1.EqualArrayContent(value2);
+            }
+            if (value1 is Collection<*> && value2 is Collection<*>) {
+                return@all value1.EqualArrayContent(value2);
+            }
+            if (value1 is Map<*, *> && value2 is Map<*, *>) {
+                return@all value1.EqualMapContent(value2);
+            }
+
+            if (compare != null) {
+                return@all compare(value1, value2);
+            }
+            return@all it.value == value2;
+        } == false) return false;
+
+    return true;
+}

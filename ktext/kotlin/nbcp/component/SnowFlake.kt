@@ -51,7 +51,7 @@ class SnowFlake : InitializingBean {
     /**
      * 机器标识Id, 默认为1 ， 范围：1 - 1023
      */
-    @Value("\${app.machine-id:1}")
+//    @Value("\${app.machine-id:1}")
     var machineId: Int = 1
 
     private var sequence = 0L //序列号

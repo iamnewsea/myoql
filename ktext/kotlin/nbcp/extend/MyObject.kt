@@ -18,7 +18,6 @@ import java.util.*
  */
 
 data class CheckMustExpresstion<T>(var condition: Boolean, var data: T?) {
-
     fun elseThrow(msg: ((T?) -> String)): T {
         if (condition) return data!!
         else throw RuntimeException(msg(data));
