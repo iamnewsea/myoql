@@ -8,6 +8,7 @@
 - 本发安装单个Jar包： python install_jar.py -f ktext
 
 > 发布到私服：mvn clean deploy -Dmaven.test.skip=true -P nancal-dev
+> 发布到私服：mvn clean deploy -Dmaven.test.skip=true -P nancal-snapshots
 
 > mvn clean package -Dmaven.test.skip=true  -P release
 > mvn clean install -Dmaven.test.skip=true  -P release
