@@ -319,5 +319,15 @@
                 </repository>
             </distributionManagement>
         </profile>
+
+        <profile>
+            <id>nancal-snapshots</id>
+            <distributionManagement>
+                <repository>
+                    <id>nancal-snapshots</id>
+                    <url>http://nexus.cloudnk.cn/repository/maven-snapshots/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
     </profiles>
 </project>
