@@ -151,7 +151,7 @@ open class NacosService {
         if (http.status == 200) {
             return ApiResult.of(res.FromJson<NacosInstanceData>())
         } else {
-            return ApiResult("ns:$namespaceId,dataId:$serviceName,group:$group , 发布nacos实例错误 : $res")
+            return ApiResult("ns:$namespaceId,dataId:$serviceName,group:$group , 获取nacos实例错误 : $res")
         }
     }
 
