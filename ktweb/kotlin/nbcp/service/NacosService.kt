@@ -50,11 +50,20 @@ open class NacosService {
 
     val serverHost: String
         get() {
-            if (nacosServerAddress.startsWith("http://", true) || nacosServerAddress.startsWith("https://", true)) {
-                return nacosServerAddress
+            var ret = nacosServerAddress
+            if (!ret.startsWith("http://", true) && !ret.startsWith("https://", true)) {
+                ret = "http://${ret}"
             }
 
-            return "http://${nacosServerAddress}"
+            if (ret.endsWith("/")) {
+                ret = ret.substring(0, ret.length - 2);
+            }
+
+            if (ret.endsWith("/nacos") == false) {
+                ret = ret + "/nacos"
+            }
+
+            return ret;
         }
 
     /**
