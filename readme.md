@@ -19,16 +19,16 @@ maven的 setting.xml 增加
 
 servers
 ```
-    <server>
-       <id>snapshots</id>
-      <username>iamnewsea</username>
-      <password>xxx</password>
-    </server>
-	
 	<server>
        <id>nancal-dev</id>
-      <username>admin</username>
-      <password>xxx</password>
+       <username>admin</username>
+       <password>xxx</password>
+    </server>
+    
+    <server>
+       <id>nancal-snapshots</id>
+       <username>admin</username>
+       <password>xxx</password>
     </server>
 ```
 
