@@ -89,11 +89,11 @@ open class NacosService {
      * 设置配置项
      */
     fun setConfig(
-        namespaceId: String,
-        dataId: String,
-        configContent: String,
-        group: String = "DEFAULT_GROUP",
-        type: String = "yaml",
+            namespaceId: String,
+            dataId: String,
+            configContent: String,
+            group: String = "DEFAULT_GROUP",
+            type: String = "yaml",
     ): JsonResult {
         var group = group.AsString("DEFAULT_GROUP")
 
@@ -115,39 +115,39 @@ open class NacosService {
     }
 
     data class NacosInstanceHostData(
-        var ip: String = "",
-        var port: Int = 0,
-        var valid: Boolean = false,
-        var healthy: Boolean = false,
-        var marked: Boolean = false,
-        var instanceId: String = "",
-        var metadata: StringMap = StringMap(),
-        var enabled: Boolean = false,
-        var weight: Int = 0,
-        var clusterName: String = "",
-        var serviceName: String = "",
-        var ephemeral: Boolean = false
+            var ip: String = "",
+            var port: Int = 0,
+            var valid: Boolean = false,
+            var healthy: Boolean = false,
+            var marked: Boolean = false,
+            var instanceId: String = "",
+            var metadata: StringMap = StringMap(),
+            var enabled: Boolean = false,
+            var weight: Int = 0,
+            var clusterName: String = "",
+            var serviceName: String = "",
+            var ephemeral: Boolean = false
     )
 
     data class NacosInstanceData(
-        var hosts: MutableList<NacosInstanceHostData> = mutableListOf(),
-        var dom: String = "",
-        var name: String = "",
-        var cacheMillis: Int = 0,
-        var lastRefTime: Long = 0L,
-        var checksum: String = "",
-        var clusters: String = "",
-        var env: String = "",
-        var metadata: StringMap = StringMap()
+            var hosts: MutableList<NacosInstanceHostData> = mutableListOf(),
+            var dom: String = "",
+            var name: String = "",
+            var cacheMillis: Int = 0,
+            var lastRefTime: Long = 0L,
+            var checksum: String = "",
+            var clusters: String = "",
+            var env: String = "",
+            var metadata: StringMap = StringMap()
     )
 
     /**
      * 获取Nacos实例列表。
      */
     fun getInstances(
-        namespaceId: String,
-        serviceName: String,
-        group: String = "DEFAULT_GROUP"
+            namespaceId: String,
+            serviceName: String,
+            group: String = "DEFAULT_GROUP"
     ): ApiResult<NacosInstanceData> {
         var group = group.AsString("DEFAULT_GROUP")
         var query = StringMap();
@@ -188,28 +188,28 @@ open class NacosService {
      * 设置雪花算法的机器Id
      */
     fun setSnowFlakeMachineId(
-        namespaceId: String,
-        serviceName: String,
-        group: String = "DEFAULT_GROUP"
+            namespaceId: String,
+            serviceName: String,
+            group: String = "DEFAULT_GROUP"
     ): ApiResult<Int> {
         var appName = namespaceId + "-" + serviceName;
         var nacosInstances = getInstances(namespaceId, serviceName, group)
-            .apply {
-                if (this.msg.HasValue) return ApiResult(this.msg);
-            }.data!!
-            .hosts
+                .apply {
+                    if (this.msg.HasValue) return ApiResult(this.msg);
+                }.data!!
+                .hosts
 
         var nacosInstanceIps = nacosInstances.map { it.ip }.toTypedArray();
         var localUseIp = nacosInstanceIps.intersect(getIpAddresses())
-            .apply {
-                if (this.size == 0) {
-                    return ApiResult("未找到注册到 nacos 的实例，nacosip:${nacosInstanceIps.joinToString()}")
+                .apply {
+                    if (this.size == 0) {
+                        return ApiResult("未找到注册到 nacos 的实例，nacosip:${nacosInstanceIps.joinToString()}")
+                    }
+                    if (this.size > 1) {
+                        return ApiResult("找到多个本地使用的Ip:${this.joinToString(",")}")
+                    }
                 }
-                if (this.size > 1) {
-                    return ApiResult("找到多个本地使用的Ip:${this.joinToString(",")}")
-                }
-            }
-            .first();
+                .first();
 
 
         //第一次初始化应用。
@@ -226,21 +226,17 @@ open class NacosService {
         var redisNacosInstanceNewData = redisNacosInstance.filter { nacosInstanceIps.contains(it.key) }.toMutableMap()
 
         fillNacosNewData(redisNacosInstanceNewData);
-
-        if (redisNacosInstanceNewData.EqualMapContent(redisNacosInstance)) {
-            return ApiResult();
-        }
-
-
-        //先设置到自己。
         var machineId = redisNacosInstanceNewData.get(localUseIp).AsInt();
-
+        //先设置到自己。
         if (machineId > 0) {
             SpringUtil.getBean<SnowFlake>().machineId = machineId;
         }
 
-        db.rer_base.nacosInstance.setMap(appName, redisNacosInstanceNewData);
+        if (redisNacosInstanceNewData.EqualMapContent(redisNacosInstance)) {
+            return ApiResult.of(machineId);
+        }
 
+        db.rer_base.nacosInstance.setMap(appName, redisNacosInstanceNewData);
         return ApiResult.of(machineId);
     }
 
