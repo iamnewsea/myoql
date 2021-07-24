@@ -11,8 +11,8 @@ import java.io.Serializable
 
 
 class RedisHashProxy @JvmOverloads constructor(
-    group: String,
-    defaultCacheSeconds: Int = 0
+        group: String,
+        defaultCacheSeconds: Int = 0
 ) : BaseRedisProxy(group, defaultCacheSeconds) {
 
 
@@ -68,16 +68,24 @@ class RedisHashProxy @JvmOverloads constructor(
 //    }
 
     /**
-     * 设置对象。 如果map为空，则删除。
+     * 设置多个 key 值，不会删除其它key 。
+     *
      */
-    fun setMap(key: String, value: Map<String, Any>) {
-        if (value.any() == false) {
-            super.deleteKeys(key);
-            return;
-        }
+    fun putMap(key: String, value: Map<String, Any>) {
         var cacheKey = getFullKey(key)
 
         anyTypeCommand.opsForHash<String, Any>().putAll(cacheKey, value)
+    }
+
+    /**
+     * 覆盖性设置 Hash，会删除其它key
+     */
+    fun resetMap(key: String, value: Map<String, Any>) {
+        var keys = keys(key);
+        var deleteKeys = keys - value.keys;
+        removeItems(key, *deleteKeys.toTypedArray());
+
+        putMap(key, value);
     }
 
     /**

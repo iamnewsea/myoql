@@ -214,6 +214,8 @@ open class NacosService {
 
         //第一次初始化应用。
         var redisNacosInstance = db.rer_base.nacosInstance.getMap(appName)
+                .mapValuesTo(mutableMapOf<String, Int>(), { it.value.AsInt() })
+
         var randomNumber = MyUtil.getRandomWithMaxValue(10);
         if (redisNacosInstance.isNullOrEmpty() || !redisNacosInstance.containsKey(localUseIp)) {
             var machineId = 10 + randomNumber;
@@ -236,7 +238,7 @@ open class NacosService {
             return ApiResult.of(machineId);
         }
 
-        db.rer_base.nacosInstance.setMap(appName, redisNacosInstanceNewData);
+        db.rer_base.nacosInstance.resetMap(appName, redisNacosInstanceNewData);
         return ApiResult.of(machineId);
     }
 
@@ -244,15 +246,18 @@ open class NacosService {
     /**
      * 填充Id
      */
-    private fun fillNacosNewData(redisNacosInstanceNewData: MutableMap<String, Any>) {
-        //先判断是否有重复值。
-        var ids = redisNacosInstanceNewData.values.map { it.AsInt() }.filter { it > 0 }
-        var ids_set = ids.toSet();
-        if (ids.size != ids_set.size) {
-            var inter_ids = ids - ids_set;
+    private fun fillNacosNewData(redisNacosInstanceNewData: MutableMap<String, Int>) {
+        //每10位的最小值。
+        var ids_set = redisNacosInstanceNewData.values
+                .groupBy { it.AsInt() / 10 }
+                .map { it.value.minOrNull()!! }
+                .filter { it > 0 }
+
+
+        if (redisNacosInstanceNewData.size != ids_set.size) {
             redisNacosInstanceNewData.keys.forEach { ip ->
-                var id = redisNacosInstanceNewData[ip].AsInt();
-                if (inter_ids.contains(id)) {
+                var id = redisNacosInstanceNewData[ip];
+                if (ids_set.contains(id) == false) {
                     redisNacosInstanceNewData.set(ip, 0)
                 }
             }
@@ -260,7 +265,7 @@ open class NacosService {
 
         var ary = (1..9).toList().toMutableSet();
         redisNacosInstanceNewData.keys.forEach { ip ->
-            var id = redisNacosInstanceNewData[ip].AsInt() / 10;
+            var id = redisNacosInstanceNewData[ip]!! / 10;
             if (id > 0) {
                 ary.remove(id);
             } else {
