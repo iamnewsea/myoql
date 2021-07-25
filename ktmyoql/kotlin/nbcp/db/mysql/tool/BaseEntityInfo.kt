@@ -99,9 +99,5 @@ private ${if (baseColumnsInInterface.contains(column.fieldName)) "override" else
         return " implements ${list.joinToString(",")}"
     }
 
-    fun getMyBatisStyleFields(): List<String> {
-
-    }
-
     val className: String = MyUtil.getBigCamelCase(entity.name)
 }
