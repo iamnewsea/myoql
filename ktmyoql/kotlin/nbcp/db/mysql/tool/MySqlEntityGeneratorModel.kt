@@ -5,6 +5,8 @@ import nbcp.db.sql.DbType
 
 
 class EntityDbItemFieldData {
+    // name 小驼峰形式。
+    var fieldName = ""
     var sqlType = ""
     var remark = ""
     var name = ""

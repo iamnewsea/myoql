@@ -444,7 +444,7 @@ fun String.IsIn(vararg ts: String, ignoreCase: Boolean): Boolean {
 }
 
 /**
- * 整体向左移动几个Tab，每个Tab = 4个空格。
+ * 整体向左移(所有行向左移) 几个Tab，每个Tab = 4个空格。
  */
 fun String.ToTab(deepth: Int): String {
     if (deepth == 0) return this;
