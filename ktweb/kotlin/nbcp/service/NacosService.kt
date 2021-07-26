@@ -1,39 +1,15 @@
 package nbcp.service
 
-import io.minio.MinioClient
 import nbcp.comm.*
 import nbcp.component.SnowFlake
-import nbcp.db.DatabaseEnum
-import nbcp.db.IdName
 import nbcp.db.db
-import nbcp.db.mongo.entity.SysAnnex
-import nbcp.db.mongo.service.UploadFileMongoService
-import nbcp.db.mysql.service.UploadFileMysqlService
-import nbcp.db.redis.RedisTask
 import nbcp.utils.*
-import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
-import java.lang.Exception
-import java.time.LocalDate
-import javax.imageio.ImageIO
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 import java.net.Inet4Address
 
-import java.net.InetAddress
-
-import java.util.Enumeration
-
 import java.net.NetworkInterface
-import kotlin.concurrent.thread
 
 
 /**
@@ -91,11 +67,11 @@ open class NacosService {
      */
     @JvmOverloads
     fun setConfig(
-            namespaceId: String,
-            dataId: String,
-            configContent: String,
-            group: String = "DEFAULT_GROUP",
-            type: String = "yaml",
+        namespaceId: String,
+        dataId: String,
+        configContent: String,
+        group: String = "DEFAULT_GROUP",
+        type: String = "yaml",
     ): JsonResult {
         var group = group.AsString("DEFAULT_GROUP")
 
@@ -117,30 +93,30 @@ open class NacosService {
     }
 
     data class NacosInstanceHostData(
-            var ip: String = "",
-            var port: Int = 0,
-            var valid: Boolean = false,
-            var healthy: Boolean = false,
-            var marked: Boolean = false,
-            var instanceId: String = "",
-            var metadata: StringMap = StringMap(),
-            var enabled: Boolean = false,
-            var weight: Int = 0,
-            var clusterName: String = "",
-            var serviceName: String = "",
-            var ephemeral: Boolean = false
+        var ip: String = "",
+        var port: Int = 0,
+        var valid: Boolean = false,
+        var healthy: Boolean = false,
+        var marked: Boolean = false,
+        var instanceId: String = "",
+        var metadata: StringMap = StringMap(),
+        var enabled: Boolean = false,
+        var weight: Int = 0,
+        var clusterName: String = "",
+        var serviceName: String = "",
+        var ephemeral: Boolean = false
     )
 
     data class NacosInstanceData(
-            var hosts: MutableList<NacosInstanceHostData> = mutableListOf(),
-            var dom: String = "",
-            var name: String = "",
-            var cacheMillis: Int = 0,
-            var lastRefTime: Long = 0L,
-            var checksum: String = "",
-            var clusters: String = "",
-            var env: String = "",
-            var metadata: StringMap = StringMap()
+        var hosts: MutableList<NacosInstanceHostData> = mutableListOf(),
+        var dom: String = "",
+        var name: String = "",
+        var cacheMillis: Int = 0,
+        var lastRefTime: Long = 0L,
+        var checksum: String = "",
+        var clusters: String = "",
+        var env: String = "",
+        var metadata: StringMap = StringMap()
     )
 
     /**
@@ -148,9 +124,9 @@ open class NacosService {
      */
     @JvmOverloads
     fun getInstances(
-            namespaceId: String,
-            serviceName: String,
-            group: String = "DEFAULT_GROUP"
+        namespaceId: String,
+        serviceName: String,
+        group: String = "DEFAULT_GROUP"
     ): ApiResult<NacosInstanceData> {
         var group = group.AsString("DEFAULT_GROUP")
         var query = StringMap();
@@ -192,57 +168,52 @@ open class NacosService {
      */
     @JvmOverloads
     fun setSnowFlakeMachineId(
-            namespaceId: String,
-            serviceName: String,
-            group: String = "DEFAULT_GROUP"
+        namespaceId: String,
+        serviceName: String,
+        group: String = "DEFAULT_GROUP"
     ): ApiResult<Int> {
         var appName = namespaceId + "-" + serviceName;
         var nacosInstances = getInstances(namespaceId, serviceName, group)
-                .apply {
-                    if (this.msg.HasValue) return ApiResult(this.msg);
-                }.data!!
-                .hosts
+            .apply {
+                if (this.msg.HasValue) return ApiResult(this.msg);
+            }.data!!
+            .hosts
 
-        var nacosInstanceIps = nacosInstances.map { it.ip }.toTypedArray();
-        var localUseIp = nacosInstanceIps.intersect(getIpAddresses())
-                .apply {
-                    if (this.size == 0) {
-                        return ApiResult("未找到注册到 nacos 的实例，nacosip:${nacosInstanceIps.joinToString()}")
-                    }
-                    if (this.size > 1) {
-                        return ApiResult("找到多个本地使用的Ip:${this.joinToString(",")}")
-                    }
+        var nacosInstancesWithIp = nacosInstances.map { it.ip }.toTypedArray();
+        var localUsedIp = nacosInstancesWithIp.intersect(getIpAddresses())
+            .apply {
+                if (this.size == 0) {
+                    return ApiResult("未找到注册到 nacos 的实例，nacosip:${nacosInstancesWithIp.joinToString()}")
                 }
-                .first();
+                if (this.size > 1) {
+                    return ApiResult("找到多个本地使用的Ip:${this.joinToString(",")}")
+                }
+            }
+            .first();
 
 
         //第一次初始化应用。
-        var redisNacosInstance = db.rer_base.nacosInstance.getMap(appName)
-                .mapValuesTo(mutableMapOf<String, Int>(), { it.value.AsInt() })
+        var redisInstances = db.rer_base.nacosInstance.getMap(appName)
+            .mapValuesTo(mutableMapOf<String, Int>(), { it.value.AsInt() })
 
-        var randomNumber = MyUtil.getRandomWithMaxValue(10);
-        if (redisNacosInstance.isNullOrEmpty() || !redisNacosInstance.containsKey(localUseIp)) {
-            var machineId = 10 + randomNumber;
-            SpringUtil.getBean<SnowFlake>().machineId = machineId
-
-            db.rer_base.nacosInstance.setItem(appName, localUseIp, machineId);
-            return ApiResult.of(machineId);
+        if (redisInstances.isEmpty() || !redisInstances.containsKey(localUsedIp)) {
+            redisInstances.put(localUsedIp, 0);
         }
 
-        var redisNacosInstanceNewData = redisNacosInstance.filter { nacosInstanceIps.contains(it.key) }.toMutableMap()
+        var redisInstancesNewData = redisInstances.filter { nacosInstancesWithIp.contains(it.key) }.toMutableMap()
 
-        fillNacosNewData(redisNacosInstanceNewData);
-        var machineId = redisNacosInstanceNewData.get(localUseIp).AsInt();
+        fillNacosNewData(redisInstancesNewData);
+        var machineId = redisInstancesNewData.get(localUsedIp).AsInt();
         //先设置到自己。
         if (machineId > 0) {
             SpringUtil.getBean<SnowFlake>().machineId = machineId;
         }
 
-        if (redisNacosInstanceNewData.EqualMapContent(redisNacosInstance)) {
+        if (redisInstancesNewData.EqualMapContent(redisInstances)) {
             return ApiResult.of(machineId);
         }
 
-        db.rer_base.nacosInstance.resetMap(appName, redisNacosInstanceNewData);
+        db.rer_base.nacosInstance.resetMap(appName, redisInstancesNewData);
         return ApiResult.of(machineId);
     }
 
@@ -253,9 +224,9 @@ open class NacosService {
     private fun fillNacosNewData(redisNacosInstanceNewData: MutableMap<String, Int>) {
         //每10位的最小值。
         var ids_set = redisNacosInstanceNewData.values
-                .groupBy { it.AsInt() / 10 }
-                .map { it.value.minOrNull()!! }
-                .filter { it > 0 }
+            .groupBy { it.AsInt() / 10 }
+            .map { it.value.minOrNull()!! }
+            .filter { it > 0 }
 
 
         if (redisNacosInstanceNewData.size != ids_set.size) {
