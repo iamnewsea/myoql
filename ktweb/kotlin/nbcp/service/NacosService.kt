@@ -164,7 +164,7 @@ open class NacosService {
     }
 
     /**
-     * 设置雪花算法的机器Id
+     * 设置雪花算法的机器Id，如果有异常，则设置一个500-1000之间的随机数做为机器Id
      */
     @JvmOverloads
     fun setSnowFlakeMachineId(
@@ -175,6 +175,8 @@ open class NacosService {
         var appName = namespaceId + "-" + serviceName;
         var nacosInstances = getInstances(namespaceId, serviceName, group)
             .apply {
+                //随机一个 500-1000之间的id
+                SpringUtil.getBean<SnowFlake>().machineId = 500 + MyUtil.getRandomWithMaxValue(500);
                 if (this.msg.HasValue) return ApiResult(this.msg);
             }.data!!
             .hosts
@@ -182,6 +184,8 @@ open class NacosService {
         var nacosInstancesWithIp = nacosInstances.map { it.ip }.toTypedArray();
         var localUsedIp = nacosInstancesWithIp.intersect(getIpAddresses())
             .apply {
+                //随机一个 500-1000之间的id
+                SpringUtil.getBean<SnowFlake>().machineId = 500 + MyUtil.getRandomWithMaxValue(500);
                 if (this.size == 0) {
                     return ApiResult("未找到注册到 nacos 的实例，nacosip:${nacosInstancesWithIp.joinToString()}")
                 }
