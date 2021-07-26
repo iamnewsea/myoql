@@ -165,6 +165,7 @@ fun Any?.AsBigDecimal(): BigDecimal? {
  * 为代码生成器而扩展
  */
 val Number?.HasValue: Boolean
+    @JvmName("hasValue")
     get() {
         return this != null && this != 0
     }

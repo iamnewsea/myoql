@@ -23,7 +23,9 @@ infix inline fun String.VbSame(other: String?): Boolean {
 /**
  * 判断是否有内容：非空且有长度
  */
+
 val String?.HasValue: Boolean
+    @JvmName("hasValue")
     get() {
         return !this.isNullOrEmpty()
     }
