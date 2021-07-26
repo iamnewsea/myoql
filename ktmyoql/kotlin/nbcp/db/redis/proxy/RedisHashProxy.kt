@@ -11,8 +11,8 @@ import java.io.Serializable
 
 
 class RedisHashProxy @JvmOverloads constructor(
-        group: String,
-        defaultCacheSeconds: Int = 0
+    group: String,
+    defaultCacheSeconds: Int = 0
 ) : BaseRedisProxy(group, defaultCacheSeconds) {
 
 
@@ -47,7 +47,7 @@ class RedisHashProxy @JvmOverloads constructor(
 //    }
 
     inline fun <reified T> getJson(key: String): T? {
-        return getMap(key)?.ConvertJson(T::class.java)
+        return getMap(key).ConvertJson(T::class.java)
     }
 
 
@@ -72,6 +72,8 @@ class RedisHashProxy @JvmOverloads constructor(
      *
      */
     fun putMap(key: String, value: Map<String, Any>) {
+        if (value.any() == false) return
+
         var cacheKey = getFullKey(key)
 
         anyTypeCommand.opsForHash<String, Any>().putAll(cacheKey, value)
@@ -98,6 +100,8 @@ class RedisHashProxy @JvmOverloads constructor(
     }
 
     fun removeItems(key: String, vararg members: String) {
+        if (members.any() == false) return;
+
         var cacheKey = getFullKey(key)
 
         anyTypeCommand.opsForHash<String, Any>().delete(cacheKey, *members)
