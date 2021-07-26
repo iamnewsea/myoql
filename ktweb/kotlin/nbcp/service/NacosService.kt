@@ -69,6 +69,7 @@ open class NacosService {
     /**
      * 获取配置项
      */
+    @JvmOverloads
     fun getConfig(namespaceId: String, dataId: String, group: String = "DEFAULT_GROUP"): ApiResult<String> {
         val group = group.AsString("DEFAULT_GROUP")
         var query = StringMap();
@@ -88,6 +89,7 @@ open class NacosService {
     /**
      * 设置配置项
      */
+    @JvmOverloads
     fun setConfig(
             namespaceId: String,
             dataId: String,
@@ -144,6 +146,7 @@ open class NacosService {
     /**
      * 获取Nacos实例列表。
      */
+    @JvmOverloads
     fun getInstances(
             namespaceId: String,
             serviceName: String,
@@ -187,6 +190,7 @@ open class NacosService {
     /**
      * 设置雪花算法的机器Id
      */
+    @JvmOverloads
     fun setSnowFlakeMachineId(
             namespaceId: String,
             serviceName: String,
