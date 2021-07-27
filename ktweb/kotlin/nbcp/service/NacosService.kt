@@ -4,6 +4,7 @@ import nbcp.comm.*
 import nbcp.component.AppJsonMapper
 import nbcp.component.SnowFlake
 import nbcp.db.db
+import nbcp.db.redis.MyOqlRedisConfig
 import nbcp.utils.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -18,7 +19,7 @@ import java.net.NetworkInterface
  * https://nacos.io/zh-cn/docs/open-api.html
  */
 @Service
-@Import(value = [SpringUtil::class, SnowFlake::class, AppJsonMapper::class])
+@Import(value = [SpringUtil::class, SnowFlake::class, AppJsonMapper::class, MyOqlRedisConfig::class])
 open class NacosService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -179,8 +180,10 @@ open class NacosService {
         var nacosInstances = getInstances(namespaceId, serviceName, group)
             .apply {
                 //随机一个 500-1000之间的id
-                SpringUtil.getBean<SnowFlake>().machineId = 500 + MyUtil.getRandomWithMaxValue(500);
-                if (this.msg.HasValue) return ApiResult(this.msg);
+                if (this.msg.HasValue || !(this.data?.hosts?.any() ?: false)) {
+                    SpringUtil.getBean<SnowFlake>().machineId = 500 + MyUtil.getRandomWithMaxValue(500);
+                    return ApiResult(this.msg.AsString("nacos未注册"));
+                }
             }.data!!
             .hosts
 

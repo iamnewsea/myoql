@@ -40,7 +40,7 @@ import javax.sql.DataSource
     havingValue = "com.zaxxer.hikari.HikariDataSource",
     matchIfMissing = true
 )
-internal class MySqlConfig {
+internal class MyOqlMySqlConfig {
     companion object {
         @JvmStatic
         val hasSlave: Boolean
@@ -59,7 +59,7 @@ internal class MySqlConfig {
     @Primary
     @Bean
     @ConfigurationProperties(prefix = "spring.datasource.hikari")
-    fun dataSource(properties: DataSourceProperties): HikariDataSource {
+    fun myoqlDataSource(properties: DataSourceProperties): HikariDataSource {
         val dataSource =
             properties.initializeDataSourceBuilder().type(HikariDataSource::class.java).build() as HikariDataSource
         if (StringUtils.hasText(properties.name)) {

@@ -19,7 +19,7 @@ import java.util.concurrent.Executor
 class TaskConfig {
 
     @Bean
-    fun taskExecutor(): Executor {
+    fun myoqlTaskExecutor(): Executor {
         val executor = ThreadPoolTaskExecutor()
         executor.corePoolSize = config.getConfig("app.executor.core-pool-size").AsInt().Iif(0,3)
         executor.maxPoolSize = config.getConfig("app.executor.max-pool-size").AsInt().Iif(0,64)

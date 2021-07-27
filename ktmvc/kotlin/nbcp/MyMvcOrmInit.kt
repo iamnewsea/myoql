@@ -12,11 +12,11 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.jackson.JsonComponent
-import org.springframework.context.ApplicationListener
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
 import org.springframework.context.event.ContextRefreshedEvent
+import org.springframework.context.event.EventListener
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.core.convert.support.GenericConversionService
@@ -33,7 +33,7 @@ import java.lang.RuntimeException
 
 
 @Configuration
-open class MyMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
+open class MyMvcOrmInit {
     companion object {
         private var _inited = false;
 
@@ -49,7 +49,8 @@ open class MyMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
     }
 
 
-    override fun onApplicationEvent(event: ContextRefreshedEvent) {
+    @EventListener
+    fun onApplicationEvent(event: ContextRefreshedEvent) {
         if (isInited()) return;
         initMvcRequest()
     }

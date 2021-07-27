@@ -148,9 +148,9 @@ import org.springframework.data.redis.serializer.RedisSerializer
 @AutoConfigureAfter(RedisAutoConfiguration::class)
 //@ConditionalOnProperty("spring.redis.host")
 @ConditionalOnProperty("spring.redis.host")
-class RedisConfig {
+class MyOqlRedisConfig {
     @Bean
-    fun redisTemplate(connectionFactory: RedisConnectionFactory): AnyTypeRedisTemplate {
+    fun myoqlRedisTemplate(connectionFactory: RedisConnectionFactory): AnyTypeRedisTemplate {
         var template = AnyTypeRedisTemplate()
         template.connectionFactory = connectionFactory;
         template.keySerializer = RedisSerializer.string()

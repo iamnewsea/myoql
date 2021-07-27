@@ -57,7 +57,7 @@ class SpringUtil : BeanPostProcessor, ApplicationContextAware {
         }
 
         @JvmStatic
-        fun getBeanObjectByArgs(name: String): Any {
+        fun getBean(name: String): Any {
             return context.getBean(name);
         }
 

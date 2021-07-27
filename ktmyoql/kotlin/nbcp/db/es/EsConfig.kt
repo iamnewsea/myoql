@@ -23,14 +23,14 @@ import java.lang.RuntimeException
 @ConditionalOnProperty("spring.elasticsearch.rest.uris")
 @ConditionalOnBean(ElasticsearchDataAutoConfiguration::class)
 @Lazy
-class EsConfig {
+class MyOqlEsConfig {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
     @Bean
     @Lazy
-    fun dataSource(): RestClient {
+    fun myoqlEsDataSource(): RestClient {
         var configs = config.getConfig("spring.elasticsearch.rest.uris","")
                 .split(",")
                 .map { it.trim() }

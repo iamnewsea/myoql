@@ -30,7 +30,7 @@ import javax.sql.DataSource
 //@DependsOn(value = arrayOf("mysqlConfig", "primary", "springUtil"))
 @ConditionalOnBean(DataSourceAutoConfiguration::class)
 @Lazy
-open class MyBatisConfig() : TransactionManagementConfigurer {
+open class MyOqlMyBatisConfig() : TransactionManagementConfigurer {
     val dataSource: DataSource by lazy {
         return@lazy SpringUtil.getBean<DataSource>()
     }
