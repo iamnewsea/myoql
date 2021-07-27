@@ -242,15 +242,15 @@ open class NacosService {
             }
         }
 
-        var ary = (1..9).toList().toMutableSet();
+        var ary = (1..99).toList().toMutableSet();
         redisNacosInstanceNewData.keys.forEach { ip ->
             var id = redisNacosInstanceNewData[ip]!! / 10;
             if (id > 0) {
                 ary.remove(id);
             } else {
                 if (ary.size == 0) {
-                    //一个应用有大于9个实例？ 随机分配一个100到200之间的机器号
-                    redisNacosInstanceNewData.put(ip, 100 + MyUtil.getRandomWithMaxValue(100));
+                    //一个应用有大于99个实例？ 随机分配一个1000以内的机器号
+                    redisNacosInstanceNewData.put(ip, MyUtil.getRandomWithMaxValue(1000));
                     return@forEach
                 }
 
