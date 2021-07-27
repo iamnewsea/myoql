@@ -23,7 +23,6 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext
  */
 @Configuration
 @Conditional(ExistsMongoDataSourceConfigCondition::class)
-@DependsOn("springUtil")
 class MongoDbConfig {
 
     @Bean

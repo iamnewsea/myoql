@@ -33,7 +33,6 @@ import java.lang.RuntimeException
 
 
 @Configuration
-@DependsOn("springUtil")
 open class MyMvcOrmInit : ApplicationListener<ContextRefreshedEvent> {
     companion object {
         private var _inited = false;

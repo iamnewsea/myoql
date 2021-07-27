@@ -17,7 +17,6 @@ import java.util.*
 
 
 @Component("WebJson")
-@DependsOn(value = ["springUtil"])
 class WebJsonMapper : BaseJsonMapper(), InitializingBean {
     companion object {
         private val sers: MutableList<SimpleModule> = mutableListOf()

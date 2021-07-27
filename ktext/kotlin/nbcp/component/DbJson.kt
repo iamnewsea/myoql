@@ -17,7 +17,6 @@ import java.util.*
 
 
 @Component("DbJson")
-@DependsOn(value = ["springUtil"])
 class DbJsonMapper : BaseJsonMapper(), InitializingBean {
     companion object {
         private val sers: MutableList<SimpleModule> = mutableListOf()

@@ -1,11 +1,13 @@
 package nbcp.service
 
 import nbcp.comm.*
+import nbcp.component.AppJsonMapper
 import nbcp.component.SnowFlake
 import nbcp.db.db
 import nbcp.utils.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Import
 import org.springframework.stereotype.Service
 import java.net.Inet4Address
 
@@ -16,6 +18,7 @@ import java.net.NetworkInterface
  * https://nacos.io/zh-cn/docs/open-api.html
  */
 @Service
+@Import(value = [SpringUtil::class, SnowFlake::class, AppJsonMapper::class])
 open class NacosService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

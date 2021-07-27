@@ -20,7 +20,6 @@ import java.lang.RuntimeException
 
 
 @Configuration
-@DependsOn("springUtil")
 @ConditionalOnProperty("spring.elasticsearch.rest.uris")
 @ConditionalOnBean(ElasticsearchDataAutoConfiguration::class)
 @Lazy

@@ -25,7 +25,6 @@ import kotlin.collections.LinkedHashMap
  */
 //@Primary
 //@Component
-//@DependsOn(value = ["springUtil"])
 //open class DefaultMyJsonMapper : ObjectMapper(), InitializingBean {
 //    override fun afterPropertiesSet() {
 //        this.setStyle()

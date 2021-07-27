@@ -12,7 +12,6 @@ import org.springframework.context.event.ContextRefreshedEvent
 import org.springframework.stereotype.Component
 
 @Component
-@DependsOn("springUtil")
 class MyOqlInit : ApplicationListener<ContextRefreshedEvent> {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
