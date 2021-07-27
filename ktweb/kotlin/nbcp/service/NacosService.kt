@@ -51,7 +51,6 @@ open class NacosService {
      */
     @JvmOverloads
     fun getConfig(namespaceId: String, dataId: String, group: String = "DEFAULT_GROUP"): ApiResult<String> {
-        val group = group.AsString("DEFAULT_GROUP")
         var query = StringMap();
         query["dataId"] = dataId;
         query["group"] = group;
@@ -77,8 +76,6 @@ open class NacosService {
         group: String = "DEFAULT_GROUP",
         type: String = "yaml",
     ): JsonResult {
-        var group = group.AsString("DEFAULT_GROUP")
-
         val http = HttpUtil("$serverHost/v1/cs/configs")
         var query = StringMap();
         query["dataId"] = dataId;
@@ -132,7 +129,6 @@ open class NacosService {
         serviceName: String,
         group: String = "DEFAULT_GROUP"
     ): ApiResult<NacosInstanceData> {
-        var group = group.AsString("DEFAULT_GROUP")
         var query = StringMap();
         query["serviceName"] = serviceName;
         query["groupName"] = group;
@@ -174,6 +170,8 @@ open class NacosService {
     fun setSnowFlakeMachineId(
         namespaceId: String,
         serviceName: String,
+        ip: String,
+        port: Int = 80,
         group: String = "DEFAULT_GROUP"
     ): ApiResult<Int> {
         var appName = namespaceId + "-" + serviceName;
@@ -187,35 +185,54 @@ open class NacosService {
             }.data!!
             .hosts
 
-        var nacosInstancesWithIp = nacosInstances.map { it.ip }.toTypedArray();
-        var localUsedIp = nacosInstancesWithIp.intersect(getIpAddresses())
-            .apply {
-                //随机一个 500-1000之间的id
-                SpringUtil.getBean<SnowFlake>().machineId = 500 + MyUtil.getRandomWithMaxValue(500);
-                if (this.size == 0) {
-                    return ApiResult("未找到注册到 nacos 的实例，nacosip:${nacosInstancesWithIp.joinToString()}")
+        var nacosInstancesIpPort = nacosInstances.map { it.ip + ":" + it.port }.toMutableSet();
+        var localUsedIpPort = "${ip}:${port}"
+
+        if (ip.isEmpty()) {
+            localUsedIpPort = nacosInstancesIpPort.intersect(getIpAddresses().map { it + ":" + port })
+                .apply {
+                    //随机一个 500-1000之间的id
+                    if (this.size != 1) {
+                        SpringUtil.getBean<SnowFlake>().machineId = 500 + MyUtil.getRandomWithMaxValue(500);
+                    }
+
+                    if (this.size == 0) {
+                        return ApiResult("未找到注册到 nacos 的实例，nacosip: ${nacosInstancesIpPort.joinToString()}")
+                    }
+                    if (this.size > 1) {
+                        return ApiResult("找到多个本地使用的Ip: ${this.joinToString(",")}")
+                    }
                 }
-                if (this.size > 1) {
-                    return ApiResult("找到多个本地使用的Ip:${this.joinToString(",")}")
-                }
-            }
-            .first();
+                .first();
+        }
+
+        if (nacosInstancesIpPort.contains(localUsedIpPort) == false) {
+            nacosInstancesIpPort.add(localUsedIpPort);
+        }
 
 
         //第一次初始化应用。
         var redisInstances = db.rer_base.nacosInstance.getMap(appName)
             .mapValuesTo(mutableMapOf<String, Int>(), { it.value.AsInt() })
 
-        if (redisInstances.isEmpty() || !redisInstances.containsKey(localUsedIp)) {
-            redisInstances.put(localUsedIp, 0);
+        if (redisInstances.isEmpty() || !redisInstances.containsKey(localUsedIpPort)) {
+            redisInstances.put(localUsedIpPort, 0);
         }
 
-        var redisInstancesNewData = redisInstances.filter { nacosInstancesWithIp.contains(it.key) }.toMutableMap()
+        var redisInstancesNewData = mutableMapOf<String, Int>(
+            *nacosInstancesIpPort.map { ip ->
+                var id = redisInstances.get(ip).AsInt();
+                return@map ip to id
+            }.toTypedArray()
+        );
+
 
         fillNacosNewData(redisInstancesNewData);
-        var machineId = redisInstancesNewData.get(localUsedIp).AsInt();
+        var machineId = redisInstancesNewData.get(localUsedIpPort).AsInt();
         //先设置到自己。
-        if (machineId > 0) {
+        if (machineId == 0) {
+            return ApiResult("设置机器Id失败")
+        } else {
             SpringUtil.getBean<SnowFlake>().machineId = machineId;
         }
 
