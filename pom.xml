@@ -12,6 +12,7 @@
         <module>ktmyoql</module>
         <module>ktmvc</module>
         <module>ktweb</module>
+        <module>tools/api-test</module>
     </modules>
 
     <licenses>

@@ -29,7 +29,7 @@ logging:
 ```
 
 
-skywalking agent:
+skywalking/agent/conf/agent.conf 文件内容追加:
 ```
 plugin.toolkit.log.grpc.reporter.server_host=${SW_GRPC_LOG_SERVER_HOST:192.168.5.213}
 plugin.toolkit.log.grpc.reporter.server_port=${SW_GRPC_LOG_SERVER_PORT:11800}

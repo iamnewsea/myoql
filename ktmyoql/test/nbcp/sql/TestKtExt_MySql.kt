@@ -102,7 +102,7 @@ class TestKtExt_MySql : TestBase() {
 
     @Test
     fun test_mybatis() {
-        MysqlEntityGenerator.db2Entity("zhks").toMyBatisCode("com.kjwt.gis.entity").forEach {
+        MysqlEntityGenerator.db2Entity("zhks").toJpaCode("com.kjwt.gis.entity").forEach {
             FileWriter("d:\\ent\\" + MyUtil.getBigCamelCase(it.id) + ".java").use { f ->
                 f.write(it.name);
             }
