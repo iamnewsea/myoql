@@ -5,14 +5,14 @@
 
     <groupId>cn.dev8</groupId>
     <artifactId>api-test</artifactId>
-    <version>1.0.1</version>
+    <version>0.2.4-SNAPSHOT</version>
     <packaging>jar</packaging>
     <description>能科Saas管理平台</description>
 
     <parent>
         <groupId>cn.dev8</groupId>
         <artifactId>shop_starter</artifactId>
-        <version>1.0.1</version>
+        <version>0.2.4-SNAPSHOT</version>
         <relativePath>pom_starter.xml</relativePath>
     </parent>
     <!-- 设定主仓库，按设定顺序进行查找。 -->

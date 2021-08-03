@@ -5,7 +5,7 @@
 
     <groupId>cn.dev8</groupId>
     <artifactId>shop_starter</artifactId>
-    <version>1.0.1</version>
+    <version>0.2.4-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>shop_starter</name>
     <description>定义微服务所需要的组件</description>
