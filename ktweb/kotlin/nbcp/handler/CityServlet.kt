@@ -9,7 +9,6 @@ import nbcp.db.db
 import nbcp.db.mongo.*
 import nbcp.db.mongo.service.UploadFileMongoService
 import nbcp.db.mysql.service.UploadFileMysqlService
-import nbcp.web.MyHttpRequestWrapper
 import nbcp.web.WriteJsonRawValue
 import nbcp.web.WriteTextValue
 import nbcp.web.findParameterIntValue

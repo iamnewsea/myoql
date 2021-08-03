@@ -4,7 +4,9 @@ import nbcp.db.IdUrl
 import nbcp.comm.*
 import nbcp.db.mongo.*
 import nbcp.db.mongo.event.*
-import nbcp.web.MyHttpRequestWrapper
+import nbcp.web.findParameterIntValue
+import nbcp.web.findParameterStringValue
+import nbcp.web.findParameterValue
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
@@ -13,18 +15,13 @@ import javax.servlet.http.HttpServletResponse
 @WebServlet(urlPatterns = ["/image/change"])
 open class ImageChangeServlet : HttpServlet() {
     override fun doPost(request: HttpServletRequest, resp: HttpServletResponse) {
-        if (request is MyHttpRequestWrapper == false) {
-            return
-        }
+        var action = request.findParameterStringValue("action").ToEnum(MongoImageActionEnum::class.java)!!
+        var db = request.findParameterStringValue("db")
+        var id = request.findParameterStringValue("id")
 
-        var req = request as MyHttpRequestWrapper
-        var action = req.getValue("action").ToEnum(MongoImageActionEnum::class.java)!!
-        var db = req.getValue("db")
-        var id = req.getValue("id")
-
-        var image = (req.json.get("image")?.ConvertType(IdUrl::class.java) as IdUrl?) ?: IdUrl()
-        var index1 = req.getValue("index1").AsInt()
-        var index2 = req.getValue("index2").AsInt()
+        var image = (request.findParameterValue("image")?.ConvertType(IdUrl::class.java) as IdUrl?) ?: IdUrl()
+        var index1 = request.findParameterIntValue("index1").AsInt()
+        var index2 = request.findParameterIntValue("index2").AsInt()
 
         var res = proc(action, db, id, image, index1, index2);
         resp.contentType = "application/json;charset=UTF-8"
