@@ -54,6 +54,10 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
         var idValues = mutableMapOf<String, Array<String>>()
 
         refs.forEach { ref ->
+            if( setData.containsKey(ref.masterNameField) == false){
+                return@forEach
+            }
+
             var idValue = idValues.getOrPut(ref.masterIdField) {
                 if (whereMap.keys.contains(ref.masterIdField)) {
 
@@ -67,6 +71,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
                     return@getOrPut query.toList(String::class.java).toTypedArray()
                 }
             }
+
 
             list.add(
                 CascadeUpdateEventDataModel(
