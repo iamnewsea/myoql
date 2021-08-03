@@ -31,7 +31,7 @@ class ${entity}AutoController {
 </#if>
         @Require skip: Int,
         @Require take: Int,
-        request: MyHttpRequestWrapper
+        request: HttpServletRequest
     ): ListResult<${entity}> {
 
         dbr.${w(group)}.${entity}.query()
@@ -56,7 +56,7 @@ class ${entity}AutoController {
     @JsonpMapping("/detail/{id}")
     fun detail(
         @Require ${idKey}: ${kotlin_type(idKey)},
-        request: MyHttpRequestWrapper
+        request: HttpServletRequest
     ): ApiResult<${entity}> {
         dbr.${w(group)}.${entity}.queryBy${W(idKey)}(${idKey})
             .toEntity()
@@ -73,7 +73,7 @@ class ${entity}AutoController {
     @JsonpMapping("/save")
     fun save(
         @JsonModel entity: ${entity},
-        request: MyHttpRequestWrapper
+        request: HttpServletRequest
     ): ApiResult<${kotlin_type(idKey)}> {
         //鉴权
         var userId = request.UserId
@@ -102,7 +102,7 @@ class ${entity}AutoController {
     fun set(
         @Require ${idKey}: ${kotlin_type(idKey)},
         @Require status: ${status_enum_class},
-        request: MyHttpRequestWrapper
+        request: HttpServletRequest
     ): JsonResult {
         //鉴权
         var userId = request.UserId
@@ -125,7 +125,7 @@ class ${entity}AutoController {
     @JsonpMapping("/delete/{id}")
     fun delete(
         @Require ${idKey}: ${kotlin_type(idKey)},
-        request: MyHttpRequestWrapper
+        request: HttpServletRequest
     ): JsonResult {
         //鉴权
         var userId = request.UserId

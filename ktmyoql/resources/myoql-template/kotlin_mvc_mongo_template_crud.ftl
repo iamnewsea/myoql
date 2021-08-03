@@ -72,7 +72,7 @@ class ${entity}AutoController {
     @JsonpMapping("/save")
     fun save(
         @JsonModel entity: ${entity},
-        request: MyHttpRequestWrapper
+        request: HttpServletRequest
     ): ApiResult<String> {
         //鉴权
         var userId = request.UserId;
@@ -101,7 +101,7 @@ class ${entity}AutoController {
     fun set(
         @Require id: String,
         @Require status: ${status_enum_class},
-        request: MyHttpRequestWrapper
+        request: HttpServletRequest
     ): JsonResult {
         //鉴权
         var userId = request.UserId
@@ -124,7 +124,7 @@ class ${entity}AutoController {
     @JsonpMapping("/delete/{id}")
     fun delete(
         @Require id: String,
-        request: MyHttpRequestWrapper
+        request: HttpServletRequest
     ): JsonResult {
         //鉴权
         var userId = request.UserId
