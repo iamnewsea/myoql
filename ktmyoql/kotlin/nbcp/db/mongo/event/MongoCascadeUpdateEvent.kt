@@ -54,7 +54,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
         var idValues = mutableMapOf<String, Array<String>>()
 
         refs.forEach { ref ->
-            if( setData.containsKey(ref.masterNameField) == false){
+            if (setData.containsKey(ref.masterNameField) == false) {
                 return@forEach
             }
 
