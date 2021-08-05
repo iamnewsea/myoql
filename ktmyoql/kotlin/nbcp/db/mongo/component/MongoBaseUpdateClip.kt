@@ -67,6 +67,11 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
     protected fun execAll(): Int {
         db.affectRowCount = -1;
 
+        var settingResult = db.mongo.mongoEvents.onUpdating(this)
+        if (settingResult.any { it.second.result == false }) {
+            return 0;
+        }
+
         var criteria = this.getMongoCriteria(*whereData.toTypedArray());
 
         var update = org.springframework.data.mongodb.core.query.Update();
@@ -128,11 +133,6 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
 
         this.arrayFilters.forEach {
             update.filterArray(it)
-        }
-
-        var settingResult = db.mongo.mongoEvents.onUpdating(this)
-        if (settingResult.any { it.second.result == false }) {
-            return 0;
         }
 
         var ret = 0;

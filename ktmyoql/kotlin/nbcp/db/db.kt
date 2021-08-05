@@ -151,23 +151,23 @@ object db {
 //        }
 //    }
 
-    /**
-     * 填充 city.name
-     */
-    fun fillCityName(value: Any) {
-        RecursionUtil.recursionAny(value, { map, pkey ->
-            true
-        }, { list, pkey ->
-            true
-        }, { value, pkey ->
-            if (value is CityCodeName) {
-                if (value.code > 0 && value.name.isEmpty()) {
-                    value.name = db.rer_base.getCityNameByCode(value.code)
-                }
-            }
-            true
-        })
-    }
+//    /**
+//     * 填充 city.name
+//     */
+//    fun fillCityName(value: Any) {
+//        RecursionUtil.recursionAny(value, { map, pkey ->
+//            true
+//        }, { list, pkey ->
+//            true
+//        }, { value, pkey ->
+//            if (value is CityCodeName) {
+//                if (value.code > 0 && value.name.isEmpty()) {
+//                    value.name = db.rer_base.getCityNameByCode(value.code)
+//                }
+//            }
+//            true
+//        })
+//    }
 
     val mor_base get() = MongoBaseGroup()
     val rer_base get() = RedisBaseGroup()

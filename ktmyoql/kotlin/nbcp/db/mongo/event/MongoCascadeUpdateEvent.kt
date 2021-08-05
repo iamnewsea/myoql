@@ -9,7 +9,6 @@ import nbcp.utils.*
 import nbcp.db.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import java.io.Serializable
 
 /**
  * 同步处理，更新的实体，级联更新引用的冗余字段。
@@ -30,7 +29,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
 
     override fun beforeUpdate(update: MongoBaseUpdateClip): EventResult {
         var refs =
-            MongoEntityEvent.refsMap.filter { MyUtil.getSmallCamelCase(it.masterEntityClass.simpleName) == update.collectionName }
+            MongoEntityCollector.refsMap.filter { MyUtil.getSmallCamelCase(it.masterEntityClass.simpleName) == update.collectionName }
         if (refs.any() == false) {
             return EventResult(true, null)
         }

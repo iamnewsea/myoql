@@ -6,7 +6,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component
 
 @Component
-class EsEntityEvent : BeanPostProcessor {
+class EsEntityCollector : BeanPostProcessor {
     companion object {
         @JvmStatic
         //需要删 除后放入垃圾箱的实体

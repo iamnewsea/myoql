@@ -20,7 +20,7 @@ class MongoUpdateAtEvent : IMongoEntityUpdate {
                 return@forEach
             }
 
-            db.fillCityName(it.value!!);
+//            db.fillCityName(it.value!!);
 
             return@forEach
         }

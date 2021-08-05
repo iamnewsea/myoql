@@ -21,7 +21,7 @@ class MongoDustbinEvent : IMongoEntityDelete {
     }
 
     override fun beforeDelete(delete: MongoDeleteClip<*>): EventResult {
-        var contains = MongoEntityEvent.dustbinEntitys.contains(delete.moerEntity.entityClass)
+        var contains = MongoEntityCollector.dustbinEntitys.contains(delete.moerEntity.entityClass)
         if (contains == false) {
             return EventResult(true, null);
         }

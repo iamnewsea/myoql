@@ -9,7 +9,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 
 @GroupLog("main")
-class TestBase : TestBase() {
+class TestSome : TestBase() {
     companion object{
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

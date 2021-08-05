@@ -3,10 +3,18 @@ package nbcp.utils
 import nbcp.comm.*
 import nbcp.component.BaseJsonMapper
 import nbcp.component.DbJsonMapper
+import org.springframework.beans.factory.BeanNameAware
+import org.springframework.beans.factory.InitializingBean
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor
 import org.springframework.beans.factory.config.BeanPostProcessor
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
+import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.core.Ordered
+import org.springframework.core.PriorityOrdered
 import org.springframework.core.annotation.Order
 import org.springframework.core.env.ConfigurableEnvironment
 import org.springframework.core.env.MapPropertySource
@@ -20,12 +28,11 @@ import java.util.*
 
 /**
  * 这样能达到在所有Bean初始化之前执行的目的。
+ * 继承 BeanFactoryPostProcessor 保证该组件比较早执行。
  */
-@Order(Ordered.HIGHEST_PRECEDENCE)
 @Component
-class SpringUtil : BeanPostProcessor, ApplicationContextAware {
+class SpringUtil : BeanFactoryPostProcessor, ApplicationContextAware {
     companion object {
-        private var inited = false;
         var startAt: LocalDateTime? = null
 
         private var applicationContext: ApplicationContext? = null
@@ -114,21 +121,35 @@ class SpringUtil : BeanPostProcessor, ApplicationContextAware {
         }
     }
 
-    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
+//    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
+//        if (inited == false) {
+//            inited = true;
+//            init_app();
+//        }
+//
+//        return super.postProcessBeforeInitialization(bean, beanName)
+//    }
 
-        if (inited == false) {
-            inited = true;
-            init_app();
+
+    override fun setApplicationContext(context: ApplicationContext) {
+        applicationContext = context
+
+        if (startAt == null) {
+            startAt = LocalDateTime.now()
+
+            this.init_app()
         }
-
-        return super.postProcessBeforeInitialization(bean, beanName)
     }
+
+
+    override fun postProcessBeanFactory(beanFactory: ConfigurableListableBeanFactory) {
+    }
+
 
     /**
      * 在所有Bean初始化之前执行
      */
     private fun init_app() {
-
         DbJsonMapper.addSerializer(MyRawString::class.java, MyRawStringSerializer(), MyRawStringDeserializer())
 
         BaseJsonMapper.addSerializer(MyString::class.java, MyStringSerializer(), MyStringDeserializer())
@@ -141,17 +162,6 @@ class SpringUtil : BeanPostProcessor, ApplicationContextAware {
             LocalDateTimeJsonDeserializer()
         )
         BaseJsonMapper.addSerializer(Timestamp::class.java, TimestampJsonSerializer(), TimestampJsonDeserializer())
-    }
-
-    override fun setApplicationContext(context: ApplicationContext?) {
-        if (context == null) {
-            throw RuntimeException("设置 ApplicationContext 出现了异常!")
-        }
-
-        if (startAt == null) {
-            startAt = LocalDateTime.now()
-        }
-        applicationContext = context
     }
 }
 

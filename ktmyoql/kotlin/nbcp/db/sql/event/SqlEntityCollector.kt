@@ -11,7 +11,7 @@ import javax.sql.DataSource
  * 事件处理中心
  */
 @Component
-class SqlEntityEvent : BeanPostProcessor {
+class SqlEntityCollector : BeanPostProcessor {
     companion object {
         //需要删 除后放入垃圾箱的实体
         @JvmStatic

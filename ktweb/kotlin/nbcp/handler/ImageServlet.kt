@@ -3,7 +3,6 @@ package nbcp.handler
 import nbcp.db.IdUrl
 import nbcp.comm.*
 
-import nbcp.db.mongo.event.*
 import nbcp.db.mongo.*
 import nbcp.web.findParameterStringValue
 import nbcp.web.findParameterValue
@@ -39,7 +38,7 @@ open class ImageServlet : HttpServlet() {
 
         var table = dbs[0];
         var field = dbs.Skip(1).joinToString(".")
-        var collection = MongoEntityEvent.getCollection(table);
+        var collection = MongoEntityCollector.getCollection(table);
         if (collection == null) {
             return JsonResult("找不到集合")
         }

@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 class MongoInsertEvent : IMongoEntityInsert {
     override fun beforeInsert(insert: MongoBaseInsertClip): EventResult {
         insert.entities.forEach { entity ->
-            db.fillCityName(entity);
+//            db.fillCityName(entity);
 
 
             if (entity is BaseEntity) {

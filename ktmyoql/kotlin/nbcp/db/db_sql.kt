@@ -1,12 +1,9 @@
 package nbcp.db
 
 import nbcp.utils.*
-import nbcp.comm.StringKeyMap
 import nbcp.db.sql.IDataGroup
 import nbcp.db.sql.SqlBaseMetaTable
 import nbcp.db.sql.event.*
-import org.springframework.jdbc.core.JdbcTemplate
-import javax.sql.DataSource
 
 /**
  * 请使用 db.sql
@@ -20,7 +17,7 @@ object db_sql {
 
 
     val sqlEvents by lazy {
-        return@lazy SpringUtil.getBean<SqlEntityEvent>();
+        return@lazy SpringUtil.getBean<SqlEntityCollector>();
     }
 
     fun getSqlQuoteName(value: String): String {

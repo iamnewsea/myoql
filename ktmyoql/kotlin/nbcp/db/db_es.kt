@@ -3,7 +3,6 @@ package nbcp.db
 
 import nbcp.comm.*
 import nbcp.utils.*
-import org.springframework.core.convert.support.GenericConversionService
 import nbcp.db.es.*
 import org.elasticsearch.client.*
 import org.slf4j.LoggerFactory
@@ -20,7 +19,7 @@ object db_es {
 
     //     val sqlEvents = SpringUtil.getBean<SqlEventConfig>();
     val esEvents by lazy {
-        return@lazy SpringUtil.getBean<EsEntityEvent>();
+        return@lazy SpringUtil.getBean<EsEntityCollector>();
     }
 
     val restClient: RestClient by lazy {

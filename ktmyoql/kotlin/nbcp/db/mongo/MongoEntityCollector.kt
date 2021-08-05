@@ -1,14 +1,25 @@
-package nbcp.db.mongo.event;
+package nbcp.db.mongo
 
-import nbcp.db.mongo.*;
-
-import nbcp.comm.*
+import nbcp.comm.ForEachExt
+import nbcp.comm.OrmLogScope
+import nbcp.comm.usingScope
 import nbcp.db.*
+import nbcp.db.mongo.event.IMongoEntityDelete
+import nbcp.db.mongo.event.IMongoEntityInsert
+import nbcp.db.mongo.event.IMongoEntityQuery
+import nbcp.db.mongo.event.IMongoEntityUpdate
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor
 import org.springframework.beans.factory.config.BeanPostProcessor
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
+import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
+import org.springframework.core.Ordered
+import org.springframework.core.PriorityOrdered
+import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 
 @Component
-class MongoEntityEvent : BeanPostProcessor {
+class MongoEntityCollector : BeanPostProcessor {
     companion object {
         //需要删 除后放入垃圾箱的实体
         @JvmStatic
@@ -42,7 +53,7 @@ class MongoEntityEvent : BeanPostProcessor {
         @JvmStatic
         fun getCollection(collectionName: String): MongoBaseMetaCollection<IMongoDocument>? {
             var ret: BaseMetaData? = null
-            db.mongo.groups.any { group ->
+            db_mongo.groups.any { group ->
                 ret = group.getEntities().firstOrNull() { it.tableName == collectionName }
 
                 return@any ret != null
@@ -52,14 +63,13 @@ class MongoEntityEvent : BeanPostProcessor {
         }
     }
 
-//    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
+    //    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
 //        return super.postProcessBeforeInitialization(bean, beanName)
 //    }
-
+//
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
-
         if (bean is IDataGroup) {
-            db.mongo.groups.add(bean)
+            db_mongo.groups.add(bean)
 
             bean.getEntities().forEach { moer ->
                 if (moer is MongoBaseMetaCollection<*>) {
@@ -112,7 +122,7 @@ class MongoEntityEvent : BeanPostProcessor {
             refsMap.add(DbEntityFieldRefData(entityClass, ref))
         }
 
-        if( entityClass.superclass !=null) {
+        if (entityClass.superclass != null) {
             addRef(entityClass.superclass);
         }
     }

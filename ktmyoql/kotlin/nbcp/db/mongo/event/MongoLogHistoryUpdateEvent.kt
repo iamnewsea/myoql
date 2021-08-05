@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 @Component
 class MongoLogHistoryUpdateEvent : IMongoEntityUpdate {
     override fun beforeUpdate(update: MongoBaseUpdateClip): EventResult {
-        var logs = MongoEntityEvent.logHistoryMap.filter { MyUtil.getSmallCamelCase(it.key.simpleName) == update.collectionName }
+        var logs = MongoEntityCollector.logHistoryMap.filter { MyUtil.getSmallCamelCase(it.key.simpleName) == update.collectionName }
         if (logs.any() == false) {
             return EventResult(true, null)
         }

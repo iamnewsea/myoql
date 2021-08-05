@@ -39,7 +39,7 @@ class DevDockerController {
             return ListResult.of(listOf(name))
         }
 
-        var ret = execCmd("docker", "ps","--format", "table {{.Names}}")
+        var ret = execCmd("docker", "ps", "--format", "table {{.Names}}")
         if (ret.msg.HasValue == false) {
             ret.data = ret.data.Skip(1);
         }
@@ -82,7 +82,12 @@ class DevDockerController {
      * 下载 文件内容
      */
     @GetMapping("/download")
-    fun download(@Require container: String, @Require work_path: String, @Require name: String, response: HttpServletResponse) {
+    fun download(
+        @Require container: String,
+        @Require work_path: String,
+        @Require name: String,
+        response: HttpServletResponse
+    ) {
         var targetPathName = path;
         var targetPath = File(targetPathName);
 
@@ -102,7 +107,12 @@ class DevDockerController {
      * 查看 文件内容
      */
     @GetMapping("/view")
-    fun view(@Require container: String, @Require work_path: String, @Require name: String, response: HttpServletResponse) {
+    fun view(
+        @Require container: String,
+        @Require work_path: String,
+        @Require name: String,
+        response: HttpServletResponse
+    ) {
         var targetPathName = path;
         var targetPath = File(targetPathName);
 
@@ -125,7 +135,12 @@ class DevDockerController {
      * 上传
      */
     @PostMapping("/upload")
-    fun upload(@Require container: String, @Require work_path: String, @Require name: String, @Require dbFile: IdUrl): ListResult<String> {
+    fun upload(
+        @Require container: String,
+        @Require work_path: String,
+        @Require name: String,
+        @Require dbFile: IdUrl
+    ): ListResult<String> {
         return execCmd("docker", "cp", "${path}${dbFile.url}", "${container}:${work_path}/${name}");
     }
 
@@ -133,7 +148,13 @@ class DevDockerController {
      * 改名
      */
     @PostMapping("/rename")
-    fun rename(@Require container: String, bash: String, @Require work_path: String, @Require name: String, @Require newName: String): ListResult<String> {
+    fun rename(
+        @Require container: String,
+        bash: String,
+        @Require work_path: String,
+        @Require name: String,
+        @Require newName: String
+    ): ListResult<String> {
         var docker_cmd = "mv ${work_path}/${name} ${work_path}/${newName}"
         return execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd)
     }
@@ -143,7 +164,12 @@ class DevDockerController {
      * 创建文件夹
      */
     @PostMapping("/mkdir")
-    fun mkdir(@Require container: String, bash: String, @Require work_path: String, @Require name: String): ListResult<String> {
+    fun mkdir(
+        @Require container: String,
+        bash: String,
+        @Require work_path: String,
+        @Require name: String
+    ): ListResult<String> {
         var docker_cmd = "mkdir -p  ${work_path}/${name}"
         return execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd);
     }
@@ -152,13 +178,18 @@ class DevDockerController {
      * 删除
      */
     @PostMapping("/delete")
-    fun delete(@Require container: String, bash: String, @Require work_path: String, @Require name: String): ListResult<String> {
+    fun delete(
+        @Require container: String,
+        bash: String,
+        @Require work_path: String,
+        @Require name: String
+    ): ListResult<String> {
         var docker_cmd = "rm -rf  ${work_path}/${name}"
         return execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd);
     }
 
     fun execCmd(vararg cmds: String): ListResult<String> {
-        return ListResult.of(execRuntimeCommand(*cmds))
+        return ListResult.of(ShellUtil.execRuntimeCommand(*cmds))
 //        logger.warn(cmds.joinToString(" "));
 //        var p = Runtime.getRuntime().exec(cmds);
 //        var lines = listOf<String>()

@@ -11,7 +11,6 @@ import nbcp.utils.*
 import org.springframework.context.annotation.DependsOn
 
 @Service
-@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 class ProxyDataCache4SqlServiceImpl : ProxyCache4SqlService {
     private val redisCache by lazy {
         return@lazy SpringUtil.getBeanByName<DataCache4SqlService>("redis")

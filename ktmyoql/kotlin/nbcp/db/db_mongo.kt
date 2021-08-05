@@ -26,7 +26,7 @@ object db_mongo {
 
     //     val sqlEvents = SpringUtil.getBean<SqlEventConfig>();
     val mongoEvents by lazy {
-        return@lazy SpringUtil.getBean<MongoEntityEvent>();
+        return@lazy SpringUtil.getBean<MongoEntityCollector>();
     }
 
     private var dynamicMongoMap = StringMap();
