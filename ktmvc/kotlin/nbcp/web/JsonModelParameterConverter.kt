@@ -25,9 +25,9 @@ import javax.servlet.http.HttpSession
 /**
  * 自定义Mvc参数解析,有如下规则:
  * 1. 不支持默认值
- * 2. 基本类型, string , 不传递也会有默认值.
- * 3. 如果定义了可空参数,需要默认值, 重写参数 var  productIds = productIds ?: mutableListOf<String>()
- * 4. 只解析没有注解的参数,有任何注解,都不使用该方式.
+ * 2. 数值类型, string , 不传递也会有默认值.
+ * 3. 由于cao蛋的擦除机制，不支持List泛型参数，使用 Array泛型。
+ * 4. 只解析没有注解的参数, 或 JsonModel 注解的参数。
  */
 class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
     companion object {
@@ -104,7 +104,13 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
 //                    return jsonModelValue.value.java.newInstance().apply(webRequest)
 //                }
 
-                return (myRequest.body ?: byteArrayOf()).toString(utf8).FromJson(parameter.parameterType);
+                //如果用 JsonModel 接收 String 等简单参数？
+                var valueString = (myRequest.body ?: byteArrayOf()).toString(utf8);
+                if (parameter.parameterType.IsSimpleType()) {
+                    return valueString.ConvertType(parameter.parameterType);
+                }
+
+                return valueString.FromJson(parameter.parameterType);
             }
 
             value = myRequest.json.get(key)
