@@ -10,13 +10,16 @@ import org.springframework.stereotype.Component
  * 表示 config.userSystem 配置的用户体系的 redis 项，格式如： {config.userSystem}token:{id}
  */
 @Component
-class UserSystemService {
-
-    private val userSystemRedisProxy
-        get() = RedisStringProxy(config.tokenKey, config.tokenKeyExpireSeconds)
+class UserAuthenticationService {
 
     /**
-     * 用户体系的redis验证码，格式如：{app.user-system}validateCode:{id}
+     * 保存到 Redis 的 token
+     */
+    private val userSystemRedisProxy
+        get() = RedisStringProxy(config.tokenKey, config.tokenCacheSeconds)
+
+    /**
+     * 用户体系的图片验证码，格式如：validateCode:{id}
      */
     val validateCode
         get() = RedisStringProxy(

@@ -9,25 +9,38 @@ import org.springframework.boot.web.servlet.ServletComponentScan
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.*
+import org.springframework.beans.factory.InitializingBean
 
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 import org.springframework.boot.web.context.WebServerApplicationContext
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationEvent
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.*
+import org.springframework.context.event.EventListener
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.util.*
 
 
+
+
+
 @SpringBootApplication(
     exclude = arrayOf(
+        //DataSourceAutoConfiguration::class,
+        RedisAutoConfiguration::class,
         MongoAutoConfiguration::class,
         RabbitAutoConfiguration::class,
         ElasticsearchDataAutoConfiguration::class
@@ -66,6 +79,14 @@ fun main(args: Array<String>) {
 //    db.setDynamicMongo("adminLoginUser", master)
 //    db.setDynamicMongo("planInfo", master)
 //    db.setDynamicMongo("sysDictionary", master)
+
+
+    var d = MyEvent("token");
+    SpringUtil.context.publishEvent(d);
+
+
+    println("是否包含 DataSourceAutoConfiguration: "+ SpringUtil.containsBean(DataSourceAutoConfiguration::class.java))
+    println("是否包含 DataSourceAutoConfiguration: "+ SpringUtil.context.containsBean(DataSourceAutoConfiguration::class.java.name))
 
     usingScope(LogScope.info) {
         MainApplication.logger.info(

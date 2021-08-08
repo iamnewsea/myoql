@@ -31,11 +31,13 @@ open class s_annex @JvmOverloads constructor(
 open class s_log @JvmOverloads constructor(
     var module: String = "", //模块
     var type: String = "",  //类型
-    var key: String = "",   //实体标志, 查询用： module + key
+    var tags: String = "",   //实体标志, 查询用： module + key
     var msg: String = "",   //消息
+
+    var request: String = "",
     var data: String = "",
-    var remark: String = "",
-    var clientIp: String = "",
+    var response: String = "",
+
     var creatorId: String = ""
 ) : AutoNumberSqlDbEntity()
 

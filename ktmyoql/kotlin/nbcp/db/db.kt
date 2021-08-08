@@ -51,6 +51,8 @@ object db {
     val mongo = db_mongo;
     val es = db_es;
 
+    val redis = db_redis;
+
 //    private val _beforeExecuteDbData: ThreadLocal<Any?> = ThreadLocal.withInitial { return@withInitial null }
 //
 //    //执行前保存的数据,可能会执行后用到。

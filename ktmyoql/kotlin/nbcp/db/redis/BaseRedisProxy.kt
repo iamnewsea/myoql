@@ -3,6 +3,7 @@ package nbcp.db.redis
 import nbcp.comm.AsInt
 import nbcp.utils.*
 import nbcp.comm.*
+import nbcp.db.db
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.StringRedisTemplate
 
@@ -29,11 +30,13 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
     }
 
     protected val stringCommand: StringRedisTemplate by lazy {
-        return@lazy SpringUtil.getBean<StringRedisTemplate>()
+        return@lazy db.redis.getStringRedisTemplate(group) ?: scopes.GetLatest<StringRedisTemplate>()
+        ?: SpringUtil.getBean<StringRedisTemplate>()
     }
 
     protected val anyTypeCommand: AnyTypeRedisTemplate by lazy {
-        return@lazy SpringUtil.getBean<AnyTypeRedisTemplate>()
+        return@lazy db.redis.getAnyRedisTemplate(group) ?: scopes.GetLatest<AnyTypeRedisTemplate>()
+        ?: SpringUtil.getBean<AnyTypeRedisTemplate>()
     }
 
 //    /**

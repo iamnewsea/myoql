@@ -3,6 +3,7 @@
 
 package nbcp.comm
 
+import nbcp.data.TokenStorageTypeEnum
 import nbcp.utils.CodeUtil
 import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
@@ -88,6 +89,26 @@ object config {
     }
 
     /**
+     * 配置 redis 存储方式 。
+     * 如果没有指定，且没有配置 RedisAutoConfiguration，使用 Nemory。
+     * 否则使用 Redis
+     */
+    val tokenStorage: TokenStorageTypeEnum by lazy {
+        var configValue = getConfig("app.token-storage").AsStringWithNull()?.ToEnum<TokenStorageTypeEnum>();
+        if (configValue != null) {
+            return@lazy configValue
+        }
+
+        if (redisHost.HasValue &&
+                SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration")
+        ) {
+            return@lazy TokenStorageTypeEnum.Redis
+        }
+
+        return@lazy TokenStorageTypeEnum.Memory
+    }
+
+    /**
      * token 缓存时间，默认四个小时
      */
     val tokenCacheSeconds: Int by lazy {
@@ -97,10 +118,10 @@ object config {
     }
 
     /**
-     * 强制 token 过期时间。单位是秒,默认是72小时，过期后不再续期
+     * 强制 token 过期时间。单位是秒,默认是7天，从第一次登录，连续使用7天后，强制过期。
      */
     val tokenKeyExpireSeconds: Int by lazy {
-        var ret = Duration.parse(getConfig("app.token-key-expire").AsString("P3D"));
+        var ret = Duration.parse(getConfig("app.token-key-expire").AsString("P7D"));
         if (ret.seconds < tokenCacheSeconds * 3) {
             return@lazy tokenCacheSeconds * 3
         }
@@ -108,11 +129,11 @@ object config {
     }
 
     /**
-     * token 缓存时间，默认四个小时
+     * 验证码缓存时间，默认5分钟
      */
     val validateCodeCacheSeconds: Int by lazy {
         return@lazy Duration.parse(
-            getConfig("app.validate-code-cache-seconds").AsString("PT4H")
+            getConfig("app.validate-code-cache-seconds").AsString("PT5M")
         ).seconds.toInt()
     }
 

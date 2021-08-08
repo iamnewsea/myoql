@@ -1,5 +1,6 @@
 package nbcp.db.mongo.entity
 
+import nbcp.comm.StringMap
 import nbcp.db.*
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
@@ -212,24 +213,40 @@ open class SysCity @JvmOverloads constructor(
     var pcode: Int = 0
 ) : BaseEntity(), IMongoDocument
 
+
+open class BaseRequestData {
+    var method = "";
+    var url = "";
+    var body = "";
+    var header = StringMap();
+    var clientIP = "";
+}
+
+open class BaseResponseData {
+    var status = 0;
+    var body = "";
+    var header = StringMap();
+}
+
 @Document
 @DbEntityGroup("MongoBase")
 @Cn("系统日志")
 open class SysLog @JvmOverloads constructor(
+    @Cn("名称")
+    var name: String = "", //模块,多级模块用.分隔
     @Cn("模块")
-    var module: String = "", //模块
+    var module: String = "", //模块,多级模块用.分隔
     @Cn("类型")
-    var type: String = "",  //类型
-    @Cn("实体")
-    var key: String = "",   //实体标志, 查询用： module + key
+    var type: String = "",  //类型， error,warn,info
+    @Cn("标签")
+    var tags: MutableList<String> = mutableListOf(),   //实体标志, 查询用： module + key
     @Cn("消息")
     var msg: String = "",   //消息
-    @Cn("数据")
-    var data: Any? = null,
-    @Cn("详情")
-    var remark: String = "",
-    @Cn("客户Ip")
-    var clientIp: String = "",
+
+    var request: BaseRequestData? = null, //请求数据
+    var data: Any? = null,    //程序处理数据
+    var response: BaseResponseData? = null,  //回发数据
+
     @Cn("创建时间")
     var creatAt: LocalDateTime = LocalDateTime.now(),
     @Cn("创建者Id")

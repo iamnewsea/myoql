@@ -4,18 +4,21 @@
 package nbcp.web
 
 import nbcp.comm.*
+import nbcp.data.TokenStorageTypeEnum
 import nbcp.utils.*
 import nbcp.db.LoginUserModel
-import nbcp.service.UserSystemService
+import nbcp.extend.RequestGetLoginUserModelEvent
+import nbcp.extend.RequestSetLoginUserModelEvent
+import nbcp.extend.RequestTokenEvent
+import nbcp.service.UserAuthenticationService
 import org.slf4j.LoggerFactory
-import java.lang.RuntimeException
 import java.time.LocalDateTime
 import javax.servlet.http.HttpServletRequest
 
 private val logger = LoggerFactory.getLogger("ktweb.MyWebHelper")
 
 val HttpServletRequest.userSystemService by lazy {
-    return@lazy SpringUtil.getBean<UserSystemService>();
+    return@lazy SpringUtil.getBean<UserAuthenticationService>();
 }
 
 
@@ -32,36 +35,36 @@ var HttpServletRequest.LoginUser: LoginUserModel
             return ret;
         }
 
-        if (WebUserTokenBeanInstance.instances.any() == false) {
-            ret = this.session.getAttribute("[LoginUser]") as LoginUserModel?;
+        var event = RequestGetLoginUserModelEvent(this);
+        SpringUtil.context.publishEvent(event);
+        if (event.loginUser != null) return event.loginUser!!;
 
-            if (ret != null) {
-                return ret;
-            }
-
-            return LoginUserModel();
+        if (config.tokenStorage == TokenStorageTypeEnum.Memory) {
+            return this.session.getAttribute("[LoginUser]") as LoginUserModel? ?: LoginUserModel();
         }
-
 
         var token = this.tokenValue;
 
-
-        WebUserTokenBeanInstance.instances.forEach { ret = it.getUserInfo(token) };
-
+        ret = userSystemService.getLoginInfoFromToken(token)
         if (ret == null) {
             ret = LoginUserModel.ofToken(token);
         }
 
-        this.LoginUser = ret!!;
-        return ret!!;
+        this.LoginUser = ret;
+        return ret;
     }
     set(value) {
-        if (WebUserTokenBeanInstance.instances.any() == false) {
+        this.setAttribute("[LoginUser]", value)
+
+        var event = RequestSetLoginUserModelEvent(this);
+        SpringUtil.context.publishEvent(event);
+        if (event.proced) return;
+
+        if (config.tokenStorage == TokenStorageTypeEnum.Memory) {
             this.session.setAttribute("[LoginUser]", value);
             return;
         }
 
-        this.setAttribute("[LoginUser]", value)
         this.userSystemService.saveLoginUserInfo(value);
     }
 
@@ -87,14 +90,15 @@ val HttpServletRequest.UserName: String
  */
 val HttpServletRequest.tokenValue: String
     get() {
-        if (WebUserTokenBeanInstance.instances.any() == false) {
-            return this.requestedSessionId ?: "";
-        }
         var cacheKey = "_Token_Value_";
         var token = this.getAttribute(cacheKey).AsStringWithNull();
         if (token.HasValue) {
             return token.AsString();
         }
+
+        var event = RequestTokenEvent(this);
+        SpringUtil.context.publishEvent(event);
+        if (event.tokenValue.HasValue) return event.tokenValue;
 
         token = this.findParameterValue(config.tokenKey).AsStringWithNull();
 
@@ -102,28 +106,18 @@ val HttpServletRequest.tokenValue: String
 
         if (token.isNullOrEmpty()) {
             newToken = TokenUtil.generateToken();
-        } else if (TokenUtil.validateToken(token) == false) {
-            newToken = TokenUtil.generateToken();
         } else {
-            var tokenTime: LocalDateTime? = null;
-            try {
-                tokenTime = CodeUtil.getDateTimeFromCode(token.split("!")[2]);
-            } catch (e: Exception) {
-                logger.error("token格式非法:" + e.message);
-            }
+            var tokenTime: LocalDateTime? = TokenUtil.getTokenCreateTime(token);
 
             if (tokenTime == null) {
-                newToken = TokenUtil.generateToken(token)
+                newToken = TokenUtil.generateToken()
             } else {
                 var now = LocalDateTime.now();
 
                 var diffSeconds = (now - tokenTime).seconds
                 if (diffSeconds > config.tokenKeyExpireSeconds) {
                     this.userSystemService.deleteToken(token);
-                    newToken = TokenUtil.generateToken(token);
-                } else if (diffSeconds > config.tokenCacheSeconds) {
-                    newToken = TokenUtil.generateToken(token);
-                    WebUserTokenBeanInstance.instances.forEach { it.changeToken(token, newToken) };
+                    newToken = TokenUtil.generateToken();
                 } else {
                     newToken = token
                 }
@@ -131,7 +125,7 @@ val HttpServletRequest.tokenValue: String
         }
 
         if (newToken.isEmpty()) {
-            return ""
+            newToken = TokenUtil.generateToken();
         }
 
 

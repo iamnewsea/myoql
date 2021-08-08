@@ -43,8 +43,6 @@ import javax.servlet.http.HttpServletResponse
  * 2. app.filter.headers
  * 3. 通过 Url参数 log-level 控制 Log级别,可以是数字，也可以是被 ch.qos.logback.classic.Level.toLevel识别的参数，不区分大小写，如：all|trace|debug|info|error|off
  */
-@Order(Ordered.HIGHEST_PRECEDENCE)
-//@Configuration
 @WebFilter(urlPatterns = ["/*", "/**"])
 //@WebFilter(urlPatterns = arrayOf("/**"), filterName = "MyAllFilter")
 //@ConfigurationProperties(prefix = "nbcp.filter")

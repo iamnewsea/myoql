@@ -1,15 +1,11 @@
 package nbcp.handler
 
-import ch.qos.logback.classic.Level
 import com.wf.captcha.ArithmeticCaptcha
 import nbcp.comm.*
-import nbcp.db.db
-import nbcp.service.UserSystemService
-import nbcp.utils.SpringUtil
+import nbcp.service.UserAuthenticationService
 import nbcp.web.queryJson
 import nbcp.web.tokenValue
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import java.lang.RuntimeException
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServletRequest
@@ -24,7 +20,7 @@ import javax.servlet.http.HttpServlet
 @WebServlet(urlPatterns = ["/open/validate-code-image"])
 open class AuthImageServlet : HttpServlet() {
     @Autowired
-    lateinit var userSystemService: UserSystemService;
+    lateinit var userSystemService: UserAuthenticationService;
 
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
         var token = request.tokenValue

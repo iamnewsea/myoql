@@ -2,6 +2,7 @@ package nbcp.db
 
 import nbcp.comm.*
 import nbcp.utils.*
+import java.time.LocalDateTime
 
 /**
  * Created by yuxh on 2018/11/13
@@ -9,9 +10,11 @@ import nbcp.utils.*
 
 open class IdValue @JvmOverloads constructor(var id: String = "", var value: String = "") : java.io.Serializable {}
 
-open class IdName @JvmOverloads constructor(var id: String = "", @Cn("名称") var name: String = "") : java.io.Serializable {}
+open class IdName @JvmOverloads constructor(var id: String = "", @Cn("名称") var name: String = "") :
+    java.io.Serializable {}
 
-open class KeyValueString @JvmOverloads constructor(@Cn("键") var key: String = "", @Cn("值") var value: String = "") : java.io.Serializable {}
+open class KeyValueString @JvmOverloads constructor(@Cn("键") var key: String = "", @Cn("值") var value: String = "") :
+    java.io.Serializable {}
 
 /**
  * 表示Mongo数据库里 Id，Url 的附件实体引用。
@@ -43,15 +46,20 @@ open class NameUrl() : BaseUrlModel() {
     }
 }
 
-open class IdNameUrl @JvmOverloads constructor(var id: String = "", name: String = "", url: String = "") : NameUrl(name, url)
+open class IdNameUrl @JvmOverloads constructor(var id: String = "", name: String = "", url: String = "") :
+    NameUrl(name, url)
 
-open class IdNamePath @JvmOverloads constructor(id: String = "", name: String = "", @Cn("路径") var path: String = "") : IdName(id, name) {}
+open class IdNamePath @JvmOverloads constructor(id: String = "", name: String = "", @Cn("路径") var path: String = "") :
+    IdName(id, name) {}
 
-open class CodeName @JvmOverloads constructor(@Cn("编码") var code: String = "", @Cn("名称") var name: String = "") : java.io.Serializable {}
+open class CodeName @JvmOverloads constructor(@Cn("编码") var code: String = "", @Cn("名称") var name: String = "") :
+    java.io.Serializable {}
 
-open class CodeValue @JvmOverloads constructor(@Cn("编码") var code: String = "", @Cn("值") var value: String = "") : java.io.Serializable {}
+open class CodeValue @JvmOverloads constructor(@Cn("编码") var code: String = "", @Cn("值") var value: String = "") :
+    java.io.Serializable {}
 
-open class IdCodeName @JvmOverloads constructor(var id: String = "", code: String = "", name: String = "") : CodeName(code, name) {}
+open class IdCodeName @JvmOverloads constructor(var id: String = "", code: String = "", name: String = "") :
+    CodeName(code, name) {}
 
 
 /**
@@ -59,18 +67,21 @@ open class IdCodeName @JvmOverloads constructor(var id: String = "", code: Strin
  */
 open class LoginUserModel @JvmOverloads constructor(
     id: String = "",
+    var token: String = "",
     var loginName: String = "",
     name: String = "",
-    var token: String = "",
     var isAdmin: Boolean = false,
     var organization: IdName = IdName(),
     var roles: List<String> = listOf() //角色
 ) : IdName(id, name) {
     companion object {
         fun ofToken(token: String): LoginUserModel {
-            return LoginUserModel("", "", "", token);
+            return LoginUserModel("", token);
         }
     }
+
+    //登录时间
+//    var loginAt: LocalDateTime = LocalDateTime.now()
 
     fun AsIdName(): IdName {
         return IdName(this.id, this.name)
