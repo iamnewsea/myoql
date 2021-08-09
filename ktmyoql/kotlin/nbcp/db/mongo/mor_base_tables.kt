@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2021-06-21 16:17:11
+//generate auto @2021-08-09 16:02:58
 
 class IdUrlMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
@@ -105,10 +105,36 @@ class SerializableMeta (private val _pname:String):MongoColumnName() {
     }
 }
 
+class BaseRequestDataMeta (private val _pname:String):MongoColumnName() {
+    constructor(_val:MongoColumnName):this(_val.toString()) {}
+
+    val method=join(this._pname, "method")
+    val url=join(this._pname, "url")
+    val body=join(this._pname, "body")
+    val header=join_map(this._pname, "header")/*:map*/
+    val clientIP=join(this._pname, "clientIP")
+
+    override fun toString(): String {
+        return join(this._pname).toString()
+    }
+}
+
 class ObjectMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
 
 
+
+    override fun toString(): String {
+        return join(this._pname).toString()
+    }
+}
+
+class BaseResponseDataMeta (private val _pname:String):MongoColumnName() {
+    constructor(_val:MongoColumnName):this(_val.toString()) {}
+
+    val status=join(this._pname, "status")
+    val body=join(this._pname, "body")
+    val header=join_map(this._pname, "header")/*:map*/
 
     override fun toString(): String {
         return join(this._pname).toString()
@@ -760,32 +786,20 @@ class MongoBaseGroup : IDataGroup{
         * 类型
         */
         @Cn("类型")
-        val type=MongoColumnName("type")
+        val level=MongoColumnName("level")
         /**
-        * 实体
+        * 标签
         */
-        @Cn("实体")
-        val key=MongoColumnName("key")
+        @Cn("标签")
+        val tags=MongoColumnName("tags")
         /**
         * 消息
         */
         @Cn("消息")
         val msg=MongoColumnName("msg")
-        /**
-        * 数据
-        */
-        @Cn("数据")
+        val request=BaseRequestDataMeta("request")
         val data=ObjectMeta("data")
-        /**
-        * 详情
-        */
-        @Cn("详情")
-        val remark=MongoColumnName("remark")
-        /**
-        * 客户Ip
-        */
-        @Cn("客户Ip")
-        val clientIp=MongoColumnName("clientIp")
+        val response=BaseResponseDataMeta("response")
         /**
         * 创建时间
         */

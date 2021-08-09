@@ -232,12 +232,10 @@ open class BaseResponseData {
 @DbEntityGroup("MongoBase")
 @Cn("系统日志")
 open class SysLog @JvmOverloads constructor(
-    @Cn("名称")
-    var name: String = "", //模块,多级模块用.分隔
     @Cn("模块")
     var module: String = "", //模块,多级模块用.分隔
     @Cn("类型")
-    var type: String = "",  //类型， error,warn,info
+    var level: String = "",  //类型， error,warn,info
     @Cn("标签")
     var tags: MutableList<String> = mutableListOf(),   //实体标志, 查询用： module + key
     @Cn("消息")
