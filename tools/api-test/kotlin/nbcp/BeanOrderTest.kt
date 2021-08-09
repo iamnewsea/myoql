@@ -93,8 +93,8 @@ class MyEvent(var e: String) : ApplicationEvent(Any()) {
 @ConditionalOnBean(DataSourceAutoConfiguration::class)
 @Configuration
 class ExistDatasourceConfig : InitializingBean {
-    @EventListener
 
+    @EventListener
     fun ev(ev: MyEvent) {
         ev.e = "exist datasource"
         println(ev.e)
@@ -109,8 +109,8 @@ class ExistDatasourceConfig : InitializingBean {
 @ConditionalOnMissingBean(DataSourceAutoConfiguration::class)
 @Configuration
 class NotExistDatasourceConfig : InitializingBean {
-    @EventListener
 
+    @EventListener
     fun ev(ev: MyEvent) {
         ev.e = "no datasource"
         println(ev.e)
