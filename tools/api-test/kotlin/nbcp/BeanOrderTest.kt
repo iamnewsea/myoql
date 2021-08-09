@@ -5,6 +5,7 @@ import nbcp.utils.SpringUtil
 import org.springframework.beans.factory.BeanNameAware
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.config.BeanPostProcessor
+import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.AutoConfigureOrder
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -13,6 +14,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.DependsOn
 import org.springframework.context.annotation.Import
 import org.springframework.context.event.EventListener
 import org.springframework.core.Ordered
@@ -50,9 +52,9 @@ class post1 : BeanPostProcessor {
     override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
         if (bean.javaClass == DataSourceAutoConfiguration::class.java ||
             bean.javaClass == ExistDatasourceConfig::class.java ||
-            bean.javaClass == NoexistDatasourceConfig::class.java
+            bean.javaClass == NotexistDatasourceConfig::class.java
         ) {
-            println("::::postProcessBeforeInitialization：${beanName}")
+        println("::::postProcessBeforeInitialization：${beanName}")
         }
         return super.postProcessBeforeInitialization(bean, beanName)
     }
@@ -86,7 +88,7 @@ class MyEvent(var e: String) : ApplicationEvent(Any()) {
 @ConditionalOnBean(DataSourceAutoConfiguration::class)
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
-class ExistDatasourceConfig :InitializingBean{
+class ExistDatasourceConfig : InitializingBean {
     @EventListener
 
     fun ev(ev: MyEvent) {
@@ -95,7 +97,7 @@ class ExistDatasourceConfig :InitializingBean{
     }
 
     override fun afterPropertiesSet() {
-
+        println(":::: ExistDatasourceConfig")
     }
 }
 
@@ -103,7 +105,7 @@ class ExistDatasourceConfig :InitializingBean{
 @ConditionalOnMissingBean(DataSourceAutoConfiguration::class)
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
-class NoexistDatasourceConfig :InitializingBean{
+class NotexistDatasourceConfig :InitializingBean{
     @EventListener
 
     fun ev(ev: MyEvent) {
@@ -112,6 +114,6 @@ class NoexistDatasourceConfig :InitializingBean{
     }
 
     override fun afterPropertiesSet() {
-
+        println(":::: NotexistDatasourceConfig")
     }
 }

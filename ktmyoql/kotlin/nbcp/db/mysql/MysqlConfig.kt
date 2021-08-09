@@ -40,6 +40,7 @@ import javax.sql.DataSource
     havingValue = "com.zaxxer.hikari.HikariDataSource",
     matchIfMissing = true
 )
+@AutoConfigureAfter(DataSourceAutoConfiguration::class)
 internal class MyOqlMySqlConfig {
     companion object {
         @JvmStatic

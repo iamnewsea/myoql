@@ -23,7 +23,7 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext
  */
 @Configuration
 @Conditional(ExistsMongoDataSourceConfigCondition::class)
-@ConditionalOnBean
+@AutoConfigureAfter(MongoAutoConfiguration::class)
 class MyOqlMongoDbConfig {
 
     @Bean
