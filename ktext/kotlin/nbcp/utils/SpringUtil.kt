@@ -10,7 +10,6 @@ import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.beans.factory.support.BeanDefinitionBuilder
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
-import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
 import org.springframework.beans.factory.support.GenericBeanDefinition
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
@@ -34,6 +33,7 @@ import java.util.function.Supplier
  * 继承 BeanFactoryPostProcessor 保证该组件比较早执行。
  */
 @Component
+@Order(PriorityOrdered.HIGHEST_PRECEDENCE)
 class SpringUtil : BeanFactoryPostProcessor, ApplicationContextAware {
     companion object {
         var startAt: LocalDateTime? = null
@@ -124,8 +124,13 @@ class SpringUtil : BeanFactoryPostProcessor, ApplicationContextAware {
         }
 
 
-        inline fun <reified T> getGenericBeanDefinition(instance: T): GenericBeanDefinition {
+        inline fun <reified T> getGenericBeanDefinition(
+            instance: T,
+            callback: ((BeanDefinitionBuilder) -> Unit) = {}
+        ): GenericBeanDefinition {
             val builder = BeanDefinitionBuilder.genericBeanDefinition(T::class.java);
+            callback(builder);
+
             val definition = builder.rawBeanDefinition as GenericBeanDefinition;
             definition.autowireMode = GenericBeanDefinition.AUTOWIRE_BY_TYPE
             definition.instanceSupplier = Supplier { instance }

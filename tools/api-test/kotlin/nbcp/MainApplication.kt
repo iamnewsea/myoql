@@ -13,7 +13,7 @@ import org.springframework.beans.factory.InitializingBean
 
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
+
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration
@@ -39,7 +39,7 @@ import java.util.*
 
 @SpringBootApplication(
     exclude = arrayOf(
-        //DataSourceAutoConfiguration::class,
+        DataSourceAutoConfiguration::class,
         RedisAutoConfiguration::class,
         MongoAutoConfiguration::class,
         RabbitAutoConfiguration::class,

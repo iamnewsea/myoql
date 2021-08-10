@@ -3,7 +3,7 @@ package nbcp.db.mongo
 import nbcp.comm.HasValue
 import nbcp.utils.SpringUtil
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 import org.springframework.context.annotation.*

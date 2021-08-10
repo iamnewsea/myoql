@@ -8,35 +8,30 @@ import org.apache.http.message.BasicHeader
 import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestClient.FailureListener
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.InitializingBean
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
-import org.springframework.beans.factory.support.BeanDefinitionBuilder
-import org.springframework.beans.factory.support.BeanDefinitionRegistry
-import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
-import org.springframework.beans.factory.support.GenericBeanDefinition
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration
-import org.springframework.context.ApplicationContext
-import org.springframework.context.ApplicationContextAware
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
 import org.springframework.context.annotation.Lazy
-import org.springframework.stereotype.Component
 import java.lang.RuntimeException
 
+
+@Configuration
 @ConditionalOnProperty("spring.elasticsearch.rest.uris")
-@Component
-class MyOqlEsConfig : BeanDefinitionRegistryPostProcessor {
+@ConditionalOnBean(ElasticsearchDataAutoConfiguration::class)
+@Lazy
+class MyOqlEsConfig {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-
+    @Bean
+    @Lazy
     fun myoqlEsDataSource(): RestClient {
-        var configs = config.getConfig("spring.elasticsearch.rest.uris", "")
+        var configs = config.getConfig("spring.elasticsearch.rest.uris","")
             .split(",")
             .map { it.trim() }
             .filter { it.HasValue }
@@ -95,17 +90,4 @@ class MyOqlEsConfig : BeanDefinitionRegistryPostProcessor {
 
         return builder.build()
     }
-
-
-    override fun postProcessBeanFactory(beanFactory: ConfigurableListableBeanFactory) {
-    }
-
-    override fun postProcessBeanDefinitionRegistry(registry: BeanDefinitionRegistry) {
-        if (registry.containsBeanDefinition("elasticsearchDataAutoConfiguration")) {
-            registry.registerBeanDefinition("myoqlEsDataSource", SpringUtil.getGenericBeanDefinition(myoqlEsDataSource()))
-        }
-    }
-
-
-
 }

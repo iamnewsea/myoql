@@ -17,7 +17,7 @@ import javax.annotation.PostConstruct
 /**
  * Redis处理缓存组件
  */
-@Service("redis")
+@Service("redisCache")
 @ConfigurationProperties(prefix = "sql-orm")
 open class DataCache4SqlServiceImpl : DataCache4SqlService {
     companion object {

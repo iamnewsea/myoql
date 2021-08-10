@@ -7,6 +7,7 @@ import nbcp.model.MasterAlternateStack
 import nbcp.utils.SpringUtil
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.StringRedisTemplate
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 @Configuration
+@ConditionalOnProperty("spring.redis.host")
 class RedisTask : InitializingBean {
     companion object {
         /**
