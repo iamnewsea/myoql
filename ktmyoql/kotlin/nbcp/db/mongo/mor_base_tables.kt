@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2021-08-09 16:02:58
+//generate auto @2021-08-10 11:22:58
 
 class IdUrlMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
@@ -108,8 +108,9 @@ class SerializableMeta (private val _pname:String):MongoColumnName() {
 class BaseRequestDataMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
 
-    val method=join(this._pname, "method")
     val url=join(this._pname, "url")
+    val method=join(this._pname, "method")
+    val traceId=join(this._pname, "traceId")
     val body=join(this._pname, "body")
     val header=join_map(this._pname, "header")/*:map*/
     val clientIP=join(this._pname, "clientIP")
@@ -135,6 +136,7 @@ class BaseResponseDataMeta (private val _pname:String):MongoColumnName() {
     val status=join(this._pname, "status")
     val body=join(this._pname, "body")
     val header=join_map(this._pname, "header")/*:map*/
+    val result=join(this._pname, "result")
 
     override fun toString(): String {
         return join(this._pname).toString()
@@ -809,17 +811,12 @@ class MongoBaseGroup : IDataGroup{
         * 创建者Id
         */
         @Cn("创建者Id")
-        val creatorId=MongoColumnName("creatorId")
+        val creator=IdNameMeta("creator")
         /**
         * 创建时间
         */
         @Cn("创建时间")
         val createAt=MongoColumnName("createAt")
-        /**
-        * 更新时间
-        */
-        @Cn("更新时间")
-        val updateAt=MongoColumnName("updateAt")
     
     }
     

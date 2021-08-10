@@ -215,8 +215,9 @@ open class SysCity @JvmOverloads constructor(
 
 
 open class BaseRequestData {
-    var method = "";
     var url = "";
+    var method = "";
+    var traceId = "";
     var body = "";
     var header = StringMap();
     var clientIP = "";
@@ -226,12 +227,14 @@ open class BaseResponseData {
     var status = 0;
     var body = "";
     var header = StringMap();
+    var result = "";
 }
 
 @Document
 @DbEntityGroup("MongoBase")
 @Cn("系统日志")
 open class SysLog @JvmOverloads constructor(
+    var id: String = "",
     @Cn("模块")
     var module: String = "", //模块,多级模块用.分隔
     @Cn("类型")
@@ -248,8 +251,10 @@ open class SysLog @JvmOverloads constructor(
     @Cn("创建时间")
     var creatAt: LocalDateTime = LocalDateTime.now(),
     @Cn("创建者Id")
-    var creatorId: String = ""
-) : BaseEntity(), IMongoDocument {
+    var creator: IdName = IdName(),
+    @Cn("创建时间")
+    var createAt: LocalDateTime = LocalDateTime.now()
+) : IMongoDocument {
 }
 
 //存放删除的数据。

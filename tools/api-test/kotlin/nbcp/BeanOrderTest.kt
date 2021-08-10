@@ -2,15 +2,23 @@ package nbcp
 
 import nbcp.comm.JsonMap
 import nbcp.utils.SpringUtil
+import org.springframework.beans.factory.BeanFactory
+import org.springframework.beans.factory.BeanFactoryAware
 import org.springframework.beans.factory.BeanNameAware
 import org.springframework.beans.factory.InitializingBean
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor
 import org.springframework.beans.factory.config.BeanPostProcessor
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
+import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.AutoConfigureOrder
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -20,53 +28,55 @@ import org.springframework.context.event.EventListener
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
-
+import javax.sql.DataSource
 
 @Component
-class BeanNameTest : BeanNameAware {
-    override fun setBeanName(name: String) {
-        println("1 :::::BeanNameAware")
+class NormalBean : InitializingBean {
+    override fun afterPropertiesSet() {
+        println("6::::InitializingBean")
     }
 }
-
 
 @Configuration
 class BeanOrderTest : InitializingBean {
     @Bean
     fun abc(): JsonMap {
-        println("2... 内部Bean JsonMap")
+        println("5... 内部Bean JsonMap")
         return JsonMap();
     }
 
     override fun afterPropertiesSet() {
-        println("2 ::::@Configuration")
-    }
-}
-
-@Order(Ordered.HIGHEST_PRECEDENCE)
-@Component
-class HeighestBean : InitializingBean {
-    override fun afterPropertiesSet() {
-        println("3 ::::HIGHEST_PRECEDENCE")
-    }
-}
-
-@Order(Ordered.LOWEST_PRECEDENCE)
-@Component
-class LowestBean : InitializingBean {
-    override fun afterPropertiesSet() {
-        println("4 ::::LOWEST_PRECEDENCE")
+        println("5::::@Configuration")
     }
 }
 
 @Component
-class NormalBean : InitializingBean {
-    override fun afterPropertiesSet() {
-        println("5 ::::InitializingBean")
+class BeanNameTest : BeanNameAware {
+    override fun setBeanName(name: String) {
+        println("4:::::BeanNameAware")
     }
 }
 
+@Component
+class BeanFactoryAwareTest : BeanFactoryAware {
+    override fun setBeanFactory(beanFactory: BeanFactory) {
+        println("3:::::BeanFactoryAware")
+    }
+}
 
+@Component
+class ApplicationContextAwareTest : ApplicationContextAware {
+    override fun setApplicationContext(applicationContext: ApplicationContext) {
+        println("2:::::ApplicationContextAware")
+    }
+}
+
+@Component
+class BeanFactoryPostProcessorTest : BeanFactoryPostProcessor {
+    override fun postProcessBeanFactory(beanFactory: ConfigurableListableBeanFactory) {
+        println("1 :::::BeanFactoryPostProcessor")
+    }
+}
 
 @Component
 class post1 : BeanPostProcessor {
@@ -77,10 +87,13 @@ class post1 : BeanPostProcessor {
         ) {
             println("::::postProcessBeforeInitialization：${beanName}")
         }
+
+        if (beanName == "dataSource") {
+            println("::::postProcessBeforeInitialization：${beanName}")
+        }
         return super.postProcessBeforeInitialization(bean, beanName)
     }
 }
-
 
 
 class MyEvent(var e: String) : ApplicationEvent(Any()) {
@@ -90,9 +103,9 @@ class MyEvent(var e: String) : ApplicationEvent(Any()) {
 
 //@ConditionalOnBean 出现的时机太早了。 要推迟。
 
-@ConditionalOnBean(DataSourceAutoConfiguration::class)
+@ConditionalOnBean(DataSource::class)
 @Configuration
-class ExistDatasourceConfig : InitializingBean {
+class ExistDatasourceConfig() : InitializingBean {
 
     @EventListener
     fun ev(ev: MyEvent) {
@@ -106,9 +119,9 @@ class ExistDatasourceConfig : InitializingBean {
 }
 
 
-@ConditionalOnMissingBean(DataSourceAutoConfiguration::class)
+@ConditionalOnBean(DataSource::class)
 @Configuration
-class NotExistDatasourceConfig : InitializingBean {
+class NotExistDatasourceConfig() : InitializingBean {
 
     @EventListener
     fun ev(ev: MyEvent) {
