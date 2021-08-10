@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest
 
 private val logger = LoggerFactory.getLogger("ktweb.MyWebHelper")
 
-val HttpServletRequest.userSystemService by lazy {
+val HttpServletRequest.userAuthenticationService by lazy {
     return@lazy SpringUtil.getBean<UserAuthenticationService>();
 }
 
@@ -45,7 +45,7 @@ var HttpServletRequest.LoginUser: LoginUserModel
 
         var token = this.tokenValue;
 
-        ret = userSystemService.getLoginInfoFromToken(token)
+        ret = userAuthenticationService.getLoginInfoFromToken(token)
         if (ret == null) {
             ret = LoginUserModel.ofToken(token);
         }
@@ -65,7 +65,7 @@ var HttpServletRequest.LoginUser: LoginUserModel
             return;
         }
 
-        this.userSystemService.saveLoginUserInfo(value);
+        this.userAuthenticationService.saveLoginUserInfo(value);
     }
 
 
@@ -116,7 +116,7 @@ val HttpServletRequest.tokenValue: String
 
                 var diffSeconds = (now - tokenTime).seconds
                 if (diffSeconds > config.tokenKeyExpireSeconds) {
-                    this.userSystemService.deleteToken(token);
+                    this.userAuthenticationService.deleteToken(token);
                     newToken = TokenUtil.generateToken();
                 } else {
                     newToken = token

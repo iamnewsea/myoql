@@ -34,7 +34,7 @@ open class AuthImageServlet : HttpServlet() {
         var captcha = ArithmeticCaptcha(width, height);
         var txt = captcha.text()
 
-        userSystemService.validateCode.set(token, txt);
+        userSystemService.validateCodeRedis.set(token, txt);
         response.setHeader("content-type", "image/png")
 
 //        var set_cookie_ori = response.getHeader("Set-Cookie") ?: "";

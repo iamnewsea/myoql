@@ -3,7 +3,6 @@ package nbcp.service
 import nbcp.comm.*
 import nbcp.db.LoginUserModel
 import nbcp.db.redis.proxy.RedisStringProxy
-import nbcp.utils.TokenUtil
 import org.springframework.stereotype.Component
 
 /**
@@ -15,13 +14,13 @@ class UserAuthenticationService {
     /**
      * 保存到 Redis 的 token
      */
-    private val userSystemRedisProxy
+    private val userSystemRedis
         get() = RedisStringProxy(config.tokenKey, config.tokenCacheSeconds)
 
     /**
      * 用户体系的图片验证码，格式如：validateCode:{id}
      */
-    val validateCode
+    val validateCodeRedis
         get() = RedisStringProxy(
             "validateCode", config.validateCodeCacheSeconds
         )
@@ -31,8 +30,8 @@ class UserAuthenticationService {
      * 获取登录token
      */
     fun getLoginInfoFromToken(token: String): LoginUserModel? {
-        userSystemRedisProxy.renewalKey(token);
-        return userSystemRedisProxy.get(token).FromJson<LoginUserModel>();
+        userSystemRedis.renewalKey(token);
+        return userSystemRedis.get(token).FromJson<LoginUserModel>();
     }
 
     /**
@@ -40,7 +39,7 @@ class UserAuthenticationService {
      */
     fun saveLoginUserInfo(userInfo: LoginUserModel) {
         if (userInfo.id.HasValue && userInfo.token.HasValue) {
-            userSystemRedisProxy.set(userInfo.token, userInfo.ToJson())
+            userSystemRedis.set(userInfo.token, userInfo.ToJson())
         }
     }
 
@@ -48,6 +47,6 @@ class UserAuthenticationService {
      * 删除tokens
      */
     fun deleteToken(vararg tokens: String) {
-        userSystemRedisProxy.deleteKeys(*tokens)
+        userSystemRedis.deleteKeys(*tokens)
     }
 }
