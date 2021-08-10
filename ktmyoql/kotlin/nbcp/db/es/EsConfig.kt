@@ -8,46 +8,51 @@ import org.apache.http.message.BasicHeader
 import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestClient.FailureListener
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.InitializingBean
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
+import org.springframework.beans.factory.support.BeanDefinitionBuilder
+import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
+import org.springframework.beans.factory.support.GenericBeanDefinition
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
 import org.springframework.context.annotation.Lazy
+import org.springframework.stereotype.Component
 import java.lang.RuntimeException
 
-
-@Configuration
 @ConditionalOnProperty("spring.elasticsearch.rest.uris")
-@ConditionalOnBean(ElasticsearchDataAutoConfiguration::class)
-@Lazy
-class MyOqlEsConfig {
+@Component
+class MyOqlEsConfig : BeanDefinitionRegistryPostProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    @Bean
-    @Lazy
+
     fun myoqlEsDataSource(): RestClient {
-        var configs = config.getConfig("spring.elasticsearch.rest.uris","")
-                .split(",")
-                .map { it.trim() }
-                .filter { it.HasValue }
-                .map {
-                    var sect = it.split(":")
-                    if (sect[1].startsWith("//") == false) {
-                        throw RuntimeException("spring.elasticsearch.rest.uris 格式错误")
-                    }
-
-                    var protocal = sect[0]
-                    var ip = sect[1].substring(2)
-                    var port = if (sect.size >= 2) sect[2].AsInt() else 9200
-
-
-                    return@map HttpHost(ip, port, protocal);
+        var configs = config.getConfig("spring.elasticsearch.rest.uris", "")
+            .split(",")
+            .map { it.trim() }
+            .filter { it.HasValue }
+            .map {
+                var sect = it.split(":")
+                if (sect[1].startsWith("//") == false) {
+                    throw RuntimeException("spring.elasticsearch.rest.uris 格式错误")
                 }
+
+                var protocal = sect[0]
+                var ip = sect[1].substring(2)
+                var port = if (sect.size >= 2) sect[2].AsInt() else 9200
+
+
+                return@map HttpHost(ip, port, protocal);
+            }
 
         if (configs.isEmpty()) {
             throw RuntimeException("spring.elasticsearch.rest.uris 定义错误")
@@ -90,4 +95,17 @@ class MyOqlEsConfig {
 
         return builder.build()
     }
+
+
+    override fun postProcessBeanFactory(beanFactory: ConfigurableListableBeanFactory) {
+    }
+
+    override fun postProcessBeanDefinitionRegistry(registry: BeanDefinitionRegistry) {
+        if (registry.containsBeanDefinition("elasticsearchDataAutoConfiguration")) {
+            registry.registerBeanDefinition("myoqlEsDataSource", SpringUtil.getGenericBeanDefinition(myoqlEsDataSource()))
+        }
+    }
+
+
+
 }

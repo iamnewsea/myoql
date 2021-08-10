@@ -8,8 +8,10 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
+import org.springframework.beans.factory.support.BeanDefinitionBuilder
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
+import org.springframework.beans.factory.support.GenericBeanDefinition
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.context.ApplicationEventPublisher
@@ -25,6 +27,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
+import java.util.function.Supplier
 
 /**
  * 这样能达到在所有Bean初始化之前执行的目的。
@@ -118,6 +121,15 @@ class SpringUtil : BeanFactoryPostProcessor, ApplicationContextAware {
         fun <T> getBeanWithNull(name: String, clazz: Class<T>): T? {
             if (containsBean(name, clazz) == false) return null
             return context.getBean(name, clazz);
+        }
+
+
+        inline fun <reified T> getGenericBeanDefinition(instance: T): GenericBeanDefinition {
+            val builder = BeanDefinitionBuilder.genericBeanDefinition(T::class.java);
+            val definition = builder.rawBeanDefinition as GenericBeanDefinition;
+            definition.autowireMode = GenericBeanDefinition.AUTOWIRE_BY_TYPE
+            definition.instanceSupplier = Supplier { instance }
+            return definition;
         }
     }
 

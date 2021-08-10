@@ -39,7 +39,7 @@ import java.util.*
 
 @SpringBootApplication(
     exclude = arrayOf(
-        //DataSourceAutoConfiguration::class,
+        DataSourceAutoConfiguration::class,
         RedisAutoConfiguration::class,
         MongoAutoConfiguration::class,
         RabbitAutoConfiguration::class,
@@ -101,6 +101,8 @@ ${context.debugServerInfo}
                 .joinToString("\n")
         )
     }
+
+    Thread.sleep(30000)
 }
 
 val ApplicationContext.debugServerInfo: String

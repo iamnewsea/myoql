@@ -10,6 +10,8 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter
+import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.AutoConfigureOrder
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
@@ -17,9 +19,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
-import org.springframework.context.ApplicationContext
-import org.springframework.context.ApplicationContextAware
-import org.springframework.context.ApplicationEvent
+import org.springframework.context.*
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
@@ -78,6 +78,7 @@ class BeanFactoryPostProcessorTest : BeanFactoryPostProcessor {
     }
 }
 
+
 @Component
 class post1 : BeanPostProcessor {
     override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
@@ -102,34 +103,46 @@ class MyEvent(var e: String) : ApplicationEvent(Any()) {
 
 
 //@ConditionalOnBean 出现的时机太早了。 要推迟。
+@Component
+class ExistDatasourceConfig() : BeanDefinitionRegistryPostProcessor {
 
-@ConditionalOnBean(DataSource::class)
-@Configuration
-class ExistDatasourceConfig() : InitializingBean {
-
-    @EventListener
-    fun ev(ev: MyEvent) {
-        ev.e = "exist datasource"
-        println(ev.e)
+    public class Ev: ApplicationListener<MyEvent> {
+        override fun onApplicationEvent(event: MyEvent) {
+            event.e = "exist datasource"
+            println(event.e)
+        }
     }
 
-    override fun afterPropertiesSet() {
-        println(":::: ExistDatasourceConfig")
+
+    override fun postProcessBeanFactory(beanFactory: ConfigurableListableBeanFactory) {
+
+    }
+
+    override fun postProcessBeanDefinitionRegistry(registry: BeanDefinitionRegistry) {
+        if (registry.containsBeanDefinition("dataSource")) {
+            registry.registerBeanDefinition("eeeee", SpringUtil.getGenericBeanDefinition(Ev()))
+        }
+    }
+}
+
+@Component
+class NotExistDatasourceConfig() : BeanDefinitionRegistryPostProcessor {
+
+    public class Ev: ApplicationListener<MyEvent> {
+        override fun onApplicationEvent(event: MyEvent) {
+            event.e = "no datasource"
+            println(event.e)
+        }
+    }
+
+    override fun postProcessBeanFactory(beanFactory: ConfigurableListableBeanFactory) {
+
+    }
+
+    override fun postProcessBeanDefinitionRegistry(registry: BeanDefinitionRegistry) {
+        if (registry.containsBeanDefinition("dataSource") == false) {
+            registry.registerBeanDefinition("eeeee", SpringUtil.getGenericBeanDefinition(Ev()))
+        }
     }
 }
 
-
-@ConditionalOnBean(DataSource::class)
-@Configuration
-class NotExistDatasourceConfig() : InitializingBean {
-
-    @EventListener
-    fun ev(ev: MyEvent) {
-        ev.e = "no datasource"
-        println(ev.e)
-    }
-
-    override fun afterPropertiesSet() {
-        println(":::: NotexistDatasourceConfig")
-    }
-}
