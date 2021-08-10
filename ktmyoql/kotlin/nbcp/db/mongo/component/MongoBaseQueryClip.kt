@@ -261,7 +261,9 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         var ret = ListResult<R>();
         ret.data = toList(clazz, mapFunc);
 
-        if (this.skip == 0 && this.take > 0) {
+        if (config.listResultWithCount) {
+            ret.total = count()
+        } else if (this.skip == 0 && this.take > 0) {
             if (ret.data.size < this.take) {
                 ret.total = ret.data.size;
             } else {

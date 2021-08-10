@@ -8,7 +8,8 @@ import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
 
-class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M) : SqlBaseQueryClip(mainEntity.tableName) {
+class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M) :
+    SqlBaseQueryClip(mainEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -22,6 +23,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
     private var subSelect: SqlQueryClip<*, *>? = null //<out SqlBaseTable<out IBaseDbEntity>, out IBaseDbEntity>? = null
     private var subSelectAlias: String = ""
     private var lockType: SqlLockType? = null;
+
     // <0: 不出现子句， 0:nowait子句, >0: wait子句
     private var lockSeconds = 0;
 
@@ -85,7 +87,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
     }
 
     @JvmOverloads
-    fun withLock(lockType:SqlLockType, lockSeconds:Int = -1):SqlQueryClip<M, T>{
+    fun withLock(lockType: SqlLockType, lockSeconds: Int = -1): SqlQueryClip<M, T> {
         this.lockType = lockType;
         this.lockSeconds = lockSeconds;
         return this;
@@ -100,12 +102,29 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
         }
 
         var fk = fks.first()
-        return WhereData("${db.sql.getSqlQuoteName(fk.table)}.${db.sql.getSqlQuoteName(fk.column)} = ${db.sql.getSqlQuoteName(fk.refTable)}.${db.sql.getSqlQuoteName(fk.refColumn)}")
+        return WhereData(
+            "${db.sql.getSqlQuoteName(fk.table)}.${db.sql.getSqlQuoteName(fk.column)} = ${
+                db.sql.getSqlQuoteName(
+                    fk.refTable
+                )
+            }.${db.sql.getSqlQuoteName(fk.refColumn)}"
+        )
     }
 
     @JvmOverloads
-    fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> join(joinTable: M2, onWhere: (M, M2) -> WhereData, select: ((M2) -> SqlColumnNames)? = null): SqlQueryClip<M, T> {
-        this.joins.add(JoinTableData("join", joinTable, onWhere(this.mainEntity, joinTable), if (select == null) SqlColumnNames() else select(joinTable)))
+    fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> join(
+        joinTable: M2,
+        onWhere: (M, M2) -> WhereData,
+        select: ((M2) -> SqlColumnNames)? = null
+    ): SqlQueryClip<M, T> {
+        this.joins.add(
+            JoinTableData(
+                "join",
+                joinTable,
+                onWhere(this.mainEntity, joinTable),
+                if (select == null) SqlColumnNames() else select(joinTable)
+            )
+        )
         return this
     }
 
@@ -113,15 +132,26 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
      * 根据外键自动 onWhere
      */
     @JvmOverloads
-    fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> join(joinTable: M2, select: ((M2) -> SqlColumnNames)? = null): SqlQueryClip<M, T> {
+    fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> join(
+        joinTable: M2,
+        select: ((M2) -> SqlColumnNames)? = null
+    ): SqlQueryClip<M, T> {
         this.join(joinTable, { a, b -> getJoinOnWhere(joinTable) }, select)
         return this
     }
 
     @JvmOverloads
-    fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> left_join(joinTable: M2, onWhere: (M, M2) -> WhereData, select: ((M2) -> SqlColumnNames)? = null): SqlQueryClip<M, T> {
-        this.joins.add(JoinTableData("left join", joinTable, onWhere(this.mainEntity, joinTable), select?.invoke(joinTable)
-                ?: SqlColumnNames()))
+    fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> left_join(
+        joinTable: M2,
+        onWhere: (M, M2) -> WhereData,
+        select: ((M2) -> SqlColumnNames)? = null
+    ): SqlQueryClip<M, T> {
+        this.joins.add(
+            JoinTableData(
+                "left join", joinTable, onWhere(this.mainEntity, joinTable), select?.invoke(joinTable)
+                    ?: SqlColumnNames()
+            )
+        )
         return this
     }
 
@@ -129,7 +159,10 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
      * 根据外键自动 onWhere
      */
     @JvmOverloads
-    fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> left_join(joinTable: M2, select: ((M2) -> SqlColumnNames)? = null): SqlQueryClip<M, T> {
+    fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> left_join(
+        joinTable: M2,
+        select: ((M2) -> SqlColumnNames)? = null
+    ): SqlQueryClip<M, T> {
         this.left_join(joinTable, { a, b -> getJoinOnWhere(joinTable) }, select)
         return this
     }
@@ -160,17 +193,23 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
                 if (this.subSelect!!.columns.any() == false) {
                     ret.expression += this.subSelectAlias + ".*"
                 } else {
-                    ret.expression += this.subSelect!!.columns.map { this.subSelectAlias + "." + db.sql.getSqlQuoteName(it.getAliasName()) }.joinToString(",")
+                    ret.expression += this.subSelect!!.columns.map {
+                        this.subSelectAlias + "." + db.sql.getSqlQuoteName(
+                            it.getAliasName()
+                        )
+                    }.joinToString(",")
                 }
             } else {
-                var selectColumn = columns.map { this.subSelectAlias + "." + db.sql.getSqlQuoteName(it.getAliasName()) }.joinToString(",")
+                var selectColumn = columns.map { this.subSelectAlias + "." + db.sql.getSqlQuoteName(it.getAliasName()) }
+                    .joinToString(",")
 
                 ret.expression += selectColumn
             }
 
             joins.forEach {
                 if (it.select.any()) {
-                    ret.expression += "," + it.select.map { this.subSelectAlias + "." + db.sql.getSqlQuoteName(it.getAliasName()) }.joinToString(",")
+                    ret.expression += "," + it.select.map { this.subSelectAlias + "." + db.sql.getSqlQuoteName(it.getAliasName()) }
+                        .joinToString(",")
                 }
             }
 
@@ -251,21 +290,18 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
             ret.expression += " limit  ${skip},99999"
         }
 
-        if( this.lockType != null){
-            if( this.lockType == SqlLockType.ShareMode){
+        if (this.lockType != null) {
+            if (this.lockType == SqlLockType.ShareMode) {
                 ret.expression += " lock in share mode"
-            }
-            else if( this.lockType == SqlLockType.Update){
+            } else if (this.lockType == SqlLockType.Update) {
                 ret.expression += " for update"
-            }
-            else{
+            } else {
                 throw RuntimeException("不识别的SqlLockType:${this.lockType}")
             }
 
-            if( this.lockSeconds == 0){
+            if (this.lockSeconds == 0) {
                 ret.expression += " nowait"
-            }
-            else if( this.lockSeconds >0){
+            } else if (this.lockSeconds > 0) {
                 ret.expression += " wait ${this.lockSeconds}"
             }
         }
@@ -336,7 +372,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
             it.ConvertJson(entityClass)
 //            mapToEntity(it, { entityClass.newInstance() })
         }
-                .firstOrNull()
+            .firstOrNull()
     }
 
     override fun toMap(): JsonMap? {
@@ -363,12 +399,15 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
         select.columns.removeAll { it.getAliasName() == select.mainEntity.getAutoIncrementKey() }
 
         //校验, 必须是表的列.
-        var surplusColumns = select.columns.map { it.getAliasName() }.minus(insertTable::class.memberProperties.map { it.name })
+        var surplusColumns =
+            select.columns.map { it.getAliasName() }.minus(insertTable::class.memberProperties.map { it.name })
         if (surplusColumns.any()) {
             throw RuntimeException("插入 select 语句时,发现多余的列: ${surplusColumns.joinToString(",")}")
         }
 
-        var exp = "insert into ${insertTable.quoteTableName} (${select.columns.map { "${db.sql.getSqlQuoteName(it.getAliasName())}" }.joinToString(",")}) ";
+        var exp = "insert into ${insertTable.quoteTableName} (${
+            select.columns.map { "${db.sql.getSqlQuoteName(it.getAliasName())}" }.joinToString(",")
+        }) ";
 
         var sql = select.toSql().toExecuteSqlAndParameters()
 
@@ -388,10 +427,11 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
         } finally {
             logger.InfoError(n < 0) {
                 var msg_log = mutableListOf(
-                        "[select] ${executeData.executeSql}",
-                        "[参数] ${executeData.executeParameters.joinToString(",")}",
-                        "[result] ${n}",
-                        "[耗时] ${db.executeTime}")
+                    "[select] ${executeData.executeSql}",
+                    "[参数] ${executeData.executeParameters.joinToString(",")}",
+                    "[result] ${n}",
+                    "[耗时] ${db.executeTime}"
+                )
 
                 return@InfoError msg_log.joinToString(line_break)
             }
@@ -413,7 +453,9 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
         var ret = ListResult<R>()
         var data = toList(entityClass, mapFunc)
 
-        if (this.skip == 0 && this.take > 0) {
+        if (config.listResultWithCount) {
+            ret.total = count()
+        } else if (this.skip == 0 && this.take > 0) {
             if (data.size < this.take) {
                 ret.total = data.size;
             } else {

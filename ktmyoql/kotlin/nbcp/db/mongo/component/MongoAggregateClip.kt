@@ -287,7 +287,9 @@ ${if (logger.debug) "[result] ${result?.ToJson()}" else "[result.size] ${result?
         var ret = ListResult<R>()
         var data = toList(entityClass, itemFunc)
 
-        if (this.skip == 0 && this.take > 0) {
+        if (config.listResultWithCount) {
+            ret.total = count()
+        } else if (this.skip == 0 && this.take > 0) {
             if (data.size < this.take) {
                 ret.total = data.size;
             } else {

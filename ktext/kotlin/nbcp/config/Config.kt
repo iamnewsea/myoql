@@ -78,6 +78,10 @@ object config {
         return@lazy getConfig("app.mybatis.package", "")
     }
 
+    val listResultWithCount: Boolean by lazy {
+        return@lazy getConfig("app.list-result-with-count", "").AsBoolean()
+    }
+
     /**
      * 由于 SameSite 限制，避免使用 Cookie，定义一个额外值来保持会话。
      * 如果设置为空，则使用 set-cookie方式， 用于以下两个地方：
@@ -100,7 +104,7 @@ object config {
         }
 
         if (redisHost.HasValue &&
-                SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration")
+            SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration")
         ) {
             return@lazy TokenStorageTypeEnum.Redis
         }
