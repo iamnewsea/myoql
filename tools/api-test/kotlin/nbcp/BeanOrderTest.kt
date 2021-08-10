@@ -106,8 +106,9 @@ class MyEvent(var e: String) : ApplicationEvent(Any()) {
 @Component
 class ExistDatasourceConfig() : BeanDefinitionRegistryPostProcessor {
 
-    public class Ev: ApplicationListener<MyEvent> {
-        override fun onApplicationEvent(event: MyEvent) {
+    public class Ev {
+        @EventListener
+        fun onApplicationEvent(event: MyEvent) {
             event.e = "exist datasource"
             println(event.e)
         }
@@ -128,8 +129,9 @@ class ExistDatasourceConfig() : BeanDefinitionRegistryPostProcessor {
 @Component
 class NotExistDatasourceConfig() : BeanDefinitionRegistryPostProcessor {
 
-    public class Ev: ApplicationListener<MyEvent> {
-        override fun onApplicationEvent(event: MyEvent) {
+    public class Ev {
+        @EventListener
+        fun onApplicationEvent(event: MyEvent) {
             event.e = "no datasource"
             println(event.e)
         }
