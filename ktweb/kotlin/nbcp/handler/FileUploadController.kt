@@ -8,6 +8,7 @@ import nbcp.db.*
 import nbcp.service.UploadService
 import nbcp.web.*
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -37,6 +38,9 @@ class FileUploadController {
      */
     @PostMapping("/sys/upload")
     fun fileUpload(request: HttpServletRequest, response: HttpServletResponse) {
+        if (request is StandardMultipartHttpServletRequest == false) {
+            throw RuntimeException("request非StandardMultipartHttpServletRequest类型")
+        }
 
         var ret =
             uploadService.upload(request, IdName(request.UserId, request.UserName), request.LoginUser.organization.id);

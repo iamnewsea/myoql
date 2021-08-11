@@ -10,6 +10,7 @@ import nbcp.db.mongo.service.UploadFileMongoService
 import nbcp.db.mysql.service.UploadFileMysqlService
 import nbcp.utils.CodeUtil
 import nbcp.utils.SpringUtil
+import nbcp.web.findParameterStringValue
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -89,8 +90,8 @@ open class UploadService {
     @Value("\${app.upload.saveCorp:true}")
     private var UPLOAD_SAVECORP = false
 
-    @Value("\${app.upload.group:}")
-    private var UPLOAD_GROUP = ""
+//    @Value("\${app.upload.group:}")
+//    private var UPLOAD_GROUP = ""
 
     /**
      * 上传到本地时使用该配置,最后不带 "/"
@@ -135,7 +136,7 @@ open class UploadService {
      * @param vTempFile , 相对于 uploadPath 的相对路径.
      */
     private fun doUpload(
-        request: HttpServletRequest,
+        group: String,
         file: MultipartFile,
         fileName: String,
         user: IdName,
@@ -152,14 +153,15 @@ open class UploadService {
         fileData.oriName = extInfo.toString()
         fileData.extName = extInfo.extName
         fileData.extType = extInfo.extType
-        fileData.needCorp = request.getHeader("save-corp").AsBooleanWithNull() ?: UPLOAD_SAVECORP;
+        fileData.needCorp = UPLOAD_SAVECORP;
         fileData.corpId = corpId;
+
 
         var annexInfo = SysAnnex();
         annexInfo.ext = extInfo.extName
         annexInfo.size = file.size.toInt()
         annexInfo.creator = user
-        annexInfo.group = request.getHeader("group").AsStringWithNull() ?: UPLOAD_GROUP
+        annexInfo.group = group
         annexInfo.corpId = corpId
 
 
@@ -288,11 +290,9 @@ open class UploadService {
         corpId: String,
     ): ListResult<SysAnnex> {
         var list = mutableListOf<SysAnnex>()
-        if (request is StandardMultipartHttpServletRequest == false) {
-            throw RuntimeException("request非StandardMultipartHttpServletRequest类型")
-        }
 
         var msg = ""
+        var group = request.findParameterStringValue("group")
 
         (request as StandardMultipartHttpServletRequest)
             .multiFileMap
@@ -302,7 +302,7 @@ open class UploadService {
                 var files = it.second;
 
                 files.ForEachExt for2@{ file, _ ->
-                    var ret1 = doUpload(request, file, fileName, user, corpId);
+                    var ret1 = doUpload(group, file, fileName, user, corpId);
                     if (ret1.msg.HasValue) {
                         msg = ret1.msg;
                         return@ForEachExt false
