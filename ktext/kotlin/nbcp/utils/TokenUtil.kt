@@ -52,7 +52,7 @@ object TokenUtil {
         if (token.startsWith(tokenPrefix) == false) return null;
 
         try {
-            return CodeUtil.getDateTimeFromCode(token.split("!")[2]);
+            return CodeUtil.getDateTimeFromCode(token.split("!")[1]);
         } catch (e: Exception) {
             return null;
         }

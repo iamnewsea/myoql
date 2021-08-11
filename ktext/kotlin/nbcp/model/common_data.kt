@@ -66,19 +66,20 @@ open class IdCodeName @JvmOverloads constructor(var id: String = "", code: Strin
  * 登录用户数据
  */
 open class LoginUserModel @JvmOverloads constructor(
-    id: String = "",
     var token: String = "",
+    var isAdmin: Boolean = false,
+    id: String = "",
     var loginName: String = "",
     name: String = "",
-    var isAdmin: Boolean = false,
     var organization: IdName = IdName(),
     var roles: List<String> = listOf() //角色
 ) : IdName(id, name) {
-    companion object {
-        fun ofToken(token: String): LoginUserModel {
-            return LoginUserModel("", token);
-        }
-    }
+
+
+//    fun isAdmin(isAdmin: Boolean): LoginUserModel {
+//        this.isAdmin = isAdmin;
+//        return this;
+//    }
 
     //登录时间
 //    var loginAt: LocalDateTime = LocalDateTime.now()

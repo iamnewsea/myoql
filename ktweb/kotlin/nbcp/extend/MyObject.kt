@@ -39,15 +39,14 @@ var HttpServletRequest.LoginUser: LoginUserModel
         SpringUtil.context.publishEvent(event);
         if (event.loginUser != null) return event.loginUser!!;
 
-        if (config.tokenStorage == TokenStorageTypeEnum.Memory) {
-            return this.session.getAttribute("[LoginUser]") as LoginUserModel? ?: LoginUserModel();
-        }
-
         var token = this.tokenValue;
+        if (config.tokenStorage == TokenStorageTypeEnum.Memory) {
+            return this.session.getAttribute("[LoginUser]") as LoginUserModel? ?: LoginUserModel(token);
+        }
 
         ret = userAuthenticationService.getLoginInfoFromToken(token)
         if (ret == null) {
-            ret = LoginUserModel.ofToken(token);
+            ret = LoginUserModel(token);
         }
 
         this.LoginUser = ret;
