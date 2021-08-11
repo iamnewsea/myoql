@@ -3,9 +3,11 @@ package nbcp.db.redis
 /**
  * Created by udi on 17-3-19.
  */
+import nbcp.db.MultipleDataSourceProperties
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -15,6 +17,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.SetOperations
 import org.springframework.data.redis.serializer.RedisSerializer
+import org.springframework.stereotype.Component
 
 //
 ////@Suppress("SpringKotlinAutowiring")
@@ -160,6 +163,15 @@ class MyOqlRedisConfig {
         template.afterPropertiesSet();
         return template;
     }
+}
+
+
+/**
+ * 定义Redis不同的数据源
+ */
+@ConfigurationProperties(prefix = "app.redis")
+@Component
+class RedisDataSource : MultipleDataSourceProperties() {
 }
 
 //

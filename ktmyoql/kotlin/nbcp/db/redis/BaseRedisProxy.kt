@@ -4,7 +4,6 @@ import nbcp.comm.AsInt
 import nbcp.utils.*
 import nbcp.comm.*
 import nbcp.db.db
-import nbcp.db.sql.SqlTableDataSource
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.StringRedisTemplate
 
@@ -37,11 +36,11 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
      * 4. 使用默认
      */
     protected val stringCommand: StringRedisTemplate by lazy {
-        var config = SpringUtil.getBean<SqlTableDataSource>();
-        var dataSourceName = config.getDataSourceName(group)
-        if (dataSourceName.HasValue) {
-            return@lazy SpringUtil.getBean(dataSourceName) as StringRedisTemplate
-        }
+//        var config = SpringUtil.getBean<RedisDataSource>();
+//        var dataSourceName = config.getDataSourceName(group)
+//        if (dataSourceName.HasValue) {
+//            return@lazy SpringUtil.getBean(dataSourceName) as StringRedisTemplate
+//        }
 
         return@lazy scopes.GetLatest<StringRedisTemplate>()
             ?: SpringUtil.getBean<StringRedisTemplate>()
@@ -49,11 +48,11 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
 
     protected val anyTypeCommand: AnyTypeRedisTemplate by lazy {
 
-        var config = SpringUtil.getBean<SqlTableDataSource>();
-        var dataSourceName = config.getDataSourceName(group)
-        if (dataSourceName.HasValue) {
-            return@lazy SpringUtil.getBean(dataSourceName) as AnyTypeRedisTemplate
-        }
+//        var config = SpringUtil.getBean<RedisDataSource>();
+//        var dataSourceName = config.getDataSourceName(group)
+//        if (dataSourceName.HasValue) {
+//            return@lazy SpringUtil.getBean(dataSourceName) as AnyTypeRedisTemplate
+//        }
 
         return@lazy scopes.GetLatest<AnyTypeRedisTemplate>()
             ?: SpringUtil.getBean<AnyTypeRedisTemplate>()

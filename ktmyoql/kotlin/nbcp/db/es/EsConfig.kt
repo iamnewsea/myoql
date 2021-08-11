@@ -44,7 +44,7 @@ class MyOqlEsConfig {
 }
 
 /**
- * 定义Mongo不同的数据源
+ * 定义Es不同的数据源
  */
 @ConfigurationProperties(prefix = "app.es")
 @Component

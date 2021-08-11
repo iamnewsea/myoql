@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 
 /**
- * 定义Mongo不同的数据源
+ * 定义Sql不同的数据源
  */
 @ConfigurationProperties(prefix = "app.sql")
 @Component

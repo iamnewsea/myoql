@@ -5,13 +5,31 @@ import nbcp.comm.*
 import nbcp.db.redis.AnyTypeRedisTemplate
 import nbcp.utils.*
 import org.springframework.core.convert.support.GenericConversionService
+import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.data.redis.core.StringRedisTemplate
+import org.springframework.data.redis.serializer.RedisSerializer
 
 /**
  * 请使用 db.mongo
  */
 object db_redis {
 
+    /**
+     * 获取 AnyTypeRedisTemplate
+     */
+    fun getAnyTypeRedisTemplate(host: String, password: String): AnyTypeRedisTemplate {
+        var connectionFactory = SpringUtil.getBean<RedisConnectionFactory>();
+
+
+        var template = AnyTypeRedisTemplate()
+        template.connectionFactory = connectionFactory;
+        template.keySerializer = RedisSerializer.string()
+        template.valueSerializer = RedisSerializer.string()
+        template.hashKeySerializer = RedisSerializer.string()
+        template.hashValueSerializer = RedisSerializer.json()
+        template.afterPropertiesSet();
+        return template;
+    }
 
 //    private var dynamicStringRedisMap = StringKeyMap<StringRedisTemplate>();
 //    private var dynamicAnyRedisTemplate = StringKeyMap<AnyTypeRedisTemplate>();
