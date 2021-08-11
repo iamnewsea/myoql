@@ -49,7 +49,7 @@ var HttpServletRequest.LoginUser: LoginUserModel
             ret = LoginUserModel(token);
         }
 
-        this.LoginUser = ret;
+        this.setAttribute("[LoginUser]", ret)
         return ret;
     }
     set(value) {
