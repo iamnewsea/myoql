@@ -4,8 +4,6 @@ import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.db
 import nbcp.db.es.tool.EsIndexDataSource
-import nbcp.db.mongo.MongoAggregateClip
-import nbcp.db.mongo.MongoBaseQueryClip
 import nbcp.db.sql.SqlTableDataSource
 import org.elasticsearch.client.RestClient
 import org.springframework.data.mongodb.core.MongoTemplate
