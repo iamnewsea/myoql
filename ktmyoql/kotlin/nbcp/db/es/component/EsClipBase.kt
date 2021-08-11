@@ -1,8 +1,6 @@
 package nbcp.db.es
 
-import nbcp.comm.GetLatest
-import nbcp.comm.HasValue
-import nbcp.comm.scopes
+import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.db
 import nbcp.db.es.tool.EsIndexDataSource
@@ -34,7 +32,11 @@ open class EsClipBase(var collectionName: String) : Serializable {
         var config = SpringUtil.getBean<EsIndexDataSource>();
         var dataSourceName = config.getDataSourceName(this.collectionName, isRead)
         if (dataSourceName.HasValue) {
-            return@lazy SpringUtil.getBeanByName<RestClient>(dataSourceName)
+            var uri = SpringUtil.context.environment.getProperty("app.es.${dataSourceName}-ds.uri").AsString()
+            var prefix = SpringUtil.context.environment.getProperty("app.es.${dataSourceName}-ds.prefix").AsString()
+            var timeout = SpringUtil.context.environment.getProperty("app.es.${dataSourceName}-ds.timeout").AsInt()
+
+            return@lazy db.es.getRestClient(uri, prefix, timeout);
         }
 
         var ds = db.es.esEvents.getDataSource(this.collectionName, isRead) ?: scopes.GetLatest<RestClient>()

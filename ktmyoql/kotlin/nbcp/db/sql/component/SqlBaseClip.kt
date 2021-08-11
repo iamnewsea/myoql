@@ -91,7 +91,15 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
             var dataSourceName = config.getDataSourceName(this.tableName, isRead)
 
             if (dataSourceName.HasValue) {
-                return JdbcTemplate(SpringUtil.getBeanByName<DataSource>(dataSourceName), true);
+
+                var uri = SpringUtil.context.environment.getProperty("app.sql.${dataSourceName}-ds.uri").AsString()
+                var username = SpringUtil.context.environment.getProperty("app.sql.${dataSourceName}-ds.username").AsString()
+                var password = SpringUtil.context.environment.getProperty("app.sql.${dataSourceName}-ds.password").AsString()
+
+                //其它参数按数据源配置参数
+                var ds = db.sql.getDataSource(uri,username,password);
+
+                return JdbcTemplate(ds, true);
             }
 
             var ds = db.sql.sqlEvents.getDataSource(this.tableName, isRead) ?: scopes.GetLatest<DataSource>()

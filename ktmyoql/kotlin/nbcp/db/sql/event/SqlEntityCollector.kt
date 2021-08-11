@@ -80,11 +80,16 @@ class SqlEntityCollector : BeanPostProcessor {
         return super.postProcessAfterInitialization(bean, beanName)
     }
 
+
+    private val dataSourceMap = mutableMapOf<String, DataSource>();
+
     /**
      * 在拦截器中获取数据源。
      */
     fun getDataSource(tableName: String, isRead: Boolean): DataSource? {
-        var ret: DataSource? = null;
+        var key = "${tableName}-${isRead}"
+        var ret = dataSourceMap.get(key);
+        if (ret != null) return ret;
 
         dataSources.ForEachExt { iSqlDataSource, i ->
             var ret = iSqlDataSource.run(tableName, isRead)
@@ -95,6 +100,9 @@ class SqlEntityCollector : BeanPostProcessor {
             return@ForEachExt true;
         }
 
+        if (ret != null) {
+            dataSourceMap.put(key, ret);
+        }
         return ret;
     }
 

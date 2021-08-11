@@ -7,6 +7,18 @@ import org.springframework.beans.factory.InitializingBean
  */
 open class MultipleDataSourceProperties : InitializingBean {
     /**
+     *app:
+     *  mongo:
+     *    yapi-ds: mongodb://dev:123@mongo:27017/yapi
+     *    db:
+     *      yapi:
+     *          - group
+     *          - project
+     *          - api
+     *          - interface_cat
+     */
+
+    /**
      * key 数据库的bean名称。value 是表名
      */
     var db: Map<String, List<String>> = mapOf()

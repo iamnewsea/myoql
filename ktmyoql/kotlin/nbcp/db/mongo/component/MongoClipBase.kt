@@ -9,6 +9,7 @@ import nbcp.db.db
 import nbcp.db.sql.SqlTableDataSource
 import org.springframework.data.mongodb.core.query.Criteria
 import java.io.Serializable
+import java.lang.RuntimeException
 
 /**
  * Created by udi on 17-4-24.
@@ -33,7 +34,8 @@ open class MongoClipBase(var collectionName: String) : Serializable {
             var dataSourceName = config.getDataSourceName(this.collectionName, isRead)
 
             if (dataSourceName.HasValue) {
-                return SpringUtil.getBeanByName<MongoTemplate>(dataSourceName);
+                var uri = SpringUtil.context.environment.getProperty("app.mongo.${dataSourceName}-ds")
+                return db.mongo.getMongoTemplateByUri(uri) ?: throw RuntimeException("创建Mongo连接失败");
             }
 
             var ds =

@@ -1,9 +1,13 @@
 package nbcp.db
 
+import com.zaxxer.hikari.HikariDataSource
 import nbcp.utils.*
 import nbcp.db.sql.IDataGroup
 import nbcp.db.sql.SqlBaseMetaTable
 import nbcp.db.sql.event.*
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
+import org.springframework.util.StringUtils
+import javax.sql.DataSource
 
 /**
  * 请使用 db.sql
@@ -28,6 +32,32 @@ object db_sql {
         } else {
             return """"${value}""""
         }
+    }
+
+
+    private val dataSourceMap = mutableMapOf<String, DataSource>();
+
+    fun getDataSource(uri: String, username: String, password: String): DataSource? {
+        var key = "${uri}-${username}-${password}"
+        var dataSource = dataSourceMap.get(key);
+        if (dataSource != null) {
+            return dataSource;
+        }
+
+        var properties = SpringUtil.getBean<DataSourceProperties>();
+
+        properties.url = uri;
+        properties.username = username;
+        properties.password = password;
+
+        dataSource =
+            properties.initializeDataSourceBuilder().type(HikariDataSource::class.java).build() as HikariDataSource
+        if (StringUtils.hasText(properties.name)) {
+            dataSource.poolName = properties.name
+        }
+
+        dataSourceMap.put(key, dataSource);
+        return dataSource
     }
 
 //    /**
