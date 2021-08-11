@@ -70,6 +70,12 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
      */
     @JvmOverloads
     fun <R> toList(clazz: Class<R>, mapFunc: ((Map<String, Any?>) -> Unit)? = null): MutableList<R> {
+        var settingResult = db.es.esEvents.onQuering(this)
+        if (settingResult.any { it.second.result == false }) {
+            return mutableListOf();
+        }
+
+
         var isString = clazz.IsStringType;
 
         var error = false;

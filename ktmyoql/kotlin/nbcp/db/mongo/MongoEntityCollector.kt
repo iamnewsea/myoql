@@ -4,10 +4,8 @@ import nbcp.comm.ForEachExt
 import nbcp.comm.OrmLogScope
 import nbcp.comm.usingScope
 import nbcp.db.*
-import nbcp.db.mongo.event.IMongoEntityDelete
-import nbcp.db.mongo.event.IMongoEntityInsert
-import nbcp.db.mongo.event.IMongoEntityQuery
-import nbcp.db.mongo.event.IMongoEntityUpdate
+import nbcp.db.mongo.event.*
+import nbcp.db.sql.event.SqlEntityCollector
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
@@ -15,6 +13,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.core.Ordered
 import org.springframework.core.PriorityOrdered
 import org.springframework.core.annotation.Order
+import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
 
 @Component
@@ -45,6 +44,9 @@ class MongoEntityCollector : BeanPostProcessor {
         //注册的 Delete Bean
         @JvmStatic
         val deleteEvent = mutableListOf<IMongoEntityDelete>()
+
+        @JvmStatic
+        val dataSources = mutableListOf<IMongoDataSource>()
 
         /**
          * 根据名称查找定义的集合。
@@ -95,6 +97,10 @@ class MongoEntityCollector : BeanPostProcessor {
 
         if (bean is IMongoEntityDelete) {
             deleteEvent.add(bean)
+        }
+
+        if (bean is IMongoDataSource) {
+            dataSources.add(bean);
         }
 
         return super.postProcessAfterInitialization(bean, beanName)
@@ -196,5 +202,24 @@ class MongoEntityCollector : BeanPostProcessor {
             }
         }
         return list.toTypedArray()
+    }
+
+
+    /**
+     * 在拦截器中获取数据源。
+     */
+    fun getDataSource(collectionName: String, isRead: Boolean): MongoTemplate? {
+        var ret: MongoTemplate? = null;
+
+        dataSources.firstOrNull { mongoDataSource ->
+            ret = mongoDataSource.run(collectionName, isRead)
+            if (ret == null) {
+                return@firstOrNull false;
+            }
+
+            return@firstOrNull true;
+        }
+
+        return ret;
     }
 }

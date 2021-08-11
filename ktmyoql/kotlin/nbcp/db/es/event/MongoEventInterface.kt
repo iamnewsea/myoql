@@ -1,6 +1,15 @@
 package nbcp.db.es
 
 import nbcp.db.EventResult
+import nbcp.db.mongo.MongoBaseQueryClip
+import org.elasticsearch.client.RestClient
+import org.springframework.data.mongodb.core.MongoTemplate
+
+interface IEsEntityQuery {
+    fun beforeQuery(query: EsBaseQueryClip): EventResult
+
+    fun query(query: EsBaseQueryClip, eventData: EventResult)
+}
 
 interface IEsEntityInsert {
     fun beforeInsert(insert: EsBaseInsertClip): EventResult
@@ -24,4 +33,9 @@ interface IEsEntityDelete {
     fun beforeDelete(delete: EsBaseDeleteClip): EventResult
 
     fun delete(delete: EsBaseDeleteClip, eventData: EventResult)
+}
+
+
+interface IEsDataSource {
+    fun run(collection: String, isRead: Boolean): RestClient?
 }

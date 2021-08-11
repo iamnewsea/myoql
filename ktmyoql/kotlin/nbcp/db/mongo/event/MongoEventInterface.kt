@@ -2,6 +2,8 @@ package nbcp.db.mongo.event;
 
 import nbcp.db.mongo.*;
 import nbcp.db.EventResult
+import org.springframework.data.mongodb.core.MongoTemplate
+import javax.sql.DataSource
 
 
 interface IMongoEntityQuery {
@@ -33,4 +35,8 @@ interface IMongoEntityDelete {
     fun beforeDelete(delete: MongoDeleteClip<*>): EventResult
 
     fun delete(delete: MongoDeleteClip<*>, eventData: EventResult)
+}
+
+interface IMongoDataSource {
+    fun run(collection: String, isRead: Boolean): MongoTemplate?
 }

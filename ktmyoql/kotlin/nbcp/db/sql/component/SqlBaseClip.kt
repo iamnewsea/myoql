@@ -77,14 +77,24 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
     }
 
     /**
-     * 通过 usingScope 作用域 切换数据源。
+     * 动态数据源：
+     * 1. 配置文件
+     * 2. 继承了 IDataSource 的Bean
+     * 3. 当前作用域
+     * 4. 如果是读操作，则使用 slave , 否则使用默认
      */
     val jdbcTemplate: JdbcTemplate
         get() {
             var isRead = this is SqlBaseQueryClip;
-            var ds: DataSource? =
-                scopes.GetLatest<DataSource>() ?: db.sql.sqlEvents.getDataSource(this.tableName, isRead)
 
+            var config = SpringUtil.getBean<SqlTableDataSource>();
+            var dataSourceName = config.getDataSourceName(this.tableName, isRead)
+
+            if (dataSourceName.HasValue) {
+                return JdbcTemplate(SpringUtil.getBeanByName<DataSource>(dataSourceName), true);
+            }
+
+            var ds = db.sql.sqlEvents.getDataSource(this.tableName, isRead) ?: scopes.GetLatest<DataSource>()
             if (ds != null) {
                 return JdbcTemplate(ds, true);
             }
@@ -251,7 +261,7 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
                 logger.InfoError(error) {
                     var msg_log = mutableListOf(
                         "" +
-                                "[select] ${executeData.executeSql}",
+                            "[select] ${executeData.executeSql}",
                         "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}"
                     )
 

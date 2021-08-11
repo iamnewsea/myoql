@@ -1,10 +1,12 @@
 package nbcp.db.mongo
 
 import nbcp.comm.GetLatest
+import nbcp.comm.HasValue
 import nbcp.comm.scopes
 import org.springframework.data.mongodb.core.MongoTemplate
 import nbcp.utils.*
 import nbcp.db.db
+import nbcp.db.sql.SqlTableDataSource
 import org.springframework.data.mongodb.core.query.Criteria
 import java.io.Serializable
 
@@ -13,13 +15,35 @@ import java.io.Serializable
  */
 
 
-
 //collectionClazz 是集合类型。
-open class MongoClipBase(var collectionName: String): Serializable {
+open class MongoClipBase(var collectionName: String) : Serializable {
 
+    /**
+     * 动态数据源：
+     * 1. 配置文件
+     * 2. 继承了 IDataSource 的 Bean
+     * 3. 当前作用域
+     * 4. 使用默认
+     */
     val mongoTemplate: MongoTemplate
         get() {
-            return db.mongo.getMongoTemplateByCollectionName(collectionName) ?: scopes.GetLatest<MongoTemplate>() ?: SpringUtil.getBean<MongoTemplate>()
+            var isRead = this is MongoBaseQueryClip || this is MongoAggregateClip<*, *>;
+
+            var config = SpringUtil.getBean<SqlTableDataSource>();
+            var dataSourceName = config.getDataSourceName(this.collectionName, isRead)
+
+            if (dataSourceName.HasValue) {
+                return SpringUtil.getBeanByName<MongoTemplate>(dataSourceName);
+            }
+
+            var ds =
+                db.mongo.mongoEvents.getDataSource(this.collectionName, isRead) ?: scopes.GetLatest<MongoTemplate>()
+            if (ds != null) {
+                return ds;
+            }
+
+            //最后不分读写
+            return SpringUtil.getBean<MongoTemplate>()
         }
 
     fun getMongoCriteria(vararg where: Criteria): Criteria {

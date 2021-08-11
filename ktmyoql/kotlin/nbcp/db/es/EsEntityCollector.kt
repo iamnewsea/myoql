@@ -2,7 +2,13 @@ package nbcp.db.es
 
 import nbcp.comm.*
 import nbcp.db.*
+import nbcp.db.mongo.MongoBaseQueryClip
+import nbcp.db.mongo.MongoEntityCollector
+import nbcp.db.mongo.event.IMongoDataSource
+import nbcp.db.mongo.event.IMongoEntityQuery
+import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.config.BeanPostProcessor
+import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
 
 @Component
@@ -16,6 +22,10 @@ class EsEntityCollector : BeanPostProcessor {
         // 冗余字段的引用。如 user.corp.name 引用的是  corp.name
         @JvmStatic
         val refsMap = mutableListOf<DbEntityFieldRefData>()
+
+        @JvmStatic
+        val queryEvent = mutableListOf<IEsEntityQuery>()
+
         //注册的 Update Bean
         @JvmStatic
         val insertEvent = mutableListOf<IEsEntityInsert>()
@@ -25,6 +35,9 @@ class EsEntityCollector : BeanPostProcessor {
         //注册的 Delete Bean
         @JvmStatic
         val deleteEvent = mutableListOf<IEsEntityDelete>()
+
+        @JvmStatic
+        val dataSources = mutableListOf<IEsDataSource>()
 
         /**
          * 根据名称查找定义的集合。
@@ -58,6 +71,10 @@ class EsEntityCollector : BeanPostProcessor {
             }
         }
 
+        if (bean is IEsEntityQuery) {
+            queryEvent.add(bean)
+        }
+
         if (bean is IEsEntityInsert) {
             insertEvent.add(bean)
         }
@@ -70,6 +87,9 @@ class EsEntityCollector : BeanPostProcessor {
             deleteEvent.add(bean)
         }
 
+        if (bean is IEsDataSource) {
+            dataSources.add(bean)
+        }
         return super.postProcessAfterInitialization(bean, beanName)
     }
 
@@ -104,6 +124,22 @@ class EsEntityCollector : BeanPostProcessor {
         if (dustbin != null) {
             dustbinEntitys.add(entityClass)
         }
+    }
+
+    fun onQuering(query: EsBaseQueryClip): Array<Pair<IEsEntityQuery, EventResult>> {
+        //先判断是否进行了类拦截.
+        var list = mutableListOf<Pair<IEsEntityQuery, EventResult>>()
+        usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+            queryEvent.ForEachExt { it, index ->
+                var ret = it.beforeQuery(query);
+                if (ret.result == false) {
+                    return@ForEachExt false;
+                }
+                list.add(it to ret)
+                return@ForEachExt true
+            }
+        }
+        return list.toTypedArray()
     }
 
     fun onInserting(insert: EsBaseInsertClip): Array<Pair<IEsEntityInsert, EventResult>> {
@@ -153,5 +189,23 @@ class EsEntityCollector : BeanPostProcessor {
             }
         }
         return list.toTypedArray()
+    }
+
+    /**
+     * 在拦截器中获取数据源。
+     */
+    fun getDataSource(collectionName: String, isRead: Boolean): RestClient? {
+        var ret: RestClient? = null;
+
+        dataSources.firstOrNull { esDataSource ->
+            ret = esDataSource.run(collectionName, isRead)
+            if (ret == null) {
+                return@firstOrNull false;
+            }
+
+            return@firstOrNull true;
+        }
+
+        return ret;
     }
 }

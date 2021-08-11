@@ -29,29 +29,29 @@ object db_mongo {
         return@lazy SpringUtil.getBean<MongoEntityCollector>();
     }
 
-    private var dynamicMongoMap = StringMap();
+//    private var dynamicMongoMap = StringMap();
 //    private var dynamicMongoTemplate = StringTypedMap<MongoTemplate>();
 
     /**
      * 指派集合到数据库
      */
-    fun bindCollection2Database(collectionName: String, connectionUri: String) {
-        this.dynamicMongoMap.set(collectionName, connectionUri)
-    }
-
-    fun unbindCollection(collectionName: String) {
-        this.dynamicMongoMap.remove(collectionName)
-    }
+//    fun bindCollection2Database(collectionName: String, connectionUri: String) {
+//        this.dynamicMongoMap.set(collectionName, connectionUri)
+//    }
+//
+//    fun unbindCollection(collectionName: String) {
+//        this.dynamicMongoMap.remove(collectionName)
+//    }
 
     /**
      * 根据集合定义，获取 MongoTemplate
      */
-    fun getMongoTemplateByCollectionName(collectionName: String): MongoTemplate? {
-        var uri = dynamicMongoMap.get(collectionName);
-        if (uri == null) return null;
-
-        return getMongoTemplateByUri(uri)
-    }
+//    fun getMongoTemplateByCollectionName(collectionName: String): MongoTemplate? {
+//        var uri = dynamicMongoMap.get(collectionName);
+//        if (uri == null) return null;
+//
+//        return getMongoTemplateByUri(uri)
+//    }
 
     /**
      * MongoTemplate不释放，所以要缓存。

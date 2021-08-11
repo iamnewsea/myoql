@@ -4,6 +4,7 @@ import nbcp.comm.AsInt
 import nbcp.utils.*
 import nbcp.comm.*
 import nbcp.db.db
+import nbcp.db.sql.SqlTableDataSource
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.StringRedisTemplate
 
@@ -29,14 +30,33 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
         }
     }
 
+    /**
+     * 动态数据源：
+     * 1. 配置文件
+     * 3. 当前作用域
+     * 4. 使用默认
+     */
     protected val stringCommand: StringRedisTemplate by lazy {
-        return@lazy db.redis.getStringRedisTemplate(group) ?: scopes.GetLatest<StringRedisTemplate>()
-        ?: SpringUtil.getBean<StringRedisTemplate>()
+        var config = SpringUtil.getBean<SqlTableDataSource>();
+        var dataSourceName = config.getDataSourceName(group)
+        if (dataSourceName.HasValue) {
+            return@lazy SpringUtil.getBean(dataSourceName) as StringRedisTemplate
+        }
+
+        return@lazy scopes.GetLatest<StringRedisTemplate>()
+            ?: SpringUtil.getBean<StringRedisTemplate>()
     }
 
     protected val anyTypeCommand: AnyTypeRedisTemplate by lazy {
-        return@lazy db.redis.getAnyRedisTemplate(group) ?: scopes.GetLatest<AnyTypeRedisTemplate>()
-        ?: SpringUtil.getBean<AnyTypeRedisTemplate>()
+
+        var config = SpringUtil.getBean<SqlTableDataSource>();
+        var dataSourceName = config.getDataSourceName(group)
+        if (dataSourceName.HasValue) {
+            return@lazy SpringUtil.getBean(dataSourceName) as AnyTypeRedisTemplate
+        }
+
+        return@lazy scopes.GetLatest<AnyTypeRedisTemplate>()
+            ?: SpringUtil.getBean<AnyTypeRedisTemplate>()
     }
 
 //    /**

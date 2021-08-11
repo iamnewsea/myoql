@@ -1,6 +1,7 @@
 package nbcp.db.es.tool
 
 import nbcp.comm.*
+import nbcp.db.MultipleDataSourceProperties
 import nbcp.utils.*
 import org.apache.http.Header
 import org.apache.http.HttpHost
@@ -12,10 +13,12 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
 import org.springframework.context.annotation.Lazy
+import org.springframework.stereotype.Component
 import java.lang.RuntimeException
 
 
@@ -90,4 +93,12 @@ class MyOqlEsConfig {
 
         return builder.build()
     }
+}
+
+/**
+ * 定义Mongo不同的数据源
+ */
+@ConfigurationProperties(prefix = "app.es")
+@Component
+class EsIndexDataSource : MultipleDataSourceProperties() {
 }
