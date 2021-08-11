@@ -6,7 +6,6 @@ import nbcp.comm.scopes
 import org.springframework.data.mongodb.core.MongoTemplate
 import nbcp.utils.*
 import nbcp.db.db
-import nbcp.db.sql.SqlTableDataSource
 import org.springframework.data.mongodb.core.query.Criteria
 import java.io.Serializable
 import java.lang.RuntimeException
@@ -30,7 +29,7 @@ open class MongoClipBase(var collectionName: String) : Serializable {
         get() {
             var isRead = this is MongoBaseQueryClip || this is MongoAggregateClip<*, *>;
 
-            var config = SpringUtil.getBean<SqlTableDataSource>();
+            var config = SpringUtil.getBean<MongoCollectionDataSource>();
             var dataSourceName = config.getDataSourceName(this.collectionName, isRead)
 
             if (dataSourceName.HasValue) {
