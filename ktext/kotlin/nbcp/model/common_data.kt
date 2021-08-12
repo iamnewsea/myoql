@@ -67,6 +67,7 @@ open class IdCodeName @JvmOverloads constructor(var id: String = "", code: Strin
  */
 open class LoginUserModel @JvmOverloads constructor(
     var token: String = "",
+    var system: String = "",
     var isAdmin: Boolean = false,
     id: String = "",
     var loginName: String = "",
