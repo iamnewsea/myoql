@@ -18,12 +18,12 @@ class RedisListProxy @JvmOverloads constructor(
      */
     fun size(key: String): Int {
         var cacheKey = getFullKey(key);
-        return anyTypeCommand.opsForList().size(cacheKey).toInt().AsInt()
+        return stringCommand.opsForList().size(cacheKey).toInt().AsInt()
     }
 
     fun getIndex(key: String, index: Int): String {
         var cacheKey = getFullKey(key);
-        return anyTypeCommand.opsForList().index(cacheKey, index.AsLong()).toString()
+        return stringCommand.opsForList().index(cacheKey, index.AsLong()).toString()
     }
 
     /**
@@ -32,7 +32,7 @@ class RedisListProxy @JvmOverloads constructor(
      */
     fun removeItems(key: String, member: String): Int {
         var cacheKey = getFullKey(key);
-        return anyTypeCommand.opsForList().remove(cacheKey, 0, member).AsInt()
+        return stringCommand.opsForList().remove(cacheKey, 0, member).AsInt()
     }
 
     /**
@@ -40,7 +40,7 @@ class RedisListProxy @JvmOverloads constructor(
      */
     fun push(key: String, vararg members: String): Int {
         var cacheKey = getFullKey(key);
-        return anyTypeCommand.opsForList().rightPushAll(cacheKey, *members).AsInt()
+        return stringCommand.opsForList().rightPushAll(cacheKey, *members).AsInt()
     }
 
     /**
@@ -48,13 +48,13 @@ class RedisListProxy @JvmOverloads constructor(
      */
     fun pop(key: String): String {
         var cacheKey = getFullKey(key);
-        return anyTypeCommand.opsForList().rightPop(cacheKey).AsString()
+        return stringCommand.opsForList().rightPop(cacheKey).AsString()
     }
 
     fun popPush(key: String, targetGroup: String, targetKey: String): String {
         var cacheKey = getFullKey(key);
         var targetKey = BaseRedisProxy.getFullKey(targetGroup, targetKey)
-        return anyTypeCommand.opsForList().rightPopAndLeftPush(cacheKey, targetKey).AsString()
+        return stringCommand.opsForList().rightPopAndLeftPush(cacheKey, targetKey).AsString()
     }
 
     /**
@@ -64,7 +64,7 @@ class RedisListProxy @JvmOverloads constructor(
      */
     fun getListString(key: String, start: Int = 0, end: Int = -1): List<String> {
         var cacheKey = getFullKey(key)
-        return anyTypeCommand.opsForList().range(cacheKey, start.AsLong(), end.AsLong()).map { it.AsString() }
+        return stringCommand.opsForList().range(cacheKey, start.AsLong(), end.AsLong()).map { it.AsString() }
     }
 }
 

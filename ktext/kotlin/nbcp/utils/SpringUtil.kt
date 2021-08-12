@@ -3,23 +3,16 @@ package nbcp.utils
 import nbcp.comm.*
 import nbcp.component.BaseJsonMapper
 import nbcp.component.DbJsonMapper
-import org.springframework.beans.factory.BeanNameAware
-import org.springframework.beans.factory.InitializingBean
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor
-import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.beans.factory.support.BeanDefinitionBuilder
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
 import org.springframework.beans.factory.support.GenericBeanDefinition
+import org.springframework.boot.context.properties.bind.Binder
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
-import org.springframework.context.ApplicationEventPublisher
-import org.springframework.core.Ordered
 import org.springframework.core.PriorityOrdered
 import org.springframework.core.annotation.Order
-import org.springframework.core.env.ConfigurableEnvironment
-import org.springframework.core.env.MapPropertySource
-import org.springframework.core.env.SimpleCommandLinePropertySource
 import org.springframework.stereotype.Component
 import java.sql.Timestamp
 import java.time.LocalDate
@@ -34,24 +27,57 @@ import java.util.function.Supplier
  */
 @Component
 @Order(PriorityOrdered.HIGHEST_PRECEDENCE)
-class SpringUtil : BeanFactoryPostProcessor, ApplicationContextAware {
+class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware {
     companion object {
         var startAt: LocalDateTime? = null
 
-        private var applicationContext: ApplicationContext? = null
+        private var contextField: ApplicationContext? = null
+
+        @JvmStatic
+        val binder: Binder by lazy {
+            return@lazy Binder.get(context.environment)
+        }
 
         @JvmStatic
         val context: ApplicationContext
             get() {
-                if (applicationContext == null) {
-                    throw RuntimeException("ApplicationContext为空,在 @SpringBootApplication 下添加 @Import(SpringUtil::class)")
+                if (contextField == null) {
+                    throw RuntimeException("需要@Import(SpringUtil::class)")
                 }
-                return applicationContext!!
+                return contextField!!
+            }
+
+        private var beanFactoryField: ConfigurableListableBeanFactory? = null
+
+        @JvmStatic
+        val beanFactory: ConfigurableListableBeanFactory
+            get() {
+                if (beanFactoryField == null) {
+                    throw RuntimeException("需要@Import(SpringUtil::class)")
+                }
+                return beanFactoryField!!
+            }
+
+        private var registryField: BeanDefinitionRegistry? = null
+
+        @JvmStatic
+        val registry: BeanDefinitionRegistry
+            get() {
+                if (registryField == null) {
+                    throw RuntimeException("需要@Import(SpringUtil::class)")
+                }
+                return registryField!!
             }
 
         @JvmStatic
+        inline fun <reified T> registerBeanDefinition(name:String,instance:T, callback: ((BeanDefinitionBuilder) -> Unit) = {}) {
+            registry.registerBeanDefinition(name, getGenericBeanDefinition(instance,callback))
+        }
+
+
+        @JvmStatic
         val isInited: Boolean
-            get() = applicationContext != null
+            get() = startAt != null
 
         /**
          * 判断是否存在某个Bean
@@ -124,6 +150,9 @@ class SpringUtil : BeanFactoryPostProcessor, ApplicationContextAware {
         }
 
 
+        /**
+         * 创建
+         */
         inline fun <reified T> getGenericBeanDefinition(
             instance: T,
             callback: ((BeanDefinitionBuilder) -> Unit) = {}
@@ -149,7 +178,7 @@ class SpringUtil : BeanFactoryPostProcessor, ApplicationContextAware {
 
 
     override fun setApplicationContext(context: ApplicationContext) {
-        applicationContext = context
+        contextField = context
 
         if (startAt == null) {
             startAt = LocalDateTime.now()
@@ -160,6 +189,11 @@ class SpringUtil : BeanFactoryPostProcessor, ApplicationContextAware {
 
 
     override fun postProcessBeanFactory(beanFactory: ConfigurableListableBeanFactory) {
+        beanFactoryField = beanFactory;
+    }
+
+    override fun postProcessBeanDefinitionRegistry(registry: BeanDefinitionRegistry) {
+        registryField = registry;
     }
 
 

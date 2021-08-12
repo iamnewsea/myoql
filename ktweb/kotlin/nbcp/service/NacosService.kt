@@ -4,7 +4,6 @@ import nbcp.comm.*
 import nbcp.component.AppJsonMapper
 import nbcp.component.SnowFlake
 import nbcp.db.db
-import nbcp.db.redis.MyOqlRedisConfig
 import nbcp.utils.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -19,7 +18,7 @@ import java.net.NetworkInterface
  * https://nacos.io/zh-cn/docs/open-api.html
  */
 @Service
-@Import(value = [SpringUtil::class, SnowFlake::class, AppJsonMapper::class, MyOqlRedisConfig::class])
+@Import(value = [SpringUtil::class, SnowFlake::class, AppJsonMapper::class])
 open class NacosService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

@@ -147,23 +147,23 @@ import org.springframework.stereotype.Component
 //}
 
 
-@Configuration
-@AutoConfigureAfter(RedisAutoConfiguration::class)
+//@Configuration
+//@AutoConfigureAfter(RedisAutoConfiguration::class)
+////@ConditionalOnProperty("spring.redis.host")
 //@ConditionalOnProperty("spring.redis.host")
-@ConditionalOnProperty("spring.redis.host")
-class MyOqlRedisConfig {
-    @Bean
-    fun myoqlRedisTemplate(connectionFactory: RedisConnectionFactory): AnyTypeRedisTemplate {
-        var template = AnyTypeRedisTemplate()
-        template.connectionFactory = connectionFactory;
-        template.keySerializer = RedisSerializer.string()
-        template.valueSerializer = RedisSerializer.string()
-        template.hashKeySerializer = RedisSerializer.string()
-        template.hashValueSerializer = RedisSerializer.json()
-        template.afterPropertiesSet();
-        return template;
-    }
-}
+//class MyOqlRedisConfig {
+//    @Bean
+//    fun myoqlRedisTemplate(connectionFactory: RedisConnectionFactory): AnyTypeRedisTemplate {
+//        var template = AnyTypeRedisTemplate()
+//        template.connectionFactory = connectionFactory;
+//        template.keySerializer = RedisSerializer.string()
+//        template.valueSerializer = RedisSerializer.string()
+//        template.hashKeySerializer = RedisSerializer.string()
+//        template.hashValueSerializer = RedisSerializer.json()
+//        template.afterPropertiesSet();
+//        return template;
+//    }
+//}
 
 
 /**

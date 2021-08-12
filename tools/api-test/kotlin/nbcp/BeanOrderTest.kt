@@ -19,6 +19,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.ConfigurationPropertiesBean
+import org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor
+import org.springframework.boot.context.properties.bind.Binder
 import org.springframework.context.*
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -30,6 +34,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
+import java.util.*
 import javax.sql.DataSource
 
 @Component
@@ -43,6 +48,9 @@ class NormalBean : InitializingBean {
 class BeanOrderTest : InitializingBean {
     @Bean
     fun abc(): JsonMap {
+        var b = Binder.get(SpringUtil.context.environment)
+        var d = b.bind("spring.datasource2",DataSourceProperties::class.java)
+
         println("5... 内部Bean JsonMap")
         return JsonMap();
     }
@@ -98,6 +106,18 @@ class post1 : BeanPostProcessor {
     }
 }
 
+@Component
+class post333 : ConfigurationPropertiesBindingPostProcessor() {
+    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
+
+//        var d = ConfigurationPropertiesBean.get(SpringUtil.context,Properties(),"ddd");
+
+        var ret =  super.postProcessBeforeInitialization(bean, beanName)
+        return ret;
+    }
+}
+
+
 
 class MyEvent(var e: String) : ApplicationEvent(Any()) {
 
@@ -106,7 +126,7 @@ class MyEvent(var e: String) : ApplicationEvent(Any()) {
 
 //@ConditionalOnBean 出现的时机太早了。 要推迟。
 @Component
-class EventConfig() {
+class EventConfig  {
     val hasDataSource by lazy {
         return@lazy SpringUtil.containsBean(DataSourceAutoConfiguration::class.java)
     }
@@ -124,17 +144,17 @@ class EventConfig() {
     }
 
     @EventListener
-    fun onE1(event: ContextRefreshedEvent){
+    fun onE1(event: ContextRefreshedEvent) {
         println("ContextRefreshedEvent")
     }
 
     @EventListener
-    fun onE2(event: ContextRefreshedEvent){
+    fun onE2(event: ContextRefreshedEvent) {
         println("ContextClosedEvent")
     }
 
     @EventListener
-    fun onE3(event: ContextStartedEvent){
+    fun onE3(event: ContextStartedEvent) {
         println("ContextStartedEvent")
     }
 }

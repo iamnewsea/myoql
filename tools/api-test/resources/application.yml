@@ -9,14 +9,18 @@ spring:
     active: yuxh
 
 
-  datasource2:
+  datasource:
     username: dev
     password: 123
     url: jdbc:mysql://mariadb:3306/lowcode?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=Asia/Shanghai
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       maximum-pool-size: 20
-    driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url:
 
+
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    client-name:
 server:
   port: 8084

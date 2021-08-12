@@ -2,7 +2,6 @@ package nbcp.db
 
 
 import nbcp.comm.*
-import nbcp.db.redis.AnyTypeRedisTemplate
 import nbcp.utils.*
 import org.springframework.core.convert.support.GenericConversionService
 import org.springframework.data.redis.connection.RedisConnectionFactory
@@ -17,19 +16,19 @@ object db_redis {
     /**
      * 获取 AnyTypeRedisTemplate
      */
-    fun getAnyTypeRedisTemplate(host: String, password: String): AnyTypeRedisTemplate {
-        var connectionFactory = SpringUtil.getBean<RedisConnectionFactory>();
-
-
-        var template = AnyTypeRedisTemplate()
-        template.connectionFactory = connectionFactory;
-        template.keySerializer = RedisSerializer.string()
-        template.valueSerializer = RedisSerializer.string()
-        template.hashKeySerializer = RedisSerializer.string()
-        template.hashValueSerializer = RedisSerializer.json()
-        template.afterPropertiesSet();
-        return template;
-    }
+//    fun getAnyTypeRedisTemplate(host: String, password: String): AnyTypeRedisTemplate {
+//        var connectionFactory = SpringUtil.getBean<RedisConnectionFactory>();
+//
+//
+//        var template = AnyTypeRedisTemplate()
+//        template.connectionFactory = connectionFactory;
+//        template.keySerializer = RedisSerializer.string()
+//        template.valueSerializer = RedisSerializer.string()
+//        template.hashKeySerializer = RedisSerializer.string()
+//        template.hashValueSerializer = RedisSerializer.json()
+//        template.afterPropertiesSet();
+//        return template;
+//    }
 
 //    private var dynamicStringRedisMap = StringKeyMap<StringRedisTemplate>();
 //    private var dynamicAnyRedisTemplate = StringKeyMap<AnyTypeRedisTemplate>();

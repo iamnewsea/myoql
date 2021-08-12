@@ -18,12 +18,12 @@ class RedisHashProxy @JvmOverloads constructor(
 
     fun keys(key: String): Set<String> {
         var cacheKey = getFullKey(key)
-        return anyTypeCommand.opsForHash<String, Any>().keys(cacheKey)
+        return stringCommand.opsForHash<String, Any>().keys(cacheKey)
     }
 
     fun getMap(key: String): Map<String, Any> {
         var cacheKey = getFullKey(key)
-        return anyTypeCommand.opsForHash<String, Any>().entries(cacheKey)
+        return stringCommand.opsForHash<String, Any>().entries(cacheKey)
     }
 
 
@@ -32,7 +32,7 @@ class RedisHashProxy @JvmOverloads constructor(
      */
     fun increment(key: String, field: String, value: Long = 1): Long {
         var cacheKey = getFullKey(key);
-        return anyTypeCommand.opsForHash<String, Any>().increment(cacheKey, field, value)
+        return stringCommand.opsForHash<String, Any>().increment(cacheKey, field, value)
     }
 
 
@@ -54,7 +54,7 @@ class RedisHashProxy @JvmOverloads constructor(
     fun getItem(key: String, field: String): Any? {
         var cacheKey = getFullKey(key)
 
-        return anyTypeCommand.opsForHash<String, Any>().get(cacheKey, field)
+        return stringCommand.opsForHash<String, Any>().get(cacheKey, field)
     }
 
 //    private fun get(token_value: String): Map<String, Serializable> {
@@ -76,7 +76,7 @@ class RedisHashProxy @JvmOverloads constructor(
 
         var cacheKey = getFullKey(key)
 
-        anyTypeCommand.opsForHash<String, Any>().putAll(cacheKey, value)
+        stringCommand.opsForHash<String, Any>().putAll(cacheKey, value)
     }
 
     /**
@@ -96,7 +96,7 @@ class RedisHashProxy @JvmOverloads constructor(
     fun setItem(key: String, field: String, value: Any) {
         var cacheKey = getFullKey(key)
 
-        anyTypeCommand.opsForHash<String, Any>().put(cacheKey, field, value)
+        stringCommand.opsForHash<String, Any>().put(cacheKey, field, value)
     }
 
     fun removeItems(key: String, vararg members: String) {
@@ -104,6 +104,6 @@ class RedisHashProxy @JvmOverloads constructor(
 
         var cacheKey = getFullKey(key)
 
-        anyTypeCommand.opsForHash<String, Any>().delete(cacheKey, *members)
+        stringCommand.opsForHash<String, Any>().delete(cacheKey, *members)
     }
 }

@@ -21,12 +21,12 @@ open class RedisSetProxy @JvmOverloads constructor(
      */
     fun size(key: String): Int {
         var cacheKey = getFullKey(key);
-        return anyTypeCommand.opsForSet().size(cacheKey).toInt().AsInt()
+        return stringCommand.opsForSet().size(cacheKey).toInt().AsInt()
     }
 
     fun isMember(key: String, member: String): Boolean {
         var cacheKey = getFullKey(key);
-        return anyTypeCommand.opsForSet().isMember(cacheKey, member)
+        return stringCommand.opsForSet().isMember(cacheKey, member)
     }
 
     /**
@@ -36,7 +36,7 @@ open class RedisSetProxy @JvmOverloads constructor(
     fun removeItems(key: String, vararg members: String): Long {
         if (members.any() == false) return 0;
         var cacheKey = getFullKey(key);
-        var ret = anyTypeCommand.opsForSet().remove(cacheKey, *members);
+        var ret = stringCommand.opsForSet().remove(cacheKey, *members);
         return ret;
     }
 
@@ -47,7 +47,7 @@ open class RedisSetProxy @JvmOverloads constructor(
     fun add(key: String, vararg value: String) {
         if (value.any() == false) return
         var cacheKey = getFullKey(key);
-        anyTypeCommand.opsForSet().add(cacheKey, *value)
+        stringCommand.opsForSet().add(cacheKey, *value)
     }
 
     /**
@@ -55,7 +55,7 @@ open class RedisSetProxy @JvmOverloads constructor(
      */
     fun getListString(key: String): List<String> {
         var cacheKey = getFullKey(key);
-        return anyTypeCommand.opsForSet().members(cacheKey).map { it.toString() }
+        return stringCommand.opsForSet().members(cacheKey).map { it.toString() }
     }
 
     /**
@@ -63,7 +63,7 @@ open class RedisSetProxy @JvmOverloads constructor(
      */
     fun spop(key: String): String? {
         var cacheKey = getFullKey(key);
-        return anyTypeCommand.opsForSet().pop(cacheKey)?.toString()
+        return stringCommand.opsForSet().pop(cacheKey)?.toString()
     }
 
     /**
@@ -73,7 +73,7 @@ open class RedisSetProxy @JvmOverloads constructor(
 
         var cacheKey = getFullKey(key);
 
-        anyTypeCommand.opsForSet()
+        stringCommand.opsForSet()
                 .scan(cacheKey, ScanOptions.scanOptions().match(group + pattern).count(limit.AsLong()).build())
                 .use { result ->
                     var list = mutableSetOf<String>()

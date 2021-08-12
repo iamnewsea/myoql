@@ -46,17 +46,17 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
             ?: SpringUtil.getBean<StringRedisTemplate>()
     }
 
-    protected val anyTypeCommand: AnyTypeRedisTemplate by lazy {
-
-//        var config = SpringUtil.getBean<RedisDataSource>();
-//        var dataSourceName = config.getDataSourceName(group)
-//        if (dataSourceName.HasValue) {
-//            return@lazy SpringUtil.getBean(dataSourceName) as AnyTypeRedisTemplate
-//        }
-
-        return@lazy scopes.GetLatest<AnyTypeRedisTemplate>()
-            ?: SpringUtil.getBean<AnyTypeRedisTemplate>()
-    }
+//    protected val anyTypeCommand: AnyTypeRedisTemplate by lazy {
+//
+////        var config = SpringUtil.getBean<RedisDataSource>();
+////        var dataSourceName = config.getDataSourceName(group)
+////        if (dataSourceName.HasValue) {
+////            return@lazy SpringUtil.getBean(dataSourceName) as AnyTypeRedisTemplate
+////        }
+//
+//        return@lazy scopes.GetLatest<AnyTypeRedisTemplate>()
+//            ?: SpringUtil.getBean<AnyTypeRedisTemplate>()
+//    }
 
 //    /**
 //     * 参数是 key,动态生成新的fullKey
@@ -149,13 +149,13 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
             return 0;
         }
         RedisTask.clearDelayRenewalKeys(*fullKeys.toTypedArray());
-        return anyTypeCommand.delete(fullKeys);
+        return stringCommand.delete(fullKeys);
     }
 
     /**
      * 判断是否存在该Key
      */
-    fun existsKey(key: String): Boolean = anyTypeCommand.hasKey(getFullKey(key));
+    fun existsKey(key: String): Boolean = stringCommand.hasKey(getFullKey(key));
 
 //    /**
 //     * 判断是否存在 group key
