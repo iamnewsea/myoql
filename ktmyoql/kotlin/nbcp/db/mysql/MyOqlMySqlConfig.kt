@@ -34,11 +34,7 @@ import javax.sql.DataSource
  *        maximum-pool-size: 70
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(
-    name = ["spring.datasource.type"],
-    havingValue = "com.zaxxer.hikari.HikariDataSource",
-    matchIfMissing = true
-)
+@ConditionalOnProperty("spring.datasource.url")
 @Import(SpringUtil::class)
 @AutoConfigureAfter(DataSourceAutoConfiguration::class)
 internal class MyOqlMySqlConfig {
@@ -52,14 +48,14 @@ internal class MyOqlMySqlConfig {
 
     @Primary
     @Bean()
-    @ConfigurationProperties("spring.datasource")
+    @ConfigurationProperties("spring.datasource.url")
     fun dataSourceProperties(): DataSourceProperties {
         return DataSourceProperties()
     }
 
     @Primary
     @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.hikari")
+    @ConfigurationProperties(prefix = "spring.datasource")
     fun myoqlDataSource(properties: DataSourceProperties): HikariDataSource {
         val dataSource =
             properties.initializeDataSourceBuilder().type(HikariDataSource::class.java).build() as HikariDataSource
@@ -77,7 +73,7 @@ internal class MyOqlMySqlConfig {
     }
 
     @Bean("slave")
-    @ConfigurationProperties(prefix = "spring.datasource-slave.hikari")
+    @ConfigurationProperties(prefix = "spring.datasource-slave")
     fun slave(@Autowired @Qualifier("slaveDataSourceProperties") properties: DataSourceProperties): HikariDataSource {
         val dataSource =
             properties.initializeDataSourceBuilder().type(HikariDataSource::class.java).build() as HikariDataSource
