@@ -1,6 +1,7 @@
 package nbcp.db.mysql
 
 import com.zaxxer.hikari.HikariDataSource
+import nbcp.comm.HasValue
 import nbcp.utils.SpringUtil
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
@@ -10,6 +11,8 @@ import org.springframework.boot.context.properties.bind.Binder
 import org.springframework.context.annotation.DependsOn
 import org.springframework.context.annotation.Import
 import org.springframework.context.event.EventListener
+import org.springframework.context.support.GenericApplicationContext
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import javax.sql.DataSource
 
@@ -37,11 +40,17 @@ class MySqlDataSourceConfig {
         }
 
 
-        var dataSource = SpringUtil.binder.bindOrCreate("spring.datasource", DataSourceProperties::class.java).getDataSource()
-        SpringUtil.registerBeanDefinition("dataSource", dataSource)
+        SpringUtil.beanFactory.getBeanDefinition("dataSource").isPrimary = true;
+        SpringUtil.beanFactory.getBeanDefinition("jdbcTemplate").isPrimary = true;
 
-        var dataSourceSlave = SpringUtil.binder.bindOrCreate("spring.datasource-slave", DataSourceProperties::class.java)
-        SpringUtil.registerBeanDefinition("slave", dataSourceSlave)
+
+        var slaveDataProperties =
+            SpringUtil.binder.bindOrCreate("spring.datasource-slave", DataSourceProperties::class.java);
+        if (slaveDataProperties.url.HasValue) {
+            var dataSourceSlave = slaveDataProperties.getDataSource()
+            SpringUtil.registerBeanDefinition("slaveDataSource", dataSourceSlave)
+            SpringUtil.registerBeanDefinition("slaveJdbcTemplate", JdbcTemplate(dataSourceSlave, true))
+        }
     }
 
 
