@@ -24,6 +24,8 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
 import org.springframework.context.annotation.Import
+import org.springframework.context.event.ContextRefreshedEvent
+import org.springframework.context.event.ContextStartedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
@@ -83,7 +85,7 @@ class BeanFactoryPostProcessorTest : BeanFactoryPostProcessor {
 class post1 : BeanPostProcessor {
     override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
         if (bean.javaClass == DataSourceAutoConfiguration::class.java ||
-            bean.javaClass == ExistDatasourceConfig::class.java ||
+            bean.javaClass == EventConfig::class.java ||
             bean.javaClass == RedisAutoConfiguration::class.java
         ) {
             println("::::postProcessBeforeInitialization：${beanName}")
@@ -104,7 +106,7 @@ class MyEvent(var e: String) : ApplicationEvent(Any()) {
 
 //@ConditionalOnBean 出现的时机太早了。 要推迟。
 @Component
-class ExistDatasourceConfig() {
+class EventConfig() {
     val hasDataSource by lazy {
         return@lazy SpringUtil.containsBean(DataSourceAutoConfiguration::class.java)
     }
@@ -119,6 +121,21 @@ class ExistDatasourceConfig() {
         }
 
         println(event.e)
+    }
+
+    @EventListener
+    fun onE1(event: ContextRefreshedEvent){
+        println("ContextRefreshedEvent")
+    }
+
+    @EventListener
+    fun onE2(event: ContextRefreshedEvent){
+        println("ContextClosedEvent")
+    }
+
+    @EventListener
+    fun onE3(event: ContextStartedEvent){
+        println("ContextStartedEvent")
     }
 }
 

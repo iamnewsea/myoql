@@ -1,5 +1,6 @@
 package nbcp.db.mybatis
 
+import com.zaxxer.hikari.HikariDataSource
 import nbcp.comm.config
 import nbcp.db.mysql.MyOqlMySqlConfig
 import nbcp.utils.*
@@ -26,10 +27,10 @@ import javax.sql.DataSource
  */
 @Configuration
 @EnableTransactionManagement
-@AutoConfigureAfter(value = [DataSourceAutoConfiguration::class])
+@AutoConfigureAfter(MyOqlMySqlConfig::class)
 @ConditionalOnProperty("app.mybatis.package")
 //@DependsOn(value = arrayOf("mysqlConfig", "primary", "springUtil"))
-@ConditionalOnBean(MyOqlMySqlConfig::class)
+@ConditionalOnBean(DataSourceAutoConfiguration::class)
 @Import(SpringUtil::class)
 @Lazy
 open class MyOqlMyBatisConfig() : TransactionManagementConfigurer {

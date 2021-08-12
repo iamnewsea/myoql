@@ -133,6 +133,9 @@ class CheckWebMvcConfigurationSupport : InitializingBean {
     }
 
     override fun afterPropertiesSet() {
+        var mvcConfigs = SpringUtil.context.getBeanNamesForType(WebMvcConfigurationSupport::class.java);
+        if (mvcConfigs.size <= 1) return;
+
         var level = SpringUtil.context.environment.getProperty("app.webMvcConfigurationSupport.level").AsString("error")
         if (level == "error") {
             throw RuntimeException("Spring Boot中只能有一个 WebMvcConfigurationSupport 配置类,请改用 WebMvcConfigurer")
