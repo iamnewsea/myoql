@@ -125,7 +125,6 @@ open class MyMvcOrmInit {
 //}
 
 
-@ConditionalOnBean(WebMvcConfigurationSupport::class)
 @Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 class CheckWebMvcConfigurationSupport : InitializingBean {

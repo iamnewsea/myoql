@@ -25,7 +25,6 @@ import java.lang.RuntimeException
 
 @Configuration
 @ConditionalOnProperty("spring.elasticsearch.rest.uris")
-@ConditionalOnBean(ElasticsearchDataAutoConfiguration::class)
 @Lazy
 class MyOqlEsConfig {
     companion object {

@@ -8,10 +8,12 @@ import nbcp.db.mongo.event.IMongoDataSource
 import nbcp.db.mongo.event.IMongoEntityQuery
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.config.BeanPostProcessor
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
 
 @Component
+@ConditionalOnProperty("spring.elasticsearch.rest.uris")
 class EsEntityCollector : BeanPostProcessor {
     companion object {
         @JvmStatic
