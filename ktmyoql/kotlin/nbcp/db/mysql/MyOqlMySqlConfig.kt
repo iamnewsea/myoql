@@ -39,6 +39,7 @@ import javax.sql.DataSource
     havingValue = "com.zaxxer.hikari.HikariDataSource",
     matchIfMissing = true
 )
+@Import(SpringUtil::class)
 @AutoConfigureAfter(DataSourceAutoConfiguration::class)
 internal class MyOqlMySqlConfig {
     companion object {

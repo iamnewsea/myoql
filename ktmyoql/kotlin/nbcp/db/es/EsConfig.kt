@@ -15,16 +15,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.DependsOn
-import org.springframework.context.annotation.Lazy
+import org.springframework.context.annotation.*
 import org.springframework.stereotype.Component
 import java.lang.RuntimeException
 
 
 @Configuration
 @ConditionalOnProperty("spring.elasticsearch.rest.uris")
+@Import(SpringUtil::class)
 @Lazy
 class MyOqlEsConfig {
     companion object {
