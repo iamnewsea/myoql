@@ -9,6 +9,7 @@ import nbcp.db.mongo.entity.SysAnnex
 import nbcp.db.mongo.service.UploadFileMongoService
 import nbcp.db.mysql.service.UploadFileMysqlService
 import nbcp.utils.CodeUtil
+import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
 import nbcp.web.findParameterStringValue
 import org.bytedeco.javacv.FFmpegFrameGrabber
@@ -263,7 +264,7 @@ open class UploadService {
             .replace(File.separatorChar, '/')
 
         //类型
-        val contentType = fileData.extType.toString()
+        val contentType = MyUtil.getMimeType(fileData.extType.toString())
         //把文件放置MinIo桶(文件夹)
 
         fileStream.use {
