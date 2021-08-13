@@ -264,7 +264,7 @@ open class UploadService {
             .replace(File.separatorChar, '/')
 
         //类型
-        val contentType = MyUtil.getMimeType(fileData.extType.toString())
+        val contentType = MyUtil.getMimeType(fileData.extName)
         //把文件放置MinIo桶(文件夹)
 
         fileStream.use {
