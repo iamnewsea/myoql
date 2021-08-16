@@ -34,9 +34,9 @@ data class FileMessage @JvmOverloads constructor(
  */
 fun getTextTypeFromContentType(contentType: String): Boolean {
     return contentType.contains("json", true) ||
-            contentType.contains("htm", true) ||
-            contentType.contains("text", true) ||
-            contentType.contains("urlencoded", true)
+        contentType.contains("htm", true) ||
+        contentType.contains("text", true) ||
+        contentType.contains("urlencoded", true)
 }
 
 data class HttpRequestData @JvmOverloads constructor(
@@ -499,15 +499,8 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
      * 大文件上传文件，块大小1MB
      * @param filePath: 要上传的文件。
      */
-    fun uploadFile(filePath: String): String {
+    fun uploadFile(fileName: String, fileStream: InputStream): String {
         var CACHESIZE = 1024 * 1024;
-
-        var file = File(filePath);
-        if (file.exists() == false) {
-            throw  Exception("文件${filePath}不存在")
-        }
-
-        var fileName = file.name;
 
         var boundary = "------" + CodeUtil.getCode();
 
@@ -535,13 +528,12 @@ Content-Type: application/octet-stream
 
             var bytes = ByteArray(CACHESIZE);
             var bytes_len = 0;
-            DataInputStream(FileInputStream(file)).use { input ->
+            fileStream.use { input ->
                 while (true) {
                     bytes_len = input.read(bytes)
                     if (bytes_len <= 0) {
                         break;
                     }
-
                     out.write(bytes, 0, bytes_len)
                 }
             }

@@ -6,6 +6,7 @@ import nbcp.comm.StringMap
 import nbcp.comm.formatWithJson
 import nbcp.comm.usingScope
 import org.junit.Test
+import java.io.FileInputStream
 
 
 class HttpUtilTest : TestBase() {
@@ -13,7 +14,7 @@ class HttpUtilTest : TestBase() {
     fun abfc() {
         var http = HttpUtil("http://localhost:8202/sys/upload")
         http.request.headers.set("group", "lowcode")
-        var ret = http.uploadFile("""D:\能科资料\DevOps流程.vsdx""")
+        var ret = http.uploadFile("DevOps流程.vsdx", FileInputStream("""D:\能科资料\DevOps流程.vsdx"""))
         println(ret)
     }
 
