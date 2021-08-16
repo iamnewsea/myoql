@@ -499,7 +499,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
      * 大文件上传文件，块大小1MB
      * @param fileName: 文件名。
      * @param fileStream: 文件输入流。
-     * @return 上传文件返回的结果，如Json：{id,name,url}
+     * @return 上传文件返回的结果，如Json：{id,name,url,msg}
      */
     fun uploadFile(fileName: String, fileStream: InputStream): String {
         var CACHESIZE = 1024 * 1024;
