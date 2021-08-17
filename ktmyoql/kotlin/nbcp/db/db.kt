@@ -32,7 +32,7 @@ object db {
 //        return@lazy LoggerFactory.getLogger(this::class.java)
 //    }
 
-
+    @JvmStatic
     val mainDatabaseType: DatabaseEnum by lazy {
         var value: DatabaseEnum? = config.databaseType.ToEnum(DatabaseEnum::class.java)
 
@@ -47,10 +47,13 @@ object db {
         return@lazy value ?: DatabaseEnum.Mongo;
     }
 
+    @JvmStatic
     val sql = db_sql;
+    @JvmStatic
     val mongo = db_mongo;
+    @JvmStatic
     val es = db_es;
-
+    @JvmStatic
     val redis = db_redis;
 
 //    private val _beforeExecuteDbData: ThreadLocal<Any?> = ThreadLocal.withInitial { return@withInitial null }
@@ -170,8 +173,10 @@ object db {
 //            true
 //        })
 //    }
-
+    @JvmStatic
     val mor_base get() = MongoBaseGroup()
+    @JvmStatic
     val rer_base get() = RedisBaseGroup()
+    @JvmStatic
     val sql_base get() = SqlBaseGroup()
 }

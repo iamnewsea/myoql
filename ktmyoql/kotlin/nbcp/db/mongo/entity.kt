@@ -248,8 +248,6 @@ open class SysLog @JvmOverloads constructor(
     var data: Any? = null,    //程序处理数据
     var response: BaseResponseData? = null,  //回发数据
 
-    @Cn("创建时间")
-    var creatAt: LocalDateTime = LocalDateTime.now(),
     @Cn("创建者Id")
     var creator: IdName = IdName(),
     @Cn("创建时间")

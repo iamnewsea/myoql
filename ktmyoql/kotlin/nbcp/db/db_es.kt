@@ -27,6 +27,7 @@ object db_es {
 
     private val restClientMap = mutableMapOf<String, RestClient>()
 
+    @JvmStatic
     @JvmOverloads
     fun getRestClient(uri: String, pathPrefix: String = "", timeout: Int = 0): RestClient {
 
