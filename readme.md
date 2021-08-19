@@ -7,6 +7,7 @@
 - 安装到远程仓库：python publish ${version}
 - 本发安装单个Jar包： python install_jar.py -f ktext
 
+> 设置版本： mvn versions:set -DnewVersion=1.0.6-SNAPSHOT
 > 发布到私服：mvn clean deploy -Dmaven.test.skip=true -P nancal-dev
 > 发布到私服：mvn clean deploy -Dmaven.test.skip=true -P nancal-snapshots
 
