@@ -5,7 +5,7 @@
     <artifactId>kotlin</artifactId>
     <version>0.2.4-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>kotlin-myoql-component</name>
+    <name>kotlin-myoql</name>
 
     <modules>
         <module>ktext</module>
