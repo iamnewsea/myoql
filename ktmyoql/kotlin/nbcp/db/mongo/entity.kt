@@ -244,9 +244,9 @@ open class SysLog @JvmOverloads constructor(
     @Cn("消息")
     var msg: String = "",   //消息
 
-    var request: BaseRequestData? = null, //请求数据
+    var request: BaseRequestData = BaseRequestData(), //请求数据
     var data: Any? = null,    //程序处理数据
-    var response: BaseResponseData? = null,  //回发数据
+    var response: BaseResponseData = BaseResponseData(),  //回发数据
 
     @Cn("创建者Id")
     var creator: IdName = IdName(),
