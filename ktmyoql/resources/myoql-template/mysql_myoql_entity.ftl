@@ -13,7 +13,7 @@ import java.time.*
 @DbEntityGroup("${entity.group}")
 @Cn("${entity.getComment()}")
 @DbUks(${entity.getUks()?join(",")})
-data class ${entity.getName()}(): ISqlDbEntity {
+open class ${entity.getName()}(): ISqlDbEntity {
 <#list entity.getColumns() as field>
 <#if  field.getAutoInc()>
     @SqlAutoIncrementKey

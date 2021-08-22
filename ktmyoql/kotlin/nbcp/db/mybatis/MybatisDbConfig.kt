@@ -6,6 +6,7 @@ import org.apache.ibatis.session.SqlSessionFactory
 import org.mybatis.spring.SqlSessionFactoryBean
 import org.mybatis.spring.SqlSessionTemplate
 import org.mybatis.spring.mapper.MapperScannerConfigurer
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.context.event.ApplicationPreparedEvent
 import org.springframework.context.annotation.Import
@@ -17,6 +18,7 @@ import javax.sql.DataSource
 @EnableTransactionManagement
 @Component
 @Import(SpringUtil::class)
+@ConditionalOnClass(SqlSessionFactory::class)
 class MybatisDbConfig {
 
     @EventListener

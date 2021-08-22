@@ -83,40 +83,41 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
      * 3. 当前作用域
      * 4. 如果是读操作，则使用 slave , 否则使用默认
      */
-    val jdbcTemplate: JdbcTemplate
-        get() {
-            var isRead = this is SqlBaseQueryClip;
+    val jdbcTemplate by lazy {
+        var isRead = this is SqlBaseQueryClip;
 
-            var config = SpringUtil.getBean<SqlTableDataSource>();
-            var dataSourceName = config.getDataSourceName(this.tableName, isRead)
+        var config = SpringUtil.getBean<SqlTableDataSource>();
+        var dataSourceName = config.getDataSourceName(this.tableName, isRead)
 
-            if (dataSourceName.HasValue) {
+        if (dataSourceName.HasValue) {
 
-                var uri = SpringUtil.context.environment.getProperty("app.sql.${dataSourceName}-ds.uri").AsString()
-                var username = SpringUtil.context.environment.getProperty("app.sql.${dataSourceName}-ds.username").AsString()
-                var password = SpringUtil.context.environment.getProperty("app.sql.${dataSourceName}-ds.password").AsString()
+            var uri = SpringUtil.context.environment.getProperty("app.sql.${dataSourceName}-ds.uri").AsString()
+            var username =
+                SpringUtil.context.environment.getProperty("app.sql.${dataSourceName}-ds.username").AsString()
+            var password =
+                SpringUtil.context.environment.getProperty("app.sql.${dataSourceName}-ds.password").AsString()
 
-                //其它参数按数据源配置参数
-                var ds = db.sql.getDataSource(uri,username,password);
+            //其它参数按数据源配置参数
+            var ds = db.sql.getDataSource(uri, username, password);
 
-                return JdbcTemplate(ds, true);
-            }
-
-            var ds = db.sql.sqlEvents.getDataSource(this.tableName, isRead) ?: scopes.GetLatest<DataSource>()
-            if (ds != null) {
-                return JdbcTemplate(ds, true);
-            }
-
-            if (isRead) {
-                if (SpringUtil.containsBean("slave", DataSource::class.java)) {
-                    ds = SpringUtil.getBeanByName<DataSource>("slave")
-                    return JdbcTemplate(ds, true);
-                }
-            }
-
-            ds = SpringUtil.getBean<DataSource>()
-            return JdbcTemplate(ds);
+            return@lazy JdbcTemplate(ds, true);
         }
+
+        var ds = db.sql.sqlEvents.getDataSource(this.tableName, isRead) ?: scopes.GetLatest<DataSource>()
+        if (ds != null) {
+            return@lazy JdbcTemplate(ds, true);
+        }
+
+        if (isRead) {
+            if (SpringUtil.containsBean("slave", DataSource::class.java)) {
+                ds = SpringUtil.getBeanByName<DataSource>("slave")
+                return@lazy JdbcTemplate(ds, true);
+            }
+        }
+
+        ds = SpringUtil.getBean<DataSource>()
+        return@lazy JdbcTemplate(ds);
+    }
 
 
 //    val transactionTemplate: TransactionTemplate
@@ -269,7 +270,7 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
                 logger.InfoError(error) {
                     var msg_log = mutableListOf(
                         "" +
-                            "[select] ${executeData.executeSql}",
+                                "[select] ${executeData.executeSql}",
                         "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}"
                     )
 

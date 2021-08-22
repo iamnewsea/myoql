@@ -6,25 +6,25 @@ import nbcp.db.IdName
 import nbcp.db.sql.*
 import nbcp.tool.FreemarkerUtil
 import nbcp.utils.MyUtil
+import nbcp.utils.SpringUtil
 import java.time.LocalDateTime
 import java.util.*
+import javax.sql.DataSource
 
 
 /**
  * MySql 实体生成器
  */
 object MysqlEntityGenerator {
-    /**
-     * @param db: 数据库名
-     */
-    fun db2Entity(db: String) = DbEntityBuilder(db);
+
+    fun db2Entity() = DbEntityBuilder();
 
 
     /**
      * 生成数据库表的实体代码。
      * @param db: 数据库名
      */
-    class DbEntityBuilder(var db: String) {
+    class DbEntityBuilder() {
         private var tableLike = "";
         private var tables = listOf<String>()
         private var excludes = listOf<String>()
@@ -141,6 +141,10 @@ ${
 
         fun getTablesData(): List<EntityDbItemData> {
             var ret = mutableListOf<EntityDbItemData>()
+
+            var db = SpringUtil.getBean<DataSource>().connection.use {
+                return@use it.catalog;
+            }
 
             var tables_map = RawQuerySqlClip(
                 """
@@ -269,7 +273,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                     ) == "PRI"
                 }
                     .map { it.getStringValue("column_name") }
-                    .map { """"${it}"""" }
+//                    .map { """"${it}"""" }
                     .joinToString(",")
                 )
 
@@ -277,12 +281,14 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                     .groupBy { it.getStringValue("index_name") }
                     .forEach {
                         uks.add(it.value.map { it.getStringValue("column_name") }
-                            .map { """"${it}"""" }
+//                            .map { """"${it}"""" }
                             .joinToString(",")
                         )
                     }
 
-                tableData.uks = uks.map { """"${it}"""" }.toTypedArray()
+                tableData.uks = uks
+                    .map { """"${it}"""" }
+                    .toTypedArray()
 
                 ret.add(tableData)
             }
