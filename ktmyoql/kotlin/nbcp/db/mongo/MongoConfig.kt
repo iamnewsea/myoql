@@ -66,8 +66,7 @@ class MyOqlMongoDbConfig {
 class ExistsMongoDataSourceConfigCondition : Condition {
     override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata): Boolean {
         return (context.environment.getProperty("spring.data.mongodb.uri") != null ||
-                context.environment.getProperty("spring.data.mongodb.database") != null) &&
-                context.beanFactory.getBeanNamesForType(MongoDatabaseFactory::class.java).any()
+            context.environment.getProperty("spring.data.mongodb.database") != null)
     }
 
 }
