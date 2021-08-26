@@ -22,7 +22,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.time.LocalDate
-import javax.imageio.ImageIO
 import javax.servlet.http.HttpServletRequest
 
 
@@ -36,7 +35,7 @@ open class UploadService {
     }
 
     data class FileNameData @JvmOverloads constructor(var msg: String = "") {
-        var oriName: String = ""
+        var fileName: String = ""
         var extName: String = ""
         var extType: FileExtentionTypeEnum = FileExtentionTypeEnum.Other
 
@@ -70,20 +69,22 @@ open class UploadService {
             return list.toTypedArray();
         }
 
-        private fun getTargetFileNames(): Array<String> {
-            return arrayOf(
-                *this.getTargetPaths(),
-                CodeUtil.getCode() + (if (extName.HasValue) ("." + extName) else "")
-            );
-        }
-
+        /**
+         * 保存全路径
+         */
         fun getTargetFileName(): String {
             var targetFileName = mutableListOf<String>()
 
             if (needCorp && corpId.HasValue) {
                 targetFileName.add(corpId);
             }
-            targetFileName.addAll(getTargetFileNames())
+            targetFileName.addAll(getTargetPaths())
+            targetFileName.add(CodeUtil.getCode())
+
+            if (fileName.HasValue) {
+                targetFileName.add(fileName)
+            }
+
             return targetFileName.map { File.separator + it }.joinToString("")
         }
     }
@@ -151,7 +152,7 @@ open class UploadService {
         }
 
         var fileData = FileNameData();
-        fileData.oriName = extInfo.toString()
+        fileData.fileName = extInfo.getFileName()
         fileData.extName = extInfo.extName
         fileData.extType = extInfo.extType
         fileData.needCorp = UPLOAD_SAVECORP;
