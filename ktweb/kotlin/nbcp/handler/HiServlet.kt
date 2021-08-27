@@ -36,9 +36,13 @@ open class HiServlet : HttpServlet() {
         json["JAVA_VERSION"] = System.getenv("JAVA_VERSION");
         json["JAVA_OPTS"] = System.getenv("JAVA_OPTS");
         json["POD名称"] = System.getenv("HOSTNAME");
-        json["版本号"] = System.getenv("VERSION").AsString();
-        var gitCommitTime = System.getenv("GIT_COMMIT_TIME").AsString();
+        json["镜像版本号"] = System.getenv("VERSION").AsString();
 
+        var gitCommitId = System.getenv("GIT_COMMIT_ID").AsString();
+        if (gitCommitId.HasValue) {
+            json["Git提交Id"] = gitCommitId;
+        }
+        var gitCommitTime = System.getenv("GIT_COMMIT_TIME").AsString();
         if (gitCommitTime.HasValue) {
             json["Git提交时间"] = gitCommitTime;
         }
