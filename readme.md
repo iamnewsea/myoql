@@ -7,30 +7,31 @@
 - 安装到远程仓库：python publish ${version}
 - 本发安装单个Jar包： python install_jar.py -f ktext
 
-> 设置版本： mvn versions:set -DnewVersion=1.0.6-SNAPSHOT
-> 发布到私服：mvn clean deploy -Dmaven.test.skip=true -P nancal-dev
-> 发布到私服：mvn clean deploy -Dmaven.test.skip=true -P nancal-snapshots
 
-> mvn clean package -Dmaven.test.skip=true  -P release
-> mvn clean install -Dmaven.test.skip=true  -P release
-> mvn clean deploy -Dmaven.test.skip=true -P release
+    > 设置版本： mvn versions:set -DnewVersion=1.0.6-SNAPSHOT
+    > 发布到私服：mvn clean deploy -Dmaven.test.skip=true -P nancal-dev
+    > 发布到私服：mvn clean deploy -Dmaven.test.skip=true -P nancal-snapshots
+
+    > mvn clean package -Dmaven.test.skip=true  -P release
+    > mvn clean install -Dmaven.test.skip=true  -P release
+    > mvn clean deploy -Dmaven.test.skip=true -P release
 
 ## 发布到私服
 maven的 setting.xml 增加
 
 servers
 ```
-	<server>
-       <id>nancal-dev</id>
-       <username>admin</username>
-       <password>xxx</password>
-    </server>
-    
-    <server>
-       <id>nancal-snapshots</id>
-       <username>admin</username>
-       <password>xxx</password>
-    </server>
+<server>
+   <id>nancal-dev</id>
+   <username>admin</username>
+   <password>xxx</password>
+</server>
+
+<server>
+   <id>nancal-snapshots</id>
+   <username>admin</username>
+   <password>xxx</password>
+</server>
 ```
 
 
@@ -38,14 +39,14 @@ servers
 pom.xml 文件设置：(以后想办法把这一段移到 setting.xml 中)
 ```
 <profile>
-		<id>nancal-dev</id>
-		<distributionManagement>
-			<repository>
-				<id>nancal-dev</id>
-				<url>http://saas-dev.nancal.com:31016/repository/maven-releases/</url>
-			</repository>
-		</distributionManagement>
-	</profile>
+    <id>nancal-dev</id>
+    <distributionManagement>
+        <repository>
+            <id>nancal-dev</id>
+            <url>http://nexus.nancal.com/repository/maven-releases/</url>
+        </repository>
+    </distributionManagement>
+</profile>
 ```
 
 本地打包：python install_jar.py
