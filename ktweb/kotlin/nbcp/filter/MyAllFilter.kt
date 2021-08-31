@@ -57,8 +57,8 @@ open class MyAllFilter : Filter {
     @Value("\${app.filter.allow-origins:}")
     var allowOrigins: String = "";
 
-    @Value("\${app.filter.headers:token}")
-    var headers: List<String> = listOf()
+//    @Value("\${app.filter.headers:token,Authorization}")
+//    var headers: List<String> = listOf()
 
     /**
      * 静态文件在 resources 里的文件夹。前后不能有 "/"
@@ -437,8 +437,8 @@ open class MyAllFilter : Filter {
         var allowOrigins = this.allowOrigins.split(",") //非 localhost 域名
 
         var allow = allowOrigins.any { originClient.contains(it) } ||
-                originClient.contains("localhost") ||
-                originClient.contains("127.0.0.1");
+            originClient.contains("localhost") ||
+            originClient.contains("127.0.0.1");
 
         if (allow == false) {
             logger.warn("跨域阻止:${originClient}")
@@ -454,9 +454,8 @@ open class MyAllFilter : Filter {
 
         var allowHeaders = mutableSetOf<String>();
         allowHeaders.add(config.tokenKey);
-
         //添加指定的
-        allowHeaders.addAll(headers)
+        allowHeaders.add("Authorization")
 
         if (request.method == "OPTIONS") {
             allowHeaders.addAll(
