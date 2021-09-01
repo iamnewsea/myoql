@@ -13,6 +13,7 @@ import nbcp.extend.RequestSetLoginUserModelEvent
 import nbcp.extend.RequestTokenEvent
 import nbcp.service.UserAuthenticationService
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpHeaders
 import java.time.LocalDateTime
 import javax.servlet.http.HttpServletRequest
 
@@ -120,7 +121,7 @@ val HttpServletRequest.tokenValue: String
 
         token = this.findParameterStringValue(config.tokenKey).AsString {
             //获取自定义 Authorization 中的 token,值必须以 st!开头。和 token 保持一致，redis key 不能有空格。
-            var authorization = this.findParameterStringValue("Authorization");
+            var authorization = this.findParameterStringValue(HttpHeaders.AUTHORIZATION);
             if (authorization.startsWith("st!")) {
                 return@AsString authorization.substring(3);
             }
