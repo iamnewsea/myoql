@@ -150,10 +150,19 @@ open class MyAllFilter : Filter {
             }
         } else {
             var ignoreLog = ignoreLogUrls.any {
-                if (it.endsWith("*")) {
-                    return@any httpRequest.requestURI.startsWith(it.Slice(0, -1), true)
+                var url = it;
+                var exact = url.startsWith("(") && url.endsWith(")")
+                if (exact) {
+                    url = url.Slice(1, -1);
+                }
+
+                if (url.startsWith("/") == false) {
+                    url = "/" + url;
+                }
+                if (exact) {
+                    return@any httpRequest.requestURI.startsWith(url, true)
                 } else {
-                    return@any httpRequest.requestURI.equals(it, true)
+                    return@any httpRequest.requestURI.equals(url, true)
                 }
             }
 
