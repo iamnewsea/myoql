@@ -3,7 +3,6 @@
 
     <groupId>cn.dev8</groupId>
     <artifactId>ktext</artifactId>
-    <version>0.2.3.4</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
