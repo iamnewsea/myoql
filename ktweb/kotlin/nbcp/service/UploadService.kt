@@ -254,7 +254,14 @@ open class UploadService {
             throw java.lang.RuntimeException("minIO需要group值！")
         }
 
-        val minioClient = MinioClient(MINIO_ENDPOINT, MINIO_ACCESSKEY, MINIO_SECRETKEY)
+        lateinit var minioClient: MinioClient
+        try {
+            minioClient = MinioClient(MINIO_ENDPOINT, MINIO_ACCESSKEY, MINIO_SECRETKEY)
+        } catch (e: Exception) {
+            logger.error(e.message + " . endpoint: ${MINIO_ENDPOINT}")
+            throw e;
+        }
+
         // bucket 不存在，创建
         if (!minioClient.bucketExists(group)) {
             minioClient.makeBucket(group)

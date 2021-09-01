@@ -55,21 +55,21 @@ fun Cell?.getStringValue(evaluator: FormulaEvaluator): String {
 /**
  * Excel 导入导出。
  */
-class ExcelComponent() {
+class ExcelComponent(val excelStream: () -> InputStream) {
     private var columns: List<String> = listOf()
     private var sheetName: String = ""
     private var offset_row: Int = 0;
     private var pks: List<String> = listOf()
-    private var fileName: String = "";
+
     val sheetNames: Array<String>
         get() {
             var ret = mutableListOf<String>()
 
-            FileMagic.prepareToCheckMagic(FileInputStream(fileName)).use { file ->
+            FileMagic.prepareToCheckMagic(excelStream()).use { file ->
                 val fm = FileMagic.valueOf(file)
                 when (fm) {
                     FileMagic.OOXML -> {
-                        WorkbookFactory.create(FileInputStream(fileName)).use { book ->
+                        WorkbookFactory.create(excelStream()).use { book ->
                             for (i in 0..(book.numberOfSheets - 1)) {
                                 ret.add(book.getSheetAt(i).sheetName)
                             }
@@ -77,7 +77,7 @@ class ExcelComponent() {
                     }
 
                     FileMagic.OLE2 -> {
-                        OPCPackage.open(fileName, PackageAccess.READ).use { xlsxPackage ->
+                        OPCPackage.open(excelStream()).use { xlsxPackage ->
                             var xssfReader = XSSFReader(xlsxPackage)
                             var iter = xssfReader.sheetsData as XSSFReader.SheetIterator
                             while (iter.hasNext()) {
@@ -93,9 +93,6 @@ class ExcelComponent() {
             return ret.toTypedArray()
         }
 
-    fun usingFile(fileName: String) {
-        this.fileName = fileName;
-    }
 
     fun select(sheetName: String, columns: List<String>, pks: List<String>, offset_row: Int = 0) {
         this.sheetName = sheetName;
@@ -105,7 +102,11 @@ class ExcelComponent() {
     }
 
 
-    private fun getHeaderColumnsIndexMap(headerRow: Row, columns: List<String>, evaluator: FormulaEvaluator): LinkedHashMap<Int, String> {
+    private fun getHeaderColumnsIndexMap(
+        headerRow: Row,
+        columns: List<String>,
+        evaluator: FormulaEvaluator
+    ): LinkedHashMap<Int, String> {
 
         var columnDataIndexs = linkedMapOf<Int, String>()
         for (columnIndex in headerRow.firstCellNum.AsInt()..headerRow.lastCellNum) {
@@ -127,8 +128,10 @@ class ExcelComponent() {
      * 读取数据
      */
     @JvmOverloads
-    fun <T : Any> getDataTable(clazz: Class<T>,
-                               filter: ((JsonMap, Map<Int, String>) -> Boolean)? = null): DataTable<T> {
+    fun <T : Any> getDataTable(
+        clazz: Class<T>,
+        filter: ((JsonMap, Map<Int, String>) -> Boolean)? = null
+    ): DataTable<T> {
         var dt = DataTable<T>(clazz)
 
         var pk_values = mutableListOf<String>()
@@ -177,7 +180,7 @@ class ExcelComponent() {
             }
         }
 
-        FileMagic.prepareToCheckMagic(FileInputStream(fileName)).use { file ->
+        FileMagic.prepareToCheckMagic(excelStream()).use { file ->
 
             val fm = FileMagic.valueOf(file)
             var lined = 0;
@@ -257,8 +260,9 @@ class ExcelComponent() {
                     } else if (dbValue is Boolean) {
                         cell.setCellValue(dbValue.AsBoolean())
                     } else if (dbValue is LocalDateTime ||
-                            dbValue is LocalDate ||
-                            dbValue is Date) {
+                        dbValue is LocalDate ||
+                        dbValue is Date
+                    ) {
                         cell.setCellValue(dbValue.AsDate())
                     } else {
                         cell.setCellValue(dbValue.AsString())
@@ -274,9 +278,10 @@ class ExcelComponent() {
     }
 
 
-    private fun readOle2ExcelData(filter: (JsonMap, Map<Int, String>) -> Boolean
+    private fun readOle2ExcelData(
+        filter: (JsonMap, Map<Int, String>) -> Boolean
     ) {
-        WorkbookFactory.create(FileInputStream(fileName)).use { book ->
+        WorkbookFactory.create(excelStream()).use { book ->
 
             var sheet: Sheet;
 
@@ -316,9 +321,10 @@ class ExcelComponent() {
                         }
 
                         if (cell.cellStyle.dataFormatString.indexOf("yy") >= 0 &&
-                                cell.cellStyle.dataFormatString.indexOf("m") >= 0 &&
-                                cell.cellStyle.dataFormatString.indexOf("d") >= 0 &&
-                                cell.cellStyle.dataFormatString.indexOf("h:mm:ss") >= 0) {
+                            cell.cellStyle.dataFormatString.indexOf("m") >= 0 &&
+                            cell.cellStyle.dataFormatString.indexOf("d") >= 0 &&
+                            cell.cellStyle.dataFormatString.indexOf("h:mm:ss") >= 0
+                        ) {
 
                             oriData.set(columnIndex, cell.dateCellValue.AsLocalDateTime().AsString());
                             continue;
@@ -326,8 +332,9 @@ class ExcelComponent() {
                             oriData.set(columnIndex, cell.dateCellValue.AsLocalTime().AsString());
                             continue;
                         } else if (cell.cellStyle.dataFormatString.indexOf("yy") >= 0 &&
-                                cell.cellStyle.dataFormatString.indexOf("m") >= 0 &&
-                                cell.cellStyle.dataFormatString.indexOf("d") >= 0) {
+                            cell.cellStyle.dataFormatString.indexOf("m") >= 0 &&
+                            cell.cellStyle.dataFormatString.indexOf("d") >= 0
+                        ) {
                             oriData.set(columnIndex, cell.dateCellValue.AsLocalDate().AsString());
                             continue;
                         }
@@ -361,7 +368,7 @@ class ExcelComponent() {
 
 
     private fun readOpenXmlExcelData(filter: (JsonMap, Map<Int, String>) -> Boolean) {
-        OPCPackage.open(fileName, PackageAccess.READ).use { xlsxPackage ->
+        OPCPackage.open(excelStream()).use { xlsxPackage ->
 
             var xssfReader = XSSFReader(xlsxPackage)
             var iter: XSSFReader.SheetIterator
@@ -407,12 +414,12 @@ class ExcelComponent() {
 
 
     private fun getSheetData(
-            xlsxPackage: OPCPackage,
-            xssfReader: XSSFReader,
-            sheetInputStream: InputStream,
-            columns: List<String>,
-            offset_row: Int = 0,
-            filter: ((JsonMap, Map<Int, String>) -> Boolean)
+        xlsxPackage: OPCPackage,
+        xssfReader: XSSFReader,
+        sheetInputStream: InputStream,
+        columns: List<String>,
+        offset_row: Int = 0,
+        filter: ((JsonMap, Map<Int, String>) -> Boolean)
     ) {
 
         var strings = ReadOnlySharedStringsTable(xlsxPackage);
@@ -422,7 +429,14 @@ class ExcelComponent() {
         var sheetParser = SAXHelper.newXMLReader();
 
         try {
-            sheetParser.contentHandler = XSSFSheetXMLHandler(styles, null, strings, SheetContentReader(sheetParser, columns, filter, offset_row), formatter, false);
+            sheetParser.contentHandler = XSSFSheetXMLHandler(
+                styles,
+                null,
+                strings,
+                SheetContentReader(sheetParser, columns, filter, offset_row),
+                formatter,
+                false
+            );
             sheetParser.parse(sheetSource)
         } catch (e: Exception) {
             if (e.cause is ReturnException == false) {
