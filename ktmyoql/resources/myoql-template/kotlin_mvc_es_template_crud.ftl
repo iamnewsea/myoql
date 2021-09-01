@@ -30,7 +30,7 @@ class ${entity}AutoController {
 </#if>
         @Require skip: Int,
         @Require take: Int,
-        request: MyHttpRequestWrapper
+        request: HttpServletRequest
     ): ListResult<${entity}> {
 
         mor.${w(group)}.${entityField}.query()
@@ -55,7 +55,7 @@ class ${entity}AutoController {
     @JsonpMapping("/detail/{id}")
     fun detail(
         @Require id: String,
-        request: MyHttpRequestWrapper
+        request: HttpServletRequest
     ): ApiResult<${entity}> {
         mor.${w(group)}.${entityField}.queryById(id)
             .toEntity()
@@ -72,7 +72,7 @@ class ${entity}AutoController {
     @JsonpMapping("/save")
     fun save(
         @JsonModel entity: ${entity},
-        request: MyHttpRequestWrapper
+        request: HttpServletRequest
     ): ApiResult<String> {
         //鉴权
         var userId = request.UserId
