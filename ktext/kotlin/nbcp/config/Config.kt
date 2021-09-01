@@ -30,6 +30,7 @@ import java.time.Duration
  */
 object config {
     private var _debug: Boolean? = null;
+
     @JvmStatic
     val debug: Boolean
         get() {
@@ -46,6 +47,7 @@ object config {
     fun getConfig(key: String, defaultValue: String): String {
         return SpringUtil.context.environment.getProperty(key) ?: defaultValue
     }
+
     @JvmStatic
     fun getConfig(key: String): String? {
         return SpringUtil.context.environment.getProperty(key)
@@ -80,9 +82,20 @@ object config {
     val mybatisPackage: String by lazy {
         return@lazy getConfig("app.mybatis.package", "")
     }
+
     @JvmStatic
     val listResultWithCount: Boolean by lazy {
         return@lazy getConfig("app.list-result-with-count", "").AsBoolean()
+    }
+
+    @JvmStatic
+    val jwtSignatureAlgorithm: String by lazy {
+        return@lazy getConfig("app.jwt-signature-algorithm") ?: "HS256"
+    }
+
+    @JvmStatic
+    val jwtSecretKey: String by lazy {
+        return@lazy getConfig("app.jwt-secret-key") ?: ""
     }
 
     /**

@@ -3,6 +3,7 @@
 
 package nbcp.web
 
+import io.jsonwebtoken.Jwts
 import nbcp.comm.*
 import nbcp.data.TokenStorageTypeEnum
 import nbcp.utils.*
@@ -84,6 +85,24 @@ val HttpServletRequest.UserName: String
     }
 
 
+fun getJwtUserId(value: String): String {
+    if (config.jwtSecretKey.isEmpty()) return "";
+
+    var claims = Jwts.parser()
+        .setSigningKey(config.jwtSecretKey)
+        .parseClaimsJws(value)
+        .getBody();
+
+
+    var userIdKey = claims.keys.firstOrNull { it VbSame "userId" } ?: claims.keys.first { it VbSame "user-id" }
+
+    if (userIdKey.HasValue) {
+        return claims.getStringValue(userIdKey!!) ?: "";
+    }
+
+    return "";
+}
+
 /**
  * 由于 SameSite 限制，避免使用 Cookie，定义一个额外值来保持会话。使用 app.token-key 定义。
  */
@@ -105,6 +124,18 @@ val HttpServletRequest.tokenValue: String
             if (authorization.startsWith("st!")) {
                 return@AsString authorization.substring(3);
             }
+
+            if (authorization.startsWith("Bearer ")) {
+                var value = authorization.substring("Bearer ".length)
+
+                if (value.split(".").size == 3) {
+                    var userId = getJwtUserId(value)
+                    if (userId.HasValue) {
+                        return@AsString userId;
+                    }
+                }
+            }
+
             return@AsString "";
         }
 
