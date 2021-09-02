@@ -225,7 +225,7 @@ class ExcelComponent(val excelStream: () -> InputStream) {
         /**回写数据 按 data.tableName == sheetName
          * @param getRowData: 返回 null 停止。
          */
-        fun writeNewData(offset_column: Int = 0, getRowData: (Int) -> JsonMap?): ByteArray {
+        fun writeData(outputStream: OutputStream, offset_column: Int = 0, getRowData: (Int) -> JsonMap?) {
             SXSSFWorkbook(1000).use { book ->
 
                 //生成一个sheet1
@@ -279,12 +279,17 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                 }
 
 
-                var outputStream = ByteArrayOutputStream();
+
                 book.write(outputStream)
-                return outputStream.toByteArray()
             }
         }
 
+
+        fun <T : Any> writeData(outputStream: OutputStream, column_offset: Int = 0, table: DataTable<T>) {
+            writeData(outputStream, column_offset) { rowIndex ->
+                return@writeData table.rows.getOrNull(rowIndex)?.ConvertType(JsonMap::class.java) as JsonMap?
+            }
+        }
 
         private fun readOle2ExcelData(
             filter: (JsonMap, Map<Int, String>) -> Boolean
