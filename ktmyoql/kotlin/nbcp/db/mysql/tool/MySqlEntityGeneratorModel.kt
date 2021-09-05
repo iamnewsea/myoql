@@ -1,12 +1,28 @@
 package nbcp.db.mysql.tool
 
+import nbcp.comm.AsBoolean
+import nbcp.comm.AsString
 import nbcp.comm.HasValue
+import nbcp.comm.config
 import nbcp.db.sql.DbType
+import nbcp.utils.MyUtil
 
 
 class EntityDbItemFieldData {
     // name 小驼峰形式。
-    var fieldName = ""
+    val fieldName: String
+        get() {
+            var name2 = this.name;
+            if (name2[0].isDigit()) {
+                name2 = "field_" + name2;
+            }
+
+            if (config.getConfig("app.myoql.keep-db-name").AsString("true").AsBoolean()) {
+                return MyUtil.splitWordParts(name2).joinToString("_");
+            }
+            return MyUtil.getSmallCamelCase(name2);
+        }
+
     var sqlType = ""
     var remark = ""
     var name = ""
@@ -85,7 +101,7 @@ class EntityDbItemData {
             if (groups_value.any()) {
                 return groups_value.first();
             }
-            groups_value = name.split("_");
+            groups_value = name.split("_", "-");
             if (groups_value.size > 1) {
                 return groups_value.first()
             }
@@ -96,4 +112,18 @@ class EntityDbItemData {
     var uks = arrayOf<String>()
 
     var columns = mutableListOf<EntityDbItemFieldData>()
+
+    val className: String
+        get() {
+            var name2 = this.name
+            if (name2[0].isDigit()) {
+                name2 = "table_" + name2;
+            }
+
+            if (config.getConfig("app.myoql.keep-db-name").AsString("true").AsBoolean()) {
+                return MyUtil.splitWordParts(name2).joinToString("_")
+            }
+
+            return MyUtil.getBigCamelCase(name2)
+        }
 }

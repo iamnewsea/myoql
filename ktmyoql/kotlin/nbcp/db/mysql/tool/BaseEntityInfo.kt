@@ -75,16 +75,16 @@ class BaseEntityInfo(var entity: EntityDbItemData, var baseEntityClass: Array<ou
         var baseColumns = getColumnsWithoutBaseClasses();
         var baseColumnsInInterface = getColumnsWithoutBaseInterfaces();
         return this.entity.columns
-            .filter { column ->
-                return@filter baseColumns.contains(column.fieldName)
-            }
-            .map { column ->
-                """/** ${column.comment} */
+                .filter { column ->
+                    return@filter baseColumns.contains(column.fieldName)
+                }
+                .map { column ->
+                    """/** ${column.comment} */
 @Cn("${column.comment}")
 @Column(name = "${column.name}")
 @DbName(name = "${column.name}")
 private ${if (baseColumnsInInterface.contains(column.fieldName)) "override" else ""}${column.javaType} ${column.fieldName} ;"""
-            }
+                }
     }
 
     fun getBaseClasseString(): String {
@@ -99,5 +99,5 @@ private ${if (baseColumnsInInterface.contains(column.fieldName)) "override" else
         return " implements ${list.joinToString(",")}"
     }
 
-    val className: String = MyUtil.getBigCamelCase(entity.name)
+
 }

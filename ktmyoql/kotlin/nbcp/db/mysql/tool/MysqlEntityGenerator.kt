@@ -125,7 +125,7 @@ import java.lang.*;
 @Entity(name = "${entity.name}")
 @DbName(name = "${entity.name}")
 @Cn("${entity.comment}")
-public class ${entInfo.className} ${entInfo.getBaseClasseString()} ${entInfo.getBaseInterfaceString()} {
+public class ${entity.className} ${entInfo.getBaseClasseString()} ${entInfo.getBaseInterfaceString()} {
 ${
                     entInfo.getJpaStyleFields().joinToString("\n")
                         .ToTab(1)
@@ -249,7 +249,6 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
 
                         var columnData = EntityDbItemFieldData()
                         columnData.name = columnName
-                        columnData.fieldName = MyUtil.getSmallCamelCase(columnName);
                         columnData.commentString = columnComment
                         columnData.sqlType = columnMap.getStringValue("column_type") ?: ""
                         columnData.dbType = dbType

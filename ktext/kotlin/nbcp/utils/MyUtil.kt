@@ -1,13 +1,8 @@
 package nbcp.utils
 
 import nbcp.comm.*
-import sun.misc.Launcher
-import java.io.File
-import java.io.Serializable
 import java.lang.RuntimeException
 import java.lang.reflect.Field
-import java.net.JarURLConnection
-import java.net.URL
 import java.time.*
 import java.util.*
 
@@ -492,7 +487,7 @@ object MyUtil {
     /**
      * 分隔为各个部分
      */
-    private fun getCharItems(value: String): List<String> {
+    fun splitWordParts(value: String): List<String> {
         var ret = value.split(Regex("""[\W_]+""")).map {
             if (allCharIsSameCase(it)) {
                 return@map arrayOf(it);
@@ -523,7 +518,7 @@ object MyUtil {
      * 大驼峰 ,仅保留字母，数字
      */
     fun getBigCamelCase(value: String): String {
-        return getCharItems(value).map { it[0].toUpperCase() + it.substring(1).toLowerCase() }.joinToString("")
+        return splitWordParts(value).map { it[0].toUpperCase() + it.substring(1).toLowerCase() }.joinToString("")
     }
 
     /**
@@ -539,7 +534,7 @@ object MyUtil {
      * 短横线格式，全小写
      */
     fun getKebabCase(value: String): String {
-        return getCharItems(value).map { it.toLowerCase() }.joinToString("-")
+        return splitWordParts(value).map { it.toLowerCase() }.joinToString("-")
     }
 
     @JvmOverloads

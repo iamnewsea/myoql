@@ -13,7 +13,8 @@ import java.time.*
 @DbEntityGroup("${entity.group}")
 @Cn("${entity.getComment()}")
 @DbUks(${entity.getUks()?join(",")})
-open class ${entity.getName()}(): ISqlDbEntity {
+@DbName("${entity.getName()}")
+open class ${entity.getClassName()}(): ISqlDbEntity {
 <#list entity.getColumns() as field>
 <#if  field.getAutoInc()>
     @SqlAutoIncrementKey
@@ -23,7 +24,8 @@ open class ${entity.getName()}(): ISqlDbEntity {
     @ConverterValueToDb(AutoNumberConverter::class)
 </#if>
     @Cn("${field.getComment()}")
-    var ${field.getName()}: ${field.getKotlinType()} = ${field.getKotlinDefaultValue()}
+    @DbName("${field.getName()}")
+    var ${field.getFieldName()}: ${field.getKotlinType()} = ${field.getKotlinDefaultValue()}
 </#list>
 }
 </#list>
