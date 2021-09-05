@@ -143,12 +143,7 @@ where table_schema = {db}
 order by table_name
 """, JsonMap("db" to db)
             ).toMapList()
-                .filter {
-                    if (tableCallback != null) {
-                        return@filter tableCallback!!(it.getStringValue("table_name")!!)
-                    }
-                    return@filter true;
-                }
+
 
             var columns_map = RawQuerySqlClip(
                 """
@@ -158,12 +153,7 @@ where table_schema = {db}
 order by table_name , ordinal_position
 """, JsonMap("db" to db)
             ).toMapList()
-                .filter {
-                    if (tableCallback != null) {
-                        return@filter tableCallback!!(it.getStringValue("table_name")!!)
-                    }
-                    return@filter true;
-                }
+
 
             var indexes_map = RawQuerySqlClip(
                 """
@@ -173,123 +163,124 @@ where table_schema = {db} AND non_unique = 0 AND INDEX_name != 'PRIMARY'
 ORDER BY TABLE_NAME , index_name , seq_in_index
 """, JsonMap("db" to db)
             ).toMapList()
-                .filter {
-                    if (tableCallback != null) {
-                        return@filter tableCallback!!(it.getStringValue("table_name")!!)
-                    }
-                    return@filter true;
+
+
+
+            tables_map.filter { tableMap ->
+                if (tableCallback != null) {
+                    return@filter tableCallback!!(tableMap.getStringValue("table_name")!!)
                 }
-
-
-            tables_map.forEach { tableMap ->
-                var tableData = EntityDbItemData()
-
-                tableData.name = tableMap.getStringValue("table_name")!!;
-                tableData.commentString = tableMap.getStringValue("table_comment").AsString()
-                    .replace("\r\n", " ")
-                    .replace('\n', ' ')
-                    .replace('\"', '＂')
-                    .replace('\$', '＄')
-                    .replace('#', '＃')
-
-
-                columns_map.filter { it.getStringValue("table_name") == tableData.name }
-                    .forEach colMap@{ columnMap ->
-
-                        var columnName = columnMap.getStringValue("column_name")!!
-                        var dataType = columnMap.getStringValue("data_type").AsString()
-                        var columnComment = columnMap.getStringValue("column_comment").AsString()
-                            .replace("\r\n", " ")
-                            .replace('\n', ' ')
-                            .replace('\"', '＂')
-                            .replace('\$', '＄')
-                            .replace('#', '＃')
-
-                        var dbType = DbType.String
-                        var remark = "";
-
-                        if (dataType VbSame "varchar"
-                            || dataType VbSame "char"
-                            || dataType VbSame "nvarchar"
-                            || dataType VbSame "nchar"
-                        ) {
-                            dbType = DbType.String
-                        } else if (dataType VbSame "text"
-                            || dataType VbSame "mediumtext"
-                            || dataType VbSame "longtext"
-                        ) {
-                            dbType = DbType.Text
-                        } else if (dataType VbSame "enum") {
-                            dbType = DbType.Enum
-                        } else if (dataType VbSame "int") {
-                            dbType = DbType.Int
-                        } else if (dataType VbSame "bit") {
-                            dbType = DbType.Boolean
-                        } else if (dataType VbSame "datetime" ||
-                            dataType VbSame "timestamp"
-                        ) {
-                            dbType = DbType.DateTime
-                        } else if (dataType VbSame "date") {
-                            dbType = DbType.Date
-                        } else if (dataType VbSame "float") {
-                            dbType = DbType.Float
-                        } else if (dataType VbSame "double") {
-                            dbType = DbType.Double
-                        } else if (dataType VbSame "long") {
-                            dbType = DbType.Long
-                        } else if (dataType VbSame "tinyint") {
-                            dbType = DbType.Byte
-                        } else if (dataType VbSame "bigint") {
-                            dbType = DbType.Long
-                        } else if (dataType VbSame "decimal") {
-                            remark = "warning sql data type: ${dataType}";
-                            dbType = DbType.Double
-                        }
-
-                        var columnData = EntityDbItemFieldData()
-                        columnData.name = columnName
-                        columnData.commentString = columnComment
-                        columnData.sqlType = columnMap.getStringValue("column_type") ?: ""
-                        columnData.dbType = dbType
-
-                        if (columnMap.getStringValue("extra") == "auto_increment") {
-                            columnData.autoInc = true
-                        }
-
-                        if (remark.HasValue) {
-                            columnData.remark = remark
-                        }
-
-                        tableData.columns.add(columnData)
-                    }
-
-                var uks = mutableListOf<String>();
-
-                uks.add(columns_map.filter {
-                    it.getStringValue("table_name") == tableData.name && it.getStringValue(
-                        "column_key"
-                    ) == "PRI"
-                }
-                    .map { it.getStringValue("column_name") }
-//                    .map { """"${it}"""" }
-                    .joinToString(",")
-                )
-
-                indexes_map.filter { it.getStringValue("table_name") == tableData.name }
-                    .groupBy { it.getStringValue("index_name") }
-                    .forEach {
-                        uks.add(it.value.map { it.getStringValue("column_name") }
-//                            .map { """"${it}"""" }
-                            .joinToString(",")
-                        )
-                    }
-
-                tableData.uks = uks
-                    .map { """"${it}"""" }
-                    .toTypedArray()
-
-                ret.add(tableData)
+                return@filter true;
             }
+                .forEach { tableMap ->
+                    var tableData = EntityDbItemData()
+
+                    tableData.name = tableMap.getStringValue("table_name")!!;
+                    tableData.commentString = tableMap.getStringValue("table_comment").AsString()
+                        .replace("\r\n", " ")
+                        .replace('\n', ' ')
+                        .replace('\"', '＂')
+                        .replace('\$', '＄')
+                        .replace('#', '＃')
+
+
+                    columns_map.filter { it.getStringValue("table_name") == tableData.name }
+                        .forEach colMap@{ columnMap ->
+
+                            var columnName = columnMap.getStringValue("column_name")!!
+                            var dataType = columnMap.getStringValue("data_type").AsString()
+                            var columnComment = columnMap.getStringValue("column_comment").AsString()
+                                .replace("\r\n", " ")
+                                .replace('\n', ' ')
+                                .replace('\"', '＂')
+                                .replace('\$', '＄')
+                                .replace('#', '＃')
+
+                            var dbType = DbType.String
+                            var remark = "";
+
+                            if (dataType VbSame "varchar"
+                                || dataType VbSame "char"
+                                || dataType VbSame "nvarchar"
+                                || dataType VbSame "nchar"
+                            ) {
+                                dbType = DbType.String
+                            } else if (dataType VbSame "text"
+                                || dataType VbSame "mediumtext"
+                                || dataType VbSame "longtext"
+                            ) {
+                                dbType = DbType.Text
+                            } else if (dataType VbSame "enum") {
+                                dbType = DbType.Enum
+                            } else if (dataType VbSame "int") {
+                                dbType = DbType.Int
+                            } else if (dataType VbSame "bit") {
+                                dbType = DbType.Boolean
+                            } else if (dataType VbSame "datetime" ||
+                                dataType VbSame "timestamp"
+                            ) {
+                                dbType = DbType.DateTime
+                            } else if (dataType VbSame "date") {
+                                dbType = DbType.Date
+                            } else if (dataType VbSame "float") {
+                                dbType = DbType.Float
+                            } else if (dataType VbSame "double") {
+                                dbType = DbType.Double
+                            } else if (dataType VbSame "long") {
+                                dbType = DbType.Long
+                            } else if (dataType VbSame "tinyint") {
+                                dbType = DbType.Byte
+                            } else if (dataType VbSame "bigint") {
+                                dbType = DbType.Long
+                            } else if (dataType VbSame "decimal") {
+                                remark = "warning sql data type: ${dataType}";
+                                dbType = DbType.Double
+                            }
+
+                            var columnData = EntityDbItemFieldData()
+                            columnData.name = columnName
+                            columnData.commentString = columnComment
+                            columnData.sqlType = columnMap.getStringValue("column_type") ?: ""
+                            columnData.dbType = dbType
+
+                            if (columnMap.getStringValue("extra") == "auto_increment") {
+                                columnData.autoInc = true
+                            }
+
+                            if (remark.HasValue) {
+                                columnData.remark = remark
+                            }
+
+                            tableData.columns.add(columnData)
+                        }
+
+                    var uks = mutableListOf<String>();
+
+                    uks.add(columns_map.filter {
+                        it.getStringValue("table_name") == tableData.name && it.getStringValue(
+                            "column_key"
+                        ) == "PRI"
+                    }
+                        .map { it.getStringValue("column_name") }
+//                    .map { """"${it}"""" }
+                        .joinToString(",")
+                    )
+
+                    indexes_map.filter { it.getStringValue("table_name") == tableData.name }
+                        .groupBy { it.getStringValue("index_name") }
+                        .forEach {
+                            uks.add(it.value.map { it.getStringValue("column_name") }
+//                            .map { """"${it}"""" }
+                                .joinToString(",")
+                            )
+                        }
+
+                    tableData.uks = uks
+                        .map { """"${it}"""" }
+                        .toTypedArray()
+
+                    ret.add(tableData)
+                }
 
             return ret;
         }
