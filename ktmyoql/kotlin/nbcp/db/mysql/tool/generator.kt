@@ -281,10 +281,10 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                     field.isAccessible = true
                     var db_column_name = field.name;
 
-                    var dbName = field.getAnnotation(DbName::class.java);
-                    if (dbName != null) {
-                        db_column_name = dbName.value;
-                    }
+//                    var dbName = field.getAnnotation(DbName::class.java);
+//                    if (dbName != null) {
+//                        db_column_name = dbName.value;
+//                    }
 
 
                     if (field.getAnnotation(SqlAutoIncrementKey::class.java) != null) {

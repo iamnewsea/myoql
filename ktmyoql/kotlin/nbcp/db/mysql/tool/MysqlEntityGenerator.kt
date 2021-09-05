@@ -25,23 +25,12 @@ object MysqlEntityGenerator {
      * @param db: 数据库名
      */
     class DbEntityBuilder() {
-        private var tableLike = "";
-        private var tables = listOf<String>()
-        private var excludes = listOf<String>()
 
-        fun tableLike(tableLike: String = ""): DbEntityBuilder {
-            this.tableLike = tableLike
+        private var tableCallback: ((String) -> Boolean)? = null
+
+        fun whereTable(tableCallback: ((String) -> Boolean)?): DbEntityBuilder {
+            this.tableCallback = tableCallback;
             return this;
-        }
-
-        fun tables(vararg tables: String): DbEntityBuilder {
-            this.tables = tables.toList()
-            return this
-        }
-
-        fun excludes(vararg excludes: String): DbEntityBuilder {
-            this.excludes = excludes.toList()
-            return this
         }
 
         /**
@@ -151,36 +140,46 @@ ${
 SELECT table_name,table_comment
 FROM INFORMATION_SCHEMA.TABLES
 where table_schema = {db} 
-${if (tableLike.HasValue) " and table_name like '${tableLike}'" else ""}  
-${if (tables.any()) " and table_name in (${tables.map { "'" + it + "'" }.joinToString(",")})" else ""}
-${if (excludes.any()) " and table_name not in (${excludes.map { "'" + it + "'" }.joinToString(",")})" else ""}
 order by table_name
 """, JsonMap("db" to db)
             ).toMapList()
+                .filter {
+                    if (tableCallback != null) {
+                        return@filter tableCallback!!(it.getStringValue("table_name")!!)
+                    }
+                    return@filter true;
+                }
 
             var columns_map = RawQuerySqlClip(
                 """
 SELECT table_name , column_name , data_type , column_type, column_comment, column_key,extra
 FROM INFORMATION_SCHEMA.COLUMNS
 where table_schema = {db}  
-${if (tableLike.HasValue) " and table_name like '${tableLike}'" else ""}  
-${if (tables.any()) " and table_name in (${tables.map { "'" + it + "'" }.joinToString(",")})" else ""}
-${if (excludes.any()) " and table_name not in (${excludes.map { "'" + it + "'" }.joinToString(",")})" else ""}
 order by table_name , ordinal_position
 """, JsonMap("db" to db)
             ).toMapList()
+                .filter {
+                    if (tableCallback != null) {
+                        return@filter tableCallback!!(it.getStringValue("table_name")!!)
+                    }
+                    return@filter true;
+                }
 
             var indexes_map = RawQuerySqlClip(
                 """
 SELECT table_name ,index_name,seq_in_index,column_name 
 FROM INFORMATION_SCHEMA.STATISTICS
 where table_schema = {db} AND non_unique = 0 AND INDEX_name != 'PRIMARY' 
-${if (tableLike.HasValue) " and table_name like '${tableLike}'" else ""}  
-${if (tables.any()) " and table_name in (${tables.map { "'" + it + "'" }.joinToString(",")})" else ""}
-${if (excludes.any()) " and table_name not in (${excludes.map { "'" + it + "'" }.joinToString(",")})" else ""}
 ORDER BY TABLE_NAME , index_name , seq_in_index
 """, JsonMap("db" to db)
             ).toMapList()
+                .filter {
+                    if (tableCallback != null) {
+                        return@filter tableCallback!!(it.getStringValue("table_name")!!)
+                    }
+                    return@filter true;
+                }
+
 
             tables_map.forEach { tableMap ->
                 var tableData = EntityDbItemData()
