@@ -3,7 +3,7 @@ package nbcp
 import com.fasterxml.jackson.databind.ObjectMapper
 import nbcp.comm.AsString
 import nbcp.comm.JsonStyleEnumScope
-import nbcp.comm.utf8
+import nbcp.comm.const
 import nbcp.component.WebJsonMapper
 import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
@@ -81,18 +81,18 @@ open class MyMvcOrmInit {
         //处理请求的消息体。
         handlerAdapter.messageConverters.forEach { converter ->
             if (converter is MappingJackson2HttpMessageConverter) {
-                converter.defaultCharset = utf8
+                converter.defaultCharset = const.utf8
                 converter.objectMapper = SpringUtil.getBean<WebJsonMapper>()
                 return@forEach
             }
 
             if (converter is StringHttpMessageConverter) {
                 converter.setWriteAcceptCharset(false);
-                converter.defaultCharset = utf8;
+                converter.defaultCharset = const.utf8;
             }
 
             if (converter is AllEncompassingFormHttpMessageConverter) {
-                converter.setCharset(utf8)
+                converter.setCharset(const.utf8)
 
                 (MyUtil.getPrivatePropertyValue(
                     converter,
@@ -100,7 +100,7 @@ open class MyMvcOrmInit {
                 ) as Collection<*>).forEach foreach2@{ sub_conveter ->
 
                     if (sub_conveter is MappingJackson2HttpMessageConverter) {
-                        sub_conveter.defaultCharset = utf8
+                        sub_conveter.defaultCharset = const.utf8
                         sub_conveter.objectMapper = SpringUtil.getBean<WebJsonMapper>()
                     }
                     return@foreach2

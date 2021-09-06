@@ -61,7 +61,7 @@ class RawExecuteSqlClip(var sql: SingleSqlData, tableName: String) : SqlBaseExec
                         "[result] ${n}",
                         "[耗时] ${db.executeTime}")
 
-                return@InfoError msg_log.joinToString(line_break)
+                return@InfoError msg_log.joinToString(const.line_break)
             }
         }
 

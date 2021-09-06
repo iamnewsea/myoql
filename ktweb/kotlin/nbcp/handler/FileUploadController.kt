@@ -55,11 +55,11 @@ class FileUploadController {
         response.contentType = "application/json;charset=UTF-8"
         usingScope(JsonSceneEnumScope.Web) {
             if (ids.size == 0) {
-                response.outputStream.write(JsonResult("上传失败").ToJson().toByteArray(utf8));
+                response.outputStream.write(JsonResult("上传失败").ToJson().toByteArray(const.utf8));
             } else if (ids.size == 1) {
-                response.outputStream.write(ApiResult.of(ids[0]).ToJson().toByteArray(utf8));
+                response.outputStream.write(ApiResult.of(ids[0]).ToJson().toByteArray(const.utf8));
             } else {
-                response.outputStream.write(ListResult.of(ids).ToJson().toByteArray(utf8));
+                response.outputStream.write(ListResult.of(ids).ToJson().toByteArray(const.utf8));
             }
         }
         return

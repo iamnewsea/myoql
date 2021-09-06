@@ -7,5 +7,5 @@ import java.io.InputStream
 
 
 fun InputStream.GetHtmlString(): String {
-    return String(this.readBytes(), utf8)
+    return String(this.readBytes(), const.utf8)
 }

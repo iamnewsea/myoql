@@ -107,10 +107,10 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
 
         var requestBody = "";
         usingScope(arrayOf(JsonStyleEnumScope.DateUtcStyle,JsonStyleEnumScope.Compress)) {
-            requestBody = data.map { it.ToJson() + line_break }.joinToString("")
+            requestBody = data.map { it.ToJson() + const.line_break }.joinToString("")
         }
 
-        request.entity = NStringEntity(requestBody, ContentType.create("application/x-ndjson", utf8))
+        request.entity = NStringEntity(requestBody, ContentType.create("application/x-ndjson", const.utf8))
 
         var responseBody = "";
         var startAt = LocalDateTime.now()
@@ -121,7 +121,7 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
             }
 
             db.executeTime = LocalDateTime.now() - startAt
-            responseBody = response.entity.content.readBytes().toString(utf8)
+            responseBody = response.entity.content.readBytes().toString(const.utf8)
 
             usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
                 settingResult.forEach {

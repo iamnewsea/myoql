@@ -74,7 +74,7 @@ object MyTemplateProc {
                         return@formatTemplateJson null
                     }, "\${}"
                 )
-            }.filter { it.HasValue }.joinToString(line_break);
+            }.filter { it.HasValue }.joinToString(const.line_break);
 
             text = beforeExp + t2 + afterExp;
         }

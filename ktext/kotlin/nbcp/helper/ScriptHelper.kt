@@ -1,8 +1,8 @@
 package nbcp.helper
 
 import nbcp.comm.StringMap
+import nbcp.comm.const
 import nbcp.comm.formatWithJson
-import nbcp.comm.line_break
 import java.lang.RuntimeException
 import javax.script.Compilable
 import javax.script.ScriptEngine
@@ -47,7 +47,7 @@ enum class ScriptLanguageEnum {
             "Mime types:{types}",
             "Names:{names}",
         )
-            .joinToString(line_break)
+            .joinToString(const.line_break)
             .formatWithJson(
                 StringMap(
                     "name" to factory.engineName,

@@ -295,7 +295,7 @@ object MyUtil {
      * 获取 Base64
      */
     fun getBase64(target: String): String {
-        return Base64.getEncoder().encodeToString(target.toByteArray(utf8));
+        return Base64.getEncoder().encodeToString(target.toByteArray(const.utf8));
     }
 
     fun getBase64(bytes: ByteArray): String {
@@ -307,7 +307,7 @@ object MyUtil {
     }
 
     fun getStringContentFromBase64(base64: String): String {
-        return String(getFromBase64(base64), utf8)
+        return String(getFromBase64(base64), const.utf8)
     }
 //
 //    /**

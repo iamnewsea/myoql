@@ -331,7 +331,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
         return """
 DROP TABLE IF EXISTS `${entity.simpleName}`;
 CREATE TABLE IF NOT EXISTS `${entity.simpleName}` (
-${list.joinToString(line_break + ",")}
+${list.joinToString(const.line_break + ",")}
 ,PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 COMMENT='';
 """

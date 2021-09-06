@@ -281,7 +281,7 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
                     }
 
                     msg_log.add("[耗时] ${db.executeTime}")
-                    return@InfoError msg_log.joinToString(line_break)
+                    return@InfoError msg_log.joinToString(const.line_break)
                 }
             }
         } else {

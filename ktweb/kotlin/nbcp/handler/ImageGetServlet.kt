@@ -70,6 +70,6 @@ open class ImageGetServlet : HttpServlet() {
         if (contentType.HasValue) {
             response.contentType = contentType
         }
-        response.outputStream.write(ret.ToJson().toByteArray(utf8));
+        response.outputStream.write(ret.ToJson().toByteArray(const.utf8));
     }
 }

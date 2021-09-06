@@ -220,7 +220,7 @@ open class MyAllFilter : Filter {
                         msgs.add(e.message ?: "服务器错误");
                         msgs.add("<----]]")
 
-                        return@Error msgs.joinToString(line_break)
+                        return@Error msgs.joinToString(const.line_break)
                     }
 
                     if (request.findParameterStringValue("iniframe").AsBoolean()) {
@@ -277,7 +277,7 @@ open class MyAllFilter : Filter {
                         msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
                         msgs.add(e.message ?: "服务器错误");
                         msgs.add("<----]]")
-                        return@Error msgs.joinToString(line_break)
+                        return@Error msgs.joinToString(const.line_break)
                     }
                     if (request.findParameterStringValue("iniframe").AsBoolean()) {
                         response.parentAlert(e.message ?: "服务器错误")
@@ -313,7 +313,7 @@ open class MyAllFilter : Filter {
 //                }
 
                 msgs.add("<----]]")
-                return@Info msgs.joinToString(line_break)
+                return@Info msgs.joinToString(const.line_break)
             }
 
 
@@ -369,7 +369,7 @@ open class MyAllFilter : Filter {
                 errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }
                     .take(24))
 
-                return@Error errorInfo.joinToString(line_break)
+                return@Error errorInfo.joinToString(const.line_break)
             }
 
             errorMsg = JsonMap("msg" to errorMsg).ToJson()
@@ -427,14 +427,14 @@ open class MyAllFilter : Filter {
             }
 
 
-            var htmlString = (request.body ?: byteArrayOf()).toString(utf8)
+            var htmlString = (request.body ?: byteArrayOf()).toString(const.utf8)
             if (htmlString.HasValue) {
                 msgs.add("[request body]:")
                 msgs.add("\t" + htmlString)
             }
 
 
-            return@Info msgs.joinToString(line_break)
+            return@Info msgs.joinToString(const.line_break)
         }
     }
 
@@ -528,14 +528,14 @@ open class MyAllFilter : Filter {
         var resStringValue = errorMsg;
         if (error) {
             response.contentType = "application/json;charset=UTF-8"
-            response.result = resStringValue.toByteArray(utf8)
+            response.result = resStringValue.toByteArray(const.utf8)
         } else if (response.IsOctetContent == false) {
             var resValue = response.result ?: byteArrayOf();
-            resStringValue = resValue.toString(utf8);
+            resStringValue = resValue.toString(const.utf8);
 
             if (callback.isNotEmpty() && response.contentType.contains("json")) {
                 response.contentType = "application/javascript;charset=UTF-8"
-                response.result = """${callback}(${resStringValue})""".toByteArray(utf8)
+                response.result = """${callback}(${resStringValue})""".toByteArray(const.utf8)
             } else {
 //                setResponseBid(resValue, request, response);
 
@@ -562,7 +562,7 @@ open class MyAllFilter : Filter {
             }
 
             msg.add("<----]]")
-            return@Info msg.joinToString(line_break)
+            return@Info msg.joinToString(const.line_break)
         }
     }
 

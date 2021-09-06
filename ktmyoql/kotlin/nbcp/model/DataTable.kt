@@ -48,7 +48,7 @@ class DataTable<T : Any>(clazz: Class<T>) : Serializable {
             return@map this.columns.map { toCsvItemText(map.getStringValue(it).AsString()) }.joinToString(",")
         })
 
-        return list.joinToString(line_break)
+        return list.joinToString(const.line_break)
     }
 
     companion object {

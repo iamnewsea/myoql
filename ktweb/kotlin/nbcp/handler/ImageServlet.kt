@@ -23,7 +23,7 @@ open class ImageServlet : HttpServlet() {
 
 
         resp.contentType = "application/json;charset=UTF-8"
-        resp.outputStream.write(ret.ToJson().toByteArray(utf8));
+        resp.outputStream.write(ret.ToJson().toByteArray(const.utf8));
     }
 
     fun proc(db: String, id: String, image: IdUrl): JsonResult {

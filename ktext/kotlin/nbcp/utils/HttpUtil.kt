@@ -319,7 +319,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
                     conn.setChunkedStreamingMode(0)
 
                     DataOutputStream(conn.outputStream).use { out ->
-                        out.write(this.request.postBody.toByteArray(utf8));
+                        out.write(this.request.postBody.toByteArray(const.utf8));
                         out.flush();
                     }
                 } else if (this.request.postAction != null) {
@@ -374,7 +374,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
 
                 msgs.add(this.request.headers.map {
                     return@map "\t${it.key}:${it.value}"
-                }.joinToString(line_break))
+                }.joinToString(const.line_break))
 
                 if (this.status == 0) {
                     msgs.add("[Timeout]");
@@ -384,14 +384,14 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
                     //小于 10K
                     if (this.request.postIsText && this.request.postBody.any()) {
                         msgs.add("---")
-                        msgs.add(this.request.postBody.take(k10Size).toByteArray().toString(utf8))
+                        msgs.add(this.request.postBody.take(k10Size).toByteArray().toString(const.utf8))
                     }
 
                     msgs.add("---")
 
                     msgs.add(this.response.headers.map {
                         return@map "\t${it.key}:${it.value}"
-                    }.joinToString(line_break))
+                    }.joinToString(const.line_break))
 
                     //小于10K
                     if (this.response.resultIsText && this.response.resultBody.any()) {
@@ -402,7 +402,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
                     }
                 }
 
-                var content = msgs.joinToString(line_break);
+                var content = msgs.joinToString(const.line_break);
                 msgs.clear();
                 return@InfoError content;
             }

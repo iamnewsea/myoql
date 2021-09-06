@@ -40,7 +40,7 @@ open class RedisCacheIntercepter {
         list.add(cache.value)
 
         list.add(ext)
-        var md5 = Md5Util.getBase64Md5(list.joinToString(line_break));
+        var md5 = Md5Util.getBase64Md5(list.joinToString(const.line_break));
 
         var ret = "sc:${cache.table}:${
             cache.joinTables.toSortedSet().map { "[${it}]" }.joinToString("")

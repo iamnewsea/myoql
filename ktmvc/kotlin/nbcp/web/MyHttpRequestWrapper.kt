@@ -79,7 +79,7 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
             if (request.contentType.startsWith(MediaType.APPLICATION_JSON_VALUE) ||
                     request.contentType.startsWith(MediaType.APPLICATION_JSON_UTF8_VALUE)) {
 
-                var bodyString = (body ?: byteArrayOf()).toString(utf8).trim()
+                var bodyString = (body ?: byteArrayOf()).toString(const.utf8).trim()
 
                 if (bodyString.startsWith("{") && bodyString.endsWith("}")) {
                     ret = bodyString.FromJsonWithDefaultValue();
@@ -102,7 +102,7 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
                         }
                     }
                 } else {
-                    var bodyString = (body ?: byteArrayOf()).toString(utf8).trim()
+                    var bodyString = (body ?: byteArrayOf()).toString(const.utf8).trim()
                     ret = JsonMap.loadFromUrl(bodyString)
                 }
             }

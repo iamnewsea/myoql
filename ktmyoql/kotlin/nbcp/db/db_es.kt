@@ -121,7 +121,7 @@ object db_es {
             if (response.statusLine.statusCode != 200) {
                 return;
             }
-            responseBody = response.entity.content.readBytes().toString(utf8)
+            responseBody = response.entity.content.readBytes().toString(const.utf8)
 //            var result = responseBody.FromJson<JsonMap>()!!;
 
         } catch (e: Exception) {

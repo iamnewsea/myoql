@@ -58,7 +58,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
             if (response.statusLine.statusCode != 200) {
                 return "";
             }
-            return response.entity.content.readBytes().toString(utf8)
+            return response.entity.content.readBytes().toString(const.utf8)
 
         } catch (e: Exception) {
             throw e;
@@ -156,7 +156,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
                 }
 
                 msgs.add("[耗时] ${db.executeTime}")
-                return msgs.joinToString(line_break);
+                return msgs.joinToString(const.line_break);
             }
 
             logger.InfoError(error) { getMsgs() }
@@ -216,7 +216,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
                 }
 
                 msgs.add("[耗时] ${db.executeTime}")
-                return msgs.joinToString(line_break);
+                return msgs.joinToString(const.line_break);
             }
 
             logger.InfoError(error) { getMsgs() }
@@ -270,7 +270,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
 
 
                 msgs.add("[耗时] ${db.executeTime}")
-                return msgs.joinToString(line_break);
+                return msgs.joinToString(const.line_break);
             }
 
             logger.InfoError(error) { getMsgs() }

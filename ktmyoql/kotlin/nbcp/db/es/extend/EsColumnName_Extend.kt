@@ -83,7 +83,7 @@ data class EsResultMsg(
 )
 
 fun Response.getResultMsg(): EsResultMsg {
-    var result_map = this.entity.content.readBytes().toString(utf8).FromJson<JsonMap>();
+    var result_map = this.entity.content.readBytes().toString(const.utf8).FromJson<JsonMap>();
     var ret = EsResultMsg();
     if (result_map == null) return ret;
     ret.error = result_map.get("errors").AsBoolean()

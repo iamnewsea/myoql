@@ -1,6 +1,5 @@
 package nbcp.utils
 
-import nbcp.comm.utf8
 import java.util.*
 import javax.crypto.*
 import javax.crypto.spec.*

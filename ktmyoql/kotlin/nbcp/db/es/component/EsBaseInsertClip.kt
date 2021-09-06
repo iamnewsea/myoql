@@ -109,9 +109,9 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
         // 关于es中时间类型，仅支持 "yyyy-MM-dd"、"yyyyMMdd"、"yyyyMMddHHmmss"、"yyyy-MM-ddTHH:mm:ss"、"yyyy-MM-ddTHH:mm:ss.SSS"、"yyyy-MM-ddTHH:mm:ss.SSSZ"格式
         // https://www.cnblogs.com/koushr/p/9498888.html
         usingScope(arrayOf(JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.Compress)) {
-            requestBody = data.map { it.ToJson() + line_break }.joinToString("")
+            requestBody = data.map { it.ToJson() + const.line_break }.joinToString("")
         }
-        request.entity = NStringEntity(requestBody, ContentType.create("application/x-ndjson", utf8))
+        request.entity = NStringEntity(requestBody, ContentType.create("application/x-ndjson", const.utf8))
 
         var responseBody = EsResultMsg()
         var startAt = LocalDateTime.now()

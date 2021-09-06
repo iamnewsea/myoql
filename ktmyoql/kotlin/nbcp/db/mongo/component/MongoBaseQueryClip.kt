@@ -192,7 +192,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                 }
 
                 msgs.add("[耗时] ${db.executeTime}")
-                return msgs.joinToString(line_break);
+                return msgs.joinToString(const.line_break);
             }
 
             logger.InfoError(error) { getMsgs() }

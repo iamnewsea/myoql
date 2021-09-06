@@ -124,7 +124,7 @@ object WxSystemGroup {
         if (null == resultByte || resultByte.size <= 0) {
             return "";
         }
-        return String(resultByte, utf8)
+        return String(resultByte, const.utf8)
     }
 
     /**

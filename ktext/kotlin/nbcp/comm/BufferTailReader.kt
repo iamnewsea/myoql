@@ -9,7 +9,7 @@ import java.nio.charset.Charset
 /**
  * 从末尾读取流
  */
-class BufferTailReader @JvmOverloads constructor(var file: File, var charset: Charset = utf8) : Closeable {
+class BufferTailReader @JvmOverloads constructor(var file: File, var charset: Charset = const.utf8) : Closeable {
     private var pos = -1L;
     private var reader: RandomAccessFile
     var currentLineIndex = 0;

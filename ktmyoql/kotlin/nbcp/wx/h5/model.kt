@@ -1,9 +1,6 @@
 package nbcp.wx.h5
 
-import nbcp.comm.AsLocalDateTime
-import nbcp.comm.HasValue
-import nbcp.comm.Slice
-import nbcp.comm.utf8
+import nbcp.comm.*
 import nbcp.utils.CodeUtil
 import nbcp.wx.system.wx_return_data
 import nbcp.wx.wx
@@ -40,7 +37,7 @@ class JsapiTicketData : Serializable {
 
         val crypt = MessageDigest.getInstance("SHA-1")
         crypt.reset()
-        crypt.update(string1.toByteArray(utf8))
+        crypt.update(string1.toByteArray(const.utf8))
         signature = byteToHex(crypt.digest())
 
         this.signature = signature;

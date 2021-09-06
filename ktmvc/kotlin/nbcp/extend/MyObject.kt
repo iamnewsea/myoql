@@ -24,22 +24,22 @@ infix fun String.lang(englishMessage: String): String {
 
 fun ServletResponse.WriteXmlRawValue(xml: String) {
     this.contentType = MediaType.TEXT_XML_VALUE;
-    this.outputStream.write(xml.toByteArray(utf8));
+    this.outputStream.write(xml.toByteArray(const.utf8));
 }
 
 fun ServletResponse.WriteJsonRawValue(json: String) {
     this.contentType = MediaType.APPLICATION_JSON_UTF8_VALUE;
-    this.outputStream.write(json.toByteArray(utf8));
+    this.outputStream.write(json.toByteArray(const.utf8));
 }
 
 fun ServletResponse.WriteTextValue(text: String) {
     this.contentType = "text/plain;charset=UTF-8";
-    this.outputStream.write(text.toByteArray(utf8));
+    this.outputStream.write(text.toByteArray(const.utf8));
 }
 
 fun ServletResponse.WriteHtmlValue(text: String) {
     this.contentType = "text/html;charset=UTF-8";
-    this.outputStream.write(text.toByteArray(utf8));
+    this.outputStream.write(text.toByteArray(const.utf8));
 }
 
 fun ServletResponse.WriteHtmlBodyValue(text: String) {
@@ -49,7 +49,7 @@ fun ServletResponse.WriteHtmlBodyValue(text: String) {
 <html lang="en">
 <head><meta charset="utf-8"></head>
 <body>${text}</body>
-</html>""".toByteArray(utf8)
+</html>""".toByteArray(const.utf8)
     );
 }
 

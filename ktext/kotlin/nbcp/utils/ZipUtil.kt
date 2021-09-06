@@ -2,7 +2,7 @@ package nbcp.utils
 
 import nbcp.comm.FullName
 import nbcp.comm.HasValue
-import nbcp.comm.utf8
+import nbcp.comm.const
 import net.lingala.zip4j.ZipFile
 import java.io.File;
 
@@ -119,7 +119,7 @@ object ZipUtil {
         }
         //2.初始化zip工具
         val zFile = ZipFile(zipFile)
-        zFile.charset = utf8
+        zFile.charset = const.utf8
         if (!zFile.isValidZipFile()) {
             return "压缩文件不合法,可能被损坏."
         }
@@ -137,7 +137,7 @@ object ZipUtil {
      */
     fun listFile(zipFile: File, passwd: String): List<FileHeader> {
         val zFile = ZipFile(zipFile)
-        zFile.charset = utf8
+        zFile.charset = const.utf8
         if (!zFile.isValidZipFile()) {
             return listOf()
         }

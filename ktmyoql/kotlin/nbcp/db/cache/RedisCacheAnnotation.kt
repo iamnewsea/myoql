@@ -1,8 +1,5 @@
 package nbcp.db.cache
 
-import nbcp.comm.StringMap
-import nbcp.comm.line_break
-import nbcp.utils.Md5Util
 import java.lang.annotation.Inherited
 
 /**

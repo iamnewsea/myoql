@@ -77,7 +77,7 @@ fun File.ReadTailLines(action: ((String, Int) -> Boolean)): Int {
 fun File.ReadHeadLines(action: ((String, Int) -> Boolean)): Int {
     if (this.isFile == false) return -1;
 
-    BufferedReader(InputStreamReader(FileInputStream(this), utf8)).use { reader ->
+    BufferedReader(InputStreamReader(FileInputStream(this), const.utf8)).use { reader ->
         var index = -1;
         while (true) {
             index++;

@@ -297,7 +297,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
         } finally {
             logger.InfoError(error) {
                 msg_log.add("[耗时] ${db.executeTime}")
-                return@InfoError msg_log.joinToString(line_break)
+                return@InfoError msg_log.joinToString(const.line_break)
             }
         }
 //        }
@@ -346,7 +346,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
                     msg_log.add("[id] ${db.lastAutoId}")
                     msg_log.add("[result] ${n}")
                     msg_log.add("[耗时] ${db.executeTime}")
-                    return@InfoError msg_log.joinToString(line_break)
+                    return@InfoError msg_log.joinToString(const.line_break)
                 }
             }
 
@@ -379,7 +379,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
                     }
                     msg_log.add("[result] ${n}")
                     msg_log.add("[耗时] ${db.executeTime}")
-                    return@InfoError msg_log.joinToString(line_break)
+                    return@InfoError msg_log.joinToString(const.line_break)
                 }
             }
         }

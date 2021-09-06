@@ -105,7 +105,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
 //                }
 
                 //如果用 JsonModel 接收 String 等简单参数？
-                var valueString = (myRequest.body ?: byteArrayOf()).toString(utf8);
+                var valueString = (myRequest.body ?: byteArrayOf()).toString(const.utf8);
                 if (parameter.parameterType.IsSimpleType()) {
                     return valueString.ConvertType(parameter.parameterType);
                 }
