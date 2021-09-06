@@ -8,4 +8,5 @@
 
 连接字符串添加参数： ?maxIdleTimeMS=3000
 
+> https://docs.mongodb.com/drivers/node/current/fundamentals/connection/
 
