@@ -14,6 +14,7 @@ import nbcp.utils.SpringUtil
 import nbcp.web.findParameterStringValue
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -34,87 +35,12 @@ open class UploadService {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    data class FileNameData @JvmOverloads constructor(var msg: String = "") {
-        var fileName: String = ""
-        var extName: String = ""
-        var extType: FileExtentionTypeEnum = FileExtentionTypeEnum.Other
-
-        //        var imgWidth: Int = 0
-//        var imgHeight: Int = 0
-        var needCorp: Boolean = true
-        var corpId: String = ""
-
-        /*
-     * 把文件转移到相应的文件夹下.
-     * 1. 第一级目录,按 年-月 归档.
-     * 2. 第二级目录,按 企业Id 归档.
-     *      2.1.如果是后台, 企业Id = _admin_
-     *      2.2.如果是商城用户,企业Id = _shop_
-     * 3. 第三级目录,如果是非图片是 extType , 如果是图片是 宽-高
-     * 4. 第四级是,如果是图片,是256宽度像素大小的缩略图.
-         */
-        private fun getTargetPaths(): Array<String> {
-            var list = mutableListOf<String>()
-            list.add(LocalDate.now().Format("yyyy-MM"));
-//            var pixelTotal = imgWidth * imgHeight;
-//
-//
-//            if (pixelTotal > 0) {
-//                var pixel = (pixelTotal / 10000.0).toInt();
-//                //按图片像素文件夹命名。不足1万 = 0
-//                list.add(pixel.toString())
-//            } else {
-//                list.add(this.extType.toString())
-//            }
-            return list.toTypedArray();
-        }
-
-        /**
-         * 保存全路径
-         */
-        fun getTargetFileName(): String {
-            var targetFileName = mutableListOf<String>()
-
-            if (needCorp && corpId.HasValue) {
-                targetFileName.add(corpId);
-            }
-            targetFileName.addAll(getTargetPaths())
-            targetFileName.add(CodeUtil.getCode())
-
-            if (fileName.HasValue) {
-                targetFileName.add(fileName)
-            }
-
-            return targetFileName.map { File.separator + it }.joinToString("")
-        }
-    }
 
     @Value("\${app.upload.saveCorp:true}")
     private var UPLOAD_SAVECORP = false
 
 //    @Value("\${app.upload.group:}")
 //    private var UPLOAD_GROUP = ""
-
-    /**
-     * 上传到本地时使用该配置,最后不带 "/"
-     */
-    @Value("\${app.upload.local.host:}")
-    var UPLOAD_LOCAL_HOST: String = ""
-
-    /**
-     * 上传到本地时使用该配置,最后不带 "/"
-     */
-    @Value("\${app.upload.local.path:}")
-    var UPLOAD_LOCAL_PATH: String = ""
-
-    @Value("\${app.upload.minio.endpoint:}")
-    var MINIO_ENDPOINT: String = ""
-
-    @Value("\${app.upload.minio.key:}")
-    var MINIO_ACCESSKEY: String = ""
-
-    @Value("\${app.upload.minio.secret:}")
-    var MINIO_SECRETKEY: String = ""
 
 
     private fun getFileInfo(fileName1: String): FileExtentionInfo {
@@ -141,6 +67,7 @@ open class UploadService {
         group: String,
         file: MultipartFile,
         fileName: String,
+        storageType: UploadStorageTypeEnum?,
         user: IdName,
         corpId: String
     ): ApiResult<SysAnnex> {
@@ -151,7 +78,7 @@ open class UploadService {
             extInfo.name = CodeUtil.getCode()
         }
 
-        var fileData = FileNameData();
+        var fileData = UploadFileNameData();
         fileData.fileName = extInfo.getFileName()
         fileData.extName = extInfo.extName
         fileData.extType = extInfo.extType
@@ -179,7 +106,7 @@ open class UploadService {
 //        fileData.imgWidth = annexInfo.imgWidth;
 //        fileData.imgHeight = annexInfo.imgHeight;
 
-        annexInfo.url = saveFile(fileStream, annexInfo.group, fileData).replace("\\", "/")
+        annexInfo.url = saveFile(fileStream, annexInfo.group, fileData, storageType).replace("\\", "/")
 
         annexInfo.corpId = corpId
 
@@ -208,6 +135,12 @@ open class UploadService {
 //    }
 
 
+    @Autowired
+    lateinit var localUploader: UploadFileForLocalService
+
+    @Autowired
+    lateinit var minioUploader: UploadFileForMinioService
+
     /**
      * 把文件转移到相应的文件夹下.
      * 1. 第一级目录,按 年-月 归档.
@@ -217,70 +150,35 @@ open class UploadService {
      * 3. 第三级目录,是 后缀名
      * 4. 如果是图片，第四级目录是原图片的像素数/万 ，如 800*600 = 480000,则文件夹名为 48 。 忽略小数部分。这样对大部分图片大体归类。
      */
-    fun saveFile(fileStream: InputStream, group: String, fileData: FileNameData): String {
-        if (MINIO_ENDPOINT.HasValue && MINIO_ACCESSKEY.HasValue) {
-            return saveToMinIo(fileStream, group, fileData)
-        } else if (UPLOAD_LOCAL_HOST.HasValue && UPLOAD_LOCAL_PATH.HasValue) {
-            return saveToLocal(fileStream, group, fileData)
+    fun saveFile(
+        fileStream: InputStream,
+        group: String,
+        fileData: UploadFileNameData,
+        storageType: UploadStorageTypeEnum?
+    ): String {
+        var storageType = storageType;
+
+        if (storageType == null) {
+            if (minioUploader.check()) {
+                storageType = UploadStorageTypeEnum.Minio
+            } else if (localUploader.check()) {
+                storageType = UploadStorageTypeEnum.Local
+            }
         }
+
+
+        if (storageType == UploadStorageTypeEnum.Minio) {
+            return minioUploader.upload(fileStream, group, fileData)
+        }
+
+        if (storageType == UploadStorageTypeEnum.Local) {
+            return localUploader.upload(fileStream, group, fileData)
+        }
+
 
         throw java.lang.RuntimeException("请配置上传方式，MinIO方式：app.upload.minio.endpoint,app.upload.minio.accessKey; 本地文件方式：app.upload.local.host,app.upload.local.path")
     }
 
-    private fun saveToLocal(fileStream: InputStream, group: String, fileData: FileNameData): String {
-        var targetFileName = fileData.getTargetFileName()
-        var targetFile = File(listOf(UPLOAD_LOCAL_PATH, group, fileData.getTargetFileName()).filter { it.HasValue }
-            .joinToString(File.separator));
-
-        if (targetFile.parentFile.exists() == false) {
-            if (targetFile.parentFile.mkdirs() == false) {
-                throw java.lang.RuntimeException("创建文件夹失败： ${targetFile.parentFile.FullName}")
-            }
-        }
-
-        FileOutputStream(targetFile).use {
-            if (fileStream.copyTo(it) <= 0) {
-                throw java.lang.RuntimeException("保存文件失败： ${targetFile.parentFile.FullName}")
-            }
-        }
-        return UPLOAD_LOCAL_HOST + targetFileName;
-    }
-
-    private fun saveToMinIo(fileStream: InputStream, group: String, fileData: FileNameData): String {
-        if (!MINIO_ENDPOINT.HasValue || !MINIO_ACCESSKEY.HasValue) {
-            return "";
-        }
-
-        if (group.isEmpty()) {
-            throw java.lang.RuntimeException("minIO需要group值！")
-        }
-
-        lateinit var minioClient: MinioClient
-        try {
-            minioClient = MinioClient(MINIO_ENDPOINT, MINIO_ACCESSKEY, MINIO_SECRETKEY)
-        } catch (e: Exception) {
-            logger.error(e.message + " . endpoint: ${MINIO_ENDPOINT}")
-            throw e;
-        }
-
-        // bucket 不存在，创建
-        if (!minioClient.bucketExists(group)) {
-            minioClient.makeBucket(group)
-        }
-
-        val fileName = fileData.getTargetFileName()
-            .replace(File.separatorChar, '/')
-
-        //类型
-        val contentType = MyUtil.getMimeType(fileData.extName)
-        //把文件放置MinIo桶(文件夹)
-
-        fileStream.use {
-            minioClient.putObject(group, fileName, it, contentType)
-        }
-
-        return minioClient.getObjectUrl(group, fileName)
-    }
 
     private val dbService by lazy {
         if (db.mainDatabaseType == DatabaseEnum.Mongo) {
@@ -302,6 +200,7 @@ open class UploadService {
 
         var msg = ""
         var group = request.findParameterStringValue("group")
+        var storageType = request.findParameterStringValue("storage-type").ToEnum<UploadStorageTypeEnum>()
 
         (request as StandardMultipartHttpServletRequest)
             .multiFileMap
@@ -311,7 +210,7 @@ open class UploadService {
                 var files = it.second;
 
                 files.ForEachExt for2@{ file, _ ->
-                    var ret1 = doUpload(group, file, fileName, user, corpId);
+                    var ret1 = doUpload(group, file, fileName, storageType, user, corpId);
                     if (ret1.msg.HasValue) {
                         msg = ret1.msg;
                         return@ForEachExt false
