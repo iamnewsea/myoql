@@ -141,6 +141,9 @@ open class UploadService {
     @Autowired
     lateinit var minioUploader: UploadFileForMinioService
 
+    @Autowired
+    lateinit var aliOssUploader: UploadFileForAliOssService
+
     /**
      * 把文件转移到相应的文件夹下.
      * 1. 第一级目录,按 年-月 归档.
@@ -159,13 +162,19 @@ open class UploadService {
         var storageType = storageType;
 
         if (storageType == null) {
-            if (minioUploader.check()) {
+
+            if (aliOssUploader.check()) {
+                storageType = UploadStorageTypeEnum.AliOss
+            } else if (minioUploader.check()) {
                 storageType = UploadStorageTypeEnum.Minio
             } else if (localUploader.check()) {
                 storageType = UploadStorageTypeEnum.Local
             }
         }
 
+        if (storageType == UploadStorageTypeEnum.AliOss) {
+            return aliOssUploader.upload(fileStream, group, fileData)
+        }
 
         if (storageType == UploadStorageTypeEnum.Minio) {
             return minioUploader.upload(fileStream, group, fileData)
