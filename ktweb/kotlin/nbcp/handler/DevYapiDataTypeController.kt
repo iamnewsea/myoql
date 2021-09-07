@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest
 
 @OpenAction
 @RestController
-@JsonpMapping("/dev/yapi")
+@RequestMapping("/dev/yapi")
 class DevYapiDataTypeController {
     /**
      * 修正 yapi 的数据类型,在 title 字段设置如下格式： :IdName,IdUrl,会对其下属性添加 id,name,url 字段。

@@ -8,6 +8,8 @@ import nbcp.db.*
 import nbcp.db.mongo.*
 import nbcp.db.mongo.entity.*
 import nbcp.web.*
+import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.RequestMapping
 import javax.servlet.http.HttpServletRequest
 import java.time.*
 
@@ -16,10 +18,10 @@ import java.time.*
  */
 @Api(description = "数据连接", tags = arrayOf("DbConnection"))
 @RestController
-@JsonpMapping("/dev")
+@RequestMapping("/dev")
 class DbConnectionAutoController {
 
-    @JsonpMapping("/test")
+    @PostMapping("/test")
     fun test1(): ApiResult<String> {
         return ApiResult()
     }

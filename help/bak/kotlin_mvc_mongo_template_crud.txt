@@ -18,11 +18,11 @@ import java.time.*
  */
 @Api(description = "${title}", tags = arrayOf("${entity}"))
 @RestController
-@JsonpMapping("${url}")
+@RequestMapping("${url}")
 class ${entity}AutoController {
 
     @ApiOperation("列表")
-    @JsonpMapping("/list")
+    @PostMapping("/list")
     fun list(
         id: String, //当列表列新一条后，刷新时使用
 ${if:name}
@@ -52,7 +52,7 @@ ${endif}
     }
 
     @ApiOperation("详情")
-    @JsonpMapping("/detail/{id}")
+    @PostMapping("/detail/{id}")
     fun detail(
         @Require id: String,
         request: MyHttpRequestWrapper
@@ -69,7 +69,7 @@ ${endif}
     }
 
     @ApiOperation("更新")
-    @JsonpMapping("/save")
+    @PostMapping("/save")
     fun save(
       @JsonModel entity:${entity},
       request: MyHttpRequestWrapper
@@ -99,7 +99,7 @@ ${endif}
     }
 ${if:status}
     @ApiOperation("更新状态，更新一个字段")
-    @JsonpMapping("/set-status")
+    @PostMapping("/set-status")
     fun set(
         @Require id: String,
         @Require status: ${status_enum_class},
@@ -123,7 +123,7 @@ ${if:status}
     }
 ${endif}
     @ApiOperation("删除")
-    @JsonpMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     fun delete(
       @Require id:String,
       request: MyHttpRequestWrapper

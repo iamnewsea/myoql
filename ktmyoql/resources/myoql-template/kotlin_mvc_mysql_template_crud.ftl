@@ -1,8 +1,7 @@
 package nbcp.mvc.${w(group)}
 
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
-import org.springframework.web.bind.annotation.RestController
+import io.swagger.annotations.*
+import org.springframework.web.bind.annotation.*
 import nbcp.base.extend.*
 import nbcp.comm.*
 import nbcp.db.*
@@ -11,7 +10,7 @@ import nbcp.db.sql.entity.*
 import nbcp.db.mysql.*
 import nbcp.db.mysql.entity.*
 import nbcp.web.*
-import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.*
 import java.time.*
 
 /**
@@ -19,11 +18,11 @@ import java.time.*
  */
 @Api(description = "${title}", tags = arrayOf("${entity}"))
 @RestController
-@JsonpMapping("${url}")
+@RequestMapping("${url}")
 class ${entity}AutoController {
 
     @ApiOperation("列表")
-    @JsonpMapping("/list")
+    @PostMapping("/list")
     fun list(
         ${idKey}: ${kotlin_type(idKey)}, //当列表列新一条后，刷新时使用
 <#if has("name")>
@@ -53,7 +52,7 @@ class ${entity}AutoController {
     }
 
     @ApiOperation("详情")
-    @JsonpMapping("/detail/{id}")
+    @PostMapping("/detail/{id}")
     fun detail(
         @Require ${idKey}: ${kotlin_type(idKey)},
         request: HttpServletRequest
@@ -70,7 +69,7 @@ class ${entity}AutoController {
     }
 
     @ApiOperation("更新")
-    @JsonpMapping("/save")
+    @PostMapping("/save")
     fun save(
         @JsonModel entity: ${entity},
         request: HttpServletRequest
@@ -98,7 +97,7 @@ class ${entity}AutoController {
 <#if has("status")>
 
     @ApiOperation("更新状态，更新一个字段")
-    @JsonpMapping("/set-status")
+    @PostMapping("/set-status")
     fun set(
         @Require ${idKey}: ${kotlin_type(idKey)},
         @Require status: ${status_enum_class},
@@ -122,7 +121,7 @@ class ${entity}AutoController {
 </#if>
 
     @ApiOperation("删除")
-    @JsonpMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     fun delete(
         @Require ${idKey}: ${kotlin_type(idKey)},
         request: HttpServletRequest

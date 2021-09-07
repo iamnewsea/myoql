@@ -7,6 +7,8 @@ import nbcp.comm.*
 import nbcp.db.db
 import nbcp.db.mongo.MongoBaseMetaCollection
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaType
 
@@ -16,7 +18,7 @@ import kotlin.reflect.jvm.javaType
  */
 @RestController
 @ConditionalOnProperty("server.dev")
-@JsonpMapping("/dev/mongo")
+@RequestMapping("/dev/mongo")
 class DevMongoController {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -43,10 +45,10 @@ class DevMongoController {
 
 
     data class FieldModel(
-            var name: String,
-            var remark: String,
-            var type: String,
-            var isSimpleType: Boolean
+        var name: String,
+        var remark: String,
+        var type: String,
+        var isSimpleType: Boolean
     )
 
     @GetMapping("/fields")
