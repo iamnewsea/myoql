@@ -24,6 +24,14 @@ import javax.servlet.http.HttpServlet
 @WebServlet(urlPatterns = ["/hi"])
 open class HiServlet : HttpServlet() {
     public override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
+        proc(request, response)
+    }
+
+    public override fun doPost(request: HttpServletRequest, response: HttpServletResponse) {
+        proc(request, response)
+    }
+
+    private fun proc(request: HttpServletRequest, response: HttpServletResponse) {
         var json = JsonMap();
 
         var jarFile = ClassUtil.getStartingJarFile();
@@ -56,7 +64,6 @@ open class HiServlet : HttpServlet() {
         if (status.HasValue) {
             response.status = status
         }
-
 
 
         response.WriteHtmlBodyValue("""<style>div{margin:10px;} span{margin:5px;font-size:16px;display:inline-block}</style>""" +
