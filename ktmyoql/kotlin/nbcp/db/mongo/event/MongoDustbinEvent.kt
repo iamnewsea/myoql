@@ -38,7 +38,7 @@ class MongoDustbinEvent : IMongoEntityDelete {
         if (data == null) return
 
         var dustbin = SysDustbin()
-        dustbin.id = ObjectId().toString()
+//        dustbin.id = ObjectId().toString()
         dustbin.table = delete.collectionName
         dustbin.data = data as Serializable?;
         db.mor_base.sysDustbin.doInsert(dustbin)

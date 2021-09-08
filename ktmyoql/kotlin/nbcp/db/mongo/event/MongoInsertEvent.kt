@@ -18,16 +18,16 @@ class MongoInsertEvent : IMongoEntityInsert {
 
 
             if (entity is BaseEntity) {
-                if (entity.id.isEmpty()) {
-                    entity.id = ObjectId().toString()
-                }
+//                if (entity.id.isEmpty()) {
+//                    entity.id = ObjectId().toString()
+//                }
 
                 entity.createAt = LocalDateTime.now();
             } else if (entity is MutableMap<*, *>) {
                 var map = entity as MutableMap<String, Any?>
-                if (map.get("id").AsString().isNullOrEmpty()) {
-                    map.set("id", ObjectId().toString())
-                }
+//                if (map.get("_id").AsString().isNullOrEmpty()) {
+//                    map.set("_id", ObjectId().toString())
+//                }
                 map.set("createAt", LocalDateTime.now())
             }
         }

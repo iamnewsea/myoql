@@ -32,7 +32,7 @@ abstract class MongoBaseMetaCollection<T : IMongoDocument>(val entityClass: Clas
         if (entity is BaseEntity) {
             return entity.id
         } else if (entity is Map<*, *>) {
-            var idValue = entity.get("id");
+            var idValue = entity.get("_id");
             if (idValue != null) {
                 return idValue.AsString()
             }
