@@ -47,6 +47,18 @@ open class HiServlet : HttpServlet() {
             json["Git提交时间"] = gitCommitTime;
         }
 
+        var sleep = (request.findParameterValue("sleep").AsFloat() * 1000).toLong();
+        if (sleep > 0 && sleep <= 3600_000) {
+            Thread.sleep(sleep);
+        }
+
+        var status = request.findParameterValue("status").AsInt()
+        if (status.HasValue) {
+            response.status = status
+        }
+
+
+
         response.WriteHtmlBodyValue("""<style>div{margin:10px;} span{margin:5px;font-size:16px;display:inline-block}</style>""" +
             "<div>" + json
             .map { "<span>" + it.key + " : " + it.value.AsString() + "</span>" }
