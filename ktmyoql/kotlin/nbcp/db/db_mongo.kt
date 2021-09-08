@@ -282,4 +282,18 @@ object db_mongo {
             return@recursionAny true
         })
     }
+
+
+
+    class MongoDynamicEntity : JsonMap(), IMongoDocument {}
+    class MongoDynamicMetaEntity(collectionName: String) :
+        MongoBaseMetaCollection<MongoDynamicEntity>(MongoDynamicEntity::class.java, collectionName) {
+    }
+
+    /**
+     * 动态实体
+     */
+    fun dynamicEntity(collectionName: String): MongoDynamicMetaEntity {
+        return MongoDynamicMetaEntity(collectionName);
+    }
 }
