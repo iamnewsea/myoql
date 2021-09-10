@@ -117,3 +117,13 @@ data class SysCity(
     - 尽量不要使用 save 方法，save方法有两个问题：
         1. 需要先查后保存。 
         2. 并发问题。保存时别人可能已经修改了数据。
+
+## 聚合
+    
+
+    var result = mor.组.实体名.aggregate()
+
+
+
+使用 db.runCommand( 生成的mongo语句 ) 执行
+

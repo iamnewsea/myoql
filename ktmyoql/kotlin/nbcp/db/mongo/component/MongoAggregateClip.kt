@@ -33,8 +33,11 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : IMongoDocument>(var
         return this;
     }
 
-    fun addPipeLine(key: PipeLineEnum, json: String): MongoAggregateClip<M, E> {
-        this.pipeLines.add("\$${key}" to json);
+    /**
+     * @param rawString 原始的mongo字符串，不解析
+     */
+    fun addPipeLineRawString(key: PipeLineEnum, rawString: String): MongoAggregateClip<M, E> {
+        this.pipeLines.add("\$${key}" to MyRawString(rawString));
         return this;
     }
 

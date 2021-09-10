@@ -41,7 +41,7 @@ import java.util.*
     exclude = arrayOf(
         DataSourceAutoConfiguration::class,
         RedisAutoConfiguration::class,
-        MongoAutoConfiguration::class,
+//        MongoAutoConfiguration::class,
         RabbitAutoConfiguration::class,
         ElasticsearchDataAutoConfiguration::class
     )
