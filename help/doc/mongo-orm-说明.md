@@ -119,11 +119,29 @@ data class SysCity(
         2. 并发问题。保存时别人可能已经修改了数据。
 
 ## 聚合
-    
 
-    var result = mor.组.实体名.aggregate()
+```
+db.mor_base.sysAnnex.aggregate()
+    .addPipeLineRawString(PipeLineEnum.match, """ { "group" : "lowcode"} """.replace("##", "$"))
+    .addPipeLineRawString(
+        PipeLineEnum.group, """
+{
+    _id: { 扩展名: "##ext" },
+    总数: { ##sum : 1 },
+    最小: { ##min: "##size" } ,
+    最大: { ##max: "##size" }
+}
+    """.replace("##", "$")
+    )
+    .addPipeLineRawString(PipeLineEnum.sort, """ { "_id.扩展名":1 } """)
+    .toMapList()
+```
 
+生成的结果：
+```
+[{"总数":1,"最小":26821,"最大":26821,"id":{"扩展名":"abc"}},{"总数":5,"最小":5229,"最大":170276,"id":{"扩展名":"png"}}]
+```
 
-
+```
 使用 db.runCommand( 生成的mongo语句 ) 执行
-
+```
