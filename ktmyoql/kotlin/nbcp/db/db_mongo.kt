@@ -69,7 +69,8 @@ object db_mongo {
             return ret;
         }
         var dbFactory = SimpleMongoClientDatabaseFactory(uri);
-        val converter = MappingMongoConverter(DefaultDbRefResolver(dbFactory), SpringUtil.getBean<MongoMappingContext>())
+        val converter =
+            MappingMongoConverter(DefaultDbRefResolver(dbFactory), SpringUtil.getBean<MongoMappingContext>())
         converter.setTypeMapper(DefaultMongoTypeMapper(null));
         (converter.conversionService as GenericConversionService).addConverter(Date2LocalDateTimeConverter())
 
@@ -87,7 +88,11 @@ object db_mongo {
         return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
 
-    fun cond(ifExpression: Criteria, trueExpression: MongoExpression, falseExpression: MongoExpression): MongoExpression {
+    fun cond(
+        ifExpression: Criteria,
+        trueExpression: MongoExpression,
+        falseExpression: MongoExpression
+    ): MongoExpression {
         return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
 
@@ -99,7 +104,11 @@ object db_mongo {
         return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
 
-    fun cond(ifExpression: MongoExpression, trueExpression: MongoExpression, falseExpression: MongoExpression): MongoExpression {
+    fun cond(
+        ifExpression: MongoExpression,
+        trueExpression: MongoExpression,
+        falseExpression: MongoExpression
+    ): MongoExpression {
         return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression, trueExpression, falseExpression))
     }
 
@@ -208,7 +217,7 @@ object db_mongo {
      * 把 Document 推送到数据库，需要转换 id
      */
     fun procSetDocumentData(value: Any): Any {
-        RecursionUtil.recursionAny(value, { json,pKey ->
+        RecursionUtil.recursionAny(value, { json, pKey ->
             if (json is MutableMap<*, *>) {
                 var m_json = (json as MutableMap<String, Any?>);
                 if (json.contains("id")) {
@@ -235,54 +244,48 @@ object db_mongo {
      *value 可能会是： Document{{answerRole=Patriarch}}
      */
     fun procResultDocumentJsonData(value: Document) {
-        fun test(item: Any?): Boolean {
+        fun testDocumentString(item: Any?): Boolean {
             if (item == null) return false;
             var type = item::class.java;
             if (type.IsStringType == false) return false;
             var v_string_value = item.toString()
-            if (v_string_value.startsWith("Document{{") && v_string_value.endsWith("}}")) {
-                return true;
-            }
-            return false;
+            return v_string_value.startsWith("Document{{") && v_string_value.endsWith("}}")
         }
 
-        fun proc(item: Any): Any {
-            var v_string_value = item.toString()
-            if (v_string_value.startsWith("Document{{") && v_string_value.endsWith("}}")) {
-                //Document{{answerRole=Patriarch}}
-                //目前只发现一个键值对形式的。
-                var ary = v_string_value.Slice(10, -2).split("=")
-                var json = Document();
-                json.set(ary[0], ary[1]);
-                return json;
-            }
-            return item;
+        fun procDocumentString(v_string_value: String): Any {
+            //Document{{answerRole=Patriarch}}
+            //目前只发现一个键值对形式的。
+            var ary = v_string_value.Slice(10, -2).split("=")
+            var json = Document();
+            json.set(ary[0], ary[1]);
+            return json;
         }
 
-        RecursionUtil.recursionAny(value, { json,pKey ->
-            json.keys.toTypedArray().forEachIndexed { index, it ->
-                if (it == null || !test(it)) {
+        RecursionUtil.recursionAny(value, { json, pKey ->
+            json.keys.toTypedArray().forEachIndexed { index, key ->
+                if (key == null) {
                     return@forEachIndexed
                 }
-                (json as MutableMap<Any, Any>).set(it, proc(it));
+                var documentStringValue = json.get(key);
+                if (!testDocumentString(documentStringValue)) {
+                    return@forEachIndexed
+                }
+                (json as MutableMap<Any, Any>).set(key, procDocumentString(documentStringValue.toString()));
 
                 return@forEachIndexed
             }
-
             return@recursionAny true
-        }, { list,pKey ->
-
+        }, { list, pKey ->
             list.forEachIndexed { index, it ->
-                if (it == null || !test(it)) {
+                if (it == null || !testDocumentString(it)) {
                     return@forEachIndexed
                 }
-                (list as MutableList<Any>)[index] = proc(it);
+                (list as MutableList<Any>)[index] = procDocumentString(it.toString());
             }
 
             return@recursionAny true
         })
     }
-
 
 
     /**
