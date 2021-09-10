@@ -25,30 +25,36 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
      * 支持两种类型：IMongoDocument,Map。  Document,DbObject 算是Map
      */
     fun addEntity(entity: Any) {
+        if (entity is BaseEntity) {
+            if (entity.id.isEmpty()) {
+                entity.id = ObjectId().toString()
+            }
+            entity.createAt = LocalDateTime.now();
+        } else if (entity is MutableMap<*, *>) {
+            var map = entity as MutableMap<String,Any?>
+            if (map.get("_id").AsString().isEmpty()) {
+                map.put("_id", ObjectId().toString())
+            }
+
+            map.put("createAt", LocalDateTime.now());
+        }
+
+
         if (entity is IMongoDocument) {
-//            if (entity.id.isEmpty()) {
-//                entity.id = ObjectId().toString()
-//            }
-//            entity.createAt = LocalDateTime.now()
             this.entities.add(entity);
             return;
         }
+
         if (entity is MutableMap<*, *>) {
-//            var map = entity as MutableMap<String, Any?>
-//            if (map.get("id").AsString().isNullOrEmpty()) {
-//                map.set("id", ObjectId().toString())
-//            }
-//            map.set("createAt", LocalDateTime.now())
-
             this.entities.add(entity)
-
             return;
         }
-
         if (entity is Collection<*>) {
             //不能插入列表，请一条一条的插入
             throw RuntimeException("不能插入列表!")
         }
+
+        throw RuntimeException("不支持插入类型：${entity.javaClass}")
     }
 
     fun exec(): Int {
