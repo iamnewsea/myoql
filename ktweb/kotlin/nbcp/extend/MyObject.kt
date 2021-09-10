@@ -85,7 +85,9 @@ val HttpServletRequest.UserName: String
         return this.LoginUser.name;
     }
 
-
+/**
+ * 从Jwt中获取用户Id
+ */
 fun getJwtUserId(value: String): String {
     if (config.jwtSecretKey.isEmpty()) return "";
 

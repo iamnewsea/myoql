@@ -12,7 +12,7 @@ class UploadFileNameData @JvmOverloads constructor(var msg: String = "") {
     var extName: String = ""
     var extType: FileExtentionTypeEnum = FileExtentionTypeEnum.Other
 
-    //        var imgWidth: Int = 0
+//        var imgWidth: Int = 0
 //        var imgHeight: Int = 0
     var needCorp: Boolean = true
     var corpId: String = ""

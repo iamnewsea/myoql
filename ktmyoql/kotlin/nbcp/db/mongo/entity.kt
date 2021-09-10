@@ -168,6 +168,9 @@ open class SysAnnex @JvmOverloads constructor(
     @Cn("时长")
     var videoTime: Int = 0,          //视频时长,秒
 
+    @Cn("视频封面地址")
+    var videoLogoUrl: String = "",      //视频封面地址
+
     @Cn("网络路径")
     var url: String = "",           //下载的路径。没有 host
 

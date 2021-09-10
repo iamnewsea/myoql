@@ -8,10 +8,12 @@ import nbcp.db.db
 import nbcp.db.mongo.entity.SysAnnex
 import nbcp.db.mongo.service.UploadFileMongoService
 import nbcp.db.mysql.service.UploadFileMysqlService
+import nbcp.util.VideoUtil
 import nbcp.utils.CodeUtil
 import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
 import nbcp.web.findParameterStringValue
+import org.apache.poi.util.IOUtils
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,6 +25,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.time.LocalDate
+import javax.imageio.ImageIO
 import javax.servlet.http.HttpServletRequest
 
 
@@ -94,14 +97,33 @@ open class UploadService {
         annexInfo.corpId = corpId
 
 
-        //流不可重复读！！
-//        if (extInfo.extType == FileExtentionTypeEnum.Image) {
-//            val bufferedImage = ImageIO.read(fileStream)
-//            annexInfo.imgWidth = bufferedImage.getWidth();
-//            annexInfo.imgHeight = bufferedImage.getHeight();
-//        } else if (extInfo.extType == FileExtentionTypeEnum.Video) {
-//            fillVideoWidthHeight(annexInfo, fileStream);
-//        }
+        //流不可重复读！！所以要重新从file中获取流
+        if (extInfo.extType == FileExtentionTypeEnum.Image) {
+            val bufferedImage = ImageIO.read(file.inputStream)
+            annexInfo.imgWidth = bufferedImage.getWidth();
+            annexInfo.imgHeight = bufferedImage.getHeight();
+
+        } else if (extInfo.extType == FileExtentionTypeEnum.Video) {
+            VideoUtil.getVideoInfo(file.inputStream).data.apply {
+                if (this != null) {
+                    annexInfo.imgWidth = this.width;
+                    annexInfo.imgHeight = this.height;
+                    annexInfo.videoTime = this.time;
+
+
+                    var logoFile = UploadFileNameData();
+                    logoFile.corpId = fileData.corpId;
+                    logoFile.extName = "png";
+                    logoFile.extType = FileExtentionTypeEnum.Image;
+                    logoFile.needCorp = fileData.needCorp;
+                    logoFile.fileName = CodeUtil.getCode() + ".png";
+
+                    var logoUrl = saveFile(this.logoStream, annexInfo.group, logoFile, storageType);
+                    annexInfo.videoLogoUrl = logoUrl
+                }
+            }
+
+        }
 
 //        fileData.imgWidth = annexInfo.imgWidth;
 //        fileData.imgHeight = annexInfo.imgHeight;
@@ -114,19 +136,6 @@ open class UploadService {
             return ApiResult("记录到数据出错")
         }
         return ApiResult.of(annexInfo)
-    }
-
-    private fun fillVideoWidthHeight(annexInfo: SysAnnex, file: InputStream) {
-        FFmpegFrameGrabber(file).use { fFmpegFrameGrabber ->
-            fFmpegFrameGrabber.start();
-            val ftp = fFmpegFrameGrabber.lengthInFrames
-
-            annexInfo.imgHeight = fFmpegFrameGrabber.imageHeight;
-            annexInfo.imgWidth = fFmpegFrameGrabber.imageWidth;
-            annexInfo.videoTime = (ftp / fFmpegFrameGrabber.frameRate / 60).AsInt();
-
-            fFmpegFrameGrabber.stop()
-        }
     }
 
 //    private fun setVideoUrlTime(annexInfo: SysAnnex, vFile: File, fileData: FileNameData) {

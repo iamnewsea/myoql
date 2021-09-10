@@ -44,6 +44,7 @@
         <mybatis.version>3.5.6</mybatis.version>
         <elasticsearch-rest-client.version>7.10.0</elasticsearch-rest-client.version>
         <jackson.version>2.12.0</jackson.version>
+        <reflections.version>0.9.12</reflections.version>
 
     </properties>
 
@@ -89,7 +90,7 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.12</version>
+            <version>${reflections.version}</version>
         </dependency>
 
 

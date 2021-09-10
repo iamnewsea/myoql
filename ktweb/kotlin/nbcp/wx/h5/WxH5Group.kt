@@ -42,7 +42,7 @@ object WxH5Group {
             var openid: String = "",
             var scope: String = "",
             var unionid: String = ""
-    ):wx_return_data(){
+    ): wx_return_data(){
 
     }
 

@@ -133,12 +133,12 @@
 
 
         <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on -->
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <scope>provided</scope>
-            <version>1.67</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.bouncycastle</groupId>-->
+<!--            <artifactId>bcprov-jdk15on</artifactId>-->
+<!--            <scope>provided</scope>-->
+<!--            <version>1.67</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>cn.dev8</groupId>

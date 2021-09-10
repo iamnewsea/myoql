@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2021-08-19 15:09:55
+//generate auto @2021-09-10 18:16:46
 
 class IdUrlMeta (private val _pname:String):MongoColumnName() {
     constructor(_val:MongoColumnName):this(_val.toString()) {}
@@ -542,6 +542,11 @@ class MongoBaseGroup : IDataGroup{
         */
         @Cn("时长")
         val videoTime=MongoColumnName("videoTime")
+        /**
+        * 视频封面地址
+        */
+        @Cn("视频封面地址")
+        val videoLogoUrl=MongoColumnName("videoLogoUrl")
         /**
         * 网络路径
         */
