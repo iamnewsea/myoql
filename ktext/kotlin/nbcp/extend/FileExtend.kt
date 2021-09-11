@@ -8,6 +8,7 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStreamReader
+import java.time.LocalDateTime
 
 /**
  * 文件的全路径。
@@ -23,8 +24,8 @@ val File.FullName: String
  */
 @JvmOverloads
 fun File.ListRecursionFiles(
-    pathCallback: ((String) -> Boolean)? = null,
-    fileCallback: ((String) -> Boolean)? = null
+        pathCallback: ((String) -> Boolean)? = null,
+        fileCallback: ((String) -> Boolean)? = null
 ): List<String> {
     var ret = mutableSetOf<String>()
     if (this.isFile) {
@@ -94,6 +95,53 @@ fun File.ReadHeadLines(action: ((String, Int) -> Boolean)): Int {
     }
 }
 
+
+/**
+ * 文件缓存器
+ * 简单代替Redis，但不移除缓存。
+ */
+fun File.withCacheObject(cacheSeconds: Int, contentAction: () -> String): String {
+    var exists = this.exists();
+    var lines = listOf<String>()
+    if (exists) {
+        lines = this.readLines(const.utf8);
+
+        var validate = validate@{
+            if (lines.any() == false) {
+                return@validate false
+            }
+
+            var createAt = lines.get(0).AsLocalDateTime();
+            if (createAt == null) {
+                return@validate false
+            }
+
+            if ((LocalDateTime.now() - createAt).seconds > cacheSeconds) {
+                return@validate false
+            }
+
+            return@validate true;
+        }
+
+        exists = validate()
+    }
+
+
+    if (exists) {
+        return lines.subList(1, lines.size - 1).joinToString(const.line_break)
+    }
+
+    var content = contentAction();
+
+
+    "file:cache:${this.FullName}".withLock(5) {
+        this.writeText(LocalDateTime.now().AsString() + const.line_break + content, const.utf8);
+    }
+
+    return content;
+}
+
+
 /**
  * @param startFlag 开始块包含的标志,返回 null 表示没找到。 返回 int 表示开始行的偏移量。 0 表示该行， 1表示下一行。 不能是负数
  * @param endFlag  结束块包含的标志,返回 null 表示没找到。 返回 int 表示开始行的偏移量。 0 表示该行， -1 表示上一行。 不能是正数。
@@ -151,11 +199,11 @@ fun File.ReadHeadLines(action: ((String, Int) -> Boolean)): Int {
  */
 @JvmOverloads
 fun File.FilterLines(
-    matchLines: Int,
-    extCount: Int = 0,
-    filter: List<String> = emptyList(),
-    not: List<String> = emptyList(),
-    tail: Boolean = true
+        matchLines: Int,
+        extCount: Int = 0,
+        filter: List<String> = emptyList(),
+        not: List<String> = emptyList(),
+        tail: Boolean = true
 ): List<String> {
     var matchLines = matchLines;
     if (matchLines == 0) {

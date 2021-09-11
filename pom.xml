@@ -45,7 +45,7 @@
         <elasticsearch-rest-client.version>7.10.0</elasticsearch-rest-client.version>
         <jackson.version>2.12.0</jackson.version>
         <reflections.version>0.9.12</reflections.version>
-
+        <bcprov.version>1.67</bcprov.version>
     </properties>
 
 

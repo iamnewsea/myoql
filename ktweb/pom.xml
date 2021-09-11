@@ -21,7 +21,6 @@
         <jjwt.version>0.9.1</jjwt.version>
         <captcha.version>1.6.2</captcha.version>
         <javacv.version>1.5.3</javacv.version>
-        <bcprov.version>1.67</bcprov.version>
     </properties>
 
     <dependencies>
@@ -38,12 +37,7 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on -->
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>${bcprov.version}</version>
-        </dependency>
+
 
 
         <!-- 阿里云OSS-->
