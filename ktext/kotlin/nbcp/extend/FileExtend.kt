@@ -125,6 +125,11 @@ fun File.withCacheObject(cacheSeconds: Int, contentAction: () -> String): String
 
         exists = validate()
     }
+    else{
+        if( this.parentFile.exists() == false) {
+            this.parentFile.mkdirs()
+        }
+    }
 
 
     if (exists) {
