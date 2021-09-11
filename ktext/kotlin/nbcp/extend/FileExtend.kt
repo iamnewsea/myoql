@@ -133,7 +133,7 @@ fun File.withCacheObject(cacheSeconds: Int, contentAction: () -> String): String
 
 
     if (exists) {
-        return lines.subList(1, lines.size - 1).joinToString(const.line_break)
+        return lines.subList(1, lines.size).joinToString(const.line_break)
     }
 
     var content = contentAction();
