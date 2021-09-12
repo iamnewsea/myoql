@@ -97,7 +97,7 @@ fun File.ReadHeadLines(action: ((String, Int) -> Boolean)): Int {
 
 
 /**
- * 文件缓存器
+ * 文件缓存器,不缓存空字符串
  * 简单代替Redis，但不移除缓存。
  */
 fun File.withCacheObject(cacheSeconds: Int, contentAction: () -> String): String {
@@ -137,7 +137,9 @@ fun File.withCacheObject(cacheSeconds: Int, contentAction: () -> String): String
     }
 
     var content = contentAction();
-
+    if( content.isNullOrEmpty()){
+        return content;
+    }
 
     "file:cache:${this.FullName}".withLock(5) {
         this.writeText(LocalDateTime.now().AsString() + const.line_break + content, const.utf8);
