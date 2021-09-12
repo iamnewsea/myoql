@@ -24,8 +24,8 @@ val File.FullName: String
  */
 @JvmOverloads
 fun File.ListRecursionFiles(
-        pathCallback: ((String) -> Boolean)? = null,
-        fileCallback: ((String) -> Boolean)? = null
+    pathCallback: ((String) -> Boolean)? = null,
+    fileCallback: ((String) -> Boolean)? = null
 ): List<String> {
     var ret = mutableSetOf<String>()
     if (this.isFile) {
@@ -111,7 +111,13 @@ fun File.withCacheObject(cacheSeconds: Int, contentAction: () -> String): String
                 return@validate false
             }
 
-            var createAt = lines.get(0).AsLocalDateTime();
+            var line0 = lines.get(0);
+            var line0_sect = line0.split("~")
+            if (line0_sect.size != 2) {
+                return@validate false;
+            }
+
+            var createAt = line0[0].AsLocalDateTime();
             if (createAt == null) {
                 return@validate false
             }
@@ -124,9 +130,8 @@ fun File.withCacheObject(cacheSeconds: Int, contentAction: () -> String): String
         }
 
         exists = validate()
-    }
-    else{
-        if( this.parentFile.exists() == false) {
+    } else {
+        if (this.parentFile.exists() == false) {
             this.parentFile.mkdirs()
         }
     }
@@ -137,12 +142,13 @@ fun File.withCacheObject(cacheSeconds: Int, contentAction: () -> String): String
     }
 
     var content = contentAction();
-    if( content.isNullOrEmpty()){
+    if (content.isNullOrEmpty()) {
         return content;
     }
 
     "file:cache:${this.FullName}".withLock(5) {
-        this.writeText(LocalDateTime.now().AsString() + const.line_break + content, const.utf8);
+        var line0 = LocalDateTime.now().AsString() + "~" + cacheSeconds
+        this.writeText(line0 + const.line_break + content, const.utf8);
     }
 
     return content;
@@ -206,11 +212,11 @@ fun File.withCacheObject(cacheSeconds: Int, contentAction: () -> String): String
  */
 @JvmOverloads
 fun File.FilterLines(
-        matchLines: Int,
-        extCount: Int = 0,
-        filter: List<String> = emptyList(),
-        not: List<String> = emptyList(),
-        tail: Boolean = true
+    matchLines: Int,
+    extCount: Int = 0,
+    filter: List<String> = emptyList(),
+    not: List<String> = emptyList(),
+    tail: Boolean = true
 ): List<String> {
     var matchLines = matchLines;
     if (matchLines == 0) {
