@@ -19,9 +19,7 @@ import java.time.LocalDateTime
  */
 open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhereable {
     companion object {
-        private val logger by lazy {
-            return@lazy LoggerFactory.getLogger(this::class.java)
-        }
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
     var routing = ""

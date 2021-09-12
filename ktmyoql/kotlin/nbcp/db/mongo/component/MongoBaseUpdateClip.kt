@@ -14,9 +14,7 @@ import java.time.LocalDateTime
 
 open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IMongoWhereable {
     companion object {
-        private val logger by lazy {
-            return@lazy LoggerFactory.getLogger(this::class.java)
-        }
+        private val logger =LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
     val whereData = mutableListOf<Criteria>()

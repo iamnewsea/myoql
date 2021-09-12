@@ -112,12 +112,6 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : IMongoDocument>(var moe
         return this;
     }
 
-    companion object {
-        private val logger by lazy {
-            return@lazy LoggerFactory.getLogger(this::class.java)
-        }
-    }
-
 
     @JvmOverloads
     fun toList(mapFunc: ((Document) -> Unit)? = null): MutableList<E> {

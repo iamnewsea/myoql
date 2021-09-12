@@ -29,9 +29,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     }
 
     companion object {
-        private val logger by lazy {
-            return@lazy LoggerFactory.getLogger(this::class.java)
-        }
+        private val logger= LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
     /**

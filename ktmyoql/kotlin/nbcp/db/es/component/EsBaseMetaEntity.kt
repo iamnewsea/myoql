@@ -15,9 +15,6 @@ import nbcp.db.*;
 abstract class EsBaseMetaEntity<T : IEsDocument>(val entityClass: Class<T>, entityName: String) : BaseMetaData(entityName) {
     //    abstract fun getColumns(): Array<String>;
     companion object {
-        private val logger by lazy {
-            return@lazy LoggerFactory.getLogger(this::class.java)
-        }
     }
 
 

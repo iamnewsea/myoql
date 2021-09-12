@@ -13,9 +13,7 @@ import java.time.LocalDateTime
 
 open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IMongoWhereable {
     companion object {
-        private val logger by lazy {
-            return@lazy LoggerFactory.getLogger(this::class.java)
-        }
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
     var entities = mutableListOf<Any>()
@@ -31,7 +29,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
             }
             entity.createAt = LocalDateTime.now();
         } else if (entity is MutableMap<*, *>) {
-            var map = entity as MutableMap<String,Any?>
+            var map = entity as MutableMap<String, Any?>
             if (map.get("_id").AsString().isEmpty()) {
                 map.put("_id", ObjectId().toString())
             }

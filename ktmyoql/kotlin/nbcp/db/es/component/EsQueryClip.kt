@@ -95,12 +95,6 @@ class EsQueryClip<M : EsBaseMetaEntity<E>, E : IEsDocument>(var moerEntity: M)
         return this;
     }
 
-    companion object {
-//        private val logger by lazy {
-//            return@lazy LoggerFactory.getLogger(this::class.java)
-//        }
-    }
-
 
     @JvmOverloads
     fun toList(mapFunc: ((Map<String, Any?>) -> Unit)? = null): MutableList<E> {

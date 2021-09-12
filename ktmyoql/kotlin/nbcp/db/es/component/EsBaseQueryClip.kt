@@ -25,9 +25,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
     }
 
     companion object {
-        private val logger by lazy {
-            return@lazy LoggerFactory.getLogger(this::class.java)
-        }
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
 

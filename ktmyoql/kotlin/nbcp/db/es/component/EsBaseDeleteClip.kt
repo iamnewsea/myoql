@@ -13,9 +13,7 @@ import java.time.LocalDateTime
 
 open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhereable {
     companion object {
-        private val logger by lazy {
-            return@lazy LoggerFactory.getLogger(this::class.java)
-        }
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
     var routing = ""
@@ -26,7 +24,7 @@ open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhere
     /**
      * 批量添加中的添加实体。
      */
-    fun addId(id:String) {
+    fun addId(id: String) {
         if (id.isEmpty()) {
             throw RuntimeException("批量删除时需要指定Id")
         }
@@ -75,8 +73,8 @@ open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhere
         )
 
         var data = mutableListOf<Any>()
-        this.ids.forEach { id->
-            if( id.isNullOrEmpty()){
+        this.ids.forEach { id ->
+            if (id.isNullOrEmpty()) {
                 throw RuntimeException("更新实体缺少 id值")
             }
 
@@ -84,7 +82,7 @@ open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhere
         }
 
         var requestBody = "";
-        usingScope(arrayOf(JsonStyleEnumScope.DateUtcStyle,JsonStyleEnumScope.Compress)) {
+        usingScope(arrayOf(JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.Compress)) {
             requestBody = data.map { it.ToJson() + const.line_break }.joinToString("")
         }
 

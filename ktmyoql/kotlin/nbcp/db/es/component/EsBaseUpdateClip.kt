@@ -13,9 +13,8 @@ import java.time.LocalDateTime
 
 open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhereable {
     companion object {
-        private val logger by lazy {
-            return@lazy LoggerFactory.getLogger(this::class.java)
-        }
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+
     }
 
 
@@ -106,7 +105,7 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
         }
 
         var requestBody = "";
-        usingScope(arrayOf(JsonStyleEnumScope.DateUtcStyle,JsonStyleEnumScope.Compress)) {
+        usingScope(arrayOf(JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.Compress)) {
             requestBody = data.map { it.ToJson() + const.line_break }.joinToString("")
         }
 
