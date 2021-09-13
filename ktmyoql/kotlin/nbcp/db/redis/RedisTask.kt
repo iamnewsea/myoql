@@ -3,6 +3,7 @@ package nbcp.db.redis
 import nbcp.comm.AsLong
 import nbcp.comm.HasValue
 import nbcp.db.cache.CacheForBroke
+import nbcp.db.cache.CacheForBrokeData
 import nbcp.db.db
 import nbcp.model.MasterAlternateStack
 import nbcp.utils.SpringUtil
@@ -34,15 +35,17 @@ class RedisTask : InitializingBean {
         }
 
 
-        fun setDelayBrokeCacheKey(key: CacheForBroke) {
+        fun setDelayBrokeCacheKey(key: CacheForBrokeData) {
             broke_cache.push(key)
         }
 
 
-        private val redisTemplate: StringRedisTemplate
-            get() {
-                return db.redis.getStringRedisTemplate("")
-            }
+        /**
+         * 缓存数据源，使用系统固定的数据库，不涉及分组及上下文切换。
+         */
+        private val redisTemplate by lazy {
+            return@lazy SpringUtil.getBean<StringRedisTemplate>()
+        }
 
         /**
          * 续期的 keys，value=过期时间，单位秒
@@ -57,26 +60,44 @@ class RedisTask : InitializingBean {
 
             redisTemplate.expire(key, cacheSecond.AsLong(), TimeUnit.SECONDS)
         };
-        private var broke_cache = MasterAlternateStack<CacheForBroke>() {
-            var pattern = "";
-            if (it.key.HasValue && it.value.HasValue) {
-                pattern = "sc:${it.table}:*(${it.key}-${it.value})*";
-            } else {
-                pattern = "sc:${it.table}:*";
-            }
 
-            for (i in 0..99) {
+        /**
+         * 缓存破坏
+         */
+        private var broke_cache = MasterAlternateStack<CacheForBrokeData>() { cacheBroke ->
+            var pattern = "sc:${cacheBroke.table}:*";
+
+            for (i in 0..999) {
                 var list = redisTemplate.scanKeys(pattern);
                 if (list.any() == false) {
                     break;
                 }
 
-                redisTemplate.delete(list);
+
+                //如果是删除全表。
+                if (cacheBroke.key.isEmpty() || cacheBroke.value.isEmpty()) {
+                    redisTemplate.delete(list);
+                    continue;
+                }
+
+                //先移除不含 @ 的key
+                var list_like_sql_keys = list.filter { it.contains("@") == false };
+                if (list_like_sql_keys.any()) {
+                    redisTemplate.delete(list_like_sql_keys)
+                }
+
+                //再精准破坏 key,value分组的。
+                var list_keys = list.filter { it.contains(":${cacheBroke.key}@${cacheBroke.value}:") };
+
+                if (list_keys.any()) {
+                    redisTemplate.delete(list_keys);
+                }
             }
 
-            pattern = "sc:*[${it.table}]*"
 
-            for (i in 0..99) {
+            pattern = "sc:*|${cacheBroke.table}|*"
+
+            for (i in 0..999) {
                 var list = redisTemplate.scanKeys(pattern);
                 if (list.any() == false) {
                     break;

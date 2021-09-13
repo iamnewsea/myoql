@@ -3,3 +3,9 @@ spring:
     url2: jdbc:mysql://mariadb:3306/lowcode?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=Asia/Shanghai
     username: dev
     password: 123
+
+  redis:
+    host: redis
+    password: 1@#4
+    port: 6379
+    timeout: 3000

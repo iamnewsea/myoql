@@ -1,18 +1,15 @@
 package nbcp.db.cache
 
 import nbcp.comm.*
+import nbcp.db.db
 import nbcp.db.redis.RedisTask
-import nbcp.model.MasterAlternateStack
-import nbcp.utils.Md5Util
 import nbcp.utils.SpringUtil
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.reflect.MethodSignature
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Lazy
-import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.core.LocalVariableTableParameterNameDiscoverer
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
 import java.time.Duration
@@ -24,39 +21,25 @@ import java.time.Duration
  */
 @Aspect
 @Component
-open class RedisCacheIntercepter {
+open class RedisCacheService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    @Autowired
-    @Lazy
-    lateinit var redisTemplate: StringRedisTemplate
 
-    fun getCacheKey(cache: CacheForSelect, ext: String): String {
-
-        var list = mutableListOf<String>();
-        list.add(cache.key)
-        list.add(cache.value)
-
-        list.add(ext)
-        var md5 = Md5Util.getBase64Md5(list.joinToString(const.line_break));
-
-        var ret = "sc:${cache.table}:${
-            cache.joinTables.toSortedSet().map { "[${it}]" }.joinToString("")
-        }";
-
-        if (cache.key.HasValue && cache.value.HasValue) {
-            ret += "(${cache.key}-${cache.value})"
-        }
-        return "${ret}${md5}"
+    /**
+     * 缓存数据源，使用系统固定的数据库，不涉及分组及上下文切换。
+     */
+    private val redisTemplate by lazy {
+        return@lazy SpringUtil.getBean<StringRedisTemplate>()
     }
+
     //@annotation 表示拦截方法级别上的注解。
     //@within 表示拦截类级别上的注解。
 
     /**
      * RedisCache , sc=sqlcache
-     * key规则：6部分： sc:{主表}:{join_tables.sort().map("[]")}:{主表key}-{key_value}-{sql md5}
+     * key规则：6部分： sc:{主表}:{join_tables.sort().map("[]")}:{主表key}-{key_value}:{sql/md5}
      * 使用 scan 遍历key.
      * insert破坏: 所有 join_tabls，主表
      */
@@ -67,12 +50,22 @@ open class RedisCacheIntercepter {
         var cache = method.getAnnotationsByType(CacheForSelect::class.java).firstOrNull()
 
         var args = joinPoint.args
-        if (cache == null || cache.table.isEmpty()) {
+        if (cache == null || cache.table.isEmpty() || cache.cacheSeconds <= 0) {
             return joinPoint.proceed(args)
         }
 
-        var cacheKey =
-            getCacheKey(cache, signature.declaringType.name + ":" + signature.parameterNames.joinToString(","))
+
+        var variables = LocalVariableTableParameterNameDiscoverer().getParameterNames(method)
+        var variableMap = JsonMap();
+        for (i in variables.indices) {
+            variableMap.put(variables.get(i), args.get(i))
+        }
+
+        var ext = signature.declaringType.name + "-" + signature.parameterNames.joinToString(",");
+
+        var cacheData = CacheForSelectData.of(cache, ext, variableMap);
+        var cacheKey = db.redis.getCacheKey(cacheData)
+
 
         var cacheValue = redisTemplate.opsForValue().get(cacheKey).AsString()
 
@@ -82,7 +75,7 @@ open class RedisCacheIntercepter {
 
         var ret = joinPoint.proceed(args)
         if (ret != null) {
-            redisTemplate.opsForValue().set(cacheKey, ret.ToJson(), Duration.ofMinutes(15));
+            redisTemplate.opsForValue().set(cacheKey, ret.ToJson(), Duration.ofSeconds(cache.cacheSeconds.toLong()));
         }
         return ret;
     }
@@ -101,7 +94,16 @@ open class RedisCacheIntercepter {
         if (cache == null || cache.table.isEmpty()) {
             return joinPoint.proceed(args)
         }
-        RedisTask.setDelayBrokeCacheKey(cache)
+
+        var variables = LocalVariableTableParameterNameDiscoverer().getParameterNames(method)
+        var variableMap = JsonMap();
+        for (i in variables.indices) {
+            variableMap.put(variables.get(i), args.get(i))
+        }
+
+        var cacheData = CacheForBrokeData.of(cache,variableMap)
+        RedisTask.setDelayBrokeCacheKey(cacheData)
+
         return joinPoint.proceed(args)
     }
 }
