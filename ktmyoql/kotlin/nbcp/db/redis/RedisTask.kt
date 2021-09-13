@@ -7,6 +7,7 @@ import nbcp.db.cache.CacheForBrokeData
 import nbcp.db.db
 import nbcp.model.MasterAlternateStack
 import nbcp.utils.SpringUtil
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -21,6 +22,8 @@ import kotlin.concurrent.thread
 @ConditionalOnProperty("spring.redis.host")
 class RedisTask : InitializingBean {
     companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+
         /**
          * 定时任务，使键续期。
          */
@@ -113,8 +116,13 @@ class RedisTask : InitializingBean {
         thread(start = true, isDaemon = true, name = "MyOqlRedisTask") {
             while (true) {
                 Thread.sleep(1000)
-                renewal_cache.consumeTask()
-                broke_cache.consumeTask()
+                try {
+                    renewal_cache.consumeTask()
+                    broke_cache.consumeTask()
+                } catch (ex: Exception) {
+                    ex.printStackTrace()
+                    logger.error(ex.message);
+                }
             }
         }
     }

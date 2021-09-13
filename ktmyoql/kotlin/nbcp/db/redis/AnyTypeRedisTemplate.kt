@@ -12,7 +12,7 @@ fun RedisTemplate<*, *>.scanKeys(pattern: String, limit: Int = 999): Set<String>
     var list = mutableSetOf<String>()
 
     this.connectionFactory
-        .clusterConnection
+        .connection
         .use { conn ->
             conn.scan(
                 ScanOptions
@@ -22,7 +22,8 @@ fun RedisTemplate<*, *>.scanKeys(pattern: String, limit: Int = 999): Set<String>
                     .build()
             ).use { result ->
                 while (result.hasNext()) {
-                    list.add(result.next().toString())
+                    var item = result.next();
+                    list.add(String(item))
                 }
             }
         }

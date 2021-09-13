@@ -41,7 +41,7 @@ object db_redis {
 
 
         if (cache.key.HasValue && cache.value.HasValue) {
-            ret.add("${cache.key}-${cache.value}")
+            ret.add("${cache.key}@${cache.value}")
         }
 
         var ext = cache.sql
