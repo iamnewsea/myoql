@@ -5,7 +5,7 @@ import org.springframework.beans.factory.InitializingBean
 /**
  * 多数据定义
  */
-open class MultipleDataSourceProperties : InitializingBean {
+abstract class AbstractMultipleDataSourceProperties : InitializingBean {
     /**
      *app:
      *  mongo:
@@ -16,6 +16,10 @@ open class MultipleDataSourceProperties : InitializingBean {
      *          - project
      *          - api
      *          - interface_cat
+     *    read:
+     *      yapi-read:
+     *          - group
+     *          - project
      */
 
     /**
@@ -29,6 +33,9 @@ open class MultipleDataSourceProperties : InitializingBean {
     private var dbWriteDataSource: MutableMap<String, String> = mutableMapOf()
 
 
+    /**
+     * 返回配置数据源的名称
+     */
     fun getDataSourceName(name: String, isRead: Boolean? = null): String {
         if (isRead != null && isRead) {
             return dbReadDataSource.getOrDefault(name, "")

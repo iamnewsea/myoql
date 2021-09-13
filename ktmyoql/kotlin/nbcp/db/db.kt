@@ -6,6 +6,7 @@ import nbcp.db.mongo.table.MongoBaseGroup
 import nbcp.db.redis.RedisBaseGroup
 import nbcp.db.sql.table.SqlBaseGroup
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 import java.time.Duration
 
 enum class DatabaseEnum {
@@ -40,7 +41,12 @@ object db {
             return@lazy value
         }
 
-        if (SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration")) {
+
+        if (SpringUtil.context.getBeanNamesForType(MongoAutoConfiguration::class.java).any()) {
+            value = DatabaseEnum.Mongo
+        }
+
+        if (SpringUtil.context.getBeanNamesForType(DataSourceAutoConfiguration::class.java).any()) {
             value = DatabaseEnum.Mysql
         }
 
@@ -49,10 +55,13 @@ object db {
 
     @JvmStatic
     val sql = db_sql;
+
     @JvmStatic
     val mongo = db_mongo;
+
     @JvmStatic
     val es = db_es;
+
     @JvmStatic
     val redis = db_redis;
 
@@ -156,7 +165,7 @@ object db {
 //        }
 //    }
 
-//    /**
+    //    /**
 //     * 填充 city.name
 //     */
 //    fun fillCityName(value: Any) {
@@ -174,9 +183,14 @@ object db {
 //        })
 //    }
     @JvmStatic
-    val mor_base get() = MongoBaseGroup()
+    val mor_base
+        get() = MongoBaseGroup()
+
     @JvmStatic
-    val rer_base get() = RedisBaseGroup()
+    val rer_base
+        get() = RedisBaseGroup()
+
     @JvmStatic
-    val sql_base get() = SqlBaseGroup()
+    val sql_base
+        get() = SqlBaseGroup()
 }

@@ -2,7 +2,7 @@ package nbcp.db.mongo
 
 import nbcp.comm.HasValue
 import nbcp.comm.StringMap
-import nbcp.db.MultipleDataSourceProperties
+import nbcp.db.AbstractMultipleDataSourceProperties
 import nbcp.utils.SpringUtil
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
@@ -76,5 +76,5 @@ class ExistsMongoDataSourceConfigCondition : Condition {
  */
 @ConfigurationProperties(prefix = "app.mongo")
 @Component
-class MongoCollectionDataSource : MultipleDataSourceProperties() {
+class MongoCollectionDataSource : AbstractMultipleDataSourceProperties() {
 }

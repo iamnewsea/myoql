@@ -3,6 +3,7 @@ package nbcp.db.redis
 import nbcp.comm.AsLong
 import nbcp.comm.HasValue
 import nbcp.db.cache.CacheForBroke
+import nbcp.db.db
 import nbcp.model.MasterAlternateStack
 import nbcp.utils.SpringUtil
 import org.springframework.beans.factory.InitializingBean
@@ -38,9 +39,10 @@ class RedisTask : InitializingBean {
         }
 
 
-        private val redisTemplate by lazy {
-            return@lazy SpringUtil.getBean<StringRedisTemplate>()
-        }
+        private val redisTemplate: StringRedisTemplate
+            get() {
+                return db.redis.getStringRedisTemplate("")
+            }
 
         /**
          * 续期的 keys，value=过期时间，单位秒

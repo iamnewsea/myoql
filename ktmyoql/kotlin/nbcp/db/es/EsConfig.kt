@@ -1,7 +1,7 @@
 package nbcp.db.es.tool
 
 import nbcp.comm.*
-import nbcp.db.MultipleDataSourceProperties
+import nbcp.db.AbstractMultipleDataSourceProperties
 import nbcp.db.db
 import nbcp.utils.*
 import org.apache.http.Header
@@ -45,5 +45,5 @@ class MyOqlEsConfig {
  */
 @ConfigurationProperties(prefix = "app.es")
 @Component
-class EsIndexDataSource : MultipleDataSourceProperties() {
+class EsIndexDataSource : AbstractMultipleDataSourceProperties() {
 }

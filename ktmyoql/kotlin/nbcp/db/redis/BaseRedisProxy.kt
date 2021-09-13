@@ -35,88 +35,18 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
      * 3. 当前作用域
      * 4. 使用默认
      */
-    protected val stringCommand: StringRedisTemplate by lazy {
-//        var config = SpringUtil.getBean<RedisDataSource>();
-//        var dataSourceName = config.getDataSourceName(group)
-//        if (dataSourceName.HasValue) {
-//            return@lazy SpringUtil.getBean(dataSourceName) as StringRedisTemplate
-//        }
-
-        return@lazy scopes.GetLatest<StringRedisTemplate>()
-            ?: SpringUtil.getBean<StringRedisTemplate>()
-    }
-
-//    protected val anyTypeCommand: AnyTypeRedisTemplate by lazy {
-//
-////        var config = SpringUtil.getBean<RedisDataSource>();
-////        var dataSourceName = config.getDataSourceName(group)
-////        if (dataSourceName.HasValue) {
-////            return@lazy SpringUtil.getBean(dataSourceName) as AnyTypeRedisTemplate
-////        }
-//
-//        return@lazy scopes.GetLatest<AnyTypeRedisTemplate>()
-//            ?: SpringUtil.getBean<AnyTypeRedisTemplate>()
-//    }
-
-//    /**
-//     * 参数是 key,动态生成新的fullKey
-//     */
-//    private var _dynamic_group: ((String) -> String)? = null
-//
-//    /**
-//     * 动态组，根据key
-//     */
-//    fun dynamicGroup(callback: ((String) -> String)) {
-//        this._dynamic_group = callback
-//    }
-
-//    protected fun readRenewalEvent(key: String) {
-//        if (renewalType == RedisRenewalTypeEnum.Read ||
-//                renewalType == RedisRenewalTypeEnum.Write) {
-//            return RedisTask.setExpireKey(key, defaultCacheSeconds);
-//        }
-//    }
-//
-//    protected fun writeRenewalEvent(key: String) {
-//        if (renewalType == RedisRenewalTypeEnum.Write) {
-//            return RedisTask.setExpireKey(key, defaultCacheSeconds);
-//        }
-//    }
-
-
-//    companion object {
-//        private val rediss = linkedMapOf<String, RedisCommands<String, *>>()
-//
-//        fun getStringRedisTemplate(db: Int): StringRedisTemplate  {
-//            var redis = rediss.get(db.toString() + ":String") as StringRedisTemplate
-//            if (redis == null) {
-//                redis = SpringUtil.getBean<StringRedisTemplate>()
-//
-//                rediss.set(db.toString() + ":String", redis)
-//            }
-//            redis
-//            return redis;
-//        }
-//    }
+    protected val stringCommand: StringRedisTemplate
+        get() {
+            return db.redis.getStringRedisTemplate(group)
+        }
 
     fun getFullKey(key: String): String {
-//        var group2 = "";
-//        if( _dynamic_group != null){
-//            group2 = _dynamic_group!!.invoke(key)
-//        }
-//        else{
-//            group2 = group
-//        }
 
         if (key.startsWith(group + ":")) return key;
         return arrayOf(group, key).filter { it.isNotEmpty() }.joinToString(":");
     }
 
 
-//    /**
-//     * 对 group 键值续期
-//     */
-//    fun renewal(cacheSeconds: Int = defaultCacheSeconds) = renewalKey("", cacheSeconds);
 
     /**
      * 使用 RedisTask.setExpireKey 设置续期时间
@@ -132,11 +62,6 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
 
         RedisTask.setDelayRenewalKey(getFullKey(key), cs);
     }
-
-//    /**
-//     * 删除 group 键值。
-//     */
-//    fun delete(): Long = deleteKeys("");
 
 
     /***
@@ -157,8 +82,4 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
      */
     fun existsKey(key: String): Boolean = stringCommand.hasKey(getFullKey(key));
 
-//    /**
-//     * 判断是否存在 group key
-//     */
-//    fun exists(): Boolean = existsKey("")
 }

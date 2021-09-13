@@ -3,7 +3,7 @@ package nbcp.db.redis
 /**
  * Created by udi on 17-3-19.
  */
-import nbcp.db.MultipleDataSourceProperties
+import nbcp.db.AbstractMultipleDataSourceProperties
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
@@ -171,7 +171,7 @@ import org.springframework.stereotype.Component
  */
 @ConfigurationProperties(prefix = "app.redis")
 @Component
-class RedisDataSource : MultipleDataSourceProperties() {
+class RedisDataSource : AbstractMultipleDataSourceProperties() {
 }
 
 //
