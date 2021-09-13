@@ -25,7 +25,7 @@ class DbConnectionAutoController {
 
     @GetMapping("/test1")
     @MyLogLevel(LogScope.info)
-    @CacheForSelect("a", arrayOf(), "city", "2")
+    @CacheForSelect(300,"a", arrayOf(), "city", "2")
     fun test1() {
         var result = db.mor_base.sysAnnex.aggregate()
             .addPipeLineRawString(PipeLineEnum.match, """ { "group" : "lowcode"} """.replace("##", "$"))
