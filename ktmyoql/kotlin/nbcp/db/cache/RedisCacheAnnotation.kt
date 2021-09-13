@@ -26,7 +26,7 @@ annotation class CacheForSelect(
      */
     val joinTables: Array<String>,
     /**
-     * 缓存表的隔离键, 如:"cityCode"
+     * 缓存表的隔离键或主键, 如:"cityCode"
      */
     val key: String = "",
     /**

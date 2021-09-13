@@ -1,20 +1,14 @@
 package nbcp.db.redis
 
 import nbcp.comm.AsLong
-import nbcp.comm.HasValue
-import nbcp.db.cache.CacheForBroke
 import nbcp.db.cache.CacheForBrokeData
-import nbcp.db.db
 import nbcp.model.MasterAlternateStack
 import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Configuration
-import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.StringRedisTemplate
-import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
@@ -71,29 +65,35 @@ class RedisTask : InitializingBean {
             var pattern = "sc:${cacheBroke.table}:*";
 
             for (i in 0..999) {
-                var list = redisTemplate.scanKeys(pattern);
-                if (list.any() == false) {
+                var all_keys = redisTemplate.scanKeys(pattern);
+                if (all_keys.any() == false) {
                     break;
                 }
 
 
                 //如果是删除全表。
                 if (cacheBroke.key.isEmpty() || cacheBroke.value.isEmpty()) {
-                    redisTemplate.delete(list);
+                    redisTemplate.delete(all_keys);
                     continue;
                 }
 
                 //先移除不含 @ 的key
-                var list_like_sql_keys = list.filter { it.contains("@") == false };
-                if (list_like_sql_keys.any()) {
-                    redisTemplate.delete(list_like_sql_keys)
+                var like_sql_keys = all_keys.filter { it.contains("@") == false };
+                if (like_sql_keys.any()) {
+                    redisTemplate.delete(like_sql_keys)
+                }
+
+                //破坏其它维度的分组
+                var other_group_keys = all_keys.filter { it.contains(":${cacheBroke.key}@") == false };
+                if( other_group_keys.any()){
+                    redisTemplate.delete(other_group_keys);
                 }
 
                 //再精准破坏 key,value分组的。
-                var list_keys = list.filter { it.contains(":${cacheBroke.key}@${cacheBroke.value}:") };
+                var this_group_keys = all_keys.filter { it.contains(":${cacheBroke.key}@${cacheBroke.value}:") };
 
-                if (list_keys.any()) {
-                    redisTemplate.delete(list_keys);
+                if (this_group_keys.any()) {
+                    redisTemplate.delete(this_group_keys);
                 }
             }
 
