@@ -1,6 +1,8 @@
 package nbcp.db.cache
 
 import nbcp.comm.JsonMap
+import nbcp.comm.remove
+
 import org.springframework.expression.spel.standard.SpelExpressionParser
 import org.springframework.expression.spel.support.StandardEvaluationContext
 
@@ -34,11 +36,14 @@ class CacheSpelExecutor(val variableMap: JsonMap) {
         return retString
             .replace(":", "：")
             .replace("|", "｜")
+            .replace("~", "～")
             .replace("@", "＠")
-            .replace(" ", "")
-            .replace("　", "")
-            .replace("\t", "")
-            .replace("\r", "")
-            .replace("\n", "")
+            .remove(
+                " ", "　", "\t", "\r", "\n",
+                CacheForSelectData.GROUP_JOIN_CHAR.toString(),
+                CacheForSelectData.JOIN_TABLE_CHAR.toString(),
+                CacheForSelectData.KEY_VALUE_JOIN_CHAR.toString(),
+                CacheForSelectData.TAIL_CHAR.toString()
+            )
     }
 }

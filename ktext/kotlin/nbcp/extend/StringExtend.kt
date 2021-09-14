@@ -85,6 +85,16 @@ fun Char.NewString(count: Int): String {
     return chrs.toString();
 }
 
+/**
+ * 高效的批量移除字符串
+ */
+fun String.remove(vararg removeChars: String, ignoreCase: Boolean = false): String {
+    //先计算有哪些长度，按长度倒排。
+    var willRemoveChars = removeChars.sortedByDescending { it.length }
+
+    return this.split(*willRemoveChars.toTypedArray(), ignoreCase = ignoreCase).joinToString("")
+}
+
 data class CharFlowSetting(
     var index: Int = 0,
     var item: Char = 0.toChar(),

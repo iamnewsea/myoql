@@ -2,6 +2,7 @@ package nbcp.db.redis
 
 import nbcp.comm.AsLong
 import nbcp.db.cache.CacheForBrokeData
+import nbcp.db.cache.CacheForSelectData
 import nbcp.model.MasterAlternateMap
 import nbcp.model.MasterAlternateSet
 import nbcp.model.MasterAlternateStack
@@ -61,7 +62,7 @@ class RedisTask : InitializingBean {
          * 缓存破坏
          */
         private var broke_cache = MasterAlternateSet<CacheForBrokeData>() { cacheBroke ->
-            var pattern = "sc:${cacheBroke.table}:*";
+            var pattern = cacheBroke.getTablePattern()
 
             for (i in 0..999) {
                 var all_keys = redisTemplate.scanKeys(pattern);
@@ -76,20 +77,26 @@ class RedisTask : InitializingBean {
                     continue;
                 }
 
-                //先移除不含 @ 的key
-                var like_sql_keys = all_keys.filter { it.contains("@") == false };
+                //先移除不含 ~ 的key
+                var like_sql_keys = all_keys.filter { it.contains(CacheForSelectData.KEY_VALUE_JOIN_CHAR) == false };
                 if (like_sql_keys.any()) {
                     redisTemplate.delete(like_sql_keys)
                 }
 
+                var other_group_keys_pattern =
+                    "${CacheForSelectData.GROUP_JOIN_CHAR}${cacheBroke.key}${CacheForSelectData.KEY_VALUE_JOIN_CHAR}"
                 //破坏其它维度的分组
-                var other_group_keys = all_keys.filter { it.contains(":${cacheBroke.key}@") == false };
+                var other_group_keys =
+                    all_keys.filter { it.contains(other_group_keys_pattern) == false };
                 if (other_group_keys.any()) {
                     redisTemplate.delete(other_group_keys);
                 }
 
+                var this_group_keys_pattern =
+                    "${CacheForSelectData.GROUP_JOIN_CHAR}${cacheBroke.key}${CacheForSelectData.KEY_VALUE_JOIN_CHAR}${cacheBroke.value}${CacheForSelectData.GROUP_JOIN_CHAR}"
                 //再精准破坏 key,value分组的。
-                var this_group_keys = all_keys.filter { it.contains(":${cacheBroke.key}@${cacheBroke.value}:") };
+                var this_group_keys =
+                    all_keys.filter { it.contains(this_group_keys_pattern) };
 
                 if (this_group_keys.any()) {
                     redisTemplate.delete(this_group_keys);
@@ -97,7 +104,7 @@ class RedisTask : InitializingBean {
             }
 
 
-            pattern = "sc:*|${cacheBroke.table}|*"
+            pattern = cacheBroke.getJoinTablePattern();
 
             for (i in 0..999) {
                 var list = redisTemplate.scanKeys(pattern);

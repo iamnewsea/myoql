@@ -31,8 +31,8 @@ public class CacheTestJavaController {
 
     @GetMapping("/cach_city1")
     @MyLogLevel(LogScope.info)
-    @CacheForSelect(cacheSeconds = 300, table = "a", joinTables = {}, key = "city", value = "1")
-    List<Document> cach_city1() {
+    @CacheForSelect(cacheSeconds = 300, table = "a", joinTables = {}, key = "city", value = "#city")
+    List<Document> cach_city1(Integer city) {
         List<Document> result = MyOqlMongo.aggregate(db.getMor_base().getSysAnnex())
                 .addPipeLineRawString(PipeLineEnum.match, "{ \"group\" : \"lowcode\"} ")
                 .addPipeLineRawString(
@@ -70,8 +70,8 @@ public class CacheTestJavaController {
 
     @GetMapping("/cache_city2")
     @MyLogLevel(LogScope.info)
-    List<Document> cache_city2() {
-        Document d2 = new CacheForSelectData(3000, "a", new String[]{}, "city", "2", "test3").usingRedisCache(Document.class, () -> {
+    List<Document> cache_city2(Integer city) {
+        Document d2 = new CacheForSelectData(3000, "a", new String[]{}, "city", city.toString(), "test3").usingRedisCache(Document.class, () -> {
             Document d1 = new Document();
             d1.put("OK", "dfdf");
             return d1;
@@ -83,15 +83,15 @@ public class CacheTestJavaController {
     }
 
     @GetMapping("/broke_city1")
-    @CacheForBroke(table = "a", key = "city", value = "1")
-    void broke_city1() {
+    @CacheForBroke(table = "a", key = "city", value = "#city")
+    void broke_city1(Integer city) {
 
     }
 
 
     @GetMapping("/broke_city2")
-    void broke_city2() {
-        new CacheForBrokeData("a", "city", "2").brokeCache();
+    void broke_city2(Integer city) {
+        new CacheForBrokeData("a", "city", city.toString()).brokeCache();
     }
 }
 

@@ -111,36 +111,47 @@ data class CacheForSelectData(
         private val redisTemplate by lazy {
             return@lazy SpringUtil.getBean<StringRedisTemplate>()
         }
+
+        const val SQL_CACHE_PREFIX= "sc"
+        const val GROUP_JOIN_CHAR= ':'
+        const val JOIN_TABLE_CHAR = '|';
+        const val KEY_VALUE_JOIN_CHAR='~';
+        const val TAIL_CHAR='@';
     }
 
 
     /**
      * sc=sqlcache
-     * key规则：5部分： sc:{主表}:{join_tables.sort().join(":")}:{主表key}@{key_value}:{sql/md5}
-     * 如： sc:主表:|join_tab1|join_tab2|:cityCode-010:select*from主表wherecityCode=010anddeleted!=0
+     * key规则：4部分：(冒号分隔的部分)
+     *  1. sc标志
+     *  2. {主表}
+     *  3. |{join_tables.sort().join("|")}| 或 空字符串
+     *  4. {主表key}~{key_value}@{sql/md5}
+     *
+     * 如： sc:主表:|join_tab1|join_tab2|:cityCode~010@select*from主表wherecityCode=010anddeleted!=0
      * 主表规则：  sc:表:*
      * join表规则:  sc:*|表|* , join表为空，没有|
-     * 主表key:   sc:*:表key@*
-     * 表主value:  sc:*@表value:*
+     * 主表key:   sc:*:表key#*
+     * 表主value:  sc:*~表value@*
      *
-     * 约束:  每个部分不能出现半角 冒号，竖线，@,出现部分用全角代替
+     * 约束:  每个部分不能出现半角 冒号，竖线，~, @,出现部分用全角代替
      *
-     * scan:   sc:table1:*:table1_column1-value1:*
+     * scan:   sc:table1:*:table1~column1#value1@*
      */
     fun getCacheKey(): String {
         var cache = this;
         var ret = mutableListOf<String>();
-        ret.add("sc")
+        ret.add(SQL_CACHE_PREFIX)
         ret.add(cache.table);
 
         if (cache.joinTables.any()) {
-            ret.add("|" + cache.joinTables.toSortedSet().joinToString("|") + "|")
+            ret.add(JOIN_TABLE_CHAR + cache.joinTables.toSortedSet().joinToString(JOIN_TABLE_CHAR.toString()) + JOIN_TABLE_CHAR)
         } else {
             ret.add("")
         }
 
         if (cache.key.HasValue && cache.value.HasValue) {
-            ret.add("${cache.key}@${cache.value}")
+            ret.add("${cache.key}${KEY_VALUE_JOIN_CHAR}${cache.value}")
         }
 
         var ext = cache.sql
@@ -150,7 +161,7 @@ data class CacheForSelectData(
         } else {
             ret.add(ext)
         }
-        return ret.joinToString(":")
+        return ret.joinToString(GROUP_JOIN_CHAR.toString())
     }
 
 
@@ -197,6 +208,14 @@ data class CacheForBrokeData(
 ) {
     fun brokeCache() {
         RedisTask.setDelayBrokeCacheKey(this)
+    }
+
+    fun getTablePattern():String{
+        return "${CacheForSelectData.SQL_CACHE_PREFIX}${CacheForSelectData.GROUP_JOIN_CHAR}${this.table}${CacheForSelectData.GROUP_JOIN_CHAR}*";
+    }
+
+    fun getJoinTablePattern():String{
+        return  "${CacheForSelectData.SQL_CACHE_PREFIX}${CacheForSelectData.GROUP_JOIN_CHAR}*${CacheForSelectData.JOIN_TABLE_CHAR}${this.table}${CacheForSelectData.JOIN_TABLE_CHAR}*"
     }
 
     companion object {

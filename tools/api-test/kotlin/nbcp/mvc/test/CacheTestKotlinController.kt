@@ -28,8 +28,8 @@ class CacheTestKotlinController {
 
     @GetMapping("/cache_city1")
     @MyLogLevel(LogScope.info)
-    @CacheForSelect(300, "a", arrayOf(), "city", "1")
-    fun cache_city1(): MutableList<Document> {
+    @CacheForSelect(300, "a", arrayOf(), "city", "#city")
+    fun cache_city1(city: Int): MutableList<Document> {
         var result = db.mor_base.sysAnnex.aggregate()
             .addPipeLineRawString(PipeLineEnum.match, """ { "group" : "lowcode"} """.replace("##", "$"))
             .addPipeLineRawString(
@@ -70,9 +70,16 @@ class CacheTestKotlinController {
 
     @GetMapping("/cache_city2")
     @MyLogLevel(LogScope.info)
-    fun cache_city2(): MutableList<Document> {
+    fun cache_city2(city: Int): MutableList<Document> {
         var d1 =
-            CacheForSelectData(3000, "a", arrayOf(), "city", "2", "唯一字符串，随便写").usingRedisCache(Document::class.java) {
+            CacheForSelectData(
+                3000,
+                "a",
+                arrayOf(),
+                "city",
+                city.toString(),
+                "唯一字符串，随便写"
+            ).usingRedisCache(Document::class.java) {
                 var d1 = Document();
                 d1.put("OK", "dfdf")
                 return@usingRedisCache d1;
@@ -82,15 +89,15 @@ class CacheTestKotlinController {
     }
 
     @GetMapping("/broke_city1")
-    @CacheForBroke("a", "city", "1")
-    fun broke_city1() {
+    @CacheForBroke("a", "city", "#city")
+    fun broke_city1(city: Int) {
 
     }
 
 
     @GetMapping("/broke_city2")
-    fun broke_city2() {
-        CacheForBrokeData("a", "city", "2").brokeCache();
+    fun broke_city2(city: Int) {
+        CacheForBrokeData("a", "city", city.toString()).brokeCache();
     }
 }
 
