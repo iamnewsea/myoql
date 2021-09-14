@@ -156,7 +156,7 @@ data class CacheForBrokeData(
         db.rer_base.sqlCacheBroker.push(config.applicationName, this.ToJson());
 
         //发布消息通知
-        SpringUtil.getBean<RedisCacheDbService>().publish()
+        SpringUtil.getBean<RedisCacheDbDynamicService>().publish()
     }
 
     fun getTablePattern(): String {

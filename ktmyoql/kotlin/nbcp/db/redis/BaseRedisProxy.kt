@@ -4,7 +4,6 @@ import nbcp.comm.AsInt
 import nbcp.utils.*
 import nbcp.comm.*
 import nbcp.db.db
-import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.StringRedisTemplate
 
 enum class RedisRenewalTypeEnum {
@@ -56,11 +55,11 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
     fun renewalKey(key: String, cacheSeconds: Int = defaultCacheSeconds) {
         var cs = cacheSeconds.AsInt();
         if (cs <= 0) {
-            RedisRenewalTask.clearDelayRenewalKeys(getFullKey(key))
+            RedisRenewalDynamicService.clearDelayRenewalKeys(getFullKey(key))
             return;
         }
 
-        RedisRenewalTask.setDelayRenewalKey(getFullKey(key), cs);
+        RedisRenewalDynamicService.setDelayRenewalKey(getFullKey(key), cs);
     }
 
 
@@ -73,7 +72,7 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
         if (fullKeys.any() == false) {
             return 0;
         }
-        RedisRenewalTask.clearDelayRenewalKeys(*fullKeys.toTypedArray());
+        RedisRenewalDynamicService.clearDelayRenewalKeys(*fullKeys.toTypedArray());
         return stringCommand.delete(fullKeys);
     }
 

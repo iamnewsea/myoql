@@ -70,8 +70,12 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
             }
 
         @JvmStatic
-        inline fun <reified T> registerBeanDefinition(name:String,instance:T, callback: ((BeanDefinitionBuilder) -> Unit) = {}) {
-            registry.registerBeanDefinition(name, getGenericBeanDefinition(instance,callback))
+        inline fun <reified T> registerBeanDefinition(
+            name: String,
+            instance: T,
+            callback: ((BeanDefinitionBuilder) -> Unit) = {}
+        ) {
+            registry.registerBeanDefinition(name, getGenericBeanDefinition(instance, callback));
         }
 
 

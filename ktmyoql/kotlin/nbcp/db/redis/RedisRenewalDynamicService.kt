@@ -1,23 +1,16 @@
 package nbcp.db.redis
 
 import nbcp.comm.AsLong
-import nbcp.db.cache.CacheForBrokeData
-import nbcp.db.cache.CacheForSelectData
 import nbcp.model.MasterAlternateMap
-import nbcp.model.MasterAlternateSet
-import nbcp.model.MasterAlternateStack
 import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.core.StringRedisTemplate
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
-@Configuration
-@ConditionalOnProperty("spring.redis.host")
-class RedisRenewalTask : InitializingBean {
+
+class RedisRenewalDynamicService :InitializingBean  {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 

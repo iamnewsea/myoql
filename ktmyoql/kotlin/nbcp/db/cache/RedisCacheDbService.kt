@@ -6,30 +6,33 @@ import nbcp.comm.config
 import nbcp.comm.const
 import nbcp.db.db
 import nbcp.db.redis.scanKeys
-import nbcp.model.MasterAlternateMap
-import nbcp.model.MasterAlternateSet
 import nbcp.utils.CodeUtil
-import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.context.annotation.Configuration
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.listener.PatternTopic
 import org.springframework.data.redis.listener.RedisMessageListenerContainer
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter
 import java.time.LocalDateTime
-import java.util.concurrent.TimeUnit
-import kotlin.concurrent.thread
 
 /**
  *
  */
-@Configuration
-@ConditionalOnProperty("spring.redis.host")
-class RedisCacheDbService : InitializingBean {
+class RedisCacheDbDynamicService : InitializingBean {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    }
+
+    override fun afterPropertiesSet() {
+        var listener = MessageListenerAdapter(SqlBrokerListener(this), "handleMessage");
+
+        var container = RedisMessageListenerContainer()
+        container.connectionFactory = redisTemplate.connectionFactory;
+        container.addMessageListener(
+            listener,
+            PatternTopic("sc-borker-version-${config.applicationName}")
+        )
     }
 
     /**
@@ -40,9 +43,10 @@ class RedisCacheDbService : InitializingBean {
             "sc-borker-version-${config.applicationName}", CodeUtil.getCode().toByteArray()
         )
     }
+
     var lastConsumerAt = LocalDateTime.now();
 
-    class SqlBrokerListener(var p: RedisCacheDbService) {
+    class SqlBrokerListener(var p: RedisCacheDbDynamicService) {
         companion object {
             private var working = false;
         }
@@ -69,23 +73,12 @@ class RedisCacheDbService : InitializingBean {
         }
     }
 
-    override fun afterPropertiesSet() {
-        var listener = MessageListenerAdapter(SqlBrokerListener(this), "handleMessage");
-
-        var container = RedisMessageListenerContainer()
-        container.connectionFactory = redisTemplate.connectionFactory;
-        container.addMessageListener(
-            listener,
-            PatternTopic("sc-borker-version-${config.applicationName}")
-        )
-    }
 
     /**
      * 缓存数据源，使用系统固定的数据库，不涉及分组及上下文切换。
      */
-    private val redisTemplate by lazy {
-        return@lazy SpringUtil.getBean<StringRedisTemplate>()
-    }
+    @Autowired
+    lateinit var redisTemplate: StringRedisTemplate;
 
     fun brokeCacheItem(cacheBroke: CacheForBrokeData) {
         var pattern = cacheBroke.getTablePattern()
