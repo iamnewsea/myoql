@@ -1,8 +1,6 @@
 package nbcp.db.cache
 
 import nbcp.comm.*
-import nbcp.db.db
-import nbcp.db.redis.RedisTask
 import nbcp.utils.SpringUtil
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around

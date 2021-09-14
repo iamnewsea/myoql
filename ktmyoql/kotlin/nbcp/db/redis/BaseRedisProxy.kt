@@ -56,11 +56,11 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
     fun renewalKey(key: String, cacheSeconds: Int = defaultCacheSeconds) {
         var cs = cacheSeconds.AsInt();
         if (cs <= 0) {
-            RedisTask.clearDelayRenewalKeys(getFullKey(key))
+            RedisRenewalTask.clearDelayRenewalKeys(getFullKey(key))
             return;
         }
 
-        RedisTask.setDelayRenewalKey(getFullKey(key), cs);
+        RedisRenewalTask.setDelayRenewalKey(getFullKey(key), cs);
     }
 
 
@@ -73,7 +73,7 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
         if (fullKeys.any() == false) {
             return 0;
         }
-        RedisTask.clearDelayRenewalKeys(*fullKeys.toTypedArray());
+        RedisRenewalTask.clearDelayRenewalKeys(*fullKeys.toTypedArray());
         return stringCommand.delete(fullKeys);
     }
 
