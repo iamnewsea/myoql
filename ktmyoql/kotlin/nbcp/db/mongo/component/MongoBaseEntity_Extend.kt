@@ -1,3 +1,6 @@
+@file:JvmName("MyOqlMongo")
+@file:JvmMultifileClass
+
 package nbcp.db.mongo
 
 import org.bson.types.ObjectId

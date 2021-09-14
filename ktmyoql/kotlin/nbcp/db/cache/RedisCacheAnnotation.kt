@@ -10,6 +10,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser
 import org.springframework.expression.spel.support.StandardEvaluationContext
 import java.lang.annotation.Inherited
 import java.time.Duration
+import java.util.function.Supplier
 
 /**
  * Sql Select Cache
@@ -153,7 +154,7 @@ data class CacheForSelectData(
     }
 
 
-    fun <T> usingRedisCache(clazz: Class<T>, consumer: () -> Any): T {
+    fun <T> usingRedisCache(clazz: Class<T>, consumer: Supplier<Any>): T {
         var cacheKey = this.getCacheKey()
 
         if (this.cacheSeconds >= 0) {
@@ -165,7 +166,7 @@ data class CacheForSelectData(
             }
         }
 
-        var ret = consumer();
+        var ret = consumer.get();
 
         if (ret != null) {
             var cacheSeconds = this.cacheSeconds

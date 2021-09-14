@@ -108,6 +108,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : IMongoDocument>(var
         return this;
     }
 
+    @JvmOverloads
     fun group(_id: JsonMap?, eachItems: JsonMap? = null): MongoAggregateClip<M, E> {
         var raw = JsonMap();
         raw.put("_id", _id)
@@ -194,6 +195,8 @@ cursor: {} } """
         return toList(this.moerEntity.entityClass, itemFunc);
     }
 
+
+    @JvmOverloads
     fun <R : Any> toList(clazz: Class<R>, itemFunc: ((Document) -> Unit)? = null): MutableList<R> {
         return toMapList(itemFunc).map { it.ConvertJson(clazz) }.toMutableList()
     }
@@ -201,6 +204,7 @@ cursor: {} } """
     /**
      * 核心函数
      */
+    @JvmOverloads
     fun toMapList(itemFunc: ((Document) -> Unit)? = null): MutableList<Document> {
         db.affectRowCount = -1;
         var queryJson = toExpression();
@@ -252,6 +256,7 @@ ${if (logger.debug) "[result] ${result?.ToJson()}" else "[result.size] ${result?
     }
 
 
+    @JvmOverloads
     fun toMap(itemFunc: ((Document) -> Unit)? = null): Document {
         this.take(1);
         var ret = toMapList(itemFunc);
@@ -282,10 +287,12 @@ ${if (logger.debug) "[result] ${result?.ToJson()}" else "[result.size] ${result?
         return toList(moerEntity.entityClass)
     }
 
+
     fun toListResult(itemFunc: ((Document) -> Unit)? = null): ListResult<E> {
         return toListResult(moerEntity.entityClass, itemFunc);
     }
 
+    @JvmOverloads
     fun <R : Any> toListResult(entityClass: Class<R>, itemFunc: ((Document) -> Unit)? = null): ListResult<R> {
         var ret = ListResult<R>()
         var data = toList(entityClass, itemFunc)
@@ -313,6 +320,7 @@ ${if (logger.debug) "[result] ${result?.ToJson()}" else "[result.size] ${result?
         return toEntity(R::class.java);
     }
 
+    @JvmOverloads
     fun <R : Any> toEntity(clazz: Class<R>, itemFunc: ((Document) -> Unit)? = null): R? {
         this.take(1);
         return toList(clazz, itemFunc).firstOrNull();

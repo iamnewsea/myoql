@@ -67,9 +67,9 @@ open class RedisCacheAopService {
 
         var cacheData = CacheForSelectData.of(cache, ext, variableMap);
 
-        return cacheData.usingRedisCache(signature.returnType) {
+        return cacheData.usingRedisCache(signature.returnType, {
             return@usingRedisCache joinPoint.proceed(args)
-        }
+        });
     }
 
 

@@ -255,6 +255,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     }
 
 
+    @JvmOverloads
     fun <R> toListResult(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): ListResult<R> {
         var ret = ListResult<R>();
         ret.data = toList(clazz, mapFunc);
