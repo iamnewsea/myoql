@@ -38,8 +38,7 @@ open class RedisCacheAopService {
     //@within 表示拦截类级别上的注解。
 
     /**
-     * RedisCache , sc=sqlcache
-     * key规则：6部分： sc:{主表}:{join_tables.sort().map("[]")}:{主表key}-{key_value}:{sql/md5}
+     * RedisCache
      * 使用 scan 遍历key.
      * insert破坏: 所有 join_tabls，主表
      */
@@ -61,7 +60,10 @@ open class RedisCacheAopService {
             variableMap.put(variables.get(i), args.get(i))
         }
 
-        var ext = signature.declaringType.name + "-" + signature.parameterNames.joinToString(",");
+        var ext = signature.declaringType.name;
+        if (signature.parameterNames.any()) {
+            ext += "&" + args.joinToString(",")
+        }
 
         var cacheData = CacheForSelectData.of(cache, ext, variableMap);
 
@@ -81,7 +83,7 @@ open class RedisCacheAopService {
         var cache = method.getAnnotationsByType(CacheForBroke::class.java).firstOrNull()
 
         var args = joinPoint.args
-        var ret =  joinPoint.proceed(args)
+        var ret = joinPoint.proceed(args)
         if (cache == null || cache.table.isEmpty()) {
             return ret;
         }
@@ -92,7 +94,7 @@ open class RedisCacheAopService {
             variableMap.put(variables.get(i), args.get(i))
         }
 
-         CacheForBrokeData.of(cache,variableMap).brokeCache();
+        CacheForBrokeData.of(cache, variableMap).brokeCache();
 
         return ret;
     }

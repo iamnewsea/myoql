@@ -114,6 +114,7 @@ data class CacheForSelectData(
 
 
     /**
+     * sc=sqlcache
      * key规则：5部分： sc:{主表}:{join_tables.sort().join(":")}:{主表key}@{key_value}:{sql/md5}
      * 如： sc:主表:|join_tab1|join_tab2|:cityCode-010:select*from主表wherecityCode=010anddeleted!=0
      * 主表规则：  sc:表:*
@@ -152,7 +153,7 @@ data class CacheForSelectData(
     }
 
 
-    fun <T> usingRedisCache(clazz: Class<T>, consumer: () -> Any?): Any? {
+    fun <T> usingRedisCache(clazz: Class<T>, consumer: () -> Any): T {
         var cacheKey = this.getCacheKey()
 
         if (this.cacheSeconds >= 0) {
@@ -166,7 +167,6 @@ data class CacheForSelectData(
 
         var ret = consumer();
 
-
         if (ret != null) {
             var cacheSeconds = this.cacheSeconds
             //默认3分钟
@@ -178,7 +178,7 @@ data class CacheForSelectData(
                 redisTemplate.opsForValue().set(cacheKey, ret.ToJson(), Duration.ofSeconds(cacheSeconds.toLong()));
             }
         }
-        return ret;
+        return ret as T;
     }
 }
 

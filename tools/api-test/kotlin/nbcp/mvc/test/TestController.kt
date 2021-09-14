@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.RestController
 import nbcp.comm.*
 import nbcp.db.*
 import nbcp.db.cache.CacheForBroke
+import nbcp.db.cache.CacheForBrokeData
 import nbcp.db.cache.CacheForSelect
+import nbcp.db.cache.CacheForSelectData
 import nbcp.db.mongo.*
 import nbcp.db.mongo.entity.*
 import nbcp.web.*
@@ -69,16 +71,25 @@ class DbConnectionAutoController {
     @GetMapping("/test2")
     @MyLogLevel(LogScope.info)
     fun test3(): MutableList<Document> {
+        var d1 = CacheForSelectData(3000, "a", arrayOf(), "city", "3", "test3").usingRedisCache(Document::class.java) {
+            var d1 = Document();
+            d1.put("OK", "dfdf")
+            return@usingRedisCache d1;
+        }
 
-        var d1 = Document();
-        d1.put("OK", "dfdf")
         return mutableListOf(d1)
     }
 
-    @GetMapping("/test/d")
+    @GetMapping("/test/d1")
     @CacheForBroke("a", "city", "2")
-    fun test_d() {
+    fun test_d1() {
 
+    }
+
+
+    @GetMapping("/test/d2")
+    fun test_d2() {
+        CacheForBrokeData("a", "city", "3").brokeCache();
     }
 }
 
