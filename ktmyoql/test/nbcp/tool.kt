@@ -15,7 +15,6 @@ class tool : TestBase() {
 
     @Test
     fun gen_dbr() {
-        var d = ClassUtil.getStartingJarFile();
         var path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0];
 
         nbcp.db.mysql.tool.generator().work(

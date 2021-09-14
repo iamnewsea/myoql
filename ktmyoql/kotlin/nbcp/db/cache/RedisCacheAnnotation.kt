@@ -1,10 +1,8 @@
 package nbcp.db.cache
 
-import nbcp.comm.ConvertJson
-import nbcp.comm.HasValue
-import nbcp.comm.JsonMap
-import nbcp.comm.const
+import nbcp.comm.*
 import nbcp.utils.Md5Util
+import nbcp.utils.SpringUtil
 import org.springframework.expression.spel.standard.SpelExpressionParser
 import org.springframework.expression.spel.support.StandardEvaluationContext
 import java.lang.annotation.Inherited
@@ -62,36 +60,6 @@ annotation class CacheForBroke(
 
 
 //-----------------------
-
-class CacheSpelExecutor(val variableMap: JsonMap) {
-    var spelExpressionParser = SpelExpressionParser();
-    var context = StandardEvaluationContext()
-
-    init {
-        variableMap.forEach {
-            context.setVariable(it.key, it.value);
-        }
-    }
-
-    fun getVariableValue(it: String): String {
-        var retString = it;
-        if (it.contains("#")) {
-            retString = spelExpressionParser.parseExpression(it).getValue(context, String::class.java)
-        }
-
-        //转为全角
-        return retString
-            .replace(":", "：")
-            .replace("|", "｜")
-            .replace("@", "＠")
-            .replace(" ", "")
-            .replace("　", "")
-            .replace("\t", "")
-            .replace("\r", "")
-            .replace("\n", "")
-    }
-}
-
 
 /**
  * CacheForSelect 的数据类

@@ -6,7 +6,6 @@ import nbcp.comm.*
 
 import nbcp.utils.*
 import nbcp.db.*
-import nbcp.db.cache.ProxyCache4SqlService
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
 import java.io.Serializable
 import java.time.LocalDateTime
@@ -57,10 +56,10 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
 //        private val jdbcMap = linkedMapOf<String, JdbcTemplate>()
 
         // orm bean 代理 RequestCache 及 Redis Cache
-        @JvmStatic
-        val cacheService by lazy {
-            return@lazy SpringUtil.getBean<ProxyCache4SqlService>();
-        }
+//        @JvmStatic
+//        val cacheService by lazy {
+//            return@lazy SpringUtil.getBean<ProxyCache4SqlService>();
+//        }
 
 
 //        fun getJdbcTemplateByDatasrouce(datasourceName: String): JdbcTemplate {
@@ -240,55 +239,56 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
 
         var retJsons = mutableListOf<MutableMap<String, Any?>>()
 
-        var cacheKey = cacheService.getCacheKey(sql)
+//        var cacheKey = cacheService.getCacheKey(sql)
+//
+//        //先从SessionCache中找。
+//
+//        var cacheJson = cacheService.getCacheJson(cacheKey)
+//
+//
+//        if (cacheJson.HasValue) {
+//            //logger.info("sql query from cache: " + cacheKey.toString())
+//            retJsons = cacheJson.FromJsonWithDefaultValue<MutableList<MutableMap<String, Any?>>>()
+//
+//        }
 
-        //先从SessionCache中找。
 
-        var cacheJson = cacheService.getCacheJson(cacheKey)
-
-
-        if (cacheJson.isNullOrEmpty()) {
-            var executeData = sql.toExecuteSqlAndParameters()
-
+        var executeData = sql.toExecuteSqlAndParameters()
 //            logger.info(executeData.executeSql +"  [" + executeData.parameters.map { it.value.AsString() }.joinToString(",") +"]");
-            var startAt = LocalDateTime.now();
+        var startAt = LocalDateTime.now();
 
-            var error = false;
-            try {
-                retJsons =
-                    jdbcTemplate.queryForList(executeData.executeSql, *executeData.executeParameters).toMutableList()
-                db.executeTime = LocalDateTime.now() - startAt
+        var error = false;
+        try {
+            retJsons =
+                jdbcTemplate.queryForList(executeData.executeSql, *executeData.executeParameters).toMutableList()
+            db.executeTime = LocalDateTime.now() - startAt
 
-                if (retJsons.size > 0) {
-                    //setCache
-                    cacheService.setCacheJson(cacheKey, retJsons.ToJson())
+//            if (retJsons.size > 0) {
+//                //setCache
+//                cacheService.setCacheJson(cacheKey, retJsons.ToJson())
+//            }
+        } catch (e: Exception) {
+            error = true;
+            throw e;
+        } finally {
+            logger.InfoError(error) {
+                var msg_log = mutableListOf(
+                    "" +
+                        "[select] ${executeData.executeSql}",
+                    "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}"
+                )
+
+                if (logger.debug) {
+                    msg_log.add("[result] ${retJsons.ToJson()}")
+                } else {
+                    msg_log.add("[result.size] ${retJsons.size}")
                 }
 
-            } catch (e: Exception) {
-                error = true;
-                throw e;
-            } finally {
-                logger.InfoError(error) {
-                    var msg_log = mutableListOf(
-                        "" +
-                                "[select] ${executeData.executeSql}",
-                        "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}"
-                    )
-
-                    if (logger.debug) {
-                        msg_log.add("[result] ${retJsons.ToJson()}")
-                    } else {
-                        msg_log.add("[result.size] ${retJsons.size}")
-                    }
-
-                    msg_log.add("[耗时] ${db.executeTime}")
-                    return@InfoError msg_log.joinToString(const.line_break)
-                }
+                msg_log.add("[耗时] ${db.executeTime}")
+                return@InfoError msg_log.joinToString(const.line_break)
             }
-        } else {
-            //logger.info("sql query from cache: " + cacheKey.toString())
-            retJsons = cacheJson.FromJsonWithDefaultValue<MutableList<MutableMap<String, Any?>>>()
         }
+
 
         db.affectRowCount = retJsons.size
 

@@ -10,7 +10,7 @@ abstract class SqlBaseMetaTable<T : ISqlDbEntity>(val tableClass: Class<T>, tabl
     : BaseMetaData(tableName) {
     abstract fun getUks(): Array<Array<String>>
     abstract fun getFks(): Array<FkDefine>
-    abstract fun getRks(): Array<Array<String>>
+//    abstract fun getRks(): Array<Array<String>>
     abstract fun getAutoIncrementKey(): String
     abstract fun getColumns(): SqlColumnNames
     abstract fun getSpreadColumns(): Array<String>

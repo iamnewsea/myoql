@@ -23,10 +23,10 @@ annotation class SqlAutoIncrementKey()
 /**
  * 实体上定义的隔离分区键 ,它的维度要适中，起到隔离一批数据的作用。 (目前仅一组有效.),如 @DbUks("city_id")
  */
-@Repeatable
-@Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class SqlRks(vararg val rkColumns: String)//多个逗号隔开
+//@Repeatable
+//@Target(AnnotationTarget.CLASS)
+//@Retention(AnnotationRetention.RUNTIME)
+//annotation class SqlRks(vararg val rkColumns: String)//多个逗号隔开
 
 /**
  * 实体字段上定义的外键关系，如： @SqlFk("s_user", "id")

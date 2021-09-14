@@ -6,7 +6,6 @@ import nbcp.db.sql.*
 
 @DbEntityGroup("SqlBase")
 @DbUks("id")
-@SqlRks("corpId")
 open class s_annex @JvmOverloads constructor(
     var name: String = "",          //显示的名字,友好的名称
     var tags: String = "",

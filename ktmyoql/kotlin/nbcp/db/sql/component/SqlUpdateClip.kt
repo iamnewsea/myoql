@@ -178,9 +178,9 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var main
         try {
             n = jdbcTemplate.update(executeData.executeSql, *executeData.executeParameters)
             db.executeTime = LocalDateTime.now() - startAt
-            if (n > 0) {
-                cacheService.updated4BrokeCache(sql)
-            }
+//            if (n > 0) {
+//                cacheService.updated4BrokeCache(sql)
+//            }
         } catch (e: Exception) {
             throw e;
         } finally {

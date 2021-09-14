@@ -182,9 +182,9 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
         }
 
         db.affectRowCount = n
-        if (n > 0) {
-            cacheService.insertMany4BrokeCache(this.mainEntity.tableName)
-        }
+//        if (n > 0) {
+//            cacheService.insertMany4BrokeCache(this.mainEntity.tableName)
+//        }
         settings.forEach {
             it.first.insert(this, it.second);
         }

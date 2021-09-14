@@ -9,7 +9,7 @@ import nbcp.comm.*
 import nbcp.utils.*
 import org.springframework.stereotype.Component
 
-//generate auto @2021-06-21 16:17:32
+//generate auto @2021-09-14 11:18:45
 
 
 @Component("sql.SqlBase")
@@ -17,10 +17,10 @@ import org.springframework.stereotype.Component
 class SqlBaseGroup : IDataGroup{
     override fun getEntities():Set<BaseMetaData> = setOf(s_annex,s_city,s_dustbin,s_log)
 
-    val s_annex get()= s_annex_table();
-    val s_city get()= s_city_table();
-    val s_dustbin get()= s_dustbin_table();
-    val s_log get()= s_log_table();
+    val s_annex get() = s_annex_table();
+    val s_city get() = s_city_table();
+    val s_dustbin get() = s_dustbin_table();
+    val s_log get() = s_log_table();
 
 
     
@@ -47,7 +47,6 @@ class SqlBaseGroup : IDataGroup{
         override fun getColumns(): SqlColumnNames { return SqlColumnNames(name,tags,ext,size,imgWidth,imgHeight,url,creator_id,creator_name,group,corpId,errorMsg,id,createAt)}
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}
-        override fun getRks(): Array<Array<String>>{ return arrayOf( arrayOf("corpId")  )}
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
     
     
@@ -83,7 +82,6 @@ class SqlBaseGroup : IDataGroup{
         override fun getColumns(): SqlColumnNames { return SqlColumnNames(code,shortName,name,level,lng,lat,pinyin,telCode,postCode,pcode)}
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("code")  )}
-        override fun getRks(): Array<Array<String>>{ return arrayOf( )}
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
     
     
@@ -117,7 +115,6 @@ class SqlBaseGroup : IDataGroup{
         override fun getColumns(): SqlColumnNames { return SqlColumnNames(table,remark,creator_id,creator_name,data,id,createAt)}
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}
-        override fun getRks(): Array<Array<String>>{ return arrayOf( )}
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
     
     
@@ -139,11 +136,11 @@ class SqlBaseGroup : IDataGroup{
         :SqlBaseMetaTable<nbcp.db.sql.entity.s_log>(nbcp.db.sql.entity.s_log::class.java,"s_log") {
         val module=SqlColumnName(DbType.String,this.getAliaTableName(),"module")
         val type=SqlColumnName(DbType.String,this.getAliaTableName(),"type")
-        val key=SqlColumnName(DbType.String,this.getAliaTableName(),"key")
+        val tags=SqlColumnName(DbType.String,this.getAliaTableName(),"tags")
         val msg=SqlColumnName(DbType.String,this.getAliaTableName(),"msg")
+        val request=SqlColumnName(DbType.String,this.getAliaTableName(),"request")
         val data=SqlColumnName(DbType.String,this.getAliaTableName(),"data")
-        val remark=SqlColumnName(DbType.String,this.getAliaTableName(),"remark")
-        val clientIp=SqlColumnName(DbType.String,this.getAliaTableName(),"clientIp")
+        val response=SqlColumnName(DbType.String,this.getAliaTableName(),"response")
         val creatorId=SqlColumnName(DbType.String,this.getAliaTableName(),"creatorId")
         @ConverterValueToDb(nbcp.db.sql.AutoNumberConverter::class)
         val id=SqlColumnName(DbType.Long,this.getAliaTableName(),"id")
@@ -151,10 +148,9 @@ class SqlBaseGroup : IDataGroup{
     
         override fun getSpreadColumns(): Array<String> { return arrayOf<String>()}
         override fun getConvertValueColumns(): Array<String> { return arrayOf<String>("id")}
-        override fun getColumns(): SqlColumnNames { return SqlColumnNames(module,type,key,msg,data,remark,clientIp,creatorId,id,createAt)}
+        override fun getColumns(): SqlColumnNames { return SqlColumnNames(module,type,tags,msg,request,data,response,creatorId,id,createAt)}
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}
-        override fun getRks(): Array<Array<String>>{ return arrayOf( )}
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
     
     

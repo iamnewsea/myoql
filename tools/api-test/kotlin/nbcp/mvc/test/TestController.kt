@@ -68,8 +68,8 @@ class DbConnectionAutoController {
 
     @GetMapping("/test2")
     @MyLogLevel(LogScope.info)
-    @CacheForSelect(300, "a", arrayOf(), "city", "3")
     fun test3(): MutableList<Document> {
+
         var d1 = Document();
         d1.put("OK", "dfdf")
         return mutableListOf(d1)

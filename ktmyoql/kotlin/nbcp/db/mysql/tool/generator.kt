@@ -263,7 +263,7 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 
         var autoIncrementKey = "";
         var uks = mutableSetOf<String>()
-        var rks = mutableSetOf<String>()
+//        var rks = mutableSetOf<String>()
         var fks = mutableSetOf<FkDefine>()
         var pks = mutableListOf<String>()
         var columns = mutableListOf<String>()
@@ -382,16 +382,16 @@ fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName},${
             }
         }
 
-        kotlin.run {
-            var rks_define = entType.getAnnotation(SqlRks::class.java)
-            if (rks_define != null) {
-                rks.addAll(rks_define.rkColumns)
-            }
-        }
+//        kotlin.run {
+//            var rks_define = entType.getAnnotation(SqlRks::class.java)
+//            if (rks_define != null) {
+//                rks.addAll(rks_define.rkColumns)
+//            }
+//        }
 
 
         var uks2 = uks.map { """ arrayOf(${it.split(",").map { "\"" + it + "\"" }.joinToString(",")}) """ }
-        var rks2 = rks.map { """ arrayOf(${it.split(",").map { "\"" + it + "\"" }.joinToString(",")}) """ }
+//        var rks2 = rks.map { """ arrayOf(${it.split(",").map { "\"" + it + "\"" }.joinToString(",")}) """ }
         var fks_exp_string =
                 fks.map { """FkDefine("${it.table}","${it.column}","${it.refTable}","${it.refColumn}") """ }.toTypedArray()
 
@@ -474,7 +474,6 @@ ${props.joinToString("\n")}
     override fun getColumns(): SqlColumnNames { return SqlColumnNames(${columns.joinToString(",")})}
     override fun getAutoIncrementKey(): String { return "${autoIncrementKey}"}
     override fun getUks(): Array<Array<String>>{ return arrayOf(${uks2.joinToString(",")} )}
-    override fun getRks(): Array<Array<String>>{ return arrayOf(${rks2.joinToString(",")} )}
     override fun getFks(): Array<FkDefine>{ return arrayOf(${fks_exp_string.joinToString(",")})}
 
 ${idMethods.joinToString("\n")}

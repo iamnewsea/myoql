@@ -9,3 +9,6 @@ spring:
     password: 1@#4
     port: 6379
     timeout: 3000
+
+app:
+  b: 2

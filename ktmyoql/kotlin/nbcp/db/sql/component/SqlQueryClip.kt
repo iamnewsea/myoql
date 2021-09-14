@@ -419,9 +419,9 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
             n = jdbcTemplate.update(executeData.executeSql, *executeData.executeParameters)
             db.executeTime = LocalDateTime.now() - startAt
 
-            if (n > 0) {
-                cacheService.insertSelect4BrokeCache(insertTable.tableName)
-            }
+//            if (n > 0) {
+//                cacheService.insertSelect4BrokeCache(insertTable.tableName)
+//            }
         } catch (e: Exception) {
             throw e;
         } finally {

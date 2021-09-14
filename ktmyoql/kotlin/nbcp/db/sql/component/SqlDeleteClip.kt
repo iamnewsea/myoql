@@ -71,9 +71,9 @@ class SqlDeleteClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
             n = jdbcTemplate.update(executeData.executeSql, *executeData.executeParameters)
             db.executeTime = LocalDateTime.now() - startAt
 
-            if (n > 0) {
-                cacheService.delete4BrokeCache(sql)
-            }
+//            if (n > 0) {
+//                cacheService.delete4BrokeCache(sql)
+//            }
         } catch (e: Exception) {
             throw e;
         } finally {

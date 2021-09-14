@@ -1,6 +1,8 @@
 logging:
   level:
     root: warn
+app:
+  a: 1
 
 spring:
   application:
