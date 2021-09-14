@@ -21,7 +21,7 @@ import java.time.Duration
  */
 @Aspect
 @Component
-open class RedisCacheService {
+open class RedisCacheAopService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -64,20 +64,10 @@ open class RedisCacheService {
         var ext = signature.declaringType.name + "-" + signature.parameterNames.joinToString(",");
 
         var cacheData = CacheForSelectData.of(cache, ext, variableMap);
-        var cacheKey = db.redis.getCacheKey(cacheData)
 
-
-        var cacheValue = redisTemplate.opsForValue().get(cacheKey).AsString()
-
-        if (cacheValue.HasValue) {
-            return cacheValue.FromJson(signature.returnType)
+        return cacheData.usingRedisCache(signature.returnType) {
+            return@usingRedisCache joinPoint.proceed(args)
         }
-
-        var ret = joinPoint.proceed(args)
-        if (ret != null) {
-            redisTemplate.opsForValue().set(cacheKey, ret.ToJson(), Duration.ofSeconds(cache.cacheSeconds.toLong()));
-        }
-        return ret;
     }
 
 
@@ -91,8 +81,9 @@ open class RedisCacheService {
         var cache = method.getAnnotationsByType(CacheForBroke::class.java).firstOrNull()
 
         var args = joinPoint.args
+        var ret =  joinPoint.proceed(args)
         if (cache == null || cache.table.isEmpty()) {
-            return joinPoint.proceed(args)
+            return ret;
         }
 
         var variables = LocalVariableTableParameterNameDiscoverer().getParameterNames(method)
@@ -101,9 +92,8 @@ open class RedisCacheService {
             variableMap.put(variables.get(i), args.get(i))
         }
 
-        var cacheData = CacheForBrokeData.of(cache,variableMap)
-        RedisTask.setDelayBrokeCacheKey(cacheData)
+         CacheForBrokeData.of(cache,variableMap).brokeCache();
 
-        return joinPoint.proceed(args)
+        return ret;
     }
 }

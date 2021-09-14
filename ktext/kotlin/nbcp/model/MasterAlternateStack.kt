@@ -27,18 +27,22 @@ open class MasterAlternateStack<T>(private var consumer: Consumer<T>) {
             }
         }
 
-        if (isEmpty()) {
-            return
-        }
 
-        masterOpen = !masterOpen
-        if (masterOpen) {
-            consumerStack(alternateStack);
-            consumerStack(masterStack);
-        } else {
-            consumerStack(masterStack);
-            consumerStack(alternateStack);
-        }
+        consumerStack(getIdleStack());
+        masterOpen = !masterOpen;
+        consumerStack(getIdleStack());
+    }
+
+
+    fun getWorkingStack(): Stack<T> {
+        if (masterOpen) return masterStack;
+        else return alternateStack;
+    }
+
+
+    fun getIdleStack(): Stack<T> {
+        if (masterOpen) return alternateStack;
+        else return masterStack;
     }
 
 

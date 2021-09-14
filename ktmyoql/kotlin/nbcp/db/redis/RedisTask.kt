@@ -2,6 +2,8 @@ package nbcp.db.redis
 
 import nbcp.comm.AsLong
 import nbcp.db.cache.CacheForBrokeData
+import nbcp.model.MasterAlternateMap
+import nbcp.model.MasterAlternateSet
 import nbcp.model.MasterAlternateStack
 import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
@@ -22,7 +24,7 @@ class RedisTask : InitializingBean {
          * 定时任务，使键续期。
          */
         fun setDelayRenewalKey(key: String, cacheSecond: Int) {
-            renewal_cache.push(key to cacheSecond);
+            renewal_cache.push(key, cacheSecond);
         }
 
         fun clearDelayRenewalKeys(vararg keys: String) {
@@ -47,12 +49,9 @@ class RedisTask : InitializingBean {
         /**
          * 续期的 keys，value=过期时间，单位秒
          */
-        private var renewal_cache = MasterAlternateStack<Pair<String, Int>>() {
-            var key = it.first;
-            var cacheSecond = it.second;
-
+        private var renewal_cache = MasterAlternateMap<String, Int>({ a, b -> Math.max(a, b) }) { key, cacheSecond ->
             if (cacheSecond <= 0) {
-                return@MasterAlternateStack
+                return@MasterAlternateMap
             }
 
             redisTemplate.expire(key, cacheSecond.AsLong(), TimeUnit.SECONDS)
@@ -61,7 +60,7 @@ class RedisTask : InitializingBean {
         /**
          * 缓存破坏
          */
-        private var broke_cache = MasterAlternateStack<CacheForBrokeData>() { cacheBroke ->
+        private var broke_cache = MasterAlternateSet<CacheForBrokeData>() { cacheBroke ->
             var pattern = "sc:${cacheBroke.table}:*";
 
             for (i in 0..999) {
@@ -85,7 +84,7 @@ class RedisTask : InitializingBean {
 
                 //破坏其它维度的分组
                 var other_group_keys = all_keys.filter { it.contains(":${cacheBroke.key}@") == false };
-                if( other_group_keys.any()){
+                if (other_group_keys.any()) {
                     redisTemplate.delete(other_group_keys);
                 }
 
