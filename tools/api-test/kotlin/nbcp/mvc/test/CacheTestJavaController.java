@@ -26,13 +26,13 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/dev2")
-public class DbConnectionAutoController2 {
+@RequestMapping("/dev/java")
+public class CacheTestJavaController {
 
-    @GetMapping("/test1")
+    @GetMapping("/cach_city1")
     @MyLogLevel(LogScope.info)
-    @CacheForSelect(cacheSeconds = 300, table = "a", joinTables = {}, key = "city", value = "2")
-    List<Document> test1() {
+    @CacheForSelect(cacheSeconds = 300, table = "a", joinTables = {}, key = "city", value = "1")
+    List<Document> cach_city1() {
         List<Document> result = MyOqlMongo.aggregate(db.getMor_base().getSysAnnex())
                 .addPipeLineRawString(PipeLineEnum.match, "{ \"group\" : \"lowcode\"} ")
                 .addPipeLineRawString(
@@ -68,10 +68,10 @@ public class DbConnectionAutoController2 {
     }
 
 
-    @GetMapping("/test2")
+    @GetMapping("/cache_city2")
     @MyLogLevel(LogScope.info)
-    List<Document> test3() {
-        Document d2 = new CacheForSelectData(3000, "a", new String[]{}, "city", "3", "test3").usingRedisCache(Document.class, () -> {
+    List<Document> cache_city2() {
+        Document d2 = new CacheForSelectData(3000, "a", new String[]{}, "city", "2", "test3").usingRedisCache(Document.class, () -> {
             Document d1 = new Document();
             d1.put("OK", "dfdf");
             return d1;
@@ -82,16 +82,16 @@ public class DbConnectionAutoController2 {
         }};
     }
 
-    @GetMapping("/test/d1")
-    @CacheForBroke(table = "a", key = "city", value = "2")
-    void test_d1() {
+    @GetMapping("/broke_city1")
+    @CacheForBroke(table = "a", key = "city", value = "1")
+    void broke_city1() {
 
     }
 
 
-    @GetMapping("/test/d2")
-    void test_d2() {
-        new CacheForBrokeData("a", "city", "3").brokeCache();
+    @GetMapping("/broke_city2")
+    void broke_city2() {
+        new CacheForBrokeData("a", "city", "2").brokeCache();
     }
 }
 

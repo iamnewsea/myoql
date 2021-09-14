@@ -23,13 +23,13 @@ import java.time.*
  */
 @Api(description = "数据连接", tags = arrayOf("DbConnection"))
 @RestController
-@RequestMapping("/dev")
-class DbConnectionAutoController {
+@RequestMapping("/dev/kt")
+class CacheTestKotlinController {
 
-    @GetMapping("/test1")
+    @GetMapping("/cache_city1")
     @MyLogLevel(LogScope.info)
-    @CacheForSelect(300, "a", arrayOf(), "city", "2")
-    fun test1(): MutableList<Document> {
+    @CacheForSelect(300, "a", arrayOf(), "city", "1")
+    fun cache_city1(): MutableList<Document> {
         var result = db.mor_base.sysAnnex.aggregate()
             .addPipeLineRawString(PipeLineEnum.match, """ { "group" : "lowcode"} """.replace("##", "$"))
             .addPipeLineRawString(
@@ -68,28 +68,29 @@ class DbConnectionAutoController {
     }
 
 
-    @GetMapping("/test2")
+    @GetMapping("/cache_city2")
     @MyLogLevel(LogScope.info)
-    fun test3(): MutableList<Document> {
-        var d1 = CacheForSelectData(3000, "a", arrayOf(), "city", "3", "test3").usingRedisCache(Document::class.java) {
-            var d1 = Document();
-            d1.put("OK", "dfdf")
-            return@usingRedisCache d1;
-        }
+    fun cache_city2(): MutableList<Document> {
+        var d1 =
+            CacheForSelectData(3000, "a", arrayOf(), "city", "2", "唯一字符串，随便写").usingRedisCache(Document::class.java) {
+                var d1 = Document();
+                d1.put("OK", "dfdf")
+                return@usingRedisCache d1;
+            }
 
         return mutableListOf(d1)
     }
 
-    @GetMapping("/test/d1")
-    @CacheForBroke("a", "city", "2")
-    fun test_d1() {
+    @GetMapping("/broke_city1")
+    @CacheForBroke("a", "city", "1")
+    fun broke_city1() {
 
     }
 
 
-    @GetMapping("/test/d2")
-    fun test_d2() {
-        CacheForBrokeData("a", "city", "3").brokeCache();
+    @GetMapping("/broke_city2")
+    fun broke_city2() {
+        CacheForBrokeData("a", "city", "2").brokeCache();
     }
 }
 
