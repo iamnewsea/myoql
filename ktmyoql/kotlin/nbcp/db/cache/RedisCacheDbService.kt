@@ -10,6 +10,8 @@ import nbcp.utils.CodeUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.redis.connection.Message
+import org.springframework.data.redis.connection.MessageListener
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.listener.PatternTopic
 import org.springframework.data.redis.listener.RedisMessageListenerContainer
@@ -22,15 +24,15 @@ import java.time.LocalDateTime
 class RedisCacheDbDynamicService : InitializingBean {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+        private var working = false;
+        var lastConsumerAt = LocalDateTime.now();
     }
 
     override fun afterPropertiesSet() {
-        var listener = MessageListenerAdapter(SqlBrokerListener(this), "handleMessage");
-
         var container = RedisMessageListenerContainer()
         container.connectionFactory = redisTemplate.connectionFactory;
         container.addMessageListener(
-            listener,
+            SqlBrokerListener(this),
             PatternTopic("sc-borker-version-${config.applicationName}")
         )
     }
@@ -44,17 +46,15 @@ class RedisCacheDbDynamicService : InitializingBean {
         )
     }
 
-    var lastConsumerAt = LocalDateTime.now();
 
-    class SqlBrokerListener(var p: RedisCacheDbDynamicService) {
+    class SqlBrokerListener(var p: RedisCacheDbDynamicService) : MessageListener {
         companion object {
-            private var working = false;
         }
 
         /**
          * 驱动器，驱动从 redis 队列中取出，进行消费。
          */
-        fun handleMessage(msg: String) {
+        override fun onMessage(p0: Message, p1: ByteArray?) {
             if (working) return;
             working = true;
 
@@ -68,7 +68,7 @@ class RedisCacheDbDynamicService : InitializingBean {
                 p.brokeCacheItem(cacheBroke);
             }
 
-            p.lastConsumerAt = LocalDateTime.now();
+            lastConsumerAt = LocalDateTime.now();
             working = false;
         }
     }
