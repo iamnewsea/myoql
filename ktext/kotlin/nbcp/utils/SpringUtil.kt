@@ -69,13 +69,28 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
                 return registryField!!
             }
 
+        /**
+         * 动态注册Bean
+         */
         @JvmStatic
+        @JvmOverloads
         inline fun <reified T> registerBeanDefinition(
             name: String,
             instance: T,
             callback: ((BeanDefinitionBuilder) -> Unit) = {}
         ) {
             registry.registerBeanDefinition(name, getGenericBeanDefinition(instance, callback));
+        }
+
+        /**
+         * 动态注册Bean
+         */
+        @JvmStatic
+        inline fun <reified T> registerBeanDefinition(instance: T) {
+            registry.registerBeanDefinition(
+                MyUtil.getSmallCamelCase(instance!!::class.java.simpleName),
+                getGenericBeanDefinition(instance)
+            );
         }
 
 
@@ -86,6 +101,7 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
         /**
          * 判断是否存在某个Bean
          */
+        @JvmStatic
         @JvmOverloads
         fun containsBean(name: String, clazz: Class<*>, ignoreCase: Boolean = false): Boolean {
             if (name.isEmpty()) return containsBean(clazz)
@@ -155,7 +171,7 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
 
 
         /**
-         * 创建
+         * 动态创建Bean
          */
         inline fun <reified T> getGenericBeanDefinition(
             instance: T,
