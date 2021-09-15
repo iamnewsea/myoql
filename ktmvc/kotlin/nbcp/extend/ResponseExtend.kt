@@ -11,6 +11,10 @@ import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+
+
+
+
 fun ServletResponse.WriteXmlRawValue(xml: String) {
     this.contentType = MediaType.TEXT_XML_VALUE;
     this.outputStream.write(xml.toByteArray(const.utf8));

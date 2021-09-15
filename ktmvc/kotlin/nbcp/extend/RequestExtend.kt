@@ -12,10 +12,9 @@ import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+internal val logger = LoggerFactory.getLogger("nbcp.web.MyMvcHelper")
 
-object MyMvcHelper {
-    internal val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
-}
+
 
 /**
  * 判断是否是八进制类型：
@@ -196,7 +195,7 @@ fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>): StringMap
         originClient.contains("127.0.0.1");
 
     if (allow == false) {
-        MyMvcHelper.logger.warn("系统忽略未允许的跨域请求源:${originClient}")
+        logger.warn("系统忽略未允许的跨域请求源:${originClient}")
         return retMap;
     }
 

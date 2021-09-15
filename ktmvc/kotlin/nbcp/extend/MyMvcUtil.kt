@@ -3,13 +3,12 @@
 
 package nbcp.web
 
-import nbcp.comm.*
-import org.springframework.http.MediaType
-import nbcp.utils.*
-import org.springframework.web.servlet.HandlerMapping
-import javax.servlet.ServletResponse
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import org.slf4j.LoggerFactory
+
+
+
+
+
 
 /**
  * 在中英环境下，返回多语言信息， 使用字典是比较麻烦的， 使用如下方式
