@@ -120,7 +120,10 @@ open class MyAllFilter : Filter {
             return;
         }
 
-        procCORS(httpRequest, httpResponse)
+        httpRequest.getCorsResponseMap(this.allowOrigins.split(",")).forEach { key, value ->
+            httpResponse.setHeader(key, value);
+        }
+
 
         if (httpRequest.method == "OPTIONS") {
             httpResponse.status = 204
@@ -438,71 +441,6 @@ open class MyAllFilter : Filter {
         }
     }
 
-    private fun procCORS(request: HttpServletRequest, response: HttpServletResponse) {
-        var originClient = request.getHeader("origin") ?: ""
-
-        if (originClient.isEmpty()) return
-
-        var allowOrigins = this.allowOrigins.split(",") //非 localhost 域名
-
-        var allow = allowOrigins.any { originClient.contains(it) } ||
-            originClient.contains("localhost") ||
-            originClient.contains("127.0.0.1");
-
-        if (allow == false) {
-            logger.warn("跨域阻止:${originClient}")
-            return;
-        }
-
-        response.setHeader("Access-Control-Allow-Origin", originClient)
-        response.setHeader("Access-Control-Max-Age", "2592000") //30天。
-
-        response.setHeader("Access-Control-Allow-Credentials", "true")
-        response.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,PUT,HEAD,OPTIONS,DELETE")
-
-
-        var allowHeaders = mutableSetOf<String>();
-        allowHeaders.add(config.tokenKey);
-        //添加指定的
-        allowHeaders.add("Authorization")
-
-        if (request.method == "OPTIONS") {
-            allowHeaders.addAll(
-                request.getHeader("Access-Control-Request-Headers").AsString().split(",").filter { it.HasValue })
-        }
-
-        if (allowHeaders.any() == false) {
-            allowHeaders.addAll(request.headerNames.toList())
-
-
-            //https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
-            var standardHeaders = arrayOf(
-                "referer",
-                "expires",
-                "cache-control",
-                "content-language",
-                "last-modified",
-                "pragma",
-                "origin",
-                "accept",
-                "user-agent",
-                "connection",
-                "host",
-                "accept-language",
-                "accept-encoding",
-                "content-length",
-                "content-type"
-            )
-            //移除标准 header
-            allowHeaders.removeAll { standardHeaders.contains(it.toLowerCase()) }
-        }
-
-
-        if (allowHeaders.any()) {
-            response.setHeader("Access-Control-Allow-Headers", allowHeaders.joinToString(","))
-            response.setHeader("Access-Control-Expose-Headers", allowHeaders.joinToString(","))
-        }
-    }
 
     fun afterComplete(
         request: MyHttpRequestWrapper,

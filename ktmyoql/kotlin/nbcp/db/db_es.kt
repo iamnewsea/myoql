@@ -4,7 +4,6 @@ package nbcp.db
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.es.*
-import nbcp.db.es.tool.MyOqlEsConfig
 import org.apache.http.HttpHost
 import org.elasticsearch.client.*
 import org.slf4j.LoggerFactory

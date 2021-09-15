@@ -6,115 +6,16 @@ package nbcp.web
 import nbcp.comm.*
 import org.springframework.http.MediaType
 import nbcp.utils.*
+import org.slf4j.LoggerFactory
 import org.springframework.web.servlet.HandlerMapping
 import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-/**
- * 在中英环境下，返回多语言信息， 使用字典是比较麻烦的， 使用如下方式
- *
- * "服务器错误" lang "server error"
- */
-infix fun String.lang(englishMessage: String): String {
-    var lang = HttpContext.request.getAttribute("lang")?.toString() ?: "cn"
-    if (lang == "en") return englishMessage;
-    return this;
+
+object MyMvcHelper {
+    internal val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 }
-
-fun ServletResponse.WriteXmlRawValue(xml: String) {
-    this.contentType = MediaType.TEXT_XML_VALUE;
-    this.outputStream.write(xml.toByteArray(const.utf8));
-}
-
-fun ServletResponse.WriteJsonRawValue(json: String) {
-    this.contentType = MediaType.APPLICATION_JSON_UTF8_VALUE;
-    this.outputStream.write(json.toByteArray(const.utf8));
-}
-
-fun ServletResponse.WriteTextValue(text: String) {
-    this.contentType = "text/plain;charset=UTF-8";
-    this.outputStream.write(text.toByteArray(const.utf8));
-}
-
-fun ServletResponse.WriteHtmlValue(text: String) {
-    this.contentType = "text/html;charset=UTF-8";
-    this.outputStream.write(text.toByteArray(const.utf8));
-}
-
-fun ServletResponse.WriteHtmlBodyValue(text: String) {
-    this.contentType = "text/html;charset=UTF-8";
-    this.outputStream.write(
-        """<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="utf-8"></head>
-<body>${text}</body>
-</html>""".toByteArray(const.utf8)
-    );
-}
-
-fun HttpServletResponse.setDownloadFileName(fileName: String) {
-    this.setHeader("Content-Disposition", "attachment; filename=" + JsUtil.encodeURIComponent(fileName));
-    this.contentType = "application/octet-stream"
-}
-
-private val String.ContentTypeIsOctetContent: Boolean
-    get() {
-        if (this.startsWith("text/")) return false
-        if (this == "application/json") return false
-        if (this == "application/xml") return false
-
-        if (this.startsWith("application/")) {
-            if (this.endsWith("+xml")) return false
-            if (this.endsWith("+json")) return false
-            if (this.startsWith("application/json")) return false
-            if (this.startsWith("application/xml")) return false
-            if (this.startsWith("application/x-www-form-urlencoded")) return false
-        }
-
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types
-        // https://www.iana.org/assignments/media-types/media-types.xhtml
-
-
-        for (c in arrayOf<String>(
-            "application/",
-            "audio/",
-            "font/",
-            "example/",
-            "image/",
-            "message/",
-            "model/",
-            "multipart/",
-            "video/"
-        )) {
-            if (this.startsWith(c, 0, true)) return true;
-        }
-        return false;
-    }
-
-/**
- * 判断是否是八进制类型：
- * 如果是 json,text,xml,form 则为普通类型。
- * 检测contentType就否包含以下内容：
-application
-audio
-font
-example
-image
-message
-model
-multipart
-video
- */
-val HttpServletResponse.IsOctetContent: Boolean
-    get() {
-        if (this.contentType == null) {
-            return true
-        }
-
-        return this.contentType.ContentTypeIsOctetContent
-    }
 
 /**
  * 判断是否是八进制类型：
@@ -136,7 +37,7 @@ val HttpServletRequest.IsOctetContent: Boolean
             return true
         }
 
-        return this.contentType.ContentTypeIsOctetContent
+        return WebUtil.contentTypeIsOctetContent(this.contentType);
     }
 
 
@@ -278,24 +179,75 @@ val HttpServletRequest.fullUrl: String
     }
 
 /**
- * 输出 javascript ，通过 window.parent.postMessage 函数呼叫父窗口，弹出消息 用于前端下载时处理消息。
- * 前端环境：
- *  1. 调用 jv.download() 函数，原理是通过页面的iframe,打开下载页面。
- *  2. 在主页面添加 window.addEventListener('message',e=>{}) 处理函数。
- * @param msg: 错误消息
- * @param title: 消息标题
+ * 处理跨域。
+ * 网关处理完跨域后，应该移除 origin
  */
-@JvmOverloads
-fun HttpServletResponse.parentAlert(msg: String, title: String = "", targetOrigin: String = "*") {
-    /**
-     * <pre>{@code
-     * window.addEventListener('message',e=>{
-     *      if( e.data.event == 'error') {
-     *          jv.error.apply(jv, e.data.arguments)
-     *      }
-     *  });
-     *  }
-     *  </pre>
-     */
-    this.WriteHtmlValue("<script>window.parent.postMessage({event:'error',arguments:['${msg}','${title}']},'${targetOrigin}')</script>")
+fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>): StringMap {
+
+    var request = this;
+    var originClient = request.getHeader("origin") ?: ""
+
+    var retMap = StringMap();
+    if (originClient.isEmpty()) return retMap;
+
+
+    var allow = allowOrigins.any { originClient.contains(it) } ||
+        originClient.contains("localhost") ||
+        originClient.contains("127.0.0.1");
+
+    if (allow == false) {
+        MyMvcHelper.logger.warn("系统忽略未允许的跨域请求源:${originClient}")
+        return retMap;
+    }
+
+    retMap.put("Access-Control-Allow-Origin", originClient)
+    retMap.put("Access-Control-Max-Age", "2592000") //30天。
+
+    retMap.put("Access-Control-Allow-Credentials", "true")
+    retMap.put("Access-Control-Allow-Methods", "GET,POST,PATCH,PUT,HEAD,OPTIONS,DELETE")
+
+
+    var allowHeaders = mutableSetOf<String>();
+    allowHeaders.add(config.tokenKey);
+    //添加指定的
+    allowHeaders.add("Authorization")
+
+    if (request.method == "OPTIONS") {
+        allowHeaders.addAll(
+            request.getHeader("Access-Control-Request-Headers").AsString().split(",").filter { it.HasValue })
+    }
+
+    if (allowHeaders.any() == false) {
+        allowHeaders.addAll(request.headerNames.toList())
+
+
+        //https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
+        var standardHeaders = arrayOf(
+            "referer",
+            "expires",
+            "cache-control",
+            "content-language",
+            "last-modified",
+            "pragma",
+            "origin",
+            "accept",
+            "user-agent",
+            "connection",
+            "host",
+            "accept-language",
+            "accept-encoding",
+            "content-length",
+            "content-type"
+        )
+        //移除标准 header
+        allowHeaders.removeAll { standardHeaders.contains(it.toLowerCase()) }
+    }
+
+
+    if (allowHeaders.any()) {
+        retMap.put("Access-Control-Allow-Headers", allowHeaders.joinToString(","))
+        retMap.put("Access-Control-Expose-Headers", allowHeaders.joinToString(","))
+    }
+    return retMap;
 }
+
