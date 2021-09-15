@@ -29,32 +29,20 @@ import java.lang.RuntimeException
  */
 class MyHttpRequestWrapper
 @Throws(IOException::class)
-constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
-    init {
-    }
+private constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
 
     companion object {
         private val logger = LoggerFactory.getLogger(this.javaClass);
 
-
-        //        @Value("\${server.session.cookie.name}")
-//        val cookieKey: String by lazy {
-//            return@lazy SpringUtil.context.environment.getProperty("server.servlet.session.cookie.name")
-//                    ?: "JSESSIONID";
-//        }
-
-
         @Throws(IOException::class)
         @JvmStatic
-        fun Create(request: HttpServletRequest): MyHttpRequestWrapper {
+        fun create(request: HttpServletRequest): MyHttpRequestWrapper {
             if (request is MyHttpRequestWrapper) {
                 return request
             }
             return MyHttpRequestWrapper(request)
         }
     }
-
-//    private var body_read = false;
 
     //文件上传或 大于 10 MB 会返回 null , throw RuntimeException("超过10MB不能获取Body!");
     val body: ByteArray? by lazy {
@@ -72,42 +60,40 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
     val json: JsonMap by lazy {
         var ret = JsonMap();
 
-        try {
-            if (request.contentType == null) {
-                return@lazy ret;
+
+        if (request.contentType == null) {
+            return@lazy ret;
+        }
+        if (request.contentType.startsWith(MediaType.APPLICATION_JSON_VALUE) ||
+            request.contentType.startsWith(MediaType.APPLICATION_JSON_UTF8_VALUE)
+        ) {
+
+            var bodyString = (body ?: byteArrayOf()).toString(const.utf8).trim()
+
+            if (bodyString.startsWith("{") && bodyString.endsWith("}")) {
+                ret = bodyString.FromJsonWithDefaultValue();
             }
-            if (request.contentType.startsWith(MediaType.APPLICATION_JSON_VALUE) ||
-                    request.contentType.startsWith(MediaType.APPLICATION_JSON_UTF8_VALUE)) {
+        } else if (request.contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
+            //按 key进行分组，假设客户端是：
+            // corp[id]=1&corp[name]=abc&role[id]=2&role[name]=def
+            //会分成两组 ret["corp"] = json1 , ret["role"] = json2;
+            //目前只支持两级。不支持  corp[role][id]
+            if (request.parameterNames.hasMoreElements()) {
+                for (key in request.parameterNames) {
+                    var value = request.getParameter(key);
+                    var keyLastIndex = key.indexOf('[');
+                    if (keyLastIndex >= 0) {
+                        var mk = key.slice(0..keyLastIndex - 1);
 
-                var bodyString = (body ?: byteArrayOf()).toString(const.utf8).trim()
-
-                if (bodyString.startsWith("{") && bodyString.endsWith("}")) {
-                    ret = bodyString.FromJsonWithDefaultValue();
-                }
-            } else if (request.contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
-                //按 key进行分组，假设客户端是：
-                // corp[id]=1&corp[name]=abc&role[id]=2&role[name]=def
-                //会分成两组 ret["corp"] = json1 , ret["role"] = json2;
-                //目前只支持两级。不支持  corp[role][id]
-                if (request.parameterNames.hasMoreElements()) {
-                    for (key in request.parameterNames) {
-                        var value = request.getParameter(key);
-                        var keyLastIndex = key.indexOf('[');
-                        if (keyLastIndex >= 0) {
-                            var mk = key.slice(0..keyLastIndex - 1);
-
-                            setValue(ret, mk, key.substring(keyLastIndex), value);
-                        } else {
-                            setValue(ret, key, "", value);
-                        }
+                        setValue(ret, mk, key.substring(keyLastIndex), value);
+                    } else {
+                        setValue(ret, key, "", value);
                     }
-                } else {
-                    var bodyString = (body ?: byteArrayOf()).toString(const.utf8).trim()
-                    ret = JsonMap.loadFromUrl(bodyString)
                 }
+            } else {
+                var bodyString = (body ?: byteArrayOf()).toString(const.utf8).trim()
+                ret = JsonMap.loadFromUrl(bodyString)
             }
-        } catch (e: Exception) {
-            logger.Error(e);
         }
 
         return@lazy ret;
@@ -139,6 +125,20 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
         return BufferedReader(InputStreamReader(inputStream))
     }
 
+    private val excludeHeaderNames = mutableSetOf<String>()
+    fun removeHeader(headerName: String) {
+        excludeHeaderNames.add(headerName)
+    }
+
+    override fun getHeaderNames(): Enumeration<String> {
+        if (excludeHeaderNames.any() == false) {
+            return super.getHeaderNames();
+        }
+
+        return Vector<String>(super.getHeaderNames().toList() - excludeHeaderNames).elements()
+    }
+
+
     @Throws(IOException::class)
     override fun getInputStream(): ServletInputStream {
 
@@ -166,14 +166,6 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
         }
     }
 
-//回发流关闭后, Session序列化.
-//    fun responseFlush(){
-//
-//    }
-
-
-//    @Value("\${nbcp.admin.session.redis.offset:}")
-//    var adminSessionRedis: String = ""
 
     fun getCookie(name: String): String = this.cookies?.firstOrNull { it.name == name }?.value ?: ""
 
@@ -206,10 +198,5 @@ constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
         return "";
     }
 
-
-    /**
-     * 保存一点自定义数据.
-     */
-    val myTransferData = JsonMap()
 }
 

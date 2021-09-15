@@ -54,8 +54,8 @@ open class MyAllFilter : Filter {
     override fun init(p0: FilterConfig?) {
     }
 
-    @Value("\${app.filter.allow-origins:}")
-    var allowOrigins: String = "";
+//    @Value("\${app.filter.allow-origins:}")
+//    var allowOrigins: String = "";
 
 //    @Value("\${app.filter.headers:token,Authorization}")
 //    var headers: List<String> = listOf()
@@ -111,24 +111,20 @@ open class MyAllFilter : Filter {
 
         HttpContext.init(httpRequest, httpResponse);
 
-        if (!(request is HttpServletRequest) ||
-//                FileExtentionInfo(request.requestURI).isStaticURI ||
-            request.method == "HEAD" ||
-            (request is MyHttpRequestWrapper)
-        ) {
+        if (request is HttpServletRequest == false) {
             chain?.doFilter(request, response)
             return;
         }
 
-        httpRequest.getCorsResponseMap(this.allowOrigins.split(",")).forEach { key, value ->
-            httpResponse.setHeader(key, value);
-        }
-
-
-        if (httpRequest.method == "OPTIONS") {
-            httpResponse.status = 204
-            return;
-        }
+//        httpRequest.getCorsResponseMap(this.allowOrigins.split(",")).forEach { key, value ->
+//            httpResponse.setHeader(key, value);
+//        }
+//
+//
+//        if (httpRequest.method == "OPTIONS") {
+//            httpResponse.status = 204
+//            return;
+//        }
 
         var request_id = httpRequest.tokenValue;
 
@@ -170,7 +166,7 @@ open class MyAllFilter : Filter {
             }
 
             if (ignoreLog) {
-                logLevel = ch.qos.logback.classic.Level.OFF;
+                logLevel = Level.OFF;
             }
         }
 
@@ -185,141 +181,9 @@ open class MyAllFilter : Filter {
 
     fun next(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain?) {
 
-//        var ctx = WebApplicationContextUtils.getWebApplicationContext(httpRequest.servletContext)
-//        httpRequest.requestCache = ctx.getBean("request", IDataCache4Sql::class.java);
-//        httpRequest.requestCache?.clear();
-
-        var startAt = LocalDateTime.now()
-
-        //仅接收 c 端口的 token
-//        var token = request.getHeader("token");
-//        if (token.HasValue) {
-//            //从 redis 中查 token
-//            var data = SystemContext.getSessionData?.invoke(token, "sessionAttr:" + SystemContext.loginSessionKey)
-//            if (data != null) {
-//                request.session.setAttribute(SystemContext.loginSessionKey, data)
-//            }
-//        }
-
-        var queryMap = request.queryJson
-
         if (request.method == "GET") {
             //JSONP
-            if (queryMap.containsKey("callback")) {
-                var myRequest = MyHttpRequestWrapper(request);
-                var myResponse = MyHttpResponseWrapper(response)
-                myResponse.characterEncoding = "utf-8";
-
-                setLang(myRequest);
-
-                RequestContextHolder.setRequestAttributes(ServletRequestAttributes(request, response))
-                beforeRequest(myRequest);
-                try {
-                    chain?.doFilter(myRequest, myResponse);
-                } catch (e: Exception) {
-                    logger.Error {
-                        var msgs = mutableListOf<String>()
-                        msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
-                        msgs.add(e.message ?: "服务器错误");
-                        msgs.add("<----]]")
-
-                        return@Error msgs.joinToString(const.line_break)
-                    }
-
-                    if (request.findParameterStringValue("iniframe").AsBoolean()) {
-                        response.parentAlert(e.message ?: "服务器错误")
-                    } else {
-                        response.WriteTextValue(e.message ?: "服务器错误")
-                    }
-                    return;
-                }
-                afterComplete(myRequest, myResponse, queryMap.getStringValue("callback").AsString(), startAt, "");
-            } else {
-
-//                //如果是静态资源
-//                var file = htmlFiles.firstOrNull { request.requestURI.startsWith(it, true) }
-//                if (file == null) {
-//                    var browsePath = request.requestURI;
-//                    if (browsePath.endsWith("/")) {
-//                        browsePath = browsePath.substring(0, browsePath.length - 1);
-//                    }
-//                    var path = htmlPaths.keys.firstOrNull { it VbSame browsePath };
-//                    if (path != null) {
-//                        file = path + "/" + htmlPaths.get(path);
-//                    }
-//                }
-//
-//                if (file != null) {
-//                    file = htmlPath + file;
-//                    response.status = 200;
-//
-//                    var extention = FileExtentionInfo(file)
-//                    var contentType = MyUtil.getMimeType(extention.extName)
-//                    if (contentType.HasValue) {
-//                        response.contentType = contentType
-//                    }
-//
-//                    var resourceResolver = PathMatchingResourcePatternResolver()
-//                    var resource = resourceResolver.getResource(file)
-//                    resource.inputStream.copyTo(response.outputStream)
-//
-//                    logger.Info {
-//                        var msgs = mutableListOf<String>()
-//                        msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl} <----]]")
-//                        return@Info msgs.joinToString(line_break)
-//                    }
-//                    return;
-//                }
-
-
-                try {
-                    chain?.doFilter(request, response)
-                } catch (e: Exception) {
-                    logger.Error {
-                        var msgs = mutableListOf<String>()
-                        msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
-                        msgs.add(e.message ?: "服务器错误");
-                        msgs.add("<----]]")
-                        return@Error msgs.joinToString(const.line_break)
-                    }
-                    if (request.findParameterStringValue("iniframe").AsBoolean()) {
-                        response.parentAlert(e.message ?: "服务器错误")
-                    } else {
-                        response.WriteTextValue(e.message ?: "服务器错误")
-                    }
-                    return;
-                }
-//                logNewSession(request, response);
-            }
-
-
-            var endAt = LocalDateTime.now()
-
-            logger.Info {
-                var msgs = mutableListOf<String>()
-                msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
-                msgs.add("[response] ${response.status} ${endAt - startAt}")
-
-
-                for (h in response.headerNames) {
-                    msgs.add("\t${h}:${response.getHeader(h)}")
-                }
-
-//                var cookie = response.getHeader("Set-Cookie")
-//                if (cookie.HasValue) {
-//                    msgs.add("Set-Cookie:" + cookie)
-//                }
-//
-//                var contentType = response.getHeader("Content-Type")
-//                if (contentType.HasValue) {
-//                    msgs.add("Content-Type:" + contentType)
-//                }
-
-                msgs.add("<----]]")
-                return@Info msgs.joinToString(const.line_break)
-            }
-
-
+            proc_get(request, response, chain);
             return;
         }
 
@@ -331,11 +195,93 @@ open class MyAllFilter : Filter {
         //        }
 
 
-        var myRequest = MyHttpRequestWrapper(request);
-        var myResponse = MyHttpResponseWrapper(response);
-        request.characterEncoding = "utf-8";
+        procFilter(request, response, chain)
+    }
 
-        procFilter(myRequest, myResponse, chain, startAt)
+    private fun proc_get(_request: HttpServletRequest, _response: HttpServletResponse, chain: FilterChain?) {
+        var startAt = LocalDateTime.now()
+
+        var request = MyHttpRequestWrapper.create(_request);
+        var response = MyHttpResponseWrapper.create(_response)
+
+        var queryMap = request.queryJson
+
+        if (queryMap.containsKey("callback")) {
+            response.characterEncoding = "utf-8";
+
+            setLang(request);
+
+            RequestContextHolder.setRequestAttributes(ServletRequestAttributes(request, response))
+            beforeRequest(request);
+            try {
+                chain?.doFilter(request, response);
+            } catch (e: Exception) {
+                logger.Error {
+                    var msgs = mutableListOf<String>()
+                    msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
+                    msgs.add(e.message ?: "服务器错误");
+                    msgs.add("<----]]")
+
+                    return@Error msgs.joinToString(const.line_break)
+                }
+
+                if (request.findParameterStringValue("iniframe").AsBoolean()) {
+                    response.parentAlert(e.message ?: "服务器错误")
+                } else {
+                    response.WriteTextValue(e.message ?: "服务器错误")
+                }
+                return;
+            }
+            afterComplete(request, response, queryMap.getStringValue("callback").AsString(), startAt, "");
+        } else {
+
+            try {
+                chain?.doFilter(request, response)
+            } catch (e: Exception) {
+                logger.Error {
+                    var msgs = mutableListOf<String>()
+                    msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
+                    msgs.add(e.message ?: "服务器错误");
+                    msgs.add("<----]]")
+                    return@Error msgs.joinToString(const.line_break)
+                }
+                if (request.findParameterStringValue("iniframe").AsBoolean()) {
+                    response.parentAlert(e.message ?: "服务器错误")
+                } else {
+                    response.WriteTextValue(e.message ?: "服务器错误")
+                }
+                return;
+            }
+//                logNewSession(request, response);
+        }
+
+
+        var endAt = LocalDateTime.now()
+
+        logger.Info {
+            var msgs = mutableListOf<String>()
+            msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
+            msgs.add("[response] ${response.status} ${endAt - startAt}")
+
+
+            for (h in response.headerNames) {
+                msgs.add("\t${h}:${response.getHeader(h)}")
+            }
+
+//                var cookie = response.getHeader("Set-Cookie")
+//                if (cookie.HasValue) {
+//                    msgs.add("Set-Cookie:" + cookie)
+//                }
+//
+//                var contentType = response.getHeader("Content-Type")
+//                if (contentType.HasValue) {
+//                    msgs.add("Content-Type:" + contentType)
+//                }
+
+            msgs.add("<----]]")
+            return@Info msgs.joinToString(const.line_break)
+        }
+
     }
 
 //    private fun logNewSession(request: HttpServletRequest, httpResponse: HttpServletResponse) {
@@ -348,11 +294,16 @@ open class MyAllFilter : Filter {
 //    }
 
     private fun procFilter(
-        request: MyHttpRequestWrapper,
-        response: MyHttpResponseWrapper,
-        chain: FilterChain?,
-        startAt: LocalDateTime
+        _request: HttpServletRequest,
+        _response: HttpServletResponse,
+        chain: FilterChain?
     ) {
+        var request = MyHttpRequestWrapper.create(_request);
+        var response = MyHttpResponseWrapper.create(_response);
+        request.characterEncoding = "utf-8";
+
+        var startAt = LocalDateTime.now()
+
         RequestContextHolder.setRequestAttributes(ServletRequestAttributes(request, response))
 
         beforeRequest(request)

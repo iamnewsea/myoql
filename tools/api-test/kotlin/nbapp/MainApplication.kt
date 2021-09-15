@@ -50,6 +50,7 @@ import java.util.*
 @ServletComponentScan
 @Import(SpringUtil::class)
 //@EnableCircuitBreaker
+@ComponentScan("nbcp.**")
 open class MainApplication {
     companion object {
         val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

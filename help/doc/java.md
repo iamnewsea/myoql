@@ -1,4 +1,9 @@
-#
+# 集成
+
+`SpringBoot` 启动类添加 `@ComponentScan("nbcp.**")`。如果项目也是nbcp包名，可以忽略。
+
+
+
 
 获取方法名：
 

@@ -13,9 +13,21 @@ import javax.servlet.http.HttpServletResponseWrapper
  * Created by udi on 17-4-3.
  */
 
-class MyHttpResponseWrapper(
-        private val response: HttpServletResponse
-) : HttpServletResponseWrapper(response), Closeable {
+class MyHttpResponseWrapper private constructor(private val response: HttpServletResponse) :
+    HttpServletResponseWrapper(response),
+    Closeable {
+
+    companion object {
+        @JvmStatic
+        fun create(response: HttpServletResponse): MyHttpResponseWrapper {
+            if (response is MyHttpResponseWrapper) {
+                return response;
+            }
+
+            return MyHttpResponseWrapper(response)
+        }
+    }
+
     private val out: ByteServletOutputStream
     private val writer: PrintWriter
 

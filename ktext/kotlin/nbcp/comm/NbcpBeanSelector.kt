@@ -28,40 +28,40 @@ import java.lang.annotation.Inherited
  * @ComponentScan("nbcp.**")
  * @Import(NbcpBeanSelector::class)
  */
-class NbcpBeanSelector : DeferredImportSelector, BeanFactoryAware {
-    private lateinit var beanFactory: BeanFactory;
-    override fun selectImports(p0: AnnotationMetadata): Array<String> {
-
-        var ret = ClassUtil.getClassesWithAnnotationType("nbcp", Component::class.java)
-//            .sortedWith({ o1, o2 ->
+//class NbcpBeanSelector : DeferredImportSelector, BeanFactoryAware {
+//    private lateinit var beanFactory: BeanFactory;
+//    override fun selectImports(p0: AnnotationMetadata): Array<String> {
 //
-//                if (BeanDefinitionRegistryPostProcessor::class.java.isAssignableFrom(o1)) {
-//                    return@sortedWith 1;
-//                } else if (BeanDefinitionRegistryPostProcessor::class.java.isAssignableFrom(o2)) {
-//                    return@sortedWith -1;
-//                }
+//        var ret = ClassUtil.getClassesWithAnnotationType("nbcp", Component::class.java)
+////            .sortedWith({ o1, o2 ->
+////
+////                if (BeanDefinitionRegistryPostProcessor::class.java.isAssignableFrom(o1)) {
+////                    return@sortedWith 1;
+////                } else if (BeanDefinitionRegistryPostProcessor::class.java.isAssignableFrom(o2)) {
+////                    return@sortedWith -1;
+////                }
+////
+////                if (BeanFactoryPostProcessor::class.java.isAssignableFrom(o1)) {
+////                    return@sortedWith 1;
+////                } else if (BeanFactoryPostProcessor::class.java.isAssignableFrom(o2)) {
+////                    return@sortedWith -1;
+////                }
+////
+////                if (BeanPostProcessor::class.java.isAssignableFrom(o1)) {
+////                    return@sortedWith 1;
+////                } else if (BeanPostProcessor::class.java.isAssignableFrom(o2)) {
+////                    return@sortedWith -1;
+////                }
+////
+////                return@sortedWith 0;
+////            })
+//            .map { it.name }
+//            .toTypedArray();
 //
-//                if (BeanFactoryPostProcessor::class.java.isAssignableFrom(o1)) {
-//                    return@sortedWith 1;
-//                } else if (BeanFactoryPostProcessor::class.java.isAssignableFrom(o2)) {
-//                    return@sortedWith -1;
-//                }
+//        return ret;
+//    }
 //
-//                if (BeanPostProcessor::class.java.isAssignableFrom(o1)) {
-//                    return@sortedWith 1;
-//                } else if (BeanPostProcessor::class.java.isAssignableFrom(o2)) {
-//                    return@sortedWith -1;
-//                }
-//
-//                return@sortedWith 0;
-//            })
-            .map { it.name }
-            .toTypedArray();
-
-        return ret;
-    }
-
-    override fun setBeanFactory(beanFactory: BeanFactory) {
-        this.beanFactory = beanFactory;
-    }
-}
+//    override fun setBeanFactory(beanFactory: BeanFactory) {
+//        this.beanFactory = beanFactory;
+//    }
+//}
