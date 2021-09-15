@@ -1,59 +1,77 @@
 package nbcp
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import nbcp.comm.AsString
-import nbcp.comm.JsonStyleEnumScope
+import nbcp.comm.Important
+import nbcp.comm.clazzesIsSimpleDefine
 import nbcp.comm.const
+import nbcp.component.BaseJsonMapper
+import nbcp.component.DbJsonMapper
 import nbcp.component.WebJsonMapper
 import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
 import nbcp.web.*
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.InitializingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
-
-import org.springframework.boot.jackson.JsonComponent
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.DependsOn
-import org.springframework.context.event.ContextRefreshedEvent
+import org.springframework.beans.factory.config.BeanPostProcessor
+import org.springframework.boot.context.event.ApplicationReadyEvent
+import org.springframework.boot.context.event.ApplicationStartingEvent
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
+import org.springframework.context.annotation.Import
 import org.springframework.context.event.EventListener
-import org.springframework.core.Ordered
-import org.springframework.core.annotation.Order
 import org.springframework.core.convert.support.GenericConversionService
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter
+import org.springframework.scheduling.annotation.SchedulingConfiguration
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
-import org.springframework.web.method.support.HandlerMethodReturnValueHandler
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
-import java.lang.RuntimeException
+import java.util.function.Consumer
 
-
-@Configuration
-open class MyMvcOrmInit {
+@Component
+@Import(SpringUtil::class)
+class MyMvcBeanProcessor : BeanPostProcessor {
     companion object {
-        private var _inited = false;
-
-        fun isInited(): Boolean {
-            var tmp = _inited;
-            _inited = true;
-            return tmp
-        }
+        private var inited = false;
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
+
+    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
+        if (inited == false) {
+            inited = true;
+
+            init_app();
+        }
+
+        return super.postProcessBeforeInitialization(bean, beanName)
+    }
+
+    override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
+        var ret = super.postProcessAfterInitialization(bean, beanName)
+
+
+        return ret;
+    }
+
+
+    /**
+     * 在所有Bean初始化之前执行
+     */
+    private fun init_app() {
+
+    }
+
+    /**
+     * 系统预热之后，最后执行事件。
+     */
+    @EventListener
+    fun onApplicationReady(event: ApplicationReadyEvent) {
+        initMvcRequest()
+    }
+
 
     val handlerAdapter: RequestMappingHandlerAdapter by lazy {
         return@lazy SpringUtil.getBean<RequestMappingHandlerAdapter>();
-    }
-
-
-    @EventListener
-    fun onApplicationEvent(event: ContextRefreshedEvent) {
-        if (isInited()) return;
-        initMvcRequest()
     }
 
     private fun initMvcRequest() {
@@ -107,40 +125,6 @@ open class MyMvcOrmInit {
                 }
             }
             return@forEach
-        }
-    }
-}
-
-
-//@JsonComponent
-//class MyMvcJsonSerializerManage {
-//    @Bean
-//    fun jacksonObjectMapper(): ObjectMapper {
-//        return DefaultMyJsonMapper.get(
-//            JsonStyleEnumScope.GetSetStyle,
-//            JsonStyleEnumScope.IgnoreNull,
-//            JsonStyleEnumScope.Compress
-//        )
-//    }
-//}
-
-
-@Component
-@Order(Ordered.LOWEST_PRECEDENCE)
-class CheckWebMvcConfigurationSupport : InitializingBean {
-    companion object {
-        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
-    }
-
-    override fun afterPropertiesSet() {
-        var mvcConfigs = SpringUtil.context.getBeanNamesForType(WebMvcConfigurationSupport::class.java);
-        if (mvcConfigs.size <= 1) return;
-
-        var level = SpringUtil.context.environment.getProperty("app.webMvcConfigurationSupport.level").AsString("error")
-        if (level == "error") {
-            throw RuntimeException("Spring Boot中只能有一个 WebMvcConfigurationSupport 配置类,请改用 WebMvcConfigurer")
-        } else if (level == "warn") {
-            logger.warn("Spring Boot中只能有一个 WebMvcConfigurationSupport 配置类,请改用 WebMvcConfigurer");
         }
     }
 

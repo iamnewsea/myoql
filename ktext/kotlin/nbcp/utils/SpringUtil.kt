@@ -3,6 +3,7 @@ package nbcp.utils
 import nbcp.comm.*
 import nbcp.component.BaseJsonMapper
 import nbcp.component.DbJsonMapper
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.beans.factory.support.BeanDefinitionBuilder
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
@@ -29,6 +30,8 @@ import java.util.function.Supplier
 @Order(PriorityOrdered.HIGHEST_PRECEDENCE)
 class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware {
     companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+
         var startAt: LocalDateTime? = null
 
         private var contextField: ApplicationContext? = null
@@ -197,21 +200,32 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
 //    }
 
 
+    /**
+     * 1. 该方法最早执行。 BeanPostProcessor拦截不到 SpringUtil。
+     */
     override fun setApplicationContext(context: ApplicationContext) {
         contextField = context
 
         if (startAt == null) {
             startAt = LocalDateTime.now()
 
-            this.init_app()
+            this.init_app();
+            logger.Important("============ SpringUtil初始化! ============")
+            //发送初始化事件是没用的，因为需要先注册事件，再发出事件。 要保证注册事件在该方法之前
         }
     }
 
 
+    /**
+     * 3. 该方法只执行一次，而且时机很早。
+     */
     override fun postProcessBeanFactory(beanFactory: ConfigurableListableBeanFactory) {
         beanFactoryField = beanFactory;
     }
 
+    /**
+     * 2. 该方法只执行一次，而且时机很早。
+     */
     override fun postProcessBeanDefinitionRegistry(registry: BeanDefinitionRegistry) {
         registryField = registry;
     }

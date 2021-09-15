@@ -12,6 +12,9 @@ import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import java.util.concurrent.Executor
 
+/**
+ * 给 scheduler 加开关，定义ThreadPoolTaskExecutor的系统参数
+ */
 @EnableAsync
 @Configuration
 @EnableScheduling
@@ -19,11 +22,11 @@ import java.util.concurrent.Executor
 class TaskConfig {
 
     @Bean
-    fun myoqlTaskExecutor(): Executor {
+    fun myoqlTaskExecutor(): ThreadPoolTaskExecutor {
         val executor = ThreadPoolTaskExecutor()
-        executor.corePoolSize = config.getConfig("app.executor.core-pool-size").AsInt().Iif(0,3)
-        executor.maxPoolSize = config.getConfig("app.executor.max-pool-size").AsInt().Iif(0,64)
-        executor.setQueueCapacity(config.getConfig("app.executor.queue-capacity").AsInt().Iif(0,64))
+        executor.corePoolSize = config.getConfig("app.executor.core-pool-size").AsInt().Iif(0, 3)
+        executor.maxPoolSize = config.getConfig("app.executor.max-pool-size").AsInt().Iif(0, 64)
+        executor.setQueueCapacity(config.getConfig("app.executor.queue-capacity").AsInt().Iif(0, 64))
         executor.initialize()
         return executor
     }

@@ -20,25 +20,25 @@ import org.springframework.stereotype.Component
 import java.lang.RuntimeException
 
 
-@Configuration
-@ConditionalOnProperty("spring.elasticsearch.rest.uris")
-@Import(SpringUtil::class)
-@Lazy
-class MyOqlEsConfig {
-    companion object {
-        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
-    }
-
-    @Bean
-    @Lazy
-    fun myoqlEsDataSource(): RestClient {
-        return db.es.getRestClient(
-            config.getConfig("spring.elasticsearch.rest.uris", ""),
-            config.getConfig("spring.elasticsearch.path-prefix", ""),
-            config.getConfig("spring.elasticsearch.timeout").AsInt()
-        )
-    }
-}
+//@Configuration
+//@ConditionalOnProperty("spring.elasticsearch.rest.uris")
+//@Import(SpringUtil::class)
+//@Lazy
+//class MyOqlEsConfig {
+//    companion object {
+//        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+//    }
+//
+//    @Bean
+//    @Lazy
+//    fun myoqlEsDataSource(): RestClient {
+//        return db.es.getRestClient(
+//            config.getConfig("spring.elasticsearch.rest.uris", ""),
+//            config.getConfig("spring.elasticsearch.path-prefix", ""),
+//            config.getConfig("spring.elasticsearch.timeout").AsInt()
+//        )
+//    }
+//}
 
 /**
  * 定义Es不同的数据源

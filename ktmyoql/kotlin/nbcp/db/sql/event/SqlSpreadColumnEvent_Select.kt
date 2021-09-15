@@ -6,7 +6,7 @@ import nbcp.db.*
 import org.springframework.stereotype.Component
 
 /**
- * 处理删除数据后转移到垃圾箱功能
+ *
  */
 @Component
 class SqlSpreadColumnEvent_Select : ISqlEntitySelect {
