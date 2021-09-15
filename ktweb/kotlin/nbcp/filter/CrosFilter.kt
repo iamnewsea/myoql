@@ -48,6 +48,10 @@ open class CrosFilter : Filter {
     @Value("\${app.filter.allow-origins:}")
     var allowOrigins: String = "";
 
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    }
+
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
         if (request is HttpServletRequest == false) {
             chain.doFilter(request, response)
@@ -64,6 +68,9 @@ open class CrosFilter : Filter {
             if (this.any() && httpRequest.method != "OPTIONS") {
                 request2 = MyHttpRequestWrapper.create(httpRequest);
                 request2!!.removeHeader("origin")
+
+                var originClient = request.getHeader("origin") ?: ""
+                logger.Important("处理了跨域,并移除了origin, 请求源:${originClient}")
             }
         }.forEach { key, value ->
             httpResponse.setHeader(key, value);

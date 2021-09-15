@@ -9,6 +9,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.*
+import nbcp.filter.MyAllFilter
 import org.springframework.beans.factory.InitializingBean
 
 import org.springframework.beans.factory.config.BeanPostProcessor

@@ -77,19 +77,6 @@ fun main(args: Array<String>) {
     var context = SpringApplication.run(MainApplication::class.java, *args)
 
 
-//    db.setDynamicMongo("adminLoginUser", master)
-//    db.setDynamicMongo("planInfo", master)
-//    db.setDynamicMongo("sysDictionary", master)
-
-    var appMap = SpringUtil.binder.bindOrCreate("app", JsonMap::class.java)
-
-    var d = MyEvent("token");
-    SpringUtil.context.publishEvent(d);
-
-
-    println("是否包含 DataSourceAutoConfiguration: "+ SpringUtil.containsBean(DataSourceAutoConfiguration::class.java))
-    println("是否包含 DataSourceAutoConfiguration: "+ SpringUtil.context.containsBean(DataSourceAutoConfiguration::class.java.name))
-
     usingScope(LogScope.info) {
         MainApplication.logger.info(
             MyUtil.getCenterEachLine(

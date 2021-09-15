@@ -135,7 +135,7 @@ open class MyAllFilter : Filter {
 //        var requestUri = httpRequest.requestURI;
         var logLevelString = httpRequest.queryJson.get("log-level").AsString();
 
-        var logLevel: ch.qos.logback.classic.Level? = null
+        var logLevel: Level? = null
 
 
         if (logLevelString.HasValue) {
@@ -265,7 +265,14 @@ open class MyAllFilter : Filter {
 
 
             for (h in response.headerNames) {
-                msgs.add("\t${h}:${response.getHeader(h)}")
+                var key = h;
+                var headerValues = response.getHeaders(h);
+                if (headerValues.size > 1) {
+                    key = "[${key}]"
+                }
+
+
+                msgs.add("\t${key}:${headerValues.joinToString(",")}")
             }
 
 //                var cookie = response.getHeader("Set-Cookie")

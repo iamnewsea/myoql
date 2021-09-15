@@ -23,7 +23,7 @@ import java.time.*
  */
 @Api(description = "数据连接", tags = arrayOf("DbConnection"))
 @RestController
-@RequestMapping("/dev/kt")
+@RequestMapping("/cp/dev/kt")
 class CacheTestKotlinController {
 
     @GetMapping("/cache_city1")

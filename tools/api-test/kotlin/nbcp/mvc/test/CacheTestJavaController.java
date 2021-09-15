@@ -26,7 +26,7 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/dev/java")
+@RequestMapping("/cp/dev/java")
 public class CacheTestJavaController {
 
     @GetMapping("/cach_city1")

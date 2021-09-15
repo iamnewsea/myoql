@@ -26,8 +26,8 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/dev/java")
-public class CacheTestJavaController {
+@RequestMapping("/app/dev/java")
+public class AppCacheTestJavaController {
 
     @GetMapping("/cach_city1")
     @MyLogLevel(LogScope.info)

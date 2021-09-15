@@ -13,6 +13,7 @@ import nbcp.db.mongo.*
 import nbcp.db.mongo.entity.*
 import nbcp.web.*
 import org.bson.Document
+import org.springframework.http.HttpMethod
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.bind.annotation.RequestMapping
 import javax.servlet.http.HttpServletRequest
@@ -23,13 +24,13 @@ import java.time.*
  */
 @Api(description = "数据连接", tags = arrayOf("DbConnection"))
 @RestController
-@RequestMapping("/dev/kt")
-class CacheTestKotlinController {
+@RequestMapping("/app/dev/kt")
+class AppCacheTestKotlinController {
 
-    @GetMapping("/cache_city1")
+    @RequestMapping("/cache_city1",method = arrayOf(RequestMethod.GET))
     @MyLogLevel(LogScope.info)
     @CacheForSelect(300, "a", arrayOf(), "city", "#city")
-    fun cache_city1(city: Int): MutableList<Document> {
+    fun cache_city1(city: Int)  {
         var result = db.mor_base.sysAnnex.aggregate()
             .addPipeLineRawString(PipeLineEnum.match, """ { "group" : "lowcode"} """.replace("##", "$"))
             .addPipeLineRawString(
@@ -63,8 +64,6 @@ class CacheTestKotlinController {
          * 返回的结果：
         [{"总数":1,"最小":26821,"最大":26821,"id":{"扩展名":"abc"}},{"总数":5,"最小":5229,"最大":170276,"id":{"扩展名":"png"}}]
          */
-
-        return result;
     }
 
 
