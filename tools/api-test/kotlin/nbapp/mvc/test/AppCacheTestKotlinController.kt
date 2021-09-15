@@ -27,10 +27,10 @@ import java.time.*
 @RequestMapping("/app/dev/kt")
 class AppCacheTestKotlinController {
 
-    @RequestMapping("/cache_city1",method = arrayOf(RequestMethod.GET))
+    @RequestMapping("/cache_city1",method = arrayOf(RequestMethod.GET,RequestMethod.POST))
     @MyLogLevel(LogScope.info)
-    @CacheForSelect(300, "a", arrayOf(), "city", "#city")
-    fun cache_city1(city: Int)  {
+    @CacheForSelect(300, "a", arrayOf(), "city", "")
+    fun cache_city1()  {
         var result = db.mor_base.sysAnnex.aggregate()
             .addPipeLineRawString(PipeLineEnum.match, """ { "group" : "lowcode"} """.replace("##", "$"))
             .addPipeLineRawString(

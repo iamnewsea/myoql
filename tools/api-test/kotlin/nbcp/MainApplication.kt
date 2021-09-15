@@ -9,33 +9,15 @@ import org.springframework.boot.web.servlet.ServletComponentScan
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.*
-import nbcp.filter.MyAllFilter
-import org.springframework.beans.factory.InitializingBean
-
-import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
 
 import org.springframework.scheduling.annotation.EnableScheduling
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 import org.springframework.boot.web.context.WebServerApplicationContext
-import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.ApplicationContext
-import org.springframework.context.ApplicationEvent
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.*
-import org.springframework.context.event.EventListener
-import org.springframework.core.Ordered
-import org.springframework.core.annotation.Order
-import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 import java.util.*
-
-
-
 
 
 @SpringBootApplication(
@@ -50,6 +32,7 @@ import java.util.*
 @EnableScheduling
 @ServletComponentScan
 @Import(SpringUtil::class)
+@ComponentScan("nbapp.**")
 //@EnableCircuitBreaker
 open class MainApplication {
     companion object {
@@ -87,8 +70,8 @@ fun main(args: Array<String>) {
     SpringUtil.context.publishEvent(d);
 
 
-    println("是否包含 DataSourceAutoConfiguration: "+ SpringUtil.containsBean(DataSourceAutoConfiguration::class.java))
-    println("是否包含 DataSourceAutoConfiguration: "+ SpringUtil.context.containsBean(DataSourceAutoConfiguration::class.java.name))
+    println("是否包含 DataSourceAutoConfiguration: " + SpringUtil.containsBean(DataSourceAutoConfiguration::class.java))
+    println("是否包含 DataSourceAutoConfiguration: " + SpringUtil.context.containsBean(DataSourceAutoConfiguration::class.java.name))
 
     usingScope(LogScope.info) {
         MainApplication.logger.info(
