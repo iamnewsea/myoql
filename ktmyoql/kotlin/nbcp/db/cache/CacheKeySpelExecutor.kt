@@ -7,7 +7,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser
 import org.springframework.expression.spel.support.StandardEvaluationContext
 
 
-class CacheSpelExecutor(val variableMap: JsonMap) {
+class CacheKeySpelExecutor(val variableMap: JsonMap) {
     var spelExpressionParser = SpelExpressionParser();
     var context = StandardEvaluationContext()
 
@@ -40,10 +40,10 @@ class CacheSpelExecutor(val variableMap: JsonMap) {
             .replace("@", "＠")
             .remove(
                 " ", "　", "\t", "\r", "\n",
-                CacheForSelectData.GROUP_JOIN_CHAR.toString(),
-                CacheForSelectData.JOIN_TABLE_CHAR.toString(),
-                CacheForSelectData.KEY_VALUE_JOIN_CHAR.toString(),
-                CacheForSelectData.TAIL_CHAR.toString()
+                FromRedisCacheData.GROUP_JOIN_CHAR.toString(),
+                FromRedisCacheData.JOIN_TABLE_CHAR.toString(),
+                FromRedisCacheData.KEY_VALUE_JOIN_CHAR.toString(),
+                FromRedisCacheData.TAIL_CHAR.toString()
             )
     }
 }

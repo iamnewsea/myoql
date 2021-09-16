@@ -8,12 +8,9 @@ import org.springframework.http.MediaType
 import nbcp.utils.*
 import org.slf4j.LoggerFactory
 import org.springframework.web.servlet.HandlerMapping
-import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 internal val logger = LoggerFactory.getLogger("nbcp.web.MyMvcHelper")
-
 
 
 /**
@@ -184,22 +181,27 @@ val HttpServletRequest.fullUrl: String
 fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>): StringMap {
 
     var request = this;
-    var originClient = request.getHeader("origin") ?: ""
+    var requestOrigin = request.getHeader("origin") ?: ""
+    if (requestOrigin.startsWith("http://", true)) {
+        requestOrigin = requestOrigin.substring("http://".length)
+    }
+    else if (requestOrigin.startsWith("https://", true)) {
+        requestOrigin = requestOrigin.substring("https://".length)
+    }
 
     var retMap = StringMap();
-    if (originClient.isEmpty()) return retMap;
+    if (requestOrigin.isEmpty()) return retMap;
 
-
-    var allow = allowOrigins.any { originClient.contains(it) } ||
-        originClient.contains("localhost") ||
-        originClient.contains("127.0.0.1");
+    var allow = allowOrigins.any { requestOrigin.contains(it) } ||
+        requestOrigin.contains("localhost") ||
+        requestOrigin.contains("127.0.0");
 
     if (allow == false) {
-        logger.warn("系统忽略未允许的跨域请求源:${originClient}")
+        logger.warn("系统忽略未允许的跨域请求源:${requestOrigin}")
         return retMap;
     }
 
-    retMap.put("Access-Control-Allow-Origin", originClient)
+    retMap.put("Access-Control-Allow-Origin", requestOrigin)
     retMap.put("Access-Control-Max-Age", "2592000") //30天。
 
     retMap.put("Access-Control-Allow-Credentials", "true")

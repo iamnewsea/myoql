@@ -1,7 +1,6 @@
 package nbcp.db.cache
 
 import nbcp.comm.*
-import nbcp.db.db
 import nbcp.utils.Md5Util
 import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
@@ -12,32 +11,36 @@ import java.util.function.Supplier
 /**
  * CacheForSelect 的数据类
  */
-data class CacheForSelectData(
-    var cacheSeconds: Int = 0,
+data class FromRedisCacheData(
+    var cacheSeconds: Int,
     /**
      * 缓存表
      */
-    var table: String = "",
+    var table: String,
     /**
      * 缓存关联表
      */
-    var joinTables: Array<String> = arrayOf(),
+    var joinTables: Array<String>,
     /**
      * 缓存表的隔离键, 如:"cityCode"
      */
-    var key: String = "",
+    var key: String,
     /**
      * 缓存表的隔离值,如: "010"
      */
-    var value: String = "",
-    var sql: String = ""
+    var value: String,
+    var sql: String
 ) {
+    constructor() : this(0, "", arrayOf(), "", "", "") {
+
+    }
+
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
-        fun of(cacheForSelect: CacheForSelect, sql: String, variableMap: JsonMap): CacheForSelectData {
-            var spelExecutor = CacheSpelExecutor(variableMap);
-            var ret = CacheForSelectData();
+        fun of(cacheForSelect: FromRedisCache, sql: String, variableMap: JsonMap): FromRedisCacheData {
+            var spelExecutor = CacheKeySpelExecutor(variableMap);
+            var ret = FromRedisCacheData();
             ret.cacheSeconds = cacheForSelect.cacheSeconds;
             ret.table = spelExecutor.getVariableValue(cacheForSelect.table);
             ret.joinTables = cacheForSelect.joinTables;
@@ -96,17 +99,25 @@ data class CacheForSelectData(
             ret.add("")
         }
 
+
+        var part2 = mutableListOf<String>()
         if (cache.key.HasValue && cache.value.HasValue) {
-            ret.add("${cache.key}${KEY_VALUE_JOIN_CHAR}${cache.value}")
+            part2.add("${cache.key}${KEY_VALUE_JOIN_CHAR}${cache.value}")
+        } else {
+            part2.add("")
         }
+
+        part2.add(TAIL_CHAR.toString())
 
         var ext = cache.sql
-
         if (ext.length > 32) {
-            ret.add(Md5Util.getBase64Md5(ext))
+            part2.add(Md5Util.getBase64Md5(ext))
         } else {
-            ret.add(ext)
+            part2.add(ext)
         }
+
+        ret.add(part2.joinToString(""))
+
         return ret.joinToString(GROUP_JOIN_CHAR.toString())
     }
 
@@ -137,44 +148,5 @@ data class CacheForSelectData(
             }
         }
         return ret as T;
-    }
-}
-
-
-data class CacheForBrokeData(
-    var table: String = "",
-    /**
-     * 破坏表的隔离键，如: "cityCode"
-     */
-    var key: String = "",
-    /**
-     * 破坏表的隔离键值，如: "010"
-     */
-    var value: String = ""
-) {
-    fun brokeCache() {
-        db.rer_base.sqlCacheBroker.push(config.applicationName, this.ToJson());
-
-        //发布消息通知
-        SpringUtil.getBean<RedisCacheDbDynamicService>().publish()
-    }
-
-    fun getTablePattern(): String {
-        return "${CacheForSelectData.SQL_CACHE_PREFIX}${CacheForSelectData.GROUP_JOIN_CHAR}${this.table}${CacheForSelectData.GROUP_JOIN_CHAR}*";
-    }
-
-    fun getJoinTablePattern(): String {
-        return "${CacheForSelectData.SQL_CACHE_PREFIX}${CacheForSelectData.GROUP_JOIN_CHAR}*${CacheForSelectData.JOIN_TABLE_CHAR}${this.table}${CacheForSelectData.JOIN_TABLE_CHAR}*"
-    }
-
-    companion object {
-        fun of(cacheForBroke: CacheForBroke, variableMap: JsonMap): CacheForBrokeData {
-            var spelExecutor = CacheSpelExecutor(variableMap);
-            var ret = CacheForBrokeData();
-            ret.table = spelExecutor.getVariableValue(cacheForBroke.table);
-            ret.key = spelExecutor.getVariableValue(cacheForBroke.key);
-            ret.value = spelExecutor.getVariableValue(cacheForBroke.value);
-            return ret;
-        }
     }
 }

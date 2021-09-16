@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
-import java.time.Duration
 
 /**
  * #数字表示参数名，如: #0 == userName
@@ -22,14 +21,6 @@ import java.time.Duration
 open class RedisCacheAopService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
-    }
-
-
-    /**
-     * 缓存数据源，使用系统固定的数据库，不涉及分组及上下文切换。
-     */
-    private val redisTemplate by lazy {
-        return@lazy SpringUtil.getBean<StringRedisTemplate>()
     }
 
     //@annotation 表示拦截方法级别上的注解。
@@ -44,7 +35,7 @@ open class RedisCacheAopService {
     fun cacheSelect(joinPoint: ProceedingJoinPoint): Any? {
         var signature = joinPoint.signature as MethodSignature;
         var method = signature.method
-        var cache = method.getAnnotationsByType(CacheForSelect::class.java).firstOrNull()
+        var cache = method.getAnnotationsByType(FromRedisCache::class.java).firstOrNull()
 
         var args = joinPoint.args
         if (cache == null || cache.table.isEmpty() || cache.cacheSeconds <= 0) {
@@ -63,7 +54,7 @@ open class RedisCacheAopService {
             ext += "&" + args.joinToString(",")
         }
 
-        var cacheData = CacheForSelectData.of(cache, ext, variableMap);
+        var cacheData = FromRedisCacheData.of(cache, ext, variableMap);
 
         return cacheData.usingRedisCache(signature.returnType, {
             return@usingRedisCache joinPoint.proceed(args)
@@ -78,7 +69,7 @@ open class RedisCacheAopService {
     fun cacheBroke(joinPoint: ProceedingJoinPoint): Any? {
         var signature = joinPoint.signature as MethodSignature;
         var method = signature.method
-        var cache = method.getAnnotationsByType(CacheForBroke::class.java).firstOrNull()
+        var cache = method.getAnnotationsByType(BrokeRedisCache::class.java).firstOrNull()
 
         var args = joinPoint.args
         var ret = joinPoint.proceed(args)
@@ -92,7 +83,7 @@ open class RedisCacheAopService {
             variableMap.put(variables.get(i), args.get(i))
         }
 
-        CacheForBrokeData.of(cache, variableMap).brokeCache();
+        BrokeRedisCacheData.of(cache, variableMap).brokeCache();
 
         return ret;
     }

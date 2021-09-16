@@ -1,23 +1,16 @@
-package nbapp.mvc.test;
+package nbapp.service.cache;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
 import nbcp.comm.*;
 import nbcp.db.*;
-import nbcp.db.cache.CacheForBroke;
-import nbcp.db.cache.CacheForBrokeData;
-import nbcp.db.cache.CacheForSelect;
-import nbcp.db.cache.CacheForSelectData;
+import nbcp.db.cache.BrokeRedisCache;
+import nbcp.db.cache.BrokeRedisCacheData;
+import nbcp.db.cache.FromRedisCache;
+import nbcp.db.cache.FromRedisCacheData;
 import nbcp.db.mongo.*;
 import nbcp.db.mongo.entity.*;
-import nbcp.web.*;
 import org.bson.Document;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletRequest;
-import java.time.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,14 +18,17 @@ import java.util.List;
  * Created by CodeGenerator at 2021-04-11 23:42:19
  */
 
-@RestController
-@RequestMapping("/app/dev/java")
-public class AppCacheTestJavaController {
-
-    @GetMapping("/cach_city1")
-    @MyLogLevel(LogScope.info)
-    @CacheForSelect(cacheSeconds = 300, table = "a", joinTables = {}, key = "city", value = "#city")
-    List<Document> cach_city1(Integer city) {
+@Service
+@MyLogLevel(LogScope.info)
+public class AppCacheTestJavaService {
+    /**
+     * 查询时使用缓存。使用注解
+     *
+     * @param city
+     * @return
+     */
+    @FromRedisCache(cacheSeconds = 300, table = "tab1", joinTables = {}, key = "city", value = "#city")
+    public List<Document> cache_select(Integer city) {
         List<Document> result = MyOqlMongo.aggregate(db.getMor_base().getSysAnnex())
                 .addPipeLineRawString(PipeLineEnum.match, "{ \"group\" : \"lowcode\"} ")
                 .addPipeLineRawString(
@@ -68,30 +64,45 @@ public class AppCacheTestJavaController {
     }
 
 
-    @GetMapping("/cache_city2")
-    @MyLogLevel(LogScope.info)
-    List<Document> cache_city2(Integer city) {
-        Document d2 = new CacheForSelectData(3000, "a", new String[]{}, "city", city.toString(), "test3").usingRedisCache(Document.class, () -> {
-            Document d1 = new Document();
-            d1.put("OK", "dfdf");
-            return d1;
-        });
+    /**
+     * 使用注解缓存数据，如果不方便执行第一个函数，执行这个，也能测试缓存。
+     *
+     * @param city
+     * @return
+     */
+    public List<Document> code_cache_select(Integer city) {
+        Document d2 = new FromRedisCacheData(3000, "tab1", new String[]{}, "city", city.toString(), "code_cache_select" + city)
+                .usingRedisCache(Document.class, () -> {
+                    Document d1 = new Document();
+                    d1.put("name", "cache-test");
+                    d1.put("city", city.toString());
+                    return d1;
+                });
 
         return new LinkedList<Document>() {{
             add(d2);
         }};
     }
 
-    @GetMapping("/broke_city1")
-    @CacheForBroke(table = "a", key = "city", value = "#city")
-    void broke_city1(Integer city) {
 
+    /**
+     * 使用注解，破坏缓存
+     *
+     * @param city
+     */
+    @BrokeRedisCache(table = "tab1", key = "city", value = "#city")
+    public void cache_broke(Integer city) {
+        System.out.println();
     }
 
 
-    @GetMapping("/broke_city2")
-    void broke_city2(Integer city) {
-        new CacheForBrokeData("a", "city", city.toString()).brokeCache();
+    /**
+     * 使用代码，破坏缓存
+     *
+     * @param city
+     */
+    public void code_cache_broke(Integer city) {
+        new BrokeRedisCacheData("tab1", "city", city.toString()).brokeCache();
     }
 }
 

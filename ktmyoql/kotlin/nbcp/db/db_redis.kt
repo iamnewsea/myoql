@@ -2,13 +2,9 @@ package nbcp.db
 
 
 import nbcp.comm.*
-import nbcp.db.cache.CacheForSelect
-import nbcp.db.cache.CacheForSelectData
 import nbcp.db.redis.RedisDataSource
 import nbcp.utils.*
 import org.springframework.data.redis.core.StringRedisTemplate
-import org.springframework.expression.spel.standard.SpelExpressionParser
-import org.springframework.expression.spel.support.StandardEvaluationContext
 
 /**
  * 请使用 db.mongo

@@ -13,7 +13,7 @@ import org.springframework.data.redis.core.StringRedisTemplate
  * 如果封装方法，会有数据库操作
  */
 class RedisBaseGroup {
-    val sqlCacheBroker = RedisListProxy("sc-broker")
+    val sqlCacheBroker = RedisSetProxy("sc-broker")
 //    class SqlCacheGroup {
 //        val cacheSqlData get() = RedisStringProxy("")
 //        fun brokeKeys(table: String) = RedisSetProxy("broke-keys:${table}")

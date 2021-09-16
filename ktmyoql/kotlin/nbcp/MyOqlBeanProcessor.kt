@@ -66,7 +66,6 @@ class MyOqlBeanProcessor : BeanPostProcessor {
     }
 
     private fun loadRedisDependencyBean() {
-        SpringUtil.registerBeanDefinition("redisCacheDbDynamicService", RedisCacheDbDynamicService())
         SpringUtil.registerBeanDefinition("redisRenewalDynamicService", RedisRenewalDynamicService())
     }
 
@@ -85,6 +84,14 @@ class MyOqlBeanProcessor : BeanPostProcessor {
      */
     @EventListener
     fun onApplicationReady(event: ApplicationReadyEvent) {
+        //如果存在 Redis环境，但是没有 RedisCacheDbDynamicService，就构造一个，保证在Redis环境下至少一个。
+        if (SpringUtil.containsBean(StringRedisTemplate::class.java) &&
+            !SpringUtil.containsBean(RedisCacheDbDynamicService::class.java)
+        ) {
+            SpringUtil.registerBeanDefinition("redisCacheDbDynamicService", RedisCacheDbDynamicService())
+        }
+
+
         if (SpringUtil.containsBean(MongoTemplate::class.java)) {
             logger.info("mongo groups:" + db.mongo.groups.map { it::class.java.simpleName }.joinToString())
             logger.info("sql groups:" + db.sql.groups.map { it::class.java.simpleName }.joinToString())
