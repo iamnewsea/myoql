@@ -62,6 +62,8 @@ open class IdCodeName @JvmOverloads constructor(var id: String = "", code: Strin
     CodeName(code, name) {}
 
 
+open class LoginNamePasswordData(var loginName: String = "", var password: String = "")
+
 /**
  * 登录用户数据
  */

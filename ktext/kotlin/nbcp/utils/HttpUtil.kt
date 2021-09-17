@@ -5,16 +5,13 @@ package nbcp.utils
  */
 
 import nbcp.comm.*
-import org.apache.http.ssl.SSLContexts
+import nbcp.db.LoginNamePasswordData
 import org.slf4j.LoggerFactory
 import java.awt.image.BufferedImage
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
-import java.io.IOException
-import java.lang.RuntimeException
-import java.security.KeyStore
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.*
@@ -39,99 +36,6 @@ fun getTextTypeFromContentType(contentType: String): Boolean {
         contentType.contains("urlencoded", true)
 }
 
-data class HttpRequestData @JvmOverloads constructor(
-    var instanceFollowRedirects: Boolean = false,
-    var useCaches: Boolean = false,
-    var connectTimeout: Int = 5_000,
-    var readTimeout: Int = 30_000,
-    var chunkedStreamingMode: Int = 0,
-
-    var requestMethod: String = "",
-    var headers: StringMap = StringMap()
-) {
-    init {
-        headers.set("Connection", "close")
-    }
-
-    var contentType: String
-        get() {
-            return this.headers.getByIgnoreCaseKey("Content-Type").AsString()
-        }
-        set(value) {
-            this.headers["Content-Type"] = value;
-        }
-
-
-    fun setAuthorization(userName: String, password: String) {
-        this.headers.set(
-            "Authorization",
-            "Basic " + MyUtil.getBase64("${userName}:${password}".toByteArray())
-        )
-    }
-
-    /**
-     * postAction 是上传专用
-     */
-    var postAction: ((DataOutputStream) -> Unit)? = null
-
-    /**
-     * post 小数据量
-     */
-    var postBody = ""
-
-    /**
-     * 请求内容是否是文字
-     */
-    val postIsText: Boolean
-        get() {
-            return getTextTypeFromContentType(this.contentType)
-        }
-}
-
-class HttpResponseData {
-
-    /**
-     * 回发的原始内容。处理回发文本
-     */
-    var resultBody: String = ""
-
-    /**
-     * 回发回调，处理下载大文件。
-     */
-    var resultAction: ((DataInputStream) -> Unit)? = null
-
-
-    /**
-     * 回发内容是否是文字
-     */
-    val resultIsText: Boolean
-        get() {
-            return getTextTypeFromContentType(this.contentType)
-        }
-
-    var contentType: String = ""
-        internal set;
-
-    /**
-     * 该次回发Header，只读 ,全小写
-     */
-    var headers: StringMap = StringMap()
-        internal set;
-
-    /**
-     * 回发的编码，只读
-     */
-    val charset: String
-        get() {
-            var char_parts = this.contentType.AsString().split(";").last().split("=");
-            if (char_parts.size == 2) {
-                if (char_parts[0].trim().VbSame("charset")) {
-                    return char_parts[1];
-                }
-            }
-            return "UTF-8"
-        }
-}
 //@Configuration
 //class RestTemplateConfig {
 //    @Bean
@@ -155,6 +59,21 @@ class HttpResponseData {
 class HttpUtil @JvmOverloads constructor(var url: String = "") {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+
+
+        @JvmStatic
+        fun getBasicAuthorization(userName: String, password: String): String {
+            return "Basic " + MyUtil.getBase64("${userName}:${password}".toByteArray())
+        }
+
+        @JvmStatic
+        fun getLoginNamePassword(basicAuthorization: String): LoginNamePasswordData {
+            if (basicAuthorization.startsWith("Basic ")) return LoginNamePasswordData();
+            var value = MyUtil.getStringContentFromBase64(basicAuthorization.substring("Basic ".length));
+            var index = value.indexOf(":");
+            if (index < 0) return LoginNamePasswordData();
+            return LoginNamePasswordData(value.substring(0, index), value.substring(index + 1))
+        }
 
         /**远程下载图片,并压缩
          */
