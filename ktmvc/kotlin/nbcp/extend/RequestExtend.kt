@@ -179,13 +179,11 @@ val HttpServletRequest.fullUrl: String
  * 网关处理完跨域后，应该移除 origin
  */
 fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>): StringMap {
-
     var request = this;
     var requestOrigin = request.getHeader("origin") ?: ""
     if (requestOrigin.startsWith("http://", true)) {
         requestOrigin = requestOrigin.substring("http://".length)
-    }
-    else if (requestOrigin.startsWith("https://", true)) {
+    } else if (requestOrigin.startsWith("https://", true)) {
         requestOrigin = requestOrigin.substring("https://".length)
     }
 
@@ -211,39 +209,12 @@ fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>): StringMap
     var allowHeaders = mutableSetOf<String>();
     allowHeaders.add(config.tokenKey);
     //添加指定的
-    allowHeaders.add("Authorization")
+//    allowHeaders.add("Authorization")
 
-    if (request.method == "OPTIONS") {
-        allowHeaders.addAll(
-            request.getHeader("Access-Control-Request-Headers").AsString().split(",").filter { it.HasValue })
-    }
-
-    if (allowHeaders.any() == false) {
-        allowHeaders.addAll(request.headerNames.toList())
-
-
-        //https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
-        var standardHeaders = arrayOf(
-            "referer",
-            "expires",
-            "cache-control",
-            "content-language",
-            "last-modified",
-            "pragma",
-            "origin",
-            "accept",
-            "user-agent",
-            "connection",
-            "host",
-            "accept-language",
-            "accept-encoding",
-            "content-length",
-            "content-type"
-        )
-        //移除标准 header
-        allowHeaders.removeAll { standardHeaders.contains(it.toLowerCase()) }
-    }
-
+    allowHeaders.addAll(
+        request.getHeader("Access-Control-Request-Headers").AsString().split(",").filter { it.HasValue })
+//    if (request.method == "OPTIONS") {    }
+    //https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
 
     if (allowHeaders.any()) {
         retMap.put("Access-Control-Allow-Headers", allowHeaders.joinToString(","))
