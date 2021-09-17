@@ -27,6 +27,12 @@ open class CrosFilter : Filter {
     @Value("\${app.filter.allow-origins:}")
     var allowOrigins: String = "";
 
+    /**
+     * 额外需要允许通过的Key
+     */
+    @Value("\${app.filter.headers:token}")
+    var headers: List<String> = listOf()
+
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -43,7 +49,7 @@ open class CrosFilter : Filter {
         HttpContext.init(httpRequest, httpResponse);
 
         var request2: MyHttpRequestWrapper? = null
-        httpRequest.getCorsResponseMap(this.allowOrigins.split(",")).apply {
+        httpRequest.getCorsResponseMap(this.allowOrigins.split(","),headers).apply {
             if (this.any() && httpRequest.method != "OPTIONS") {
                 request2 = MyHttpRequestWrapper.create(httpRequest);
                 request2!!.removeHeader("origin")

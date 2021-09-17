@@ -178,7 +178,9 @@ val HttpServletRequest.fullUrl: String
  * 处理跨域。
  * 网关处理完跨域后，应该移除 origin
  */
-fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>): StringMap {
+fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>, headers: List<String>): StringMap {
+    //https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
+
     var request = this;
     var requestOrigin = request.getHeader("origin") ?: ""
     if (requestOrigin.startsWith("http://", true)) {
@@ -208,13 +210,18 @@ fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>): StringMap
 
     var allowHeaders = mutableSetOf<String>();
     allowHeaders.add(config.tokenKey);
+    allowHeaders.addAll(headers)
     //添加指定的
 //    allowHeaders.add("Authorization")
 
     allowHeaders.addAll(
-        request.getHeader("Access-Control-Request-Headers").AsString().split(",").filter { it.HasValue })
-//    if (request.method == "OPTIONS") {    }
-    //https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
+        request.getHeader("Access-Control-Request-Headers")
+            .AsString()
+            .split(",")
+            .filter { it.HasValue }
+    )
+
+    allowHeaders.removeIf { it.isEmpty() }
 
     if (allowHeaders.any()) {
         retMap.put("Access-Control-Allow-Headers", allowHeaders.joinToString(","))
