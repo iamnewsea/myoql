@@ -18,7 +18,7 @@ enum class DatabaseEnum {
     Mysql,
     Oracle,
     Sqlite,
-    Mssql,
+    SqlServer,
     Postgre
 }
 
@@ -32,26 +32,6 @@ object db {
 //    private val logger by lazy {
 //        return@lazy LoggerFactory.getLogger(this::class.java)
 //    }
-
-    @JvmStatic
-    val mainDatabaseType: DatabaseEnum by lazy {
-        var value: DatabaseEnum? = config.databaseType.ToEnum(DatabaseEnum::class.java)
-
-        if (value != null) {
-            return@lazy value
-        }
-
-
-        if (SpringUtil.context.getBeanNamesForType(MongoAutoConfiguration::class.java).any()) {
-            value = DatabaseEnum.Mongo
-        }
-
-        if (SpringUtil.context.getBeanNamesForType(DataSourceAutoConfiguration::class.java).any()) {
-            value = DatabaseEnum.Mysql
-        }
-
-        return@lazy value ?: DatabaseEnum.Mongo;
-    }
 
     @JvmStatic
     val sql = db_sql;

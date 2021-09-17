@@ -14,8 +14,8 @@ import nbcp.db.sql.query
 import nbcp.model.IUploadFileDbService
 import org.springframework.stereotype.Service
 
-@Service
-class UploadFileMysqlService : IUploadFileDbService {
+
+class UploadFileSqlService : IUploadFileDbService {
     override fun insert(annex: SysAnnex): Int {
         var ent = annex.ConvertJson(s_annex::class.java);
         ent.creator = annex.creator;

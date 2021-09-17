@@ -169,8 +169,3 @@ val Number?.HasValue: Boolean
     get() {
         return this != null && this != 0
     }
-
-fun <T : Number> T.Iif(conditionValue: T, retValue: T): T {
-    if (this == conditionValue) return retValue
-    return conditionValue
-}

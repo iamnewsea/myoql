@@ -150,4 +150,7 @@ fun ByteArray.ToHexLowerString(): String {
     return this.map { it.toString(16) }.joinToString("")
 }
 
-
+//fun <T : Any> T.Iif(conditionValue: T, retValue: T): T {
+//    if (this == conditionValue) return retValue
+//    return conditionValue
+//}

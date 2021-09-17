@@ -60,11 +60,11 @@ open class MyAllFilter : Filter {
 //    @Value("\${app.filter.headers:token,Authorization}")
 //    var headers: List<String> = listOf()
 
-    /**
-     * 静态文件在 resources 里的文件夹。前后不能有 "/"
-     */
-    @Value("\${app.filter.html-path:public}")
-    var htmlPath: String = "public"
+//    /**
+//     * 静态文件在 resources 里的文件夹。前后不能有 "/"
+//     */
+//    @Value("\${app.filter.html-path:public}")
+//    var htmlPath: String = "public"
 
     @Value("\${app.filter.ignore-log-urls:/health}")
     var ignoreLogUrls: List<String> = listOf()

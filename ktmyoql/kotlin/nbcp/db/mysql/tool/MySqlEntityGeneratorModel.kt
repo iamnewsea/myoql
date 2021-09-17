@@ -17,7 +17,7 @@ class EntityDbItemFieldData {
                 name2 = "field_" + name2;
             }
 
-            if (config.getConfig("app.myoql.keep-db-name").AsString("true").AsBoolean()) {
+            if (config.myoqlKeepDbName) {
                 return MyUtil.splitWordParts(name2).joinToString("_");
             }
             return MyUtil.getSmallCamelCase(name2);
@@ -85,12 +85,12 @@ class EntityDbItemData {
     val group: String
         get() {
             var groups_all_value = Regex("""\(\s*([\w-_]+)\s*\)""")
-                    .find(
-                            commentString
-                                    .replace("（", "(")
-                                    .replace("）", "")
-                    )
-                    ?.groupValues ?: listOf()
+                .find(
+                    commentString
+                        .replace("（", "(")
+                        .replace("）", "")
+                )
+                ?.groupValues ?: listOf()
             var group_value = ""
             if (groups_all_value.size > 0) {
                 group_value = groups_all_value[1];
@@ -120,7 +120,7 @@ class EntityDbItemData {
                 name2 = "table_" + name2;
             }
 
-            if (config.getConfig("app.myoql.keep-db-name").AsString("true").AsBoolean()) {
+            if (config.myoqlKeepDbName) {
                 return MyUtil.splitWordParts(name2).joinToString("_")
             }
 

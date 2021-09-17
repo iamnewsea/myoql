@@ -12,6 +12,7 @@ import org.springframework.beans.factory.support.GenericBeanDefinition
 import org.springframework.boot.context.properties.bind.Binder
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
+import org.springframework.context.annotation.Primary
 import org.springframework.core.PriorityOrdered
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
@@ -77,9 +78,9 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
          */
         @JvmStatic
         @JvmOverloads
-        inline fun <reified T> registerBeanDefinition(
+        fun registerBeanDefinition(
             name: String,
-            instance: T,
+            instance: Any,
             callback: ((BeanDefinitionBuilder) -> Unit) = {}
         ) {
             registry.registerBeanDefinition(name, getGenericBeanDefinition(instance, callback));
@@ -89,11 +90,8 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
          * 动态注册Bean
          */
         @JvmStatic
-        inline fun <reified T> registerBeanDefinition(instance: T) {
-            registry.registerBeanDefinition(
-                MyUtil.getSmallCamelCase(instance!!::class.java.simpleName),
-                getGenericBeanDefinition(instance)
-            );
+        fun registerBeanDefinition(instance: Any) {
+            registerBeanDefinition(MyUtil.getSmallCamelCase(instance::class.java.simpleName), instance)
         }
 
 
@@ -111,8 +109,14 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
             return context.getBeanNamesForType(clazz).firstOrNull { it.equals(name, ignoreCase) } != null
         }
 
+        @JvmStatic
         fun containsBean(clazz: Class<*>): Boolean {
             return context.getBeanNamesForType(clazz).any()
+        }
+
+
+        inline fun <reified T> containsBean(): Boolean {
+            return this.containsBean(T::class.java);
         }
 
         @JvmStatic
@@ -176,16 +180,22 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
         /**
          * 动态创建Bean
          */
-        inline fun <reified T> getGenericBeanDefinition(
-            instance: T,
+        fun getGenericBeanDefinition(
+            instance: Any,
             callback: ((BeanDefinitionBuilder) -> Unit) = {}
         ): GenericBeanDefinition {
-            val builder = BeanDefinitionBuilder.genericBeanDefinition(T::class.java);
-            callback(builder);
+            var type = instance::class.java
+            val builder = BeanDefinitionBuilder.genericBeanDefinition(type);
 
             val definition = builder.rawBeanDefinition as GenericBeanDefinition;
             definition.autowireMode = GenericBeanDefinition.AUTOWIRE_BY_TYPE
             definition.instanceSupplier = Supplier { instance }
+
+            if (type.getAnnotation(Primary::class.java) != null) {
+                definition.isPrimary = true;
+            }
+
+            callback(builder);
             return definition;
         }
     }

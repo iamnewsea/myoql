@@ -1,11 +1,16 @@
 package nbcp.db
 
 import com.zaxxer.hikari.HikariDataSource
+import nbcp.comm.AsString
+import nbcp.comm.ToEnum
+import nbcp.comm.config
 import nbcp.utils.*
 import nbcp.db.sql.IDataGroup
 import nbcp.db.sql.SqlBaseMetaTable
 import nbcp.db.sql.event.*
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 import org.springframework.util.StringUtils
 import javax.sql.DataSource
 
@@ -17,17 +22,41 @@ object db_sql {
     //所有的组。
     val groups = mutableSetOf<IDataGroup>()
 
-    var getSqlEntity: ((tableName: String) -> SqlBaseMetaTable<*>)? = null
+//    var getSqlEntity: ((tableName: String) -> SqlBaseMetaTable<*>)? = null
 
 
     val sqlEvents by lazy {
         return@lazy SpringUtil.getBean<SqlEntityCollector>();
     }
 
+    @JvmStatic
+    val sqlDatabaseType: DatabaseEnum? by lazy {
+        if (SpringUtil.containsBean(DataSourceAutoConfiguration::class.java) == false) {
+            return@lazy null;
+        }
+
+        var conn = config.getConfig("spring.datasource.url").AsString();
+
+        if (conn.startsWith("jdbc:mysql://")) {
+            return@lazy DatabaseEnum.Mysql
+        }
+
+        if (conn.startsWith("jdbc:sqlserver://")) {
+            return@lazy DatabaseEnum.SqlServer
+        }
+        if (conn.startsWith("jdbc:oracle:")) {
+            return@lazy DatabaseEnum.Oracle
+        }
+        if (conn.startsWith("jdbc:postgresql://")) {
+            return@lazy DatabaseEnum.Postgre
+        }
+        return@lazy null;
+    }
+
     fun getSqlQuoteName(value: String): String {
-        if (db.mainDatabaseType == DatabaseEnum.Mysql) {
+        if (sqlDatabaseType == DatabaseEnum.Mysql) {
             return "`${value}`"
-        } else if (db.mainDatabaseType == DatabaseEnum.Mssql) {
+        } else if (sqlDatabaseType == DatabaseEnum.SqlServer) {
             return "[${value}]"
         } else {
             return """"${value}""""

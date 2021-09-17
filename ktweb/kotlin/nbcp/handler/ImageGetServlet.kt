@@ -5,11 +5,12 @@ import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.DatabaseEnum
 import nbcp.db.mongo.*
-import nbcp.db.mongo.service.UploadFileMongoService
-import nbcp.db.mysql.service.UploadFileMysqlService
+import nbcp.model.IUploadFileDbService
 import nbcp.web.*
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.jdbc.core.JdbcTemplate
 import java.io.File
 import java.lang.RuntimeException
 import javax.servlet.annotation.WebServlet
@@ -26,19 +27,15 @@ import javax.servlet.http.HttpServletResponse
 open class ImageGetServlet : HttpServlet() {
 
     private val dbService by lazy {
-        if (config.databaseType VbSame DatabaseEnum.Mongo.toString()) {
-            return@lazy SpringUtil.context.getBean(UploadFileMongoService::class.java)
-        } else {
-            return@lazy SpringUtil.context.getBean(UploadFileMysqlService::class.java)
-        }
+        return@lazy SpringUtil.getBean<IUploadFileDbService>()
     }
 
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
         //附件数据库表中的Id
-        var id = request.findParameterStringValue("id") ;
+        var id = request.findParameterStringValue("id");
 
         //带 host 头部的地址
-        var url = request.findParameterStringValue("url") ;
+        var url = request.findParameterStringValue("url");
         if (id.isEmpty() && url.isEmpty()) {
             throw ParameterInvalidException("参数非法")
         }

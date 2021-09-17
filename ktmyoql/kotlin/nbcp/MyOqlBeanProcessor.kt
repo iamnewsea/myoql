@@ -7,6 +7,8 @@ import nbcp.component.DbJsonMapper
 import nbcp.db.cache.RedisCacheDbDynamicService
 import nbcp.db.db
 import nbcp.db.mongo.Date2LocalDateTimeConverter
+import nbcp.db.mongo.service.UploadFileMongoService
+import nbcp.db.mysql.service.UploadFileSqlService
 import nbcp.db.redis.RedisRenewalDynamicService
 import nbcp.utils.SpringUtil
 import org.bson.Document
@@ -27,6 +29,7 @@ import org.springframework.data.mongodb.core.convert.MappingMongoConverter
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.serializer.RedisSerializer
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import java.util.function.Consumer
 
@@ -55,18 +58,30 @@ class MyOqlBeanProcessor : BeanPostProcessor {
         if (bean is StringRedisTemplate) {
             bean.hashValueSerializer = RedisSerializer.json()
 
-            loadRedisDependencyBean()
+            loadRedisDependencyBeans()
         } else if (bean is MongoTemplate) {
             var converter = bean.converter as MappingMongoConverter;
             converter.typeMapper = DefaultMongoTypeMapper(null)
             (converter.conversionService as GenericConversionService).addConverter(Date2LocalDateTimeConverter())
+
+            loadMongoDependencyBeans();
+        } else if (bean is JdbcTemplate) {
+            loadJdbcDependencyBeans();
         }
 
         return ret;
     }
 
-    private fun loadRedisDependencyBean() {
-        SpringUtil.registerBeanDefinition("redisRenewalDynamicService", RedisRenewalDynamicService())
+    private fun loadMongoDependencyBeans() {
+        SpringUtil.registerBeanDefinition(UploadFileMongoService())
+    }
+
+    private fun loadJdbcDependencyBeans() {
+        SpringUtil.registerBeanDefinition(UploadFileSqlService())
+    }
+
+    private fun loadRedisDependencyBeans() {
+        SpringUtil.registerBeanDefinition(RedisRenewalDynamicService())
     }
 
     /**
@@ -88,7 +103,7 @@ class MyOqlBeanProcessor : BeanPostProcessor {
         if (SpringUtil.containsBean(StringRedisTemplate::class.java) &&
             !SpringUtil.containsBean(RedisCacheDbDynamicService::class.java)
         ) {
-            SpringUtil.registerBeanDefinition("redisCacheDbDynamicService", RedisCacheDbDynamicService())
+            SpringUtil.registerBeanDefinition(RedisCacheDbDynamicService())
         }
 
 

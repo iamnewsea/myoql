@@ -1,9 +1,7 @@
 package nbcp.config
 
 import nbcp.comm.AsInt
-import nbcp.comm.Iif
 import nbcp.comm.config
-import nbcp.utils.SpringUtil
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -24,9 +22,9 @@ class TaskConfig {
     @Bean
     fun myoqlTaskExecutor(): ThreadPoolTaskExecutor {
         val executor = ThreadPoolTaskExecutor()
-        executor.corePoolSize = config.getConfig("app.executor.core-pool-size").AsInt().Iif(0, 3)
-        executor.maxPoolSize = config.getConfig("app.executor.max-pool-size").AsInt().Iif(0, 64)
-        executor.setQueueCapacity(config.getConfig("app.executor.queue-capacity").AsInt().Iif(0, 64))
+        executor.corePoolSize = config.getConfig("app.executor.core-pool-size").AsInt(3)
+        executor.maxPoolSize = config.getConfig("app.executor.max-pool-size").AsInt(64)
+        executor.setQueueCapacity(config.getConfig("app.executor.queue-capacity").AsInt(64))
         executor.initialize()
         return executor
     }

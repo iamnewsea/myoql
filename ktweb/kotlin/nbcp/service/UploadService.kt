@@ -6,8 +6,7 @@ import nbcp.db.DatabaseEnum
 import nbcp.db.IdName
 import nbcp.db.db
 import nbcp.db.mongo.entity.SysAnnex
-import nbcp.db.mongo.service.UploadFileMongoService
-import nbcp.db.mysql.service.UploadFileMysqlService
+import nbcp.model.IUploadFileDbService
 import nbcp.util.VideoUtil
 import nbcp.utils.CodeUtil
 import nbcp.utils.MyUtil
@@ -199,11 +198,7 @@ open class UploadService {
 
 
     private val dbService by lazy {
-        if (db.mainDatabaseType == DatabaseEnum.Mongo) {
-            return@lazy SpringUtil.context.getBean(UploadFileMongoService::class.java)
-        } else {
-            return@lazy SpringUtil.context.getBean(UploadFileMysqlService::class.java)
-        }
+        return@lazy SpringUtil.getBean<IUploadFileDbService>()
     }
 
     /**

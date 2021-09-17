@@ -33,6 +33,7 @@ object config {
 
     @JvmStatic
     val debug: Boolean
+        @JvmName("debug")
         get() {
             if (_debug != null) {
                 return _debug!!;
@@ -81,6 +82,11 @@ object config {
     @JvmStatic
     val mybatisPackage: String by lazy {
         return@lazy getConfig("app.mybatis.package", "")
+    }
+
+    @JvmStatic
+    val myoqlKeepDbName:Boolean by lazy{
+        return@lazy getConfig("app.myoql.keep-db-name").AsBoolean(true)
     }
 
     @JvmStatic
@@ -135,21 +141,7 @@ object config {
      */
     @JvmStatic
     val tokenCacheSeconds: Int by lazy {
-        return@lazy Duration.parse(
-            getConfig("app.token-cache-seconds").AsString("PT4H")
-        ).seconds.toInt()
-    }
-
-    /**
-     * 强制 token 过期时间。单位是秒,默认是7天，从第一次登录，连续使用7天后，强制过期。
-     */
-    @JvmStatic
-    val tokenKeyExpireSeconds: Int by lazy {
-        var ret = Duration.parse(getConfig("app.token-key-expire").AsString("P7D"));
-        if (ret.seconds < tokenCacheSeconds * 3) {
-            return@lazy tokenCacheSeconds * 3
-        }
-        return@lazy ret.seconds.toInt()
+        return@lazy  getConfig("app.token-cache-seconds") .AsInt(4 * 3600)
     }
 
     /**
@@ -157,54 +149,7 @@ object config {
      */
     @JvmStatic
     val validateCodeCacheSeconds: Int by lazy {
-        return@lazy Duration.parse(
-            getConfig("app.validate-code-cache-seconds").AsString("PT5M")
-        ).seconds.toInt()
-    }
-
-    /**
-     * 映射到 DatabaseEnum 枚举上
-     */
-    @JvmStatic
-    val databaseType: String by lazy {
-        var type = getConfig("app.database-type", "")
-        if (type.HasValue) {
-            return@lazy type;
-        }
-
-        var mongo =
-            SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration");
-        if (mongo) {
-            return@lazy "Mongo"
-        }
-
-        var sql =
-            SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration");
-        if (sql) {
-
-            var conn = getConfig("spring.datasource.url");
-
-            if (conn.isNullOrEmpty()) {
-                return@lazy "Mysql"
-            }
-
-            if (conn.startsWith("jdbc:mysql://")) {
-                return@lazy "Mysql"
-            }
-
-            if (conn.startsWith("jdbc:sqlserver://")) {
-                return@lazy "Mssql"
-            }
-            if (conn.startsWith("jdbc:oracle:")) {
-                return@lazy "Oracle"
-            }
-            if (conn.startsWith("jdbc:postgresql://")) {
-                return@lazy "Postgre"
-            }
-            return@lazy "Mysql"
-        }
-
-        throw RuntimeException("无法识别数据库类型,请指定 app.database-type")
+        return@lazy getConfig("app.validate-code-cache-seconds").AsInt(300)
     }
 
     @JvmStatic
@@ -220,13 +165,6 @@ object config {
         return@lazy getConfig("spring.redis.host", "");
     }
 
-//    val redisTaskSize: Int by lazy {
-//        return@lazy SpringUtil.context.environment.getProperty("app.redis.task.size").AsInt(1024)
-//    }
-//
-//    val redisTaskDelay: Int by lazy {
-//        return@lazy SpringUtil.context.environment.getProperty("app.redis.task.delay").AsInt(15)
-//    }
 
     @JvmStatic
     val wxAppId: String by lazy {

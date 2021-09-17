@@ -29,7 +29,7 @@ class MybatisDbConfig {
             return;
         }
 
-        if (SpringUtil.context.environment.getProperty("app.mybatis.package").isNullOrEmpty()) {
+        if (config.mybatisPackage.isEmpty()) {
             return;
         }
 
@@ -38,13 +38,13 @@ class MybatisDbConfig {
         }
 
 
-        SpringUtil.registerBeanDefinition("mapperScannerConfigurer", mapperScannerConfigurer())
-        SpringUtil.registerBeanDefinition("myBatisTransactionManagementConfig", MyBatisTransactionManagementConfig())
+        SpringUtil.registerBeanDefinition(mapperScannerConfigurer())
+        SpringUtil.registerBeanDefinition(MyBatisTransactionManagementConfig())
 
         var sqlSessionFactoryBean = sqlSessionFactoryBean();
         if (sqlSessionFactoryBean != null) {
-            SpringUtil.registerBeanDefinition("sqlSessionFactoryBean", sqlSessionFactoryBean)
-            SpringUtil.registerBeanDefinition("sqlSessionTemplate", sqlSessionTemplate(sqlSessionFactoryBean))
+            SpringUtil.registerBeanDefinition(sqlSessionFactoryBean)
+            SpringUtil.registerBeanDefinition(sqlSessionTemplate(sqlSessionFactoryBean))
         }
     }
 
