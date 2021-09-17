@@ -31,7 +31,7 @@ open class RedisCacheAopService {
      * 使用 scan 遍历key.
      * insert破坏: 所有 join_tabls，主表
      */
-    @Around("@annotation(nbcp.db.cache.CacheForSelect)")
+    @Around("@annotation(nbcp.db.cache.FromRedisCache)")
     fun cacheSelect(joinPoint: ProceedingJoinPoint): Any? {
         var signature = joinPoint.signature as MethodSignature;
         var method = signature.method
@@ -65,7 +65,7 @@ open class RedisCacheAopService {
     /**
      * MasterAlternateMap
      */
-    @Around("@annotation(nbcp.db.cache.CacheForBroke)")
+    @Around("@annotation(nbcp.db.cache.BrokeRedisCache)")
     fun cacheBroke(joinPoint: ProceedingJoinPoint): Any? {
         var signature = joinPoint.signature as MethodSignature;
         var method = signature.method
