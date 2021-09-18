@@ -133,11 +133,22 @@ open class MyAllFilter : Filter {
 //        MDC.put("client_ip", request.ClientIp)
 
 //        var requestUri = httpRequest.requestURI;
+
+        var logLevel: Level? = getLogLevel(httpRequest);
+
+        if (logLevel != null) {
+            usingScope(LogScope.valueOf(logLevel.levelStr.toLowerCase())) {
+                next(httpRequest, httpResponse, chain);
+            }
+        } else {
+            next(httpRequest, httpResponse, chain);
+        }
+    }
+
+    private fun getLogLevel(httpRequest: HttpServletRequest): Level? {
+        var logLevel: Level? = null;
+
         var logLevelString = httpRequest.queryJson.get("log-level").AsString();
-
-        var logLevel: Level? = null
-
-
         if (logLevelString.HasValue) {
             if (logLevelString.IsNumberic()) {
                 var logLevelInt = logLevelString.AsInt()
@@ -170,13 +181,7 @@ open class MyAllFilter : Filter {
             }
         }
 
-        if (logLevel != null) {
-            usingScope(LogScope.valueOf(logLevel.levelStr.toLowerCase())) {
-                next(httpRequest, httpResponse, chain);
-            }
-        } else {
-            next(httpRequest, httpResponse, chain);
-        }
+        return logLevel;
     }
 
     fun next(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain?) {
