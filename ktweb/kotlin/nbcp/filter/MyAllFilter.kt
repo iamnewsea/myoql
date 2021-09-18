@@ -150,12 +150,14 @@ open class MyAllFilter : Filter {
     private fun proc_get(_request: HttpServletRequest, _response: HttpServletResponse, chain: FilterChain?) {
         var startAt = LocalDateTime.now()
 
-        var request = MyHttpRequestWrapper.create(_request);
-        var response = MyHttpResponseWrapper.create(_response)
 
-        var queryMap = request.queryJson
+        var queryMap = _request.queryJson
 
+        //JSONP
         if (queryMap.containsKey("callback")) {
+            var request = MyHttpRequestWrapper.create(_request);
+            var response = MyHttpResponseWrapper.create(_response)
+
             response.characterEncoding = "utf-8";
 
             setLang(request);
@@ -183,6 +185,9 @@ open class MyAllFilter : Filter {
             }
             afterComplete(request, response, queryMap.getStringValue("callback").AsString(), startAt, "");
         } else {
+            //保持原始对象。
+            var request = _request;
+            var response = _response;
 
             try {
                 chain?.doFilter(request, response)
@@ -201,13 +206,15 @@ open class MyAllFilter : Filter {
                 }
                 return;
             }
-//                logNewSession(request, response);
         }
 
 
         var endAt = LocalDateTime.now()
 
         logger.Info {
+            var request = _request;
+            var response = _response;
+
             var msgs = mutableListOf<String>()
             msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
             msgs.add("[response] ${response.status} ${endAt - startAt}")
@@ -220,19 +227,8 @@ open class MyAllFilter : Filter {
                     key = "[${key}]"
                 }
 
-
                 msgs.add("\t${key}:${headerValues.joinToString(",")}")
             }
-
-//                var cookie = response.getHeader("Set-Cookie")
-//                if (cookie.HasValue) {
-//                    msgs.add("Set-Cookie:" + cookie)
-//                }
-//
-//                var contentType = response.getHeader("Content-Type")
-//                if (contentType.HasValue) {
-//                    msgs.add("Content-Type:" + contentType)
-//                }
 
             msgs.add("<----]]")
             return@Info msgs.joinToString(const.line_break)
@@ -240,14 +236,6 @@ open class MyAllFilter : Filter {
 
     }
 
-//    private fun logNewSession(request: HttpServletRequest, httpResponse: HttpServletResponse) {
-//        if (request.session.isNew) {
-//            var setCookie = httpResponse.getHeader("Set-Cookie");
-//            if (setCookie != null) {
-//                logger.info("Set-Cookie: ${setCookie}")
-//            }
-//        }
-//    }
 
     private fun procFilter(
         _request: HttpServletRequest,
@@ -284,9 +272,6 @@ open class MyAllFilter : Filter {
 
             errorMsg = JsonMap("msg" to errorMsg).ToJson()
             response.status = 500;
-
-            //会不会有 之前 response.write 的情况导致回发数据混乱？
-//            response.outputStream.write("""{"msg":${errorMsg}}""".toByteArray(utf8))
         }
 
         afterComplete(request, response, "", startAt, errorMsg);
@@ -356,19 +341,6 @@ open class MyAllFilter : Filter {
         startAt: LocalDateTime,
         errorMsg: String
     ) {
-//设置 Set-Cookie:PZXTK=59160c3a-5443-490f-a94f-db1e83f041fd; Path=/; HttpOnly
-//        var setCookieValue = myResponse.getHeader("Set-Cookie")
-//        if (setCookieValue.HasValue) {
-//            myResponse.setHeader("Set-Cookie", setCookieValue.replace("HttpOnly", "").trim().trimEnd(';'))
-//
-//            var scv = setCookieValue.split(";").filter { it.startsWith("Set-Cookie") }.firstOrNull() ?: ""
-//            if (scv.HasValue) {
-//                setCookieValue = scv.split(":").last().split("=").last().trim();
-//
-//                myResponse.addHeader("sessionId", setCookieValue)
-//            }
-//        }
-
         var error = errorMsg.HasValue;
         var resStringValue = errorMsg;
         if (error) {
@@ -382,8 +354,6 @@ open class MyAllFilter : Filter {
                 response.contentType = "application/javascript;charset=UTF-8"
                 response.result = """${callback}(${resStringValue})""".toByteArray(const.utf8)
             } else {
-//                setResponseBid(resValue, request, response);
-
                 if (response.status == 280) {
                     response.result = byteArrayOf();
                 } else {
@@ -410,37 +380,4 @@ open class MyAllFilter : Filter {
             return@Info msg.joinToString(const.line_break)
         }
     }
-
-//    private fun setResponseBid(
-//        resValue: ByteArray,
-//        request: MyHttpRequestWrapper,
-//        response: MyHttpResponseWrapper
-//    ): Boolean {
-//        if (resValue.isEmpty()) return false;
-//        var ori_md5 = request.getHeader("_bid_");
-//        if (ori_md5 == null) return false;
-//        if (response.status >= 400 || resValue.size < 32) return false;
-//
-//        var md5 = Md5Util.getBase64Md5(resValue);
-//        //body id
-//        response.addHeader("_bid_", md5);
-//        if (ori_md5.HasValue && ori_md5 == md5) {
-//            response.status = 280
-//            return true;
-//        }
-//        return false;
-//    }
-
-
-//    private fun getAllFiles(file: File, filter: ((String) -> Boolean)): List<String> {
-//        if (file.isDirectory == false) {
-//            if (filter.invoke(file.FullName) == false) {
-//                return listOf()
-//            }
-//
-//            return listOf(file.FullName)
-//        }
-//
-//        return file.listFiles().map { getAllFiles(it, filter).toTypedArray() }.Unwind().toList()
-//    }
 }
