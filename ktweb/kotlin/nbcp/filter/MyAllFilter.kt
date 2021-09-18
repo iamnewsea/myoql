@@ -54,55 +54,11 @@ open class MyAllFilter : Filter {
     override fun init(p0: FilterConfig?) {
     }
 
-//    @Value("\${app.filter.allow-origins:}")
-//    var allowOrigins: String = "";
-
-//    @Value("\${app.filter.headers:token,Authorization}")
-//    var headers: List<String> = listOf()
-
-//    /**
-//     * 静态文件在 resources 里的文件夹。前后不能有 "/"
-//     */
-//    @Value("\${app.filter.html-path:public}")
-//    var htmlPath: String = "public"
-
     @Value("\${app.filter.ignore-log-urls:/health}")
     var ignoreLogUrls: List<String> = listOf()
 
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
-
-        /**
-         * 以public开头的（以"/"开头） 文件夹下的静态资源文件，不包括目录
-         */
-//        @JvmStatic
-//        val htmlFiles:Set<String> by lazy{
-//
-//            var htmlPath = System.getProperty("app.filter.html-path").AsString("public")
-//            htmlFiles = ClasspathHelper.forResource("${htmlPath}/").map { it.path }.toMutableSet()
-//
-//            //
-//            htmlIndexFiles.forEach { htmlIndexFile ->
-//                htmlFiles.filter { file -> file.endsWith("/" + htmlIndexFile, true) }.forEach { indexFile ->
-//                    var lastIndex = indexFile.lastIndexOf("/");
-//                    if (lastIndex >= 0) {
-//                        htmlPaths.set(indexFile.substring(0, lastIndex), htmlIndexFile);
-//                    }
-//                }
-//            }
-//
-//
-//            return@lazy
-//        }
-//
-//        /**
-//         * 以public开头的（以"/"开头） 文件夹下目录，以 "/" 结尾
-//         */
-//        @JvmStatic
-//        var htmlPaths = mutableMapOf<String, String>()
-//
-//        @JvmStatic
-//        var htmlIndexFiles = setOf("index.html", "index.htm", "home.html", "home.htm", "default.html", "default.htm");
     }
 
     override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
@@ -111,28 +67,16 @@ open class MyAllFilter : Filter {
 
         HttpContext.init(httpRequest, httpResponse);
 
-        if (request is HttpServletRequest == false) {
+        if (request is HttpServletRequest == false ||
+            config.getConfig("app.filter.enabled").AsBoolean(true)
+        ) {
             chain?.doFilter(request, response)
             return;
         }
 
-//        httpRequest.getCorsResponseMap(this.allowOrigins.split(",")).forEach { key, value ->
-//            httpResponse.setHeader(key, value);
-//        }
-//
-//
-//        if (httpRequest.method == "OPTIONS") {
-//            httpResponse.status = 204
-//            return;
-//        }
-
         var request_id = httpRequest.tokenValue;
 
         MDC.put("request_id", request_id)
-//        MDC.put("user_name", request.LoginUser.name.AsString())
-//        MDC.put("client_ip", request.ClientIp)
-
-//        var requestUri = httpRequest.requestURI;
 
         var logLevel: Level? = getLogLevel(httpRequest);
 
