@@ -68,7 +68,7 @@ open class MyAllFilter : Filter {
         HttpContext.init(httpRequest, httpResponse);
 
         if (request is HttpServletRequest == false ||
-            config.getConfig("app.filter.enabled").AsBoolean(true)
+            !config.getConfig("app.filter.enabled").AsBoolean(true)
         ) {
             chain?.doFilter(request, response)
             return;
