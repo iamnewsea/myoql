@@ -182,7 +182,8 @@ fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>, headers: L
     //https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
 
     var request = this;
-    var requestOrigin = request.getHeader("origin") ?: ""
+    var requestOrigin_Ori = request.getHeader("origin") ?: ""
+    var requestOrigin = requestOrigin_Ori
     if (requestOrigin.startsWith("http://", true)) {
         requestOrigin = requestOrigin.substring("http://".length)
     } else if (requestOrigin.startsWith("https://", true)) {
@@ -197,11 +198,11 @@ fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>, headers: L
         requestOrigin.contains("127.0.0");
 
     if (allow == false) {
-        logger.warn("系统忽略未允许的跨域请求源:${requestOrigin}")
+        logger.warn("系统忽略未允许的跨域请求源:${requestOrigin_Ori}")
         return retMap;
     }
 
-    retMap.put("Access-Control-Allow-Origin", requestOrigin)
+    retMap.put("Access-Control-Allow-Origin", requestOrigin_Ori)
     retMap.put("Access-Control-Max-Age", "2592000") //30天。
 
     retMap.put("Access-Control-Allow-Credentials", "true")
