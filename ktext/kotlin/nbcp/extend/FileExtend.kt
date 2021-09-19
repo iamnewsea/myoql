@@ -117,7 +117,7 @@ fun File.withCacheObject(cacheSeconds: Int, contentAction: () -> String): String
                 return@validate false;
             }
 
-            var createAt = line0[0].AsLocalDateTime();
+            var createAt = line0_sect[0].AsLocalDateTime();
             if (createAt == null) {
                 return@validate false
             }
