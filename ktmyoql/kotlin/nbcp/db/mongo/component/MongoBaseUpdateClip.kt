@@ -1,5 +1,6 @@
 package nbcp.db.mongo
 
+import com.mongodb.client.result.UpdateResult
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.db
@@ -133,11 +134,14 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             update.filterArray(it)
         }
 
-        var ret = 0;
+        var ret = -1;
         var startAt = LocalDateTime.now()
+        var error:Exception?= null
+        var query = Query.query(criteria)
+        var result :UpdateResult? = null;
         try {
-            var result = mongoTemplate.updateMulti(
-                    Query.query(criteria),
+             result = mongoTemplate.updateMulti(
+                    query,
                     update,
                     collectionName);
 
@@ -154,16 +158,17 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             ret = result.matchedCount.toInt();
             db.affectRowCount = ret
         } catch (e: Exception) {
-            ret = -1;
+            error = e;
             throw e;
         } finally {
-            logger.InfoError(ret < 0) {
-                """[update] ${this.collectionName}
-[where] ${criteria.criteriaObject.ToJson()}
-[set] ${update.updateObject.ToJson()}
-[result] ${ret}
-[耗时] ${db.executeTime}"""
-            }
+            MongoLogger.logUpdate(error,collectionName, query, update , result)
+//            logger.InfoError(ret < 0) {
+//                """[update] ${this.collectionName}
+//[where] ${criteria.criteriaObject.ToJson()}
+//[set] ${update.updateObject.ToJson()}
+//[result] ${ret}
+//[耗时] ${db.executeTime}"""
+//            }
         }
 
 

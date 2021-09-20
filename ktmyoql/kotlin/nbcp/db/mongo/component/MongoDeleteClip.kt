@@ -1,6 +1,7 @@
 package nbcp.db.mongo
 
 
+import com.mongodb.client.result.DeleteResult
 import nbcp.comm.*
 import nbcp.db.db
 import org.springframework.data.mongodb.core.query.Criteria
@@ -16,7 +17,8 @@ import java.time.LocalDateTime
 /**
  * MongoDelete
  */
-class MongoDeleteClip<M : MongoBaseMetaCollection<out IMongoDocument>>(var moerEntity: M) : MongoClipBase(moerEntity.tableName), IMongoWhereable {
+class MongoDeleteClip<M : MongoBaseMetaCollection<out IMongoDocument>>(var moerEntity: M) :
+    MongoClipBase(moerEntity.tableName), IMongoWhereable {
     val whereData = mutableListOf<Criteria>()
 
     companion object {
@@ -54,12 +56,14 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out IMongoDocument>>(var moerE
             return 0;
         }
 
-        var ret = 0;
+        var ret = -1;
         var startAt = LocalDateTime.now();
+        var error: Exception? = null;
+        var result: DeleteResult? = null;
+        var query = Query.query(criteria)
         try {
-            var result = mongoTemplate.remove(
-                    Query.query(criteria),
-                    collectionName);
+            result = mongoTemplate.remove(query, collectionName);
+
             db.executeTime = LocalDateTime.now() - startAt
 
             ret = result.deletedCount.toInt()
@@ -73,10 +77,10 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out IMongoDocument>>(var moerE
                 }
             }
         } catch (e: Exception) {
-            ret = -1;
+            error = e
             throw e;
         } finally {
-            logger.InfoError(ret < 0) { "delete:[" + this.collectionName + "] " + criteria.criteriaObject.ToJson() + ",result:${ret}" };
+            MongoLogger.logDelete(error,collectionName,query,result);
         }
 
 
