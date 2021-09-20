@@ -2,26 +2,8 @@ package nbcp.db
 
 import org.springframework.beans.factory.InitializingBean
 
-/**
- * 多数据定义
- */
-abstract class AbstractMultipleDataSourceProperties : InitializingBean {
-    /**
-     *app:
-     *  mongo:
-     *    yapi-ds: mongodb://dev:123@mongo:27017/yapi
-     *    db:
-     *      yapi:
-     *          - group
-     *          - project
-     *          - api
-     *          - interface_cat
-     *    read:
-     *      yapi-read:
-     *          - group
-     *          - project
-     */
 
+abstract class AbstractMyOqlMultipleDataSourceProperties : InitializingBean {
     /**
      * key 数据库的bean名称。value 是表名
      */

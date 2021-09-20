@@ -108,31 +108,27 @@ object db_es {
         }
 
         request.setJsonEntity(requestBody)
-        var error = false;
+
         var startAt = LocalDateTime.now()
-        var responseBody = "";
+        var error: Exception? = null;
+        var response: Response? = null;
+
         try {
-            var response = SpringUtil.getBean<RestClient>().performRequest(request)
+            response = SpringUtil.getBean<RestClient>().performRequest(request)
 
             db.executeTime = LocalDateTime.now() - startAt
-
 
             if (response.statusLine.statusCode != 200) {
                 return;
             }
-            responseBody = response.entity.content.readBytes().toString(const.utf8)
+//            responseBody = response.entity.content.readBytes().toString(const.utf8)
 //            var result = responseBody.FromJson<JsonMap>()!!;
 
         } catch (e: Exception) {
-            error = true;
+            error = e;
             throw e;
         } finally {
-            logger.InfoError(error) {
-                """[url] ${request.method} ${request.endpoint} 
-[body] ${requestBody} 
-[result] ${responseBody}
-[耗时] ${db.executeTime}"""
-            }
+            EsLogger.logGet(error,name, request, response);
         }
     }
 }

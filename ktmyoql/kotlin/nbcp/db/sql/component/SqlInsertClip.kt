@@ -16,7 +16,8 @@ import java.time.LocalDateTime
 /**
  * Created by yuxh on 2018/7/2
  */
-class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
+class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity: M) :
+    SqlBaseExecuteClip(mainEntity.tableName) {
 
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -24,6 +25,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
 
     private val columns = SqlColumnNames()
     val entities = mutableListOf<JsonMap>()
+
     //    private var transaction = false;
     private var multiBatchSize = 256;
 
@@ -71,16 +73,16 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
 
         //把 布尔值 改为 1,0
         entity::class.java.AllFields
-                .forEach {
-                    var key = it.name;
-                    var value = ent.get(key);
-                    if (value == null) {
-                        ent.remove(key);
-                        return@forEach
-                    }
-
-                    ent.set(key, proc_value(value));
+            .forEach {
+                var key = it.name;
+                var value = ent.get(key);
+                if (value == null) {
+                    ent.remove(key);
+                    return@forEach
                 }
+
+                ent.set(key, proc_value(value));
+            }
 
         this.entities.add(ent)
         return this
@@ -106,28 +108,30 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
             var keys = entity.keys;
 
             var insertColumns = this.mainEntity.getColumns().filter { it.name != autoIncrmentKey }
-                    .filter {
-                        if (it.name.IsIn(keys) == false) return@filter false;
+                .filter {
+                    if (it.name.IsIn(keys) == false) return@filter false;
 
-                        var v = entity.get(it.name);
-                        if (v == null) {
+                    var v = entity.get(it.name);
+                    if (v == null) {
+                        return@filter false;
+                    }
+
+                    //如果是时间，且为空字符串， 则不插入
+                    if (it.dbType.isDateOrTime()) {
+                        if (v is String && v.isEmpty()) {
                             return@filter false;
                         }
-
-                        //如果是时间，且为空字符串， 则不插入
-                        if (it.dbType.isDateOrTime()) {
-                            if (v is String && v.isEmpty()) {
-                                return@filter false;
-                            }
-                        }
-                        return@filter true;
                     }
+                    return@filter true;
+                }
 
             if (columns.any()) {
                 insertColumns = insertColumns.Intersect(columns, { a, b -> a.name == b.name })
             }
 
-            var exp = "insert into ${mainEntity.quoteTableName} (${insertColumns.map { "${db.sql.getSqlQuoteName(it.name)}" }.joinToString(",")}) values (${insertColumns.map { "{${it.name}}" }.joinToString(",")})";
+            var exp = "insert into ${mainEntity.quoteTableName} (${
+                insertColumns.map { "${db.sql.getSqlQuoteName(it.name)}" }.joinToString(",")
+            }) values (${insertColumns.map { "{${it.name}}" }.joinToString(",")})";
 
             var executeSql = SingleSqlData(exp, entity)
 
@@ -261,7 +265,9 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
 //        if (take < 0) {
 //            result = doBatch_EachItem(insertColumns).size;
 //        } else {
-        var executeSql = "insert into ${mainEntity.quoteTableName} (${insertColumns.map { "${db.sql.getSqlQuoteName(it.name)}" }.joinToString(",")}) values " +
+        var executeSql = "insert into ${mainEntity.quoteTableName} (${
+            insertColumns.map { "${db.sql.getSqlQuoteName(it.name)}" }.joinToString(",")
+        }) values " +
 
                 IntRange(1, take).map each_entity@{
                     return@each_entity "(" + insertColumns.map { "?" }.joinToString(",") + ")"
@@ -270,7 +276,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
         var msg_log = mutableListOf("[sql] ${executeSql}")
         var startAt = LocalDateTime.now();
 
-        var error = false;
+        var error: Exception? = null;
         var index = 1;
         try {
             result = jdbcTemplate.update(PreparedStatementCreator {
@@ -283,8 +289,14 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
                     }
                 }
 
-                if (logger.debug) {
-                    msg_log.add("[参数]\n${entities.map { ent -> insertColumns.map { column -> ent.getStringValue(column.name) }.joinToString(",") }.joinToString("\n")}")
+                if (config.debug) {
+                    msg_log.add(
+                        "[参数]\n${
+                            entities.map { ent ->
+                                insertColumns.map { column -> ent.getStringValue(column.name) }.joinToString(",")
+                            }.joinToString("\n")
+                        }"
+                    )
                 }
                 return@PreparedStatementCreator ps
             })
@@ -292,15 +304,13 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
 
             msg_log.add("批量插入完成 ${result} 条!")
         } catch (e: Exception) {
-            error = true
+            error = e
             throw e;
         } finally {
-            logger.InfoError(error) {
-                msg_log.add("[耗时] ${db.executeTime}")
-                return@InfoError msg_log.joinToString(const.line_break)
-            }
+            msg_log.add("[耗时] ${db.executeTime}")
+
+            SqlLogger.logInsert(error, tableName, { msg_log.joinToString(const.line_break) });
         }
-//        }
 
         return result
     }
@@ -316,7 +326,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
 
         var startAt = LocalDateTime.now();
 
-        var error = false;
+        var error: Exception? = null;
         var n = 0;
 
         //有自增Id的情况。
@@ -335,19 +345,27 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
                 db.executeTime = LocalDateTime.now() - startAt
                 db.lastAutoId = idKey.key.toInt()
             } catch (e: Exception) {
-                error = true
+                error = e
                 throw e;
             } finally {
-                logger.InfoError(error) {
+                SqlLogger.logInsert(error, tableName, {
                     var msg_log = mutableListOf("[sql] ${executeData.executeSql}")
-                    if (logger.debug) {
-                        msg_log.add("[参数] ${executeData.executeParameters.joinToString(",")}")
-                    }
+                    msg_log.add("[参数] ${executeData.executeParameters.joinToString(",")}")
                     msg_log.add("[id] ${db.lastAutoId}")
                     msg_log.add("[result] ${n}")
                     msg_log.add("[耗时] ${db.executeTime}")
-                    return@InfoError msg_log.joinToString(const.line_break)
-                }
+                    return@logInsert msg_log.joinToString(const.line_break)
+                })
+//                logger.InfoError(error) {
+//                    var msg_log = mutableListOf("[sql] ${executeData.executeSql}")
+//                    if (config.debug) {
+//                        msg_log.add("[参数] ${executeData.executeParameters.joinToString(",")}")
+//                    }
+//                    msg_log.add("[id] ${db.lastAutoId}")
+//                    msg_log.add("[result] ${n}")
+//                    msg_log.add("[耗时] ${db.executeTime}")
+//                    return@InfoError msg_log.joinToString(const.line_break)
+//                }
             }
 
             if (this.ori_entities.any()) {
@@ -368,19 +386,27 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
                 db.executeTime = LocalDateTime.now() - startAt
 
             } catch (e: Exception) {
-                error = true
+                error = e
                 throw e;
             } finally {
-                logger.InfoError(error) {
+                SqlLogger.logInsert(error, tableName, {
                     var msg_log = mutableListOf("[sql] ${executeData.executeSql}")
-
-                    if (logger.debug) {
-                        msg_log.add("[参数] ${executeData.executeParameters.joinToString(",")}")
-                    }
+                    msg_log.add("[参数] ${executeData.executeParameters.joinToString(",")}")
                     msg_log.add("[result] ${n}")
                     msg_log.add("[耗时] ${db.executeTime}")
-                    return@InfoError msg_log.joinToString(const.line_break)
-                }
+
+                    return@logInsert msg_log.joinToString(const.line_break)
+                })
+//                logger.InfoError(error) {
+//                    var msg_log = mutableListOf("[sql] ${executeData.executeSql}")
+//
+//                    if (config.debug) {
+//                        msg_log.add("[参数] ${executeData.executeParameters.joinToString(",")}")
+//                    }
+//                    msg_log.add("[result] ${n}")
+//                    msg_log.add("[耗时] ${db.executeTime}")
+//                    return@InfoError msg_log.joinToString(const.line_break)
+//                }
             }
         }
 

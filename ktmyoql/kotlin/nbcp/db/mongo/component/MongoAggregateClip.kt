@@ -210,18 +210,21 @@ cursor: {} } """
         var queryJson = toExpression();
         var result: Document? = null
         var startAt = LocalDateTime.now();
+        var error:Exception? = null ;
         try {
             result = mongoTemplate.executeCommand(queryJson)
             db.executeTime = LocalDateTime.now() - startAt
         } catch (e: Exception) {
+            error = e;
             throw e;
         } finally {
-            logger.InfoError(result == null) {
-                """[aggregate] ${this.moerEntity.tableName}
-[语句] ${queryJson}
-${if (logger.debug) "[result] ${result?.ToJson()}" else "[result.size] ${result?.size}"}
-[耗时] ${db.executeTime}"""
-            }
+            MongoLogger.logFind(error,collectionName,queryJson,result);
+//            logger.InfoError(result == null) {
+//                """[aggregate] ${this.moerEntity.tableName}
+//[语句] ${queryJson}
+//${if (config.debug) "[result] ${result?.ToJson()}" else "[result.size] ${result?.size}"}
+//[耗时] ${db.executeTime}"""
+//            }
         }
 
         if (result == null) {

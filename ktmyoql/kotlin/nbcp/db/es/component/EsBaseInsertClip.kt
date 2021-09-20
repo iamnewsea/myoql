@@ -142,8 +142,8 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
             logger.InfoError(ret < 0) {
                 """[insert] ${this.collectionName}
 [url] ${request.method} ${request.endpoint}
-${if (logger.debug) "[body] ${requestBody}" else "[enities.size] ${entities.size}"}
-[result] ${if (logger.debug) responseBody.toString() else ret}
+${if (config.debug) "[body] ${requestBody}" else "[enities.size] ${entities.size}"}
+[result] ${if (config.debug) responseBody.toString() else ret}
 [耗时] ${db.executeTime}
 """
             };

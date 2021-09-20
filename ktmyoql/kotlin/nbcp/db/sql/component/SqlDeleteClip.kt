@@ -67,6 +67,7 @@ class SqlDeleteClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
         var startAt = LocalDateTime.now();
 
         var n = -1;
+        var error:Exception? = null;
         try {
             n = jdbcTemplate.update(executeData.executeSql, *executeData.executeParameters)
             db.executeTime = LocalDateTime.now() - startAt
@@ -75,17 +76,10 @@ class SqlDeleteClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntit
 //                cacheService.delete4BrokeCache(sql)
 //            }
         } catch (e: Exception) {
+            error = e;
             throw e;
         } finally {
-            logger.InfoError(n < 0) {
-                var msg_log = mutableListOf("" +
-                        "[delete] ${executeData.executeSql}",
-                        "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}",
-                        "[result] ${n}",
-                        "[耗时] ${db.executeTime}")
-
-                return@InfoError msg_log.joinToString(const.line_break)
-            }
+            SqlLogger.logDelete(error,tableName,executeData, n);
         }
 
         settings.forEach {

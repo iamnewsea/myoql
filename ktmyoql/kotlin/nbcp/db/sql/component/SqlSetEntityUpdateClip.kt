@@ -16,7 +16,8 @@ import org.slf4j.LoggerFactory
  * MongoUpdate
  * 不会更新 id
  */
-class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity: M, var entity: T) : SqlBaseExecuteClip(mainEntity.tableName) {
+class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity: M, var entity: T) :
+    SqlBaseExecuteClip(mainEntity.tableName) {
     companion object {
     }
 
@@ -142,21 +143,21 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var 
         }
 
         columns.minus(whereColumns2)
-                .filter { column ->
-                    column.name != auKey?.name
-                            && field_names.contains(column.name)
-                            && !unsetColumn_names.contains(column.name)
-                            && setColumn_names.contains(column.name)
+            .filter { column ->
+                column.name != auKey?.name
+                        && field_names.contains(column.name)
+                        && !unsetColumn_names.contains(column.name)
+                        && setColumn_names.contains(column.name)
+            }
+            .forEach { key ->
+                var value = MyUtil.getPrivatePropertyValue(entity, key.name)
+                if (value == null) {
+                    setValues.put(key, null);
+                    return@forEach
                 }
-                .forEach { key ->
-                    var value = MyUtil.getPrivatePropertyValue(entity, key.name)
-                    if (value == null) {
-                        setValues.put(key, null);
-                        return@forEach
-                    }
 
-                    setValues.put(key, proc_value(value));
-                }
+                setValues.put(key, proc_value(value));
+            }
 
         this.sets.forEach {
             setValues.put(it.key, it.value)

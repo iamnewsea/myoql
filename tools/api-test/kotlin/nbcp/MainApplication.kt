@@ -73,7 +73,7 @@ fun main(args: Array<String>) {
 //    db.setDynamicMongo("planInfo", master)
 //    db.setDynamicMongo("sysDictionary", master)
 
-    var appMap = SpringUtil.binder.bindOrCreate("app", JsonMap::class.java)
+//    var appMap = SpringUtil.binder.bindOrCreate("app", JsonMap::class.java)
 
     var d = MyEvent("token");
     SpringUtil.context.publishEvent(d);

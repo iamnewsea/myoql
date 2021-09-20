@@ -257,7 +257,7 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
 //            logger.info(executeData.executeSql +"  [" + executeData.parameters.map { it.value.AsString() }.joinToString(",") +"]");
         var startAt = LocalDateTime.now();
 
-        var error = false;
+        var error: Exception? = null;
         try {
             retJsons =
                 jdbcTemplate.queryForList(executeData.executeSql, *executeData.executeParameters).toMutableList()
@@ -268,25 +268,10 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
 //                cacheService.setCacheJson(cacheKey, retJsons.ToJson())
 //            }
         } catch (e: Exception) {
-            error = true;
+            error = e;
             throw e;
         } finally {
-            logger.InfoError(error) {
-                var msg_log = mutableListOf(
-                    "" +
-                        "[select] ${executeData.executeSql}",
-                    "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}"
-                )
-
-                if (logger.debug) {
-                    msg_log.add("[result] ${retJsons.ToJson()}")
-                } else {
-                    msg_log.add("[result.size] ${retJsons.size}")
-                }
-
-                msg_log.add("[耗时] ${db.executeTime}")
-                return@InfoError msg_log.joinToString(const.line_break)
-            }
+            SqlLogger.logQuery(error, this.tableName, executeData, retJsons)
         }
 
 

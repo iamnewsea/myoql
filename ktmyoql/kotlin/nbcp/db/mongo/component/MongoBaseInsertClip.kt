@@ -57,7 +57,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
 
     fun exec(): Int {
         db.affectRowCount = -1;
-        var ret = 0;
+        var ret = -1;
 
         var settingResult = db.mongo.mongoEvents.onInserting(this)
         if (settingResult.any { it.second.result == false }) {
@@ -65,6 +65,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
         }
 
         var startAt = LocalDateTime.now()
+        var error:Exception? = null;
         try {
             mongoTemplate.insert(entities, this.collectionName)
             db.executeTime = LocalDateTime.now() - startAt
@@ -79,33 +80,34 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
             db.affectRowCount = entities.size
             return db.affectRowCount
         } catch (e: Exception) {
-            ret = -1;
+            error = e;
             throw e;
         } finally {
-            logger.InfoError(ret < 0) {
-                """[insert] ${this.collectionName}
-${
-                    if (logger.debug) "[entities] ${entities.ToJson()}" else "[enities.ids] ${
-                        entities.map {
-                            if (it is BaseEntity) {
-                                return@map it.id
-                            } else if (it is Map<*, *>) {
-                                return@map it.get("id").AsString()
-                            }
-                            //反射 id.
-                            var idField = it.javaClass.FindField("id")
-                            if (idField != null) {
-                                idField.isAccessible = true;
-                                return@map idField.get(it);
-                            }
-                            return@map ""
-                        }.joinToString(",")
-                    }"
-                }
-[result] ${ret}
-[耗时] ${db.executeTime}
-"""
-            };
+            MongoLogger.logInsert(error,collectionName,entities)
+//            logger.InfoError(ret < 0) {
+//                """[insert] ${this.collectionName}
+//${
+//                    if (config.debug) "[entities] ${entities.ToJson()}" else "[enities.ids] ${
+//                        entities.map {
+//                            if (it is BaseEntity) {
+//                                return@map it.id
+//                            } else if (it is Map<*, *>) {
+//                                return@map it.get("id").AsString()
+//                            }
+//                            //反射 id.
+//                            var idField = it.javaClass.FindField("id")
+//                            if (idField != null) {
+//                                idField.isAccessible = true;
+//                                return@map idField.get(it);
+//                            }
+//                            return@map ""
+//                        }.joinToString(",")
+//                    }"
+//                }
+//[result] ${ret}
+//[耗时] ${db.executeTime}
+//"""
+//            };
         }
 
         return ret;

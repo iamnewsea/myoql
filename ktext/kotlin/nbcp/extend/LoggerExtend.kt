@@ -43,14 +43,14 @@ inline fun Logger.Error(msgFunc: (() -> String)) {
     }
 }
 
-fun Logger.Error(err: Throwable) {
+inline fun Logger.Error(err: Throwable) {
     this.error(err.message, err);
 }
 
 /**
  * 重要日志，使用 scope.info 记录
  */
-fun Logger.Important(msg: String) {
+inline fun Logger.Important(msg: String) {
     usingScope(LogScope.info) {
         this.info(msg);
     }

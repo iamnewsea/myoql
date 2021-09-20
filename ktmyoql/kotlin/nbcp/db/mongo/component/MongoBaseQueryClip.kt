@@ -29,7 +29,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     }
 
     companion object {
-        private val logger= LoggerFactory.getLogger(this::class.java.declaringClass)
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
     /**
@@ -98,13 +98,6 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         var startAt = LocalDateTime.now();
         var cursor = mongoTemplate.find(query, Document::class.java, this.collectionName)
         db.executeTime = LocalDateTime.now() - startAt
-//        var cacheValue = MyCache.find(this.collectionName, this.getCacheKey())
-//        if (cacheValue.HasValue) {
-//            return cacheValue.FromJson<MutableList<R>>()
-//        }
-
-
-//        var mapper = mor.util.getMongoMapper(collectionName, clazz);
 
         var ret = mutableListOf<R>();
         var lastKey = selectColumns.lastOrNull() ?: selectProjections.map { it.key }.lastOrNull() ?: ""
@@ -115,7 +108,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             lastKey = lastKey.Slice(0, -3) + "id";
         }
 
-        var error = false;
+        var error: Exception? = null;
         try {
             db.mongo.procResultData_id2Id(cursor);
             cursor.forEach {
@@ -157,7 +150,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             }
 
         } catch (e: Exception) {
-            error = true;
+            error = e;
             throw e;
         } finally {
             fun getMsgs(): String {
@@ -183,7 +176,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                     msgs.add("[limit] ${skip},${take}")
                 }
 
-                if (logger.debug) {
+                if (config.debug) {
                     msgs.add("[result] ${cursor.ToJson()}")
                 } else {
                     msgs.add("[result.size] " + cursor.size.toString())
@@ -193,7 +186,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                 return msgs.joinToString(const.line_break);
             }
 
-            logger.InfoError(error) { getMsgs() }
+            MongoLogger.logFind(error, collectionName, ::getMsgs);
         }
 
 
@@ -214,21 +207,23 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
      */
     fun count(): Int {
         var startAt = LocalDateTime.now();
-        var ret = 0;
+        var ret = -1;
+        var error: Exception? = null
         var query = Query.query(this.getMongoCriteria(*whereData.toTypedArray()));
         try {
             ret = mongoTemplate.count(query, collectionName).toInt()
             db.executeTime = LocalDateTime.now() - startAt
         } catch (e: Exception) {
-            ret = -1;
+            error = e;
             throw e;
         } finally {
-            logger.InfoError(ret < 0) {
-                return@InfoError """[count] ${this.collectionName}
-[query] ${query.queryObject.ToJson()}
-[result] ${ret}
-[耗时] ${db.executeTime}"""
-            }
+            MongoLogger.logFind(error, collectionName, JsonMap("count" to query), JsonMap("result" to ret))
+//            logger.InfoError(ret < 0) {
+//                return@InfoError """[count] ${this.collectionName}
+//[query] ${query.queryObject.ToJson()}
+//[result] ${ret}
+//[耗时] ${db.executeTime}"""
+//            }
         }
         return ret;
     }
@@ -237,19 +232,21 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         var startAt = LocalDateTime.now();
         var ret: Boolean? = null;
         var query = Query.query(this.getMongoCriteria(*whereData.toTypedArray()));
+        var error: Exception? = null;
         try {
             ret = mongoTemplate.exists(query, collectionName);
             db.executeTime = LocalDateTime.now() - startAt
         } catch (e: Exception) {
-            ret = null;
+            error = e
             throw e;
         } finally {
-            logger.InfoError(ret == null) {
-                return@InfoError """[exists] ${this.collectionName}
-[query] ${query.queryObject.ToJson()}
-[result] ${ret}
-[耗时] ${db.executeTime}"""
-            }
+            MongoLogger.logFind(error, collectionName, JsonMap("exists" to query), JsonMap("result" to ret))
+//            logger.InfoError(ret == null) {
+//                return@InfoError """[exists] ${this.collectionName}
+//[query] ${query.queryObject.ToJson()}
+//[result] ${ret}
+//[耗时] ${db.executeTime}"""
+//            }
         }
         return ret ?: false;
     }

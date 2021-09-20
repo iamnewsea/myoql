@@ -36,6 +36,11 @@ class MyLogBackFilter : TurboFilter() {
             return FilterReply.NEUTRAL
         }
 
+        //如果指定了关闭
+        if (level == Level.OFF) {
+            return FilterReply.DENY;
+        }
+
         var log = scopes.GetLatest<LogScope>()
         if (log != null) {
             if (level.levelInt >= Level.toLevel(log.name).levelInt) {

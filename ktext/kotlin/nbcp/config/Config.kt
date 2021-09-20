@@ -4,26 +4,8 @@
 package nbcp.comm
 
 import nbcp.data.TokenStorageTypeEnum
-import nbcp.utils.CodeUtil
-import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
-import org.slf4j.Logger
-import org.springframework.beans.factory.Aware
-import org.springframework.beans.factory.BeanFactory
-import org.springframework.beans.factory.BeanFactoryAware
-import org.springframework.beans.factory.InitializingBean
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Import
-import org.springframework.context.annotation.ImportSelector
-import org.springframework.core.type.AnnotationMetadata
-import org.springframework.stereotype.Component
-import org.springframework.stereotype.Service
 import org.springframework.util.unit.DataSize
-import java.lang.RuntimeException
-import java.lang.annotation.Inherited
-import java.nio.charset.Charset
-import java.time.Duration
 
 /**
  * 配置项
@@ -85,14 +67,15 @@ object config {
     }
 
     @JvmStatic
-    val myoqlKeepDbName:Boolean by lazy{
-        return@lazy getConfig("app.myoql.keep-db-name").AsBoolean(true)
+    val myoqlKeepDbName: Boolean by lazy {
+        return@lazy getConfig("app.myoql.sql.keep-db-name").AsBoolean(true)
     }
 
     @JvmStatic
     val listResultWithCount: Boolean by lazy {
         return@lazy getConfig("app.list-result-with-count", "").AsBoolean()
     }
+
 
     @JvmStatic
     val jwtSignatureAlgorithm: String by lazy {
@@ -141,7 +124,7 @@ object config {
      */
     @JvmStatic
     val tokenCacheSeconds: Int by lazy {
-        return@lazy  getConfig("app.token-cache-seconds") .AsInt(4 * 3600)
+        return@lazy getConfig("app.token-cache-seconds").AsInt(4 * 3600)
     }
 
     /**

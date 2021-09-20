@@ -413,6 +413,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
 
         var executeData = SqlExecuteData(exp + sql.executeSql, sql.parameters)
 
+        var error : Exception? = null;
         var n = -1;
         var startAt = LocalDateTime.now()
         try {
@@ -423,18 +424,10 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
 //                cacheService.insertSelect4BrokeCache(insertTable.tableName)
 //            }
         } catch (e: Exception) {
+            error = e;
             throw e;
         } finally {
-            logger.InfoError(n < 0) {
-                var msg_log = mutableListOf(
-                    "[select] ${executeData.executeSql}",
-                    "[参数] ${executeData.executeParameters.joinToString(",")}",
-                    "[result] ${n}",
-                    "[耗时] ${db.executeTime}"
-                )
-
-                return@InfoError msg_log.joinToString(const.line_break)
-            }
+            SqlLogger.logQuery(error,tableName,executeData,n);
         }
 
         db.affectRowCount = n

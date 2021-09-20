@@ -7,6 +7,7 @@ import nbcp.db.es.*
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
 import org.elasticsearch.client.Request
+import org.elasticsearch.client.Response
 import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
 import java.time.LocalDateTime
@@ -64,7 +65,7 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
      */
     fun exec(): Int {
         db.affectRowCount = -1;
-        var ret = 0;
+        var ret = -1;
 
         var settingResult = db.es.esEvents.onUpdating(this)
         if (settingResult.any { it.second.result == false }) {
@@ -111,16 +112,18 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
 
         request.entity = NStringEntity(requestBody, ContentType.create("application/x-ndjson", const.utf8))
 
-        var responseBody = "";
+
         var startAt = LocalDateTime.now()
+        var response: Response? = null;
+        var error: Exception? = null;
         try {
-            var response = esTemplate.performRequest(request)
+            response = esTemplate.performRequest(request)
             if (response.statusLine.statusCode != 200) {
                 return ret;
             }
 
             db.executeTime = LocalDateTime.now() - startAt
-            responseBody = response.entity.content.readBytes().toString(const.utf8)
+//            responseBody = response.entity.content.readBytes().toString(const.utf8)
 
             usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
                 settingResult.forEach {
@@ -132,17 +135,10 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
             db.affectRowCount = entities.size
             return db.affectRowCount
         } catch (e: Exception) {
-            ret = -1;
+            error = e;
             throw e;
         } finally {
-            logger.InfoError(ret < 0) {
-                """[insert] ${this.collectionName}
-[url] ${request.method} ${request.endpoint}
-${if (logger.debug) "[body] ${requestBody}" else "[enities.size] ${entities.size}"}
-[result] ${if (logger.debug) responseBody else ret}
-[耗时] ${db.executeTime}
-"""
-            };
+            EsLogger.logPut(error, collectionName, request, response);
         }
 
         return ret;

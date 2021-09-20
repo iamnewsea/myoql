@@ -1,8 +1,7 @@
 package nbcp.db.es.tool
 
 import nbcp.comm.*
-import nbcp.db.AbstractMultipleDataSourceProperties
-import nbcp.db.db
+import nbcp.db.*
 import nbcp.utils.*
 import org.apache.http.Header
 import org.apache.http.HttpHost
@@ -10,6 +9,7 @@ import org.apache.http.message.BasicHeader
 import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestClient.FailureListener
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -43,7 +43,61 @@ import java.lang.RuntimeException
 /**
  * 定义Es不同的数据源
  */
-@ConfigurationProperties(prefix = "app.es")
+@ConfigurationProperties(prefix = "app.es.ds")
 @Component
-class EsIndexDataSource : AbstractMultipleDataSourceProperties() {
+class EsIndexDataSource : AbstractMyOqlMultipleDataSourceProperties() {
+}
+
+
+@ConfigurationProperties(prefix = "app.es.log")
+@Component
+class EsTableLogProperties : InitializingBean {
+    var get: List<String> = listOf()
+    var post: List<String> = listOf()
+    var put: List<String> = listOf()
+    var delete: List<String> = listOf()
+
+
+    fun getGetLog(tableDbName: String): Boolean {
+        if (get.contains(tableDbName.toLowerCase())) return true;
+        if (logDefault.contains(HttpCrudEnum.get)) return true;
+        return false;
+    }
+
+    fun getPostLog(tableDbName: String): Boolean {
+        if (post.contains(tableDbName.toLowerCase())) return true;
+        if (logDefault.contains(HttpCrudEnum.post)) return true;
+        return false
+    }
+
+    fun getPutLog(tableDbName: String): Boolean {
+        if (put.contains(tableDbName.toLowerCase())) return true;
+        if (logDefault.contains(HttpCrudEnum.put)) return true;
+        return false;
+    }
+
+    fun getDeleteLog(tableDbName: String): Boolean {
+        if (delete.contains(tableDbName.toLowerCase())) return true;
+        if (logDefault.contains(HttpCrudEnum.delete)) return true;
+        return false;
+    }
+
+
+    val logDefault by lazy {
+        var value = config.getConfig("app.es.log-default").AsString().trim();
+        if (value.HasValue) {
+            if (value == "*") {
+                return@lazy HttpCrudEnum::class.java.GetEnumList()
+            }
+            return@lazy HttpCrudEnum::class.java.GetEnumList(value)
+        }
+        return@lazy listOf<HttpCrudEnum>()
+    }
+
+    override fun afterPropertiesSet() {
+        get = get.map { it.toLowerCase() }
+        post = post.map { it.toLowerCase() }
+        put = put.map { it.toLowerCase() }
+        delete = delete.map { it.toLowerCase() }
+    }
 }

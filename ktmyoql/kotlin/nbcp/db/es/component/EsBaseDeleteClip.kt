@@ -7,6 +7,7 @@ import nbcp.db.es.*
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
 import org.elasticsearch.client.Request
+import org.elasticsearch.client.Response
 import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
 import java.time.LocalDateTime
@@ -50,7 +51,7 @@ open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhere
      */
     fun exec(): Int {
         db.affectRowCount = -1;
-        var ret = 0;
+        var ret = -1;
 
         var settingResult = db.es.esEvents.onDeleting(this)
         if (settingResult.any { it.second.result == false }) {
@@ -90,14 +91,16 @@ open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhere
 
         var responseBody = "";
         var startAt = LocalDateTime.now()
+        var error: Exception?  = null
+        var response: Response? = null
         try {
-            var response = esTemplate.performRequest(request)
+            response = esTemplate.performRequest(request)
             if (response.statusLine.statusCode != 200) {
                 return ret;
             }
 
             db.executeTime = LocalDateTime.now() - startAt
-            responseBody = response.entity.content.readBytes().toString(const.utf8)
+//            responseBody = response.entity.content.readBytes().toString(const.utf8)
 
             usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
                 settingResult.forEach {
@@ -109,17 +112,10 @@ open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhere
             db.affectRowCount = ids.size
             return db.affectRowCount
         } catch (e: Exception) {
-            ret = -1;
+            error = e;
             throw e;
         } finally {
-            logger.InfoError(ret < 0) {
-                """[insert] ${this.collectionName}
-[url] ${request.method} ${request.endpoint}
-${if (logger.debug) "[body] ${requestBody}" else "[enities.size] ${ids.size}"}
-[result] ${if (logger.debug) responseBody else ret}
-[耗时] ${db.executeTime}
-"""
-            };
+            EsLogger.logDelete(error,collectionName,request,response)
         }
 
         return ret;

@@ -174,6 +174,7 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var main
 
         var startAt = LocalDateTime.now();
 
+        var error: Exception? = null;
         var n = -1;
         try {
             n = jdbcTemplate.update(executeData.executeSql, *executeData.executeParameters)
@@ -182,17 +183,10 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var main
 //                cacheService.updated4BrokeCache(sql)
 //            }
         } catch (e: Exception) {
+            error = e;
             throw e;
         } finally {
-            logger.InfoError(n < 0) {
-                var msg_log = mutableListOf(
-                        "[update] ${executeData.executeSql}",
-                        "[参数] ${executeData.executeParameters.joinToString(",")}",
-                        "[result] ${n}",
-                        "[耗时] ${db.executeTime}")
-
-                return@InfoError msg_log.joinToString(const.line_break)
-            }
+            SqlLogger.logUpdate(error,tableName,executeData,n );
         }
 
         settings.forEach {

@@ -6,6 +6,7 @@ import nbcp.db.db
 import org.apache.http.message.BasicHeader
 import org.bson.Document
 import org.elasticsearch.client.Request
+import org.elasticsearch.client.Response
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.time.LocalDateTime
@@ -47,10 +48,12 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
 
         var request = Request("POST", url);
         request.setJsonEntity(requestBody)
-
+        var response: Response? = null
         var startAt = LocalDateTime.now();
+        var error: Exception? = null
+
         try {
-            var response = esTemplate.performRequest(request)
+            response = esTemplate.performRequest(request)
             db.executeTime = LocalDateTime.now() - startAt
 
             if (response.statusLine.statusCode != 200) {
@@ -59,7 +62,10 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
             return response.entity.content.readBytes().toString(const.utf8)
 
         } catch (e: Exception) {
+            error = e;
             throw e;
+        } finally {
+            EsLogger.logGet(error, collectionName, request, response)
         }
     }
 
@@ -76,11 +82,10 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
 
         var isString = clazz.IsStringType;
 
-        var error = false;
+
         var list: List<Map<String, Any>> = listOf()
 
         var ret = mutableListOf<R>();
-        var responseBody = "";
         var url = getUrl()
 
         var requestBody = ""
@@ -88,77 +93,55 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
             requestBody = this.search.toString()
         }
 
-        try {
-            responseBody = getRestResult(url, requestBody)
+        var responseBody = getRestResult(url, requestBody)
 
-            var result = responseBody.FromJson<Map<String, Any>>()!!;
+        var result = responseBody.FromJson<Map<String, Any>>()!!;
 
-            var hits = result.getTypeValue<Map<String, *>>("hits");
-            if (hits == null) {
-                return ret;
-            }
-
-            this.total = hits.getIntValue("total", "value");
-            if (this.total <= 0) {
-                return ret;
-            }
-
-            list = (hits.getTypeValue<Collection<*>>("hits") ?: listOf<Any>())
-                .map { (it as Map<String, *>).getTypeValue<Map<String, Any>>("_source") }
-                .filter { it != null }
-                .map { it!! }
-
-
-            db.affectRowCount = list.size
-
-            var lastKey = this.search._source.lastOrNull() ?: ""
-
-            list.forEach {
-                if (mapFunc != null) {
-                    mapFunc(it);
-                }
-
-
-                if (isString) {
-                    if (lastKey.isEmpty()) {
-                        lastKey = it.keys.last()
-                    }
-
-                    ret.add(MyUtil.getPathValue(it, *lastKey.split(".").toTypedArray()).AsString() as R)
-                } else if (clazz.IsSimpleType()) {
-                    if (lastKey.isEmpty()) {
-                        lastKey = it.keys.last()
-                    }
-
-                    ret.add(MyUtil.getPathValue(it, *lastKey.split(".").toTypedArray()) as R);
-                } else {
-                    var ent = it.ConvertJson(clazz)
-                    ret.add(ent);
-                }
-            }
-
-        } catch (e: Exception) {
-            error = true;
-            throw e;
-        } finally {
-            fun getMsgs(): String {
-                var msgs = mutableListOf<String>()
-                msgs.add("[index] " + this.collectionName);
-                msgs.add("[url] " + url);
-                msgs.add("[search] " + requestBody)
-
-                if (logger.debug) {
-                    msgs.add("[result] ${responseBody}")
-                } else {
-                    msgs.add("[result.size] " + list.size.toString())
-                }
-
-                msgs.add("[耗时] ${db.executeTime}")
-                return msgs.joinToString(const.line_break);
-            }
-
-            logger.InfoError(error) { getMsgs() }
+        var hits = result.getTypeValue<Map<String, *>>("hits");
+        if (hits == null) {
+            return ret;
         }
+
+        this.total = hits.getIntValue("total", "value");
+        if (this.total <= 0) {
+            return ret;
+        }
+
+        list = (hits.getTypeValue<Collection<*>>("hits") ?: listOf<Any>())
+            .map { (it as Map<String, *>).getTypeValue<Map<String, Any>>("_source") }
+            .filter { it != null }
+            .map { it!! }
+
+
+        db.affectRowCount = list.size
+
+        var lastKey = this.search._source.lastOrNull() ?: ""
+
+        list.forEach {
+            if (mapFunc != null) {
+                mapFunc(it);
+            }
+
+
+            if (isString) {
+                if (lastKey.isEmpty()) {
+                    lastKey = it.keys.last()
+                }
+
+                ret.add(MyUtil.getPathValue(it, *lastKey.split(".").toTypedArray()).AsString() as R)
+            } else if (clazz.IsSimpleType()) {
+                if (lastKey.isEmpty()) {
+                    lastKey = it.keys.last()
+                }
+
+                ret.add(MyUtil.getPathValue(it, *lastKey.split(".").toTypedArray()) as R);
+            } else {
+                var ent = it.ConvertJson(clazz)
+                ret.add(ent);
+            }
+        }
+
+
 
         return ret
     }
@@ -181,9 +164,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
      * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/search-count.html
      */
     fun count(): Int {
-        var error = false;
         var count = 0;
-        var responseBody = "";
         var url = getUrl()
 
         var requestBody = ""
@@ -191,34 +172,12 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
             requestBody = this.search.toString()
         }
 
-        try {
-            responseBody = getRestResult(url, requestBody)
+        var responseBody = getRestResult(url, requestBody)
 
-            var result = responseBody.FromJson<Map<String, Any>>()!!;
+        var result = responseBody.FromJson<Map<String, Any>>()!!;
 
-            count = result.getIntValue("count")
-        } catch (e: Exception) {
-            error = true;
-            throw e;
-        } finally {
-            fun getMsgs(): String {
-                var msgs = mutableListOf<String>()
-                msgs.add("[index] " + this.collectionName);
-                msgs.add("[url] " + url);
-                msgs.add("[search] " + requestBody)
+        count = result.getIntValue("count")
 
-                if (logger.debug) {
-                    msgs.add("[result] ${responseBody}")
-                } else {
-                    msgs.add("[count] " + count)
-                }
-
-                msgs.add("[耗时] ${db.executeTime}")
-                return msgs.joinToString(const.line_break);
-            }
-
-            logger.InfoError(error) { getMsgs() }
-        }
 
         return count
     }
@@ -227,9 +186,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
      * 获取 aggregations 部分
      */
     fun getAggregationResult(): Map<String, *> {
-        var error = false;
         var ret = JsonMap()
-        var responseBody = "";
         var url = getUrl()
 
         var requestBody = ""
@@ -237,44 +194,21 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
             requestBody = this.search.toString()
         }
 
-        try {
-            responseBody = getRestResult(url, requestBody)
+        var responseBody = getRestResult(url, requestBody)
 
-            var result = responseBody.FromJson<Map<String, Any>>()!!;
+        var result = responseBody.FromJson<Map<String, Any>>()!!;
 
-            var hits = result.getTypeValue<Map<String, *>>("hits");
-            if (hits == null) {
-                return ret;
-            }
-
-            this.total = hits.getIntValue("total", "value");
-            if (this.total <= 0) {
-                return ret;
-            }
-
-            return result.getTypeValue<Map<String, *>>("aggregations") ?: JsonMap()
-        } catch (e: Exception) {
-            error = true;
-            throw e;
-        } finally {
-            fun getMsgs(): String {
-                var msgs = mutableListOf<String>()
-                msgs.add("[index] " + this.collectionName);
-                msgs.add("[url] " + url);
-                msgs.add("[search] " + requestBody)
-
-
-                msgs.add("[result] ${responseBody}")
-
-
-                msgs.add("[耗时] ${db.executeTime}")
-                return msgs.joinToString(const.line_break);
-            }
-
-            logger.InfoError(error) { getMsgs() }
+        var hits = result.getTypeValue<Map<String, *>>("hits");
+        if (hits == null) {
+            return ret;
         }
 
-        return ret
+        this.total = hits.getIntValue("total", "value");
+        if (this.total <= 0) {
+            return ret;
+        }
+
+        return result.getTypeValue<Map<String, *>>("aggregations") ?: JsonMap()
     }
 
     private fun getUrl(): String {

@@ -1,8 +1,8 @@
 package nbcp.db.mongo
 
-import nbcp.comm.HasValue
-import nbcp.comm.StringMap
-import nbcp.db.AbstractMultipleDataSourceProperties
+import nbcp.comm.*
+import nbcp.db.AbstractMyOqlMultipleDataSourceProperties
+import nbcp.db.MongoCrudEnum
 import nbcp.utils.SpringUtil
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
@@ -73,8 +73,79 @@ import org.springframework.stereotype.Component
 
 /**
  * 定义Mongo不同的数据源
+ *
+ *app:
+ *  mongo:
+ *    yapi-ds: mongodb://dev:123@mongo:27017/yapi
+ *    db:
+ *      yapi:
+ *          - group
+ *          - project
+ *          - api
+ *          - interface_cat
+ *    read:
+ *      yapi-read:
+ *          - group
+ *          - project
  */
-@ConfigurationProperties(prefix = "app.mongo")
+@ConfigurationProperties(prefix = "app.mongo.ds")
 @Component
-class MongoCollectionDataSource : AbstractMultipleDataSourceProperties() {
+class MongoCollectionDataSource : AbstractMyOqlMultipleDataSourceProperties() {
+}
+
+
+
+@ConfigurationProperties(prefix = "app.mongo.log")
+@Component
+class MongoCollectionLogProperties :  InitializingBean{
+    var find: List<String> = listOf()
+    var insert: List<String> = listOf()
+    var update: List<String> = listOf()
+    var remove: List<String> = listOf()
+
+
+
+    fun getFindLog(tableDbName: String): Boolean {
+        if (find.contains(tableDbName.toLowerCase())) return true;
+        if (logDefault.contains(MongoCrudEnum.find)) return true;
+        return false;
+    }
+
+    fun getInsertLog(tableDbName: String): Boolean {
+        if (insert.contains(tableDbName.toLowerCase())) return true;
+        if (logDefault.contains(MongoCrudEnum.insert)) return true;
+        return false
+    }
+
+    fun getUpdateLog(tableDbName: String): Boolean {
+        if (update.contains(tableDbName.toLowerCase())) return true;
+        if (logDefault.contains(MongoCrudEnum.update)) return true;
+        return false;
+    }
+
+    fun getRemoveLog(tableDbName: String): Boolean {
+        if (remove.contains(tableDbName.toLowerCase())) return true;
+        if (logDefault.contains(MongoCrudEnum.remove)) return true;
+        return false;
+    }
+
+
+    val logDefault by lazy {
+        var value = config.getConfig("app.mongo.log-default").AsString().trim();
+        if (value.HasValue) {
+            if (value == "*") {
+                return@lazy MongoCrudEnum::class.java.GetEnumList()
+            }
+            return@lazy MongoCrudEnum::class.java.GetEnumList(value)
+        }
+        return@lazy listOf<MongoCrudEnum>()
+    }
+
+
+    override fun afterPropertiesSet() {
+        find = find.map { it.toLowerCase() }
+        insert = insert.map { it.toLowerCase() }
+        update = update.map { it.toLowerCase() }
+        remove = remove.map { it.toLowerCase() }
+    }
 }

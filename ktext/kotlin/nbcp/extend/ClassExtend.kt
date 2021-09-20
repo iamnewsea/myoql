@@ -3,6 +3,7 @@
 
 package nbcp.comm
 
+import nbcp.db.SqlCrudEnum
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
 import java.lang.RuntimeException
 import java.lang.reflect.*
@@ -140,9 +141,13 @@ val Class<*>.IsNumberType: Boolean
 /**
  * 获取枚举类的所有成员
  */
-fun <T> Class<T>.GetEnumList(): List<T> {
+@JvmOverloads
+fun <T> Class<T>.GetEnumList(values:String = ""): List<T> {
     if (this.isEnum == false) return listOf()
 
+    if( values.HasValue){
+        return values.split(",").filter { it.HasValue }.map { it.ToEnum(this)!! }
+    }
 
     var values = this.getDeclaredField("\$VALUES");
     values.isAccessible = true;
