@@ -12,6 +12,7 @@ import nbcp.comm.*
 import nbcp.utils.*
 import org.slf4j.MDC
 import org.slf4j.Marker
+import org.springframework.boot.logging.LogLevel
 
 
 /**
@@ -41,15 +42,15 @@ class MyLogBackFilter : TurboFilter() {
             return FilterReply.DENY;
         }
 
-        var log = scopes.GetLatest<LogScope>()
+        var log = scopes.GetLatest<LogLevel>()
         if (log != null) {
-            if (level.levelInt >= Level.toLevel(log.name).levelInt) {
+            if (level.levelInt >= log.toLevel().levelInt) {
                 return FilterReply.ACCEPT
             }
             return FilterReply.DENY;
         }
 
-        usingScope(LogScope.off) {
+        usingScope(LogLevel.OFF) {
             //config.debug 本身也会调用 decide.
             if (config.debug) {
                 return FilterReply.ACCEPT

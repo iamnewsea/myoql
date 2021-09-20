@@ -17,6 +17,7 @@ import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+import org.springframework.boot.logging.LogLevel
 import org.springframework.boot.web.context.WebServerApplicationContext
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.*
@@ -82,7 +83,7 @@ fun main(args: Array<String>) {
     println("是否包含 DataSourceAutoConfiguration: " + SpringUtil.containsBean(DataSourceAutoConfiguration::class.java))
     println("是否包含 DataSourceAutoConfiguration: " + SpringUtil.context.containsBean(DataSourceAutoConfiguration::class.java.name))
 
-    usingScope(LogScope.info) {
+    usingScope(LogLevel.INFO) {
         MainApplication.logger.info(
             MyUtil.getCenterEachLine(
                 """

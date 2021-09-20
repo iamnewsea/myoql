@@ -5,6 +5,7 @@ import nbcp.app.GroupLog
 import nbcp.comm.*
 import org.junit.Test
 import org.slf4j.LoggerFactory
+import org.springframework.boot.logging.LogLevel
 import java.time.Duration
 import java.time.LocalDateTime
 
@@ -17,11 +18,11 @@ class TestDuration : TestBase() {
     fun Test_Duration() {
         var d = Duration.parse("PT20M");
         println(d.seconds)
-        usingScope(LogScope.info) {
+        usingScope(LogLevel.INFO) {
             logger.info(d.seconds.toString())
         }
 
-        var info = LogScope.info;
+        var info = LogLevel.INFO;
 
         println(info.name)
     }

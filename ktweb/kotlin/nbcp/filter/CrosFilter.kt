@@ -49,13 +49,13 @@ open class CrosFilter : Filter {
         HttpContext.init(httpRequest, httpResponse);
 
         var request2: MyHttpRequestWrapper? = null
-        httpRequest.getCorsResponseMap(this.allowOrigins.split(","),headers).apply {
+        httpRequest.getCorsResponseMap(this.allowOrigins.split(","), headers).apply {
             if (this.any() && httpRequest.method != "OPTIONS") {
                 request2 = MyHttpRequestWrapper.create(httpRequest);
                 request2!!.removeHeader("origin")
 
                 var originClient = request.getHeader("origin") ?: ""
-                logger.Important("处理了跨域,并移除了origin, 请求源:${originClient}")
+                logger.Important("处理了跨域,并移除了origin, 请求源:${originClient}, url:${httpRequest.fullUrl}")
             }
         }.forEach { key, value ->
             httpResponse.setHeader(key, value);

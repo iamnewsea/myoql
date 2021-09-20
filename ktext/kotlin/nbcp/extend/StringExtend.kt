@@ -651,14 +651,14 @@ inline fun <reified T> String.ToEnum(): T? {
 
 
 /**
- * 字符串转化为枚举，通过 String name 找. 如果找不到,再通过 numeric 找.
+ * 字符串转化为枚举，通过 String name 不区分大小写 查找. 如果找不到,再通过 numeric 找.
  */
 fun <T> String.ToEnum(enumClazz: Class<T>): T? {
     if (enumClazz.isEnum == false) return null;
     var strValue = this.trim();
     if (strValue.isEmpty()) return null;
 
-    var finded = enumClazz.declaredFields.firstOrNull { it.name == strValue }
+    var finded = enumClazz.declaredFields.firstOrNull { it.name VbSame  strValue }
     if (finded == null) {
         if (this.IsNumberic()) {
             return this.AsInt().ToEnum(enumClazz)

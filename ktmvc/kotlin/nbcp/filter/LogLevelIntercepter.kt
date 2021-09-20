@@ -1,6 +1,5 @@
 package nbcp.filter
 
-import nbcp.comm.LogScope
 import nbcp.comm.usingScope
 import nbcp.comm.MyLogLevel
 import nbcp.comm.usingScope
@@ -11,7 +10,7 @@ import org.aspectj.lang.reflect.MethodSignature
 import org.springframework.stereotype.Component
 
 /**
- * 对注解了 MyLogLevel 的Bean或方法，使用 usingScope(LogScope.NoLog) 包裹
+ * 对注解了 MyLogLevel 的Bean或方法，使用 usingScope(LogLevel.NoLog) 包裹
  */
 @Aspect
 @Component

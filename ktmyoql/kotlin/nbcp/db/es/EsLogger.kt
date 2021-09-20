@@ -14,7 +14,7 @@ import org.springframework.boot.logging.LogLevel
 
 
 object EsLogger {
-    private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    private val logger = LoggerFactory.getLogger(this::class.java)
     private val esLog by lazy {
         return@lazy SpringUtil.getBean<EsTableLogProperties>()
     }

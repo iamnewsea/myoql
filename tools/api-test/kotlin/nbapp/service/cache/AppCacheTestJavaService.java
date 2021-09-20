@@ -1,5 +1,6 @@
 package nbapp.service.cache;
 
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Service;
 import nbcp.comm.*;
 import nbcp.db.*;
@@ -19,7 +20,7 @@ import java.util.List;
  */
 
 @Service
-@MyLogLevel(LogScope.info)
+@MyLogLevel(LogLevel.INFO)
 public class AppCacheTestJavaService {
     /**
      * 查询时使用缓存。使用注解

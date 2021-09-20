@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.logging.LogLevel
 import org.springframework.context.annotation.DependsOn
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
@@ -78,10 +79,10 @@ open class MyAllFilter : Filter {
 
         MDC.put("request_id", request_id)
 
-        var logLevel: Level? = getLogLevel(httpRequest);
+        var logLevel: LogLevel? = getLogLevel(httpRequest);
 
         if (logLevel != null) {
-            usingScope(LogScope.valueOf(logLevel.levelStr.toLowerCase())) {
+            usingScope(logLevel) {
                 next(httpRequest, httpResponse, chain);
             }
         } else {
@@ -89,7 +90,7 @@ open class MyAllFilter : Filter {
         }
     }
 
-    private fun getLogLevel(httpRequest: HttpServletRequest): Level? {
+    private fun getLogLevel(httpRequest: HttpServletRequest): LogLevel? {
         var logLevel: Level? = null;
 
         var logLevelString = httpRequest.queryJson.get("log-level").AsString();
@@ -125,7 +126,8 @@ open class MyAllFilter : Filter {
             }
         }
 
-        return logLevel;
+        if (logLevel == null) return null;
+        return logLevel.toLogLevel();
     }
 
     fun next(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain?) {

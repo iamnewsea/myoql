@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 
 object MongoLogger {
-    private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    private val logger = LoggerFactory.getLogger(this::class.java)
     private val mongoLog by lazy {
         return@lazy SpringUtil.getBean<MongoCollectionLogProperties>()
     }

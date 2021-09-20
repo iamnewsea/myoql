@@ -18,6 +18,7 @@ import nbcp.utils.SpringUtil
 import org.junit.Test
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.boot.jdbc.DataSourceBuilder
+import org.springframework.boot.logging.LogLevel
 import org.springframework.jdbc.core.JdbcTemplate
 import java.io.FileWriter
 import javax.sql.DataSource
@@ -50,7 +51,7 @@ class TestKtExt_MySql : TestBase() {
 
     @Test
     fun test_update_spread() {
-        usingScope(LogScope.debug) {
+        usingScope(LogLevel.DEBUG) {
             var ent = db.sql_base.s_annex.queryById("56Fgk7UEAm0Z").toEntity()!!;
             ent.creator = IdName("2", "rr")
             db.sql_base.s_annex.updateWithEntity(ent)

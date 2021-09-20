@@ -1,11 +1,11 @@
 package nbcp.utils
 
 import nbcp.TestBase
-import nbcp.comm.LogScope
 import nbcp.comm.StringMap
 import nbcp.comm.formatWithJson
 import nbcp.comm.usingScope
 import org.junit.Test
+import org.springframework.boot.logging.LogLevel
 import java.io.FileInputStream
 
 
@@ -20,7 +20,7 @@ class HttpUtilTest : TestBase() {
 
     @Test
     fun abfc2() {
-        usingScope(LogScope.info) {
+        usingScope(LogLevel.INFO) {
             var http = HttpUtil("http://saas-demo.nancal.com:7003/c/login")
             http.request.headers["Content-Type"] = "application/x-www-form-urlencoded"
 

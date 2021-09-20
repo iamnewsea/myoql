@@ -1,5 +1,6 @@
 package nbcp.comm
 
+import org.springframework.boot.logging.LogLevel
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import kotlin.reflect.KClass
@@ -45,7 +46,7 @@ annotation class JsonModel()
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class MyLogLevel(val value: LogScope)
+annotation class MyLogLevel(val value: LogLevel)
 
 
 /**

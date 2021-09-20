@@ -10,6 +10,7 @@ import nbcp.db.mongo.*
 import nbcp.db.mongo.entity.*
 import nbcp.web.*
 import org.bson.Document
+import org.springframework.boot.logging.LogLevel
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.*
 import java.time.*
@@ -18,7 +19,7 @@ import java.time.*
  * Created by CodeGenerator at 2021-04-11 23:42:19
  */
 @Service
-@MyLogLevel(LogScope.info)
+@MyLogLevel(LogLevel.INFO)
 class AppCacheTestKotlinService {
 
     @FromRedisCache(300, "tab2", arrayOf(), "city", "#city")

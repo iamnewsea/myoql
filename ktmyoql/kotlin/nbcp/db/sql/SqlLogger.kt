@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.logging.LogLevel
 
 object SqlLogger {
-    private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     private val sqlLog by lazy {
         return@lazy SpringUtil.getBean<SqlTableLogProperties>()

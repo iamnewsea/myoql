@@ -3,9 +3,12 @@
 
 package nbcp.comm
 
+import ch.qos.logback.classic.Level
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.boot.logging.LogLevel
 import java.io.Flushable
+import java.lang.RuntimeException
 import java.util.*
 
 class ScopeStack : Stack<Any>() {}
@@ -35,6 +38,10 @@ inline fun <T, M : Any> usingScope(initObjects: M, body: () -> T): T {
 
 
 inline fun <T, M : Any> usingScope(initObjects: M, body: () -> T, finally: ((M) -> Unit)): T {
+    if (initObjects is Level) {
+        throw RuntimeException("请使用 LogLevel 枚举")
+    }
+
     var init_list = mutableListOf<Any>()
 
     if (initObjects is Collection<*>) {
@@ -136,9 +143,9 @@ fun ScopeStack.getLatestStringScope(key: String): String {
 
 inline val Logger.scopeInfoLevel: Boolean
     get() {
-        var logs = scopes.getScopeTypes<LogScope>()
+        var logs = scopes.getScopeTypes<LogLevel>()
         if (logs.any()) {
-            return logs.any { ch.qos.logback.classic.Level.INFO_INT >= ch.qos.logback.classic.Level.toLevel(it.name).levelInt }
+            return logs.any { Level.INFO_INT >= it.toLevel().levelInt }
         }
 
         return this.isInfoEnabled;
@@ -146,9 +153,9 @@ inline val Logger.scopeInfoLevel: Boolean
 
 inline val Logger.scopeErrorLevel: Boolean
     get() {
-        var logs = scopes.getScopeTypes<LogScope>()
+        var logs = scopes.getScopeTypes<LogLevel>()
         if (logs.any()) {
-            return logs.any { ch.qos.logback.classic.Level.ERROR_INT >= ch.qos.logback.classic.Level.toLevel(it.name).levelInt }
+            return logs.any { Level.ERROR_INT >= it.toLevel().levelInt }
         }
 
         return this.isErrorEnabled;

@@ -8,19 +8,19 @@ import java.io.Closeable
 /**
  * value = Level.toLevel识别的参数，不区分大小写，如：all|trace|debug|info|warn|error|off
  */
-enum class LogScope() : Closeable {
-    all,
-    trace,
-    debug,
-    info,
-    warn,
-    error,
-    off;
-
-
-    override fun close() {
-    }
-}
+//enum class LogScope() : Closeable {
+//    all,
+//    trace,
+//    debug,
+//    info,
+//    warn,
+//    error,
+//    off;
+//
+//
+//    override fun close() {
+//    }
+//}
 
 
 enum class OrmLogScope(val remark: String) : Closeable {

@@ -2,12 +2,12 @@ package nbcp.db.mongo.event;
 
 import nbcp.db.mongo.*;
 import nbcp.comm.AsString
-import nbcp.comm.LogScope
 import nbcp.comm.getStringValue
 import nbcp.comm.usingScope
 import nbcp.utils.*
 import nbcp.db.*
 import org.slf4j.LoggerFactory
+import org.springframework.boot.logging.LogLevel
 import org.springframework.stereotype.Component
 
 /**
@@ -106,7 +106,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
                 update2.setValue(ref.ref.nameField, ref.masterNameValue)
                 update2.exec();
 
-                usingScope(LogScope.info) {
+                usingScope(LogLevel.INFO) {
                     logger.info("因为更新 ${update.collectionName}: ${ref.masterIdValues.joinToString(",")} + ${ref.masterNameValue} 而导致级联更新 ${targetCollection}：${ref.ref.idField} + ${ref.ref.nameField}")
                 }
             }
