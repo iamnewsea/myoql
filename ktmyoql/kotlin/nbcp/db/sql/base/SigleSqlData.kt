@@ -58,7 +58,10 @@ open class SingleSqlData @JvmOverloads constructor(
         var sameKeys = this.values.keys.intersect(other2.values.keys)
 
         sameKeys.forEachIndexed { index, sameKey ->
+
+            //SingleSqlData拼接Sql时，参数索引并不可靠，必须使用唯一参数名。
             var key = sameKey + "_" + CodeUtil.getCode();
+
             other2.expression = other2.expression.replace("{${sameKey}}", "{${key}}");
             other2.values.set(key, other2.values.get(sameKey));
             other2.values.remove(sameKey)
