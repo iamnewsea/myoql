@@ -3,6 +3,7 @@ package nbcp.db.sql
 import nbcp.comm.*
 import nbcp.comm.Slice
 import nbcp.db.mysql.*
+import nbcp.utils.CodeUtil
 import java.io.Serializable
 import java.util.LinkedHashSet
 
@@ -57,14 +58,14 @@ open class SingleSqlData @JvmOverloads constructor(
         var sameKeys = this.values.keys.intersect(other2.values.keys)
 
         sameKeys.forEachIndexed { index, sameKey ->
-            var key = sameKey + "_" + (index + 1);
+            var key = sameKey + "_" + CodeUtil.getCode();
             other2.expression = other2.expression.replace("{${sameKey}}", "{${key}}");
             other2.values.set(key, other2.values.get(sameKey));
             other2.values.remove(sameKey)
         }
 
 
-        return SingleSqlData(this.expression + other2.expression, JsonMap(this.values + other2.values));
+        return SingleSqlData(this.expression + other2.expression, this.values + other2.values);
     }
 //
 //    operator fun plus(expression: String): SingleSqlData {

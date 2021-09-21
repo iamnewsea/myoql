@@ -8,10 +8,8 @@ import nbcp.comm.*
 import nbcp.db.IdName
 import nbcp.db.db
 import nbcp.db.mysql.tool.MysqlEntityGenerator
-import nbcp.db.sql.SqlColumnName
-import nbcp.db.sql.doInsert
+import nbcp.db.sql.*
 import nbcp.db.sql.entity.s_annex
-import nbcp.db.sql.updateWithEntity
 import nbcp.tool.UserCodeGenerator
 import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
@@ -64,9 +62,19 @@ class TestKtExt_MySql : TestBase() {
 
     @Test
     fun test_select_spread() {
-        var ent = db.sql_base.s_annex.queryById("56Fgk7UEAm0Z").toEntity()
+        var ent = db.sql_base.s_annex.queryById("56Fgk7UEAm0Z")
+            .apply {
+                var where = WhereData();
+                where.or(db.sql_base.s_annex.ext match "png")
+                where.or(db.sql_base.s_annex.ext match "gif")
+                where.or(db.sql_base.s_annex.ext match "jpg")
+                where.or(db.sql_base.s_annex.ext match "bmp")
+                this.where { where }
+            }
+            .toSql();
 
         println(ent.ToJson())
+        println(ent.values.ToJson())
     }
 
     @Test
