@@ -50,15 +50,15 @@ fun <V> MutableMap<String, V>.onlyHoldKeys(keys: Set<String>) {
     }
 }
 
-inline fun <reified T> Map<String, *>.getTypeValue(vararg keys: String): T? {
-    var ret = MyUtil.getPathValue(this, *keys);
+inline fun <reified T> Map<String, *>.getTypeValue(vararg keys: String, ignoreCase: Boolean = false): T? {
+    var ret = MyUtil.getPathValue(this, *keys, ignoreCase = ignoreCase);
     if (ret === null) return null;
     if (ret is T) return ret;
     return null;
 }
 
-fun Map<*, *>.getStringValue(vararg keys: String): String? {
-    var v = MyUtil.getPathValue(this, *keys)
+fun Map<*, *>.getStringValue(vararg keys: String, ignoreCase: Boolean = false): String? {
+    var v = MyUtil.getPathValue(this, *keys, ignoreCase = ignoreCase)
     if (v == null) return null;
     var v_type = v::class.java;
     if (v_type.isArray) {
@@ -69,8 +69,8 @@ fun Map<*, *>.getStringValue(vararg keys: String): String? {
     return v.toString()
 }
 
-fun Map<*, *>.getIntValue(vararg keys: String): Int {
-    var v = MyUtil.getPathValue(this, *keys)
+fun Map<*, *>.getIntValue(vararg keys: String, ignoreCase: Boolean = false): Int {
+    var v = MyUtil.getPathValue(this, *keys, ignoreCase = ignoreCase)
     if (v == null) return 0;
     return v.AsInt()
 }

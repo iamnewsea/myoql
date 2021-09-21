@@ -49,7 +49,7 @@ class BeanOrderTest : InitializingBean {
     @Bean
     fun abc(): JsonMap {
         var b = Binder.get(SpringUtil.context.environment)
-        var d = b.bind("spring.datasource2",DataSourceProperties::class.java)
+        var d = b.bind("spring.datasource2", DataSourceProperties::class.java)
 
         println("5... 内部Bean JsonMap")
         return JsonMap();
@@ -99,9 +99,9 @@ class post1 : BeanPostProcessor {
             println("::::postProcessBeforeInitialization：${beanName}")
         }
 
-        if (beanName == "dataSource") {
-            println("::::postProcessBeforeInitialization：${beanName}")
-        }
+
+        println("：：：：${beanName}----${bean.javaClass.name}")
+
         return super.postProcessBeforeInitialization(bean, beanName)
     }
 }
@@ -112,11 +112,10 @@ class post333 : ConfigurationPropertiesBindingPostProcessor() {
 
 //        var d = ConfigurationPropertiesBean.get(SpringUtil.context,Properties(),"ddd");
 
-        var ret =  super.postProcessBeforeInitialization(bean, beanName)
+        var ret = super.postProcessBeforeInitialization(bean, beanName)
         return ret;
     }
 }
-
 
 
 class MyEvent(var e: String) : ApplicationEvent(Any()) {
@@ -126,7 +125,7 @@ class MyEvent(var e: String) : ApplicationEvent(Any()) {
 
 //@ConditionalOnBean 出现的时机太早了。 要推迟。
 @Component
-class EventConfig  {
+class EventConfig {
     val hasDataSource by lazy {
         return@lazy SpringUtil.containsBean(DataSourceAutoConfiguration::class.java)
     }

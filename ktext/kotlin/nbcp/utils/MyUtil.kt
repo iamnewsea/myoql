@@ -38,7 +38,7 @@ object MyUtil {
      * 通过 path 获取 value,每级返回的值必须是 Map<String,V> 否则返回 null
      * @param keys: 可以传多个key，也可以使用 . 分隔；如果查询数组，使用 products[],products[0], products.[] 或 products.[0] 或 "products","[]"
      */
-    fun getPathValue(data: Any, vararg keys: String): Any? {
+    fun getPathValue(data: Any, vararg keys: String, ignoreCase: Boolean = false): Any? {
         if (keys.any() == false) return null;
         var key = keys.first();
         var left_keys = keys.Slice(1);
@@ -48,7 +48,7 @@ object MyUtil {
         }
         var keys2 = key.split(".");
         if (keys2.size > 1) {
-            var v = getPathValue(data, *keys2.toTypedArray());
+            var v = getPathValue(data, *keys2.toTypedArray(), ignoreCase = ignoreCase);
             if (v == null) {
                 return null;
             }
@@ -57,26 +57,41 @@ object MyUtil {
                 return v;
             }
 
-            return getPathValue(v, *left_keys.toTypedArray())
+            return getPathValue(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase)
         }
 
 
         if (key.endsWith("]")) {
             if (key != "[]" && key.endsWith("[]")) {
-                return getPathValue(data, key.Slice(0, -2), "[]");
+                return getPathValue(data, key.Slice(0, -2), "[]", ignoreCase = ignoreCase);
             }
             var start_index = key.lastIndexOf('[');
             if (start_index > 0) {
-                return getPathValue(data, key.slice(0 until start_index), key.Slice(start_index))
+                return getPathValue(
+                    data,
+                    key.slice(0 until start_index),
+                    key.Slice(start_index),
+                    ignoreCase = ignoreCase
+                )
             }
         }
 
         if (data is Map<*, *>) {
             var v = data.get(key)
-            if (v == null) return null;
+            if (v == null) {
+                var vbKeys = data.keys.filter { it.toString() VbSame key };
+                if (vbKeys.size == 1) {
+                    return null;
+                }
+                v = data.get(vbKeys.first())
+
+                if (v == null) {
+                    return null;
+                }
+            }
             if (left_keys.any() == false) return v;
 
-            return getPathValue(v, *left_keys.toTypedArray())
+            return getPathValue(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase)
         } else if (key == "[]") {
             var data2: List<*>
             if (data is Array<*>) {
@@ -90,7 +105,7 @@ object MyUtil {
             if (left_keys.any() == false) return data2;
 
             return data2
-                .map { MyUtil.getPathValue(it!!, *left_keys.toTypedArray()) }
+                .map { getPathValue(it!!, *left_keys.toTypedArray(), ignoreCase = ignoreCase) }
                 .filter { it != null }
 
         } else if (key.startsWith("[") && key.endsWith("]")) {
@@ -114,7 +129,7 @@ object MyUtil {
 
             if (left_keys.any() == false) return data2;
 
-            return MyUtil.getPathValue(data2, *left_keys.toTypedArray())
+            return getPathValue(data2, *left_keys.toTypedArray(), ignoreCase = ignoreCase)
         }
 
         //如果是对象
@@ -125,7 +140,7 @@ object MyUtil {
             return v;
         }
 
-        return getPathValue(v, *left_keys.toTypedArray())
+        return getPathValue(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase)
     }
 
     /**

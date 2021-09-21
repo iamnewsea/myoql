@@ -2,6 +2,7 @@ package nbcp
 
 import nbcp.comm.Important
 import nbcp.comm.clazzesIsSimpleDefine
+import nbcp.comm.getStringValue
 import nbcp.component.BaseJsonMapper
 import nbcp.component.DbJsonMapper
 import nbcp.db.cache.RedisCacheDbDynamicService
@@ -10,11 +11,13 @@ import nbcp.db.mongo.Date2LocalDateTimeConverter
 import nbcp.db.mongo.service.UploadFileMongoService
 import nbcp.db.mysql.service.UploadFileSqlService
 import nbcp.db.redis.RedisRenewalDynamicService
+import nbcp.utils.JsUtil
 import nbcp.utils.SpringUtil
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
+import org.springframework.boot.autoconfigure.mongo.MongoProperties
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.boot.context.event.ApplicationStartingEvent
 import org.springframework.context.ApplicationContext
@@ -65,6 +68,14 @@ class MyOqlBeanProcessor : BeanPostProcessor {
             (converter.conversionService as GenericConversionService).addConverter(Date2LocalDateTimeConverter())
 
             loadMongoDependencyBeans();
+        } else if (bean is MongoProperties) {
+            //修改默认连接池参数
+            var urlJson = JsUtil.parseUrlQueryJson(bean.uri);
+            var maxIdleTimeMS = urlJson.queryJson.getStringValue("maxIdleTimeMS", ignoreCase = true)
+            if (maxIdleTimeMS.isNullOrEmpty()) {
+                urlJson.queryJson.put("maxIdleTimeMS", "30000")
+                bean.uri = urlJson.toUrl();
+            }
         } else if (bean is JdbcTemplate) {
             loadJdbcDependencyBeans();
         }
