@@ -92,14 +92,19 @@ class WhereData : Serializable {
         return this;
     }
 
+    fun load(other:WhereData){
+        this.expression = other.expression;
+        this.child = other.child;
+        this.next = other.next;
+        this.linker = other.linker;
+
+        this.values.clear();
+        this.values.putAll(other.values)
+    }
+
     infix fun or(next: WhereData): WhereData {
         if (this.hasValue == false) {
-            this.expression = next.expression
-            this.child = next.child
-
-            this.values.clear()
-            this.values.putAll(next.values)
-
+            this.load(next)
             return this
         }
 
@@ -112,18 +117,12 @@ class WhereData : Serializable {
 
         ret.next = next2
 
+
         var wrap = WhereData();
         wrap.child = ret;
 
-
         //更改 this
-        this.child = wrap.child
-        this.expression = wrap.expression
-        this.linker = wrap.linker
-        this.next = wrap.next;
-        this.values.clear()
-        this.values.putAll(wrap.values)
-
-        return wrap;
+        this.load(wrap);
+        return this;
     }
 }
