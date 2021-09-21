@@ -1,5 +1,6 @@
 package nbcp
 
+import nbcp.comm.HasValue
 import nbcp.comm.Important
 import nbcp.comm.clazzesIsSimpleDefine
 import nbcp.comm.getStringValue
@@ -70,11 +71,13 @@ class MyOqlBeanProcessor : BeanPostProcessor {
             loadMongoDependencyBeans();
         } else if (bean is MongoProperties) {
             //修改默认连接池参数
-            var urlJson = JsUtil.parseUrlQueryJson(bean.uri);
-            var maxIdleTimeMS = urlJson.queryJson.getStringValue("maxIdleTimeMS", ignoreCase = true)
-            if (maxIdleTimeMS.isNullOrEmpty()) {
-                urlJson.queryJson.put("maxIdleTimeMS", "30000")
-                bean.uri = urlJson.toUrl();
+            if (bean.uri.HasValue) {
+                var urlJson = JsUtil.parseUrlQueryJson(bean.uri);
+                var maxIdleTimeMS = urlJson.queryJson.getStringValue("maxIdleTimeMS", ignoreCase = true)
+                if (maxIdleTimeMS.isNullOrEmpty()) {
+                    urlJson.queryJson.put("maxIdleTimeMS", "30000")
+                    bean.uri = urlJson.toUrl();
+                }
             }
         } else if (bean is JdbcTemplate) {
             loadJdbcDependencyBeans();
