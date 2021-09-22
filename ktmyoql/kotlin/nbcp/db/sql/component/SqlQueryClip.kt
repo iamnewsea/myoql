@@ -2,7 +2,7 @@ package nbcp.db.sql
 
 import org.slf4j.LoggerFactory
 import nbcp.comm.*
-
+import nbcp.scope.*
 import nbcp.db.*
 import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties

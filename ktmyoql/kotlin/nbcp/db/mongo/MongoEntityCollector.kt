@@ -1,18 +1,11 @@
 package nbcp.db.mongo
 
 import nbcp.comm.ForEachExt
-import nbcp.comm.OrmLogScope
+import nbcp.scope.*
 import nbcp.comm.usingScope
 import nbcp.db.*
 import nbcp.db.mongo.event.*
-import nbcp.db.sql.event.SqlEntityCollector
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor
 import org.springframework.beans.factory.config.BeanPostProcessor
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
-import org.springframework.beans.factory.support.BeanDefinitionRegistry
-import org.springframework.core.Ordered
-import org.springframework.core.PriorityOrdered
-import org.springframework.core.annotation.Order
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
 

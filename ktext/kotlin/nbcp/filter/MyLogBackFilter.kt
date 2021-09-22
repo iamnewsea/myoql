@@ -8,11 +8,11 @@ import ch.qos.logback.core.filter.AbstractMatcherFilter
 import ch.qos.logback.core.filter.Filter
 import ch.qos.logback.core.spi.FilterReply
 import nbcp.app.GroupLog
+import nbcp.app.GroupLogScope
 import nbcp.comm.*
 import nbcp.utils.*
 import org.slf4j.MDC
 import org.slf4j.Marker
-import org.springframework.boot.logging.LogLevel
 
 
 /**
@@ -42,15 +42,15 @@ class MyLogBackFilter : TurboFilter() {
             return FilterReply.DENY;
         }
 
-        var log = scopes.GetLatest<LogLevel>()
+        var log = scopes.GetLatest<LogLevelScope>()
         if (log != null) {
-            if (level.levelInt >= log.toLevel().levelInt) {
+            if (level.levelInt >= log.value) {
                 return FilterReply.ACCEPT
             }
             return FilterReply.DENY;
         }
 
-        usingScope(LogLevel.OFF) {
+        usingScope(LogLevelScope.off) {
             //config.debug 本身也会调用 decide.
             if (config.debug) {
                 return FilterReply.ACCEPT
@@ -119,7 +119,7 @@ class MyGroupLogBackFilter : Filter<ILoggingEvent>() {
     var group: String = "";
 
     override fun decide(event: ILoggingEvent?): FilterReply {
-        var groupScope = scopes.GetLatest<GroupLog>();
+        var groupScope = scopes.GetLatest<GroupLogScope>();
         if (groupScope != null) {
             return if (groupScope.value == group) FilterReply.ACCEPT else FilterReply.DENY
         }

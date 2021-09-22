@@ -3,8 +3,7 @@ package nbcp.db.es
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.db
-import org.apache.http.message.BasicHeader
-import org.bson.Document
+import nbcp.scope.*
 import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.slf4j.LoggerFactory

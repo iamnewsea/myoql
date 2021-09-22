@@ -1,6 +1,6 @@
 package nbcp.db.mongo
 
-import com.mongodb.BasicDBObject
+import nbcp.scope.*
 import nbcp.comm.*
 import nbcp.db.BaseEntity
 import nbcp.db.db

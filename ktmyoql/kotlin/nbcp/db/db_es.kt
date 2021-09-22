@@ -1,6 +1,6 @@
 package nbcp.db
 
-
+import nbcp.scope.*
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.es.*

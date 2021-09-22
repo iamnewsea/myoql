@@ -1,6 +1,7 @@
 package nbcp.db.es
 
 
+import nbcp.comm.LogLevelScope
 import nbcp.comm.ReadContentStringFromStream
 import nbcp.comm.scopeInfoLevel
 import nbcp.comm.usingScope
@@ -56,7 +57,7 @@ object EsLogger {
 
         //如果指定了输出Sql
         if (op(esName)) {
-            usingScope(LogLevel.INFO) {
+            usingScope(LogLevelScope.info) {
                 logger.info(getMsg())
             }
         }

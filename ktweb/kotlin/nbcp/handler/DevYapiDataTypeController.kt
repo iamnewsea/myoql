@@ -36,11 +36,11 @@ class DevYapiDataTypeController {
         }
 
         var ret = JsonMap()
-        usingScope(db.mongo.getMongoTemplateByUri(connString)!!) {
+        usingScope(MongoTemplateScope(db.mongo.getMongoTemplateByUri(connString)!!)) {
             var query = MongoBaseQueryClip("interface")
 
             var where = (MongoColumnName("req_body_other") match_like "title\":\":") match_or
-                    (MongoColumnName("res_body") match_like "title\":\":")
+                (MongoColumnName("res_body") match_like "title\":\":")
 
             query.whereData.add(where)
             var list = query.toList(JsonMap::class.java);

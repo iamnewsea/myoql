@@ -125,7 +125,7 @@ data class FromRedisCacheData(
     fun <T> usingRedisCache(clazz: Class<T>, consumer: Supplier<Any>): T {
         var cacheKey = this.getCacheKey()
 
-        if (this.cacheSeconds >= 0) {
+        if (this.cacheSeconds >= 0 && cacheKey.HasValue) {
             var redisTemplate = SpringUtil.getBean<StringRedisTemplate>();
             var cacheValue = redisTemplate.opsForValue().get(cacheKey).AsString()
             if (cacheValue.HasValue) {
@@ -136,7 +136,7 @@ data class FromRedisCacheData(
 
         var ret = consumer.get();
 
-        if (ret != null) {
+        if (ret != null && cacheSeconds >= 0 && cacheKey.HasValue) {
             var cacheSeconds = this.cacheSeconds
             //默认3分钟
             if (cacheSeconds == 0) {

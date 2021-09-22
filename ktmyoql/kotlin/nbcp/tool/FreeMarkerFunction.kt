@@ -9,6 +9,7 @@ import freemarker.ext.beans.StringModel
 import freemarker.template.*
 import nbcp.comm.*
 import nbcp.db.RemoveToSysDustbin
+import nbcp.scope.ContextMapScope
 import nbcp.utils.MyUtil
 import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
@@ -140,10 +141,10 @@ class Freemarker_IsRes : TemplateMethodModelEx {
         var paramValue = _get_value_item(p0[0]);
         if (paramValue is Field) {
             return paramValue.type.isEnum ||
-                    paramValue.type == Boolean::class.java
+                paramValue.type == Boolean::class.java
         } else if (paramValue is Class<*>) {
             return paramValue.isEnum ||
-                    paramValue == Boolean::class.java
+                paramValue == Boolean::class.java
         }
         throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
     }
@@ -205,7 +206,7 @@ class Freemarker_GetKotlinType : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
         var paramValue = _get_value_item(p0[0])
         if (paramValue is String) {
-            return (scopes.GetLatest<JsonMap>()!!
+            return (scopes.GetLatest<ContextMapScope>()!!.value
                 .get("fields") as List<Field>)
                 .first { it.name == paramValue }
                 .type
@@ -220,7 +221,7 @@ class Freemarker_Has : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
         var paramValue = _get_value_item(p0[0])
         if (paramValue is String) {
-            return (scopes.GetLatest<JsonMap>()!!
+            return (scopes.GetLatest<ContextMapScope>()!!.value
                 .get("fields") as List<Field>)
                 .any { it.name == paramValue }
         }
@@ -233,7 +234,7 @@ class Freemarker_Has : TemplateMethodModelEx {
  */
 class Freemarker_HasDustbin : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
-        return (scopes.GetLatest<JsonMap>()!!
+        return (scopes.GetLatest<ContextMapScope>()!!.value
             .get("entity_type") as Class<*>)
             .getAnnotation(RemoveToSysDustbin::class.java) != null
     }

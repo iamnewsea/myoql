@@ -3,6 +3,7 @@ package nbcp.comm
 import nbcp.*
 import nbcp.db.*
 import org.junit.Test
+import nbcp.scope.*
 
 class TestKtExt_Json : TestBase() {
 

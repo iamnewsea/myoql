@@ -19,7 +19,7 @@ import java.time.*
  * Created by CodeGenerator at 2021-04-11 23:42:19
  */
 @Service
-@MyLogLevel(LogLevel.INFO)
+@MyLogLevel(LogLevelScope.info)
 class AppCacheTestKotlinService {
 
     @FromRedisCache(300, "tab2", arrayOf(), "city", "#city")

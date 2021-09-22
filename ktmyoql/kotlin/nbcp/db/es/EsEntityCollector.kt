@@ -2,10 +2,7 @@ package nbcp.db.es
 
 import nbcp.comm.*
 import nbcp.db.*
-import nbcp.db.mongo.MongoBaseQueryClip
-import nbcp.db.mongo.MongoEntityCollector
-import nbcp.db.mongo.event.IMongoDataSource
-import nbcp.db.mongo.event.IMongoEntityQuery
+import nbcp.scope.*
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty

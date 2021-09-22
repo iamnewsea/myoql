@@ -1,6 +1,6 @@
 package nbcp.db.mongo
 
-import nbcp.comm.GetLatest
+
 import nbcp.comm.HasValue
 import nbcp.comm.scopes
 import org.springframework.data.mongodb.core.MongoTemplate
@@ -38,7 +38,8 @@ open class MongoClipBase(var collectionName: String) : Serializable {
             }
 
             var ds =
-                db.mongo.mongoEvents.getDataSource(this.collectionName, isRead) ?: scopes.GetLatest<MongoTemplate>()
+                db.mongo.mongoEvents.getDataSource(this.collectionName, isRead)
+                    ?: scopes.GetLatest<MongoTemplateScope>()?.value
             if (ds != null) {
                 return ds;
             }

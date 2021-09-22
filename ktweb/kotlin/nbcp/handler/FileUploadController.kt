@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import nbcp.comm.*
 import nbcp.db.*
+import nbcp.scope.JsonSceneEnumScope
 import nbcp.service.UploadService
 import nbcp.web.*
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean

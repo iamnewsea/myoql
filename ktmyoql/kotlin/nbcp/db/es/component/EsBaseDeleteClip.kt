@@ -11,6 +11,7 @@ import org.elasticsearch.client.Response
 import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
 import java.time.LocalDateTime
+import nbcp.scope.*
 
 open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhereable {
     companion object {

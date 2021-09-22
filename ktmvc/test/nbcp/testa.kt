@@ -1,5 +1,6 @@
 package nbcp
 
+import nbcp.comm.LogLevelScope
 import nbcp.comm.MyLogLevel
 import nbcp.comm.usingScope
 import nbcp.utils.SpringUtil
@@ -14,7 +15,7 @@ class ff {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass);
     }
 
-    @MyLogLevel(LogLevel.TRACE)
+    @MyLogLevel(LogLevelScope.trace)
     fun abc(a: String) {
         logger.trace("OK:${a}")
     }

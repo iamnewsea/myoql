@@ -5,7 +5,6 @@ import nbcp.db.*
 import nbcp.db.es.*
 import nbcp.utils.CodeUtil
 import org.apache.http.entity.ContentType
-import org.apache.http.message.BasicHeader
 import org.apache.http.nio.entity.NStringEntity
 import org.bson.types.ObjectId
 import org.elasticsearch.client.Request
@@ -13,7 +12,7 @@ import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.lang.RuntimeException
 import java.time.LocalDateTime
-
+import nbcp.scope.*
 /**
  * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html
  */

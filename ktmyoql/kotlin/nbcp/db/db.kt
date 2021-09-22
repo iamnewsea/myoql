@@ -8,6 +8,7 @@ import nbcp.db.sql.table.SqlBaseGroup
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 import java.time.Duration
+import nbcp.scope.*
 
 enum class DatabaseEnum {
     Mongo,

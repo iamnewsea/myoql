@@ -83,7 +83,7 @@ fun main(args: Array<String>) {
     println("是否包含 DataSourceAutoConfiguration: " + SpringUtil.containsBean(DataSourceAutoConfiguration::class.java))
     println("是否包含 DataSourceAutoConfiguration: " + SpringUtil.context.containsBean(DataSourceAutoConfiguration::class.java.name))
 
-    usingScope(LogLevel.INFO) {
+    usingScope(LogLevelScope.info) {
         MainApplication.logger.info(
             MyUtil.getCenterEachLine(
                 """

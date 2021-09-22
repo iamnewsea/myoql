@@ -53,7 +53,7 @@ object SqlLogger {
 
         //如果指定了输出Sql
         if (sqlLog.getSelectLog(tableDbName)) {
-            usingScope(LogLevel.INFO) {
+            usingScope(LogLevelScope.info) {
                 logger.info(getMsg())
             }
         }
@@ -89,7 +89,7 @@ object SqlLogger {
             sqlLog.getUpdateLog(tableDbName) ||
             sqlLog.getDeleteLog(tableDbName)
         ) {
-            usingScope(LogLevel.INFO) {
+            usingScope(LogLevelScope.info) {
                 logger.info(getMsg())
             }
         }
@@ -124,7 +124,7 @@ object SqlLogger {
         //如果指定了输出Sql
         if (sqlLog.getDeleteLog(tableDbName)
         ) {
-            usingScope(LogLevel.INFO) {
+            usingScope(LogLevelScope.info) {
                 logger.info(getMsg())
             }
         }
@@ -146,7 +146,7 @@ object SqlLogger {
         //如果指定了输出Sql
         if (sqlLog.getInsertLog(tableDbName)
         ) {
-            usingScope(LogLevel.INFO) {
+            usingScope(LogLevelScope.info) {
                 logger.info(getMsg())
             }
         }
@@ -204,7 +204,7 @@ object SqlLogger {
         //如果指定了输出Sql
         if (sqlLog.getUpdateLog(tableName)
         ) {
-            usingScope(LogLevel.INFO) {
+            usingScope(LogLevelScope.info) {
                 logger.info(getMsg())
             }
         }

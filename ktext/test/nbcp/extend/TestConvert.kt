@@ -6,7 +6,7 @@ import nbcp.utils.CookieData
 import org.junit.Test
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
-import java.time.ZoneId
+import nbcp.scope.*
 import java.time.format.DateTimeFormatter
 
 class TestConvert : TestBase() {

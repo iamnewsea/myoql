@@ -1,5 +1,6 @@
 package nbcp.app
 
+import nbcp.scope.*
 import nbcp.comm.usingScope
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
@@ -16,6 +17,15 @@ import org.springframework.stereotype.Component
 @Retention(AnnotationRetention.RUNTIME)
 annotation class GroupLog(val value: String = "")
 
+
+data class GroupLogScope(var value: String = "") : IScopeData {
+    companion object {
+        fun of(groupLog: GroupLog): GroupLogScope {
+            return GroupLogScope(groupLog.value)
+        }
+    }
+}
+
 @Aspect
 @Component
 class GroupLogIntercepter {
@@ -31,7 +41,7 @@ class GroupLogIntercepter {
             return invoke(joinPoint);
         }
 
-        return usingScope(groupLog) {
+        return usingScope(GroupLogScope.of(groupLog)) {
             MDC.put("group", groupLog.value)
             return@usingScope invoke(joinPoint);
         }

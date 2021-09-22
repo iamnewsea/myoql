@@ -16,7 +16,7 @@ import java.io.StringReader
 import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.time.LocalDateTime
-
+import nbcp.scope.*
 
 object FreemarkerUtil {
     /**
@@ -92,7 +92,7 @@ object FreemarkerUtil {
         params: JsonMap
     ): String {
         val template: Template = Template("template", StringReader(content), freemarkerConfig, "utf-8")
-        return usingScope(params) {
+        return usingScope(ContextMapScope(params)) {
             return escapeString(processTemplate(template, params))
         }
     }
@@ -111,7 +111,7 @@ object FreemarkerUtil {
         params: JsonMap
     ): String {
         val template: Template = freemarkerConfig.getTemplate(templateName)
-        return usingScope(params) {
+        return usingScope(ContextMapScope(params)) {
             return escapeString(processTemplate(template, params))
         }
     }

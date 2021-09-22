@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.query.Query
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.time.LocalDateTime
-
+import nbcp.scope.*
 /**
  * Created by udi on 17-4-17.
  */

@@ -37,7 +37,8 @@ open class EsClipBase(var collectionName: String) : Serializable {
                 return db.es.getRestClient(uri, prefix, timeout);
             }
 
-            var ds = db.es.esEvents.getDataSource(this.collectionName, isRead) ?: scopes.GetLatest<RestClient>()
+            var ds =
+                db.es.esEvents.getDataSource(this.collectionName, isRead) ?: scopes.GetLatest<RestClientScope>()?.value
             if (ds != null) {
                 return ds;
             }

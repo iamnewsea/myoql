@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import java.lang.Exception
 import java.time.LocalDateTime
+import nbcp.scope.*
 
 open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMongoWhereable {
     var whereData = mutableListOf<Criteria>()

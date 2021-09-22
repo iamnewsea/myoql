@@ -3,6 +3,7 @@ package nbcp.base
 import nbcp.TestBase
 import nbcp.comm.*
 import nbcp.db.CityCodeName
+import nbcp.scope.JsonSceneEnumScope
 import org.junit.Test
 
 class TestKtExt_Json : TestBase() {

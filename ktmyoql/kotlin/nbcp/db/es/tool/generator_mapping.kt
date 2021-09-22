@@ -3,7 +3,6 @@ package nbcp.db.es.tool
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.*
-
 import java.io.File
 import java.io.FileWriter
 import java.lang.RuntimeException
@@ -14,6 +13,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
 import kotlin.collections.HashMap
+import nbcp.scope.*
 
 /**
  * es mapping 代码生成器

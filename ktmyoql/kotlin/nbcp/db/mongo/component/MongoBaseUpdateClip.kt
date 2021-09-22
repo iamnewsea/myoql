@@ -4,9 +4,7 @@ import com.mongodb.client.result.UpdateResult
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.db
-import nbcp.db.mongo.IMongoWhereable
-import nbcp.db.mongo.MongoClipBase
-import org.bson.Document
+import nbcp.scope.*
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.CriteriaDefinition

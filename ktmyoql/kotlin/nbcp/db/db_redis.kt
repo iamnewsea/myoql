@@ -3,6 +3,7 @@ package nbcp.db
 
 import nbcp.comm.*
 import nbcp.db.redis.RedisDataSource
+import nbcp.db.redis.RedisTemplateScope
 import nbcp.utils.*
 import org.springframework.data.redis.core.StringRedisTemplate
 
@@ -18,7 +19,7 @@ object db_redis {
             return SpringUtil.getBean(dataSourceName) as StringRedisTemplate
         }
 
-        return scopes.GetLatest<StringRedisTemplate>()
+        return scopes.GetLatest<RedisTemplateScope>()?.value
             ?: SpringUtil.getBean<StringRedisTemplate>()
     }
 }

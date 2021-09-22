@@ -79,7 +79,7 @@ open class MyAllFilter : Filter {
 
         MDC.put("request_id", request_id)
 
-        var logLevel: LogLevel? = getLogLevel(httpRequest);
+        var logLevel = getLogLevel(httpRequest);
 
         if (logLevel != null) {
             usingScope(logLevel) {
@@ -90,7 +90,7 @@ open class MyAllFilter : Filter {
         }
     }
 
-    private fun getLogLevel(httpRequest: HttpServletRequest): LogLevel? {
+    private fun getLogLevel(httpRequest: HttpServletRequest): LogLevelScope? {
         var logLevel: Level? = null;
 
         var logLevelString = httpRequest.queryJson.get("log-level").AsString();
@@ -127,7 +127,7 @@ open class MyAllFilter : Filter {
         }
 
         if (logLevel == null) return null;
-        return logLevel.toLogLevel();
+        return logLevel.levelInt.ToEnum<LogLevelScope>()
     }
 
     fun next(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain?) {

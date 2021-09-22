@@ -53,7 +53,7 @@ inline fun Logger.Error(err: Throwable) {
  * 重要日志，使用 scope.info 记录
  */
 inline fun Logger.Important(msg: String) {
-    usingScope(LogLevel.INFO) {
+    usingScope(LogLevelScope.info) {
         this.info(msg);
     }
 }
@@ -70,31 +70,31 @@ fun ch.qos.logback.classic.Logger.getLoggerFile(configName: String): String {
     if (parent == null) return "";
     return parent.getLoggerFile(configName);
 }
-
-fun LogLevel.toLevel(): Level {
-    when (this) {
-        LogLevel.INFO -> return Level.INFO
-        LogLevel.DEBUG -> return Level.DEBUG
-        LogLevel.ERROR -> return Level.ERROR
-        LogLevel.FATAL -> return Level.ERROR
-        LogLevel.OFF -> return Level.OFF
-        LogLevel.TRACE -> return Level.TRACE
-        LogLevel.WARN -> return Level.WARN
-
-        else -> return Level.INFO
-    }
-}
-
-fun Level.toLogLevel(): LogLevel {
-    when (this) {
-        Level.INFO -> return LogLevel.INFO
-        Level.DEBUG -> return LogLevel.DEBUG
-        Level.ERROR -> return LogLevel.ERROR
-
-        Level.OFF -> return LogLevel.OFF
-        Level.TRACE -> return LogLevel.TRACE
-        Level.WARN -> return LogLevel.WARN
-
-        else -> return LogLevel.INFO
-    }
-}
+//
+//fun LogLevel.toLevel(): Level {
+//    when (this) {
+//        LogLevel.INFO -> return Level.INFO
+//        LogLevel.DEBUG -> return Level.DEBUG
+//        LogLevel.ERROR -> return Level.ERROR
+//        LogLevel.FATAL -> return Level.ERROR
+//        LogLevel.OFF -> return Level.OFF
+//        LogLevel.TRACE -> return Level.TRACE
+//        LogLevel.WARN -> return Level.WARN
+//
+//        else -> return Level.INFO
+//    }
+//}
+//
+//fun Level.toLogLevel(): LogLevel {
+//    when (this) {
+//        Level.INFO -> return LogLevel.INFO
+//        Level.DEBUG -> return LogLevel.DEBUG
+//        Level.ERROR -> return LogLevel.ERROR
+//
+//        Level.OFF -> return LogLevel.OFF
+//        Level.TRACE -> return LogLevel.TRACE
+//        Level.WARN -> return LogLevel.WARN
+//
+//        else -> return LogLevel.INFO
+//    }
+//}

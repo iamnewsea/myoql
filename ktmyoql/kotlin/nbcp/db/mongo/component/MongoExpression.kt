@@ -3,7 +3,7 @@ package nbcp.db.mongo
 
 import nbcp.comm.ToJson
 import nbcp.comm.JsonMap
-import nbcp.comm.JsonSceneEnumScope
+import nbcp.scope.*
 import org.springframework.data.mongodb.core.query.Criteria
 import java.lang.RuntimeException
 

@@ -4,6 +4,7 @@
 package nbcp.comm
 
 import nbcp.comm.*
+import nbcp.scope.IScopeData
 import nbcp.utils.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -65,27 +66,7 @@ fun <T : Comparable<in T>> T.Between(start: T?, end: T?): Boolean {
     return true;
 }
 
-/**
- * 查找最近添加的。
- * @param enumValues: 如果有值，则精确查找该值进行返回。
- */
-inline fun <reified R> Stack<*>.GetLatest(vararg enumValues: R): R? {
-    if (this.size == 0) return null
 
-    for (i in this.indices.reversed()) {
-        var item = this[i];
-        if (item is R) {
-            if (enumValues.isEmpty() || enumValues.contains(item)) {
-                return item;
-            } else {
-                continue;
-            }
-        }
-    }
-
-
-    return null;
-}
 
 fun Serializable.ToSerializableByteArray(): ByteArray {
     ByteArrayOutputStream().use { byteOutStream ->

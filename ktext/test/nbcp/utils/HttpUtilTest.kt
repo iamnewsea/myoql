@@ -1,6 +1,7 @@
 package nbcp.utils
 
 import nbcp.TestBase
+import nbcp.comm.LogLevelScope
 import nbcp.comm.StringMap
 import nbcp.comm.formatWithJson
 import nbcp.comm.usingScope
@@ -20,7 +21,7 @@ class HttpUtilTest : TestBase() {
 
     @Test
     fun abfc2() {
-        usingScope(LogLevel.INFO) {
+        usingScope(LogLevelScope.info) {
             var http = HttpUtil("http://saas-demo.nancal.com:7003/c/login")
             http.request.headers["Content-Type"] = "application/x-www-form-urlencoded"
 

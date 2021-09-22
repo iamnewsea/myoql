@@ -46,7 +46,7 @@ annotation class JsonModel()
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class MyLogLevel(val value: LogLevel)
+annotation class MyLogLevel(val value: LogLevelScope)
 
 
 /**

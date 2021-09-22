@@ -2,6 +2,7 @@ package nbcp.db.mongo.event;
 
 import nbcp.db.mongo.*;
 import nbcp.comm.AsString
+import nbcp.comm.LogLevelScope
 import nbcp.comm.getStringValue
 import nbcp.comm.usingScope
 import nbcp.utils.*
@@ -106,7 +107,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
                 update2.setValue(ref.ref.nameField, ref.masterNameValue)
                 update2.exec();
 
-                usingScope(LogLevel.INFO) {
+                usingScope(LogLevelScope.info) {
                     logger.info("因为更新 ${update.collectionName}: ${ref.masterIdValues.joinToString(",")} + ${ref.masterNameValue} 而导致级联更新 ${targetCollection}：${ref.ref.idField} + ${ref.ref.nameField}")
                 }
             }

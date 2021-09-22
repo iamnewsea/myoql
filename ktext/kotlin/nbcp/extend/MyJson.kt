@@ -4,7 +4,7 @@
 package nbcp.comm
 
 import java.lang.RuntimeException
-
+import nbcp.scope.*
 
 /**
  * Created by udi on 17-5-23.
