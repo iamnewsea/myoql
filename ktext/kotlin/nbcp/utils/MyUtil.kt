@@ -80,9 +80,10 @@ object MyUtil {
             var v = data.get(key)
             if (v == null) {
                 var vbKeys = data.keys.filter { it.toString() VbSame key };
-                if (vbKeys.size == 1) {
+                if (vbKeys.size != 1) {
                     return null;
                 }
+
                 v = data.get(vbKeys.first())
 
                 if (v == null) {
