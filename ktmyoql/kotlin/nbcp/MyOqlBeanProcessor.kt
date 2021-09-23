@@ -17,7 +17,9 @@ import nbcp.utils.SpringUtil
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
+import org.springframework.amqp.core.AcknowledgeMode
 import org.springframework.beans.factory.config.BeanPostProcessor
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties
 import org.springframework.boot.autoconfigure.mongo.MongoProperties
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.boot.context.event.ApplicationStartingEvent
@@ -78,6 +80,25 @@ class MyOqlBeanProcessor : BeanPostProcessor {
                     urlJson.queryJson.put("maxIdleTimeMS", "30000")
                     bean.uri = urlJson.toUrl();
                 }
+            }
+        } else if (bean is RabbitProperties) {
+            //ConfirmCallback 确认消息是否到达 Broker 服务器
+            if (bean.publisherConfirmType == null) {
+                bean.publisherConfirmType =
+                    org.springframework.amqp.rabbit.connection.CachingConnectionFactory.ConfirmType.CORRELATED;
+            }
+
+            //需要实现 ReturnCallback 接口
+            if (bean.isPublisherReturns == null) {
+                bean.isPublisherReturns = true;
+            }
+
+            //手动确认
+            if (bean.listener.simple.acknowledgeMode == null) {
+                bean.listener.simple.acknowledgeMode = AcknowledgeMode.MANUAL;
+            }
+            if (bean.listener.direct.acknowledgeMode == null) {
+                bean.listener.direct.acknowledgeMode = AcknowledgeMode.MANUAL;
             }
         } else if (bean is JdbcTemplate) {
             loadJdbcDependencyBeans();
