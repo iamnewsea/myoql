@@ -1,6 +1,6 @@
 package nbcp.service
 
-import io.minio.MinioClient
+import io.minio.*
 import nbcp.comm.FullName
 import nbcp.comm.HasValue
 import nbcp.utils.MyUtil
@@ -26,6 +26,8 @@ class UploadFileForMinioService {
     @Value("\${app.upload.minio.secret:}")
     var MINIO_SECRETKEY: String = ""
 
+    @Value("\${app.upload.minio.region:}")
+    var MINIO_REGION: String = ""
 
     fun check(): Boolean {
         return MINIO_ENDPOINT.HasValue && MINIO_ACCESSKEY.HasValue && MINIO_SECRETKEY.HasValue
@@ -43,28 +45,36 @@ class UploadFileForMinioService {
 
         lateinit var minioClient: MinioClient
         try {
-            minioClient = MinioClient(MINIO_ENDPOINT, MINIO_ACCESSKEY, MINIO_SECRETKEY)
+            minioClient = MinioClient.builder().endpoint(MINIO_ENDPOINT).credentials(MINIO_ACCESSKEY, MINIO_SECRETKEY).build()
         } catch (e: Exception) {
             logger.error(e.message + " . endpoint: ${MINIO_ENDPOINT}")
             throw e;
         }
 
         // bucket 不存在，创建
-        if (!minioClient.bucketExists(group)) {
-            minioClient.makeBucket(group)
+        if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(group).region(MINIO_REGION).build())) {
+            minioClient.makeBucket(MakeBucketArgs.builder().bucket(group).region(MINIO_REGION).build())
         }
 
         val fileName = fileData.getTargetFileName()
-            .replace(File.separatorChar, '/')
+                .replace(File.separatorChar, '/')
 
         //类型
         val contentType = MyUtil.getMimeType(fileData.extName)
         //把文件放置MinIo桶(文件夹)
 
-        fileStream.use {
-            minioClient.putObject(group, fileName, it, contentType)
-        }
+        return fileStream.use {
+            var size = it.available().toLong();
+            var response = minioClient.putObject(PutObjectArgs.builder()
+                    .bucket(group).contentType(contentType)
+                    .stream(it, size, size)
+                    .`object`(fileName)
+                    .region(MINIO_REGION)
+                    .build())
 
-        return minioClient.getObjectUrl(group, fileName)
+
+            //TODO @yuxh 应该返回可下载的URL地址，这里不对。
+            return@use response.versionId()??
+        }
     }
 }
