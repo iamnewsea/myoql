@@ -1,4 +1,4 @@
-package nbcp
+package nbcp.db.mongo
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
