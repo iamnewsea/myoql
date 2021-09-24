@@ -79,8 +79,9 @@ data class UrlQueryJsonData(
                     ret.queryJson.put(items[0], "")
                 } else if (items.size == 2) {
                     ret.queryJson.put(items[0], items[1])
+                } else {
+                    throw RuntimeException("${items}非法，无法转换为键值对")
                 }
-                throw RuntimeException("${items}非法，无法转换为键值对")
             }
 
             return ret;
