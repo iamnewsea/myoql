@@ -60,7 +60,7 @@ open class MasterAlternateStack<T>(private var consumer: Consumer<T>) {
     /**
      * 清除所有存储空间的指定key
      */
-    fun removeAll(key: String) {
+    fun removeAll(key: T) {
         masterStack.remove(key);
         alternateStack.remove(key);
     }

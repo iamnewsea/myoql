@@ -23,7 +23,7 @@ class SheetContentRowArrayDataReader(
         if (row_can_reading == false) return;
 
         var ret = mutableListOf<String>()
-        var maxLength = currentDataRow.keys.max() ?: -1
+        var maxLength = currentDataRow.keys.maxOrNull() ?: -1
 
         for( i in 0..maxLength){
             ret.add( currentDataRow[i] ?: "" )

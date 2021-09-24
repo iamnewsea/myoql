@@ -25,7 +25,7 @@ class generator {
         if (this.isEmpty()) return this;
 
         return this.split(".").map {
-            if( Sys.devKeywords.contains(it)){
+            if (Sys.devKeywords.contains(it)) {
                 return@map """`${it}`"""
             }
             return@map it;
@@ -524,7 +524,7 @@ ${idMethods.joinToString("\n")}
         if (uks_define != null) {
             uks.addAll(uks_define.ukColumns)
         }
-        if (entType.superclass != null && !procedClasses.contains(entType.superclass)) {
+        if (entType.superclass != null && !procedClasses.contains(entType.superclass.name)) {
             uks.addAll(getUks(entType.superclass, procedClasses))
         }
         return uks;

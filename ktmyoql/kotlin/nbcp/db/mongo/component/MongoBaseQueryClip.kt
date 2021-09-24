@@ -218,7 +218,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             error = e;
             throw e;
         } finally {
-            MongoLogger.logFind(error, collectionName, JsonMap("count" to query), JsonMap("result" to ret))
+            MongoLogger.logFind(error, collectionName, query, JsonMap("result" to ret))
 //            logger.InfoError(ret < 0) {
 //                return@InfoError """[count] ${this.collectionName}
 //[query] ${query.queryObject.ToJson()}
@@ -241,7 +241,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             error = e
             throw e;
         } finally {
-            MongoLogger.logFind(error, collectionName, JsonMap("exists" to query), JsonMap("result" to ret))
+            MongoLogger.logFind(error, collectionName, query, JsonMap("result" to ret))
 //            logger.InfoError(ret == null) {
 //                return@InfoError """[exists] ${this.collectionName}
 //[query] ${query.queryObject.ToJson()}

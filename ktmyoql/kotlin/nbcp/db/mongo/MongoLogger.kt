@@ -22,8 +22,8 @@ object MongoLogger {
         log(error, collectionName, queryJson, result?.ToJson() ?: "", mongoLog::getFindLog)
     }
 
-    fun logFind(error: Exception?, collectionName: String, queryJson: JsonMap, result: JsonMap) {
-        log(error, collectionName, queryJson.ToJson(), result.ToJson(), mongoLog::getFindLog)
+    fun logFind(error: Exception?, collectionName: String, queryJson: Query, result: JsonMap) {
+        log(error, collectionName, queryJson.queryObject.toJson(), result.ToJson(), mongoLog::getFindLog)
     }
 
     fun logFind(error: Exception?, collectionName: String, getMsg: () -> String) {

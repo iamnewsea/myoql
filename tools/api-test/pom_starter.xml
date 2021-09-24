@@ -21,7 +21,7 @@
         <springfox-swagger-ui.version>2.9.2</springfox-swagger-ui.version>
         <swagger-bootstrap-ui.version>1.9.6</swagger-bootstrap-ui.version>
         <myoql.version>0.2.5-SNAPSHOT</myoql.version>
-        <mybatis.version>2.0.1</mybatis.version>
+        <mybatis-boot.version>2.0.1</mybatis-boot.version>
     </properties>
 
     <dependencies>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>${mybatis.version}</version>
+            <version>${mybatis-boot.version}</version>
             <scope>provided</scope>
         </dependency>
 

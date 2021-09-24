@@ -26,7 +26,7 @@ class TestKtExt_Array : TestBase() {
         list.add(arrayOf("a","efff","ww"))
         list.add(arrayOf("wf","ewwfwf"))
 
-        var group = list.groupBy { it.size }.maxBy { it.key }?.value?.firstOrNull()
+        var group = list.groupBy { it.size }.maxByOrNull { it.key }?.value?.firstOrNull()
         println(group.ToJson())
     }
 }

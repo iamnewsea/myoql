@@ -58,7 +58,7 @@ open class MasterAlternateSet<T>(private var consumer: Consumer<T>) {
     /**
      * 清除所有存储空间的指定key
      */
-    fun removeAll(key: String) {
+    fun removeAll(key: T) {
         masterSet.remove(key);
         alternateSet.remove(key);
     }

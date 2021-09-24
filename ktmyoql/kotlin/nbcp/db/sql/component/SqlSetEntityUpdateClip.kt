@@ -118,7 +118,7 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var 
                 whereColumns2.add(auKey)
             } else {
                 var uks = this.mainEntity.getUks().toList();
-                var pks = uks.groupBy { it.size }.minBy { it.key }?.value?.firstOrNull()
+                var pks = uks.groupBy { it.size }.minByOrNull { it.key }?.value?.firstOrNull()
                 if (pks != null) {
                     whereColumns2.addAll(columns.filter { pks.contains(it.name) })
                 }

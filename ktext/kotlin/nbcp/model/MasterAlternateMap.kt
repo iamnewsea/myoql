@@ -23,10 +23,10 @@ open class MasterAlternateMap<K, V>(private var v_callback: (V, V) -> V, private
         var consumerMap: (MutableMap<K, V>) -> Unit = {
             var len = it.count();
             for (i in 1..len) {
-                var key = it.entries.elementAt(0);
+                var key = it.entries.elementAt(0) as K;
                 var value = it.get(key);
                 if (value != null) {
-                    consumer(key as K, it.get(key)!!)
+                    consumer(key, it.get(key)!!)
                 }
                 it.remove(key);
             }
@@ -65,7 +65,7 @@ open class MasterAlternateMap<K, V>(private var v_callback: (V, V) -> V, private
     /**
      * 清除所有存储空间的指定key
      */
-    fun removeAll(key: String) {
+    fun removeAll(key: K) {
         masterMap.remove(key);
         alternateMap.remove(key);
     }
