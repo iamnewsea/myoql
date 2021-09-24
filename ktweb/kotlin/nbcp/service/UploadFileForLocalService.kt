@@ -31,9 +31,9 @@ class UploadFileForLocalService {
             return "";
         }
 
-        var targetFileName = fileData.getTargetFileName()
-        var targetFile = File(listOf(UPLOAD_LOCAL_PATH, group, fileData.getTargetFileName()).filter { it.HasValue }
-            .joinToString(File.separator));
+        var targetFileName = UPLOAD_LOCAL_HOST + fileData.getTargetFileName(File.separatorChar)
+
+        var targetFile = File(targetFileName);
 
         if (targetFile.parentFile.exists() == false) {
             if (targetFile.parentFile.mkdirs() == false) {
@@ -46,6 +46,6 @@ class UploadFileForLocalService {
                 throw java.lang.RuntimeException("保存文件失败： ${targetFile.parentFile.FullName}")
             }
         }
-        return UPLOAD_LOCAL_HOST + targetFileName;
+        return targetFileName;
     }
 }

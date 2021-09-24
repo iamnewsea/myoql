@@ -6,12 +6,14 @@ import nbcp.comm.HasValue
 import nbcp.utils.MyUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.stereotype.Service
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 
 @Service
+@ConditionalOnClass(MinioClient::class)
 class UploadFileForMinioService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -45,19 +47,41 @@ class UploadFileForMinioService {
 
         lateinit var minioClient: MinioClient
         try {
-            minioClient = MinioClient.builder().endpoint(MINIO_ENDPOINT).credentials(MINIO_ACCESSKEY, MINIO_SECRETKEY).build()
+            minioClient =
+                MinioClient.builder().endpoint(MINIO_ENDPOINT).credentials(MINIO_ACCESSKEY, MINIO_SECRETKEY).build()
         } catch (e: Exception) {
             logger.error(e.message + " . endpoint: ${MINIO_ENDPOINT}")
             throw e;
         }
 
         // bucket 不存在，创建
-        if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(group).region(MINIO_REGION).build())) {
-            minioClient.makeBucket(MakeBucketArgs.builder().bucket(group).region(MINIO_REGION).build())
+        if (!minioClient.bucketExists(
+                BucketExistsArgs
+                    .builder()
+                    .bucket(group)
+                    .apply {
+                        if (MINIO_REGION.HasValue) {
+                            this.region(MINIO_REGION)
+                        }
+                    }
+                    .build()
+            )
+        ) {
+
+            minioClient.makeBucket(
+                MakeBucketArgs
+                    .builder()
+                    .bucket(group)
+                    .apply {
+                        if (MINIO_REGION.HasValue) {
+                            this.region(MINIO_REGION)
+                        }
+                    }
+                    .build()
+            )
         }
 
-        val fileName = fileData.getTargetFileName()
-                .replace(File.separatorChar, '/')
+        val fileName = fileData.getTargetFileName('/')
 
         //类型
         val contentType = MyUtil.getMimeType(fileData.extName)
@@ -65,16 +89,22 @@ class UploadFileForMinioService {
 
         return fileStream.use {
             var size = it.available().toLong();
-            var response = minioClient.putObject(PutObjectArgs.builder()
+            var response = minioClient.putObject(
+                PutObjectArgs.builder()
                     .bucket(group).contentType(contentType)
-                    .stream(it, size, size)
+                    .stream(it, size, -1)
                     .`object`(fileName)
-                    .region(MINIO_REGION)
-                    .build())
+                    .apply {
+                        if (MINIO_REGION.HasValue) {
+                            this.region(MINIO_REGION)
+                        }
+                    }
+                    .build()
+            )
 
 
             //TODO @yuxh 应该返回可下载的URL地址，这里不对。
-            return@use response.versionId()??
+            return@use MINIO_ENDPOINT + "/" + response.bucket() + "/" + response.`object`()
         }
     }
 }

@@ -1,29 +1,20 @@
 package nbcp.service
 
-import io.minio.MinioClient
 import nbcp.comm.*
-import nbcp.db.DatabaseEnum
 import nbcp.db.IdName
-import nbcp.db.db
 import nbcp.db.mongo.entity.SysAnnex
 import nbcp.model.IUploadFileDbService
 import nbcp.util.VideoUtil
 import nbcp.utils.CodeUtil
-import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
 import nbcp.web.findParameterStringValue
-import org.apache.poi.util.IOUtils
-import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
-import java.io.File
-import java.io.FileOutputStream
 import java.io.InputStream
-import java.time.LocalDate
 import javax.imageio.ImageIO
 import javax.servlet.http.HttpServletRequest
 
@@ -38,8 +29,8 @@ open class UploadService {
     }
 
 
-    @Value("\${app.upload.saveCorp:true}")
-    private var UPLOAD_SAVECORP = false
+    @Value("\${app.upload.group-corp:true}")
+    private var UPLOAD_GROUPCORP = false
 
 //    @Value("\${app.upload.group:}")
 //    private var UPLOAD_GROUP = ""
@@ -84,7 +75,7 @@ open class UploadService {
         fileData.fileName = extInfo.getFileName()
         fileData.extName = extInfo.extName
         fileData.extType = extInfo.extType
-        fileData.needCorp = UPLOAD_SAVECORP;
+        fileData.groupCorp = UPLOAD_GROUPCORP;
         fileData.corpId = corpId;
 
 
@@ -114,7 +105,7 @@ open class UploadService {
                     logoFile.corpId = fileData.corpId;
                     logoFile.extName = "png";
                     logoFile.extType = FileExtentionTypeEnum.Image;
-                    logoFile.needCorp = fileData.needCorp;
+                    logoFile.groupCorp = fileData.groupCorp;
                     logoFile.fileName = CodeUtil.getCode() + ".png";
 
                     var logoUrl = saveFile(this.logoStream, annexInfo.group, logoFile, storageType);
@@ -146,11 +137,13 @@ open class UploadService {
     @Autowired
     lateinit var localUploader: UploadFileForLocalService
 
-    @Autowired
-    lateinit var minioUploader: UploadFileForMinioService
+    val minioUploader: UploadFileForMinioService? by lazy {
+        return@lazy SpringUtil.getBeanWithNull(UploadFileForMinioService::class.java)
+    }
 
-    @Autowired
-    lateinit var aliOssUploader: UploadFileForAliOssService
+    val aliOssUploader: UploadFileForAliOssService? by lazy {
+        return@lazy SpringUtil.getBeanWithNull(UploadFileForAliOssService::class.java)
+    }
 
     /**
      * 把文件转移到相应的文件夹下.
@@ -170,10 +163,9 @@ open class UploadService {
         var storageType = storageType;
 
         if (storageType == null) {
-
-            if (aliOssUploader.check()) {
+            if (aliOssUploader?.check() == true) {
                 storageType = UploadStorageTypeEnum.AliOss
-            } else if (minioUploader.check()) {
+            } else if (minioUploader?.check() == true) {
                 storageType = UploadStorageTypeEnum.Minio
             } else if (localUploader.check()) {
                 storageType = UploadStorageTypeEnum.Local
@@ -181,11 +173,11 @@ open class UploadService {
         }
 
         if (storageType == UploadStorageTypeEnum.AliOss) {
-            return aliOssUploader.upload(fileStream, group, fileData)
+            return aliOssUploader!!.upload(fileStream, group, fileData)
         }
 
         if (storageType == UploadStorageTypeEnum.Minio) {
-            return minioUploader.upload(fileStream, group, fileData)
+            return minioUploader!!.upload(fileStream, group, fileData)
         }
 
         if (storageType == UploadStorageTypeEnum.Local) {

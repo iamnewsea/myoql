@@ -2,7 +2,12 @@ logging:
   level:
     root: info
 app:
-  a: 1
+  upload:
+    minio:
+      endpoint: http://192.168.5.219:9000
+      key: admin
+      secret: nancal.123
+      region:
 
 spring:
   application:

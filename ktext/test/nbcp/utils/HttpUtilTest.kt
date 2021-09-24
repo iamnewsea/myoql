@@ -13,9 +13,9 @@ import java.io.FileInputStream
 class HttpUtilTest : TestBase() {
     @Test
     fun abfc() {
-        var http = HttpUtil("http://localhost:8202/sys/upload")
+        var http = HttpUtil("http://localhost:8084/sys/upload")
         http.request.headers.set("group", "lowcode")
-        var ret = http.uploadFile("DevOps流程.vsdx", FileInputStream("""D:\能科资料\DevOps流程.vsdx"""))
+        var ret = http.uploadFile("DevOps流程.vsdx", FileInputStream("""D:\b.xlsx"""))
         println(ret)
     }
 

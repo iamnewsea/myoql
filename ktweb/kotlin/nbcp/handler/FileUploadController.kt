@@ -32,10 +32,8 @@ class FileUploadController {
 
     /**
      * 文件上传流程：
-     *  1. 保存文件
-     *  2. 计算文件 Md5 值
-     *  3. 插入到 SysAnnex 表中。
-     *  4. 返回 SysAnnex.id
+     *
+     *  参数: group,storage-type
      */
     @PostMapping("/sys/upload")
     fun fileUpload(request: HttpServletRequest, response: HttpServletResponse) {

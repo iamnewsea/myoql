@@ -12,9 +12,9 @@ class UploadFileNameData @JvmOverloads constructor(var msg: String = "") {
     var extName: String = ""
     var extType: FileExtentionTypeEnum = FileExtentionTypeEnum.Other
 
-//        var imgWidth: Int = 0
+    //        var imgWidth: Int = 0
 //        var imgHeight: Int = 0
-    var needCorp: Boolean = true
+    var groupCorp: Boolean = true
     var corpId: String = ""
 
     /*
@@ -45,10 +45,10 @@ class UploadFileNameData @JvmOverloads constructor(var msg: String = "") {
     /**
      * 保存全路径
      */
-    fun getTargetFileName(): String {
+    fun getTargetFileName(separator: Char): String {
         var targetFileName = mutableListOf<String>()
 
-        if (needCorp && corpId.HasValue) {
+        if (groupCorp && corpId.HasValue) {
             targetFileName.add(corpId);
         }
         targetFileName.addAll(getTargetPaths())
@@ -58,6 +58,6 @@ class UploadFileNameData @JvmOverloads constructor(var msg: String = "") {
             targetFileName.add(fileName)
         }
 
-        return targetFileName.map { File.separator + it }.joinToString("")
+        return targetFileName.map { separator + it }.joinToString("")
     }
 }

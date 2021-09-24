@@ -12,6 +12,7 @@ import nbcp.utils.MyUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.stereotype.Service
 import org.springframework.util.MimeTypeUtils
 import org.springframework.web.multipart.MultipartFile
@@ -25,6 +26,7 @@ import java.util.*
 import java.util.concurrent.*
 
 @Service
+@ConditionalOnClass(OSSClientBuilder::class)
 class UploadFileForAliOssService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -62,8 +64,7 @@ class UploadFileForAliOssService {
         metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString())
         metadata.setContentLength(contentLength.toLong())
 
-        val fileName = fileData.getTargetFileName()
-            .replace(File.separatorChar, '/')
+        val fileName = fileData.getTargetFileName('/')
 
         ossClient.putObject(group, fileName, fileStream, metadata);
 
