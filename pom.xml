@@ -10,6 +10,7 @@
     <name>kotlin-myoql</name>
 
     <modules>
+        <module>kotlin-myoql-dependencies</module>
         <module>ktext</module>
         <module>ktmyoql</module>
         <module>ktmvc</module>
@@ -23,10 +24,12 @@
             <url>http://opensource.org/licenses/mit-license.php</url>
         </license>
     </licenses>
+
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.12.RELEASE</version>
+        <groupId>cn.dev8</groupId>
+        <artifactId>kotlin-myoql-dependencies</artifactId>
+        <version>0.2.5-SNAPSHOT</version>
+        <relativePath>./kotlin-myoql-dependencies</relativePath>
     </parent>
 
 
@@ -34,22 +37,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <kotlin.version>1.5.31</kotlin.version>
 
-        <poi.version>5.0.0</poi.version>
-        <maven-plugin.version>3.2.1</maven-plugin.version>
-        <dokka.version>1.5.30</dokka.version>
-        <aspectj.version>1.9.7</aspectj.version>
-        <cglib.version>3.3.0</cglib.version>
-        <zip4j.version>2.9.0</zip4j.version>
-        <mybatis.version>3.5.7</mybatis.version>
-        <mybatis-spring.version>2.0.6</mybatis-spring.version>
-        <elasticsearch.version>7.15.0</elasticsearch.version>
-        <jackson.version>2.12.5</jackson.version>
-        <reflections.version>0.9.12</reflections.version>
-        <bcprov.version>1.69</bcprov.version>
-        <asm.version>9.2</asm.version>
-        <okhttp3.version>4.9.1</okhttp3.version>
     </properties>
 
 
@@ -175,71 +163,20 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-    </dependencies>
 
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-dependencies</artifactId>-->
+<!--            <version>2.3.12.RELEASE</version>-->
+<!--        </dependency>-->
+    </dependencies>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>com.fasterxml.jackson.module</groupId>
-                <artifactId>jackson-module-kotlin</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
 
-            <dependency>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-stdlib</artifactId>
-                <version>${kotlin.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ow2.asm</groupId>
-                <artifactId>asm</artifactId>
-                <version>${asm.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-core</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.squareup.okhttp3</groupId>
-                <artifactId>okhttp</artifactId>
-                <version>4.9.1</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>30.0-jre</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk15on</artifactId>
-                <version>${bcprov.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>xml-apis</groupId>
-                <artifactId>xml-apis</artifactId>
-                <version>1.4.01</version>
-            </dependency>
         </dependencies>
-
     </dependencyManagement>
+
 
     <!-- 开发者信息 -->
     <developers>
@@ -277,8 +214,8 @@
         </testResources>
         <plugins>
             <plugin>
-                <artifactId>kotlin-maven-plugin</artifactId>
                 <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
                 <version>${kotlin.version}</version>
                 <configuration>
                     <jvmTarget>1.8</jvmTarget>
@@ -302,7 +239,6 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 

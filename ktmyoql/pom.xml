@@ -78,7 +78,6 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
-            <version>${bcprov.version}</version>
         </dependency>
 
         <!--        &lt;!&ndash; https://mvnrepository.com/artifact/io.lettuce/lettuce-core &ndash;&gt;-->
@@ -136,13 +135,13 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>${poi.version}</version>
+<!--            <version>${poi.version}</version>-->
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>${poi.version}</version>
+<!--            <version>${poi.version}</version>-->
         </dependency>
 
 

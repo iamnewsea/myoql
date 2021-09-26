@@ -16,33 +16,25 @@
         <version>0.2.5-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <properties>
-        <springfox-swagger.version>2.9.2</springfox-swagger.version>
-        <minio.version>8.3.0</minio.version>
-        <aliyun.oss.version>3.10.2</aliyun.oss.version>
-        <jjwt.version>0.9.1</jjwt.version>
-        <captcha.version>1.6.2</captcha.version>
-        <javacv.version>1.5.3</javacv.version>
-    </properties>
 
     <dependencies>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
-            <version>${jjwt.version}</version>
+<!--            <version>${jjwt.version}</version>-->
         </dependency>
 
         <dependency>
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>
-            <version>${minio.version}</version>
+<!--            <version>${minio.version}</version>-->
         </dependency>
 
         <!-- 阿里云OSS-->
         <dependency>
             <groupId>com.aliyun.oss</groupId>
             <artifactId>aliyun-sdk-oss</artifactId>
-            <version>${aliyun.oss.version}</version>
+<!--            <version>${aliyun.oss.version}</version>-->
         </dependency>
 
         <dependency>
@@ -53,7 +45,7 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
-            <version>${springfox-swagger.version}</version>
+<!--            <version>${springfox-swagger.version}</version>-->
         </dependency>
         <dependency>
             <groupId>cn.dev8</groupId>
@@ -81,7 +73,7 @@
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>javacv</artifactId>
-            <version>${javacv.version}</version>
+<!--            <version>${javacv.version}</version>-->
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -123,7 +115,7 @@
         <dependency>
             <groupId>com.github.whvcse</groupId>
             <artifactId>easy-captcha</artifactId>
-            <version>${captcha.version}</version>
+<!--            <version>${captcha.version}</version>-->
         </dependency>
 
         <!--        <dependency>-->
