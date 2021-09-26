@@ -37,17 +37,19 @@
         <kotlin.version>1.5.31</kotlin.version>
 
         <poi.version>5.0.0</poi.version>
-        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+        <maven-plugin.version>3.2.1</maven-plugin.version>
         <dokka.version>1.5.30</dokka.version>
-        <aspectjweaver.version>1.9.7</aspectjweaver.version>
+        <aspectj.version>1.9.7</aspectj.version>
         <cglib.version>3.3.0</cglib.version>
         <zip4j.version>2.9.0</zip4j.version>
+        <mybatis.version>3.5.7</mybatis.version>
         <mybatis-spring.version>2.0.6</mybatis-spring.version>
-        <mybatis.version>3.5.6</mybatis.version>
-        <elasticsearch-rest-client.version>7.15.0</elasticsearch-rest-client.version>
+        <elasticsearch.version>7.15.0</elasticsearch.version>
         <jackson.version>2.12.5</jackson.version>
         <reflections.version>0.9.12</reflections.version>
         <bcprov.version>1.69</bcprov.version>
+        <asm.version>9.2</asm.version>
+        <okhttp3.version>4.9.1</okhttp3.version>
     </properties>
 
 
@@ -112,7 +114,7 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
-            <version>${aspectjweaver.version}</version>
+            <version>${aspectj.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -192,7 +194,7 @@
             <dependency>
                 <groupId>org.ow2.asm</groupId>
                 <artifactId>asm</artifactId>
-                <version>7.1</version>
+                <version>${asm.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -312,7 +314,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>3.0.1</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>

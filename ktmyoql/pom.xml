@@ -100,7 +100,6 @@
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-client</artifactId>
-            <version>${elasticsearch-rest-client.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -243,7 +242,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>${maven-source-plugin.version}</version>
+                <version>${maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
