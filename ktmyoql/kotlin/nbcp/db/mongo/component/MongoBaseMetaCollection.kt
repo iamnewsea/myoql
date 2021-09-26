@@ -51,7 +51,7 @@ abstract class MongoBaseMetaCollection<T : IMongoDocument>(val entityClass: Clas
     fun getMongoCriteria(vararg where: Criteria): Criteria {
         if (where.size == 0) return Criteria();
         if (where.size == 1) return where[0];
-        return where.first().andOperator(*where.slice(1 until where.size).toTypedArray());
+        return Criteria().andOperator(*where);
     }
 }
 
