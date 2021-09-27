@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cn.dev8</groupId>
@@ -51,7 +53,7 @@
         <dependency>
             <groupId>net.lingala.zip4j</groupId>
             <artifactId>zip4j</artifactId>
-<!--            <version>${zip4j.version}</version>-->
+            <!--            <version>${zip4j.version}</version>-->
         </dependency>
 
 
@@ -69,10 +71,10 @@
             </testResource>
         </testResources>
         <plugins>
-<!--            <plugin>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
-<!--            </plugin>-->
+            <!--            <plugin>-->
+            <!--                <groupId>org.springframework.boot</groupId>-->
+            <!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
+            <!--            </plugin>-->
             <plugin>
                 <groupId>org.jetbrains.dokka</groupId>
                 <artifactId>dokka-maven-plugin</artifactId>
@@ -88,11 +90,11 @@
 
                 <configuration>
                     <outputDir>${project.build.directory}/apidocs</outputDir>
-<!--                    <externalDocumentationLinks>-->
-<!--                        <externalDocumentationLink>-->
-<!--                            <url>http://file.dev8.cn:8000/package-list</url>-->
-<!--                        </externalDocumentationLink>-->
-<!--                    </externalDocumentationLinks>-->
+                    <!--                    <externalDocumentationLinks>-->
+                    <!--                        <externalDocumentationLink>-->
+                    <!--                            <url>http://file.dev8.cn:8000/package-list</url>-->
+                    <!--                        </externalDocumentationLink>-->
+                    <!--                    </externalDocumentationLinks>-->
                 </configuration>
             </plugin>
 
