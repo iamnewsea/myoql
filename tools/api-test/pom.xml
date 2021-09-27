@@ -138,30 +138,15 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--            <plugin>-->
-            <!--                <groupId>org.codehaus.mojo</groupId>-->
-            <!--                <artifactId>exec-maven-plugin</artifactId>-->
-            <!--                <version>3.0.0</version>-->
-            <!--                <executions>-->
-            <!--                    <execution>-->
-            <!--                        <id>Version Calculation</id>-->
-            <!--                        <phase>package</phase>-->
-            <!--                        <goals>-->
-            <!--                            <goal>exec</goal>-->
-            <!--                        </goals>-->
-            <!--                        <configuration>-->
-            <!--                            <executable>/bin/bash</executable>-->
-            <!--                            <arguments>-->
-            <!--                                <argument>-->
-            <!--                                    ${basedir}/bin/addimage.sh-->
-            <!--                                </argument>-->
-            <!--                            </arguments>-->
-            <!--                            &lt;!&ndash; 也可替换成如下 &ndash;&gt;-->
-            <!--                            &lt;!&ndash;  <executable>${basedir}/bin/test/addimage.sh</executable>&ndash;&gt;-->
-            <!--                        </configuration>-->
-            <!--                    </execution>-->
-            <!--                </executions>-->
-            <!--            </plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <groupId>org.jetbrains.kotlin</groupId>
