@@ -378,7 +378,7 @@ fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName},${
         kotlin.run {
             var uks_define = entType.getAnnotation(DbUks::class.java)
             if (uks_define != null) {
-                uks.addAll(uks_define.ukColumns)
+                uks.addAll(uks_define.value)
             }
         }
 

@@ -521,7 +521,7 @@ ${idMethods.joinToString("\n")}
         var uks = mutableSetOf<String>()
         var uks_define = entType.getAnnotation(DbUks::class.java)
         if (uks_define != null) {
-            uks.addAll(uks_define.ukColumns)
+            uks.addAll(uks_define.value)
         }
         if (entType.superclass != null && !procedClasses.contains(entType.superclass.name)) {
             uks.addAll(getUks(entType.superclass, procedClasses))

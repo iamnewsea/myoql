@@ -141,7 +141,7 @@ class generator_mapping {
     fun getDefines(field: Field): Map<String, String> {
         var defines = field.getAnnotation(Defines::class.java)
         if (defines != null) {
-            return defines.values.map { it.key to it.value }.toMap()
+            return defines.value.map { it.key to it.value }.toMap()
         }
 
         var define = field.getAnnotation(Define::class.java)
