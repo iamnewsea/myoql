@@ -11,9 +11,9 @@
 
     <parent>
         <groupId>cn.dev8</groupId>
-        <artifactId>kotlin</artifactId>
+        <artifactId>kotlin-boot-parent</artifactId>
         <version>0.2.5-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <properties>
