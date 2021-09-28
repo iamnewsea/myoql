@@ -19,16 +19,14 @@ class SqlConvertValueToDbEvent_Insert : ISqlEntityInsert {
         insert.mainEntity.tableClass.AllFields.forEach {
             var ann = it.getAnnotation(ConverterValueToDb::class.java);
             if (ann != null) {
-                annotations.put(it, ann.converter.createInstance());
+                annotations.put(it, ann.value.createInstance());
             }
         }
 
         annotations.forEach { field, converter ->
-
             var values = mutableListOf<Any?>()
-
             insert.entities.forEach {
-                var convertedValue = converter.convert(it.get(field.name))
+                var convertedValue = converter.convert(field, it.get(field.name))
                 values.add(convertedValue);
                 it.set(field.name, convertedValue);
             }

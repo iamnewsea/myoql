@@ -14,7 +14,7 @@ interface ISqlDbEntity : java.io.Serializable {
 
 abstract class AutoNumberSqlDbEntity : ISqlDbEntity {
     @DbKey
-    @ConverterValueToDb(AutoNumberConverter::class)
+    @ConverterValueToDb(AutoIdConverter::class)
     var id: Long = 0
 
     @Cn("创建时间")

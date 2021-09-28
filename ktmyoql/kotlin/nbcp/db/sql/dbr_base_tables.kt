@@ -9,7 +9,7 @@ import nbcp.comm.*
 import nbcp.utils.*
 import org.springframework.stereotype.Component
 
-//generate auto @2021-09-14 11:18:45
+//generate auto @2021-09-29 00:29:50
 
 
 @Component("sql.SqlBase")
@@ -106,7 +106,7 @@ class SqlBaseGroup : IDataGroup{
         val creator_id=SqlColumnName(DbType.String,this.getAliaTableName(),"creator_id")
         val creator_name=SqlColumnName(DbType.String,this.getAliaTableName(),"creator_name")
         val data=SqlColumnName(DbType.String,this.getAliaTableName(),"data")
-        @ConverterValueToDb(nbcp.db.sql.AutoNumberConverter::class)
+        @ConverterValueToDb(nbcp.db.sql.AutoIdConverter::class)
         val id=SqlColumnName(DbType.Long,this.getAliaTableName(),"id")
         val createAt=SqlColumnName(DbType.DateTime,this.getAliaTableName(),"createAt")
     
@@ -142,7 +142,7 @@ class SqlBaseGroup : IDataGroup{
         val data=SqlColumnName(DbType.String,this.getAliaTableName(),"data")
         val response=SqlColumnName(DbType.String,this.getAliaTableName(),"response")
         val creatorId=SqlColumnName(DbType.String,this.getAliaTableName(),"creatorId")
-        @ConverterValueToDb(nbcp.db.sql.AutoNumberConverter::class)
+        @ConverterValueToDb(nbcp.db.sql.AutoIdConverter::class)
         val id=SqlColumnName(DbType.Long,this.getAliaTableName(),"id")
         val createAt=SqlColumnName(DbType.DateTime,this.getAliaTableName(),"createAt")
     

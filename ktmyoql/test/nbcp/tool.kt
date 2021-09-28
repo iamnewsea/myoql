@@ -3,12 +3,8 @@ package nbcp
 import nbcp.TestBase
 import org.junit.jupiter.api.Test
 import nbcp.comm.*
-import nbcp.db.mongo.entity.*
 import nbcp.db.sql.entity.*
-import nbcp.utils.ClassUtil
 import java.io.File
-import java.lang.reflect.ParameterizedType
-import kotlin.reflect.full.memberProperties
 
 
 class tool : TestBase() {

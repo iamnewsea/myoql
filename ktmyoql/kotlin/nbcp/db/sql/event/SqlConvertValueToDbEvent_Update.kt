@@ -17,14 +17,14 @@ class SqlConvertValueToDbEvent_Update : ISqlEntityUpdate {
         update.mainEntity.tableClass.AllFields.forEach {
             var ann = it.getAnnotation(ConverterValueToDb::class.java);
             if (ann != null) {
-                annotations.put(it, ann.converter.createInstance());
+                annotations.put(it, ann.value.createInstance());
             }
         }
 
         annotations.forEach { field, converter ->
             update.sets.forEach {
                 if (it.key.name == field.name) {
-                    update.sets.put(it.key, converter.convert(it.value))
+                    update.sets.put(it.key, converter.convert(field, it.value))
                 }
             }
         }

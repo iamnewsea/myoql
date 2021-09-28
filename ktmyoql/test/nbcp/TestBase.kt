@@ -15,6 +15,7 @@ import nbcp.utils.*
 import org.springframework.boot.Banner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
@@ -27,7 +28,7 @@ import java.time.LocalDateTime
  */
 
 //@SpringBootApplication(exclude = arrayOf(MongoAutoConfiguration::class, RedisAutoConfiguration::class))
-@SpringBootApplication()
+@SpringBootApplication(exclude = arrayOf(MongoAutoConfiguration::class, RabbitAutoConfiguration::class, RedisAutoConfiguration::class))
 @Import(SpringUtil::class)
 open class KtMyoqlTestApplication {
 
@@ -72,6 +73,6 @@ abstract class TestBase {
         }
         var endAt = LocalDateTime.now()
 
-        println((endAt  - startAt).toString())
+        println((endAt - startAt).toString())
     }
 }

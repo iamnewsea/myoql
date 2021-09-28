@@ -1,5 +1,6 @@
 package nbcp.db.sql
 
+import java.lang.reflect.Field
 import kotlin.reflect.KClass
 
 /**
@@ -48,13 +49,17 @@ annotation class SqlSpreadColumn()
 /**
  * 插入，或更新某个字段前，进行数据转换。
  * 使用方式，如在实体字段上定义 @ConverterValueToDb(TrimUppercaseConverter::class)
+ * TODO 之后改为 vararg
  */
 @Repeatable
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class ConverterValueToDb(val converter: KClass<out IConverter>)
+annotation class ConverterValueToDb(val value: KClass<out IConverter>)
 
 
-interface  IConverter{
-    fun convert(value:Any?):Any?
+interface IConverter {
+    /**
+     * @param field 实体字段
+     */
+    fun convert(field:Field , value: Any?): Any?
 }
