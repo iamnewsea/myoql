@@ -3,8 +3,6 @@
 
 package nbcp.comm
 
-import nbcp.db.SqlCrudEnum
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
 import java.lang.RuntimeException
 import java.lang.reflect.*
 
@@ -272,8 +270,8 @@ fun ParameterizedType.GetActualClass(index: Int, callback: (() -> Class<*>?)? = 
 }
 
 fun Class<*>.GetFirstTypeArguments(): Array<Type> {
-    if (this.genericSuperclass is ParameterizedTypeImpl) {
-        return (this.genericSuperclass as ParameterizedTypeImpl).actualTypeArguments
+    if (this.genericSuperclass is ParameterizedType) {
+        return (this.genericSuperclass as ParameterizedType).actualTypeArguments
     }
     if (this.superclass == null) return arrayOf()
     return this.superclass.GetFirstTypeArguments();

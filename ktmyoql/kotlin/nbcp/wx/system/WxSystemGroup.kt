@@ -1,15 +1,12 @@
 package nbcp.wx.system
 
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64
 import nbcp.comm.*
-import nbcp.db.db
 import nbcp.utils.HttpUtil
 import nbcp.utils.Md5Util
-import nbcp.utils.SpringUtil
+import nbcp.utils.MyUtil
 import nbcp.wx.wx
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.lang.RuntimeException
-import java.nio.charset.Charset
 import java.security.AlgorithmParameters
 import java.security.Security
 import java.util.*
@@ -99,11 +96,11 @@ object WxSystemGroup {
      * 解密用户的加密数据
      */
     fun decryptWxUserData(encryptedData: String, sessionKey: String, iv: String): String { // 被加密的数据
-        val dataByte = Base64.decode(encryptedData)
+        val dataByte = MyUtil.getFromBase64(encryptedData)
         // 加密秘钥
-        var keyByte = Base64.decode(sessionKey)
+        var keyByte = MyUtil.getFromBase64(sessionKey)
         // 偏移量
-        val ivByte = Base64.decode(iv)
+        val ivByte = MyUtil.getBase64(iv).toByteArray(const.utf8)
         // 如果密钥不足16位，那么就补足.  这个if 中的内容很重要
         val base = 16
         if (keyByte.size % base != 0) {

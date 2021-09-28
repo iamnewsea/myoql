@@ -5,7 +5,6 @@ import nbcp.data.Sys
 import nbcp.utils.*
 import nbcp.db.*
 import nbcp.tool.CodeGeneratorHelper
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
 import java.io.File
 import java.io.FileWriter
 import java.lang.RuntimeException

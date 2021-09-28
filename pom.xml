@@ -230,11 +230,11 @@
                 <version>30.0-jre</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk15on</artifactId>
-                <version>${bcprov.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.bouncycastle</groupId>-->
+<!--                <artifactId>bcprov-jdk15on</artifactId>-->
+<!--                <version>${bcprov.version}</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>xml-apis</groupId>
@@ -307,11 +307,11 @@
             </dependency>
 
 
-            <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk15on</artifactId>
-                <version>${bcprov.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.bouncycastle</groupId>-->
+<!--                <artifactId>bcprov-jdk15on</artifactId>-->
+<!--                <version>${bcprov.version}</version>-->
+<!--            </dependency>-->
 
 
             <dependency>

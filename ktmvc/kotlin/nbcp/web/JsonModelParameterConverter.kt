@@ -12,9 +12,8 @@ import nbcp.comm.*
 import nbcp.utils.*
 import org.slf4j.LoggerFactory
 import org.springframework.web.servlet.HandlerMapping
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
-import java.lang.RuntimeException
 import java.lang.reflect.Method
+import java.lang.reflect.ParameterizedType
 import javax.servlet.ServletRequest
 import javax.servlet.ServletRequestWrapper
 import javax.servlet.ServletResponse
@@ -146,7 +145,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
 
         //如果是列表。
         if (parameter.parameterType.IsCollectionType) {
-            var genType = (parameter.genericParameterType as ParameterizedTypeImpl).GetActualClass(0);
+            var genType = (parameter.genericParameterType as ParameterizedType).GetActualClass(0);
             value = value?.ConvertType(parameter.parameterType, genType)
             if (value is Collection<*> && value.size == 0) {
                 checkRequire(parameter, webRequest);
@@ -214,7 +213,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
                         .toTypedArray()
                 }
             } else if (parameter.parameterType.IsCollectionType) {
-                var genType = (parameter.genericParameterType as ParameterizedTypeImpl).GetActualClass(0);
+                var genType = (parameter.genericParameterType as ParameterizedType).GetActualClass(0);
                 if (!genType.IsStringType) {
                     value = (value as Collection<String>).map { it.ConvertType(genType) }
                 }
@@ -230,7 +229,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         if (parameter.parameterType.isArray) {
             value = arrayOf(value.ConvertType(parameter.parameterType.componentType))
         } else if (parameter.parameterType.IsCollectionType) {
-            var genType = (parameter.genericParameterType as ParameterizedTypeImpl).GetActualClass(0);
+            var genType = (parameter.genericParameterType as ParameterizedType).GetActualClass(0);
             value = listOf(value.ConvertType(genType))
         } else if (parameter.parameterType.IsStringType == false) {
             value = value.ConvertType(parameter.parameterType)

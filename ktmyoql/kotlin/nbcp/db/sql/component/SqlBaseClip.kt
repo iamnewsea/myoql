@@ -6,7 +6,6 @@ import nbcp.comm.*
 
 import nbcp.utils.*
 import nbcp.db.*
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
 import java.io.Serializable
 import java.time.LocalDateTime
 import javax.sql.DataSource
