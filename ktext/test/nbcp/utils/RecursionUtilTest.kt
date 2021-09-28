@@ -2,7 +2,7 @@ package nbcp.utils
 
 import nbcp.TestBase
 import nbcp.comm.JsonMap
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class RecursionUtilTest : TestBase() {
     @Test

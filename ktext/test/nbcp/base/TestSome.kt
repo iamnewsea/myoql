@@ -3,7 +3,7 @@ package nbcp.base
 import nbcp.TestBase
 import nbcp.app.GroupLog
 import nbcp.comm.*
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.time.LocalDateTime

@@ -11,7 +11,7 @@ import nbcp.db.sql.doInsert
 import nbcp.db.sql.entity.s_annex
 import nbcp.db.sql.updateWithEntity
 import nbcp.tool.UserCodeGenerator
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.transaction.annotation.Transactional
 import java.lang.RuntimeException

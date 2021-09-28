@@ -3,7 +3,7 @@ package nbcp.utils
 import nbcp.TestBase
 import nbcp.comm.*
 import nbcp.component.SnowFlake
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.io.File
 import java.time.format.DateTimeFormatter
 

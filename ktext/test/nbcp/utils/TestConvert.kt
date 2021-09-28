@@ -3,7 +3,7 @@ package nbcp.utils
 import nbcp.TestBase
 import nbcp.comm.*
 import nbcp.helper.ScriptLanguageEnum
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.time.format.DateTimeFormatter
 
 class TestUtils : TestBase() {

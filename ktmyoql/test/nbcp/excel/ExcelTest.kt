@@ -5,7 +5,7 @@ import nbcp.comm.AsString
 import nbcp.comm.JsonMap
 import nbcp.comm.ToJson
 import nbcp.db.excel.ExcelComponent
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.time.LocalDateTime

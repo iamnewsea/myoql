@@ -8,7 +8,7 @@ import nbcp.db.es.IEsDocument
 import nbcp.db.es.tool.generator_mapping
 import nbcp.tool.UserCodeGenerator
 import nbcp.utils.SpringUtil
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Component

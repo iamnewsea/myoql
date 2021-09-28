@@ -1,7 +1,7 @@
 package nbcp
 
 import nbcp.TestBase
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import nbcp.comm.*
 import nbcp.db.mongo.entity.*
 import nbcp.db.sql.entity.*

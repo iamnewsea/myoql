@@ -5,7 +5,7 @@ import nbcp.app.GroupLog
 import nbcp.comm.kotlinTypeName
 import nbcp.db.EventResult
 import nbcp.utils.ProxyUtil
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method

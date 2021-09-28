@@ -1,6 +1,7 @@
 package nbcp
 
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.support.FileSystemXmlApplicationContext
@@ -44,7 +45,7 @@ open class KtMyoqlTestApplication {
     }
 }
 
-@RunWith(SpringRunner::class)
+@ExtendWith(SpringExtension::class)
 @WebAppConfiguration
 @SpringBootTest(classes = [KtMyoqlTestApplication::class])
 @TestPropertySource(locations = ["classpath:application.yml"])

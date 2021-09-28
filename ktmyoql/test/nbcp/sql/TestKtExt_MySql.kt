@@ -13,7 +13,7 @@ import nbcp.db.sql.entity.s_annex
 import nbcp.tool.UserCodeGenerator
 import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.boot.logging.LogLevel

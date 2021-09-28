@@ -4,7 +4,7 @@ import nbcp.TestBase
 import nbcp.comm.JsonMap
 import nbcp.comm.StringMap
 import nbcp.db.IdName
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class MyUtilTest : TestBase() {
     @Test

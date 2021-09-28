@@ -1,7 +1,7 @@
 package nbcp.model
 
 import nbcp.TestBase
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 
 class MasterAlternateMapTest : TestBase() {

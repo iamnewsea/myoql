@@ -5,7 +5,7 @@ import nbcp.comm.LogLevelScope
 import nbcp.comm.StringMap
 import nbcp.comm.formatWithJson
 import nbcp.comm.usingScope
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.springframework.boot.logging.LogLevel
 import java.io.FileInputStream
 

@@ -2,7 +2,7 @@ package nbcp.comm
 
 import nbcp.TestBase
 import nbcp.db.IdUrl
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.io.Serializable
 import java.time.Duration
 

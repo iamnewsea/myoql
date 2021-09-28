@@ -3,7 +3,7 @@ package nbcp.comm
 import nbcp.TestBase
 import nbcp.comm.*
 import nbcp.utils.CookieData
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalDateTime

@@ -7,7 +7,7 @@ import nbcp.db.es.IEsDocument
 import nbcp.db.es.tool.generator_mapping
 import nbcp.db.sql.entity.s_city
 import nbcp.tool.UserCodeGenerator
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
 @DbEntityGroup("sys")

@@ -7,7 +7,7 @@ import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.IdName
 import nbcp.db.IdUrl
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
 import java.io.InputStreamReader

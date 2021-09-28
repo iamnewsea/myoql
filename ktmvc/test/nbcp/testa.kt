@@ -4,7 +4,7 @@ import nbcp.comm.LogLevelScope
 import nbcp.comm.MyLogLevel
 import nbcp.comm.usingScope
 import nbcp.utils.SpringUtil
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.springframework.boot.logging.LogLevel
 import org.springframework.stereotype.Component

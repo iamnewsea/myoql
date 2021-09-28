@@ -4,7 +4,7 @@ import nbcp.TestBase
 import nbcp.comm.*
 import nbcp.db.IdName
 import nbcp.helper.ScriptLanguageEnum
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.lang.reflect.ParameterizedType
 import java.time.format.DateTimeFormatter
 
