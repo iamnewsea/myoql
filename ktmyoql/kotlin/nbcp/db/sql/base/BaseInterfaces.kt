@@ -5,6 +5,13 @@ import nbcp.db.DbKey
 import org.springframework.data.annotation.Id
 import java.time.LocalDateTime
 
+/**
+ * 仅留接口
+ */
+interface ISqlDbEntity : java.io.Serializable {
+}
+
+
 abstract class AutoNumberSqlDbEntity : java.io.Serializable {
     @DbKey
     @ConverterValueToDb(AutoIdConverter::class)
