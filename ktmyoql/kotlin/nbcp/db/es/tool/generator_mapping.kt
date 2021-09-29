@@ -77,7 +77,7 @@ class generator_mapping {
         }
 
         println("")
-        println("生成 mapping 完成!")
+        println("生成 mapping 完成,位置:${moer_Path}")
         println("---")
         println("创建 mapping:")
         println("https://www.elastic.co/guide/en/elasticsearch/reference/7.6/indices-put-mapping.html")
@@ -183,7 +183,6 @@ class generator_mapping {
 
                     json.put(it.name, defineJson);
                     return@forEach
-
                 }
 
 
