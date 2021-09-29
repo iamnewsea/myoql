@@ -139,8 +139,9 @@ if __name__ == '__main__':
 
     print("-----------------------------------------------")
 
+    cwd = os.getcwd()
     for module in modules:
         resetVersion(module, "pom.xml", groupId, artifactId, version)
-        os.chdir("../")
+        os.chdir(cwd)
 
     print("-----------------------------------------------")
