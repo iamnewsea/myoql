@@ -107,7 +107,7 @@ class SqlEntityCollector : BeanPostProcessor {
     }
 
 
-    private fun addRef(entityClass: Class<out ISqlDbEntity>) {
+    private fun addRef(entityClass: Class<out java.io.Serializable>) {
         var refs = entityClass.getAnnotation(DbEntityFieldRefs::class.java)
         if (refs != null && refs.values.any()) {
             refs.values.forEach {
@@ -121,7 +121,7 @@ class SqlEntityCollector : BeanPostProcessor {
         }
     }
 
-    private fun addDustbin(entityClass: Class<out ISqlDbEntity>) {
+    private fun addDustbin(entityClass: Class<out java.io.Serializable>) {
         var dustbin = entityClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dustbin != null) {
             dustbinEntitys.add(entityClass)

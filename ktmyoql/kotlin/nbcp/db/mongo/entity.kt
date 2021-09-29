@@ -41,7 +41,7 @@ open class BasicUser @JvmOverloads constructor(
     var workCity: CityCodeName = CityCodeName(),
     @Cn("工作地址")
     var workLocation: String = ""  //工作地
-) : BaseEntity(), IMongoDocument {
+) : BaseEntity() {
 
 //    var name: String
 //        get() = this.identityCard.name
@@ -89,7 +89,7 @@ open class BasicUserLoginInfo @JvmOverloads constructor(
     var isLocked: Boolean = false,
     @Cn("锁定详情")
     var lockedRemark: String = ""
-) : BaseEntity(), IMongoDocument
+) : BaseEntity()
 
 
 @Document
@@ -114,7 +114,7 @@ open class SysOrganization @JvmOverloads constructor(
     var isLocked: Boolean = true,
     @Cn("锁定详情")
     var lockedRemark: String = ""
-) : BaseEntity(), IMongoDocument
+) : BaseEntity()
 
 /**
  * 应用中心
@@ -143,7 +143,7 @@ open class SysApplication @JvmOverloads constructor(
     var isLocked: Boolean = false,
     @Cn("锁定详情")
     var loadRemark: String = ""
-) : BaseEntity(), IMongoDocument
+) : BaseEntity()
 
 
 //系统附件表
@@ -185,7 +185,7 @@ open class SysAnnex @JvmOverloads constructor(
 
     @Cn("错误消息")
     var errorMsg: String = ""      //文件处理时的错误消息
-) : BaseEntity(), IMongoDocument {
+) : BaseEntity() {
 }
 
 
@@ -214,10 +214,10 @@ open class SysCity @JvmOverloads constructor(
     var postCode: String = "",
     @Cn("父级码")
     var pcode: Int = 0
-) : BaseEntity(), IMongoDocument
+) : BaseEntity()
 
 
-open class BaseRequestData {
+open class BaseRequestData : java.io.Serializable {
     var url = "";
     var method = "";
     var traceId = "";
@@ -226,7 +226,7 @@ open class BaseRequestData {
     var clientIP = "";
 }
 
-open class BaseResponseData {
+open class BaseResponseData : java.io.Serializable {
     var status = 0;
     var body = "";
     var header = StringMap();
@@ -255,7 +255,7 @@ open class SysLog @JvmOverloads constructor(
     var creator: IdName = IdName(),
     @Cn("创建时间")
     var createAt: LocalDateTime = LocalDateTime.now()
-) : IMongoDocument {
+) : java.io.Serializable {
 }
 
 //存放删除的数据。
@@ -271,7 +271,7 @@ open class SysDustbin @JvmOverloads constructor(
     var creator: IdName = IdName(),
     @Cn("数据")
     var data: Serializable? = null
-) : BaseEntity(), IMongoDocument
+) : BaseEntity()
 
 
 

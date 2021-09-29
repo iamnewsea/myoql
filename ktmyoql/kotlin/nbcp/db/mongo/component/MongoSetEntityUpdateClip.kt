@@ -17,7 +17,7 @@ import org.springframework.data.mongodb.core.query.Criteria
  * MongoUpdate
  * 不会更新 id
  */
-class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out IMongoDocument>>(var moerEntity: M, var entity: IMongoDocument) : MongoBaseUpdateClip(moerEntity.tableName) {
+class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out java.io.Serializable>>(var moerEntity: M, var entity: java.io.Serializable) : MongoBaseUpdateClip(moerEntity.tableName) {
 
 
     private var whereColumns = mutableSetOf<String>()

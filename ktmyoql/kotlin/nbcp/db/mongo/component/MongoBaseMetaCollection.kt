@@ -13,7 +13,7 @@ typealias mongoQuery = org.springframework.data.mongodb.core.query.Query
 /**
  * mongo 元数据实体的基类
  */
-abstract class MongoBaseMetaCollection<T : IMongoDocument>(val entityClass: Class<T>, entityName: String) :
+abstract class MongoBaseMetaCollection<T : java.io.Serializable>(val entityClass: Class<T>, entityName: String) :
     BaseMetaData(entityName) {
     //    abstract fun getColumns(): Array<String>;
     companion object {

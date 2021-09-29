@@ -17,7 +17,7 @@ enum class MongoImageActionEnum {
  * @param id 实体Id
  * @param imageId 数组中的某一项。
  */
-private fun <M : MongoBaseMetaCollection<E>, E : IMongoDocument> M.remove(fieldName: String, id: String, imageId: String): Int {
+private fun <M : MongoBaseMetaCollection<E>, E : java.io.Serializable> M.remove(fieldName: String, id: String, imageId: String): Int {
     return this.updateById(id)
             .pull({ MongoColumnName(fieldName) }, "_id" match imageId)
             .exec()
@@ -29,13 +29,13 @@ private fun <M : MongoBaseMetaCollection<E>, E : IMongoDocument> M.remove(fieldN
  * @param id 实体Id
  * @param image 添加的图片
  */
-private fun <M : MongoBaseMetaCollection<E>, E : IMongoDocument> M.add(fieldName: String, id: String, image: IdUrl): Int {
+private fun <M : MongoBaseMetaCollection<E>, E : java.io.Serializable> M.add(fieldName: String, id: String, image: IdUrl): Int {
     return this.updateById(id)
             .push { MongoColumnName(fieldName) to image }
             .exec()
 }
 
-fun <M : MongoBaseMetaCollection<E>, E : IMongoDocument> M.swap(fieldName: (M) -> MongoColumnName, id: String, index1: Int, index2: Int): JsonResult {
+fun <M : MongoBaseMetaCollection<E>, E : java.io.Serializable> M.swap(fieldName: (M) -> MongoColumnName, id: String, index1: Int, index2: Int): JsonResult {
     return this.swap(fieldName(this).toString(), id, index1, index2);
 }
 
@@ -46,7 +46,7 @@ fun <M : MongoBaseMetaCollection<E>, E : IMongoDocument> M.swap(fieldName: (M) -
  * @param index1 交换项索引
  * @param index2 交换项索引
  */
-fun <M : MongoBaseMetaCollection<E>, E : IMongoDocument> M.swap(fieldName: String, id: String, index1: Int, index2: Int): JsonResult {
+fun <M : MongoBaseMetaCollection<E>, E : java.io.Serializable> M.swap(fieldName: String, id: String, index1: Int, index2: Int): JsonResult {
     if (index1 == index2) {
         return JsonResult("非法")
     }
@@ -87,7 +87,7 @@ fun <M : MongoBaseMetaCollection<E>, E : IMongoDocument> M.swap(fieldName: Strin
 /**
  * 图片操作，添加，删除，交换
  */
-fun <M : MongoBaseMetaCollection<E>, E : IMongoDocument> M.imageChange(
+fun <M : MongoBaseMetaCollection<E>, E : java.io.Serializable> M.imageChange(
         action: MongoImageActionEnum, fieldName: String, id: String, image: IdUrl, index1: Int, index2: Int
 ): JsonResult {
 
@@ -110,7 +110,7 @@ fun <M : MongoBaseMetaCollection<E>, E : IMongoDocument> M.imageChange(
 }
 
 
-fun <M : MongoBaseMetaCollection<E>, E : IMongoDocument> M.imageSet(
+fun <M : MongoBaseMetaCollection<E>, E : java.io.Serializable> M.imageSet(
         fieldName: String, id: String, image: IdUrl
 ): JsonResult {
 

@@ -6,7 +6,7 @@ import nbcp.db.*
 import java.lang.reflect.Modifier
 
 
-abstract class SqlBaseMetaTable<T : ISqlDbEntity>(val tableClass: Class<T>, tableName: String)
+abstract class SqlBaseMetaTable<T : java.io.Serializable>(val tableClass: Class<T>, tableName: String)
     : BaseMetaData(tableName) {
     abstract fun getUks(): Array<Array<String>>
     abstract fun getFks(): Array<FkDefine>

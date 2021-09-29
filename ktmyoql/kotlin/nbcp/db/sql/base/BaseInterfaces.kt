@@ -5,14 +5,7 @@ import nbcp.db.DbKey
 import org.springframework.data.annotation.Id
 import java.time.LocalDateTime
 
-/**
- * 为了扩展性， id = 程序生成的唯一Id
- */
-interface ISqlDbEntity : java.io.Serializable {
-}
-
-
-abstract class AutoNumberSqlDbEntity : ISqlDbEntity {
+abstract class AutoNumberSqlDbEntity : java.io.Serializable {
     @DbKey
     @ConverterValueToDb(AutoIdConverter::class)
     var id: Long = 0
@@ -21,7 +14,7 @@ abstract class AutoNumberSqlDbEntity : ISqlDbEntity {
     var createAt: LocalDateTime = LocalDateTime.now()
 }
 
-abstract class AutoIdSqlDbEntity : ISqlDbEntity {
+abstract class AutoIdSqlDbEntity : java.io.Serializable {
     @DbKey
     @ConverterValueToDb(AutoIdConverter::class)
     var id: String = ""

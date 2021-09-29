@@ -16,7 +16,7 @@ open class s_annex @JvmOverloads constructor(
     var imgHeight: Int = 0,         // 图像宽度值。
     var url: String = "",           //下载的路径。有 host
 
-    @SqlSpreadColumn()
+//    @SqlSpreadColumn()
     var creator: IdName = IdName(), //创建者
     var group: String = "",
     var corpId: String = "", //企业Id
@@ -63,13 +63,13 @@ open class s_city @JvmOverloads constructor(
     var postCode: String = "",
     @Cn("父级码")
     var pcode: Int = 0
-) : ISqlDbEntity
+) : java.io.Serializable
 
 @DbEntityGroup("SqlBase")
 open class s_dustbin @JvmOverloads constructor(
     var table: String = "",
     var remark: String = "",
-    @SqlSpreadColumn()
+//    @SqlSpreadColumn()
     var creator: IdName = IdName(),
     var data: String = "",  //保存 JSON 数据
 ) : AutoNumberSqlDbEntity()

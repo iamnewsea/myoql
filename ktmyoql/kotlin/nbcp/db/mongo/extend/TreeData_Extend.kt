@@ -38,7 +38,7 @@ class TreeResultData() : LinkedHashSet<ITreeData<*>>() {
  * 在数据库中遍历查找树节点。返回所在树中的 根，父，本身。
  */
 fun <M : MongoBaseMetaCollection<T>, T> M.findTreeById(id: String): TreeResultData
-        where T : IMongoDocument,
+        where T : java.io.Serializable,
               T : ITreeData<*> {
     return this.findTree { it.id == id };
 }
@@ -47,7 +47,7 @@ fun <M : MongoBaseMetaCollection<T>, T> M.findTreeById(id: String): TreeResultDa
  * 在数据库中遍历查找树节点。返回所在树中的 根，父，本身。
  */
 fun <M : MongoBaseMetaCollection<T>, T> M.findTree(callback: ((ITreeData<*>) -> Boolean)): TreeResultData
-        where T : IMongoDocument,
+        where T : java.io.Serializable,
               T : ITreeData<*> {
     var reader = BatchReader.init(5, { skip, take ->
         this.query().limit(skip, take).toList()
@@ -75,7 +75,7 @@ fun <M : MongoBaseMetaCollection<T>, T> M.findTree(callback: ((ITreeData<*>) -> 
  * 删除树节点，可能删除的是根节点，也可能删除的是子级节点
  */
 fun <M : MongoBaseMetaCollection<T>, T> M.deleteTreeNodeById(id: String): ApiResult<String>
-        where T : IMongoDocument,
+        where T : java.io.Serializable,
               T : ITreeData<*> {
     var result = this.findTreeById(id)
     if (result == null) return ApiResult("找不到数据")
@@ -106,7 +106,7 @@ fun <M : MongoBaseMetaCollection<T>, T> M.saveTreeToParent(
     pid: String,
     saveEntity: T
 ): ApiResult<String>
-        where T : IMongoDocument,
+        where T : java.io.Serializable,
               T : ITreeData<*> {
 
     if (saveEntity.id.HasValue) {
@@ -123,7 +123,7 @@ private fun <M : MongoBaseMetaCollection<T>, T> M.addTreeToTree(
     pid: String,
     saveEntity: T
 ): ApiResult<String>
-        where T : IMongoDocument,
+        where T : java.io.Serializable,
               T : ITreeData<*> {
 
     if (saveEntity.id.isEmpty()) {

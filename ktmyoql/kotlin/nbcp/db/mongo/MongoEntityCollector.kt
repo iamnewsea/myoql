@@ -45,7 +45,7 @@ class MongoEntityCollector : BeanPostProcessor {
          * 根据名称查找定义的集合。
          */
         @JvmStatic
-        fun getCollection(collectionName: String): MongoBaseMetaCollection<IMongoDocument>? {
+        fun getCollection(collectionName: String): MongoBaseMetaCollection<java.io.Serializable>? {
             var ret: BaseMetaData? = null
             db_mongo.groups.any { group ->
                 ret = group.getEntities().firstOrNull() { it.tableName == collectionName }
@@ -53,7 +53,7 @@ class MongoEntityCollector : BeanPostProcessor {
                 return@any ret != null
             }
 
-            return ret as MongoBaseMetaCollection<IMongoDocument>?
+            return ret as MongoBaseMetaCollection<java.io.Serializable>?
         }
     }
 
@@ -99,7 +99,7 @@ class MongoEntityCollector : BeanPostProcessor {
         return super.postProcessAfterInitialization(bean, beanName)
     }
 
-    private fun addLogHistory(entityClass: Class<out IMongoDocument>) {
+    private fun addLogHistory(entityClass: Class<out java.io.Serializable>) {
         var logHistory = entityClass.getAnnotation(DbEntityLogHistory::class.java)
         if (logHistory != null) {
             logHistoryMap.put(entityClass, logHistory.fields.map { it }.toTypedArray());
@@ -125,7 +125,7 @@ class MongoEntityCollector : BeanPostProcessor {
         }
     }
 
-    private fun addDustbin(entityClass: Class<out IMongoDocument>) {
+    private fun addDustbin(entityClass: Class<out java.io.Serializable>) {
         var dustbin = entityClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dustbin != null) {
             dustbinEntitys.add(entityClass)

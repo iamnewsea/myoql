@@ -104,7 +104,7 @@ fun SingleSqlData.ifNull(elseValue: SingleSqlData, alias: String): SingleSqlData
     return ret;
 }
 
-data class CaseWhenData<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity: M) : Serializable {
+data class CaseWhenData<M : SqlBaseMetaTable<out T>, T : java.io.Serializable>(var mainEntity: M) : Serializable {
     private val caseWhens = mutableListOf<Pair<WhereData, SingleSqlData>>()
     private lateinit var elseEnd: Pair<SingleSqlData, String>
 
@@ -137,7 +137,7 @@ data class CaseWhenData<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainE
 }
 
 
-fun <M : SqlBaseMetaTable<out T>, T : ISqlDbEntity> M.case(): CaseWhenData<M, T> {
+fun <M : SqlBaseMetaTable<out T>, T : java.io.Serializable> M.case(): CaseWhenData<M, T> {
     return CaseWhenData(this)
 }
 
@@ -211,14 +211,14 @@ fun PreparedStatement.setValue(index: Int, param: SqlParameterData) {
 }
 
 
-val SqlBaseMetaTable<out ISqlDbEntity>.quoteTableName: String
+val SqlBaseMetaTable<out java.io.Serializable>.quoteTableName: String
     get() = "${db.sql.getSqlQuoteName(this.tableName)}"
 
 /**
  * 如果有别名，返回： table as t
  * 否则返回   table
  */
-val SqlBaseMetaTable<out ISqlDbEntity>.fromTableName: String
+val SqlBaseMetaTable<out java.io.Serializable>.fromTableName: String
     get() {
         var ret = "${db.sql.getSqlQuoteName(this.tableName)}"
         if (this.getAliaTableName().HasValue && (this.getAliaTableName() != this.tableName)) {

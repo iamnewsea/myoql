@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 /**
  * MongoInsert
  */
-class MongoInsertClip<M : MongoBaseMetaCollection<E>, E : IMongoDocument>(var moerEntity: M) : MongoBaseInsertClip(moerEntity.tableName)  {
+class MongoInsertClip<M : MongoBaseMetaCollection<E>, E : java.io.Serializable>(var moerEntity: M) : MongoBaseInsertClip(moerEntity.tableName)  {
 
     companion object {
         private var logger = LoggerFactory.getLogger(this::class.java.declaringClass)

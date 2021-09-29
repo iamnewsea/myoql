@@ -20,7 +20,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
 
     /**
      * 批量添加中的添加实体。
-     * 支持两种类型：IMongoDocument,Map。  Document,DbObject 算是Map
+     * 支持两种类型：java.io.Serializable,Map。  Document,DbObject 算是Map
      */
     fun addEntity(entity: Any) {
         if (entity is BaseEntity) {
@@ -38,7 +38,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
         }
 
 
-        if (entity is IMongoDocument) {
+        if (entity is java.io.Serializable) {
             this.entities.add(entity);
             return;
         }

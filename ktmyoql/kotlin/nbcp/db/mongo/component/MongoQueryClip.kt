@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 /**
  * MongoQuery
  */
-class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : IMongoDocument>(var moerEntity: M) : MongoBaseQueryClip(moerEntity.tableName) {
+class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : java.io.Serializable>(var moerEntity: M) : MongoBaseQueryClip(moerEntity.tableName) {
 
 
     fun limit(skip: Int, take: Int): MongoQueryClip<M, E> {

@@ -16,7 +16,7 @@ import nbcp.scope.*
 /**
  * MongoAggregate
  */
-class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : IMongoDocument>(var moerEntity: M) :
+class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : java.io.Serializable>(var moerEntity: M) :
     MongoClipBase(moerEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass);
@@ -332,7 +332,7 @@ cursor: {} } """
 }
 
 
-class BeginMatchClip<M : MongoBaseMetaCollection<E>, E : IMongoDocument>(var aggregate: MongoAggregateClip<M, E>) {
+class BeginMatchClip<M : MongoBaseMetaCollection<E>, E : java.io.Serializable>(var aggregate: MongoAggregateClip<M, E>) {
     private var wheres = mutableListOf<Criteria>()
     fun where(where: (M) -> Criteria): BeginMatchClip<M, E> {
         wheres.add(where(this.aggregate.moerEntity))

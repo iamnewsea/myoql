@@ -41,10 +41,10 @@ annotation class SqlFk(val refTable: String, val refTableColumn: String)
 /**
  * 实体字段上定义，表示该复杂对象字段在数据库默认上对应多个列。使用下划线展开对象的每个字段列。
  */
-@Repeatable
-@Target(AnnotationTarget.FIELD)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class SqlSpreadColumn()
+//@Repeatable
+//@Target(AnnotationTarget.FIELD)
+//@Retention(AnnotationRetention.RUNTIME)
+//annotation class SqlSpreadColumn()
 
 /**
  * 插入，或更新某个字段前，进行数据转换。

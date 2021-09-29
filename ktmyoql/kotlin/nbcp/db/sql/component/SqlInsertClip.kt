@@ -16,7 +16,7 @@ import java.time.LocalDateTime
 /**
  * Created by yuxh on 2018/7/2
  */
-class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity: M) :
+class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : java.io.Serializable>(var mainEntity: M) :
     SqlBaseExecuteClip(mainEntity.tableName) {
 
     companion object {

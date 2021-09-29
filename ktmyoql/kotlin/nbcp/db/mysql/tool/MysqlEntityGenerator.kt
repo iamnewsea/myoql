@@ -307,8 +307,13 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                 var type = dbType.toMySqlTypeString()
 
                 if (type.isEmpty()) {
-                    var spreadColumn = property.getAnnotation(SqlSpreadColumn::class.java)
-                    if (spreadColumn != null) {
+//                    var spreadColumn = property.getAnnotation(SqlSpreadColumn::class.java)
+//                    if (spreadColumn != null) {
+
+                    //生成关系表
+                    if (propertyType.IsCollectionType) {
+                        throw RuntimeException("TODO 生成关系表，未实现")
+                    } else {
                         propertyType.AllFields.forEach {
                             var columnName = columnName + "_" + it.name;
                             var dbType = DbType.of(it.type);
@@ -318,9 +323,10 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                                 """`${columnName}` ${type} not null ${if (dbType.isNumberic()) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment ''"""
                             list.add(item);
                         }
-
-                        return@forEach
                     }
+
+                    return@forEach
+//                    }
                 }
 
                 var item =

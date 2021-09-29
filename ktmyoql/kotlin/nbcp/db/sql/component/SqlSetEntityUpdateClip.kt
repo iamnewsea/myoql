@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory
  * MongoUpdate
  * 不会更新 id
  */
-class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out T>, T : ISqlDbEntity>(var mainEntity: M, var entity: T) :
+class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out T>, T : java.io.Serializable>(var mainEntity: M, var entity: T) :
     SqlBaseExecuteClip(mainEntity.tableName) {
     companion object {
     }

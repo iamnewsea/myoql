@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
 
-class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M) :
+class SqlQueryClip<M : SqlBaseMetaTable<T>, T : java.io.Serializable>(var mainEntity: M) :
     SqlBaseQueryClip(mainEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -93,7 +93,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
         return this;
     }
 
-    private fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> getJoinOnWhere(joinTable: M2): WhereData {
+    private fun <M2 : SqlBaseMetaTable<out T2>, T2 : java.io.Serializable> getJoinOnWhere(joinTable: M2): WhereData {
         var fks = this.mainEntity.getFks().filter { it.refTable == joinTable.tableName }
         if (fks.size == 0) {
             throw RuntimeException("找不到 ${this.mainEntity.tableName}->${joinTable.tableName} 的外键定义")
@@ -112,7 +112,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
     }
 
     @JvmOverloads
-    fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> join(
+    fun <M2 : SqlBaseMetaTable<out T2>, T2 : java.io.Serializable> join(
         joinTable: M2,
         onWhere: (M, M2) -> WhereData,
         select: ((M2) -> SqlColumnNames)? = null
@@ -132,7 +132,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
      * 根据外键自动 onWhere
      */
     @JvmOverloads
-    fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> join(
+    fun <M2 : SqlBaseMetaTable<out T2>, T2 : java.io.Serializable> join(
         joinTable: M2,
         select: ((M2) -> SqlColumnNames)? = null
     ): SqlQueryClip<M, T> {
@@ -141,7 +141,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
     }
 
     @JvmOverloads
-    fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> left_join(
+    fun <M2 : SqlBaseMetaTable<out T2>, T2 : java.io.Serializable> left_join(
         joinTable: M2,
         onWhere: (M, M2) -> WhereData,
         select: ((M2) -> SqlColumnNames)? = null
@@ -159,7 +159,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
      * 根据外键自动 onWhere
      */
     @JvmOverloads
-    fun <M2 : SqlBaseMetaTable<out T2>, T2 : ISqlDbEntity> left_join(
+    fun <M2 : SqlBaseMetaTable<out T2>, T2 : java.io.Serializable> left_join(
         joinTable: M2,
         select: ((M2) -> SqlColumnNames)? = null
     ): SqlQueryClip<M, T> {
@@ -388,7 +388,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : ISqlDbEntity>(var mainEntity: M)
         return super.exists()
     }
 
-    fun <M2 : SqlBaseMetaTable<out ISqlDbEntity>> insertInto(insertTable: M2): Int {
+    fun <M2 : SqlBaseMetaTable<out java.io.Serializable>> insertInto(insertTable: M2): Int {
         db.affectRowCount = -1;
         var select = this
 

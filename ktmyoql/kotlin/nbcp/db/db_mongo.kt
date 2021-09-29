@@ -296,7 +296,7 @@ object db_mongo {
     }
 }
 
-class MongoDynamicEntity : JsonMap(), IMongoDocument {}
+class MongoDynamicEntity : JsonMap(), java.io.Serializable {}
 class MongoDynamicMetaEntity(collectionName: String) :
     MongoBaseMetaCollection<MongoDynamicEntity>(MongoDynamicEntity::class.java, collectionName) {
 }

@@ -51,7 +51,7 @@
 //        private val logger by lazy {
 //            return@lazy LoggerFactory.getLogger(this::class.java)
 //        }
-//        //        private val all_entities = mutableListOf<MongoBaseEntity<IMongoDocument>>()
+//        //        private val all_entities = mutableListOf<MongoBaseEntity<java.io.Serializable>>()
 //        private val list_entity_settings = mutableListOf<MongoUpdateData>()
 //        private val list_entity_setteds = mutableListOf<MongoUpdateData>()
 //
@@ -117,7 +117,7 @@
 //    }
 //
 //
-////    fun getCollection(collectionName: String): MongoBaseEntity<IMongoDocument>? {
+////    fun getCollection(collectionName: String): MongoBaseEntity<java.io.Serializable>? {
 ////        return all_entities.find { it.tableName == collectionName }
 ////    }
 //

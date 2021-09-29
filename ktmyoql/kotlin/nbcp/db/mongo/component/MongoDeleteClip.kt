@@ -17,7 +17,7 @@ import nbcp.scope.*
 /**
  * MongoDelete
  */
-class MongoDeleteClip<M : MongoBaseMetaCollection<out IMongoDocument>>(var moerEntity: M) :
+class MongoDeleteClip<M : MongoBaseMetaCollection<out java.io.Serializable>>(var moerEntity: M) :
     MongoClipBase(moerEntity.tableName), IMongoWhereable {
     val whereData = mutableListOf<Criteria>()
 
