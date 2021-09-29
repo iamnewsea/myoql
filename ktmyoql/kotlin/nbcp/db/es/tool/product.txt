@@ -1,0 +1,369 @@
+{
+  "properties" : {
+    "name" : {
+      "type" : "text",
+      "index" : "true",
+      "boost" : "1",
+      "analyzer" : "ik_max_word",
+      "search_analyzer" : "ik_max_word"
+    },
+    "corp" : {
+      "type" : "nested",
+      "properties" : {
+        "id" : {
+          "type" : "keyword"
+        },
+        "name" : {
+          "type" : "keyword"
+        }
+      }
+    },
+    "slogan" : {
+      "type" : "text",
+      "index" : "true",
+      "boost" : "1",
+      "analyzer" : "ik_max_word",
+      "search_analyzer" : "ik_max_word"
+    },
+    "brandPath" : {
+      "type" : "nested",
+      "properties" : {
+        "id" : {
+          "type" : "keyword"
+        },
+        "code" : {
+          "type" : "keyword"
+        },
+        "name" : {
+          "type" : "keyword"
+        }
+      }
+    },
+    "corpCategoryPath" : {
+      "type" : "nested",
+      "properties" : {
+        "id" : {
+          "type" : "keyword"
+        },
+        "code" : {
+          "type" : "keyword"
+        },
+        "name" : {
+          "type" : "keyword"
+        }
+      }
+    },
+    "categoryPath" : {
+      "type" : "nested",
+      "properties" : {
+        "id" : {
+          "type" : "keyword"
+        },
+        "code" : {
+          "type" : "keyword"
+        },
+        "name" : {
+          "type" : "keyword"
+        }
+      }
+    },
+    "detail" : {
+      "type" : "text",
+      "index" : "true",
+      "boost" : "1",
+      "analyzer" : "ik_max_word",
+      "search_analyzer" : "ik_max_word"
+    },
+    "remark" : {
+      "type" : "text",
+      "index" : "true",
+      "boost" : "1",
+      "analyzer" : "ik_max_word",
+      "search_analyzer" : "ik_max_word"
+    },
+    "status" : {
+      "type" : "keyword"
+    },
+    "guidePrice" : {
+      "type" : "integer"
+    },
+    "skuDefines" : {
+      "type" : "nested",
+      "properties" : {
+        "key" : {
+          "type" : "text",
+          "index" : "true",
+          "boost" : "1",
+          "analyzer" : "ik_max_word",
+          "search_analyzer" : "ik_max_word"
+        },
+        "value" : {
+          "type" : "text",
+          "index" : "true",
+          "boost" : "1",
+          "analyzer" : "ik_max_word",
+          "search_analyzer" : "ik_max_word"
+        }
+      }
+    },
+    "skuStockPrice" : {
+      "type" : "nested",
+      "properties" : {
+        "skuItem" : {
+          "type" : "nested",
+          "properties" : {
+            "accessOrder" : {
+              "type" : "bool"
+            },
+            "threshold" : {
+              "type" : "integer"
+            },
+            "loadFactor" : {
+              "type" : "float"
+            }
+          }
+        },
+        "stock" : {
+          "type" : "integer"
+        },
+        "saleCount" : {
+          "type" : "integer"
+        },
+        "activities" : {
+          "type" : "nested",
+          "properties" : {
+            "price" : {
+              "type" : "integer"
+            },
+            "type" : {
+              "type" : "keyword"
+            },
+            "detail" : {
+              "type" : "keyword"
+            },
+            "banner" : {
+              "type" : "nested",
+              "properties" : {
+                "id" : {
+                  "type" : "keyword"
+                },
+                "url" : {
+                  "type" : "keyword"
+                }
+              }
+            },
+            "code" : {
+              "type" : "keyword"
+            },
+            "rule" : {
+              "type" : "nested",
+              "properties" : {
+                "memberLevel" : {
+                  "type" : "nested"
+                },
+                "clients" : {
+                  "type" : "nested"
+                },
+                "categoryPath" : {
+                  "type" : "nested",
+                  "properties" : {
+                    "id" : {
+                      "type" : "keyword"
+                    },
+                    "code" : {
+                      "type" : "keyword"
+                    },
+                    "name" : {
+                      "type" : "keyword"
+                    }
+                  }
+                },
+                "products" : {
+                  "type" : "nested",
+                  "properties" : {
+                    "id" : {
+                      "type" : "keyword"
+                    },
+                    "name" : {
+                      "type" : "keyword"
+                    }
+                  }
+                },
+                "cities" : {
+                  "type" : "nested",
+                  "properties" : {
+                    "code" : {
+                      "type" : "keyword"
+                    },
+                    "name" : {
+                      "type" : "keyword"
+                    }
+                  }
+                },
+                "payTypes" : {
+                  "type" : "nested"
+                },
+                "favorite" : {
+                  "type" : "bool"
+                },
+                "startAt" : {
+                  "type" : "date"
+                },
+                "endAt" : {
+                  "type" : "date"
+                },
+                "platformNoCommission" : {
+                  "type" : "bool"
+                },
+                "proxyNoCommission" : {
+                  "type" : "bool"
+                },
+                "sallerNoCommission" : {
+                  "type" : "bool"
+                }
+              }
+            },
+            "order" : {
+              "type" : "float"
+            },
+            "id" : {
+              "type" : "keyword"
+            },
+            "createAt" : {
+              "type" : "date"
+            },
+            "updateAt" : {
+              "type" : "date"
+            }
+          }
+        },
+        "guidePrice" : {
+          "type" : "integer"
+        },
+        "normalPrice" : {
+          "type" : "integer"
+        },
+        "coupons" : {
+          "type" : "nested",
+          "properties" : {
+            "type" : {
+              "type" : "keyword"
+            },
+            "until" : {
+              "type" : "integer"
+            },
+            "discountRate" : {
+              "type" : "integer"
+            },
+            "discountReduce" : {
+              "type" : "integer"
+            },
+            "count" : {
+              "type" : "integer"
+            },
+            "transformUser" : {
+              "type" : "bool"
+            },
+            "rule" : {
+              "type" : "nested",
+              "properties" : {
+                "memberLevel" : {
+                  "type" : "nested"
+                },
+                "clients" : {
+                  "type" : "nested"
+                },
+                "categoryPath" : {
+                  "type" : "nested",
+                  "properties" : {
+                    "id" : {
+                      "type" : "keyword"
+                    },
+                    "code" : {
+                      "type" : "keyword"
+                    },
+                    "name" : {
+                      "type" : "keyword"
+                    }
+                  }
+                },
+                "products" : {
+                  "type" : "nested",
+                  "properties" : {
+                    "id" : {
+                      "type" : "keyword"
+                    },
+                    "name" : {
+                      "type" : "keyword"
+                    }
+                  }
+                },
+                "cities" : {
+                  "type" : "nested",
+                  "properties" : {
+                    "code" : {
+                      "type" : "keyword"
+                    },
+                    "name" : {
+                      "type" : "keyword"
+                    }
+                  }
+                },
+                "payTypes" : {
+                  "type" : "nested"
+                },
+                "favorite" : {
+                  "type" : "bool"
+                },
+                "startAt" : {
+                  "type" : "date"
+                },
+                "endAt" : {
+                  "type" : "date"
+                },
+                "platformNoCommission" : {
+                  "type" : "bool"
+                },
+                "proxyNoCommission" : {
+                  "type" : "bool"
+                },
+                "sallerNoCommission" : {
+                  "type" : "bool"
+                }
+              }
+            },
+            "corp" : {
+              "type" : "nested",
+              "properties" : {
+                "id" : {
+                  "type" : "keyword"
+                },
+                "name" : {
+                  "type" : "keyword"
+                }
+              }
+            },
+            "id" : {
+              "type" : "keyword"
+            },
+            "createAt" : {
+              "type" : "date"
+            },
+            "updateAt" : {
+              "type" : "date"
+            }
+          }
+        }
+      }
+    },
+    "id" : {
+      "type" : "keyword"
+    },
+    "createAt" : {
+      "type" : "date"
+    },
+    "updateAt" : {
+      "type" : "date"
+    }
+  }
+}

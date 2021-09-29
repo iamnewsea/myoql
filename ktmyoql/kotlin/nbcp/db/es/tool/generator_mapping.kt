@@ -64,7 +64,7 @@ class generator_mapping {
 
                     println("${count.toString().padStart(2, ' ')} 生成Mapping：${groupName}.${dbName}".ToTab(1))
 
-                    var json = genEntity(it)
+                    var json = genEntity(it, "", { "" })
 
                     var mappings = JsonMap("properties" to json)
 
@@ -149,74 +149,58 @@ class generator_mapping {
     /**
      * TODO 优先使用最外层实体的定义，如果外层没有，再使用当前实体的定义。
      */
-    fun genEntity(entType: Class<*>, entWbs: String = ""): JsonMap {
+    fun genEntity(entType: Class<*>, wbs: String, getParentDbDefFunc: (String) -> String): JsonMap {
         var json = JsonMap();
         var dbDefines = getDefines(entType);
+
+        var getDefSelf: (String) -> String = getDefSelf@{ fieldName ->
+            var def: String? = getParentDbDefFunc(if (wbs.HasValue) wbs + "." + fieldName else fieldName);
+            if (def.HasValue) {
+                return@getDefSelf def!!;
+            }
+            def = dbDefines.get(fieldName);
+            if (def.HasValue) {
+                return@getDefSelf def!!;
+            }
+            return@getDefSelf ""
+        }
 
         entType.AllFields
             .filter { it.name != "Companion" }
             .forEach {
+                if (it.getAnnotation(Transient::class.java) != null) {
+                    return@forEach
+                }
+
                 var type = getActType(it);
 
-
-                var defineJson = JsonMap();
+                var defineJson = getDefSelf(it.name).FromJson<JsonMap>()
 
                 if (type.IsSimpleType()) {
-//                    if (defines.filter { it.key.HasValue }.any()) {
-//                        throw RuntimeException(
-//                            "简单类型不允许指定key：${it.name},:${
-//                                defines.filter { it.key.HasValue }.map { it.key }.joinToString(",")
-//                            }"
-//                        )
-//                    }
-
-//                    var define = defines.filter { it.key.isNullOrEmpty() }.entries.firstOrNull()
-
-                    defineJson = dbD
-
-                    if (parentDefines.containsKey(it.name)) {
-                        if (defineJson.any()) {
-                            throw RuntimeException("重复定义key:" + it.name)
-                        }
-                        defineJson = (parentDefines.get(it.name) ?: "").FromJson<JsonMap>() ?: JsonMap();
+                    if (defineJson == null) {
+                        defineJson = JsonMap("type" to getJsType(it.type))
                     }
 
+                    json.put(it.name, defineJson);
+                    return@forEach
 
-                    if (defineJson.containsKey("type") == false) {
-                        defineJson.put("type", getJsType(it.type))
-                    }
-                } else {
-                    var define = defines.filter { it.key.isNullOrEmpty() }.entries.firstOrNull()
-
-                    if (define != null) {
-                        defineJson = (define?.value ?: "").FromJson<JsonMap>() ?: JsonMap();
-                    }
-
-                    var theDefines = StringMap(parentDefines
-                        .filter { d -> d.key == it.name || d.key.startsWith(it.name + ".") }
-                        .map { d -> d.key.substring(it.name.length + 1) to d.value }
-                        .toMap())
-
-                    if (theDefines.filter { it.key.isNullOrEmpty() }.any()) {
-                        if (defineJson.any()) {
-                            throw RuntimeException("重复定义key:" + it.name)
-                        }
-
-                        defineJson = JsonMap(theDefines.filter { it.key.isNullOrEmpty() })
-                    }
-
-                    if (defineJson.containsKey("type") == false) {
-                        defineJson.put("type", "nested")
-                    }
-
-                    defineJson.put("properties", genEntity(type, defines
-                        .filter { it.key.isNotEmpty() }
-                            +
-                            theDefines.filter { it.key.isNotEmpty() }
-                    ))
                 }
 
 
+                if (defineJson == null) {
+                    defineJson = JsonMap();
+                }
+                if (defineJson.containsKey("type") == false) {
+                    defineJson.put("type", "nested")
+                }
+
+                defineJson.put(
+                    "properties", genEntity(
+                        type,
+                        if (wbs.HasValue) wbs + "." + it.name else it.name,
+                        getDefSelf
+                    )
+                )
                 json.put(it.name, defineJson)
             }
 
