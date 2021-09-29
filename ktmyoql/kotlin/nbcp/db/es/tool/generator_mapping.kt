@@ -138,40 +138,41 @@ class generator_mapping {
         return field.type
     }
 
-    fun getDefines(field: Field): Map<String, String> {
-        var defines = field.getAnnotation(Defines::class.java)
+    fun getDefines(entType: Class<*>): Map<String, String> {
+        var defines = entType.getAnnotation(DbDefines::class.java)
         if (defines != null) {
-            return defines.value.map { it.key to it.value }.toMap()
+            return defines.value.map { it.fieldName to it.define }.toMap()
         }
-
-        var define = field.getAnnotation(Define::class.java)
-        if (define != null) return mapOf(define.key to define.value)
         return mapOf()
     }
 
-    fun genEntity(entType: Class<*>, parentDefines: Map<String, String> = mapOf()): JsonMap {
+    /**
+     * TODO 优先使用最外层实体的定义，如果外层没有，再使用当前实体的定义。
+     */
+    fun genEntity(entType: Class<*>, entWbs: String = ""): JsonMap {
         var json = JsonMap();
+        var dbDefines = getDefines(entType);
 
         entType.AllFields
             .filter { it.name != "Companion" }
             .forEach {
                 var type = getActType(it);
 
-                var defines = getDefines(it);
+
                 var defineJson = JsonMap();
 
                 if (type.IsSimpleType()) {
-                    if (defines.filter { it.key.HasValue }.any()) {
-                        throw RuntimeException(
-                            "简单类型不允许指定key：${it.name},:${
-                                defines.filter { it.key.HasValue }.map { it.key }.joinToString(",")
-                            }"
-                        )
-                    }
+//                    if (defines.filter { it.key.HasValue }.any()) {
+//                        throw RuntimeException(
+//                            "简单类型不允许指定key：${it.name},:${
+//                                defines.filter { it.key.HasValue }.map { it.key }.joinToString(",")
+//                            }"
+//                        )
+//                    }
 
-                    var define = defines.filter { it.key.isNullOrEmpty() }.entries.firstOrNull()
+//                    var define = defines.filter { it.key.isNullOrEmpty() }.entries.firstOrNull()
 
-                    defineJson = (define?.value ?: "").FromJson<JsonMap>() ?: JsonMap();
+                    defineJson = dbD
 
                     if (parentDefines.containsKey(it.name)) {
                         if (defineJson.any()) {

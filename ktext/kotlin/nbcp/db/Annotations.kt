@@ -43,16 +43,16 @@ annotation class DbEntityGroup(val value: String)
 annotation class DbUks(vararg val value: String)
 
 
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FIELD)
+@Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Defines(val value: Array<Define>)
+annotation class DbDefines(vararg val value: DbDefine)
 
 /**
  * 字段定义，用于 Es实体 生成 Mapping
  */
-@java.lang.annotation.Repeatable(Defines::class)
+@java.lang.annotation.Repeatable(DbDefines::class)
 @Repeatable
 @Inherited
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Define(val value: String, val key: String = "")
+annotation class DbDefine(val fieldName: String, val define: String)
