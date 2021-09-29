@@ -120,16 +120,13 @@ if __name__ == '__main__':
         print("myoql现在的版本: " + getVersionOnly())
         sys.exit(1)
     elif newVersion == "+":
-        v_ary = getVersionOnly().split(".")
-        if(len(v_ary) < 4):
-            newVersion = ".".join(v_ary) + ".1"
-        else:
-            last = int(v_ary[len(v_ary)-1])
-            v_ary[len(v_ary)-1] = str( last + 1 )
-            newVersion = ".".join(v_ary)
-    elif newVersion == "+!":
-        v_ary = getVersionOnly().split(".")
-        newVersion = v_ary[0] +"." + v_ary[1] +"." + str(int(v_ary[2])+1)
+        version = getVersionOnly()
+        tails = version.split("-")
+        v_ary = tails[0].split(".")
+        v_ary[-1] = str(int(v_ary[-1]) +1)
+        tails[0] = ".".join(v_ary)
+        newVersion = "-".join(tails)
+
 
 
 
