@@ -102,7 +102,8 @@ def resetVersion(module, file, groupId, artifactId, version):
     if p_artifactId[0].data != artifactId:
         return
 
-    vv_data[0].data = version
+    if len(vv_data) > 0:
+        vv_data[0].data = version
     t_version_data[0].data = version
 
     with open(file, 'w', encoding='UTF-8') as fh:
