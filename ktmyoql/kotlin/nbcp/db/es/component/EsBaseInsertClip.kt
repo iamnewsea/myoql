@@ -13,6 +13,7 @@ import java.lang.Exception
 import java.lang.RuntimeException
 import java.time.LocalDateTime
 import nbcp.scope.*
+
 /**
  * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html
  */
@@ -29,23 +30,8 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
     /**
      * 批量添加中的添加实体。
      */
-    fun addEntity(entity: IEsDocument) {
-
-        if (entity.id.isEmpty()) {
-            entity.id = CodeUtil.getCode()
-        }
-        entity.createAt = LocalDateTime.now()
-
-        this.entities.add(entity)
-    }
-
-    fun addEntity(entity: JsonMap) {
-        if (entity.getStringValue("id").isNullOrEmpty()) {
-            entity.put("id", CodeUtil.getCode())
-        }
-
-        entity.put("createAt", LocalDateTime.now());
-
+    fun addEntity(entity: Any) {
+        //id,createAt在拦截器中实现。
         this.entities.add(entity)
     }
 
@@ -86,16 +72,19 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
         }
 
         var request = Request("POST", "/_bulk" +
-                search.toUrlQuery().IfHasValue { "?" + it }
+            search.toUrlQuery().IfHasValue { "?" + it }
         )
 
         var data = mutableListOf<Any>()
         this.entities.forEach {
             var id = "";
-            if (it is IEsDocument) {
-                id = it.id;
-            } else if (it is Map<*, *>) {
+            if (it is Map<*, *>) {
                 id = it.get("id").AsString()
+            } else {
+                var idField = it.javaClass.FindField("id")
+                if (idField != null) {
+                    id = idField.get(it).AsString()
+                }
             }
             data.add(JsonMap("create" to JsonMap("_index" to this.collectionName, "_id" to id)))
 

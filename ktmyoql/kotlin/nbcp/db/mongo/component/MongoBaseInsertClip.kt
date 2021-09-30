@@ -5,7 +5,7 @@ import nbcp.comm.*
 import nbcp.db.BaseEntity
 import nbcp.db.db
 import nbcp.db.mongo.*
-import org.bson.Document
+import java.io.*
 import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
 import java.lang.Exception
@@ -23,36 +23,40 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
      * 支持两种类型：java.io.Serializable,Map。  Document,DbObject 算是Map
      */
     fun addEntity(entity: Any) {
-        if (entity is BaseEntity) {
-            if (entity.id.isEmpty()) {
-                entity.id = ObjectId().toString()
-            }
-            entity.createAt = LocalDateTime.now();
-        } else if (entity is MutableMap<*, *>) {
-            var map = entity as MutableMap<String, Any?>
-            if (map.get("_id").AsString().isEmpty()) {
-                map.put("_id", ObjectId().toString())
-            }
+        //移到拦截器中。
+//        if (entity is BaseEntity) {
+//            if (entity.id.isEmpty()) {
+//                entity.id = ObjectId().toString()
+//            }
+//            entity.createAt = LocalDateTime.now();
+//            this.entities.add(entity);
+//            return;
+//        } else if (entity is MutableMap<*, *>) {
+//            var map = entity as MutableMap<String, Any?>
+//            if (map.get("_id").AsString().isEmpty()) {
+//                map.put("_id", ObjectId().toString())
+//            }
+//
+//            map.put("createAt", LocalDateTime.now());
+//            this.entities.add(entity)
+//            return;
+//        }
+//
+//
+//
+//        if (entity is Serializable) {
+//            this.entities.add(entity);
+//            return;
+//        }
 
-            map.put("createAt", LocalDateTime.now());
-        }
-
-
-        if (entity is java.io.Serializable) {
-            this.entities.add(entity);
-            return;
-        }
-
-        if (entity is MutableMap<*, *>) {
-            this.entities.add(entity)
-            return;
-        }
-        if (entity is Collection<*>) {
+/*        if (entity is Collection<*>) {
             //不能插入列表，请一条一条的插入
             throw RuntimeException("不能插入列表!")
-        }
+        }*/
 
-        throw RuntimeException("不支持插入类型：${entity.javaClass}")
+        this.entities.add(entity);
+
+//        throw RuntimeException("不支持插入类型：${entity.javaClass}")
     }
 
     fun exec(): Int {
@@ -65,7 +69,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
         }
 
         var startAt = LocalDateTime.now()
-        var error:Exception? = null;
+        var error: Exception? = null;
         try {
             mongoTemplate.insert(entities, this.collectionName)
             db.executeTime = LocalDateTime.now() - startAt
@@ -83,7 +87,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
             error = e;
             throw e;
         } finally {
-            MongoLogger.logInsert(error,collectionName,entities)
+            MongoLogger.logInsert(error, collectionName, entities)
 //            logger.InfoError(ret < 0) {
 //                """[insert] ${this.collectionName}
 //${

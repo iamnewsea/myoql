@@ -42,7 +42,7 @@ class EsEntityCollector : BeanPostProcessor {
          * 根据名称查找定义的集合。
          */
         @JvmStatic
-        fun getCollection(collectionName: String): EsBaseMetaEntity<IEsDocument>? {
+        fun getCollection(collectionName: String): EsBaseMetaEntity<java.io.Serializable>? {
             var ret: BaseMetaData? = null
             db.es.groups.any { group ->
                 ret = group.getEntities().firstOrNull() { it.tableName == collectionName }
@@ -50,7 +50,7 @@ class EsEntityCollector : BeanPostProcessor {
                 return@any ret != null
             }
 
-            return ret as EsBaseMetaEntity<IEsDocument>?
+            return ret as EsBaseMetaEntity<java.io.Serializable>?
         }
     }
 
@@ -92,7 +92,7 @@ class EsEntityCollector : BeanPostProcessor {
         return super.postProcessAfterInitialization(bean, beanName)
     }
 
-    private fun addLogHistory(entityClass: Class<out IEsDocument>) {
+    private fun addLogHistory(entityClass: Class<out java.io.Serializable>) {
         var logHistory = entityClass.getAnnotation(DbEntityLogHistory::class.java)
         if (logHistory != null) {
             logHistoryMap.put(entityClass, logHistory.fields.map { it }.toTypedArray());
@@ -118,7 +118,7 @@ class EsEntityCollector : BeanPostProcessor {
         }
     }
 
-    private fun addDustbin(entityClass: Class<out IEsDocument>) {
+    private fun addDustbin(entityClass: Class<out java.io.Serializable>) {
         var dustbin = entityClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dustbin != null) {
             dustbinEntitys.add(entityClass)

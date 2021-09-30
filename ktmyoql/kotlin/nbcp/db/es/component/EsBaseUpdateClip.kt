@@ -1,6 +1,7 @@
 package nbcp.db.es
 
 import nbcp.comm.*
+import nbcp.db.BaseEntity
 import nbcp.utils.*
 import nbcp.db.db
 import nbcp.db.es.*
@@ -28,25 +29,39 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
     /**
      * 批量添加中的添加实体。
      */
-    fun addEntity(entity: IEsDocument) {
-        if (entity.id.isEmpty()) {
-            throw RuntimeException("批量更新时需要指定Id")
-        }
+    fun addEntity(entity: Any) {
+        if (entity is BaseEntity) {
+            if (entity.id.isEmpty()) {
+                throw RuntimeException("批量更新时需要指定Id")
+            }
 
-        entity.updateAt = LocalDateTime.now()
+            entity.updateAt = LocalDateTime.now();
+        } else if (entity is MutableMap<*, *>) {
+            var map = entity as MutableMap<String, Any?>
+            if (map.get("id").AsString().isNullOrEmpty()) {
+                throw RuntimeException("批量更新时需要指定Id")
+            }
+            map.set("updateAt", LocalDateTime.now())
+        } else {
+            //反射两个属性 id,createAt
+            var entityClassFields = entity.javaClass.AllFields
+            var idField = entityClassFields.firstOrNull { it.name == "id" }
+            if (idField != null && idField.type.IsStringType) {
+                var idValue = idField.get(entity).AsString();
+                if (idValue.isEmpty()) {
+                    throw RuntimeException("批量更新时需要指定Id")
+                }
+            }
+
+            var updateAtField = entityClassFields.firstOrNull { it.name == "updateAt" }
+            if (updateAtField != null) {
+                updateAtField.set(entity, LocalDateTime.now())
+            }
+        }
 
         this.entities.add(entity)
     }
 
-    fun addEntity(entity: JsonMap) {
-        if (entity.getStringValue("id").isNullOrEmpty()) {
-            throw RuntimeException("批量更新时需要指定Id")
-        }
-
-        entity.put("updateAt", LocalDateTime.now());
-
-        this.entities.add(entity)
-    }
 
     fun withRouting(routeing: String) {
         this.routing = routeing;
@@ -85,16 +100,19 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
         }
 
         var request = Request("POST", "/_bulk" +
-                search.toUrlQuery().IfHasValue { "?" + it }
+            search.toUrlQuery().IfHasValue { "?" + it }
         )
 
         var data = mutableListOf<Any>()
         this.entities.forEach {
             var id = "";
-            if (it is IEsDocument) {
-                id = it.id;
-            } else if (it is Map<*, *>) {
+            if (it is Map<*, *>) {
                 id = it.get("id").AsString()
+            } else {
+                var idField = it.javaClass.FindField("id");
+                if (idField != null) {
+                    id = idField.get(it).AsString();
+                }
             }
 
             if (id.isNullOrEmpty()) {

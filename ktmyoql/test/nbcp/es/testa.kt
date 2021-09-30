@@ -3,7 +3,6 @@ package nbcp.es
 
 import nbcp.TestBase
 import nbcp.db.*
-import nbcp.db.es.IEsDocument
 import nbcp.db.es.tool.generator_mapping
 import nbcp.db.sql.entity.s_city
 import nbcp.tool.UserCodeGenerator
@@ -31,7 +30,7 @@ class e_test(
     var key: String = "",   //实体标志, 查询用： module + key
     var msg: String = "",   //消息
     var data: IdName = IdName(),
-) : BaseEntity(), IEsDocument
+) : BaseEntity()
 
 class testa : TestBase() {
 //    @Test

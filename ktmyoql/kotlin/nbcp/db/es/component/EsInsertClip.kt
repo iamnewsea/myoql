@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 /**
  * EsInsert
  */
-class EsInsertClip<M : EsBaseMetaEntity<E>, E : IEsDocument>(var moerEntity: M)
+class EsInsertClip<M : EsBaseMetaEntity<E>, E : java.io.Serializable>(var moerEntity: M)
     : EsBaseInsertClip(moerEntity.tableName)  {
 
     companion object {

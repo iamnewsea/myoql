@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory
 /**
  * EsDelete
  */
-class EsDeleteClip<M : EsBaseMetaEntity<out IEsDocument>>(var eserEntity: M) : EsBaseDeleteClip(eserEntity.tableName), IEsWhereable {
+class EsDeleteClip<M : EsBaseMetaEntity<out java.io.Serializable>>(var eserEntity: M) : EsBaseDeleteClip(eserEntity.tableName), IEsWhereable {
     companion object {
         private var logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

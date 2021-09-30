@@ -220,9 +220,7 @@ val Class<*>.AllFields: List<Field>
         return ret;
     }
 
-/**
- * 递归向父类查找字段。
- */
+
 fun Class<*>.FindField(fieldName: String): Field? {
     var ret: Field? = null
     ret = this.declaredFields.find { it.name == fieldName };
@@ -234,6 +232,26 @@ fun Class<*>.FindField(fieldName: String): Field? {
     }
 
     return this.superclass.FindField(fieldName);
+}
+/**
+ * 递归向父类查找字段。返回 false 停止递归
+ */
+fun Class<*>.ForEachField(fieldCallback: (Field)->Boolean) {
+    var callbackValue = true;
+    var ret: Field? = null
+    ret = this.declaredFields.find {
+        callbackValue = fieldCallback(it);
+        return@find callbackValue
+    }
+
+    if (callbackValue == false ) return;
+
+
+    if (this.superclass == null || this.superclass == Any::class.java) {
+        return;
+    }
+
+    this.superclass.ForEachField(fieldCallback);
 }
 
 /**

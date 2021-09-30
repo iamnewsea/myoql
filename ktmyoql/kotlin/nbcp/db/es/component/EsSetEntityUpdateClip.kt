@@ -15,7 +15,7 @@
 ///**
 // * EsUpdate
 // */
-//class EsSetEntityUpdateClip<M : EsBaseEntity<out IEsDocument>>(var moerEntity: M, var entity: IEsDocument)
+//class EsSetEntityUpdateClip<M : EsBaseEntity<out java.io.Serializable>>(var moerEntity: M, var entity: java.io.Serializable)
 //    : EsClipBase(moerEntity.tableName) {
 //    companion object {
 //        private val logger by lazy {

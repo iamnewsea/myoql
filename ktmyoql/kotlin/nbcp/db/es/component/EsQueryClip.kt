@@ -7,7 +7,7 @@ import nbcp.comm.*
  * EsQuery
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/search.html
  */
-class EsQueryClip<M : EsBaseMetaEntity<E>, E : IEsDocument>(var moerEntity: M)
+class EsQueryClip<M : EsBaseMetaEntity<E>, E : java.io.Serializable>(var moerEntity: M)
     : EsBaseQueryClip(moerEntity.tableName) {
 
     @JvmOverloads
