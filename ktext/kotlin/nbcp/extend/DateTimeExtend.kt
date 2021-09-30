@@ -72,12 +72,12 @@ fun LocalDateTime.plusSeconds(value: Int): LocalDateTime {
     return this.plusSeconds(value.toLong());
 }
 
-infix fun LocalDate.min(other: LocalDate): LocalDate {
+infix fun LocalDate.getMin(other: LocalDate): LocalDate {
     if (this <= other) return this;
     return other;
 }
 
-infix fun LocalDate.max(other: LocalDate): LocalDate {
+infix fun LocalDate.getMax(other: LocalDate): LocalDate {
     if (this <= other) return other;
     return this;
 }
@@ -131,3 +131,4 @@ fun Duration.toSummary(): String {
 operator fun LocalDateTime.minus(beforeTime: LocalDateTime): Duration {
     return Duration.between(beforeTime, this)
 }
+

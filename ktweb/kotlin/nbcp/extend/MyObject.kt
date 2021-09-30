@@ -124,9 +124,9 @@ val HttpServletRequest.tokenValue: String
         token = this.findParameterStringValue(config.tokenKey).AsString {
             //获取自定义 Authorization 中的 token,值必须以 st!开头。和 token 保持一致，redis key 不能有空格。
             var authorization = this.findParameterStringValue(HttpHeaders.AUTHORIZATION);
-            if (authorization.startsWith("st!")) {
-                return@AsString authorization.substring(3);
-            }
+//            if (authorization.startsWith("st!")) {
+//                return@AsString authorization.substring(3);
+//            }
 
             if (authorization.startsWith("Bearer ")) {
                 var value = authorization.substring("Bearer ".length)
