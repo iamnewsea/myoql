@@ -326,11 +326,11 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 
                         spread_methods.add(
                             """
-fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName},${entType.name}>.set_${tableName}_${db_column_name}(${db_column_name}:${field.type.name}):SqlUpdateClip<${
+fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName}>.set_${tableName}_${db_column_name}(${db_column_name}:${field.type.name}):SqlUpdateClip<${
                                 MyUtil.getBigCamelCase(
                                     groupName
                                 )
-                            }Group.${entityTypeName}, ${entType.name}>{
+                            }Group.${entityTypeName}>{
     return this${
                                 subFields.map { ".set{ it." + db_column_name + "_" + it.name + " to " + db_column_name + "." + it.name + " }" }
                                     .joinToString("\n\t\t\t\t\t")
@@ -435,7 +435,7 @@ fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName},${
                             )!!.type.kotlinTypeName
                         }"
                     }.joinToString(",")
-                }): SqlDeleteClip<${entityTypeName},${entType.name}> {
+                }): SqlDeleteClip<${entityTypeName}> {
         return this.delete()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
@@ -449,7 +449,7 @@ fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName},${
                             )!!.type.kotlinTypeName
                         }"
                     }.joinToString(",")
-                }): SqlUpdateClip<${entityTypeName},${entType.name}> {
+                }): SqlUpdateClip<${entityTypeName}> {
         return this.update()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 """
