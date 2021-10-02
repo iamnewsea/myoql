@@ -206,8 +206,8 @@ fun Any?.AsBooleanWithNull(): Boolean? {
     if (this is Boolean) return this;
 
     if (this is Number) {
-        if (this == 1) return true;
-        if (this == 0) return false;
+        if (this.toDouble() == 1.0) return true;
+        if (this.toDouble() == 0.0) return false;
 
         return null;
     }

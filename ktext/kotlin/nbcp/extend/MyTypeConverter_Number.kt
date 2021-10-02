@@ -60,7 +60,7 @@ fun Any?.AsInt(defaultValue: Int = 0): Int {
 }
 
 @JvmOverloads
-fun Any?.AsLong(defaultValue: Long = 0): Long {
+fun Any?.AsLong(defaultValue: Long = 0L): Long {
     if (this == null) return defaultValue;
 
     try {
