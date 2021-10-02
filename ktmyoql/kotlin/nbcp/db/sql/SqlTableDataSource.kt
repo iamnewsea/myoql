@@ -74,6 +74,9 @@ class SqlTableLogProperties :  InitializingBean{
     }
 
 
+    /**
+     * yml 配置时需要 “*”。 把 * 使用引号引起来
+     */
     val logDefault by lazy {
         var value = config.getConfig("app.sql.log-default").AsString().trim();
         if (value.HasValue) {

@@ -167,5 +167,5 @@ fun Any?.AsBigDecimal(): BigDecimal? {
 val Number?.HasValue: Boolean
     @JvmName("hasValue")
     get() {
-        return this != null && this != 0
+        return this != null && this.toDouble() != 0.0
     }
