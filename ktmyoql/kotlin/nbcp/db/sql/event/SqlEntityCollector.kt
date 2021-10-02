@@ -158,7 +158,7 @@ class SqlEntityCollector : BeanPostProcessor {
     }
 
 
-    fun onUpdating(update: SqlUpdateClip<*, *>): Array<Pair<ISqlEntityUpdate, EventResult?>> {
+    fun onUpdating(update: SqlUpdateClip<*>): Array<Pair<ISqlEntityUpdate, EventResult?>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<ISqlEntityUpdate, EventResult?>>()
         updateEvent.ForEachExt { it, index ->
@@ -172,7 +172,7 @@ class SqlEntityCollector : BeanPostProcessor {
         return list.toTypedArray()
     }
 
-    fun onDeleting(delete: SqlDeleteClip<*, *>): Array<Pair<ISqlEntityDelete, EventResult?>> {
+    fun onDeleting(delete: SqlDeleteClip<*>): Array<Pair<ISqlEntityDelete, EventResult?>> {
 
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<ISqlEntityDelete, EventResult?>>()

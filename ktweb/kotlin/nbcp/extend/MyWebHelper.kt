@@ -1,6 +1,3 @@
-@file:JvmName("MyWebHelper")
-@file:JvmMultifileClass
-
 package nbcp.web
 
 import io.jsonwebtoken.Jwts
@@ -8,16 +5,67 @@ import nbcp.comm.*
 import nbcp.data.TokenStorageTypeEnum
 import nbcp.utils.*
 import nbcp.db.LoginUserModel
+import nbcp.db.mongo.MongoBaseMetaCollection
+import nbcp.db.mongo.MongoColumnName
+import nbcp.db.mongo.MongoSetEntityUpdateClip
+import nbcp.db.sql.SqlBaseMetaTable
+import nbcp.db.sql.SqlSetEntityUpdateClip
 import nbcp.extend.RequestGetLoginUserModelEvent
 import nbcp.extend.RequestSetLoginUserModelEvent
 import nbcp.extend.RequestTokenEvent
 import nbcp.service.UserAuthenticationService
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
-import java.time.LocalDateTime
+import java.io.Serializable
 import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
-private val logger = LoggerFactory.getLogger("ktweb.MyWebHelper")
+object MyWebHelper {
+    private val logger = LoggerFactory.getLogger(this::class.java)
+
+    /**
+     * 把当前请求转向另一个目标，并把目标结果输出。
+     */
+    @JvmStatic
+    fun transform(request: HttpServletRequest, response: HttpServletResponse, targetUrl: String): HttpUtil {
+        var http = HttpUtil(targetUrl)
+        http.request.requestMethod = request.method
+        if (request.method == "POST" || request.method == "PUT") {
+            http.setPostBody(request.inputStream.ReadContentStringFromStream())
+        }
+
+        run {
+            var headerArray = arrayOf("accept", "content-type")
+            var requestHeaderNames = request.headerNames.toList()
+            headerArray.forEach { headerName ->
+                var requestHeaderName = requestHeaderNames.firstOrNull { headerName VbSame it }
+                if (requestHeaderName != null) {
+                    request.getHeader(requestHeaderName).apply {
+                        http.request.headers.put(requestHeaderName, this)
+                    }
+                }
+            }
+        }
+
+
+        var res = http.doNet()
+        response.status = http.status;
+
+        run {
+            var headerArray = arrayOf("content-type")
+            var responseHeaderNames = http.response.headers.keys.toList()
+            headerArray.forEach { headerName ->
+                var responseHeaderName = responseHeaderNames.firstOrNull { headerName VbSame it }
+                if (responseHeaderName != null) {
+                    response.setHeader(responseHeaderName, http.response.headers.get(responseHeaderName))
+                }
+            }
+        }
+
+        response.writer.write(res)
+        return http
+    }
+}
 
 val HttpServletRequest.userAuthenticationService by lazy {
     return@lazy SpringUtil.getBean<UserAuthenticationService>();
@@ -172,4 +220,22 @@ val HttpServletRequest.tokenValue: String
     }
 
 
+fun <M : MongoBaseMetaCollection<out Serializable>> MongoSetEntityUpdateClip<M>.withRequestParams(): MongoSetEntityUpdateClip<M> {
+    var keys = (HttpContext.request as MyHttpRequestWrapper).json.keys;
+    keys.forEach { key ->
+        this.withColumn { MongoColumnName(key) }
+    }
+    return this;
+}
 
+fun <M : SqlBaseMetaTable<out Serializable>> SqlSetEntityUpdateClip<M>.withRequestParams(): SqlSetEntityUpdateClip<M> {
+    var keys = (HttpContext.request as MyHttpRequestWrapper).json.keys;
+    var columns = this.mainEntity.getColumns();
+    keys.forEach { key ->
+        var column = columns.firstOrNull { it.name == key }
+        if (column != null) {
+            this.withColumn { column }
+        }
+    }
+    return this
+}

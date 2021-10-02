@@ -10,7 +10,7 @@ import java.time.LocalDateTime
  * Created by yuxh on 2018/7/2
  */
 
-class SqlDeleteClip<M : SqlBaseMetaTable<out T>, T : java.io.Serializable>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
+class SqlDeleteClip<M : SqlBaseMetaTable<out java.io.Serializable>>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -19,7 +19,7 @@ class SqlDeleteClip<M : SqlBaseMetaTable<out T>, T : java.io.Serializable>(var m
 
     val whereDatas = WhereData()
 
-    fun where(whereData: (M) -> WhereData): SqlDeleteClip<M, T> {
+    fun where(whereData: (M) -> WhereData): SqlDeleteClip<M> {
         this.whereDatas.and(whereData(this.mainEntity));
         return this;
     }
@@ -27,7 +27,7 @@ class SqlDeleteClip<M : SqlBaseMetaTable<out T>, T : java.io.Serializable>(var m
     /**
      * delete from table where id=1 limit n;
      */
-    fun limit(take:Int):SqlDeleteClip<M, T>{
+    fun limit(take:Int):SqlDeleteClip<M>{
         this.take = take;
         return this;
     }

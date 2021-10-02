@@ -14,7 +14,7 @@
 // */
 //@Component
 //class SqlSpreadColumnEvent_Update : ISqlEntityUpdate {
-//    override fun beforeUpdate(update: SqlUpdateClip<*, *>): DbEntityEventResult? {
+//    override fun beforeUpdate(update: SqlUpdateClip<*>): DbEntityEventResult? {
 //        var annotations = mutableListOf<Field>()
 //        update.mainEntity.tableClass.AllFields.forEach {
 //            var ann = it.getAnnotation(SqlSpreadColumn::class.java);
@@ -45,7 +45,7 @@
 //        return DbEntityEventResult(true)
 //    }
 //
-//    override fun update(update: SqlUpdateClip<*, *>, eventData: DbEntityEventResult?) {
+//    override fun update(update: SqlUpdateClip<*>, eventData: DbEntityEventResult?) {
 //    }
 //
 //}

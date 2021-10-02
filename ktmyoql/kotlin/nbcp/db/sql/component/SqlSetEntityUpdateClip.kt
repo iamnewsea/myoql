@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory
  * MongoUpdate
  * 不会更新 id
  */
-class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out T>, T : java.io.Serializable>(var mainEntity: M, var entity: T) :
+class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out java.io.Serializable>>(var mainEntity: M, var entity: java.io.Serializable) :
     SqlBaseExecuteClip(mainEntity.tableName) {
     companion object {
     }
@@ -26,37 +26,30 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out T>, T : java.io.Serializab
     private var unsetColumns = mutableSetOf<SqlColumnName>()
     private var sets = mutableMapOf<SqlColumnName, Any?>()
 
-    fun withColumn(setFunc: (M) -> SqlColumnName): SqlSetEntityUpdateClip<M, T> {
+    fun withColumn(setFunc: (M) -> SqlColumnName): SqlSetEntityUpdateClip<M> {
         this.setColumns.add(setFunc(this.mainEntity))
         return this;
     }
 
-    fun withoutColumn(unsetFunc: (M) -> SqlColumnName): SqlSetEntityUpdateClip<M, T> {
+    fun withoutColumn(unsetFunc: (M) -> SqlColumnName): SqlSetEntityUpdateClip<M> {
         this.unsetColumns.add(unsetFunc(this.mainEntity))
         return this;
     }
 
-    fun whereColumn(whereFunc: (M) -> SqlColumnName): SqlSetEntityUpdateClip<M, T> {
+    fun whereColumn(whereFunc: (M) -> SqlColumnName): SqlSetEntityUpdateClip<M> {
         this.whereColumns.add(whereFunc(this.mainEntity))
         return this;
     }
 
-    /**
-     * 不应该依赖客户端，不应该使用这个方法
-     */
-    fun withRequestParams(keys: Set<String>): SqlSetEntityUpdateClip<M, T> {
-        var columns = this.mainEntity.getColumns();
-        keys.forEach { key ->
-            var column = columns.firstOrNull { it.name == key }
-            if (column != null) {
-                withColumn { column }
-            }
-        }
-        return this
-    }
+//    /**
+//     * 不应该依赖客户端，不应该使用这个方法
+//     */
+//    fun withRequestParams(keys: Set<String>): SqlSetEntityUpdateClip<M> {
+//
+//    }
 
     //额外设置
-    fun set(setItemAction: (M) -> Pair<SqlColumnName, Any?>): SqlSetEntityUpdateClip<M, T> {
+    fun set(setItemAction: (M) -> Pair<SqlColumnName, Any?>): SqlSetEntityUpdateClip<M> {
         var setItem = setItemAction(this.mainEntity);
         this.sets.put(setItem.first, setItem.second);
         return this;
@@ -71,13 +64,13 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out T>, T : java.io.Serializab
         return sqlUpdate.exec();
     }
 
-    private var sqlUpdate = SqlUpdateClip<M, T>(mainEntity);
+    private var sqlUpdate = SqlUpdateClip<M>(mainEntity);
 
     /**
      * 设置 sqlUpdate 对象
      */
     override fun toSql(): SingleSqlData {
-        sqlUpdate = SqlUpdateClip<M, T>(mainEntity);
+        sqlUpdate = SqlUpdateClip<M>(mainEntity);
 
         var columns = this.mainEntity.getColumns()
 

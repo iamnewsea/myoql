@@ -15,16 +15,16 @@ fun <M : SqlBaseMetaTable<T>, T : java.io.Serializable> M.query(selectColumn: ((
     return ret;
 }
 
-fun <M : SqlBaseMetaTable<out T>, T : java.io.Serializable> M.delete(): SqlDeleteClip<M, T> {
-    return SqlDeleteClip<M, T>(this);
+fun <M : SqlBaseMetaTable<out java.io.Serializable>> M.delete(): SqlDeleteClip<M> {
+    return SqlDeleteClip<M>(this);
 }
 
-fun <M : SqlBaseMetaTable<out T>, T : java.io.Serializable> M.update(): SqlUpdateClip<M, T> {
-    return SqlUpdateClip<M, T>(this);
+fun <M : SqlBaseMetaTable<out java.io.Serializable>> M.update(): SqlUpdateClip<M> {
+    return SqlUpdateClip<M>(this);
 }
 
-fun <M : SqlBaseMetaTable<out T>, T : java.io.Serializable> M.updateWithEntity(entity:T): SqlSetEntityUpdateClip<M, T> {
-    return SqlSetEntityUpdateClip<M, T>(this,entity);
+fun <M : SqlBaseMetaTable<out T>, T : java.io.Serializable> M.updateWithEntity(entity: T): SqlSetEntityUpdateClip<M> {
+    return SqlSetEntityUpdateClip<M>(this, entity);
 }
 
 //自增主键 ,返回到 entity 实体上. 以及 dbr.lastAutoId
@@ -38,7 +38,10 @@ fun <M : SqlBaseMetaTable<out T>, T : java.io.Serializable> M.batchInsert(): Sql
 }
 
 
-fun <M : SqlBaseMetaTable<T>, T : java.io.Serializable> M.insertIfNotExists(entity: T, unionKey: ((M) -> SqlColumnNames)): Int {
+fun <M : SqlBaseMetaTable<T>, T : java.io.Serializable> M.insertIfNotExists(
+    entity: T,
+    unionKey: ((M) -> SqlColumnNames)
+): Int {
     var map = entity.ConvertJson(JsonMap::class.java)
 
     var query = this.query()
@@ -79,11 +82,11 @@ fun <M : SqlBaseMetaTable<out T>, T : java.io.Serializable> M.save(entity: T, un
     }
 
     this.getColumns()
-            .filter { it.name != this.getAutoIncrementKey() }
-            .Minus(uks) { a, b -> a.equals(b) }
-            .forEach { key ->
-                update.set { key to map.getValue(key.name) as Serializable }
-            }
+        .filter { it.name != this.getAutoIncrementKey() }
+        .Minus(uks) { a, b -> a.equals(b) }
+        .forEach { key ->
+            update.set { key to map.getValue(key.name) as Serializable }
+        }
 
     update.exec()
     if (db.affectRowCount > 0) {

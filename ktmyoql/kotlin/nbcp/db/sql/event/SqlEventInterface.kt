@@ -27,18 +27,18 @@ interface ISqlEntityInsert {
  * 处理 Update 的 Bean 接口。
  */
 interface ISqlEntityUpdate {
-    fun beforeUpdate(update: SqlUpdateClip<*, *>): EventResult?
+    fun beforeUpdate(update: SqlUpdateClip<*>): EventResult?
 
-    fun update(update: SqlUpdateClip<*, *>, eventData: EventResult?)
+    fun update(update: SqlUpdateClip<*>, eventData: EventResult?)
 }
 
 /**
  * 处理 Delete 的 Bean 接口。
  */
 interface ISqlEntityDelete {
-    fun beforeDelete(delete: SqlDeleteClip<*, *>): EventResult?
+    fun beforeDelete(delete: SqlDeleteClip<*>): EventResult?
 
-    fun delete(delete: SqlDeleteClip<*, *>, eventData: EventResult?)
+    fun delete(delete: SqlDeleteClip<*>, eventData: EventResult?)
 }
 
 interface ISqlDataSource {

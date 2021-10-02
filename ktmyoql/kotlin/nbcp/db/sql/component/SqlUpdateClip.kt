@@ -13,7 +13,7 @@ import java.time.LocalDateTime
  * Created by yuxh on 2018/7/2
  */
 
-open class SqlUpdateClip<M : SqlBaseMetaTable<out T>, T : java.io.Serializable>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
+open class SqlUpdateClip<M : SqlBaseMetaTable<out java.io.Serializable> >(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -24,17 +24,17 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out T>, T : java.io.Serializable>(
     private var take = -1;
     private val joins = mutableListOf<JoinTableData<*, *>>()
 
-    fun <M2 : SqlBaseMetaTable<out T2>, T2 : java.io.Serializable> join(joinTable: M2, onWhere: (M, M2) -> WhereData): SqlUpdateClip<M, T> {
+    fun <M2 : SqlBaseMetaTable<out T2>, T2 : java.io.Serializable> join(joinTable: M2, onWhere: (M, M2) -> WhereData): SqlUpdateClip<M> {
         this.joins.add(JoinTableData("join", joinTable, onWhere(this.mainEntity, joinTable), SqlColumnNames()))
         return this
     }
 
-    fun where(whereData: (M) -> WhereData): SqlUpdateClip<M, T> {
+    fun where(whereData: (M) -> WhereData): SqlUpdateClip<M> {
         this.whereDatas.and(whereData(this.mainEntity));
         return this;
     }
 
-    fun set(set: (M) -> Pair<SqlColumnName, Serializable?>): SqlUpdateClip<M, T> {
+    fun set(set: (M) -> Pair<SqlColumnName, Serializable?>): SqlUpdateClip<M> {
         var p = set(this.mainEntity)
         if(p.second == null){
             this.sets.put(p.first,null);
@@ -45,7 +45,7 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out T>, T : java.io.Serializable>(
         return this
     }
 
-    fun unset(set: (M) -> SqlColumnName): SqlUpdateClip<M, T> {
+    fun unset(set: (M) -> SqlColumnName): SqlUpdateClip<M> {
         var p = set(this.mainEntity)
         this.sets.remove(p)
         return this
@@ -54,7 +54,7 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out T>, T : java.io.Serializable>(
     /**
      * update table set column=value where id=1 limit n;
      */
-    fun limit(take:Int):SqlUpdateClip<M, T>{
+    fun limit(take:Int):SqlUpdateClip<M>{
         this.take = take;
         return this;
     }

@@ -17,8 +17,10 @@ import org.springframework.data.mongodb.core.query.Criteria
  * MongoUpdate
  * 不会更新 id
  */
-class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out java.io.Serializable>>(var moerEntity: M, var entity: java.io.Serializable) : MongoBaseUpdateClip(moerEntity.tableName) {
-
+class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out java.io.Serializable>>(
+    var moerEntity: M,
+    var entity: java.io.Serializable
+) : MongoBaseUpdateClip(moerEntity.tableName) {
 
     private var whereColumns = mutableSetOf<String>()
     private var setColumns = mutableSetOf<String>()
@@ -39,15 +41,13 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out java.io.Serializa
         return this;
     }
 
-    /**
-     * 不应该依赖客户端，不应该使用这个方法
-     */
-    fun withRequestParams(keys: Set<String>): MongoSetEntityUpdateClip<M> {
-        keys.forEach { key ->
-            withColumn { MongoColumnName(key) }
-        }
-        return this
-    }
+//    /**
+//     * 不应该依赖客户端，不应该使用这个方法
+//     */
+//    fun withRequestParams(keys: Set<String>): MongoSetEntityUpdateClip<M> {
+//
+//        return this
+//    }
 
     //额外设置
     fun set(setItemAction: (M) -> Pair<MongoColumnName, Any?>): MongoSetEntityUpdateClip<M> {

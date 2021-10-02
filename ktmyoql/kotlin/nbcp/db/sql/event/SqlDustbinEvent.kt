@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 @Component
 class SqlDustbinEvent : ISqlEntityDelete {
 
-    override fun beforeDelete(delete: SqlDeleteClip<*, *>): EventResult? {
+    override fun beforeDelete(delete: SqlDeleteClip<*>): EventResult? {
         var dust = delete.mainEntity.tableClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dust != null) {
             //找出数据
@@ -26,7 +26,7 @@ class SqlDustbinEvent : ISqlEntityDelete {
         return null;
     }
 
-    override fun delete(delete: SqlDeleteClip<*, *>, eventData: EventResult?) {
+    override fun delete(delete: SqlDeleteClip<*>, eventData: EventResult?) {
         var data = eventData?.extData
         if (data == null) return
 

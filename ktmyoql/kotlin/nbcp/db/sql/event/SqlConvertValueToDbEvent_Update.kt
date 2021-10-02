@@ -12,7 +12,7 @@ import kotlin.reflect.full.createInstance
  */
 @Component
 class SqlConvertValueToDbEvent_Update : ISqlEntityUpdate {
-    override fun beforeUpdate(update: SqlUpdateClip<*, *>): EventResult? {
+    override fun beforeUpdate(update: SqlUpdateClip<*>): EventResult? {
         var annotations = mutableMapOf<Field, IConverter>()
         update.mainEntity.tableClass.AllFields.forEach {
             var ann = it.getAnnotation(ConverterValueToDb::class.java);
@@ -32,7 +32,7 @@ class SqlConvertValueToDbEvent_Update : ISqlEntityUpdate {
         return EventResult(true)
     }
 
-    override fun update(update: SqlUpdateClip<*, *>, eventData: EventResult?) {
+    override fun update(update: SqlUpdateClip<*>, eventData: EventResult?) {
 
     }
 
