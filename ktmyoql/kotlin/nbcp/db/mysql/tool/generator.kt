@@ -333,7 +333,7 @@ fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName}>.s
                             }Group.${entityTypeName}>{
     return this${
                                 subFields.map { ".set{ it." + db_column_name + "_" + it.name + " to " + db_column_name + "." + it.name + " }" }
-                                    .joinToString("\n\t\t\t\t\t")
+                                    .joinToString("\n\t\t\t")
                             }
 }
 """
@@ -347,7 +347,7 @@ fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName}>.s
                                 columns.add(db_column_name);
 
                                 var item =
-                                    """val ${field.name}_${it.name}=SqlColumnName(DbType.${dbType.name},this.getAliaTableName(),"${db_column_name}")""".ToTab(
+                                    """val ${field.name}_${it.name} = SqlColumnName(DbType.${dbType.name}, this.getAliaTableName(),"${db_column_name}")""".ToTab(
                                         1
                                     )
                                 props.add(item);
@@ -367,7 +367,7 @@ fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName}>.s
                 }
 
                 var item =
-                    """${ann_converter}val ${field.name}=SqlColumnName(DbType.${dbType.name},this.getAliaTableName(),"${db_column_name}")""".ToTab(
+                    """${ann_converter}val ${field.name} = SqlColumnName(DbType.${dbType.name}, this.getAliaTableName(),"${db_column_name}")""".ToTab(
                         1
                     )
                 props.add(item);
