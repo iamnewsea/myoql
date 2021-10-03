@@ -12,6 +12,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import nbcp.utils.*
 import java.io.InputStream
+import java.lang.RuntimeException
 import java.nio.charset.Charset
 import java.time.LocalDate
 import java.util.*
@@ -56,15 +57,17 @@ object HttpContext {
     @JvmStatic
     val request: HttpServletRequest
         get() {
-            return _request.get()
-                ?: (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.request!!
+            return (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.request
+                ?: _request.get()
+                ?: throw RuntimeException("找不到 HttpServletRequest")
         }
 
     @JvmStatic
     val response: HttpServletResponse
         get() {
-            return _response.get()
-                ?: (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.response!!
+            return (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.response
+                ?: _response.get()
+                ?: throw RuntimeException("找不到 HttpServletResponse")
         }
 
     //(RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.response!!

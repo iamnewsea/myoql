@@ -66,11 +66,11 @@ open class MyAllFilter : Filter {
         var httpRequest = request as HttpServletRequest
         var httpResponse = response as HttpServletResponse
 
-        HttpContext.init(httpRequest, httpResponse);
-
         if (request is HttpServletRequest == false ||
             !config.getConfig("app.filter.enabled").AsBoolean(true)
         ) {
+
+            HttpContext.init(httpRequest, httpResponse);
             chain?.doFilter(request, response)
             return;
         }
@@ -167,6 +167,7 @@ open class MyAllFilter : Filter {
             RequestContextHolder.setRequestAttributes(ServletRequestAttributes(request, response))
             beforeRequest(request);
             try {
+                HttpContext.init(request, response);
                 chain?.doFilter(request, response);
             } catch (e: Exception) {
                 logger.Error {
@@ -192,6 +193,7 @@ open class MyAllFilter : Filter {
             var response = _response;
 
             try {
+                HttpContext.init(request, response);
                 chain?.doFilter(request, response)
             } catch (e: Exception) {
                 logger.Error {
@@ -259,6 +261,8 @@ open class MyAllFilter : Filter {
         var errorMsg = ""
 
         try {
+
+            HttpContext.init(request, response);
             chain?.doFilter(request, response);
         } catch (e: Exception) {
             logger.Error {

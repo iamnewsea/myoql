@@ -46,8 +46,6 @@ open class CrosFilter : Filter {
         var httpRequest = request as HttpServletRequest
         var httpResponse = response as HttpServletResponse
 
-        HttpContext.init(httpRequest, httpResponse);
-
         var request2: MyHttpRequestWrapper? = null
         httpRequest.getCorsResponseMap(this.allowOrigins.split(","), headers).apply {
             if (this.any() && httpRequest.method != "OPTIONS") {
@@ -66,6 +64,11 @@ open class CrosFilter : Filter {
             return;
         }
 
-        chain.doFilter(request2 ?: request, response)
+        var targetRequest = request2 ?: request;
+
+
+
+        HttpContext.init(targetRequest, httpResponse);
+        chain.doFilter(targetRequest, response)
     }
 }
