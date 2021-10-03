@@ -63,7 +63,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             return mutableListOf();
         }
 
-        var isString = clazz.IsStringType;
+//        var isString = clazz.IsStringType;
 //        if (clazz.IsSimpleType()) {
 //            isString = clazz.name == "java.lang.String";
 //        }
@@ -118,13 +118,14 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                     mapFunc(it);
                 }
 
-                if (isString) {
-                    if (lastKey.isEmpty()) {
-                        lastKey = it.keys.last()
-                    }
-
-                    ret.add(it.GetComplexPropertyValue(*lastKey.split(".").toTypedArray()) as R)
-                } else if (clazz.IsSimpleType()) {
+//                if (isString) {
+//                    if (lastKey.isEmpty()) {
+//                        lastKey = it.keys.last()
+//                    }
+//
+//                    ret.add(it.GetComplexPropertyValue(*lastKey.split(".").toTypedArray()) as R)
+//                } else
+                if (clazz.IsSimpleType()) {
                     if (lastKey.isEmpty()) {
                         lastKey = it.keys.last()
                     }

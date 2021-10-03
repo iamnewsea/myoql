@@ -77,10 +77,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
         if (settingResult.any { it.second.result == false }) {
             return mutableListOf();
         }
-
-
-        var isString = clazz.IsStringType;
-
+//        var isString = clazz.IsStringType;
 
         var list: List<Map<String, Any>> = listOf()
 
@@ -122,13 +119,14 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
             }
 
 
-            if (isString) {
-                if (lastKey.isEmpty()) {
-                    lastKey = it.keys.last()
-                }
-
-                ret.add(MyUtil.getPathValue(it, *lastKey.split(".").toTypedArray()).AsString() as R)
-            } else if (clazz.IsSimpleType()) {
+//            if (isString) {
+//                if (lastKey.isEmpty()) {
+//                    lastKey = it.keys.last()
+//                }
+//
+//                ret.add(MyUtil.getPathValue(it, *lastKey.split(".").toTypedArray()).AsString() as R)
+//            } else
+            if (clazz.IsSimpleType()) {
                 if (lastKey.isEmpty()) {
                     lastKey = it.keys.last()
                 }
