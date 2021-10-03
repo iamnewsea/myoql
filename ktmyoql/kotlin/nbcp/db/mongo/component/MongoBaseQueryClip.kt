@@ -110,6 +110,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         }
 
         var error: Exception? = null;
+        var skipNullCount = 0;
         try {
             db.mongo.procResultData_id2Id(cursor);
             cursor.forEach {
@@ -130,7 +131,12 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                         lastKey = it.keys.last()
                     }
 
-                    ret.add(it.GetComplexPropertyValue(*lastKey.split(".").toTypedArray()) as R);
+                    var value = it.GetComplexPropertyValue(*lastKey.split(".").toTypedArray());
+                    if (value != null) {
+                        ret.add(value.ConvertType(clazz) as R);
+                    } else {
+                        skipNullCount++;
+                    }
                 } else {
                     if (Document::class.java.isAssignableFrom(clazz)) {
                         ret.add(it as R);
@@ -182,6 +188,9 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                     msgs.add("[result] ${cursor.ToJson()}")
                 } else {
                     msgs.add("[result.size] " + cursor.size.toString())
+                }
+                if (skipNullCount > 0) {
+                    msgs.add("[skipNullRows] ${skipNullCount}")
                 }
 
                 msgs.add("[耗时] ${db.executeTime}")

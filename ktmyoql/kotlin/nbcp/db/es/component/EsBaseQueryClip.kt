@@ -108,11 +108,11 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
             .filter { it != null }
             .map { it!! }
 
-
         db.affectRowCount = list.size
 
         var lastKey = this.search._source.lastOrNull() ?: ""
 
+        var skipNullCount = 0;
         list.forEach {
             if (mapFunc != null) {
                 mapFunc(it);
@@ -131,7 +131,12 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
                     lastKey = it.keys.last()
                 }
 
-                ret.add(MyUtil.getPathValue(it, *lastKey.split(".").toTypedArray()) as R);
+                var value = MyUtil.getPathValue(it, *lastKey.split(".").toTypedArray())
+                if (value != null) {
+                    ret.add(value.ConvertType(clazz) as R);
+                } else {
+                    skipNullCount++;
+                }
             } else {
                 var ent = it.ConvertJson(clazz)
                 ret.add(ent);
@@ -139,6 +144,9 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
         }
 
 
+        if (skipNullCount > 0) {
+            logger.warn("skipNullRows:${skipNullCount}")
+        }
 
         return ret
     }
