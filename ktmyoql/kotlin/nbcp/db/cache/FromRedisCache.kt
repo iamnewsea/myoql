@@ -18,7 +18,7 @@ annotation class FromRedisCache(
     /**
      * 缓存关联表
      */
-    val joinTables: Array<String>,
+    val joinTables: Array<String> = arrayOf(),
     /**
      * 缓存表的隔离键或主键, 如:"cityCode"
      */

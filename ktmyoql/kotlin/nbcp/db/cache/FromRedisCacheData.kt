@@ -20,7 +20,7 @@ data class FromRedisCacheData(
     /**
      * 缓存关联表
      */
-    var joinTables: Array<String>,
+    var joinTables: Array<String> = arrayOf(),
     /**
      * 缓存表的隔离键, 如:"cityCode"
      */
