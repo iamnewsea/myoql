@@ -16,7 +16,7 @@ object CacheForBrokeDataWorkService {
 
 
             //如果是删除全表。
-            if (cacheBroke.key.isEmpty() || cacheBroke.value.isEmpty()) {
+            if (cacheBroke.groupKey.isEmpty() || cacheBroke.groupValue.isEmpty()) {
                 redisTemplate.delete(all_keys);
                 continue;
             }
@@ -28,7 +28,7 @@ object CacheForBrokeDataWorkService {
             }
 
             var other_group_keys_pattern =
-                "${FromRedisCacheData.GROUP_JOIN_CHAR}${cacheBroke.key}${FromRedisCacheData.KEY_VALUE_JOIN_CHAR}"
+                "${FromRedisCacheData.GROUP_JOIN_CHAR}${cacheBroke.groupKey}${FromRedisCacheData.KEY_VALUE_JOIN_CHAR}"
             //破坏其它维度的分组
             var other_group_keys =
                 all_keys.filter { it.contains(other_group_keys_pattern) == false };
@@ -37,7 +37,7 @@ object CacheForBrokeDataWorkService {
             }
 
             var this_group_keys_pattern =
-                "${FromRedisCacheData.GROUP_JOIN_CHAR}${cacheBroke.key}${FromRedisCacheData.KEY_VALUE_JOIN_CHAR}${cacheBroke.value}${FromRedisCacheData.GROUP_JOIN_CHAR}"
+                "${FromRedisCacheData.GROUP_JOIN_CHAR}${cacheBroke.groupKey}${FromRedisCacheData.KEY_VALUE_JOIN_CHAR}${cacheBroke.groupValue}${FromRedisCacheData.GROUP_JOIN_CHAR}"
             //再精准破坏 key,value分组的。
             var this_group_keys =
                 all_keys.filter { it.contains(this_group_keys_pattern) };

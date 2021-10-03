@@ -1,6 +1,5 @@
 package nbapp.service.cache;
 
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Service;
 import nbcp.comm.*;
 import nbcp.db.*;
@@ -28,7 +27,7 @@ public class AppCacheTestJavaService {
      * @param city
      * @return
      */
-    @FromRedisCache(cacheSeconds = 300, table = "tab1", joinTables = {}, key = "city", value = "#city")
+    @FromRedisCache(cacheSeconds = 300, table = "tab1", joinTables = {}, groupKey = "city", groupValue = "#city")
     public List<Document> cache_select(Integer city) {
         List<Document> result = MyOqlMongo.aggregate(db.getMor_base().getSysAnnex())
                 .addPipeLineRawString(PipeLineEnum.match, "{ \"group\" : \"lowcode\"} ")
@@ -91,7 +90,7 @@ public class AppCacheTestJavaService {
      *
      * @param city
      */
-    @BrokeRedisCache(table = "tab1", key = "city", value = "#city")
+    @BrokeRedisCache(table = "tab1", groupKey = "city", groupValue = "#city")
     public void cache_broke(Integer city) {
         System.out.println();
     }

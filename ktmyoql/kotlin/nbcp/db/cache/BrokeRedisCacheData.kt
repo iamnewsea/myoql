@@ -10,11 +10,11 @@ data class BrokeRedisCacheData(
     /**
      * 破坏表的隔离键，如: "cityCode"
      */
-    var key: String,
+    var groupKey: String,
     /**
      * 破坏表的隔离键值，如: "010"
      */
-    var value: String
+    var groupValue: String
 ) {
     constructor() : this("", "", "") {
     }
@@ -39,8 +39,8 @@ data class BrokeRedisCacheData(
             var spelExecutor = CacheKeySpelExecutor(variableMap);
             var ret = BrokeRedisCacheData();
             ret.table = spelExecutor.getVariableValue(cacheForBroke.table);
-            ret.key = spelExecutor.getVariableValue(cacheForBroke.key);
-            ret.value = spelExecutor.getVariableValue(cacheForBroke.value);
+            ret.groupKey = spelExecutor.getVariableValue(cacheForBroke.groupKey);
+            ret.groupValue = spelExecutor.getVariableValue(cacheForBroke.groupValue);
             return ret;
         }
     }

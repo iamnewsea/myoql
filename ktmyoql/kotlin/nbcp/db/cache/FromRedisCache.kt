@@ -22,11 +22,11 @@ annotation class FromRedisCache(
     /**
      * 缓存表的隔离键或主键, 如:"cityCode"
      */
-    val key: String = "",
+    val groupKey: String = "",
     /**
      * 缓存表的隔离值,如: "010"
      */
-    val value: String = "",
+    val groupValue: String = "",
 
 //    val sql: String = ""
 ) {

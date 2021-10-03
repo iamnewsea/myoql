@@ -24,11 +24,11 @@ data class FromRedisCacheData(
     /**
      * 缓存表的隔离键, 如:"cityCode"
      */
-    var key: String,
+    var groupKey: String,
     /**
      * 缓存表的隔离值,如: "010"
      */
-    var value: String,
+    var groupValue: String,
     var sql: String
 ) {
     constructor() : this(0, "", arrayOf(), "", "", "") {
@@ -44,8 +44,8 @@ data class FromRedisCacheData(
             ret.cacheSeconds = cacheForSelect.cacheSeconds;
             ret.table = spelExecutor.getVariableValue(cacheForSelect.table);
             ret.joinTables = cacheForSelect.joinTables;
-            ret.key = spelExecutor.getVariableValue(cacheForSelect.key);
-            ret.value = spelExecutor.getVariableValue(cacheForSelect.value);
+            ret.groupKey = spelExecutor.getVariableValue(cacheForSelect.groupKey);
+            ret.groupValue = spelExecutor.getVariableValue(cacheForSelect.groupValue);
             ret.sql = spelExecutor.getVariableValue(sql);
             return ret
         }
@@ -101,8 +101,8 @@ data class FromRedisCacheData(
 
 
         var part2 = mutableListOf<String>()
-        if (cache.key.HasValue && cache.value.HasValue) {
-            part2.add("${cache.key}${KEY_VALUE_JOIN_CHAR}${cache.value}")
+        if (cache.groupKey.HasValue && cache.groupValue.HasValue) {
+            part2.add("${cache.groupKey}${KEY_VALUE_JOIN_CHAR}${cache.groupValue}")
         } else {
             part2.add("")
         }

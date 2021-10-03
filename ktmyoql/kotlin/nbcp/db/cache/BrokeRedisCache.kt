@@ -16,9 +16,9 @@ annotation class BrokeRedisCache(
     /**
      * 破坏表的隔离键，如: "cityCode"
      */
-    val key: String = "",
+    val groupKey: String = "",
     /**
      * 破坏表的隔离键值，如: "010"
      */
-    val value: String = ""
+    val groupValue: String = ""
 )
