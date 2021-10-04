@@ -9,17 +9,20 @@ import org.springframework.data.redis.connection.Message
 import org.springframework.data.redis.connection.MessageListener
 import java.time.LocalDateTime
 
-class CacheForBrokeMessageListener(var consumer:(BrokeRedisCacheData)->Unit) : MessageListener {
-    companion object{
+class CacheForBrokeMessageListener(var consumer: (BrokeRedisCacheData) -> Unit) : MessageListener {
+    companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
         private var working = false;
 
         var lastConsumerAt = LocalDateTime.now();
     }
+
     /**
      * 驱动器，驱动从 redis 队列中取出，进行消费。
+     * @param message: 仅标识有任务，没有其它意义
      */
     fun handleMessage(message: String) {
+        //TODO 可能并发问题：spop 后为空退出后，有消息进入
         if (working) return;
         working = true;
 
@@ -29,14 +32,14 @@ class CacheForBrokeMessageListener(var consumer:(BrokeRedisCacheData)->Unit) : M
                 break;
             }
 
-            var cacheBroke = cacheBrokeStringValue.FromJson<BrokeRedisCacheData>()!!
+            logger.info("消费 sqlCacheBroker: ${cacheBrokeStringValue}")
 
+            var cacheBroke = cacheBrokeStringValue.FromJson<BrokeRedisCacheData>()!!
             consumer(cacheBroke);
         }
 
         lastConsumerAt = LocalDateTime.now();
         working = false;
-        logger.info("消费完成! ${lastConsumerAt}")
     }
 
     override fun onMessage(msg: Message, pattern: ByteArray?) {
