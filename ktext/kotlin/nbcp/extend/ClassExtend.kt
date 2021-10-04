@@ -140,10 +140,10 @@ val Class<*>.IsNumberType: Boolean
  * 获取枚举类的所有成员
  */
 @JvmOverloads
-fun <T> Class<T>.GetEnumList(values:String = ""): List<T> {
+fun <T> Class<T>.GetEnumList(values: String = ""): List<T> {
     if (this.isEnum == false) return listOf()
 
-    if( values.HasValue){
+    if (values.HasValue) {
         return values.split(",").filter { it.HasValue }.map { it.ToEnum(this)!! }
     }
 
@@ -233,10 +233,11 @@ fun Class<*>.FindField(fieldName: String): Field? {
 
     return this.superclass.FindField(fieldName);
 }
+
 /**
  * 递归向父类查找字段。返回 false 停止递归
  */
-fun Class<*>.ForEachField(fieldCallback: (Field)->Boolean) {
+fun Class<*>.ForEachField(fieldCallback: (Field) -> Boolean) {
     var callbackValue = true;
     var ret: Field? = null
     ret = this.declaredFields.find {
@@ -244,7 +245,7 @@ fun Class<*>.ForEachField(fieldCallback: (Field)->Boolean) {
         return@find callbackValue
     }
 
-    if (callbackValue == false ) return;
+    if (callbackValue == false) return;
 
 
     if (this.superclass == null || this.superclass == Any::class.java) {
@@ -252,6 +253,17 @@ fun Class<*>.ForEachField(fieldCallback: (Field)->Boolean) {
     }
 
     this.superclass.ForEachField(fieldCallback);
+}
+
+
+/**
+ * 向上查找任意满足的类。
+ */
+fun Class<*>.AnySuperClass(filter: (Class<*>) -> Boolean): Boolean {
+    if (filter(this)) return true;
+    var superClass = this.superclass;
+    if (superClass == null) return false;
+    return superclass.AnySuperClass(filter);
 }
 
 /**

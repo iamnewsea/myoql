@@ -21,6 +21,17 @@ import org.springframework.stereotype.Component
 open class RedisCacheAopService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+
+
+        fun getRequestParamFullUrl(request: Any): String {
+            var clazz = Class.forName("javax.servlet.http.HttpServletRequest")
+            var requestClass = request::class.java
+            if (clazz.isAssignableFrom(requestClass) == false) return "";
+
+            var getRequestURI = requestClass.getMethod("getRequestURI")
+            var getQueryString = requestClass.getMethod("getQueryString")
+            return getRequestURI.invoke(request).toString() + "?" + getQueryString.invoke(request).AsString()
+        }
     }
 
     //@annotation 表示拦截方法级别上的注解。
@@ -49,9 +60,32 @@ open class RedisCacheAopService {
             variableMap.put(variables.get(i), args.get(i))
         }
 
-        var ext = signature.declaringType.name;
-        if (signature.parameterNames.any()) {
-            ext += "&" + args.joinToString(",")
+        var ext = "";
+        if (cache.sql.isEmpty()) {
+            ext = signature.declaringType.name;
+
+            if (config.isInWebEnv) {
+                try {
+                    var httpContext = Class.forName("nbcp.web.HttpContext")
+                    ext += ":" + getRequestParamFullUrl(httpContext.getMethod("getRequest").invoke(null))
+                } catch (e: Exception) {
+                    logger.warn("在Web环境下找不到 HttpContext.request，忽略缓存中的路径")
+                    e.printStackTrace();
+                }
+            }
+
+            if (variableMap.any()) {
+                //排除掉 任一基类的 package 包含 javax.servlet.http 的。
+
+                ext += ":" + variableMap.values.filter {
+                    if (it == null) return@filter false;
+                    if (it.javaClass.AnySuperClass { it.name.startsWith("javax.servlet.http.") }) {
+                        return@filter false;
+                    }
+
+                    return@filter true;
+                }.ToJson()
+            }
         }
 
         var cacheData = FromRedisCacheData.of(cache, ext, variableMap);

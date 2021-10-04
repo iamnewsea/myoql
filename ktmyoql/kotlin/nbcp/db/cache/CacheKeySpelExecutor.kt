@@ -1,5 +1,6 @@
 package nbcp.db.cache
 
+import nbcp.comm.AsString
 import nbcp.comm.JsonMap
 import nbcp.comm.remove
 
@@ -24,7 +25,15 @@ class CacheKeySpelExecutor(val variableMap: JsonMap) {
         variableMap.forEach {
             context.setVariable(it.key, it.value);
         }
+
+//        //额外添加一个参数: FullUrl
+//        if (variableMap.containsKey("FullUrl") == false && containsHttpRequest()) {
+//
+//            context.setVariable("FullUrl")
+//        }
     }
+
+
 
     fun getVariableValue(it: String): String {
         var retString = it;

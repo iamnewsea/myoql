@@ -28,7 +28,10 @@ annotation class FromRedisCache(
      */
     val groupValue: String = "",
 
-//    val sql: String = ""
+    /**
+     * 唯一值
+     */
+    val sql: String = ""
 ) {
 }
 

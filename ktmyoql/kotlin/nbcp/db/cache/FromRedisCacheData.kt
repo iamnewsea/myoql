@@ -29,6 +29,10 @@ data class FromRedisCacheData(
      * 缓存表的隔离值,如: "010"
      */
     var groupValue: String,
+
+    /**
+     * 唯一值
+     */
     var sql: String
 ) {
     constructor() : this(0, "", arrayOf(), "", "", "") {
@@ -46,7 +50,7 @@ data class FromRedisCacheData(
             ret.joinTables = cacheForSelect.joinTables;
             ret.groupKey = spelExecutor.getVariableValue(cacheForSelect.groupKey);
             ret.groupValue = spelExecutor.getVariableValue(cacheForSelect.groupValue);
-            ret.sql = spelExecutor.getVariableValue(sql);
+            ret.sql = spelExecutor.getVariableValue(cacheForSelect.sql.AsString(sql));
             return ret
         }
 

@@ -26,6 +26,24 @@ object config {
             return _debug ?: false;
         }
 
+    /**
+     * 是否在Web环境
+     */
+    @JvmStatic
+    val isInWebEnv by lazy {
+        try {
+            arrayOf(
+                "javax.servlet.Servlet",
+                "org.springframework.web.context.ConfigurableWebApplicationContext"
+            ).forEach {
+                Class.forName(it)
+            }
+            return@lazy true;
+        } catch (e: Exception) {
+            return@lazy false;
+        }
+    }
+
     @JvmStatic
     fun getConfig(key: String, defaultValue: String): String {
         return SpringUtil.context.environment.getProperty(key) ?: defaultValue
