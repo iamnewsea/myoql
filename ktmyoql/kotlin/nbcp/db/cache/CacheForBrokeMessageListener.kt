@@ -32,7 +32,7 @@ class CacheForBrokeMessageListener(var consumer: (BrokeRedisCacheData) -> Unit) 
                 break;
             }
 
-            logger.info("消费 sqlCacheBroker: ${cacheBrokeStringValue}")
+            logger.warn("消费 sqlCacheBroker: ${cacheBrokeStringValue}")
 
             var cacheBroke = cacheBrokeStringValue.FromJson<BrokeRedisCacheData>()!!
             consumer(cacheBroke);
