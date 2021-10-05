@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.slf4j.LoggerFactory
 import nbcp.db.*;
 import java.lang.RuntimeException
+import java.io.Serializable
 
 typealias mongoQuery = org.springframework.data.mongodb.core.query.Query
 
