@@ -90,7 +90,7 @@ object RecursionUtil {
     /** 递归执行
      * @param container:递归的集合。
      * @param producer: 生产者，获取下级集合。
-     * @param consumer: 消费者，参数：当前对象，父集合，当前对象的索引。
+     * @param consumer: 消费者，参数：Wbs对象，当前对象的索引。
      */
     @JvmOverloads
     fun <T> execute(
@@ -222,7 +222,7 @@ object RecursionUtil {
     }
 
     /**
-     * 遍历Json, 应该拿到对象后，对象属性值及子属性操作，而不能增减父对象。
+     * 遍历Json, 应该拿到对象后，对象属性值及子属性操作，而不能增减父对象。尽量使用 execute 方法遍历树。
      * @param json: 递归对象
      * @param consumer:  消费每一个Json
      * @param consumerObject 如果遍历到非 Map，调用该回调

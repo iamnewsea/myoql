@@ -97,7 +97,7 @@ fun Map<*, *>.procWithMongoScript(): Map<*, *> {
     }
 
 
-    RecursionUtil.recursionJson(this,"", { json,pKey ->
+    RecursionUtil.recursionJson(this,  { json ->
         var doc = json as MutableMap<String, Any>;
         doc.keys.forEach { key ->
             /**情况：

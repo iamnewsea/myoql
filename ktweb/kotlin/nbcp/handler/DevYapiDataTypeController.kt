@@ -93,7 +93,7 @@ class DevYapiDataTypeController {
 
         var items_msg = mutableListOf<String>();
 
-        RecursionUtil.recursionJson(json, "", { json, pKey ->
+        RecursionUtil.recursionJson(json,   { json  ->
             if (json.containsKey("title") == false) {
                 return@recursionJson true
             }
@@ -115,7 +115,7 @@ class DevYapiDataTypeController {
                 }
             }
 
-            items_msg.add(pKey + ":成功处理" + msg_ok.joinToString(",") + (if (msg_no.any()) ",未处理" + msg_no.joinToString(",") + "!" else ""))
+            items_msg.add("成功处理" + msg_ok.joinToString(",") + (if (msg_no.any()) ",未处理" + msg_no.joinToString(",") + "!" else ""))
             json_item.set("title", if (msg_no.any()) "-" + msg_no.joinToString(";") else "");
             return@recursionJson true;
         })
