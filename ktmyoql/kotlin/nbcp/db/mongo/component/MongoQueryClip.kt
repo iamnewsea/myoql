@@ -7,11 +7,11 @@ import org.springframework.data.mongodb.core.query.Criteria
 
 
 import org.slf4j.LoggerFactory
-
+import java.io.Serializable
 /**
  * MongoQuery
  */
-class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : java.io.Serializable>(var moerEntity: M) : MongoBaseQueryClip(moerEntity.tableName) {
+class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Serializable>(var moerEntity: M) : MongoBaseQueryClip(moerEntity.tableName) {
 
 
     fun limit(skip: Int, take: Int): MongoQueryClip<M, E> {

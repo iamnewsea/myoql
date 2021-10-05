@@ -11,12 +11,12 @@ import nbcp.db.db
 import java.lang.RuntimeException
 import java.sql.Statement
 import java.time.LocalDateTime
-
+import java.io.Serializable
 
 /**
  * Created by yuxh on 2018/7/2
  */
-class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : java.io.Serializable>(var mainEntity: M) :
+class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntity: M) :
     SqlBaseExecuteClip(mainEntity.tableName) {
 
     companion object {

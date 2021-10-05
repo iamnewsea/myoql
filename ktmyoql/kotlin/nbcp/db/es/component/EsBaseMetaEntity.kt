@@ -2,18 +2,14 @@ package nbcp.db.es
 
 
 import nbcp.comm.*
-import nbcp.utils.*
-import nbcp.db.db
-
-import org.slf4j.LoggerFactory
-import java.lang.Exception
+import java.io.Serializable
 import nbcp.db.*;
 import java.lang.RuntimeException
 
 /**
  * es 元数据实体的基类
  */
-abstract class EsBaseMetaEntity<T : java.io.Serializable>(val entityClass: Class<T>, entityName: String) : BaseMetaData(entityName) {
+abstract class EsBaseMetaEntity<T : Serializable>(val entityClass: Class<T>, entityName: String) : BaseMetaData(entityName) {
     //    abstract fun getColumns(): Array<String>;
     companion object {
     }

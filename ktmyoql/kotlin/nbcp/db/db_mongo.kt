@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext
 import org.springframework.data.mongodb.core.query.Criteria
+import java.io.Serializable
 
 /**
  * 请使用 db.mongo
@@ -296,7 +297,7 @@ object db_mongo {
     }
 }
 
-class MongoDynamicEntity : JsonMap(), java.io.Serializable {}
+class MongoDynamicEntity : JsonMap(), Serializable {}
 class MongoDynamicMetaEntity(collectionName: String) :
     MongoBaseMetaCollection<MongoDynamicEntity>(MongoDynamicEntity::class.java, collectionName) {
 }

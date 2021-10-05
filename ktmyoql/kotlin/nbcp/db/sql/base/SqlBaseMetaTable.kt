@@ -4,9 +4,9 @@ import nbcp.comm.AllFields
 import nbcp.comm.AsString
 import nbcp.db.*
 import java.lang.reflect.Modifier
+import java.io.Serializable
 
-
-abstract class SqlBaseMetaTable<T : java.io.Serializable>(val tableClass: Class<T>, tableName: String)
+abstract class SqlBaseMetaTable<T : Serializable>(val tableClass: Class<T>, tableName: String)
     : BaseMetaData(tableName) {
     abstract fun getUks(): Array<Array<String>>
     abstract fun getFks(): Array<FkDefine>

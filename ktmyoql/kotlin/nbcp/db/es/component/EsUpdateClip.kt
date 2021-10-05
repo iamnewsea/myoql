@@ -1,5 +1,7 @@
 package nbcp.db.es
 
+import java.io.Serializable
+
 /**
  * Created by udi on 17-4-7.
  */
@@ -10,7 +12,7 @@ package nbcp.db.es
  * EsUpdate
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/docs-update-by-query.html
  */
-class EsUpdateClip<M : EsBaseMetaEntity<E>,E : java.io.Serializable>(var moerEntity: M)
+class EsUpdateClip<M : EsBaseMetaEntity<E>,E : Serializable>(var moerEntity: M)
     : EsBaseUpdateClip(moerEntity.tableName) {
 
     fun add(entity: E): EsUpdateClip<M, E> {

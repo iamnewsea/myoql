@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.time.LocalDateTime
 import nbcp.scope.*
+import java.io.Serializable
 /**
  * Created by udi on 17-4-17.
  */
@@ -17,7 +18,7 @@ import nbcp.scope.*
 /**
  * MongoDelete
  */
-class MongoDeleteClip<M : MongoBaseMetaCollection<out java.io.Serializable>>(var moerEntity: M) :
+class MongoDeleteClip<M : MongoBaseMetaCollection<out Serializable>>(var moerEntity: M) :
     MongoClipBase(moerEntity.tableName), IMongoWhereable {
     val whereData = mutableListOf<Criteria>()
 

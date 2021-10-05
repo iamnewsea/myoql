@@ -1,13 +1,13 @@
 package nbcp.db.es
 
 import nbcp.comm.*
-
+import java.io.Serializable
 
 /**
  * EsQuery
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/search.html
  */
-class EsQueryClip<M : EsBaseMetaEntity<E>, E : java.io.Serializable>(var moerEntity: M)
+class EsQueryClip<M : EsBaseMetaEntity<E>, E : Serializable>(var moerEntity: M)
     : EsBaseQueryClip(moerEntity.tableName) {
 
     @JvmOverloads

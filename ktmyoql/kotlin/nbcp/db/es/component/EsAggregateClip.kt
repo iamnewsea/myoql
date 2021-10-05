@@ -1,11 +1,11 @@
 package nbcp.db.es
 
 import org.slf4j.LoggerFactory
-
+import java.io.Serializable
 /**
  * EsAggregate
  */
-class EsAggregateClip<M : EsBaseMetaEntity<E>, E : java.io.Serializable>(var moerEntity: M) : EsClipBase(moerEntity.tableName) {
+class EsAggregateClip<M : EsBaseMetaEntity<E>, E : Serializable>(var moerEntity: M) : EsClipBase(moerEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass);
     }
@@ -303,7 +303,7 @@ class EsAggregateClip<M : EsBaseMetaEntity<E>, E : java.io.Serializable>(var moe
 }
 
 
-class BeginMatchClip<M : EsBaseMetaEntity<E>, E : java.io.Serializable>(var aggregate: EsAggregateClip<M, E>) {
+class BeginMatchClip<M : EsBaseMetaEntity<E>, E : Serializable>(var aggregate: EsAggregateClip<M, E>) {
 //    private var wheres = mutableListOf<Criteria>()
 //    fun where(where: (M) -> Criteria): BeginMatchClip<M, E> {
 //        wheres.add(where(this.aggregate.moerEntity))

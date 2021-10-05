@@ -5,12 +5,13 @@ import nbcp.comm.*
 
 import nbcp.db.db
 import java.time.LocalDateTime
+import java.io.Serializable
 
 /**
  * Created by yuxh on 2018/7/2
  */
 
-class SqlDeleteClip<M : SqlBaseMetaTable<out java.io.Serializable>>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
+class SqlDeleteClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

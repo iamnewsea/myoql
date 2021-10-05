@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 import java.time.Duration
 import nbcp.scope.*
+import java.io.Serializable
 
 enum class DatabaseEnum {
     Mongo,
@@ -24,7 +25,7 @@ enum class DatabaseEnum {
 }
 
 
-abstract class BaseMetaData(var tableName: String) : java.io.Serializable
+abstract class BaseMetaData(var tableName: String) : Serializable
 
 /**
  * 数据库上下文，及操作类。

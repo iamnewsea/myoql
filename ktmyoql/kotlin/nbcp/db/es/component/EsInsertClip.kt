@@ -2,7 +2,7 @@ package nbcp.db.es
 
 
 import org.slf4j.LoggerFactory
-
+import java.io.Serializable
 /**
  * Created by udi on 17-4-17.
  */
@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 /**
  * EsInsert
  */
-class EsInsertClip<M : EsBaseMetaEntity<E>, E : java.io.Serializable>(var moerEntity: M)
+class EsInsertClip<M : EsBaseMetaEntity<E>, E : Serializable>(var moerEntity: M)
     : EsBaseInsertClip(moerEntity.tableName)  {
 
     companion object {

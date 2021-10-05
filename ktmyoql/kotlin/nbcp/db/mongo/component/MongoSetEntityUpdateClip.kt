@@ -4,8 +4,8 @@ package nbcp.db.mongo
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.db
-import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.Criteria
+import java.io.Serializable
 
 /**
  * Created by udi on 17-4-7.
@@ -17,9 +17,9 @@ import org.springframework.data.mongodb.core.query.Criteria
  * MongoUpdate
  * 不会更新 id
  */
-class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out java.io.Serializable>>(
+class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
     var moerEntity: M,
-    var entity: java.io.Serializable
+    var entity: Serializable
 ) : MongoBaseUpdateClip(moerEntity.tableName) {
 
     private var whereColumns = mutableSetOf<String>()

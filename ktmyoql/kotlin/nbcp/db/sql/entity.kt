@@ -3,6 +3,7 @@ package nbcp.db.sql.entity
 import nbcp.db.*
 import java.time.LocalDateTime
 import nbcp.db.sql.*
+import java.io.Serializable
 
 @DbEntityGroup("SqlBase")
 @DbUks("id")
@@ -63,7 +64,7 @@ open class s_city @JvmOverloads constructor(
     var postCode: String = "",
     @Cn("父级码")
     var pcode: Int = 0
-) : java.io.Serializable
+) : Serializable
 
 @DbEntityGroup("SqlBase")
 open class s_dustbin @JvmOverloads constructor(

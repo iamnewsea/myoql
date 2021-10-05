@@ -2,9 +2,9 @@ package nbcp.db
 
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.io.Serializable
 
-
-open class BaseEntity : java.io.Serializable {
+open class BaseEntity : Serializable {
     var id: String = "";
 
     @Cn("创建时间")
@@ -42,7 +42,7 @@ open class IdentityCardData @JvmOverloads constructor(
 
     @Cn("身份证地址")
     var location: String = ""   //身份证地址
-): java.io.Serializable
+): Serializable
 
 /**
  * 营业执照内容
@@ -71,8 +71,8 @@ open class BusinessLicenseData @JvmOverloads constructor(
     var registeOrganization: String = "",   //登记机关
     @Cn("注册时间")
     var registeAt: String = ""      //注册时间
-): java.io.Serializable
+): Serializable
 
 
-open class CityCodeName @JvmOverloads constructor(var code: Int = 0, var name: String = "") : java.io.Serializable {
+open class CityCodeName @JvmOverloads constructor(var code: Int = 0, var name: String = "") : Serializable {
 }

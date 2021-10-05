@@ -6,7 +6,7 @@ import nbcp.db.*
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component
 import javax.sql.DataSource
-
+import java.io.Serializable
 /**
  * 事件处理中心
  */
@@ -107,7 +107,7 @@ class SqlEntityCollector : BeanPostProcessor {
     }
 
 
-    private fun addRef(entityClass: Class<out java.io.Serializable>) {
+    private fun addRef(entityClass: Class<out Serializable>) {
         var refs = entityClass.getAnnotation(DbEntityFieldRefs::class.java)
         if (refs != null && refs.values.any()) {
             refs.values.forEach {
@@ -121,7 +121,7 @@ class SqlEntityCollector : BeanPostProcessor {
         }
     }
 
-    private fun addDustbin(entityClass: Class<out java.io.Serializable>) {
+    private fun addDustbin(entityClass: Class<out Serializable>) {
         var dustbin = entityClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dustbin != null) {
             dustbinEntitys.add(entityClass)

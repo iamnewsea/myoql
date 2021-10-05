@@ -8,6 +8,8 @@ import nbcp.db.mongo.event.*
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
+import java.io.Serializable
+
 
 @Component
 class MongoEntityCollector : BeanPostProcessor {
@@ -45,7 +47,7 @@ class MongoEntityCollector : BeanPostProcessor {
          * 根据名称查找定义的集合。
          */
         @JvmStatic
-        fun getCollection(collectionName: String): MongoBaseMetaCollection<java.io.Serializable>? {
+        fun getCollection(collectionName: String): MongoBaseMetaCollection<Serializable>? {
             var ret: BaseMetaData? = null
             db_mongo.groups.any { group ->
                 ret = group.getEntities().firstOrNull() { it.tableName == collectionName }
@@ -53,7 +55,7 @@ class MongoEntityCollector : BeanPostProcessor {
                 return@any ret != null
             }
 
-            return ret as MongoBaseMetaCollection<java.io.Serializable>?
+            return ret as MongoBaseMetaCollection<Serializable>?
         }
     }
 
@@ -99,7 +101,7 @@ class MongoEntityCollector : BeanPostProcessor {
         return super.postProcessAfterInitialization(bean, beanName)
     }
 
-    private fun addLogHistory(entityClass: Class<out java.io.Serializable>) {
+    private fun addLogHistory(entityClass: Class<out Serializable>) {
         var logHistory = entityClass.getAnnotation(DbEntityLogHistory::class.java)
         if (logHistory != null) {
             logHistoryMap.put(entityClass, logHistory.fields.map { it }.toTypedArray());
@@ -125,7 +127,7 @@ class MongoEntityCollector : BeanPostProcessor {
         }
     }
 
-    private fun addDustbin(entityClass: Class<out java.io.Serializable>) {
+    private fun addDustbin(entityClass: Class<out Serializable>) {
         var dustbin = entityClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dustbin != null) {
             dustbinEntitys.add(entityClass)

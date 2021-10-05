@@ -2,26 +2,26 @@ package nbcp.db
 
 import nbcp.comm.*
 import nbcp.utils.*
-import java.time.LocalDateTime
+import java.io.Serializable
 
 /**
  * Created by yuxh on 2018/11/13
  */
 
-open class IdValue @JvmOverloads constructor(var id: String = "", var value: String = "") : java.io.Serializable {}
+open class IdValue @JvmOverloads constructor(var id: String = "", var value: String = "") : Serializable {}
 
 open class IdName @JvmOverloads constructor(var id: String = "", @Cn("名称") var name: String = "") :
-    java.io.Serializable {}
+    Serializable {}
 
 open class KeyValueString @JvmOverloads constructor(@Cn("键") var key: String = "", @Cn("值") var value: String = "") :
-    java.io.Serializable {}
+    Serializable {}
 
 /**
  * 表示Mongo数据库里 Id，Url 的附件实体引用。
  * 保存到Mongo数据库的时候，使用 field Json，无Host。
  * 返回到Mvc前端的时候，使用 get method Json，带Host。
  */
-abstract class BaseUrlModel() : java.io.Serializable {
+abstract class BaseUrlModel() : Serializable {
     @Cn("网络资源地址")
     var url: String = ""
 }
@@ -53,10 +53,10 @@ open class IdNamePath @JvmOverloads constructor(id: String = "", name: String = 
     IdName(id, name) {}
 
 open class CodeName @JvmOverloads constructor(@Cn("编码") var code: String = "", @Cn("名称") var name: String = "") :
-    java.io.Serializable {}
+    Serializable {}
 
 open class CodeValue @JvmOverloads constructor(@Cn("编码") var code: String = "", @Cn("值") var value: String = "") :
-    java.io.Serializable {}
+    Serializable {}
 
 open class IdCodeName @JvmOverloads constructor(var id: String = "", code: String = "", name: String = "") :
     CodeName(code, name) {}

@@ -217,7 +217,7 @@ open class SysCity @JvmOverloads constructor(
 ) : BaseEntity()
 
 
-open class BaseRequestData : java.io.Serializable {
+open class BaseRequestData : Serializable {
     var url = "";
     var method = "";
     var traceId = "";
@@ -226,7 +226,7 @@ open class BaseRequestData : java.io.Serializable {
     var clientIP = "";
 }
 
-open class BaseResponseData : java.io.Serializable {
+open class BaseResponseData : Serializable {
     var status = 0;
     var body = "";
     var header = StringMap();
@@ -255,7 +255,7 @@ open class SysLog @JvmOverloads constructor(
     var creator: IdName = IdName(),
     @Cn("创建时间")
     var createAt: LocalDateTime = LocalDateTime.now()
-) : java.io.Serializable {
+) : Serializable {
 }
 
 //存放删除的数据。

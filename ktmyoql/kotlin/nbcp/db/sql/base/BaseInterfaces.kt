@@ -2,17 +2,16 @@ package nbcp.db.sql
 
 import nbcp.db.Cn
 import nbcp.db.DbKey
-import org.springframework.data.annotation.Id
+import java.io.Serializable
 import java.time.LocalDateTime
-
 /**
  * 仅留接口
  */
-interface ISqlDbEntity : java.io.Serializable {
+interface ISqlDbEntity : Serializable {
 }
 
 
-abstract class AutoNumberSqlDbEntity : java.io.Serializable {
+abstract class AutoNumberSqlDbEntity : Serializable {
     @DbKey
     @ConverterValueToDb(AutoIdConverter::class)
     var id: Long = 0
@@ -21,7 +20,7 @@ abstract class AutoNumberSqlDbEntity : java.io.Serializable {
     var createAt: LocalDateTime = LocalDateTime.now()
 }
 
-abstract class AutoIdSqlDbEntity : java.io.Serializable {
+abstract class AutoIdSqlDbEntity : Serializable {
     @DbKey
     @ConverterValueToDb(AutoIdConverter::class)
     var id: String = ""

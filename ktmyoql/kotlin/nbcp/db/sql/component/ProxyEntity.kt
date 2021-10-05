@@ -4,10 +4,10 @@ import nbcp.comm.*
 import nbcp.db.db
 import java.io.Serializable
 
-//import nbcp.db.mongo.entity.java.io.Serializable
+//import nbcp.db.mongo.entity.Serializable
 
 
-fun <M : SqlBaseMetaTable<T>, T : java.io.Serializable> M.query(selectColumn: ((M) -> SqlColumnName)? = null): SqlQueryClip<M, T> {
+fun <M : SqlBaseMetaTable<T>, T : Serializable> M.query(selectColumn: ((M) -> SqlColumnName)? = null): SqlQueryClip<M, T> {
     var ret = SqlQueryClip(this);
     if (selectColumn != null) {
         ret.select { selectColumn(this) }
@@ -15,30 +15,30 @@ fun <M : SqlBaseMetaTable<T>, T : java.io.Serializable> M.query(selectColumn: ((
     return ret;
 }
 
-fun <M : SqlBaseMetaTable<out java.io.Serializable>> M.delete(): SqlDeleteClip<M> {
+fun <M : SqlBaseMetaTable<out Serializable>> M.delete(): SqlDeleteClip<M> {
     return SqlDeleteClip<M>(this);
 }
 
-fun <M : SqlBaseMetaTable<out java.io.Serializable>> M.update(): SqlUpdateClip<M> {
+fun <M : SqlBaseMetaTable<out Serializable>> M.update(): SqlUpdateClip<M> {
     return SqlUpdateClip<M>(this);
 }
 
-fun <M : SqlBaseMetaTable<out T>, T : java.io.Serializable> M.updateWithEntity(entity: T): SqlSetEntityUpdateClip<M> {
+fun <M : SqlBaseMetaTable<out T>, T : Serializable> M.updateWithEntity(entity: T): SqlSetEntityUpdateClip<M> {
     return SqlSetEntityUpdateClip<M>(this, entity);
 }
 
 //自增主键 ,返回到 entity 实体上. 以及 dbr.lastAutoId
 //返回 影响行数
-fun <M : SqlBaseMetaTable<out T>, T : java.io.Serializable> M.doInsert(entity: T): Int {
+fun <M : SqlBaseMetaTable<out T>, T : Serializable> M.doInsert(entity: T): Int {
     return SqlInsertClip(this).addEntity(entity).exec()
 }
 
-fun <M : SqlBaseMetaTable<out T>, T : java.io.Serializable> M.batchInsert(): SqlInsertClip<M, T> {
+fun <M : SqlBaseMetaTable<out T>, T : Serializable> M.batchInsert(): SqlInsertClip<M, T> {
     return SqlInsertClip(this)
 }
 
 
-fun <M : SqlBaseMetaTable<T>, T : java.io.Serializable> M.insertIfNotExists(
+fun <M : SqlBaseMetaTable<T>, T : Serializable> M.insertIfNotExists(
     entity: T,
     unionKey: ((M) -> SqlColumnNames)
 ): Int {
@@ -66,7 +66,7 @@ fun <M : SqlBaseMetaTable<T>, T : java.io.Serializable> M.insertIfNotExists(
 /**
  * 自动保存.: 先更新, 再插入
  */
-fun <M : SqlBaseMetaTable<out T>, T : java.io.Serializable> M.save(entity: T, unionKey: ((M) -> SqlColumnNames)): Int {
+fun <M : SqlBaseMetaTable<out T>, T : Serializable> M.save(entity: T, unionKey: ((M) -> SqlColumnNames)): Int {
     var map = entity.ConvertJson(JsonMap::class.java)
 
     var update = this.update();
@@ -94,4 +94,3 @@ fun <M : SqlBaseMetaTable<out T>, T : java.io.Serializable> M.save(entity: T, un
     }
     return SqlInsertClip(this).addEntity(entity).exec()
 }
-

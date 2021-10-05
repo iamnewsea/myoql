@@ -2,6 +2,7 @@ package nbcp.db.es
 
 
 import org.slf4j.LoggerFactory
+import java.io.Serializable
 
 /**
  * Created by udi on 17-4-17.
@@ -10,7 +11,7 @@ import org.slf4j.LoggerFactory
 /**
  * EsDelete
  */
-class EsDeleteClip<M : EsBaseMetaEntity<out java.io.Serializable>>(var eserEntity: M) : EsBaseDeleteClip(eserEntity.tableName), IEsWhereable {
+class EsDeleteClip<M : EsBaseMetaEntity<out Serializable>>(var eserEntity: M) : EsBaseDeleteClip(eserEntity.tableName), IEsWhereable {
     companion object {
         private var logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

@@ -6,8 +6,8 @@ import nbcp.scope.*
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
+import java.io.Serializable
 
 @Component
 @ConditionalOnProperty("spring.elasticsearch.rest.uris")
@@ -42,7 +42,7 @@ class EsEntityCollector : BeanPostProcessor {
          * 根据名称查找定义的集合。
          */
         @JvmStatic
-        fun getCollection(collectionName: String): EsBaseMetaEntity<java.io.Serializable>? {
+        fun getCollection(collectionName: String): EsBaseMetaEntity<Serializable>? {
             var ret: BaseMetaData? = null
             db.es.groups.any { group ->
                 ret = group.getEntities().firstOrNull() { it.tableName == collectionName }
@@ -50,7 +50,7 @@ class EsEntityCollector : BeanPostProcessor {
                 return@any ret != null
             }
 
-            return ret as EsBaseMetaEntity<java.io.Serializable>?
+            return ret as EsBaseMetaEntity<Serializable>?
         }
     }
 
@@ -92,7 +92,7 @@ class EsEntityCollector : BeanPostProcessor {
         return super.postProcessAfterInitialization(bean, beanName)
     }
 
-    private fun addLogHistory(entityClass: Class<out java.io.Serializable>) {
+    private fun addLogHistory(entityClass: Class<out Serializable>) {
         var logHistory = entityClass.getAnnotation(DbEntityLogHistory::class.java)
         if (logHistory != null) {
             logHistoryMap.put(entityClass, logHistory.fields.map { it }.toTypedArray());
@@ -118,7 +118,7 @@ class EsEntityCollector : BeanPostProcessor {
         }
     }
 
-    private fun addDustbin(entityClass: Class<out java.io.Serializable>) {
+    private fun addDustbin(entityClass: Class<out Serializable>) {
         var dustbin = entityClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dustbin != null) {
             dustbinEntitys.add(entityClass)

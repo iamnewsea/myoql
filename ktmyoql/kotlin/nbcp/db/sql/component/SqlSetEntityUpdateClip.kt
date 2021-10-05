@@ -5,7 +5,7 @@ import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.db
 import org.slf4j.LoggerFactory
-
+import java.io.Serializable
 /**
  * Created by udi on 17-4-7.
  */
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory
  * MongoUpdate
  * 不会更新 id
  */
-class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out java.io.Serializable>>(var mainEntity: M, var entity: java.io.Serializable) :
+class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity: M, var entity: Serializable) :
     SqlBaseExecuteClip(mainEntity.tableName) {
     companion object {
     }
