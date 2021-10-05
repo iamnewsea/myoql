@@ -94,3 +94,14 @@ fun <M : SqlBaseMetaTable<out T>, T : Serializable> M.save(entity: T, unionKey: 
     }
     return SqlInsertClip(this).addEntity(entity).exec()
 }
+
+/**
+ * 树查询,返回结果没有单一根节点。
+ */
+fun <M : SqlBaseMetaTable<T>, T : Serializable> M.queryTree(
+    pidValue: Serializable,
+    idColumn: ((M) -> SqlColumnName),
+    pidColumn: ((M) -> SqlColumnName)
+): MyOqlTreeData<M, T> {
+    return MyOqlTreeData(this, pidValue, idColumn(this), pidColumn(this));
+}
