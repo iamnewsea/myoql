@@ -379,7 +379,11 @@ open class MyAllFilter : Filter {
 
             if (resStringValue.HasValue) {
                 msg.add("[response body]:")
-                msg.add("\t" + resStringValue.Slice(0, 8192))
+                if (resStringValue.length > 1024) {
+                    msg.add("\t" + resStringValue.substring(0, 512) + " (...) " + resStringValue.Slice(-512))
+                } else {
+                    msg.add("\t" + resStringValue)
+                }
             }
 
             msg.add("<----]]")
