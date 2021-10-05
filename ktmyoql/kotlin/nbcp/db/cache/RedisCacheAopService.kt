@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
+import java.lang.reflect.Method
 
 /**
  * #数字表示参数名，如: #0 == userName
@@ -106,11 +107,20 @@ open class RedisCacheAopService {
         var cache = method.getAnnotationsByType(BrokeRedisCache::class.java).firstOrNull()
 
         var args = joinPoint.args
-        var ret = joinPoint.proceed(args)
-        if (cache == null || cache.table.isEmpty()) {
-            return ret;
+
+        if (cache != null && cache.table.HasValue) {
+            brokeCache(method, args, cache);
         }
 
+        var ret = joinPoint.proceed(args)
+
+        if (cache != null && cache.table.HasValue) {
+            brokeCache(method, args, cache);
+        }
+        return ret;
+    }
+
+    private fun brokeCache(method: Method, args: Array<Any>, cache: BrokeRedisCache) {
         var variables = LocalVariableTableParameterNameDiscoverer().getParameterNames(method)
         var variableMap = JsonMap();
         for (i in variables.indices) {
@@ -118,7 +128,5 @@ open class RedisCacheAopService {
         }
 
         BrokeRedisCacheData.of(cache, variableMap).brokeCache();
-
-        return ret;
     }
 }

@@ -79,10 +79,10 @@ data class FromRedisCacheData(
      *  4. {主表key}~{key_value}@{sql/md5}
      *
      * 如： sc:主表:|join_tab1|join_tab2|:cityCode~010@select*from主表wherecityCode=010anddeleted!=0
-     * 主表规则：  sc:表:*
-     * join表规则:  sc:*|表|* , join表为空，没有|
-     * 主表key:   sc:*:表key#*
-     * 表主value:  sc:*~表value@*
+     * 查主表规则：  sc:表:*
+     * 查join表规则:  sc:*|表|* , join表为空，没有|
+     * 查主表key:   sc:*:表key#*
+     * 查主表value:  sc:*~表value@*
      *
      * 约束:  每个部分不能出现半角 冒号，竖线，~, @,出现部分用全角代替
      *
