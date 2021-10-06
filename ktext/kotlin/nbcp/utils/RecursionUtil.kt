@@ -30,7 +30,7 @@ enum class RecursionReturnEnum private constructor(val value: Int) {
 object RecursionUtil {
     @JvmOverloads
     fun <T> filter(
-        container: MutableList<T>,
+        container: List<T>,
         producer: (T) -> MutableList<T>,
         idCallback: (T) -> String,
         callback: (Set<T>, Int) -> Boolean
@@ -94,11 +94,11 @@ object RecursionUtil {
      */
     @JvmOverloads
     fun <T> execute(
-        container: MutableList<T>,
+        container: List<T>,
         producer: (T) -> MutableList<T>,
         consumer: (Set<T>, Int) -> RecursionReturnEnum
     ): Int {
-        return _execute(container, producer, consumer);
+        return _execute(container as MutableList<T>, producer, consumer);
     }
 
     private fun <T> _execute(

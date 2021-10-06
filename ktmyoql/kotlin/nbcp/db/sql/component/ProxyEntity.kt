@@ -98,10 +98,10 @@ fun <M : SqlBaseMetaTable<out T>, T : Serializable> M.save(entity: T, unionKey: 
 /**
  * 树查询,返回结果没有单一根节点。
  */
-fun <M : SqlBaseMetaTable<T>, T : Serializable> M.queryTree(
+fun <M : SqlBaseMetaTable<T>, T : Serializable> SqlQueryClip<M, T>.queryTree(
     pidValue: Serializable,
-    idColumn: ((M) -> SqlColumnName),
+    idColumnName: String,
     pidColumn: ((M) -> SqlColumnName)
 ): MyOqlTreeData<M, T> {
-    return MyOqlTreeData(this, pidValue, idColumn(this), pidColumn(this));
+    return MyOqlTreeData(this, pidValue, idColumnName, pidColumn(this.mainEntity));
 }

@@ -5,9 +5,9 @@ import nbcp.db.ITreeData
 import java.io.Serializable
 
 class MyOqlTreeData<M : SqlBaseMetaTable<T>, T : Serializable>(
-    var metaTable: M,
+    var baseQuery: SqlQueryClip<M, T>,
     var pidValue: Serializable,
-    var idColumn: SqlColumnName,
+    var idColumnName: String,
     var pidColumn: SqlColumnName
 ) {
 
@@ -22,33 +22,33 @@ class MyOqlTreeData<M : SqlBaseMetaTable<T>, T : Serializable>(
                 break;
             }
 
-            pids = entitys.map { it.get(idColumn.name) as Serializable }
+            pids = entitys.map { it.get(idColumnName) as Serializable }
             list.addAll(entitys);
         }
     }
 
     fun toList(): List<T> {
-        var clazz = metaTable.tableClass;
+        var clazz = baseQuery.mainEntity.tableClass;
         return list.map { it.ConvertType(clazz) as T }
     }
 
-    fun toTree(
+    fun toTreeJson(
         childrenFieldName: String = "children"
     ): List<JsonMap> {
-        return getChildren(pidValue.toString(), childrenFieldName);
+        return getChildren(pidValue, childrenFieldName);
     }
 
-    private fun getChildren(pidValue: String, childrenFieldName: String = "children"): List<JsonMap> {
-        var level0s = list.filter { it.getStringValue(pidColumn.name) == pidValue }
+    private fun getChildren(pidValue: Serializable, childrenFieldName: String = "children"): List<JsonMap> {
+        var level0s = list.filter { it.get(pidColumn.getAliasName()) == pidValue }
 
         level0s.forEach {
-            it.set(childrenFieldName, getChildren(it.getStringValue(idColumn.name).AsString()))
+            it.set(childrenFieldName, getChildren(it.get(idColumnName) as Serializable))
         }
         return level0s;
     }
 
     private fun loadSubsFromDb(pidValue: List<Serializable>): MutableList<JsonMap> {
-        var ret = SqlQueryClip(metaTable);
+        var ret = baseQuery.CloneObject()
         ret.where { pidColumn match_in pidValue.toTypedArray() }
         return ret.toMapList()
     }
