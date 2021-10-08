@@ -30,6 +30,7 @@ public enum class DbType {
     Binary("二进制数据", ByteArray::class.java, Types.VARBINARY),
 
     Text("大文本", kotlin.String::class.java, Types.LONGVARCHAR),
+    Json("Json", kotlin.String::class.java, Types.LONGVARCHAR),
 
     //比如sql表达式.
     Other("表达式类型", Any::class.java, Types.OTHER);
@@ -79,14 +80,14 @@ public enum class DbType {
             Float -> "float"
             Long -> "bigint"
             Double -> "double"
-            Byte -> "tinyint"
-            Short -> "tinyint"
+            Byte, Short -> "tinyint"
             Boolean -> "bit"
             Decimal -> "decimal"
             Date -> "date"
             Time -> "time"
             DateTime -> "datetime"
             Binary -> "binary"
+            Json -> "JSON"
             Other -> ""
         }
     }
@@ -110,7 +111,7 @@ public enum class DbType {
         if (this == DbType.Other) {
             return "Any?"
         }
-        if (this == DbType.Text) {
+        if (this == DbType.Text || this == DbType.Enum || this == DbType.Json) {
             return "String"
         }
         return this.javaType.kotlinTypeName;
@@ -121,22 +122,14 @@ public enum class DbType {
      */
     fun toKotlinDefaultValue(): kotlin.String {
         return return when (this) {
-            String -> "\"\""
-            Text -> "\"\""
-            Enum -> "\"\""
-            Int -> "0"
+            String, Text, Json, Enum -> "\"\""
             Float -> "0F"
             Long -> "0L"
             Double -> "0.0"
-            Byte -> "0"
-            Short -> "0"
-            Boolean -> "null"
+            Int, Byte, Short -> "0"
             Decimal -> "BigDecimal.ZERO"
-            Date -> "null"
-            Time -> "null"
-            DateTime -> "null"
+            Boolean, Date, Time, DateTime, Other -> "null"
             Binary -> "byteArrayOf()"
-            Other -> "null"
         }
     }
 
@@ -149,12 +142,12 @@ public enum class DbType {
             }
 
             DbType.values()
-                .firstOrNull { it.javaType == clazz || (it.javaRefType != null && it.javaRefType == clazz) }
-                .apply {
-                    if (this != null) {
-                        return this;
+                    .firstOrNull { it.javaType == clazz || (it.javaRefType != null && it.javaRefType == clazz) }
+                    .apply {
+                        if (this != null) {
+                            return this;
+                        }
                     }
-                }
 
             if (clazz == Character::class.java || clazz == java.lang.Character::class.java) {
                 return DbType.String

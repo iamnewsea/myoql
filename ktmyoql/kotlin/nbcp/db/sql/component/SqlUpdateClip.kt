@@ -13,13 +13,14 @@ import java.time.LocalDateTime
  * Created by yuxh on 2018/7/2
  */
 
-open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable> >(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
+open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
     val whereDatas = WhereData()
     val sets = linkedMapOf<SqlColumnName, Any?>()
+
     //默认是-1
     private var take = -1;
     private val joins = mutableListOf<JoinTableData<*, *>>()
@@ -34,13 +35,16 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable> >(var mainEntity
         return this;
     }
 
-    fun set(set: (M) -> Pair<SqlColumnName, Serializable?>): SqlUpdateClip<M> {
+    fun set(set: (M) -> Pair<SqlColumnName, Any?>): SqlUpdateClip<M> {
         var p = set(this.mainEntity)
-        if(p.second == null){
-            this.sets.put(p.first,null);
-        }
-        else {
-            this.sets.put(p.first, proc_value(p.second!!))
+        if (p.second == null) {
+            this.sets.put(p.first, null);
+        } else {
+            var value = p.second!!;
+            if (value is Collection<*>) {
+                value = JsonList(value)
+            }
+            this.sets.put(p.first, proc_value(value))
         }
         return this
     }
@@ -54,7 +58,7 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable> >(var mainEntity
     /**
      * update table set column=value where id=1 limit n;
      */
-    fun limit(take:Int):SqlUpdateClip<M>{
+    fun limit(take: Int): SqlUpdateClip<M> {
         this.take = take;
         return this;
     }
@@ -155,7 +159,7 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable> >(var mainEntity
         ret += whereDatas.toSingleData();
 
 
-        if( this.take >=0){
+        if (this.take >= 0) {
             ret.expression += " limit ${take}"
         }
         return ret
@@ -186,7 +190,7 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable> >(var mainEntity
             error = e;
             throw e;
         } finally {
-            SqlLogger.logUpdate(error,tableName,executeData,n );
+            SqlLogger.logUpdate(error, tableName, executeData, n);
         }
 
         settings.forEach {
