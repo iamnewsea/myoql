@@ -305,8 +305,9 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                 var ann_converter = "";
                 if (converter != null) {
                     columns_convertValue.add(db_column_name);
-                    ann_converter = "@ConverterValueToDb(" + (converter.value.qualifiedName
-                        ?: "") + "::class)\n";
+                    ann_converter =
+                        "@ConverterValueToDb(" + (converter.value.map { it.qualifiedName + "::class" }.joinToString(",")
+                            ?: "") + ")\n";
                 }
 
                 var dbType = DbType.of(field.type)

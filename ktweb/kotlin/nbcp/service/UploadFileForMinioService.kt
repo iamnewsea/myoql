@@ -103,7 +103,6 @@ class UploadFileForMinioService {
             )
 
 
-            //TODO @yuxh 应该返回可下载的URL地址，这里不对。
             return@use MINIO_ENDPOINT + "/" + response.bucket() + "/" + response.`object`()
         }
     }

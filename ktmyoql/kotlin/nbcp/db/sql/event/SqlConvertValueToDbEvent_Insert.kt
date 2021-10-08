@@ -6,6 +6,7 @@ import nbcp.utils.*
 import nbcp.db.*
 import org.springframework.stereotype.Component
 import java.lang.reflect.Field
+import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
 /**
@@ -15,18 +16,22 @@ import kotlin.reflect.full.createInstance
 class SqlConvertValueToDbEvent_Insert : ISqlEntityInsert {
     override fun beforeInsert(insert: SqlInsertClip<*, *>): EventResult? {
 
-        var annotations = mutableMapOf<Field, IConverter>()
+        var annotations = mutableMapOf<Field, Array<out KClass<out IConverter>>>()
         insert.mainEntity.tableClass.AllFields.forEach {
             var ann = it.getAnnotation(ConverterValueToDb::class.java);
             if (ann != null) {
-                annotations.put(it, ann.value.createInstance());
+                annotations.put(it, ann.value);
             }
         }
 
-        annotations.forEach { field, converter ->
+        annotations.forEach { field, convertersType ->
+            var converters = convertersType.map { it.createInstance() }
             var values = mutableListOf<Any?>()
             insert.entities.forEach {
-                var convertedValue = converter.convert(field, it.get(field.name))
+                var convertedValue:Any? = it.get(field.name);
+                converters.forEach{
+                    convertedValue = it.convert(field,it);
+                }
                 values.add(convertedValue);
                 it.set(field.name, convertedValue);
             }
