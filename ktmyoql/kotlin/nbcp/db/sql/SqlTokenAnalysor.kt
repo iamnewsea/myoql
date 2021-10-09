@@ -44,7 +44,7 @@ class SqlTokenAnalysor() {
     private fun getSect(sqls: Collection<String>): SqlBaseSect {
 //        if( sqls.isEmpty()){
 //        }
-        var type = sqls.first().toLowerCase()
+        var type = sqls.first().lowercase()
         var exps = sqls.Slice(1)
         when (type) {
             "select" -> return toSelect(exps);

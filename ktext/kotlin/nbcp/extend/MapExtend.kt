@@ -60,10 +60,10 @@ inline fun <reified T> Map<String, *>.getTypeValue(vararg keys: String, ignoreCa
 fun Map<*, *>.getStringValue(vararg keys: String, ignoreCase: Boolean = false): String? {
     var v = MyUtil.getPathValue(this, *keys, ignoreCase = ignoreCase)
     if (v == null) return null;
-    var v_type = v::class.java;
-    if (v_type.isArray) {
+//    var v_type = v::class.java;
+    if (v is Array<*>) {
         return (v as Array<Any>).map { it.AsString() }.joinToString(",")
-    } else if (v_type.IsCollectionType) {
+    } else if (v is Collection<*>) {
         return (v as Collection<Any>).map { it.AsString() }.joinToString(",")
     }
     return v.toString()
@@ -87,11 +87,11 @@ private fun get_array_querys(list: Collection<Any?>): List<String> {
                 return@map get_array_querys((value as Array<*>).toList())
                     .map { "[]=" + it }
                     .toTypedArray()
-            } else if (type.IsCollectionType) {
-                return@map get_array_querys((value as Collection<*>))
+            } else if (value is Collection<*>) {
+                return@map get_array_querys( value )
                     .map { "[]=" + it }
                     .toTypedArray()
-            } else if (type.IsMapType) {
+            } else if (value is Map<*, *>) {
                 return@map get_map_querys((value as Map<String, *>))
                     .map { "[]=" + it }
                     .toTypedArray()

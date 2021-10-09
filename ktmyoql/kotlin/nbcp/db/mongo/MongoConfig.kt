@@ -106,25 +106,25 @@ class MongoCollectionLogProperties :  InitializingBean{
 
 
     fun getFindLog(tableDbName: String): Boolean {
-        if (find.contains(tableDbName.toLowerCase())) return true;
+        if (find.contains(tableDbName.lowercase())) return true;
         if (logDefault.contains(MongoCrudEnum.find)) return true;
         return false;
     }
 
     fun getInsertLog(tableDbName: String): Boolean {
-        if (insert.contains(tableDbName.toLowerCase())) return true;
+        if (insert.contains(tableDbName.lowercase())) return true;
         if (logDefault.contains(MongoCrudEnum.insert)) return true;
         return false
     }
 
     fun getUpdateLog(tableDbName: String): Boolean {
-        if (update.contains(tableDbName.toLowerCase())) return true;
+        if (update.contains(tableDbName.lowercase())) return true;
         if (logDefault.contains(MongoCrudEnum.update)) return true;
         return false;
     }
 
     fun getRemoveLog(tableDbName: String): Boolean {
-        if (remove.contains(tableDbName.toLowerCase())) return true;
+        if (remove.contains(tableDbName.lowercase())) return true;
         if (logDefault.contains(MongoCrudEnum.remove)) return true;
         return false;
     }
@@ -143,9 +143,9 @@ class MongoCollectionLogProperties :  InitializingBean{
 
 
     override fun afterPropertiesSet() {
-        find = find.map { it.toLowerCase() }
-        insert = insert.map { it.toLowerCase() }
-        update = update.map { it.toLowerCase() }
-        remove = remove.map { it.toLowerCase() }
+        find = find.map { it.lowercase() }
+        insert = insert.map { it.lowercase() }
+        update = update.map { it.lowercase() }
+        remove = remove.map { it.lowercase() }
     }
 }

@@ -7,7 +7,6 @@ import nbcp.comm.*
 import nbcp.db.db
 import nbcp.db.mongo.MongoBaseMetaCollection
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaType
@@ -29,15 +28,15 @@ class DevMongoController {
         db.mongo.groups.apply {
             return ListResult.of(this.map {
                 var name = it::class.java.simpleName
-                return@map name[0].toLowerCase() + name.Slice(1, -5)
+                return@map name[0].lowercase() + name.Slice(1, -5)
             })
         }
     }
 
     @GetMapping("/entities")
     fun getEntities(group: String): ListResult<String> {
-        var group = group[0].toUpperCase() + group.substring(1) + "Group"
-        var groupObj = db.mongo.groups.firstOrNull { it::class.java.simpleName == group }
+        var groupValue = group[0].uppercaseChar() + group.substring(1) + "Group"
+        var groupObj = db.mongo.groups.firstOrNull { it::class.java.simpleName == groupValue }
         if (groupObj == null) return ListResult("找不到group")
 
         groupObj.getEntities().map { it.tableName }.apply { return ListResult.of(this) }
@@ -53,7 +52,7 @@ class DevMongoController {
 
     @GetMapping("/fields")
     fun getEntity(group: String, entity: String): ListResult<FieldModel> {
-        var group = group[0].toUpperCase() + group.substring(1) + "Group"
+        var group = group[0].uppercaseChar() + group.substring(1) + "Group"
         var groupObj = db.mongo.groups.firstOrNull { it::class.java.simpleName == group }
         if (groupObj == null) return ListResult("找不到group")
 

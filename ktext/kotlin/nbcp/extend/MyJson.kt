@@ -95,7 +95,7 @@ fun <T> String.FromJson(collectionClass: Class<T>, style: JsonSceneEnumScope? = 
 
     var mapper = style.getJsonMapper();
 
-    var ret: T? = null
+    var ret: T?
     try {
         ret = mapper.readValue(jsonString, collectionClass)
     } catch (e: Exception) {

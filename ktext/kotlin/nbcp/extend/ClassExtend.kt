@@ -58,13 +58,13 @@ val Class<*>.kotlinTypeName: String
         if (this.isArray) {
             if (this.componentType.isPrimitive) {
                 var name = this.componentType.simpleName;
-                return name.first().toUpperCase() + name.substring(1) + "Array";
+                return name.first().uppercaseChar() + name.substring(1) + "Array";
             }
         }
 
         if (this.isPrimitive) {
             var name = this.simpleName;
-            return name.first().toUpperCase() + name.substring(1);
+            return name.first().uppercaseChar() + name.substring(1);
         }
         return this.simpleName;
     }
@@ -147,9 +147,17 @@ fun <T> Class<T>.GetEnumList(values: String = ""): List<T> {
         return values.split(",").filter { it.HasValue }.map { it.ToEnum(this)!! }
     }
 
-    var values = this.getDeclaredField("\$VALUES");
-    values.isAccessible = true;
-    return (values.get(null) as Array<T>).toList();
+    var valuesField = this.getDeclaredField("\$VALUES");
+    valuesField.isAccessible = true;
+
+    var valuesInEnum = valuesField.get(null)
+    if( valuesInEnum is Array<*>){
+        return (valuesInEnum as Array<T>).toList();
+    }
+//    else if( valuesInEnum is List<*>){
+//        return valuesInEnum as List<T>;
+//    }
+    throw RuntimeException("Enum.\$VALUES 应该是 Array类型才对")
 }
 
 /**
@@ -239,14 +247,12 @@ fun Class<*>.FindField(fieldName: String): Field? {
  */
 fun Class<*>.ForEachField(fieldCallback: (Field) -> Boolean) {
     var callbackValue = true;
-    var ret: Field? = null
-    ret = this.declaredFields.find {
+    this.declaredFields.find {
         callbackValue = fieldCallback(it);
         return@find callbackValue
     }
 
     if (callbackValue == false) return;
-
 
     if (this.superclass == null || this.superclass == Any::class.java) {
         return;

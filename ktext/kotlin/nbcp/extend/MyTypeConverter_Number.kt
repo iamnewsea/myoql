@@ -46,7 +46,7 @@ fun Any?.AsInt(defaultValue: Int = 0): Int {
                 if (strValue.isEmpty()) return defaultValue
 
 
-                if (strValue.length > 2 && strValue[0] == '0' && strValue[1].toUpperCase() == 'X') {
+                if (strValue.length > 2 && strValue[0] == '0' && strValue[1].uppercaseChar() == 'X') {
                     ret = strValue.substring(2).toInt(16);
                 } else {
                     ret = strValue.toBigDecimal().toInt()
@@ -78,7 +78,7 @@ fun Any?.AsLong(defaultValue: Long = 0L): Long {
                 if (strValue.isEmpty()) return defaultValue
 
 
-                if (strValue.length > 2 && strValue[0] == '0' && strValue[1].toUpperCase() == 'X') {
+                if (strValue.length > 2 && strValue[0] == '0' && strValue[1].uppercaseChar() == 'X') {
                     ret = strValue.substring(2).toLong(16)
                 } else {
                     ret = strValue.toLongOrNull() ?: defaultValue

@@ -69,6 +69,8 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                             }
                         }
                     }
+
+                    else -> throw RuntimeException("不识别的类型：${fm}")
                 }
             }
 
@@ -108,9 +110,9 @@ class ExcelComponent(val excelStream: () -> InputStream) {
         }
 
         private fun getHeaderColumnsIndexMap(
-            headerRow: Row,
-            columns: Array<out String>,
-            evaluator: FormulaEvaluator
+                headerRow: Row,
+                columns: Array<out String>,
+                evaluator: FormulaEvaluator
         ): LinkedHashMap<Int, String> {
 
             var columnDataIndexs = linkedMapOf<Int, String>()
@@ -134,8 +136,8 @@ class ExcelComponent(val excelStream: () -> InputStream) {
          */
         @JvmOverloads
         fun <T : Any> getDataTable(
-            clazz: Class<T>,
-            filter: ((JsonMap, Map<Int, String>) -> Boolean)? = null
+                clazz: Class<T>,
+                filter: ((JsonMap, Map<Int, String>) -> Boolean)? = null
         ): DataTable<T> {
             var dt = DataTable<T>(clazz)
 
@@ -204,9 +206,9 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                         var pk_empty_map = pk_map.filter { it.value.AsString().isEmpty() }
                         if (pk_empty_map.any()) {
                             throw RuntimeException(
-                                "发现主键空值，行：${lined}, 列: ${
-                                    pk_empty_map.map { it.key }.joinToString(",")
-                                }"
+                                    "发现主键空值，行：${lined}, 列: ${
+                                        pk_empty_map.map { it.key }.joinToString(",")
+                                    }"
                             )
                         }
                     }
@@ -217,6 +219,7 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                 when (fm) {
                     FileMagic.OOXML -> readOpenXmlExcelData(filter2);
                     FileMagic.OLE2 -> readOle2ExcelData(filter2)
+                    else -> throw RuntimeException("不识别的类型：${fm}")
                 }
             }
         }
@@ -268,8 +271,8 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                         } else if (dbValue is Boolean) {
                             cell.setCellValue(dbValue.AsBoolean())
                         } else if (dbValue is LocalDateTime ||
-                            dbValue is LocalDate ||
-                            dbValue is Date
+                                dbValue is LocalDate ||
+                                dbValue is Date
                         ) {
                             cell.setCellValue(dbValue.AsDate())
                         } else {
@@ -292,7 +295,7 @@ class ExcelComponent(val excelStream: () -> InputStream) {
         }
 
         private fun readOle2ExcelData(
-            filter: (JsonMap, Map<Int, String>) -> Boolean
+                filter: (JsonMap, Map<Int, String>) -> Boolean
         ) {
             WorkbookFactory.create(excelStream()).use { book ->
 
@@ -334,9 +337,9 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                             }
 
                             if (cell.cellStyle.dataFormatString.indexOf("yy") >= 0 &&
-                                cell.cellStyle.dataFormatString.indexOf("m") >= 0 &&
-                                cell.cellStyle.dataFormatString.indexOf("d") >= 0 &&
-                                cell.cellStyle.dataFormatString.indexOf("h:mm:ss") >= 0
+                                    cell.cellStyle.dataFormatString.indexOf("m") >= 0 &&
+                                    cell.cellStyle.dataFormatString.indexOf("d") >= 0 &&
+                                    cell.cellStyle.dataFormatString.indexOf("h:mm:ss") >= 0
                             ) {
 
                                 oriData.set(columnIndex, cell.dateCellValue.AsLocalDateTime().AsString());
@@ -345,8 +348,8 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                                 oriData.set(columnIndex, cell.dateCellValue.AsLocalTime().AsString());
                                 continue;
                             } else if (cell.cellStyle.dataFormatString.indexOf("yy") >= 0 &&
-                                cell.cellStyle.dataFormatString.indexOf("m") >= 0 &&
-                                cell.cellStyle.dataFormatString.indexOf("d") >= 0
+                                    cell.cellStyle.dataFormatString.indexOf("m") >= 0 &&
+                                    cell.cellStyle.dataFormatString.indexOf("d") >= 0
                             ) {
                                 oriData.set(columnIndex, cell.dateCellValue.AsLocalDate().AsString());
                                 continue;
@@ -427,11 +430,11 @@ class ExcelComponent(val excelStream: () -> InputStream) {
 
 
         private fun getSheetData(
-            xlsxPackage: OPCPackage,
-            xssfReader: XSSFReader,
-            sheetInputStream: InputStream,
+                xlsxPackage: OPCPackage,
+                xssfReader: XSSFReader,
+                sheetInputStream: InputStream,
 
-            filter: ((JsonMap, Map<Int, String>) -> Boolean)
+                filter: ((JsonMap, Map<Int, String>) -> Boolean)
         ) {
 
             var strings = ReadOnlySharedStringsTable(xlsxPackage);
@@ -442,12 +445,12 @@ class ExcelComponent(val excelStream: () -> InputStream) {
 
             try {
                 sheetParser.contentHandler = XSSFSheetXMLHandler(
-                    styles,
-                    null,
-                    strings,
-                    SheetContentReader(sheetParser, columns, filter, this.rowOffset, this.strictMode),
-                    formatter,
-                    false
+                        styles,
+                        null,
+                        strings,
+                        SheetContentReader(sheetParser, columns, filter, this.rowOffset, this.strictMode),
+                        formatter,
+                        false
                 );
                 sheetParser.parse(sheetSource)
             } catch (e: Exception) {

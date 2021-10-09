@@ -52,9 +52,9 @@ fun java.util.Date.Format(pattern: String): String {
         return SimpleDateFormat(pattern.AsString("yyyy-MM-dd")).format(time);
     }
 
-    var zoneSecond = 0L;
+
     if (pattern.contains("Z")) {
-        zoneSecond = ZoneId.systemDefault().rules.getOffset(Instant.EPOCH).totalSeconds.AsLong()
+        var zoneSecond = ZoneId.systemDefault().rules.getOffset(Instant.EPOCH).totalSeconds.AsLong()
         time = Date(time.time - zoneSecond)
     }
     return SimpleDateFormat(pattern.AsString("yyyy-MM-dd HH:mm:ss")).format(time)

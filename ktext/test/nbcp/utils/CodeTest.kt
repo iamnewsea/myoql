@@ -12,9 +12,9 @@ class CodeTest : TestBase() {
     fun test_code() {
         var sect = MyUtil.getBigCamelCase("AbcDefXyz").replace(Regex("[A-Z]"), {
             if(it.range.first == 0){
-                return@replace it.value.toLowerCase()
+                return@replace it.value.lowercase()
             }
-            return@replace "-" + it.value.toLowerCase()
+            return@replace "-" + it.value.lowercase()
         })
 
         println(sect)

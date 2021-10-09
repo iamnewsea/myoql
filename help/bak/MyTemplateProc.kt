@@ -64,7 +64,7 @@ object MyTemplateProc {
                         "name" to it.name,
                         "remark" to CodeGeneratorHelper.getFieldCommentValue(it).AsString(it.name),
                         "type" to it.type.simpleName,
-                        "isSimpleType" to it.type.IsSimpleType().toString().toLowerCase(),
+                        "isSimpleType" to it.type.IsSimpleType().toString().lowercase(),
                         "idKey" to idKey
                     ),
                     { key, value, func, funcParam ->

@@ -219,8 +219,8 @@ open class NacosService {
         }
 
         var redisInstancesNewData = mutableMapOf<String, Int>(
-            *nacosInstancesIpPort.map { ip ->
-                var id = redisInstances.get(ip).AsInt();
+            *nacosInstancesIpPort.map { ipValue ->
+                var id = redisInstances.get(ipValue).AsInt();
                 return@map ip to id
             }.toTypedArray()
         );

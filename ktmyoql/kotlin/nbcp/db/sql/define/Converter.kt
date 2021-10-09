@@ -19,7 +19,7 @@ class TrimUppercaseConverter : IConverter {
     override fun convert(field: Field, value: Any?): Any? {
         if (value == null) return null;
         if (value is String) {
-            return value.trim().toUpperCase()
+            return value.trim().uppercase()
         }
         return value;
     }
@@ -30,7 +30,7 @@ class TrimLowercaseConverter : IConverter {
     override fun convert(field: Field, value: Any?): Any? {
         if (value == null) return null;
         if (value is String) {
-            return value.trim().toLowerCase()
+            return value.trim().lowercase()
         }
         return value;
     }

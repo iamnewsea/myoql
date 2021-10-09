@@ -59,25 +59,25 @@ class EsTableLogProperties : InitializingBean {
 
 
     fun getGetLog(tableDbName: String): Boolean {
-        if (get.contains(tableDbName.toLowerCase())) return true;
+        if (get.contains(tableDbName.lowercase())) return true;
         if (logDefault.contains(HttpCrudEnum.get)) return true;
         return false;
     }
 
     fun getPostLog(tableDbName: String): Boolean {
-        if (post.contains(tableDbName.toLowerCase())) return true;
+        if (post.contains(tableDbName.lowercase())) return true;
         if (logDefault.contains(HttpCrudEnum.post)) return true;
         return false
     }
 
     fun getPutLog(tableDbName: String): Boolean {
-        if (put.contains(tableDbName.toLowerCase())) return true;
+        if (put.contains(tableDbName.lowercase())) return true;
         if (logDefault.contains(HttpCrudEnum.put)) return true;
         return false;
     }
 
     fun getDeleteLog(tableDbName: String): Boolean {
-        if (delete.contains(tableDbName.toLowerCase())) return true;
+        if (delete.contains(tableDbName.lowercase())) return true;
         if (logDefault.contains(HttpCrudEnum.delete)) return true;
         return false;
     }
@@ -95,9 +95,9 @@ class EsTableLogProperties : InitializingBean {
     }
 
     override fun afterPropertiesSet() {
-        get = get.map { it.toLowerCase() }
-        post = post.map { it.toLowerCase() }
-        put = put.map { it.toLowerCase() }
-        delete = delete.map { it.toLowerCase() }
+        get = get.map { it.lowercase() }
+        post = post.map { it.lowercase() }
+        put = put.map { it.lowercase() }
+        delete = delete.map { it.lowercase() }
     }
 }

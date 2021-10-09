@@ -145,7 +145,7 @@ fun Any?.AsString(defaultValue: String = ""): String {
     return ret;
 }
 
-@JvmOverloads
+
 fun Any?.AsString(defaultValueCallback: () -> String): String {
     var ret = this.AsStringWithNull();
     if (ret.isNullOrEmpty()) return defaultValueCallback();

@@ -9,33 +9,19 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
-import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter
-import org.springframework.beans.factory.support.BeanDefinitionRegistry
-import org.springframework.boot.autoconfigure.AutoConfigureAfter
-import org.springframework.boot.autoconfigure.AutoConfigureOrder
-
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConfigurationPropertiesBean
 import org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor
 import org.springframework.boot.context.properties.bind.Binder
 import org.springframework.context.*
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.DependsOn
-import org.springframework.context.annotation.Import
 import org.springframework.context.event.ContextRefreshedEvent
 import org.springframework.context.event.ContextStartedEvent
 import org.springframework.context.event.EventListener
-import org.springframework.core.Ordered
-import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.util.*
-import javax.sql.DataSource
 
 @Component
 class NormalBean : InitializingBean {
@@ -49,7 +35,7 @@ class BeanOrderTest : InitializingBean {
     @Bean
     fun abc(): JsonMap {
         var b = Binder.get(SpringUtil.context.environment)
-        var d = b.bind("spring.datasource2", DataSourceProperties::class.java)
+        b.bind("spring.datasource2", DataSourceProperties::class.java)
 
         println("5... 内部Bean JsonMap")
         return JsonMap();

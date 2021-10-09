@@ -5,18 +5,18 @@ package nbcp.comm
 
 
 fun MutableList<*>.RemoveRange(startIndex: Int, endIndex: Int) {
-    var startIndex = startIndex
-    var endIndex = endIndex
+    var startIndexValue = startIndex
+    var endIndexValue = endIndex
 
-    var tmp = 0
-    if (startIndex > endIndex) {
-        tmp = startIndex
-        startIndex = endIndex
-        endIndex = tmp
+
+    if (startIndexValue > endIndexValue) {
+        var tmp = startIndexValue
+        startIndexValue = endIndexValue
+        endIndexValue = tmp
     }
 
-    for (i in startIndex..endIndex) {
-        this.removeAt(startIndex)
+    for (i in startIndexValue..endIndexValue) {
+        this.removeAt(startIndexValue)
     }
 }
 
@@ -46,43 +46,43 @@ inline fun <reified T> Collection<Array<T>>.Unwind(): Array<T> {
  */
 @JvmOverloads
 fun <T> Array<out T>.Slice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): List<T> {
-    var endIndex = endIndex;
-    if (endIndex == 0) return listOf()
-    var startIndex = startIndex
+    var endIndexValue = endIndex;
+    if (endIndexValue == 0) return listOf()
+    var startIndexValue = startIndex
 
-    if (startIndex >= this.size) {
+    if (startIndexValue >= this.size) {
         return listOf()
     }
     // -10 从右边取10位.
-    if (startIndex < 0) {
-        startIndex = this.size + startIndex
+    if (startIndexValue < 0) {
+        startIndexValue = this.size + startIndexValue
     }
-    if (startIndex < 0) {
-        startIndex = 0
-    }
-
-    if (endIndex == Int.MIN_VALUE) {
-        return this.slice(startIndex..(this.size - 1))
+    if (startIndexValue < 0) {
+        startIndexValue = 0
     }
 
-    if (endIndex <= 0) {
-        endIndex = this.size + endIndex
+    if (endIndexValue == Int.MIN_VALUE) {
+        return this.slice(startIndexValue..(this.size - 1))
     }
 
-    if (endIndex < startIndex) return listOf()
-
-    if (endIndex > this.size) {
-        endIndex = this.size
+    if (endIndexValue <= 0) {
+        endIndexValue = this.size + endIndexValue
     }
 
-    return this.slice(startIndex..(endIndex - 1))
+    if (endIndexValue < startIndexValue) return listOf()
+
+    if (endIndexValue > this.size) {
+        endIndexValue = this.size
+    }
+
+    return this.slice(startIndexValue..(endIndexValue - 1))
 }
 
 /**
  * [startIndex,endIndex)
  */
 @JvmOverloads
-inline fun <reified T> Collection<out T>.Slice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): List<T> {
+inline fun <reified T> Collection<T>.Slice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): List<T> {
     return this.toTypedArray<T>().Slice(startIndex, endIndex)
 }
 
@@ -137,7 +137,7 @@ fun Collection<*>.EqualArrayContent(other: Collection<*>, withIndex: Boolean = f
     return one.intersect(two).size == this.size;
 }
 
-inline fun <T> Collection<out T>.Skip(skipNumber: Int): List<T> {
+inline fun <T> Collection<T>.Skip(skipNumber: Int): List<T> {
     var ret = mutableListOf<T>();
     if (this.any() == false) return ret;
 
@@ -170,8 +170,8 @@ inline fun <T> Collection<out T>.Skip(skipNumber: Int): List<T> {
  * forEach的增强版.
  * @return  遍历完所有元素返回 true, 如果没有对象，返回 true.
  */
-inline fun <T> Iterable<out T>.ForEachExt(action: (T, Int) -> Boolean): Boolean {
-    if (this.any() == false) return true;
+inline fun <T> Iterable<T>.ForEachExt(action: (T, Int) -> Boolean): Boolean {
+    if (!this.any()) return true;
     var index = -1;
     while (true) {
         index++;
@@ -232,11 +232,11 @@ inline fun <T, R> Iterable<T>.IntersectIndeies(other: Collection<R>, equalFunc: 
 
     var listIndex = mutableMapOf<Int, Int>()
     var index = -1;
-    var index2 = -1;
+
     for (item in this) {
         index++;
 
-        index2 = -1;
+        var index2 = -1;
         for (item2 in other) {
             index2++;
 
@@ -259,7 +259,7 @@ inline fun <T, R> Iterable<T>.Minus(other: Collection<R>, equalFunc: (T, R) -> B
 
     var toRemoveIndex = this.IntersectIndeies(other, equalFunc).keys
 
-    return this.filterIndexed { index, t -> toRemoveIndex.contains(index) == false };
+    return this.filterIndexed { index, _ -> toRemoveIndex.contains(index) == false };
 }
 
 /**
@@ -271,7 +271,7 @@ inline fun <T, R> Iterable<T>.Intersect(other: Collection<R>, equalFunc: (T, R) 
 
     var indexList = this.IntersectIndeies(other, equalFunc).keys
 
-    return this.filterIndexed { index, t -> indexList.contains(index) };
+    return this.filterIndexed { index, _ -> indexList.contains(index) };
 }
 
 /**
@@ -289,7 +289,8 @@ inline fun <reified T> Collection<T>.SplitGroup(operatorItem: (T) -> Boolean): L
 
     var prevIndex = 0;
     var index = -1;
-    var subSect = listOf<T>();
+    var subSect:List<T>;
+
     while (true) {
         index++;
         if (index >= this.size) {
@@ -301,7 +302,6 @@ inline fun <reified T> Collection<T>.SplitGroup(operatorItem: (T) -> Boolean): L
         }
 
         if (operatorItem(this.elementAt(index))) {
-
             subSect = this.Slice(prevIndex, index);
             if (subSect.any()) {
                 ret.add(subSect)

@@ -66,10 +66,7 @@ open class MyAllFilter : Filter {
         var httpRequest = request as HttpServletRequest
         var httpResponse = response as HttpServletResponse
 
-        if (request is HttpServletRequest == false ||
-            !config.getConfig("app.filter.enabled").AsBoolean(true)
-        ) {
-
+        if (!config.getConfig("app.filter.enabled").AsBoolean(true)) {
             HttpContext.init(httpRequest, httpResponse);
             chain?.doFilter(request, response)
             return;
@@ -242,9 +239,9 @@ open class MyAllFilter : Filter {
 
 
     private fun procFilter(
-        _request: HttpServletRequest,
-        _response: HttpServletResponse,
-        chain: FilterChain?
+            _request: HttpServletRequest,
+            _response: HttpServletResponse,
+            chain: FilterChain?
     ) {
         var request = MyHttpRequestWrapper.create(_request);
         var response = MyHttpResponseWrapper.create(_response);
@@ -271,7 +268,7 @@ open class MyAllFilter : Filter {
                 var errorInfo = mutableListOf<String>()
                 errorInfo.add(err::class.java.simpleName + ": " + errorMsg)
                 errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }
-                    .take(24))
+                        .take(24))
 
                 return@Error errorInfo.joinToString(const.line_break)
             }
@@ -341,11 +338,11 @@ open class MyAllFilter : Filter {
 
 
     fun afterComplete(
-        request: MyHttpRequestWrapper,
-        response: MyHttpResponseWrapper,
-        callback: String,
-        startAt: LocalDateTime,
-        errorMsg: String
+            request: MyHttpRequestWrapper,
+            response: MyHttpResponseWrapper,
+            callback: String,
+            startAt: LocalDateTime,
+            errorMsg: String
     ) {
         var error = errorMsg.HasValue;
         var resStringValue = errorMsg;

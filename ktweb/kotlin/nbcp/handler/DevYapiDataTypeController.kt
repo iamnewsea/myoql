@@ -93,17 +93,17 @@ class DevYapiDataTypeController {
 
         var items_msg = mutableListOf<String>();
 
-        RecursionUtil.recursionJson(json,   { json  ->
-            if (json.containsKey("title") == false) {
+        RecursionUtil.recursionJson(json,   { jsonValue  ->
+            if (jsonValue.containsKey("title") == false) {
                 return@recursionJson true
             }
-            var title = json.get("title").AsString();
+            var title = jsonValue.get("title").AsString();
             if (title.startsWith(":") == false) {
                 return@recursionJson true;
             }
 
             title = title.substring(1);
-            var json_item = json as MutableMap<String, Any?>;
+            var json_item = jsonValue as MutableMap<String, Any?>;
             var msg_ok = mutableListOf<String>()
             var msg_no = mutableListOf<String>()
 

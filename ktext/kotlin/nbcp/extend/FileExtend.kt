@@ -69,7 +69,7 @@ fun File.ReadTailLines(action: ((String, Int) -> Boolean)): Int {
                 return reader.currentLineIndex;
             }
         }
-        return reader.currentLineIndex;
+//        return reader.currentLineIndex;
     }
 
 }
@@ -91,7 +91,7 @@ fun File.ReadHeadLines(action: ((String, Int) -> Boolean)): Int {
                 return index;
             }
         }
-        return index;
+//        return index;
     }
 }
 
@@ -212,13 +212,13 @@ fun File.withCacheObject(cacheSeconds: Int, contentAction: () -> String): String
  */
 @JvmOverloads
 fun File.FilterLines(
-    matchLines: Int,
+    matchLineCount: Int,
     extCount: Int = 0,
     filter: List<String> = emptyList(),
     not: List<String> = emptyList(),
     tail: Boolean = true
 ): List<String> {
-    var matchLines = matchLines;
+    var matchLines = matchLineCount;
     if (matchLines == 0) {
         if (filter.any()) {
             matchLines = 10;
@@ -322,7 +322,7 @@ private fun isMatched(line: String, filter: List<String>, not: List<String>): Bo
 
     var ret = true;
     if (filter.any()) {
-        ret = filter.ForEachExt { f, index ->
+        ret = filter.ForEachExt { f, _ ->
             if (line.contains(f, true) == false) {
                 return@ForEachExt false;
             }
@@ -332,7 +332,7 @@ private fun isMatched(line: String, filter: List<String>, not: List<String>): Bo
     if (ret == false) return false;
 
     if (not.any()) {
-        ret = not.ForEachExt { f, index ->
+        ret = not.ForEachExt { f, _ ->
             if (f == "") {
                 return@ForEachExt line.trim() != "";
             }

@@ -20,7 +20,7 @@ object MyUtil {
 //    val OneDayMilliseconds: Int = 86400000;
     val OneDaySeconds: Int = 86400;
     val SystemTimeZoneOffsetTotalSeconds =
-        ZoneId.systemDefault().rules.getStandardOffset(Date().toInstant()).totalSeconds  //系统时区相差的秒数
+            ZoneId.systemDefault().rules.getStandardOffset(Date().toInstant()).totalSeconds  //系统时区相差的秒数
 
     @JvmStatic
     private val random = Random();
@@ -68,10 +68,10 @@ object MyUtil {
             var start_index = key.lastIndexOf('[');
             if (start_index > 0) {
                 return getPathValue(
-                    data,
-                    key.slice(0 until start_index),
-                    key.Slice(start_index),
-                    ignoreCase = ignoreCase
+                        data,
+                        key.slice(0 until start_index),
+                        key.Slice(start_index),
+                        ignoreCase = ignoreCase
                 )
             }
         }
@@ -106,8 +106,8 @@ object MyUtil {
             if (left_keys.any() == false) return data2;
 
             return data2
-                .map { getPathValue(it!!, *left_keys.toTypedArray(), ignoreCase = ignoreCase) }
-                .filter { it != null }
+                    .map { getPathValue(it!!, *left_keys.toTypedArray(), ignoreCase = ignoreCase) }
+                    .filter { it != null }
 
         } else if (key.startsWith("[") && key.endsWith("]")) {
             var index = key.substring(1, key.length - 1).AsInt(-1)
@@ -115,7 +115,7 @@ object MyUtil {
                 throw RuntimeException("索引值错误:${key}")
             }
 
-            var data2: Any? = null
+            var data2: Any?
             if (data is Array<*>) {
                 data2 = data.get(index)
             } else if (data is Collection<*>) {
@@ -152,7 +152,11 @@ object MyUtil {
     }
 
     fun getCenterEachLine(lines: List<String>): List<String> {
-        var map = lines.map { it to it.sumBy { if (it.toLong() < 256) 1 else 2 } }
+        var selector: (Char) -> Int = {
+            if (it.code < 256) 1 else 2
+        }
+
+        var map = lines.map { it to it.sumOf(selector) }
 
         var max = map.map { it.second }.maxOrNull() ?: 0
         if (max % 2 == 1) {
@@ -194,38 +198,38 @@ object MyUtil {
      * https://www.w3school.com.cn/media/media_mimeref.asp
      */
     private val mimeLists = StringMap(
-        "css" to "text/css",
-        "htm" to "text/html",
-        "html" to "text/html",
-        "js" to "application/javascript",
-        "xml" to "text/xml",
-        "gif" to "image/gif",
-        "jpg" to "image/jpeg",
-        "jpeg" to "image/jpeg",
-        "png" to "image/jpeg",
-        "tiff" to "image/tiff",
-        "json" to "application/json",
-        "txt" to "text/plain",
-        "mp3" to "audio/mpeg",
-        "avi" to "video/x-msvideo",
-        "mp4" to "video/mpeg4",
-        "doc" to "application/msword",
-        "docx" to "application/msword",
-        "pdf" to "application/pdf",
-        "xls" to "application/vnd.ms-excel",
-        "xlsx" to "application/vnd.ms-excel",
-        "ppt" to "application/vnd.ms-powerpoint",
-        "exe" to "application/octet-stream",
-        "zip" to "application/zip",
-        "m3u" to "audio/x-mpegurl",
-        "svg" to "image/svg+xml",
-        "h" to "text/plain",
-        "c" to "text/plain",
-        "dll" to "application/x-msdownload"
+            "css" to "text/css",
+            "htm" to "text/html",
+            "html" to "text/html",
+            "js" to "application/javascript",
+            "xml" to "text/xml",
+            "gif" to "image/gif",
+            "jpg" to "image/jpeg",
+            "jpeg" to "image/jpeg",
+            "png" to "image/jpeg",
+            "tiff" to "image/tiff",
+            "json" to "application/json",
+            "txt" to "text/plain",
+            "mp3" to "audio/mpeg",
+            "avi" to "video/x-msvideo",
+            "mp4" to "video/mpeg4",
+            "doc" to "application/msword",
+            "docx" to "application/msword",
+            "pdf" to "application/pdf",
+            "xls" to "application/vnd.ms-excel",
+            "xlsx" to "application/vnd.ms-excel",
+            "ppt" to "application/vnd.ms-powerpoint",
+            "exe" to "application/octet-stream",
+            "zip" to "application/zip",
+            "m3u" to "audio/x-mpegurl",
+            "svg" to "image/svg+xml",
+            "h" to "text/plain",
+            "c" to "text/plain",
+            "dll" to "application/x-msdownload"
     )
 
     fun getMimeType(extName: String): String {
-        return mimeLists.getStringValue(extName.toLowerCase()).AsString("application/octet-stream")
+        return mimeLists.getStringValue(extName.lowercase()).AsString("application/octet-stream")
     }
 
 
@@ -243,37 +247,37 @@ object MyUtil {
 
         var value = byteArray8.ToHexLowerString()
         var map = mapOf(
-            "4D546864" to "mid",
-            "FFD8FF" to "jpg",
-            "89504E47" to "png",
-            "47494638" to "gif",
-            "49492A00" to "tif",
-            "424D" to "bmp",
-            "41433130" to "dwg",
-            "38425053" to "psd",
-            "7B5C727466" to "rtf",
-            "3C3F786D6C" to "xml",
-            "68746D6C3E" to "html",
+                "4D546864" to "mid",
+                "FFD8FF" to "jpg",
+                "89504E47" to "png",
+                "47494638" to "gif",
+                "49492A00" to "tif",
+                "424D" to "bmp",
+                "41433130" to "dwg",
+                "38425053" to "psd",
+                "7B5C727466" to "rtf",
+                "3C3F786D6C" to "xml",
+                "68746D6C3E" to "html",
 //                "44656C69766572792D646174653A" to "eml",
 //                "CFAD12FEC5FD746F" to "dbx",
 //                "2142444E" to "pst",
-            "D0CF11E0" to "doc",
+                "D0CF11E0" to "doc",
 //                "5374616E64617264204A" to "mdb",
-            "FF575043" to "wpd",
+                "FF575043" to "wpd",
 //                "252150532D41646F6265" to "ps",
-            "255044462D312E" to "pdf",
-            "AC9EBD8F" to "qdf",
-            "E3828596" to "pwl",
-            "504B0304" to "zip",
-            "52617221" to "rar",
-            "57415645" to "wav",
-            "41564920" to "avi",
-            "2E7261FD" to "ram",
-            "2E524D46" to "rm",
-            "000001BA" to "mpg",
-            "000001B3" to "mpg",
-            "6D6F6F76" to "mov",
-            "3026B2758E66CF11" to "asf"
+                "255044462D312E" to "pdf",
+                "AC9EBD8F" to "qdf",
+                "E3828596" to "pwl",
+                "504B0304" to "zip",
+                "52617221" to "rar",
+                "57415645" to "wav",
+                "41564920" to "avi",
+                "2E7261FD" to "ram",
+                "2E524D46" to "rm",
+                "000001BA" to "mpg",
+                "000001B3" to "mpg",
+                "6D6F6F76" to "mov",
+                "3026B2758E66CF11" to "asf"
         );
 
         return map.filterKeys { value.startsWith(it) }.values.firstOrNull() ?: ""
@@ -281,7 +285,7 @@ object MyUtil {
 
     fun isLocalIp(Ip: String): Boolean {
         return Ip.isEmpty() || Ip.startsWith("192.168.") || Ip.startsWith("10.") || Ip.startsWith("172.") || Ip.startsWith(
-            "127."
+                "127."
         ) || Ip.startsWith("0.") || Ip.startsWith("0:")
     }
 
@@ -347,7 +351,7 @@ object MyUtil {
         var type = T::class.java;
         for (key in mapDefine.keys) {
             if (key.contains('.') == false) {
-                var m = type.getMethod("get" + key[0].toUpperCase() + key.substring(1));
+                var m = type.getMethod("get" + key[0].uppercaseChar() + key.substring(1));
                 if (m == null) {
                     continue;
                 }
@@ -425,7 +429,7 @@ object MyUtil {
     //简单类型，请参考 Class.IsSimpleType
     fun <T> getSimpleClassDefaultValue(clazz: Class<T>): Any? {
 
-        var className = clazz.name;
+//        var className = clazz.name;
         if (clazz == Boolean::class.java || clazz == java.lang.Boolean::class.java) {
             return false;
         }
@@ -534,7 +538,7 @@ object MyUtil {
      * 大驼峰 ,仅保留字母，数字
      */
     fun getBigCamelCase(value: String): String {
-        return splitWordParts(value).map { it[0].toUpperCase() + it.substring(1).toLowerCase() }.joinToString("")
+        return splitWordParts(value).map { it[0].uppercaseChar() + it.substring(1).lowercase() }.joinToString("")
     }
 
     /**
@@ -543,14 +547,14 @@ object MyUtil {
     fun getSmallCamelCase(value: String): String {
         var ret = getBigCamelCase(value);
         if (ret.isEmpty()) return "";
-        return ret[0].toLowerCase() + ret.substring(1)
+        return ret[0].lowercase() + ret.substring(1)
     }
 
     /**
      * 短横线格式，全小写
      */
     fun getKebabCase(value: String): String {
-        return splitWordParts(value).map { it.toLowerCase() }.joinToString("-")
+        return splitWordParts(value).map { it.lowercase() }.joinToString("-")
     }
 
     @JvmOverloads
@@ -578,106 +582,106 @@ object MyUtil {
      * 格式化模板
      */
     fun formatTemplateJson(
-        /**
-         * 如 dbr.${group|w}
-         */
-        text: String,
-        /**
-         * 如: {group:"abc"}
-         */
-        json: StringMap,
-        /**
-         * 不是默认函数的时候,调用 funcCallback 自定义处理.
-         * 第一个参数是key, 第二个是value, 第三个参数是函数名,第四个参数是函数参数 , 返回新值
-         * 如果模板使用了函数,而没有传递,抛出异常.
-         * 如: ${id|type} ,type(id) 不是默认定义,需要通过 funcCallback 传
-         */
-        funcCallback: ((String, String?, String, String) -> String?)? = null,
-        style: String = "\${}"
+            /**
+             * 如 dbr.${group|w}
+             */
+            text: String,
+            /**
+             * 如: {group:"abc"}
+             */
+            json: StringMap,
+            /**
+             * 不是默认函数的时候,调用 funcCallback 自定义处理.
+             * 第一个参数是key, 第二个是value, 第三个参数是函数名,第四个参数是函数参数 , 返回新值
+             * 如果模板使用了函数,而没有传递,抛出异常.
+             * 如: ${id|type} ,type(id) 不是默认定义,需要通过 funcCallback 传
+             */
+            funcCallback: ((String, String?, String, String) -> String?)? = null,
+            style: String = "\${}"
     ): String {
 
         var map: StringKeyMap<((String) -> String)> = StringKeyMap()
-        map.put("-", { MyUtil.getKebabCase(it) })
-        map.put("W", { MyUtil.getBigCamelCase(it) })
-        map.put("w", { MyUtil.getSmallCamelCase(it) })
-        map.put("U", { it.toUpperCase() })
-        map.put("u", { it.toLowerCase() })
+        map.put("-", { getKebabCase(it) })
+        map.put("W", { getBigCamelCase(it) })
+        map.put("w", { getSmallCamelCase(it) })
+        map.put("U", { it.uppercase() })
+        map.put("u", { it.lowercase() })
 
         var map2: StringKeyMap<((String).(String) -> String)> = StringKeyMap()
-        map2.put("trim", { MyUtil.trim(this, it) })
+        map2.put("trim", { trim(this, it) })
 
 
         return text.formatWithJson(
-            json, style,
-            { key ->
-                key.split("|").first()
-            },
-            { fullKey, value ->
-                // fullKey 即 ${fullKey} == group|w
-                // 如果 json中定义了值,使用json的.如: json == {"group|w": "大写第二个字母值"}
-                // value是group的原始值 == "wx"
-                var sects = fullKey.split("|")
-                if (sects.size <= 1) {
-                    return@formatWithJson value;
-                }
-
-                // key == group
-                var key = sects.first();
-                var result: String? = value
-                sects.Skip(1).forEach { funcString ->
-                    //如：   substring:2,3
-                    var funcContent = funcString.split(":")
-                    var funcName = funcContent.first();
-                    var params = listOf<String>()
-                    if (funcContent.size > 2) {
-                        throw RuntimeException("表达式中多个冒号非法：${funcString}")
-                    } else if (funcContent.size == 2) {
-                        // 如：   substring:2,3 中的 2,2 参数部分
-                        params = funcContent[1].split(",")
+                json, style,
+                { key ->
+                    key.split("|").first()
+                },
+                { fullKey, value ->
+                    // fullKey 即 ${fullKey} == group|w
+                    // 如果 json中定义了值,使用json的.如: json == {"group|w": "大写第二个字母值"}
+                    // value是group的原始值 == "wx"
+                    var sects = fullKey.split("|")
+                    if (sects.size <= 1) {
+                        return@formatWithJson value;
                     }
 
-
-                    if (params.size == 1) {
-                        var param = params[0];
-                        var paramValue = param;
-                        if (param.startsWith("'") && param.endsWith("'")) {
-                            paramValue = param.substring(1, param.length - 1);
-                        } else if (param.IsNumberic()) {
-                            paramValue = param;
-                        } else {
-                            paramValue = json.get(param).AsString()
+                    // key == group
+                    var key = sects.first();
+                    var result: String? = value
+                    sects.Skip(1).forEach { funcString ->
+                        //如：   substring:2,3
+                        var funcContent = funcString.split(":")
+                        var funcName = funcContent.first();
+                        var params = listOf<String>()
+                        if (funcContent.size > 2) {
+                            throw RuntimeException("表达式中多个冒号非法：${funcString}")
+                        } else if (funcContent.size == 2) {
+                            // 如：   substring:2,3 中的 2,2 参数部分
+                            params = funcContent[1].split(",")
                         }
 
-                        //如果定义了默认的funcName
-                        if (value != null && map2.containsKey(funcName)) {
-                            var funcBody = map2.get(funcName)!!
-                            result = funcBody.invoke(value, paramValue)
-                        } else if (funcCallback != null) {
-                            result = funcCallback.invoke(key, value, funcName, paramValue)
-                        } else {
-                            throw RuntimeException("找不到 ${funcName}")
-                        }
-                    } else if (params.size == 0) {
-                        if (value != null && map.containsKey(funcName)) {
-                            var funcBody = map.get(funcName)!!
-                            result = funcBody.invoke(value)
-                        } else if (funcCallback != null) {
-                            result = funcCallback.invoke(key, value, funcName, "")
-                        } else {
-                            throw RuntimeException("找不到 ${funcName}")
+
+                        if (params.size == 1) {
+                            var param = params[0];
+                            var paramValue = param;
+                            if (param.startsWith("'") && param.endsWith("'")) {
+                                paramValue = param.substring(1, param.length - 1);
+                            } else if (param.IsNumberic()) {
+                                paramValue = param;
+                            } else {
+                                paramValue = json.get(param).AsString()
+                            }
+
+                            //如果定义了默认的funcName
+                            if (value != null && map2.containsKey(funcName)) {
+                                var funcBody = map2.get(funcName)!!
+                                result = funcBody.invoke(value, paramValue)
+                            } else if (funcCallback != null) {
+                                result = funcCallback.invoke(key, value, funcName, paramValue)
+                            } else {
+                                throw RuntimeException("找不到 ${funcName}")
+                            }
+                        } else if (params.size == 0) {
+                            if (value != null && map.containsKey(funcName)) {
+                                var funcBody = map.get(funcName)!!
+                                result = funcBody.invoke(value)
+                            } else if (funcCallback != null) {
+                                result = funcCallback.invoke(key, value, funcName, "")
+                            } else {
+                                throw RuntimeException("找不到 ${funcName}")
+                            }
+
                         }
 
+                        return@forEach
                     }
 
-                    return@forEach
-                }
+                    if (result == null) {
+                        throw RuntimeException("无法处理 ${fullKey}")
+                    }
 
-                if (result == null) {
-                    throw RuntimeException("无法处理 ${fullKey}")
-                }
-
-                return@formatWithJson result!!
-            });
+                    return@formatWithJson result!!
+                });
     }
 }
 

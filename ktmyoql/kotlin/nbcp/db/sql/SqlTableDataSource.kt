@@ -50,25 +50,25 @@ class SqlTableLogProperties :  InitializingBean{
 
 
     fun getSelectLog(tableDbName: String): Boolean {
-        if (select.contains(tableDbName.toLowerCase())) return true;
+        if (select.contains(tableDbName.lowercase())) return true;
         if (logDefault.contains(SqlCrudEnum.select)) return true;
         return false;
     }
 
     fun getInsertLog(tableDbName: String): Boolean {
-        if (insert.contains(tableDbName.toLowerCase())) return true;
+        if (insert.contains(tableDbName.lowercase())) return true;
         if (logDefault.contains(SqlCrudEnum.insert)) return true;
         return false
     }
 
     fun getUpdateLog(tableDbName: String): Boolean {
-        if (update.contains(tableDbName.toLowerCase())) return true;
+        if (update.contains(tableDbName.lowercase())) return true;
         if (logDefault.contains(SqlCrudEnum.update)) return true;
         return false;
     }
 
     fun getDeleteLog(tableDbName: String): Boolean {
-        if (delete.contains(tableDbName.toLowerCase())) return true;
+        if (delete.contains(tableDbName.lowercase())) return true;
         if (logDefault.contains(SqlCrudEnum.delete)) return true;
         return false;
     }
@@ -90,9 +90,9 @@ class SqlTableLogProperties :  InitializingBean{
 
 
     override fun afterPropertiesSet() {
-        select = select.map { it.toLowerCase() }
-        insert = insert.map { it.toLowerCase() }
-        update = update.map { it.toLowerCase() }
-        delete = delete.map { it.toLowerCase() }
+        select = select.map { it.lowercase() }
+        insert = insert.map { it.lowercase() }
+        update = update.map { it.lowercase() }
+        delete = delete.map { it.lowercase() }
     }
 }

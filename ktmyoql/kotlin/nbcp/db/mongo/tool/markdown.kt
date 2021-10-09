@@ -161,7 +161,7 @@ body table thead th{
 
 
     fun writeToFile(msg: String) {
-        moer_File.appendln(msg)
+        moer_File.appendLine(msg)
         moer_File.flush()
 //        println(msg)
     }
@@ -171,7 +171,7 @@ body table thead th{
         nameMapping.forEach{
             name = name.replace(it.key,it.value)
         }
-        return name[0].toLowerCase() + name.substring(1);
+        return name[0].lowercase() + name.substring(1);
     }
 
     fun getGroups(basePackage:String): HashMap<String, MutableList<Class<*>>> {

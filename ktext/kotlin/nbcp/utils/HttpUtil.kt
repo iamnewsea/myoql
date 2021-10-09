@@ -20,10 +20,10 @@ import javax.net.ssl.SSLSocketFactory
 
 
 data class FileMessage @JvmOverloads constructor(
-    var fullPath: String = "",
-    var name: String = "",
-    var extName: String = "",
-    var msg: String = ""
+        var fullPath: String = "",
+        var name: String = "",
+        var extName: String = "",
+        var msg: String = ""
 );
 
 /**
@@ -31,9 +31,9 @@ data class FileMessage @JvmOverloads constructor(
  */
 fun getTextTypeFromContentType(contentType: String): Boolean {
     return contentType.contains("json", true) ||
-        contentType.contains("htm", true) ||
-        contentType.contains("text", true) ||
-        contentType.contains("urlencoded", true)
+            contentType.contains("htm", true) ||
+            contentType.contains("text", true) ||
+            contentType.contains("urlencoded", true)
 }
 
 //@Configuration
@@ -165,7 +165,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
             requestBody = postJson.ToJson()
         } else {
             requestBody =
-                postJson.map { it.key + "=" + JsUtil.encodeURIComponent(it.value.AsString()) }.joinToString("&");
+                    postJson.map { it.key + "=" + JsUtil.encodeURIComponent(it.value.AsString()) }.joinToString("&");
         }
 
         return doPost(requestBody);
@@ -202,7 +202,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         try {
             if (this.sslSocketFactory != null) {
                 (conn as javax.net.ssl.HttpsURLConnection)
-                    .setSSLSocketFactory(this.sslSocketFactory)
+                        .setSSLSocketFactory(this.sslSocketFactory)
             }
 
             conn.instanceFollowRedirects = this.request.instanceFollowRedirects
@@ -229,7 +229,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
 
             //https://bbs.csdn.net/topics/290053257
             //GET,HEAD,OPTIONS
-            if (conn.requestMethod.toLowerCase().IsIn("post", "put")) {
+            if (conn.requestMethod.lowercase().IsIn("post", "put")) {
                 conn.doOutput = true
 
 
@@ -257,10 +257,10 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
                     return@forEach
                 }
                 var value = it.value.joinToString(",")
-                this.response.headers[it.key.toLowerCase()] = value
+                this.response.headers[it.key.lowercase()] = value
             }
 
-            var responseStream: InputStream? = null
+            var responseStream: InputStream?
             if (conn.responseCode.Between(200, 299)) {
                 responseStream = conn.inputStream;
             } else {
@@ -273,7 +273,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
                 } else if (this.response.resultIsText) {
                     DataInputStream(responseStream).use { input ->
                         this.response.resultBody =
-                            toByteArray(input).toString(Charset.forName(this.response.charset));
+                                toByteArray(input).toString(Charset.forName(this.response.charset));
                     }
                 }
             }
@@ -315,8 +315,8 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
                     //小于10K
                     if (this.response.resultIsText && this.response.resultBody.any()) {
                         msgs.add(
-                            this.response.resultBody.take(k10Size).toByteArray()
-                                .toString(Charset.forName(this.response.charset.AsString("UTF-8")))
+                                this.response.resultBody.take(k10Size).toByteArray()
+                                        .toString(Charset.forName(this.response.charset.AsString("UTF-8")))
                         )
                     }
                 }
@@ -334,9 +334,9 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
     fun toByteArray(input: InputStream): ByteArray {
         val output = ByteArrayOutputStream()
         val buffer = ByteArray(4096)
-        var n = 0
+
         while (true) {
-            n = input.read(buffer);
+            var n = input.read(buffer);
             if (n == -1) {
                 break;
             }
@@ -439,7 +439,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
 
         this.request.postAction = { out ->
             out.write(
-                """--${boundary}
+                    """--${boundary}
 Content-Disposition: form-data; name="${fileName}"; filename="blob"
 Content-Type: application/octet-stream
 

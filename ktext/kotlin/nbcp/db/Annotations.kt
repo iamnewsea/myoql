@@ -50,7 +50,6 @@ annotation class DbDefines(vararg val value: DbDefine)
 /**
  * 字段定义，用于 Es实体 生成 Mapping
  */
-@java.lang.annotation.Repeatable(DbDefines::class)
 @Repeatable
 @Inherited
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FIELD)

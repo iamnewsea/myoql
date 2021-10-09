@@ -59,7 +59,7 @@ fun <M : MongoBaseMetaCollection<T>, T> M.findTree(callback: ((ITreeData<*>) -> 
         RecursionUtil.execute<ITreeData<*>>(
             mutableListOf(current),
             { it.children() as MutableList<ITreeData<*>> },
-            { wbs, index ->
+            { wbs, _ ->
                 var item = wbs.last()
                 if (callback(item)) {
                     ret = TreeResultData(wbs);
@@ -78,7 +78,7 @@ fun <M : MongoBaseMetaCollection<T>, T> M.deleteTreeNodeById(id: String): ApiRes
         where T : Serializable,
               T : ITreeData<*> {
     var result = this.findTreeById(id)
-    if (result == null) return ApiResult("找不到数据")
+//    if (result == null) return ApiResult("找不到数据")
     var root = result.root;
     var parent = result.parent
 
@@ -141,9 +141,9 @@ private fun <M : MongoBaseMetaCollection<T>, T> M.addTreeToTree(
 
     //添加到已存在的节点
     var targetTreeResult = this.findTreeById(pid);
-    if (targetTreeResult == null) {
-        throw RuntimeException("找不到数据")
-    }
+//    if (targetTreeResult == null) {
+//        throw RuntimeException("找不到数据")
+//    }
 
     var root = targetTreeResult.root;
     var targetNode = targetTreeResult.current;

@@ -24,6 +24,7 @@ data class CheckMustExpresstion<T>(var condition: Boolean, var data: T?) {
         else throw RuntimeException(msg(data));
     }
 }
+
 @JvmOverloads
 fun <T> T?.must(trueCondition: ((T?) -> Boolean)? = null): CheckMustExpresstion<T> {
     return CheckMustExpresstion(if (trueCondition == null) this != null else trueCondition(this), this)
@@ -61,11 +62,10 @@ fun <T> T.IsIn(equalFunc: ((T, T) -> Boolean)?, vararg values: T): Boolean {
  */
 fun <T : Comparable<in T>> T.Between(start: T?, end: T?): Boolean {
     if (start == null || end == null) return false;
-    if (this.compareTo(start) < 0) return false;
-    if (this.compareTo(end) > 0) return false;
+    if (this < start) return false;
+    if (this > end) return false;
     return true;
 }
-
 
 
 fun Serializable.ToSerializableByteArray(): ByteArray {
@@ -94,9 +94,8 @@ fun Temporal.BetweenSeconds(nextTime: Temporal): Int {
 
 fun Temporal.BetweenDays(nextTime: Temporal): Int {
     return (Duration.between(this.AsLocalDateTime(), nextTime.AsLocalDateTime())
-        .getSeconds() / MyUtil.OneDaySeconds).AsInt();
+            .getSeconds() / MyUtil.OneDaySeconds).AsInt();
 }
-
 
 
 //返回非空的描述
@@ -118,8 +117,8 @@ fun <T : Serializable> T.CloneObject(): T {
     var ios = ByteArrayInputStream(out.toByteArray());
     ObjectInputStream(ios).use { ois ->
         //返回生成的新对象
-        var cloneObj = ois.readObject() as T;
-        return cloneObj;
+        var cloneObj = ois.readObject();
+        return cloneObj as T;
     }
 }
 

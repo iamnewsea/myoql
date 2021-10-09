@@ -34,7 +34,7 @@ open class RedisSetProxy @JvmOverloads constructor(
      * 返回删除的成员个数。
      */
     fun removeItems(key: String, vararg members: String): Long {
-        if (members.any() == false) return 0;
+        if (!members.any()) return 0;
         var cacheKey = getFullKey(key);
         var ret = stringCommand.opsForSet().remove(cacheKey, *members);
         return ret;

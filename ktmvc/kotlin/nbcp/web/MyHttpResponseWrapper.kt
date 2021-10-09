@@ -106,7 +106,7 @@ class MyHttpResponseWrapper private constructor(private val response: HttpServle
     }
 
     override fun getResponse(): HttpServletResponse {
-        return this.response!!
+        return this.response
     }
 
 //    fun setResponse(@NotNull response: HttpServletResponse) {

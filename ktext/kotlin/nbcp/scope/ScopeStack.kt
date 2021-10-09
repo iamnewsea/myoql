@@ -76,7 +76,8 @@ class ScopeStack : Stack<IScopeData>() {
      * @param enumValues: 如果有值，则精确查找该值进行返回。
      */
     inline fun <reified R : IScopeData> GetLatest(vararg enumValues: R): R? {
-        return GetLatest(R::class.java);
+        var clazz = R::class.java;
+        return GetLatest(clazz,*enumValues);
     }
 
     fun <R : IScopeData> GetLatest(clazz: Class<R>, vararg enumValues: R): R? {

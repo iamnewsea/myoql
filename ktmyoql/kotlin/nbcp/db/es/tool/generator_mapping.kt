@@ -70,7 +70,7 @@ class generator_mapping {
 
 
                     var moer_File = FileWriter(path + p + dbName + ".txt", false);
-                    moer_File.appendln(mappings.ToJson())
+                    moer_File.appendLine(mappings.ToJson())
                     moer_File.flush()
                 }
             }

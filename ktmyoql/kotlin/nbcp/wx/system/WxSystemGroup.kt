@@ -54,7 +54,7 @@ object WxSystemGroup {
             .toMutableList();
 
         list.add("key=${mchSecret}");
-        return Md5Util.getMd5(list.joinToString("&")).toUpperCase();
+        return Md5Util.getMd5(list.joinToString("&")).uppercase();
     }
 
 

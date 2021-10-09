@@ -43,7 +43,7 @@ open class CrosFilter : Filter {
             return;
         }
 
-        var httpRequest = request as HttpServletRequest
+        var httpRequest = request
         var httpResponse = response as HttpServletResponse
 
         var request2: MyHttpRequestWrapper? = null

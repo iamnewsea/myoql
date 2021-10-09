@@ -34,7 +34,7 @@ annotation class DbEntityLogHistory(vararg val fields: String)
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
-annotation class DbEntityFieldRefs(val values: Array<DbEntityFieldRef>)
+annotation class DbEntityFieldRefs(val value: Array<DbEntityFieldRef>)
 
 /**
  * 在引用表上定义 引用字段 与其它主表是映射关系。当其它主表的name字段更新后，级联更新引用的name字段
@@ -48,7 +48,7 @@ annotation class DbEntityFieldRefs(val values: Array<DbEntityFieldRef>)
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-@java.lang.annotation.Repeatable(DbEntityFieldRefs::class)
+//@java.lang.annotation.Repeatable(DbEntityFieldRefs::class)
 @Repeatable
 @Inherited
 annotation class DbEntityFieldRef(val masterEntityClass: KClass<*>, val idFieldMap: String, val nameFieldMap: String)

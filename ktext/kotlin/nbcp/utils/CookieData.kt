@@ -71,24 +71,24 @@ class CookieData {
                     } else if (it.contains("=")) {
                         var sects = it.split("=").map { it.trim() };
                         var key = sects[0];
-                        var value = "";
+                        var itemValue = "";
                         if (sects.size > 1) {
-                            value = sects[1]
+                            itemValue = sects[1]
                         }
 
                         if (key VbSame "path") {
-                            c.path = value;
+                            c.path = itemValue;
                         } else if (key VbSame "Expires") {
-                            c.expires = value.AsLocalDateTime()
+                            c.expires = itemValue.AsLocalDateTime()
                         } else if (key VbSame "max-age") {
-                            c.maxAge = value.AsInt();
+                            c.maxAge = itemValue.AsInt();
                         } else if (key VbSame "version") {
 
                         } else if (key VbSame "Comment") {
 
                         } else {
                             c.name = key;
-                            c.value = value;
+                            c.value = itemValue;
                         }
                     }
                 }

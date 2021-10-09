@@ -34,7 +34,7 @@ class MyBatisInterceptor : Interceptor {
                     setWriteMode(invocation.target as Executor);
                 } else {
                     val boundSql = ms.sqlSource.getBoundSql(objects[1])
-                    val sql = boundSql.sql.toLowerCase(Locale.CHINA)
+                    val sql = boundSql.sql.lowercase(Locale.CHINA)
                     if (sql.matches(REGEX.toRegex())) {
                         setWriteMode(invocation.target as Executor);
                     } else {

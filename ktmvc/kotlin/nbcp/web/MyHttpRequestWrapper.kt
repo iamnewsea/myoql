@@ -32,7 +32,7 @@ class MyHttpRequestWrapper
 private constructor(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(this.javaClass);
+        private val logger = LoggerFactory.getLogger(this::class.java);
 
         @Throws(IOException::class)
         @JvmStatic
@@ -64,10 +64,7 @@ private constructor(request: HttpServletRequest) : HttpServletRequestWrapper(req
         if (request.contentType == null) {
             return@lazy ret;
         }
-        if (request.contentType.startsWith(MediaType.APPLICATION_JSON_VALUE) ||
-            request.contentType.startsWith(MediaType.APPLICATION_JSON_UTF8_VALUE)
-        ) {
-
+        if (request.contentType.startsWith(MediaType.APPLICATION_JSON_VALUE)) {
             var bodyString = (body ?: byteArrayOf()).toString(const.utf8).trim()
 
             if (bodyString.startsWith("{") && bodyString.endsWith("}")) {

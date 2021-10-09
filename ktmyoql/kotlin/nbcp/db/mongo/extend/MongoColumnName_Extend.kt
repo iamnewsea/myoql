@@ -3,10 +3,8 @@
 
 package nbcp.db.mongo
 
-import com.mongodb.client.model.Projections
 import nbcp.comm.*
 import org.bson.BasicBSONObject
-import org.bson.conversions.Bson
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
 import java.time.LocalDate
@@ -39,23 +37,23 @@ fun getObjectIdValueTypeIfNeed(value: Any?): Any? {
 }
 
 private fun proc_mongo_match(key: MongoColumnName, value: Any?): Pair<String, Any?> {
-    var key = key
-    var keyString = key.toString();
+    var keyValue = key
+    var keyString = keyValue.toString();
     var keyIsId = false;
     if (keyString == "id") {
-        key = MongoColumnName("_id")
+        keyValue = MongoColumnName("_id")
         keyIsId = true;
     } else if (keyString == "_id") {
         keyIsId = true;
     } else if (keyString.endsWith(".id")) {
-        key = MongoColumnName(keyString.slice(0..keyString.length - 4) + "._id")
+        keyValue = MongoColumnName(keyString.slice(0..keyString.length - 4) + "._id")
         keyIsId = true;
     } else if (keyString.endsWith("._id")) {
         keyIsId = true;
     }
 
     if (value == null) {
-        return Pair<String, Any?>(key.toString(), value);
+        return Pair<String, Any?>(keyValue.toString(), value);
     }
 
     var value = value;
@@ -107,7 +105,7 @@ private fun proc_mongo_match(key: MongoColumnName, value: Any?): Pair<String, An
         value = Pair<Any?, Any?>(v1, v2);
     }
 
-    return Pair<String, Any?>(key.toString(), value);
+    return Pair<String, Any?>(keyValue.toString(), value);
 }
 
 infix fun MongoColumnName.match_size(value: Int): Criteria {
@@ -184,18 +182,18 @@ infix fun MongoColumnName.match_gte(to: Any): Criteria {
 }
 
 infix fun MongoColumnName.match_lte(to: Any): Criteria {
-    var (key, to) = proc_mongo_match(this, to);
-    return Criteria.where(key).lte(to!!);
+    var (key, toValue) = proc_mongo_match(this, to);
+    return Criteria.where(key).lte(toValue!!);
 }
 
 infix fun MongoColumnName.match_greaterThan(to: Any): Criteria {
-    var (key, to) = proc_mongo_match(this, to);
-    return Criteria.where(key).gt(to!!);
+    var (key, toValue) = proc_mongo_match(this, to);
+    return Criteria.where(key).gt(toValue!!);
 }
 
 infix fun MongoColumnName.match_lessThan(to: Any): Criteria {
-    var (key, to) = proc_mongo_match(this, to);
-    return Criteria.where(key).lt(to!!);
+    var (key, toValue) = proc_mongo_match(this, to);
+    return Criteria.where(key).lt(toValue!!);
 }
 
 /**

@@ -92,7 +92,7 @@ object FreemarkerUtil {
         params: JsonMap
     ): String {
         val template: Template = Template("template", StringReader(content), freemarkerConfig, "utf-8")
-        return usingScope(ContextMapScope(params)) {
+        usingScope(ContextMapScope(params)) {
             return escapeString(processTemplate(template, params))
         }
     }
@@ -111,7 +111,7 @@ object FreemarkerUtil {
         params: JsonMap
     ): String {
         val template: Template = freemarkerConfig.getTemplate(templateName)
-        return usingScope(ContextMapScope(params)) {
+        usingScope(ContextMapScope(params)) {
             return escapeString(processTemplate(template, params))
         }
     }

@@ -42,17 +42,17 @@ open class ApiResult<T> @JvmOverloads constructor(msg: String = "", code: Int = 
 }
 
 
-class ParameterInvalidException @JvmOverloads constructor(msg: String) :
-    RuntimeException(msg.AsString("参数非法"))
+class ParameterInvalidException @JvmOverloads constructor(msg: String = "") :
+        RuntimeException(msg.AsString("参数非法"))
 
-class NoDataException @JvmOverloads constructor(msg: String) :
-    RuntimeException(msg.AsString("找不到数据"))
+class NoDataException @JvmOverloads constructor(msg: String = "") :
+        RuntimeException(msg.AsString("找不到数据"))
 
-class ExecuteDbException @JvmOverloads constructor(msg: String) :
-    RuntimeException(msg.AsString("操作数据库失败"))
+class ExecuteDbException @JvmOverloads constructor(msg: String = "") :
+        RuntimeException(msg.AsString("操作数据库失败"))
 
-class ServerException @JvmOverloads constructor(msg: String) :
-    RuntimeException(msg.AsString("服务器异常"))
+class ServerException @JvmOverloads constructor(msg: String = "") :
+        RuntimeException(msg.AsString("服务器异常"))
 
 /**
  * 查询对象

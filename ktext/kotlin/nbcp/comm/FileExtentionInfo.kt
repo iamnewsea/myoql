@@ -34,9 +34,9 @@ data class FileExtentionInfo(private var fileName: String) {
 
         name = name.Remove('>', '<', '*', '|', ':', '?', '"', '\'');
 
-        if (extName.toLowerCase().IsIn("ico", "icon", "png", "jpg", "jpeg", "gif", "bmp", "ttf", "otf", "tiff")) {
+        if (extName.lowercase().IsIn("ico", "icon", "png", "jpg", "jpeg", "gif", "bmp", "ttf", "otf", "tiff")) {
             extType = FileExtentionTypeEnum.Image;
-        } else if (extName.toLowerCase().IsIn(
+        } else if (extName.lowercase().IsIn(
                 "mp4",
                 "mp3",
                 "avi",
@@ -54,9 +54,9 @@ data class FileExtentionInfo(private var fileName: String) {
             )
         ) {
             extType = FileExtentionTypeEnum.Video
-        } else if (extName.toLowerCase().IsIn("js", "css", "txt", "html", "htm", "xml", "xhtml", "json")) {
+        } else if (extName.lowercase().IsIn("js", "css", "txt", "html", "htm", "xml", "xhtml", "json")) {
             extType = FileExtentionTypeEnum.Html
-        } else if (extName.toLowerCase().IsIn("doc", "docx", "pdf", "xls", "xlsx", "ppt", "pptx", "rtf")) {
+        } else if (extName.lowercase().IsIn("doc", "docx", "pdf", "xls", "xlsx", "ppt", "pptx", "rtf")) {
             extType = FileExtentionTypeEnum.Office;
         }
     }

@@ -182,11 +182,11 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         }
 
         logger.Error { require.value.AsString("请求:${webRequest.fullUrl} --> 方法:${caller} 中，找不到参数${parameter.parameterName}") }
-        throw RequireException(parameter.parameterName)
+        throw RequireException(parameter.parameterName!!)
     }
 
     private fun getFromQuery(webRequest: HttpServletRequest, parameter: MethodParameter): Any? {
-        var key = parameter.parameterName
+        var key = parameter.parameterName!!
         var value: Any? = null
         var queryMap = webRequest.queryJson
         if (queryMap.containsKey(key) == false) {

@@ -3,9 +3,7 @@ package nbcp.utils
 import nbcp.comm.*
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
-import java.awt.Image.SCALE_AREA_AVERAGING
 import java.awt.Transparency
-import java.awt.Graphics2D
 import java.awt.Image
 import java.io.*
 
@@ -56,21 +54,21 @@ object ImageUtil {
             return ApiResult.of(type);
         }
 
-        var maxWidth = (originalWidth / scale).toInt()
-        var maxHeight = (originalHeight / scale).toInt()
+        var maxWidthValue = (originalWidth / scale).toInt()
+        var maxHeightValue = (originalHeight / scale).toInt()
 
-        var newImage = BufferedImage(maxWidth, maxHeight, BufferedImage.TYPE_INT_RGB)
+        var newImage = BufferedImage(maxWidthValue, maxHeightValue, BufferedImage.TYPE_INT_RGB)
 
         // 处理 png 背景变黑的问题
         if (type.IsIn("png", "gif")) {
             var g2d = newImage.createGraphics()
-            newImage = g2d.deviceConfiguration.createCompatibleImage(maxWidth, maxHeight, Transparency.TRANSLUCENT)
+            newImage = g2d.deviceConfiguration.createCompatibleImage(maxWidthValue, maxHeightValue, Transparency.TRANSLUCENT)
             g2d.dispose()
         }
 
         var g2d = newImage.createGraphics()
-        val from = oriImage.getScaledInstance(maxWidth, maxHeight, Image.SCALE_AREA_AVERAGING)
-        g2d.drawImage(from, 0, 0, maxWidth, maxHeight, null)
+        val from = oriImage.getScaledInstance(maxWidthValue, maxHeightValue, Image.SCALE_AREA_AVERAGING)
+        g2d.drawImage(from, 0, 0, maxWidthValue, maxHeightValue, null)
         g2d.dispose()
 
         ImageIO.write(newImage, type, target)

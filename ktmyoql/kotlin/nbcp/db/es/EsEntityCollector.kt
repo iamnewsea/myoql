@@ -102,8 +102,8 @@ class EsEntityCollector : BeanPostProcessor {
 
     private fun addRef(entityClass: Class<*>) {
         var refs = entityClass.getAnnotation(DbEntityFieldRefs::class.java)
-        if (refs != null && refs.values.any()) {
-            refs.values.forEach {
+        if (refs != null && refs.value.any()) {
+            refs.value.forEach {
                 refsMap.add(DbEntityFieldRefData(entityClass, it))
             }
         }
@@ -129,7 +129,7 @@ class EsEntityCollector : BeanPostProcessor {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IEsEntityQuery, EventResult>>()
         usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
-            queryEvent.ForEachExt { it, index ->
+            queryEvent.ForEachExt { it, _ ->
                 var ret = it.beforeQuery(query);
                 if (ret.result == false) {
                     return@ForEachExt false;
@@ -145,7 +145,7 @@ class EsEntityCollector : BeanPostProcessor {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IEsEntityInsert, EventResult>>()
         usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
-            insertEvent.ForEachExt { it, index ->
+            insertEvent.ForEachExt { it, _ ->
                 var ret = it.beforeInsert(insert);
                 if (ret.result == false) {
                     return@ForEachExt false;
@@ -178,7 +178,7 @@ class EsEntityCollector : BeanPostProcessor {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IEsEntityDelete, EventResult>>()
         usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
-            deleteEvent.ForEachExt { it, index ->
+            deleteEvent.ForEachExt { it, _ ->
                 var ret = it.beforeDelete(delete);
                 if (ret.result == false) {
                     return@ForEachExt false;

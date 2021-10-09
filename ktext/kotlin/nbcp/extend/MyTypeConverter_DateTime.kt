@@ -32,15 +32,20 @@ fun Any?.AsLocalTime(): LocalTime? {
         return this.toLocalTime();
     }
 
-    var strValue = "";
+    var strValue: String;
 
     if (this is String) {
         strValue = this
     } else if (this is CharSequence) {
         strValue = this.toString();
+    } else if (this is Calendar) {
+        return LocalTime.of(this.get(Calendar.HOUR_OF_DAY), this.get(Calendar.MINUTE), this.get(Calendar.SECOND), this.get(Calendar.MILLISECOND))
     } else if (this is Date) {
         //当地时间。
-        return LocalTime.of(this.hours, this.minutes, this.seconds, (this.time % 1000).AsInt() * 1000000)
+        var calendar = Calendar.getInstance();
+        calendar.time = this;
+        return LocalTime.of(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND), calendar.get(Calendar.MILLISECOND))
+//        return LocalTime.of(this.hours, this.minutes, this.seconds, (this.time % 1000).AsInt() * 1000000)
     } else {
         throw RuntimeException("非法的类型转换,试图从 ${this::class.java}类型 到 LocalTime类型")
     }

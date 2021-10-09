@@ -35,7 +35,7 @@
 //                            continue
 //                        }
 //
-//                        return@map item.toLowerCase();
+//                        return@map item.lowercase();
 //                    }
 //                    return@map ""
 //                }
@@ -66,7 +66,7 @@
 //                            continue
 //                        }
 //
-//                        return@map item.toLowerCase();
+//                        return@map item.lowercase();
 //                    }
 //                    return@map ""
 //                }
@@ -332,7 +332,7 @@
 //                            continue
 //                        }
 //
-//                        return@map item.toLowerCase();
+//                        return@map item.lowercase();
 //                    }
 //                    return@map ""
 //                }

@@ -160,27 +160,27 @@ open class UploadService {
         fileData: UploadFileNameData,
         storageType: UploadStorageTypeEnum?
     ): String {
-        var storageType = storageType;
+        var storageTypeValue = storageType;
 
-        if (storageType == null) {
+        if (storageTypeValue == null) {
             if (aliOssUploader?.check() == true) {
-                storageType = UploadStorageTypeEnum.AliOss
+                storageTypeValue = UploadStorageTypeEnum.AliOss
             } else if (minioUploader?.check() == true) {
-                storageType = UploadStorageTypeEnum.Minio
+                storageTypeValue = UploadStorageTypeEnum.Minio
             } else if (localUploader.check()) {
-                storageType = UploadStorageTypeEnum.Local
+                storageTypeValue = UploadStorageTypeEnum.Local
             }
         }
 
-        if (storageType == UploadStorageTypeEnum.AliOss) {
+        if (storageTypeValue == UploadStorageTypeEnum.AliOss) {
             return aliOssUploader!!.upload(fileStream, group, fileData)
         }
 
-        if (storageType == UploadStorageTypeEnum.Minio) {
+        if (storageTypeValue == UploadStorageTypeEnum.Minio) {
             return minioUploader!!.upload(fileStream, group, fileData)
         }
 
-        if (storageType == UploadStorageTypeEnum.Local) {
+        if (storageTypeValue == UploadStorageTypeEnum.Local) {
             return localUploader.upload(fileStream, group, fileData)
         }
 

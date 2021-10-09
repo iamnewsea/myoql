@@ -1,7 +1,6 @@
 package nbcp.comm
 
 import org.slf4j.LoggerFactory
-import nbcp.comm.*
 import nbcp.utils.*
 import java.lang.RuntimeException
 
@@ -55,10 +54,10 @@ open class JsonMap : StringKeyMap<Any?> {
             var key = keys.first();
             if (keys.size == 1) {
                 //如果指明是数组 []
-                var isArray = false;
+//                var isArray = false;
                 if (key.endsWith("[]")) {
                     key = key.Slice(0, -2);
-                    isArray = true;
+//                    isArray = true;
 
                     if (ret.containsKey(key) == false) {
                         ret.put(key, mutableListOf<String>())
@@ -73,7 +72,7 @@ open class JsonMap : StringKeyMap<Any?> {
                 var v_list = mutableListOf<String>()
                 var dbValue = ret[key];
                 if (dbValue is MutableList<*>) {
-                    v_list = ret[key] as MutableList<String>;
+                    v_list = dbValue as MutableList<String>;
                 } else {
                     if (dbValue != null) {
                         v_list.add(dbValue.AsString())
@@ -98,12 +97,12 @@ open class JsonMap : StringKeyMap<Any?> {
         }
 
         @JvmStatic
-        fun loadFromUrl(UrlQuery: String): JsonMap {
+        fun loadFromUrl(urlQueryString: String): JsonMap {
             val ret = JsonMap()
-            var UrlQuery = UrlQuery.trim()
-            if (UrlQuery.isEmpty()) return ret;
+            var urlQuery = urlQueryString.trim()
+            if (urlQuery.isEmpty()) return ret;
 
-            val list = UrlQuery.split("&").dropLastWhile { it.isEmpty() }.toTypedArray()
+            val list = urlQuery.split("&").dropLastWhile { it.isEmpty() }.toTypedArray()
             for (item in list) {
                 val kv = item.split("=").dropLastWhile { it.isEmpty() }.toTypedArray()
                 if (kv.size < 1) {
@@ -175,10 +174,10 @@ data class DiffData<T, R>(
             var valueIndexList = indexList.values;
 
             diff.commonIndexMap = indexList;
-            diff.more1 = data.filterIndexed { index, t -> keyIndexList.contains(index) == false };
-            diff.common1 = data.filterIndexed { index, t -> keyIndexList.contains(index) };
-            diff.common2 = other.filterIndexed { index, t -> valueIndexList.contains(index) };
-            diff.more2 = other.filterIndexed { index, r -> valueIndexList.contains(index) == false };
+            diff.more1 = data.filterIndexed { index, _ -> keyIndexList.contains(index) == false };
+            diff.common1 = data.filterIndexed { index, _ -> keyIndexList.contains(index) };
+            diff.common2 = other.filterIndexed { index, _ -> valueIndexList.contains(index) };
+            diff.more2 = other.filterIndexed { index, _ -> valueIndexList.contains(index) == false };
             return diff;
         }
     }

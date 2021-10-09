@@ -88,12 +88,12 @@ object MysqlEntityGenerator {
             //先对 group分组
             data.forEach {
                 var entity = it
-                var map = JsonMap(
-                        "package" to packageName,
-                        "package_base" to packageName.split(".").take(2).joinToString("."),
-                        "entity" to entity,
-                        "field_name" to field_name()
-                )
+//                var map = JsonMap(
+//                        "package" to packageName,
+//                        "package_base" to packageName.split(".").take(2).joinToString("."),
+//                        "entity" to entity,
+//                        "field_name" to field_name()
+//                )
 
                 var entInfo = BaseEntityInfo(entity, baseEntityClass)
                 var code = """package ${packageName};
@@ -320,12 +320,12 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                             list.add(item);
                         } else {
                             propertyType.AllFields.forEach {
-                                var columnName = columnName + "_" + it.name;
-                                var dbType = DbType.of(it.type);
-                                var type = dbType.toMySqlTypeString()
+                                var columnNameValue = columnName + "_" + it.name;
+                                var dbTypeValue = DbType.of(it.type);
+                                var type = dbTypeValue.toMySqlTypeString()
 
                                 var item =
-                                        """`${columnName}` ${type} not null ${if (dbType.isNumberic()) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment ''"""
+                                        """`${columnNameValue}` ${type} not null ${if (dbTypeValue.isNumberic()) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment ''"""
                                 list.add(item);
                             }
                         }
@@ -353,7 +353,7 @@ ${list.joinToString(const.line_break + ",")}
             var p1 = p0?.elementAt(0).AsString();
             if (p1.isEmpty()) return "";
 
-            if (MyUtil.allCharIsSameCase(p1)) return p1.toLowerCase();
+            if (MyUtil.allCharIsSameCase(p1)) return p1.lowercase();
 
             return MyUtil.getSmallCamelCase(p1);
         }

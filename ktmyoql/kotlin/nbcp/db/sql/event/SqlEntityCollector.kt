@@ -92,8 +92,8 @@ class SqlEntityCollector : BeanPostProcessor {
         if (ret != null) return ret;
 
         dataSources.ForEachExt { iSqlDataSource, i ->
-            var ret = iSqlDataSource.run(tableName, isRead)
-            if (ret == null) {
+            var v = iSqlDataSource.run(tableName, isRead)
+            if (v == null) {
                 return@ForEachExt false;
             }
 
@@ -109,8 +109,8 @@ class SqlEntityCollector : BeanPostProcessor {
 
     private fun addRef(entityClass: Class<out Serializable>) {
         var refs = entityClass.getAnnotation(DbEntityFieldRefs::class.java)
-        if (refs != null && refs.values.any()) {
-            refs.values.forEach {
+        if (refs != null && refs.value.any()) {
+            refs.value.forEach {
                 refsMap.add(DbEntityFieldRefData(entityClass, it))
             }
         }
@@ -131,7 +131,7 @@ class SqlEntityCollector : BeanPostProcessor {
     fun onSelecting(select: SqlBaseQueryClip): Array<Pair<ISqlEntitySelect, EventResult?>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<ISqlEntitySelect, EventResult?>>()
-        selectEvent.ForEachExt { it, index ->
+        selectEvent.ForEachExt { it, _ ->
             var ret = it.beforeSelect(select);
             if (ret != null && ret.result == false) {
                 return@ForEachExt false;
@@ -146,7 +146,7 @@ class SqlEntityCollector : BeanPostProcessor {
     fun onInserting(insert: SqlInsertClip<*, *>): Array<Pair<ISqlEntityInsert, EventResult?>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<ISqlEntityInsert, EventResult?>>()
-        insertEvent.ForEachExt { it, index ->
+        insertEvent.ForEachExt { it, _ ->
             var ret = it.beforeInsert(insert);
             if (ret != null && ret.result == false) {
                 return@ForEachExt false;
@@ -161,7 +161,7 @@ class SqlEntityCollector : BeanPostProcessor {
     fun onUpdating(update: SqlUpdateClip<*>): Array<Pair<ISqlEntityUpdate, EventResult?>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<ISqlEntityUpdate, EventResult?>>()
-        updateEvent.ForEachExt { it, index ->
+        updateEvent.ForEachExt { it, _ ->
             var ret = it.beforeUpdate(update);
             if (ret != null && ret.result == false) {
                 return@ForEachExt false;
@@ -176,7 +176,7 @@ class SqlEntityCollector : BeanPostProcessor {
 
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<ISqlEntityDelete, EventResult?>>()
-        deleteEvent.ForEachExt { it, index ->
+        deleteEvent.ForEachExt { it, _ ->
             var ret = it.beforeDelete(delete);
             if (ret != null && ret.result == false) {
                 return@ForEachExt false;

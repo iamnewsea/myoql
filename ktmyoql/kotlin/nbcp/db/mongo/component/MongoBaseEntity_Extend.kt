@@ -20,11 +20,11 @@ fun <M : MongoBaseMetaCollection<T>, T : Serializable> M.queryById(id: String): 
 
 
 fun <M : MongoBaseMetaCollection<E>, E : Serializable> M.updateById(id: String): MongoUpdateClip<M> {
-    var id = id.trim()
-    if (id.isEmpty()) {
+    var idValue = id.trim()
+    if (idValue.isEmpty()) {
         throw RuntimeException("按id更新mongo数据时，id不能为空！")
     }
-    return MongoUpdateClip(this).where("id" match id);
+    return MongoUpdateClip(this).where("id" match idValue);
 }
 
 /**

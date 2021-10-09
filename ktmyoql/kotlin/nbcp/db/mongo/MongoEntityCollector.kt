@@ -111,8 +111,8 @@ class MongoEntityCollector : BeanPostProcessor {
 
     private fun addRef(entityClass: Class<*>) {
         var refs = entityClass.getAnnotation(DbEntityFieldRefs::class.java)
-        if (refs != null && refs.values.any()) {
-            refs.values.forEach {
+        if (refs != null && refs.value.any()) {
+            refs.value.forEach {
                 refsMap.add(DbEntityFieldRefData(entityClass, it))
             }
         }
@@ -170,7 +170,7 @@ class MongoEntityCollector : BeanPostProcessor {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityUpdate, EventResult>>()
         usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
-            updateEvent.ForEachExt { it, index ->
+            updateEvent.ForEachExt { it, _ ->
                 var ret = it.beforeUpdate(update);
                 if (ret.result == false) {
                     return@ForEachExt false;
