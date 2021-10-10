@@ -4,19 +4,16 @@ import nbcp.TestBase
 import org.junit.jupiter.api.Test
 
 
-
-
 fun html(init: String.() -> String): String {
-    var html = "";
-    return html.init()
+    return "".init()
 }
 
 
-class DomTest:TestBase(){
+class DomTest : TestBase() {
     @Test
-    fun test(){
+    fun test() {
         var d = html {
-             "www";
+            "www";
         }
 
         println(d)
