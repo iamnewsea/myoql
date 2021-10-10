@@ -43,8 +43,8 @@ fun proc_value(value: Any): Any {
 //}
 
 private fun SqlColumnName.column_match_value(op: String, value: Serializable): WhereData {
-    var value = proc_value(value);
-    return WhereData("${this.fullName} ${op} {${this.jsonKeyName}}", JsonMap("${this.jsonKeyName}" to value))
+    var valueValue = proc_value(value);
+    return WhereData("${this.fullName} ${op} {${this.jsonKeyName}}", JsonMap("${this.jsonKeyName}" to valueValue))
 }
 
 /**

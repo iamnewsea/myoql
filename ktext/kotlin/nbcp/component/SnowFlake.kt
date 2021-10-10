@@ -26,16 +26,19 @@ class SnowFlake : InitializingBean {
          * 起始的时间戳 = 2000年1月1日
          */
         private const val START_STMP = 946684800000L
+
         /**
          * 每一部分占用的位数
          */
         private const val SEQUENCE_BIT: Int = 10 //序列号占用的位数
         private const val MACHINE_BIT: Int = 10 //机器标识占用的位数
+
         /**
          * 每一部分的最大值
          */
         private const val MAX_MACHINE_NUM = -1L xor (-1L shl MACHINE_BIT.toInt())
         private const val MAX_SEQUENCE = -1L xor (-1L shl SEQUENCE_BIT.toInt())
+
         /**
          * 每一部分向左的位移
          */
@@ -73,8 +76,8 @@ class SnowFlake : InitializingBean {
                 logger.info("雪花算法休息 1 毫秒!");
                 try {
                     Thread.sleep(1)
-                } catch (e: InterruptedException) {
-                    e.printStackTrace()
+                } catch (e: Exception) {
+                    logger.error("线程sleep出错", e)
                 }
                 return nextId()
             }
@@ -84,7 +87,7 @@ class SnowFlake : InitializingBean {
         lastStmp = currStmp
 
         return (currStmp - START_STMP) shl TIMESTMP_LEFT or
-                (machineId shl MACHINE_LEFT).toLong() or
-                sequence
+            (machineId shl MACHINE_LEFT).toLong() or
+            sequence
     }
 }

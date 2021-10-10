@@ -76,15 +76,9 @@ class MybatisDbConfig {
 //        config.addInterceptor(QueryInterceptor())
 //        config.addInterceptor(UpdateInterceptor())
         config.addInterceptor(MyBatisInterceptor())
-
         bean.setConfiguration(config)
-        try {
-            return bean.`object`
-        } catch (e: Exception) {
-            e.printStackTrace()
-            throw RuntimeException(e)
-        }
-
+        
+        return bean.`object`
     }
 
     fun sqlSessionTemplate(sqlSessionFactory: SqlSessionFactory): SqlSessionTemplate {
