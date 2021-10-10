@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 
-class RedisRenewalDynamicService :InitializingBean  {
+class RedisRenewalDynamicService : InitializingBean {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
@@ -56,8 +56,7 @@ class RedisRenewalDynamicService :InitializingBean  {
                 try {
                     renewal_cache.consumeTask()
                 } catch (ex: Exception) {
-                    ex.printStackTrace()
-                    logger.error(ex.message);
+                    logger.error("Redis续期线程出错,1秒后再试", ex);
                 }
             }
         }

@@ -3,16 +3,11 @@
 
 package nbcp.db.sql
 
-import nbcp.db.IdName
 import nbcp.comm.*
 import nbcp.db.sql.*
 import nbcp.db.mysql.*
 import java.io.Serializable
-import java.lang.reflect.ParameterizedType
-import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.*
-import java.util.regex.Pattern
 
 /**
  * Created by udi on 17-7-10.
@@ -48,8 +43,8 @@ fun proc_value(value: Any): Any {
 //}
 
 private fun SqlColumnName.column_match_value(op: String, value: Serializable): WhereData {
-    var value = proc_value(value);
-    return WhereData("${this.fullName} ${op} {${this.jsonKeyName}}", JsonMap("${this.jsonKeyName}" to value))
+    var valueValue = proc_value(value);
+    return WhereData("${this.fullName} ${op} {${this.jsonKeyName}}", JsonMap("${this.jsonKeyName}" to valueValue))
 }
 
 /**
@@ -162,10 +157,10 @@ infix fun SqlColumnName.match_lessThan(value: Serializable): WhereData {
 
 
 private fun SqlColumnName.column_match_between(min: Any, max: Any): WhereData {
-    var min = proc_value(min);
-    var max = proc_value(max);
+    var minValue = proc_value(min);
+    var maxValue = proc_value(max);
 
-    return WhereData("${this.fullName} >= {${this.jsonKeyName}_min} and ${this.fullName} < {${this.jsonKeyName}_max}", JsonMap("${this.jsonKeyName}_min" to min, "${this.jsonKeyName}_max" to max));
+    return WhereData("${this.fullName} >= {${this.jsonKeyName}_min} and ${this.fullName} < {${this.jsonKeyName}_max}", JsonMap("${this.jsonKeyName}_min" to minValue, "${this.jsonKeyName}_max" to maxValue));
 }
 
 //fun SqlColumnName.match_between(min: Number, max: Number): WhereData = this.column_match_between(min, max)

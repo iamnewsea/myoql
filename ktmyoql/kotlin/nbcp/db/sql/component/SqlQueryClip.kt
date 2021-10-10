@@ -136,7 +136,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
         joinTable: M2,
         select: ((M2) -> SqlColumnNames)? = null
     ): SqlQueryClip<M, T> {
-        this.join(joinTable, { a, b -> getJoinOnWhere(joinTable) }, select)
+        this.join(joinTable, { _, _ -> getJoinOnWhere(joinTable) }, select)
         return this
     }
 
@@ -163,7 +163,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
         joinTable: M2,
         select: ((M2) -> SqlColumnNames)? = null
     ): SqlQueryClip<M, T> {
-        this.left_join(joinTable, { a, b -> getJoinOnWhere(joinTable) }, select)
+        this.left_join(joinTable, { _, _ -> getJoinOnWhere(joinTable) }, select)
         return this
     }
 
@@ -413,7 +413,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
 
         var executeData = SqlExecuteData(exp + sql.executeSql, sql.parameters)
 
-        var error : Exception? = null;
+        var error: Exception? = null;
         var n = -1;
         var startAt = LocalDateTime.now()
         try {
@@ -427,7 +427,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
             error = e;
             throw e;
         } finally {
-            SqlLogger.logQuery(error,tableName,executeData,n);
+            SqlLogger.logQuery(error, tableName, executeData, n);
         }
 
         db.affectRowCount = n

@@ -70,8 +70,7 @@ open class RedisCacheAopService {
                     var httpContext = Class.forName("nbcp.web.HttpContext")
                     ext += ":" + getRequestParamFullUrl(httpContext.getMethod("getRequest").invoke(null))
                 } catch (e: Exception) {
-                    logger.warn("在Web环境下找不到 HttpContext.request，忽略缓存中的路径")
-                    e.printStackTrace();
+                    logger.error("在Web环境下找不到 HttpContext.request，忽略缓存中的路径",e)
                 }
             }
 
