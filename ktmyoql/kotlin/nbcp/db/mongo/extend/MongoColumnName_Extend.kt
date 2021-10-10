@@ -62,7 +62,7 @@ private fun proc_mongo_match(key: MongoColumnName, value: Any?): Pair<String, An
     if (type.isEnum) {
         value = value.toString();
     } else if (type == LocalDateTime::class.java ||
-        type == LocalDate::class.java
+            type == LocalDate::class.java
     ) {
         value = value.AsLocalDateTime().AsDate()
     } else if (type.IsStringType) {
@@ -133,8 +133,8 @@ infix fun MongoColumnName.match_like(like: String): Criteria {
 }
 
 infix fun MongoColumnName.match_not_equal(value: Any?): Criteria {
-    var (key, to) = proc_mongo_match(this, value);
-    return Criteria.where(key).`ne`(to)
+    val (key, toValue) = proc_mongo_match(this, value);
+    return Criteria.where(key).`ne`(toValue)
 }
 
 
@@ -151,14 +151,14 @@ infix fun String.match(to: Any?): Criteria {
 }
 
 infix fun MongoColumnName.match(to: Any?): Criteria {
-    var (key, to) = proc_mongo_match(this, to);
+    val (key, toValue) = proc_mongo_match(this, to);
 
-    return Criteria.where(key).`is`(to);// Pair<String, T>(this, to);
+    return Criteria.where(key).`is`(toValue);// Pair<String, T>(this, to);
 }
 
 //array_all
 infix fun MongoColumnName.match_all(to: Array<*>): Criteria {
-    var (key, tos) = proc_mongo_match(this, to)
+    val (key, tos) = proc_mongo_match(this, to)
 
     return Criteria.where(key).`all`(*(tos as Array<*>));
 }
@@ -170,29 +170,29 @@ infix fun MongoColumnName.match_all(to: Array<*>): Criteria {
 
 
 infix fun MongoColumnName.match_type(to: MongoTypeEnum): Criteria {
-    var (key, _) = proc_mongo_match(this, to);
+    val (key, _) = proc_mongo_match(this, to);
 
     return Criteria.where(key).`type`(to.value);// Pair<String, T>(this, to);
 }
 
 
 infix fun MongoColumnName.match_gte(to: Any): Criteria {
-    var (key, to) = proc_mongo_match(this, to);
-    return Criteria.where(key).gte(to!!);
+    val (key, toValue) = proc_mongo_match(this, to);
+    return Criteria.where(key).gte(toValue!!);
 }
 
 infix fun MongoColumnName.match_lte(to: Any): Criteria {
-    var (key, toValue) = proc_mongo_match(this, to);
+    val (key, toValue) = proc_mongo_match(this, to);
     return Criteria.where(key).lte(toValue!!);
 }
 
 infix fun MongoColumnName.match_greaterThan(to: Any): Criteria {
-    var (key, toValue) = proc_mongo_match(this, to);
+    val (key, toValue) = proc_mongo_match(this, to);
     return Criteria.where(key).gt(toValue!!);
 }
 
 infix fun MongoColumnName.match_lessThan(to: Any): Criteria {
-    var (key, toValue) = proc_mongo_match(this, to);
+    val (key, toValue) = proc_mongo_match(this, to);
     return Criteria.where(key).lt(toValue!!);
 }
 
@@ -249,7 +249,7 @@ infix fun MongoColumnName.match_hasValue(value: Boolean): Criteria {
         return this.match_exists(true).match_and(this.match_not_equal(null));
     }
 
-    return return this.match_exists(false).match_or(this.match(null));
+    return this.match_exists(false).match_or(this.match(null));
 }
 
 

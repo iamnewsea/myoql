@@ -28,7 +28,7 @@ enum class RecursionReturnEnum private constructor(val value: Int) {
  * 递归执行工具类。
  */
 object RecursionUtil {
-    @JvmOverloads
+
     fun <T> filter(
         container: List<T>,
         producer: (T) -> MutableList<T>,
@@ -70,7 +70,7 @@ object RecursionUtil {
         RecursionUtil.execute<T>(
             container,
             producer,
-            { wbs, index ->
+            { wbs, _ ->
                 var item = wbs.last();
                 var item_id = idCallback(item)
                 if (list_wbs_ids.contains(item_id) == false) {
@@ -92,7 +92,6 @@ object RecursionUtil {
      * @param producer: 生产者，获取下级集合。
      * @param consumer: 消费者，参数：Wbs对象，当前对象的索引。
      */
-    @JvmOverloads
     fun <T> execute(
         container: List<T>,
         producer: (T) -> MutableList<T>,
@@ -141,7 +140,6 @@ object RecursionUtil {
      * @param producer: 生产者，获取下级集合。
      * @param consumer: 生产者
      */
-    @JvmOverloads
     fun <T> findOne(
         container: Collection<T>,
         producer: (T) -> Collection<T>,
@@ -240,7 +238,7 @@ object RecursionUtil {
         }
 
         //判断对象是否是 Map
-        return json.keys.toTypedArray().ForEachExt { key, index ->
+        return json.keys.toTypedArray().ForEachExt { key, _ ->
             var value = json.get(key);
             if (value == null) {
                 return@ForEachExt true;
@@ -333,7 +331,7 @@ object RecursionUtil {
 
         return type.AllFields.ForEachExt { it, index ->
 
-            var key = it.name;
+//            var key = it.name;
             var value = it.get(value);
 
             if (value == null) {

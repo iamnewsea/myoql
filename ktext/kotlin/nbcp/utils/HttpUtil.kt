@@ -389,10 +389,9 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         this.response.resultAction = { input ->
 
             var bytes = ByteArray(CACHESIZE);
-            var bytes_len = 0;
 
             while (true) {
-                bytes_len = input.read(bytes)
+                val bytes_len = input.read(bytes)
                 if (bytes_len <= 0) {
                     break;
                 }
@@ -447,11 +446,10 @@ Content-Type: application/octet-stream
             )
 
 
-            var bytes = ByteArray(CACHESIZE);
-            var bytes_len = 0;
+            val bytes = ByteArray(CACHESIZE);
             fileStream.use { input ->
                 while (true) {
-                    bytes_len = input.read(bytes)
+                    val bytes_len = input.read(bytes)
                     if (bytes_len <= 0) {
                         break;
                     }

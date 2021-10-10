@@ -38,7 +38,7 @@ class CacheKeySpelExecutor(val variableMap: JsonMap) {
     fun getVariableValue(it: String): String {
         var retString = it;
         if (it.contains("#")) {
-            retString = spelExpressionParser.parseExpression(it).getValue(context, String::class.java)
+            retString = spelExpressionParser.parseExpression(it).getValue(context, String::class.java) ?: ""
         }
 
         //转为全角

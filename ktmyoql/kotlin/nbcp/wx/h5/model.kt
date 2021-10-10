@@ -24,13 +24,8 @@ class JsapiTicketData : Serializable {
 
     fun fillSign(appSecret: String, jsapi_ticket: String, fullUrl: String) {
         require(appSecret.HasValue) { "缺少appSecret!" }
-
-        val string1: String
-        var signature = ""
-
         //注意这里参数名必须全部小写，且必须有序
-        //注意这里参数名必须全部小写，且必须有序
-        string1 = "jsapi_ticket=" + jsapi_ticket +
+        val string1 = "jsapi_ticket=" + jsapi_ticket +
                 "&noncestr=" + nonceStr +
                 "&timestamp=" + timestamp +
                 "&url=" + fullUrl
@@ -38,9 +33,8 @@ class JsapiTicketData : Serializable {
         val crypt = MessageDigest.getInstance("SHA-1")
         crypt.reset()
         crypt.update(string1.toByteArray(const.utf8))
-        signature = byteToHex(crypt.digest())
 
-        this.signature = signature;
+        this.signature = byteToHex(crypt.digest());
     }
 
     private fun byteToHex(hash: ByteArray): String {

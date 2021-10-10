@@ -20,12 +20,12 @@ open class RedisSetProxy @JvmOverloads constructor(
      * 成员数量
      */
     fun size(key: String): Int {
-        var cacheKey = getFullKey(key);
+        val cacheKey = getFullKey(key);
         return stringCommand.opsForSet().size(cacheKey).toInt().AsInt()
     }
 
     fun isMember(key: String, member: String): Boolean {
-        var cacheKey = getFullKey(key);
+        val cacheKey = getFullKey(key);
         return stringCommand.opsForSet().isMember(cacheKey, member)
     }
 
@@ -35,9 +35,8 @@ open class RedisSetProxy @JvmOverloads constructor(
      */
     fun removeItems(key: String, vararg members: String): Long {
         if (!members.any()) return 0;
-        var cacheKey = getFullKey(key);
-        var ret = stringCommand.opsForSet().remove(cacheKey, *members);
-        return ret;
+        val cacheKey = getFullKey(key);
+        return stringCommand.opsForSet().remove(cacheKey, *members);
     }
 
 

@@ -26,7 +26,6 @@ class SqlSpreadColumnEvent_Select : ISqlEntitySelect {
         if (select is SqlQueryClip<*, *> == false) {
             return
         }
-        var select = select as SqlQueryClip<SqlBaseMetaTable<Serializable>, Serializable>
         var spreads = select.mainEntity.getSpreadColumns();
         spreads.forEach { spread ->
             result.forEach { row ->

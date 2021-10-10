@@ -90,13 +90,13 @@ fun Response.getResultMsg(): EsResultMsg {
     ret.took = result_map.get("took").AsInt()
 
     var items = result_map.get("items") as List<Any>;
-    if (items.any() == false) {
+    if (!items.any()) {
         return ret;
     }
 
     var item = items.first() as Map<String, Any>;
     var item_keys = item.keys;
-    if (item_keys.any() == false) {
+    if (!item_keys.any()) {
         return ret;
     }
 
@@ -108,7 +108,7 @@ fun Response.getResultMsg(): EsResultMsg {
     ret.status = item_value1.get("status").AsInt()
 
     var error = item_value1.get("error") as Map<String, Any>?;
-    if (error == null || error.keys.any() == false) {
+    if (error == null || !error.keys.any()) {
         return ret;
     }
 

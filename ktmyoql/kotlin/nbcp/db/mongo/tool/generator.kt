@@ -271,18 +271,18 @@ data class moer_map(val _pname: String)
             return "";
         }
 
-        var ret = getMetaValue(field.name, field.type, parentTypeName);
+        val ret = getMetaValue(field.name, field.type, parentTypeName);
         if (ret.HasValue) return ret;
 
 
         if (List::class.java.isAssignableFrom(field.type)) {
-            var actType = (field.genericType as ParameterizedType).GetActualClass(0, {
+            val actType = (field.genericType as ParameterizedType).GetActualClass(0, {
                 return@GetActualClass parentType.GetFirstTypeArguments()[0] as Class<*>;
             })
 
 
-            var ret = getMetaValue(field.name, actType, parentTypeName);
-            if (ret.HasValue) return ret;
+            val ret2 = getMetaValue(field.name, actType, parentTypeName);
+            if (ret2.HasValue) return ret2;
         }
 
         return "----找不到getMetaValue----"

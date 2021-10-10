@@ -55,7 +55,7 @@ open class RedisCacheAopService {
         }
 
 
-        var variables = LocalVariableTableParameterNameDiscoverer().getParameterNames(method)
+        var variables = LocalVariableTableParameterNameDiscoverer().getParameterNames(method) ?: arrayOf()
         var variableMap = JsonMap();
         for (i in variables.indices) {
             variableMap.put(variables.get(i), args.get(i))
@@ -121,7 +121,7 @@ open class RedisCacheAopService {
     }
 
     private fun brokeCache(method: Method, args: Array<Any>, cache: BrokeRedisCache) {
-        var variables = LocalVariableTableParameterNameDiscoverer().getParameterNames(method)
+        var variables = LocalVariableTableParameterNameDiscoverer().getParameterNames(method) ?: arrayOf()
         var variableMap = JsonMap();
         for (i in variables.indices) {
             variableMap.put(variables.get(i), args.get(i))

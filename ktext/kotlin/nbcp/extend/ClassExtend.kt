@@ -230,8 +230,7 @@ val Class<*>.AllFields: List<Field>
 
 
 fun Class<*>.FindField(fieldName: String): Field? {
-    var ret: Field? = null
-    ret = this.declaredFields.find { it.name == fieldName };
+    val ret = this.declaredFields.find { it.name == fieldName };
     if (ret != null) return ret;
 
 

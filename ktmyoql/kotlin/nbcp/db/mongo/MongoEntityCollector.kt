@@ -138,9 +138,9 @@ class MongoEntityCollector : BeanPostProcessor {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityQuery, EventResult>>()
         usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
-            queryEvent.ForEachExt { it, index ->
+            queryEvent.ForEachExt { it, _ ->
                 var ret = it.beforeQuery(query);
-                if (ret.result == false) {
+                if (!ret.result) {
                     return@ForEachExt false;
                 }
                 list.add(it to ret)
@@ -156,7 +156,7 @@ class MongoEntityCollector : BeanPostProcessor {
         usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
             insertEvent.ForEachExt { it, index ->
                 var ret = it.beforeInsert(insert);
-                if (ret.result == false) {
+                if (!ret.result) {
                     return@ForEachExt false;
                 }
                 list.add(it to ret)
@@ -187,9 +187,9 @@ class MongoEntityCollector : BeanPostProcessor {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityDelete, EventResult>>()
         usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
-            deleteEvent.ForEachExt { it, index ->
+            deleteEvent.ForEachExt { it, _ ->
                 var ret = it.beforeDelete(delete);
-                if (ret.result == false) {
+                if (!ret.result) {
                     return@ForEachExt false;
                 }
                 list.add(it to ret)

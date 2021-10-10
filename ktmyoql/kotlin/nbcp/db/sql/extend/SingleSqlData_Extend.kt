@@ -43,7 +43,7 @@ infix fun SqlColumnNames.and(next: SqlColumnName): SqlColumnNames {
 
 private fun op_ext_sql(sqlData: SingleSqlData, op: String, alias: String): SingleSqlData {
     var clone = sqlData.CloneObject()
-    var op = "sum"
+
     var alias_value = alias;
     if (alias_value.isEmpty()) {
         if (clone is SqlColumnName) {

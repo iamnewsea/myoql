@@ -61,7 +61,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
 
     fun exec(): Int {
         db.affectRowCount = -1;
-        var ret = -1;
+//        var ret = -1;
 
         var settingResult = db.mongo.mongoEvents.onInserting(this)
         if (settingResult.any { it.second.result == false }) {
@@ -80,7 +80,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
                 }
             }
 
-            ret = entities.size;
+//            ret = entities.size;
             db.affectRowCount = entities.size
             return db.affectRowCount
         } catch (e: Exception) {
@@ -114,6 +114,6 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
 //            };
         }
 
-        return ret;
+//        return ret;
     }
 }

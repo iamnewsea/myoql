@@ -38,11 +38,11 @@ object Md5Util {
      * 计算校验和
      */
     fun getChksum(fileStream: FileInputStream): UShort {
-        var buffer = ByteArray(1024);
-        var len = 0;
+        val buffer = ByteArray(1024);
+
         var checksum = 0;
         while (true) {
-            len = fileStream.read(buffer, 0, 1024);
+            val len = fileStream.read(buffer, 0, 1024);
             if (len <= 0) break;
 
             for (i in buffer) {

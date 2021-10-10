@@ -222,15 +222,15 @@ object db_mongo {
             if (json is MutableMap<*, *>) {
                 var m_json = (json as MutableMap<String, Any?>);
                 if (json.contains("id")) {
-                    var value = json.get("id");
+                    var idValue = json.get("id");
 
-                    if (value is String && ObjectId.isValid(value)) {
-                        m_json.put("_id", ObjectId(value));
+                    if (idValue is String && ObjectId.isValid(idValue)) {
+                        m_json.put("_id", ObjectId(idValue));
                         m_json.remove("id")
                         return@recursionAny true;
                     }
 
-                    m_json.put("_id", value)
+                    m_json.put("_id", idValue)
                     m_json.remove("id")
                 }
             }
@@ -263,7 +263,7 @@ object db_mongo {
         }
 
         RecursionUtil.recursionAny(value, { json ->
-            json.keys.toTypedArray().forEachIndexed { index, key ->
+            json.keys.toTypedArray().forEachIndexed { _, key ->
                 if (key == null) {
                     return@forEachIndexed
                 }

@@ -151,7 +151,7 @@ fun String.ConvertToLocalDateTime(dateTimeFormatter: DateTimeFormatter? = null):
     }
 
     var datePartString = "";
-    var timePartString = "";
+
     if (wrappeT) {
         datePartString = strValue.substring(0, fenIndex - 1);
         strValue = strValue.substring(fenIndex + 2);
@@ -160,21 +160,22 @@ fun String.ConvertToLocalDateTime(dateTimeFormatter: DateTimeFormatter? = null):
         strValue = strValue.substring(fenIndex + 1);
     }
 
-    if (withZ) {
-        timePartString = strValue.Slice(0, -1)
-    } else {
-        timePartString = strValue
-    }
+    var timePartString =
+            if (withZ) {
+                strValue.Slice(0, -1)
+            } else {
+                strValue
+            }
 
     var zoneSecond = 0;
     if (withZ) {
         zoneSecond = ZoneId.systemDefault().rules.getOffset(Instant.EPOCH).totalSeconds
     }
 
-    var timezoneOffset = 0
+
     var timezoneValueMatch = """([+|-])(\d\d:\d\d)$""".toRegex().find(timePartString)
     if (timezoneValueMatch != null && timezoneValueMatch.groupValues.size > 2) {
-        timezoneOffset = (timezoneValueMatch.groupValues[2] + ":00").AsLocalTime()?.totalSeconds ?: 0
+        var timezoneOffset = (timezoneValueMatch.groupValues[2] + ":00").AsLocalTime()?.totalSeconds ?: 0
 
         if (timezoneValueMatch.groupValues[1] == "-") {
             timezoneOffset = 0 - timezoneOffset

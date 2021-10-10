@@ -21,7 +21,7 @@ fun ServletResponse.WriteXmlRawValue(xml: String) {
 }
 
 fun ServletResponse.WriteJsonRawValue(json: String) {
-    this.contentType = MediaType.APPLICATION_JSON_UTF8_VALUE;
+    this.contentType = MediaType.APPLICATION_JSON_VALUE;
     this.outputStream.write(json.toByteArray(const.utf8));
 }
 

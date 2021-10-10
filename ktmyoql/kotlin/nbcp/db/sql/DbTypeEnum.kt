@@ -121,7 +121,7 @@ public enum class DbType {
      * 代码生成器用
      */
     fun toKotlinDefaultValue(): kotlin.String {
-        return return when (this) {
+        return when (this) {
             String, Text, Json, Enum -> "\"\""
             Float -> "0F"
             Long -> "0L"
@@ -130,6 +130,7 @@ public enum class DbType {
             Decimal -> "BigDecimal.ZERO"
             Boolean, Date, Time, DateTime, Other -> "null"
             Binary -> "byteArrayOf()"
+            else -> "null"
         }
     }
 

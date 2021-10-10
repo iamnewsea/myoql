@@ -167,11 +167,11 @@ body table thead th{
     }
 
     fun getEntityName(name: String): String {
-        var name = name;
+        var nameValue = name;
         nameMapping.forEach{
-            name = name.replace(it.key,it.value)
+            nameValue = nameValue.replace(it.key,it.value)
         }
-        return name[0].lowercase() + name.substring(1);
+        return nameValue[0].lowercase() + nameValue.substring(1);
     }
 
     fun getGroups(basePackage:String): HashMap<String, MutableList<Class<*>>> {
@@ -445,6 +445,7 @@ ${props.joinToString("\n")}
         var props = entType.AllFields
                 .filter { it.name != "Companion" }
                 .map {
+                    //TODO 需要测试一下，为什么没有用到。
                     var (retValue, retTypeIsBasicType) = getEntityValue(it)
                     return@map "| ${it.name} | ${it.type.simpleName} |   |"
                 }

@@ -322,10 +322,10 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                             propertyType.AllFields.forEach {
                                 var columnNameValue = columnName + "_" + it.name;
                                 var dbTypeValue = DbType.of(it.type);
-                                var type = dbTypeValue.toMySqlTypeString()
+                                var sqlTypeString = dbTypeValue.toMySqlTypeString()
 
                                 var item =
-                                        """`${columnNameValue}` ${type} not null ${if (dbTypeValue.isNumberic()) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment ''"""
+                                        """`${columnNameValue}` ${sqlTypeString} not null ${if (dbTypeValue.isNumberic()) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment ''"""
                                 list.add(item);
                             }
                         }

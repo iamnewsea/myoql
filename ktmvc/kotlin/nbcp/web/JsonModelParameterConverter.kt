@@ -12,6 +12,7 @@ import nbcp.comm.*
 import nbcp.utils.*
 import org.slf4j.LoggerFactory
 import org.springframework.web.servlet.HandlerMapping
+import java.lang.RuntimeException
 import java.lang.reflect.Method
 import java.lang.reflect.ParameterizedType
 import javax.servlet.ServletRequest
@@ -74,21 +75,21 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
     }
 
     override fun resolveArgument(
-        parameter: MethodParameter,
-        mavContainer: ModelAndViewContainer?,
-        nativeRequest: NativeWebRequest,
-        binderFactory: WebDataBinderFactory?
+            parameter: MethodParameter,
+            mavContainer: ModelAndViewContainer?,
+            nativeRequest: NativeWebRequest,
+            binderFactory: WebDataBinderFactory?
     ): Any? {
         if (mavContainer == null || binderFactory == null) return null
-        var webRequest = (nativeRequest as ServletWebRequest).request
-        var myRequest = getMyRequest(webRequest);
+        val webRequest = (nativeRequest as ServletWebRequest).request
+        val myRequest = getMyRequest(webRequest);
         var value: Any? = null
-        var key = parameter.parameterName
+        val key = parameter.parameterName
 
 
         //获取 PathVariable 的值
         value =
-            (webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as Map<String, Any?>?)?.get(key);
+                (webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as Map<String, Any?>?)?.get(key);
 
         if (value == null && webRequest.queryString != null) {
             value = getFromQuery(webRequest, parameter);
@@ -186,14 +187,14 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
     }
 
     private fun getFromQuery(webRequest: HttpServletRequest, parameter: MethodParameter): Any? {
-        var key = parameter.parameterName!!
-        var value: Any? = null
-        var queryMap = webRequest.queryJson
+        val key = parameter.parameterName!!
+
+        val queryMap = webRequest.queryJson
         if (queryMap.containsKey(key) == false) {
             return null;
         }
 
-        value = queryMap.get(key)
+        val value = queryMap.get(key)
 
         if (value == null) {
             if (parameter.parameterType.IsBooleanType) {
@@ -202,41 +203,43 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
             return null;
         }
 
+        var resultValue: Any? = null
         //如果得到了多个值。进行转换。
-        if (value::class.java.IsCollectionType) {
+        if (value is Collection<*>) {
             //如果参数是 List.
             if (parameter.parameterType.isArray) {
                 if (parameter.parameterType.componentType.IsStringType) {
-                    value = (value as Collection<String>).toTypedArray()
+                    resultValue = value.toTypedArray()
                 } else {
-                    value = (value as Collection<String>).map { it.ConvertType(parameter.parameterType.componentType) }
-                        .toTypedArray()
+                    resultValue = value.map { it!!.ConvertType(parameter.parameterType.componentType) }
+                            .toTypedArray()
                 }
             } else if (parameter.parameterType.IsCollectionType) {
                 var genType = (parameter.genericParameterType as ParameterizedType).GetActualClass(0);
                 if (!genType.IsStringType) {
-                    value = (value as Collection<String>).map { it.ConvertType(genType) }
+
+                    resultValue = value.map { it!!.ConvertType(genType) }
                 }
             } else if (parameter.parameterType.IsStringType) {
-                value = (value as Collection<String>).joinToString(",")
+                resultValue = value.joinToString(",")
             }
 
-            return value;
+            return resultValue;
         }
 
 
         //如果得到了一个值，但是参数是 List.
         if (parameter.parameterType.isArray) {
-            value = arrayOf(value.ConvertType(parameter.parameterType.componentType))
+            resultValue = arrayOf(value.ConvertType(parameter.parameterType.componentType))
         } else if (parameter.parameterType.IsCollectionType) {
             var genType = (parameter.genericParameterType as ParameterizedType).GetActualClass(0);
-            value = listOf(value.ConvertType(genType))
-        } else if (parameter.parameterType.IsStringType == false) {
-            value = value.ConvertType(parameter.parameterType)
+            resultValue = listOf(value.ConvertType(genType))
+        } else if (!parameter.parameterType.IsStringType) {
+            resultValue = value.ConvertType(parameter.parameterType)
         }
 
 
-        return value;
+        return resultValue;
     }
 
 }

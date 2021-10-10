@@ -72,16 +72,14 @@ class RedisNumberProxy(
         var cacheKey = getFullKey(key)
         if (cacheKey.isEmpty()) return -1L
 
-        var ret = stringCommand.opsForValue().increment(cacheKey, value.AsLong())
-        return ret;
+        return stringCommand.opsForValue().increment(cacheKey, value.AsLong())
     }
 
     fun decrement(key: String, value: Int = 1): Long {
         var cacheKey = getFullKey(key)
         if (cacheKey.isEmpty()) return -1L
 
-        var ret = stringCommand.opsForValue().decrement(cacheKey, value.AsLong())
-        return ret;
+        return  stringCommand.opsForValue().decrement(cacheKey, value.AsLong())
     }
 }
 

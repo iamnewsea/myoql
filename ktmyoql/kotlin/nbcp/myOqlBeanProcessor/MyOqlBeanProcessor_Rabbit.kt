@@ -31,9 +31,9 @@ class MyOqlBeanProcessor_Rabbit : BeanPostProcessor {
             }
 
             //需要实现 ReturnCallback 接口
-            if (bean.isPublisherReturns == null) {
-                bean.isPublisherReturns = true;
-            }
+//            if (bean.isPublisherReturns == null) {
+//                bean.isPublisherReturns = true;
+//            }
 
             //手动确认
             if (bean.listener.simple.acknowledgeMode == null) {

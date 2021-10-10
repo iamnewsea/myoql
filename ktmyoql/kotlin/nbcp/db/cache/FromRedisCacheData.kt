@@ -140,7 +140,7 @@ data class FromRedisCacheData(
 
         var ret = consumer.get();
 
-        if (ret != null && cacheSeconds >= 0 && cacheKey.HasValue) {
+        if (cacheSeconds >= 0 && cacheKey.HasValue) {
             var cacheSeconds = this.cacheSeconds
             //默认3分钟
             if (cacheSeconds == 0) {

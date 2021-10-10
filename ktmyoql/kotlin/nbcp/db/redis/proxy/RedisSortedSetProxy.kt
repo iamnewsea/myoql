@@ -17,25 +17,25 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
         BaseRedisProxy(group, defaultCacheSeconds) {
 
     fun add(key: String, member: String, score: Double) {
-        var cacheKey = getFullKey(key);
+        val cacheKey = getFullKey(key);
         stringCommand.opsForZSet().add(cacheKey, member, score)
     }
 
     fun add(key: String, vararg value: Pair<String, Double>) {
         if (value.any() == false) return
-        var cacheKey = getFullKey(key);
+        val cacheKey = getFullKey(key);
 
-        var set = value.map { DefaultTypedTuple(it.first, it.second)  }.toSet()
+        val set = value.map { DefaultTypedTuple(it.first, it.second)  }.toSet()
         stringCommand.opsForZSet().add(cacheKey, set)
     }
 
     fun size(key: String, member: String): Int {
-        var cacheKey = getFullKey(key);
+        val cacheKey = getFullKey(key);
         return stringCommand.opsForZSet().size(cacheKey).AsInt();
     }
 
     fun isMember(key: String, member: String): Boolean {
-        var cacheKey = getFullKey(key);
+        val cacheKey = getFullKey(key);
         return stringCommand.opsForZSet().score(cacheKey, member) != null
     }
 
@@ -52,7 +52,7 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
      * 按分值获取区间
      */
     fun getListByScore(key: String, minScore: Double, maxScore: Double): List<String> {
-        var cacheKey = getFullKey(key);
+        val cacheKey = getFullKey(key);
         return stringCommand.opsForZSet().rangeByScore(cacheKey, minScore, maxScore).map { it.AsString() }
     }
 
@@ -60,7 +60,7 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
      * 按索引获取区间
      */
     fun getListByIndex(key: String, start: Int, end: Int): List<String> {
-        var cacheKey = getFullKey(key);
+        val cacheKey = getFullKey(key);
         return stringCommand.opsForZSet().range(cacheKey, start.toLong(), end.toLong()).map { it.AsString() }
     }
 
@@ -68,7 +68,7 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
      * 按索引取第一个
      */
     fun getItem(key: String): String {
-        var cacheKey = getFullKey(key);
+        val cacheKey = getFullKey(key);
         return stringCommand.opsForZSet().range(cacheKey, 0L, 0L).firstOrNull().AsString()
     }
 
@@ -76,7 +76,7 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
      * 获取分值
      */
     fun getScore(key: String, member: String): Double {
-        var cacheKey = getFullKey(key);
+        val cacheKey = getFullKey(key);
         return stringCommand.opsForZSet().score(cacheKey, member)
     }
 
@@ -95,8 +95,7 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
      * 移除
      */
     fun removeItems(key: String, vararg members: String): Long {
-        var cacheKey = getFullKey(key);
-        var ret = stringCommand.opsForZSet().remove(cacheKey, *members)
-        return ret;
+        val cacheKey = getFullKey(key);
+        return  stringCommand.opsForZSet().remove(cacheKey, *members)
     }
 }

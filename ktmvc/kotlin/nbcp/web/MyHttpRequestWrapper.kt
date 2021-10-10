@@ -173,9 +173,11 @@ private constructor(request: HttpServletRequest) : HttpServletRequestWrapper(req
             var ret = queryJson.get(key)
             if (ret != null) {
                 if (ret is String) return ret;
-                return (ret as Collection<String>).joinToString(",")
+                if (ret is Collection<*>) {
+                    return (ret as Collection<String>).joinToString(",")
+                }
+                throw RuntimeException("不识别的类型:${ret::class.java.name}")
             }
-
         }
 
         if (json.containsKey(key)) {

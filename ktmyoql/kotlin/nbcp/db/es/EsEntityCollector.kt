@@ -161,9 +161,9 @@ class EsEntityCollector : BeanPostProcessor {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IEsEntityUpdate, EventResult>>()
         usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
-            updateEvent.ForEachExt { it, index ->
+            updateEvent.ForEachExt { it, _ ->
                 var ret = it.beforeUpdate(update);
-                if (ret.result == false) {
+                if (!ret.result) {
                     return@ForEachExt false;
                 }
                 list.add(it to ret)
