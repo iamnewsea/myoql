@@ -42,7 +42,7 @@ class MyLogBackFilter : TurboFilter() {
             return FilterReply.DENY;
         }
 
-        var log = scopes.GetLatest<LogLevelScope>()
+        val log = scopes.GetLatest<LogLevelScope>()
         if (log != null) {
             if (level.levelInt >= log.value) {
                 return FilterReply.ACCEPT
@@ -119,7 +119,7 @@ class MyGroupLogBackFilter : Filter<ILoggingEvent>() {
     var group: String = "";
 
     override fun decide(event: ILoggingEvent?): FilterReply {
-        var groupScope = scopes.GetLatest<GroupLogScope>();
+        val groupScope = scopes.GetLatest<GroupLogScope>();
         if (groupScope != null) {
             return if (groupScope.value == group) FilterReply.ACCEPT else FilterReply.DENY
         }

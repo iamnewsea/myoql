@@ -51,8 +51,8 @@ abstract class SqlBaseMetaTable<T : Serializable>(val tableClass: Class<T>, tabl
  * 设置别名。
  */
 fun <T : SqlBaseMetaTable<M>, M> T.alias(alias: String): T {
-    var type = this::class.java;
-    var ret = type.newInstance()
+    val type = this::class.java;
+    val ret = type.newInstance()
 
     type.AllFields.forEach {
         if (Modifier.isFinal(it.modifiers)) {

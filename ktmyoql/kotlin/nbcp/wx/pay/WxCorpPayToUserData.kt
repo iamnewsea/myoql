@@ -60,12 +60,12 @@ class WxCorpPayToUserData @JvmOverloads constructor(
      *  @param pkcs12FilePath: 如果是打到资源包中，使用： ClassPathResource("wx-mch-cert/apiclient_cert.p12").inputStream
      */
     fun payToPerson(mchSecret: String, pkcs12FilePath: InputStream): JsonResult {
-        var url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers"
+        val url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers"
         val http = HttpUtil(url)
         http.request.contentType = "text/xml;charset=UTF-8"
 
 
-        var postData = wx.sys.toXml(mchSecret, this);
+        val postData = wx.sys.toXml(mchSecret, this);
 
         http.sslSocketFactory = getSSLSocketFactory(pkcs12FilePath);
 

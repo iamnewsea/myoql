@@ -23,7 +23,7 @@ open class PzxEntityTestApplication {
             //disabled banner, don't want to see the spring logo
             val app = SpringApplication(PzxEntityTestApplication::class.java)
             app.setBannerMode(Banner.Mode.OFF)
-            var context = app.run(*args)
+//            val context = app.run(*args)
 
 //            SpringUtil.context = context;
         }

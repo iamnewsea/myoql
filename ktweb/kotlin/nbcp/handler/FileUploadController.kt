@@ -41,7 +41,7 @@ class FileUploadController {
             throw RuntimeException("request非StandardMultipartHttpServletRequest类型")
         }
 
-        var ret =
+        val ret =
             uploadService.upload(request, IdName(request.UserId, request.UserName), request.LoginUser.organization.id);
 
         if (ret.msg.HasValue) {
@@ -49,7 +49,7 @@ class FileUploadController {
             return;
         }
 
-        var ids = ret.data;
+        val ids = ret.data;
 
         response.contentType = "application/json;charset=UTF-8"
         usingScope(JsonSceneEnumScope.Web) {

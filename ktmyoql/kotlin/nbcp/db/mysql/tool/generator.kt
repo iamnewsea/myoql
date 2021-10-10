@@ -471,7 +471,7 @@ fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName}>.s
         }
 
 
-        var ret = EntityResult();
+        val ret = EntityResult();
         ret.body = """
 class ${entityTypeName}(datasource:String="")
     :SqlBaseMetaTable<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java,"${dbName}") {

@@ -41,9 +41,9 @@ class MongoInsertEvent : IMongoEntityInsert {
                     }
                 }
 
-                var createAtField = entityClassFields.firstOrNull { it.name == "createAt" }
+                val createAtField = entityClassFields.firstOrNull { it.name == "createAt" }
                 if (createAtField != null) {
-                    var createAtValue = createAtField.get(entity);
+                    val createAtValue = createAtField.get(entity);
                     if (createAtValue == null) {
                         createAtField.set(entity, LocalDateTime.now())
                     }

@@ -43,7 +43,7 @@ open class CrosFilter : Filter {
             return;
         }
 
-        var httpRequest = request
+        val httpRequest = request
         var httpResponse = response as HttpServletResponse
 
         var request2: MyHttpRequestWrapper? = null
@@ -52,7 +52,7 @@ open class CrosFilter : Filter {
                 request2 = MyHttpRequestWrapper.create(httpRequest);
                 request2!!.removeHeader("origin")
 
-                var originClient = request.getHeader("origin") ?: ""
+                val originClient = request.getHeader("origin") ?: ""
                 logger.Important("处理了跨域,并移除了origin, 请求源:${originClient}, url:${httpRequest.fullUrl}")
             }
         }.forEach { key, value ->
@@ -64,7 +64,7 @@ open class CrosFilter : Filter {
             return;
         }
 
-        var targetRequest = request2 ?: request;
+        val targetRequest = request2 ?: request;
 
 
 

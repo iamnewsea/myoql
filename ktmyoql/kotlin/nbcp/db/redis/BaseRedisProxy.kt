@@ -53,7 +53,7 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
      */
     @JvmOverloads
     fun renewalKey(key: String, cacheSeconds: Int = defaultCacheSeconds) {
-        var cs = cacheSeconds.AsInt();
+        val cs = cacheSeconds.AsInt();
         if (cs <= 0) {
             RedisRenewalDynamicService.clearDelayRenewalKeys(getFullKey(key))
             return;
@@ -68,7 +68,7 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
      * 如果参数为空，则删除group键
      */
     fun deleteKeys(vararg keys: String): Long {
-        var fullKeys = keys.map { getFullKey(it) }
+        val fullKeys = keys.map { getFullKey(it) }
         if (fullKeys.any() == false) {
             return 0;
         }

@@ -75,13 +75,13 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
             search.toUrlQuery().IfHasValue { "?" + it }
         )
 
-        var data = mutableListOf<Any>()
+        val data = mutableListOf<Any>()
         this.entities.forEach {
             var id = "";
             if (it is Map<*, *>) {
                 id = it.get("id").AsString()
             } else {
-                var idField = it.javaClass.FindField("id")
+                val idField = it.javaClass.FindField("id")
                 if (idField != null) {
                     id = idField.get(it).AsString()
                 }
@@ -100,9 +100,9 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
         request.entity = NStringEntity(requestBody, ContentType.create("application/x-ndjson", const.utf8))
 
         var responseBody = EsResultMsg()
-        var startAt = LocalDateTime.now()
+        val startAt = LocalDateTime.now()
         try {
-            var response = esTemplate.performRequest(request)
+            val response = esTemplate.performRequest(request)
             if (response.statusLine.statusCode != 200) {
                 return ret;
             }

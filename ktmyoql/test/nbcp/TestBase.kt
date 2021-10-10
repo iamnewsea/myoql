@@ -64,14 +64,14 @@ abstract class TestBase {
 
     fun execTimes(name: String, times: Int, func: (Int) -> String) {
         println("${name} 执行1000次:")
-        var startAt = LocalDateTime.now()
+        val startAt = LocalDateTime.now()
         for (i in 1..times) {
             var ret = func(i)
             if (ret.isEmpty()) continue
 
             println(ret)
         }
-        var endAt = LocalDateTime.now()
+        val endAt = LocalDateTime.now()
 
         println((endAt - startAt).toString())
     }

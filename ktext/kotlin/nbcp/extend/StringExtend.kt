@@ -702,7 +702,7 @@ fun String.formatWithJson(
             throw java.lang.RuntimeException("匹配出错!")
         }
 
-        var oriKey = result.groupValues.last()
+        val oriKey = result.groupValues.last()
 
         var value: String? = json.getStringValue(oriKey)
 

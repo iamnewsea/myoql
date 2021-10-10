@@ -26,7 +26,7 @@ open class MongoColumnName @JvmOverloads constructor(value: String = "") : MyStr
     }
 
     infix fun and(other: MongoColumnName): MongoColumns {
-        var ret = MongoColumns()
+        val ret = MongoColumns()
         ret.add(this);
         ret.add(other);
         return ret;

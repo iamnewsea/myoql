@@ -95,7 +95,7 @@ class TestKtExt_MySql : TestBase() {
 
     @Test
     fun test_gen() {
-        var file = UserCodeGenerator.genVueCard("base", db.sql_base.s_annex);
+        val file = UserCodeGenerator.genVueCard("base", db.sql_base.s_annex);
 
         println(file)
     }

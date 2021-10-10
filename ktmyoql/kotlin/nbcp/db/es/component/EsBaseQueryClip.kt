@@ -223,7 +223,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
         }
 
 
-        var url = "/${collectionName}/_search" + search.toUrlQuery().IfHasValue { "?" + it }
+        val url = "/${collectionName}/_search" + search.toUrlQuery().IfHasValue { "?" + it }
         return url
     }
 }

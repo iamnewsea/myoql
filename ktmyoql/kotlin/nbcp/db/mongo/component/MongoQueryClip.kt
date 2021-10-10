@@ -78,7 +78,7 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Serializable>(var moerE
 
     fun whereOr(vararg wheres: Criteria): MongoQueryClip<M, E> {
         if (wheres.any() == false) return this;
-        var where = Criteria();
+        val where = Criteria();
         where.orOperator(*wheres)
         this.whereData.add(where);
         return this;

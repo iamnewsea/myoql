@@ -82,7 +82,7 @@ class ZipCompressData(file: File) {
 
     @JvmOverloads
     fun addFile(stream: InputStream, fileNameInZip: String, fileComment: String = ""): ZipCompressData {
-        var param = getParam();
+        val param = getParam();
         param.fileComment = fileComment
         param.fileNameInZip = fileNameInZip
         param.isOverrideExistingFilesInZip = true;

@@ -663,7 +663,7 @@ object MyUtil {
                             }
                         } else if (params.size == 0) {
                             if (value != null && map.containsKey(funcName)) {
-                                var funcBody = map.get(funcName)!!
+                                val funcBody = map.get(funcName)!!
                                 result = funcBody.invoke(value)
                             } else if (funcCallback != null) {
                                 result = funcCallback.invoke(key, value, funcName, "")

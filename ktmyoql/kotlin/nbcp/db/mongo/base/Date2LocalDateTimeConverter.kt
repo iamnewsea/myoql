@@ -32,11 +32,11 @@ class Date2LocalDateTimeConverter : GenericConverter {
     override fun convert(value: Any?, sourceType: TypeDescriptor, targetType: TypeDescriptor): Any? {
         if (value == null) return null
 
-        var valueClass = sourceType.type;
-        var targetClass = targetType.type;
+        val valueClass = sourceType.type;
+        val targetClass = targetType.type;
 
         if (valueClass == String::class.java) {
-            var strValue = value.AsString();
+            val strValue = value.AsString();
             if (strValue.isEmpty()) {
                 return null;
             }

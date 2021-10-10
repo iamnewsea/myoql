@@ -42,7 +42,7 @@ fun <M : EsBaseMetaEntity<E>, E : Serializable> M.delete(): EsDeleteClip<M> = Es
 
 
 fun <M : EsBaseMetaEntity<E>, E : Serializable> M.aggregate(): EsAggregateClip<M, E> {
-    var ret = EsAggregateClip(this);
+    val ret = EsAggregateClip(this);
     return ret;
 }
 

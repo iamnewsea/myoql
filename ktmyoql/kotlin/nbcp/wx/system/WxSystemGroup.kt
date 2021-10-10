@@ -245,11 +245,11 @@ object WxSystemGroup {
     fun pushMessage(data: wx_msg_data, appSecret: String): ApiResult<String> {
         require(appSecret.HasValue) { "缺少appSecret!" }
 
-        var wx_url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=";
+        val wx_url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=";
 
-        var tokenData = wx.officeAccount.getAccessToken(appSecret)
+        val tokenData = wx.officeAccount.getAccessToken(appSecret)
 
-        var url = HttpUtil();
+        val url = HttpUtil();
         if (tokenData.msg.HasValue) {
             return ApiResult(tokenData.msg)
         }
@@ -257,7 +257,7 @@ object WxSystemGroup {
         url.url = "${wx_url}${tokenData.data!!.token}"
         url.request.contentType = "application/json"
 
-        var ret = url.doPost(data.ToJson()).FromJson<wx_return_data>() ?: wx_return_data()
+        val ret = url.doPost(data.ToJson()).FromJson<wx_return_data>() ?: wx_return_data()
         if (ret.errcode != 0) {
             return ApiResult(ret.errmsg);
         }

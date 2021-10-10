@@ -21,7 +21,7 @@ class MyUtilTest : TestBase() {
 
     @Test
     fun getCenterLines() {
-        var txt = """
+        val txt = """
 ================================================
 TomcatWebServer:8002 -- nacos: saas-dev.nancal.com:8848(yuxh) -- nacos-config:none -- admin-api:yuxh
 ================================================
@@ -31,7 +31,7 @@ TomcatWebServer:8002 -- nacos: saas-dev.nancal.com:8848(yuxh) -- nacos-config:no
 
     @Test
     fun testformat() {
-        var ret = MyUtil.formatTemplateJson("dbr.\${group|w}.\${entity}.queryById(id)",
+        val ret = MyUtil.formatTemplateJson("dbr.\${group|w}.\${entity}.queryById(id)",
             StringMap("group" to "wx", "entity" to "user"), { key, value, func, param ->
                 ""
             })
@@ -41,7 +41,7 @@ TomcatWebServer:8002 -- nacos: saas-dev.nancal.com:8848(yuxh) -- nacos-config:no
 
     @Test
     fun testformat2() {
-        var json = JsonMap("a" to 1, "b" to JsonMap("c" to 2), "d" to IdName("id1", "name1"))
+        val json = JsonMap("a" to 1, "b" to JsonMap("c" to 2), "d" to IdName("id1", "name1"))
 
         println(MyUtil.getPathValue(json, "a"))
         println(MyUtil.getPathValue(json, "b.c"))

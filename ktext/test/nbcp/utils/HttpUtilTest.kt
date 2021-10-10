@@ -31,7 +31,7 @@ class HttpUtilTest : TestBase() {
                 "password" to "Nancal1234"
             )
 
-            var msg = http.doPost("principal=@loginName&password=@password".formatWithJson(authInfoMap, "@"))
+            val msg = http.doPost("principal=@loginName&password=@password".formatWithJson(authInfoMap, "@"))
         }
     }
 }

@@ -97,8 +97,8 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
 
         ret.forEach { ref ->
             if (ref.masterIdValues.any()) {
-                var targetCollection = MyUtil.getSmallCamelCase(ref.ref.entityClass.simpleName)
-                var update2 = MongoBaseUpdateClip(targetCollection)
+                val targetCollection = MyUtil.getSmallCamelCase(ref.ref.entityClass.simpleName)
+                val update2 = MongoBaseUpdateClip(targetCollection)
                 update2.whereData.add(MongoColumnName(ref.ref.idField) match_in ref.masterIdValues.map {
                     getObjectIdValueTypeIfNeed(
                         it

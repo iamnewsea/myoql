@@ -518,8 +518,8 @@ ${idMethods.joinToString("\n")}
     private fun getUks(entType: Class<*>, procedClasses: MutableSet<String> = mutableSetOf()): Set<String> {
         procedClasses.add(entType.name)
 
-        var uks = mutableSetOf<String>()
-        var uks_define = entType.getAnnotation(DbUks::class.java)
+        val uks = mutableSetOf<String>()
+        val uks_define = entType.getAnnotation(DbUks::class.java)
         if (uks_define != null) {
             uks.addAll(uks_define.value)
         }

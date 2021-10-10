@@ -42,7 +42,7 @@ data class WxUserData @JvmOverloads constructor(
          */
         @JvmOverloads
         fun fromH5UserInfo(h5UserInfo: WxH5UserInfoData, access_token: String = ""): WxUserData {
-            var ret = WxUserData()
+            val ret = WxUserData()
             ret.access_token = access_token;
             ret.openid = h5UserInfo.openid
             ret.nickName = h5UserInfo.nickname;
@@ -60,7 +60,7 @@ data class WxUserData @JvmOverloads constructor(
         }
 
         fun fromMiniProgramUserInfo(miniProgramUserData: WxMiniProgramUserData): WxUserData {
-            var ret = WxUserData()
+            val ret = WxUserData()
             ret.access_token = miniProgramUserData.access_token;
             ret.openid = miniProgramUserData.openid
             ret.nickName = miniProgramUserData.nickName;

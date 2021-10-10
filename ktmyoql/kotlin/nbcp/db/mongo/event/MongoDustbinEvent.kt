@@ -34,10 +34,10 @@ class MongoDustbinEvent : IMongoEntityDelete {
     }
 
     override fun delete(delete: MongoDeleteClip<*>, eventData: EventResult) {
-        var data = eventData.extData
+        val data = eventData.extData
         if (data == null) return
 
-        var dustbin = SysDustbin()
+        val dustbin = SysDustbin()
 //        dustbin.id = ObjectId().toString()
         dustbin.table = delete.collectionName
         dustbin.data = data as Serializable?;

@@ -23,7 +23,7 @@ class SqlConvertValueToDbEvent_Update : ISqlEntityUpdate {
         }
 
         annotations.forEach { field, convertersType ->
-            var converters = convertersType.map { it.createInstance() }
+            val converters = convertersType.map { it.createInstance() }
             update.sets.forEach {
                 if (it.key.name == field.name) {
 

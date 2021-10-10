@@ -31,7 +31,7 @@ abstract class EsBaseMetaEntity<T : Serializable>(val entityClass: Class<T>, ent
             }
         }
 
-        var idField = entity.javaClass.FindField("id")
+        val idField = entity.javaClass.FindField("id")
         if (idField != null) {
             idField.isAccessible = true;
             return idField.get(entity).AsString();

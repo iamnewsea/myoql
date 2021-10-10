@@ -132,7 +132,7 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
         request.entity = NStringEntity(requestBody, ContentType.create("application/x-ndjson", const.utf8))
 
 
-        var startAt = LocalDateTime.now()
+        val startAt = LocalDateTime.now()
         var response: Response? = null;
         var error: Exception? = null;
         try {

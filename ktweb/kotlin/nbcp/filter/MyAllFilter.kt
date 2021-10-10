@@ -365,7 +365,7 @@ open class MyAllFilter : Filter {
             }
         }
 
-        var endAt = LocalDateTime.now();
+        val endAt = LocalDateTime.now();
         logger.Info {
             var msg = mutableListOf<String>()
             msg.add("[response] ${request.requestURI} ${response.status} ${endAt - startAt}")

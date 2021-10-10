@@ -26,10 +26,10 @@ class SqlSpreadColumnEvent_Select : ISqlEntitySelect {
         if (select is SqlQueryClip<*, *> == false) {
             return
         }
-        var spreads = select.mainEntity.getSpreadColumns();
+        val spreads = select.mainEntity.getSpreadColumns();
         spreads.forEach { spread ->
             result.forEach { row ->
-                var spreadRowData = row.filter { it.key.startsWith(spread + "_") }
+                val spreadRowData = row.filter { it.key.startsWith(spread + "_") }
                     .ToMap({ it.key.substring(spread.length + 1) }, { it.value })
                 row.put(spread, spreadRowData);
             }

@@ -22,14 +22,14 @@ enum class ScriptLanguageEnum {
     }
 
     fun getScriptEngine(): ScriptEngine {
-        var name = this.toString();
+        val name = this.toString();
         return scriptEngine.getEngineByName(name) ?: scriptEngine.getEngineByExtension(name)
         ?: scriptEngine.getEngineByMimeType(name) ?: throw RuntimeException("不支持脚本语言 ${name}")
     }
 
 
     fun execScript(script: String): Any? {
-        var engine = getScriptEngine();
+        val engine = getScriptEngine();
         if (engine is Compilable) {
             return engine.compile(script).eval();
         }
@@ -38,7 +38,7 @@ enum class ScriptLanguageEnum {
     }
 
     fun info(): String {
-        var factory = getScriptEngine().factory
+        val factory = getScriptEngine().factory
         return listOf(
             "Name: {name}",
             "Language name:{l_name}",

@@ -49,7 +49,7 @@ inline fun <T> usingScope(init_list: List<IScopeData>, body: () -> T, finally: (
         scopes.push(it);
     }
 
-    var ret = body();
+    val ret = body();
 
     //自动释放
     init_list.asReversed().forEach {
@@ -71,7 +71,7 @@ inline fun <T> usingScope(init_list: List<IScopeData>, body: () -> T, finally: (
 
 inline val Logger.scopeInfoLevel: Boolean
     get() {
-        var logs = scopes.getScopeTypes<LogLevelScope>()
+        val logs = scopes.getScopeTypes<LogLevelScope>()
         if (logs.any()) {
             return logs.any { Level.INFO_INT >= it.value }
         }
@@ -81,7 +81,7 @@ inline val Logger.scopeInfoLevel: Boolean
 
 inline val Logger.scopeErrorLevel: Boolean
     get() {
-        var logs = scopes.getScopeTypes<LogLevelScope>()
+        val logs = scopes.getScopeTypes<LogLevelScope>()
         if (logs.any()) {
             return logs.any { Level.ERROR_INT >= it.value }
         }

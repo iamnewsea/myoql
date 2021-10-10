@@ -69,11 +69,11 @@ fun <M : SqlBaseMetaTable<T>, T : Serializable> M.insertIfNotExists(
 fun <M : SqlBaseMetaTable<out T>, T : Serializable> M.save(entity: T, unionKey: ((M) -> SqlColumnNames)): Int {
     var map = entity.ConvertJson(JsonMap::class.java)
 
-    var update = this.update();
-    var uks = unionKey(this);
+    val update = this.update();
+    val uks = unionKey(this);
 
     uks.forEach { key ->
-        var value = map.get(key.name)
+        val value = map.get(key.name)
         if (value == null) {
             update.where { key.isNullOrEmpty() }
         } else {

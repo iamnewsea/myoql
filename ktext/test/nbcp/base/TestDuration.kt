@@ -38,7 +38,7 @@ class TestDuration : TestBase() {
     }
     @Test
     fun b() {
-        var j = JsonMap();
+        val j = JsonMap();
         for (i in 1..48) {
             j.put("k" + i, "value" + i)
         }

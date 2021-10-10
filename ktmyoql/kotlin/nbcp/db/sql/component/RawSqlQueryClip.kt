@@ -43,7 +43,7 @@ class RawExecuteSqlClip(var sql: SingleSqlData, tableName: String) : SqlBaseExec
         var sql = toSql()
         var executeData = sql.toExecuteSqlAndParameters();
 
-        var startAt = LocalDateTime.now()
+        val startAt = LocalDateTime.now()
 
         var n = -1;
         var error:Exception? = null;

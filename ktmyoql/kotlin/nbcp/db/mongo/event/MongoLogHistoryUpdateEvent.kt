@@ -54,11 +54,11 @@ class MongoLogHistoryUpdateEvent : IMongoEntityUpdate {
 
 
         //批量记录到日志
-        var batchInsert = db.mor_base.sysLog.batchInsert()
+        val batchInsert = db.mor_base.sysLog.batchInsert()
 
         ret.forEach {
 
-            var log = SysLog()
+            val log = SysLog()
             log.module = "DbEntityLogHistory"
             log.level = "info"
             log.tags = mutableListOf(update.collectionName)

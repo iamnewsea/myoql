@@ -56,7 +56,7 @@ object WxPayGroup {
      */
     @JvmOverloads
     fun payReplyWeixin(msg: String = ""): String {
-        var code = if (msg.HasValue) "FAIL" else "SUCCESS"
+        val code = if (msg.HasValue) "FAIL" else "SUCCESS"
 
         return """<xml>
 <return_code><![CDATA[${code}]]></return_code>

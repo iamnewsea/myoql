@@ -13,8 +13,8 @@ import org.springframework.data.redis.core.StringRedisTemplate
 object db_redis {
 
     fun getStringRedisTemplate(group: String): StringRedisTemplate {
-        var config = SpringUtil.getBean<RedisDataSource>();
-        var dataSourceName = config.getDataSourceName(group)
+        val config = SpringUtil.getBean<RedisDataSource>();
+        val dataSourceName = config.getDataSourceName(group)
         if (dataSourceName.HasValue) {
             return SpringUtil.getBean(dataSourceName) as StringRedisTemplate
         }

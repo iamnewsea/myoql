@@ -460,7 +460,7 @@ Content-Type: application/octet-stream
             out.write("\r\n--${boundary}--".toByteArray())
         }
 
-        var ret = this.doNet()
+        val ret = this.doNet()
 
         if (this.response.resultIsText) {
             logger.info(ret.Slice(0, 4096))

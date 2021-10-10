@@ -23,7 +23,7 @@ class tool : TestBase() {
 
     @Test
     fun gen_mor() {
-        var path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0]
+        val path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0]
 
         nbcp.db.mongo.tool.generator().work(
             File(path).parentFile.path + "/ktmyoql/kotlin/nbcp/db/mongo/mor_base_tables.kt",

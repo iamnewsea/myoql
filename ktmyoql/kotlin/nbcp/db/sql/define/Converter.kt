@@ -41,7 +41,7 @@ class AutoIdConverter : IConverter {
         if (field.type.IsNumberType) {
             if (value == null || value.AsLong(0) == 0L) {
                 //检查类型
-                var clazz = field.type;
+                val clazz = field.type;
                 if (clazz == java.lang.Integer::class.java || clazz == Int::class.java) {
                     throw RuntimeException("AutoId不能是32位整型")
                 }

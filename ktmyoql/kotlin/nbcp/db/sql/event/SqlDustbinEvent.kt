@@ -27,10 +27,10 @@ class SqlDustbinEvent : ISqlEntityDelete {
     }
 
     override fun delete(delete: SqlDeleteClip<*>, eventData: EventResult?) {
-        var data = eventData?.extData
+        val data = eventData?.extData
         if (data == null) return
 
-        var dustbin = s_dustbin()
+        val dustbin = s_dustbin()
         dustbin.id = CodeUtil.getNumberValue()
         dustbin.table = delete.mainEntity.tableName
         dustbin.data = data.ToJson()

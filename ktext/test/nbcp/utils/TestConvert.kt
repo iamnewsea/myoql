@@ -18,7 +18,7 @@ class TestUtils : TestBase() {
 
     @Test
     fun abc() {
-        var str = """MyUtil.getKebabCase("abcDefa-fw")"""
+        val str = """MyUtil.getKebabCase("abcDefa-fw")"""
 
 
         println("df".Slice(0, 100))

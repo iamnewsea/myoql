@@ -175,7 +175,7 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEnt
      * 执行插入
      */
     fun execInsert(): Int {
-        var batchInsert = SqlInsertClip(mainEntity)
+        val batchInsert = SqlInsertClip(mainEntity)
         batchInsert.addEntity(entity);
 
         return batchInsert.exec();

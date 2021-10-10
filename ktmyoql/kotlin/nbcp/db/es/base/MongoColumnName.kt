@@ -26,7 +26,7 @@ open class EsColumnName @JvmOverloads constructor(value: String = "") : MyString
     }
 
     infix fun and (other: EsColumnName) :EsColumns{
-        var ret= EsColumns()
+        val ret= EsColumns()
         ret.add(this);
         ret.add(other);
         return ret;

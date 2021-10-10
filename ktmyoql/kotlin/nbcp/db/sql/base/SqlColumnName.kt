@@ -78,7 +78,7 @@ open class SqlColumnName(
             return this;
         }
 
-        var ret = SqlColumnName(dbType, tableName, name);
+        val ret = SqlColumnName(dbType, tableName, name);
         ret.columnAliaValue = alias;
         return ret;
     }

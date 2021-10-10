@@ -118,7 +118,7 @@ class WhereData : Serializable {
         ret.next = next2
 
 
-        var wrap = WhereData();
+        val wrap = WhereData();
         wrap.child = ret;
 
         //更改 this

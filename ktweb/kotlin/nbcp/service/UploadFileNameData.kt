@@ -46,7 +46,7 @@ class UploadFileNameData @JvmOverloads constructor(var msg: String = "") {
      * 保存全路径
      */
     fun getTargetFileName(separator: Char): String {
-        var targetFileName = mutableListOf<String>()
+        val targetFileName = mutableListOf<String>()
 
         if (groupCorp && corpId.HasValue) {
             targetFileName.add(corpId);

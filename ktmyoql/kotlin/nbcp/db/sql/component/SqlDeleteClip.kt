@@ -63,9 +63,9 @@ class SqlDeleteClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity: M) :
             return 0;
         }
 
-        var sql = toSql()
-        var executeData = sql.toExecuteSqlAndParameters();
-        var startAt = LocalDateTime.now();
+        val sql = toSql()
+        val executeData = sql.toExecuteSqlAndParameters();
+        val startAt = LocalDateTime.now();
 
         var n = -1;
         var error:Exception? = null;

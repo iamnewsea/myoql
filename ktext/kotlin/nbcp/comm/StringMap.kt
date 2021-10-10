@@ -21,7 +21,7 @@ open class StringMap : StringKeyMap<String> {
 }
 
 fun Map<String, *>.ToNameValuePairs(): List<BasicNameValuePair> {
-    var list = mutableListOf<BasicNameValuePair>();
+    val list = mutableListOf<BasicNameValuePair>();
     for (i in 0..this.size - 1) {
         list.add(BasicNameValuePair(this.keys.elementAt(i), this.values.elementAt(i).toString()));
     }

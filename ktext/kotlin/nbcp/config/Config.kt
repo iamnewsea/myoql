@@ -123,7 +123,7 @@ object config {
      */
     @JvmStatic
     val tokenStorage: TokenStorageTypeEnum by lazy {
-        var configValue = getConfig("app.token-storage").AsStringWithNull()?.ToEnum<TokenStorageTypeEnum>();
+        val configValue = getConfig("app.token-storage").AsStringWithNull()?.ToEnum<TokenStorageTypeEnum>();
         if (configValue != null) {
             return@lazy configValue
         }

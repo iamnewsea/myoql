@@ -31,9 +31,9 @@ class UploadFileForLocalService {
             return "";
         }
 
-        var targetFileName = UPLOAD_LOCAL_HOST + fileData.getTargetFileName(File.separatorChar)
+        val targetFileName = UPLOAD_LOCAL_HOST + fileData.getTargetFileName(File.separatorChar)
 
-        var targetFile = File(targetFileName);
+        val targetFile = File(targetFileName);
 
         if (targetFile.parentFile.exists() == false) {
             if (targetFile.parentFile.mkdirs() == false) {

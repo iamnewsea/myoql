@@ -458,7 +458,7 @@ ${props.joinToString("\n")}
             dbName = MyUtil.getSmallCamelCase(entType.simpleName)
         }
 
-        var ent = """#### 集合 ${dbName}
+        val ent = """#### 集合 ${dbName}
 
 | 字段名  | 数据类型 | 备注  |
 | --- | --- | --- |

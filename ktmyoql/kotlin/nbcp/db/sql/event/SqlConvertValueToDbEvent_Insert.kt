@@ -25,8 +25,8 @@ class SqlConvertValueToDbEvent_Insert : ISqlEntityInsert {
         }
 
         annotations.forEach { field, convertersType ->
-            var converters = convertersType.map { it.createInstance() }
-            var values = mutableListOf<Any?>()
+            val converters = convertersType.map { it.createInstance() }
+            val values = mutableListOf<Any?>()
             insert.entities.forEach {
                 var convertedValue:Any? = it.get(field.name);
                 converters.forEach{

@@ -84,7 +84,7 @@ class EsTableLogProperties : InitializingBean {
 
 
     val logDefault by lazy {
-        var value = config.getConfig("app.es.log-default").AsString().trim();
+        val value = config.getConfig("app.es.log-default").AsString().trim();
         if (value.HasValue) {
             if (value == "*") {
                 return@lazy HttpCrudEnum::class.java.GetEnumList()

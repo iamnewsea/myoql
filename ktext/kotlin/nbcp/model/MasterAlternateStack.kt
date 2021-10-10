@@ -20,8 +20,8 @@ open class MasterAlternateStack<T>(private var consumer: Consumer<T>) {
     }
 
     fun consumeTask() {
-        var consumerStack: (Stack<T>) -> Unit = {
-            var len = it.count();
+        val consumerStack: (Stack<T>) -> Unit = {
+            val len = it.count();
             for (i in 1..len) {
                 consumer.accept(it.pop())
             }

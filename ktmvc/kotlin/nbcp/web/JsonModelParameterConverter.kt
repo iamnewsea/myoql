@@ -232,7 +232,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         if (parameter.parameterType.isArray) {
             resultValue = arrayOf(value.ConvertType(parameter.parameterType.componentType))
         } else if (parameter.parameterType.IsCollectionType) {
-            var genType = (parameter.genericParameterType as ParameterizedType).GetActualClass(0);
+            val genType = (parameter.genericParameterType as ParameterizedType).GetActualClass(0);
             resultValue = listOf(value.ConvertType(genType))
         } else if (!parameter.parameterType.IsStringType) {
             resultValue = value.ConvertType(parameter.parameterType)

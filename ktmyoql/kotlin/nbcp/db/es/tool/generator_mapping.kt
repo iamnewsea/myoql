@@ -172,7 +172,7 @@ class generator_mapping {
                     return@forEach
                 }
 
-                var type = getActType(it);
+                val type = getActType(it);
 
                 var defineJson = getDefSelf(it.name).FromJson<JsonMap>()
 

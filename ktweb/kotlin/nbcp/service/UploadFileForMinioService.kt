@@ -88,8 +88,8 @@ class UploadFileForMinioService {
         //把文件放置MinIo桶(文件夹)
 
         return fileStream.use {
-            var size = it.available().toLong();
-            var response = minioClient.putObject(
+            val size = it.available().toLong();
+            val response = minioClient.putObject(
                 PutObjectArgs.builder()
                     .bucket(group).contentType(contentType)
                     .stream(it, size, -1)

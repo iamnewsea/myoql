@@ -111,7 +111,7 @@ class SearchBodyClip {
     var aggs: JsonMap = JsonMap()
 
     override fun toString(): String {
-        var json = JsonMap();
+        val json = JsonMap();
         if (this.skip > 0) {
             json["from"] = this.skip
         }

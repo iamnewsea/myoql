@@ -91,7 +91,7 @@ open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhere
         request.entity = NStringEntity(requestBody, ContentType.create("application/x-ndjson", const.utf8))
 
 //        var responseBody = "";
-        var startAt = LocalDateTime.now()
+        val startAt = LocalDateTime.now()
         var error: Exception?  = null
         var response: Response? = null
         try {

@@ -12,7 +12,7 @@ fun html(init: String.() -> String): String {
 class DomTest : TestBase() {
     @Test
     fun test() {
-        var d = html {
+        val d = html {
             "www";
         }
 

@@ -37,7 +37,7 @@ object EsLogger {
 
 
     fun log(error: Exception?, esName: String, request: Request, response: Response?,op:(String)->Boolean){
-        var getMsg: () -> String = getMsg@{
+        val getMsg: () -> String = getMsg@{
             """[${request.method}] ${request.endpoint} 
 [body] ${request.entity.content.ReadContentStringFromStream()} 
 [result] ${response?.entity?.content?.ReadContentStringFromStream()}

@@ -112,9 +112,9 @@ object CodeGeneratorHelper {
 //        text = CodeGeneratorHelper.procFor(text, entityFields, idKey);
 
 
-        var title = CodeGeneratorHelper.getEntityCommentValue(entityClass).AsString(tableName);
+        val title = CodeGeneratorHelper.getEntityCommentValue(entityClass).AsString(tableName);
 
-        var url = "/${MyUtil.getKebabCase(group)}/${MyUtil.getKebabCase(entityClass.simpleName)}"
+        val url = "/${MyUtil.getKebabCase(group)}/${MyUtil.getKebabCase(entityClass.simpleName)}"
         var mapDefine = JsonMap(
             "url" to url,
             "group" to group,

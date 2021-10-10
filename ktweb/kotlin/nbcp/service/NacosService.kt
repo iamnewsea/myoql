@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Import
 import org.springframework.stereotype.Service
+import java.lang.RuntimeException
 import java.net.Inet4Address
 
 import java.net.NetworkInterface
@@ -25,10 +26,13 @@ open class NacosService {
     }
 
     @Value("\${spring.cloud.nacos.discovery.server-addr:}")
-    var nacosServerAddress: String = "http://127.0.0.1:8848/nacos"
+    lateinit var nacosServerAddress: String
 
     val serverHost: String
         get() {
+            if( nacosServerAddress.isEmpty()){
+                throw RuntimeException("需要指定配置项 spring.cloud.nacos.discovery.server-addr")
+            }
             var ret = nacosServerAddress
             if (!ret.startsWith("http://", true) && !ret.startsWith("https://", true)) {
                 ret = "http://${ret}"
@@ -50,7 +54,7 @@ open class NacosService {
      */
     @JvmOverloads
     fun getConfig(namespaceId: String, dataId: String, group: String = "DEFAULT_GROUP"): ApiResult<String> {
-        var query = StringMap();
+        val query = StringMap();
         query["dataId"] = dataId;
         query["group"] = group;
         query["tenant"] = namespaceId;
@@ -69,14 +73,14 @@ open class NacosService {
      */
     @JvmOverloads
     fun setConfig(
-        namespaceId: String,
-        dataId: String,
-        configContent: String,
-        group: String = "DEFAULT_GROUP",
-        type: String = "yaml",
+            namespaceId: String,
+            dataId: String,
+            configContent: String,
+            group: String = "DEFAULT_GROUP",
+            type: String = "yaml",
     ): JsonResult {
         val http = HttpUtil("$serverHost/v1/cs/configs")
-        var query = StringMap();
+        val query = StringMap();
         query["dataId"] = dataId;
         query["group"] = group;
         query["tenant"] = namespaceId;
@@ -93,30 +97,30 @@ open class NacosService {
     }
 
     data class NacosInstanceHostData(
-        var ip: String = "",
-        var port: Int = 0,
-        var valid: Boolean = false,
-        var healthy: Boolean = false,
-        var marked: Boolean = false,
-        var instanceId: String = "",
-        var metadata: StringMap = StringMap(),
-        var enabled: Boolean = false,
-        var weight: Int = 0,
-        var clusterName: String = "",
-        var serviceName: String = "",
-        var ephemeral: Boolean = false
+            var ip: String = "",
+            var port: Int = 0,
+            var valid: Boolean = false,
+            var healthy: Boolean = false,
+            var marked: Boolean = false,
+            var instanceId: String = "",
+            var metadata: StringMap = StringMap(),
+            var enabled: Boolean = false,
+            var weight: Int = 0,
+            var clusterName: String = "",
+            var serviceName: String = "",
+            var ephemeral: Boolean = false
     )
 
     data class NacosInstanceData(
-        var hosts: MutableList<NacosInstanceHostData> = mutableListOf(),
-        var dom: String = "",
-        var name: String = "",
-        var cacheMillis: Int = 0,
-        var lastRefTime: Long = 0L,
-        var checksum: String = "",
-        var clusters: String = "",
-        var env: String = "",
-        var metadata: StringMap = StringMap()
+            var hosts: MutableList<NacosInstanceHostData> = mutableListOf(),
+            var dom: String = "",
+            var name: String = "",
+            var cacheMillis: Int = 0,
+            var lastRefTime: Long = 0L,
+            var checksum: String = "",
+            var clusters: String = "",
+            var env: String = "",
+            var metadata: StringMap = StringMap()
     )
 
     /**
@@ -124,9 +128,9 @@ open class NacosService {
      */
     @JvmOverloads
     fun getInstances(
-        namespaceId: String,
-        serviceName: String,
-        group: String = "DEFAULT_GROUP"
+            namespaceId: String,
+            serviceName: String,
+            group: String = "DEFAULT_GROUP"
     ): ApiResult<NacosInstanceData> {
         var query = StringMap();
         query["serviceName"] = serviceName;
@@ -153,7 +157,7 @@ open class NacosService {
 
             val addresses = netInterface.inetAddresses
             while (addresses.hasMoreElements()) {
-                var ip = addresses.nextElement()
+                val ip = addresses.nextElement()
                 if (ip != null && ip is Inet4Address) {
                     ips.add(ip.getHostAddress())
                 }
@@ -167,42 +171,42 @@ open class NacosService {
      */
     @JvmOverloads
     fun setSnowFlakeMachineId(
-        namespaceId: String,
-        serviceName: String,
-        ip: String,
-        port: Int = 80,
-        group: String = "DEFAULT_GROUP"
+            namespaceId: String,
+            serviceName: String,
+            ip: String,
+            port: Int = 80,
+            group: String = "DEFAULT_GROUP"
     ): ApiResult<Int> {
-        var appName = namespaceId + "-" + serviceName;
-        var nacosInstances = getInstances(namespaceId, serviceName, group)
-            .apply {
-                //随机一个 500-1000之间的id
-                if (this.msg.HasValue || !(this.data?.hosts?.any() ?: false)) {
-                    SpringUtil.getBean<SnowFlake>().machineId = 500 + MyUtil.getRandomWithMaxValue(500);
-                    return ApiResult(this.msg.AsString("nacos未注册"));
-                }
-            }.data!!
-            .hosts
+        val appName = namespaceId + "-" + serviceName;
+        val nacosInstances = getInstances(namespaceId, serviceName, group)
+                .apply {
+                    //随机一个 500-1000之间的id
+                    if (this.msg.HasValue || !(this.data?.hosts?.any() ?: false)) {
+                        SpringUtil.getBean<SnowFlake>().machineId = 500 + MyUtil.getRandomWithMaxValue(500);
+                        return ApiResult(this.msg.AsString("nacos未注册"));
+                    }
+                }.data!!
+                .hosts
 
-        var nacosInstancesIpPort = nacosInstances.map { it.ip + ":" + it.port }.toMutableSet();
+        val nacosInstancesIpPort = nacosInstances.map { it.ip + ":" + it.port }.toMutableSet();
         var localUsedIpPort = "${ip}:${port}"
 
         if (ip.isEmpty()) {
             localUsedIpPort = nacosInstancesIpPort.intersect(getIpAddresses().map { it + ":" + port })
-                .apply {
-                    //随机一个 500-1000之间的id
-                    if (this.size != 1) {
-                        SpringUtil.getBean<SnowFlake>().machineId = 500 + MyUtil.getRandomWithMaxValue(500);
-                    }
+                    .apply {
+                        //随机一个 500-1000之间的id
+                        if (this.size != 1) {
+                            SpringUtil.getBean<SnowFlake>().machineId = 500 + MyUtil.getRandomWithMaxValue(500);
+                        }
 
-                    if (this.size == 0) {
-                        return ApiResult("未找到注册到 nacos 的实例，nacosip: ${nacosInstancesIpPort.joinToString()}")
+                        if (this.size == 0) {
+                            return ApiResult("未找到注册到 nacos 的实例，nacosip: ${nacosInstancesIpPort.joinToString()}")
+                        }
+                        if (this.size > 1) {
+                            return ApiResult("找到多个本地使用的Ip: ${this.joinToString(",")}")
+                        }
                     }
-                    if (this.size > 1) {
-                        return ApiResult("找到多个本地使用的Ip: ${this.joinToString(",")}")
-                    }
-                }
-                .first();
+                    .first();
         }
 
         if (nacosInstancesIpPort.contains(localUsedIpPort) == false) {
@@ -211,23 +215,23 @@ open class NacosService {
 
 
         //第一次初始化应用。
-        var redisInstances = db.rer_base.nacosInstance.getMap(appName)
-            .mapValuesTo(mutableMapOf<String, Int>(), { it.value.AsInt() })
+        val redisInstances = db.rer_base.nacosInstance.getMap(appName)
+                .mapValuesTo(mutableMapOf<String, Int>(), { it.value.AsInt() })
 
         if (redisInstances.isEmpty() || !redisInstances.containsKey(localUsedIpPort)) {
             redisInstances.put(localUsedIpPort, 0);
         }
 
-        var redisInstancesNewData = mutableMapOf<String, Int>(
-            *nacosInstancesIpPort.map { ipValue ->
-                var id = redisInstances.get(ipValue).AsInt();
-                return@map ip to id
-            }.toTypedArray()
+        val redisInstancesNewData = mutableMapOf<String, Int>(
+                *nacosInstancesIpPort.map { ipValue ->
+                    var id = redisInstances.get(ipValue).AsInt();
+                    return@map ip to id
+                }.toTypedArray()
         );
 
 
         fillNacosNewData(redisInstancesNewData);
-        var machineId = redisInstancesNewData.get(localUsedIpPort).AsInt();
+        val machineId = redisInstancesNewData.get(localUsedIpPort).AsInt();
         //先设置到自己。
         if (machineId == 0) {
             return ApiResult("设置机器Id失败")
@@ -249,24 +253,24 @@ open class NacosService {
      */
     private fun fillNacosNewData(redisNacosInstanceNewData: MutableMap<String, Int>) {
         //每10位的最小值。
-        var ids_set = redisNacosInstanceNewData.values
-            .groupBy { it.AsInt() / 10 }
-            .map { it.value.minOrNull()!! }
-            .filter { it > 0 }
+        val ids_set = redisNacosInstanceNewData.values
+                .groupBy { it.AsInt() / 10 }
+                .map { it.value.minOrNull()!! }
+                .filter { it > 0 }
 
 
         if (redisNacosInstanceNewData.size != ids_set.size) {
             redisNacosInstanceNewData.keys.forEach { ip ->
-                var id = redisNacosInstanceNewData[ip];
+                val id = redisNacosInstanceNewData[ip];
                 if (ids_set.contains(id) == false) {
                     redisNacosInstanceNewData.set(ip, 0)
                 }
             }
         }
 
-        var ary = (1..99).toList().toMutableSet();
+        val ary = (1..99).toList().toMutableSet();
         redisNacosInstanceNewData.keys.forEach { ip ->
-            var id = redisNacosInstanceNewData[ip]!! / 10;
+            val id = redisNacosInstanceNewData[ip]!! / 10;
             if (id > 0) {
                 ary.remove(id);
             } else {
@@ -276,11 +280,11 @@ open class NacosService {
                     return@forEach
                 }
 
-                var randomIndex = MyUtil.getRandomWithMaxValue(ary.size);
-                var randomId = ary.elementAt(randomIndex);
+                val randomIndex = MyUtil.getRandomWithMaxValue(ary.size);
+                val randomId = ary.elementAt(randomIndex);
                 ary.remove(randomId);
 
-                var randomNumber = MyUtil.getRandomWithMaxValue(10);
+                val randomNumber = MyUtil.getRandomWithMaxValue(10);
                 redisNacosInstanceNewData.put(ip, randomId * 10 + randomNumber);
             }
         }
