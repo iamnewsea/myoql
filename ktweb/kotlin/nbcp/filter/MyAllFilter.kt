@@ -91,7 +91,9 @@ open class MyAllFilter : Filter {
         var logLevel: Level? = null;
 
         var logLevelString = httpRequest.queryJson.get("log-level").AsString();
-        if (logLevelString.HasValue) {
+        if (logLevelString.HasValue &&
+            config.adminToken == httpRequest.findParameterStringValue("admin-token")
+        ) {
             if (logLevelString.IsNumberic()) {
                 var logLevelInt = logLevelString.AsInt()
                 if (logLevelInt > 0) {
@@ -239,9 +241,9 @@ open class MyAllFilter : Filter {
 
 
     private fun procFilter(
-            _request: HttpServletRequest,
-            _response: HttpServletResponse,
-            chain: FilterChain?
+        _request: HttpServletRequest,
+        _response: HttpServletResponse,
+        chain: FilterChain?
     ) {
         var request = MyHttpRequestWrapper.create(_request);
         var response = MyHttpResponseWrapper.create(_response);
@@ -268,7 +270,7 @@ open class MyAllFilter : Filter {
                 var errorInfo = mutableListOf<String>()
                 errorInfo.add(err::class.java.simpleName + ": " + errorMsg)
                 errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }
-                        .take(24))
+                    .take(24))
 
                 return@Error errorInfo.joinToString(const.line_break)
             }
@@ -338,11 +340,11 @@ open class MyAllFilter : Filter {
 
 
     fun afterComplete(
-            request: MyHttpRequestWrapper,
-            response: MyHttpResponseWrapper,
-            callback: String,
-            startAt: LocalDateTime,
-            errorMsg: String
+        request: MyHttpRequestWrapper,
+        response: MyHttpResponseWrapper,
+        callback: String,
+        startAt: LocalDateTime,
+        errorMsg: String
     ) {
         var error = errorMsg.HasValue;
         var resStringValue = errorMsg;
