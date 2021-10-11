@@ -54,6 +54,12 @@ object config {
         return SpringUtil.context.environment.getProperty(key)
     }
 
+
+    @JvmStatic
+    val adminToken: String by lazy {
+        return@lazy getConfig("app.admin-token").AsString()
+    }
+
     /**
      * 指定 ${app}.log 是否包含全部GroupLog日志。
      */
