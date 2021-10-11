@@ -1,21 +1,16 @@
 package nbcp.db.mysql
 
-import com.mysql.cj.MysqlConnection
 import com.mysql.cj.jdbc.MysqlDataSource
 import com.zaxxer.hikari.HikariDataSource
 import nbcp.comm.HasValue
 import nbcp.utils.SpringUtil
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
 import org.springframework.boot.context.event.ApplicationPreparedEvent
-import org.springframework.boot.context.properties.bind.Binder
-import org.springframework.context.annotation.DependsOn
 import org.springframework.context.annotation.Import
 import org.springframework.context.event.EventListener
-import org.springframework.context.support.GenericApplicationContext
-import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Component
 import javax.sql.DataSource
 
@@ -35,7 +30,7 @@ class MySqlDataSourceConfig {
     @EventListener
     fun prepared(ev: ApplicationPreparedEvent) {
         if (SpringUtil.context.environment.getProperty("spring.datasource.url").isNullOrEmpty() &&
-            SpringUtil.context.environment.getProperty("spring.datasource.hikari.jdbc-url").isNullOrEmpty()
+                SpringUtil.context.environment.getProperty("spring.datasource.hikari.jdbc-url").isNullOrEmpty()
         ) {
             return;
         }
@@ -49,17 +44,17 @@ class MySqlDataSourceConfig {
 
 
         var slaveDataProperties =
-            SpringUtil.binder.bindOrCreate("spring.datasource-slave", DataSourceProperties::class.java);
+                SpringUtil.binder.bindOrCreate("spring.datasource-slave", DataSourceProperties::class.java);
         if (slaveDataProperties.url.HasValue) {
             var dataSourceSlave = slaveDataProperties.getDataSource()
             SpringUtil.registerBeanDefinition("slaveDataSource", dataSourceSlave)
-            SpringUtil.registerBeanDefinition("slaveJdbcTemplate", JdbcTemplate(dataSourceSlave, true))
+            SpringUtil.registerBeanDefinition("slaveJdbcTemplate", NamedParameterJdbcTemplate(dataSourceSlave))
         }
     }
 
 
     private fun DataSourceProperties.getDataSource(): HikariDataSource {
         return this.initializeDataSourceBuilder().type(HikariDataSource::class.java)
-            .build() as HikariDataSource
+                .build() as HikariDataSource
     }
 }

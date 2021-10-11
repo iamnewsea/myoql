@@ -15,9 +15,6 @@ import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
-import org.springframework.boot.jdbc.DataSourceBuilder
-import org.springframework.boot.logging.LogLevel
-import org.springframework.jdbc.core.JdbcTemplate
 import java.io.FileWriter
 import javax.sql.DataSource
 

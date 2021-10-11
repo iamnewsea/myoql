@@ -48,7 +48,7 @@ class RawExecuteSqlClip(var sql: SingleSqlData, tableName: String) : SqlBaseExec
         var n = -1;
         var error:Exception? = null;
         try {
-            n = jdbcTemplate.update(executeData.executeSql, *executeData.executeParameters)
+            n = jdbcTemplate.update(executeData.executeSql, executeData.executeParameters)
             db.executeTime = LocalDateTime.now() - startAt
         } catch (e: Exception) {
             error = e;

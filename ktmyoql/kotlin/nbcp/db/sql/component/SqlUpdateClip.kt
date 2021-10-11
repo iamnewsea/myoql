@@ -181,7 +181,7 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity:
         var error: Exception? = null;
         var n = -1;
         try {
-            n = jdbcTemplate.update(executeData.executeSql, *executeData.executeParameters)
+            n = jdbcTemplate.update(executeData.executeSql, executeData.executeParameters)
             db.executeTime = LocalDateTime.now() - startAt
 //            if (n > 0) {
 //                cacheService.updated4BrokeCache(sql)

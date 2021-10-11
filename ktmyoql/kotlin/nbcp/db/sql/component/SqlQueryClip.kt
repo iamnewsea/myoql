@@ -411,13 +411,13 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
 
         var sql = select.toSql().toExecuteSqlAndParameters()
 
-        var executeData = SqlExecuteData(exp + sql.executeSql, sql.parameters)
+        var executeData = SqlExecuteData(exp + sql.executeSql, sql.parameterDefines)
 
         var error: Exception? = null;
         var n = -1;
         var startAt = LocalDateTime.now()
         try {
-            n = jdbcTemplate.update(executeData.executeSql, *executeData.executeParameters)
+            n = jdbcTemplate.update(executeData.executeSql, executeData.executeParameters)
             db.executeTime = LocalDateTime.now() - startAt
 
 //            if (n > 0) {

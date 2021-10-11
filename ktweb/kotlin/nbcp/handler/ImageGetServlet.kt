@@ -1,18 +1,10 @@
 package nbcp.handler
 
-import nbcp.db.IdUrl
 import nbcp.comm.*
 import nbcp.utils.*
-import nbcp.db.DatabaseEnum
 import nbcp.db.mongo.*
 import nbcp.model.IUploadFileDbService
 import nbcp.web.*
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.jdbc.core.JdbcTemplate
-import java.io.File
-import java.lang.RuntimeException
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest

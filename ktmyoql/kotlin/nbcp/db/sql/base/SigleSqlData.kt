@@ -8,7 +8,7 @@ import java.io.Serializable
 import java.util.LinkedHashSet
 
 open class SingleSqlData @JvmOverloads constructor(
-    // 使用 {变量名} 表示 变量
+    // 使用 :变量名 表示 变量
     var expression: String = "",
 
     // JsonMap 的 key = corp_id
@@ -62,7 +62,7 @@ open class SingleSqlData @JvmOverloads constructor(
             //SingleSqlData拼接Sql时，参数索引并不可靠，必须使用唯一参数名。
             var key = sameKey + "_" + CodeUtil.getCode();
 
-            other2.expression = other2.expression.replace("{${sameKey}}", "{${key}}");
+            other2.expression = other2.expression.replace(":${sameKey}", ":${key}");
             other2.values.set(key, other2.values.get(sameKey));
             other2.values.remove(sameKey)
         }

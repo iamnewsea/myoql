@@ -17,7 +17,7 @@ object SqlLogger {
         var getMsg: () -> String = getMsg@{
             var msg_log = mutableListOf(
                 "[select] ${executeData.executeSql}",
-                "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}"
+                "[参数] ${executeData.executeParameters.ToJson()}"
             )
 
             if (config.debug) {
@@ -64,7 +64,7 @@ object SqlLogger {
         var getMsg: () -> String = getMsg@{
             var msg_log = mutableListOf(
                 "[sql] ${executeData.executeSql}",
-                "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}",
+                "[参数] ${executeData.executeParameters.ToJson()}",
                 "[result] ${n}",
                 "[耗时] ${db.executeTime}"
             )
@@ -100,7 +100,7 @@ object SqlLogger {
             var msg_log = mutableListOf(
                 "" +
                         "[delete] ${executeData.executeSql}",
-                "[参数] ${executeData.executeParameters.map { it.AsString() }.joinToString(",")}",
+                "[参数] ${executeData.executeParameters.ToJson()}",
                 "[result] ${n}",
                 "[耗时] ${db.executeTime}"
             )
@@ -180,7 +180,7 @@ object SqlLogger {
         var getMsg: () -> String = getMsg@{
             var msg_log = mutableListOf(
                 "[update] ${executeData.executeSql}",
-                "[参数] ${executeData.executeParameters.joinToString(",")}",
+                "[参数] ${executeData.executeParameters.ToJson()}",
                 "[result] ${n}",
                 "[耗时] ${db.executeTime}"
             )

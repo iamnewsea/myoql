@@ -8,10 +8,6 @@ import java.sql.ResultSet
 /**
  * Created by yuxh on 2018/7/2
  */
-
-/**
- * 暂时无用
- */
 @Component
 class JsonMapRowMapper : RowMapper<JsonMap> {
     override fun mapRow(rs: ResultSet, rowNum: Int): JsonMap {

@@ -6,12 +6,12 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.context.annotation.Import
-import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Component
 
 @Component
 @Import(SpringUtil::class)
-@ConditionalOnClass(JdbcTemplate::class)
+@ConditionalOnClass(NamedParameterJdbcTemplate::class)
 class MyOqlBeanProcessor_DataSource : BeanPostProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -20,7 +20,7 @@ class MyOqlBeanProcessor_DataSource : BeanPostProcessor {
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
         var ret = super.postProcessAfterInitialization(bean, beanName)
 
-        if (bean is JdbcTemplate) {
+        if (bean is NamedParameterJdbcTemplate) {
             loadJdbcDependencyBeans()
         }
 

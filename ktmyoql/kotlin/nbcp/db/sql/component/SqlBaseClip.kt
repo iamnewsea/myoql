@@ -1,11 +1,11 @@
 package nbcp.db.sql
 
 import org.slf4j.LoggerFactory
-import org.springframework.jdbc.core.JdbcTemplate
 import nbcp.comm.*
-
 import nbcp.utils.*
 import nbcp.db.*
+import nbcp.db.sql.component.JsonMapRowMapper
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import java.io.Serializable
 import java.time.LocalDateTime
 import javax.sql.DataSource
@@ -81,7 +81,7 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
      * 3. 当前作用域
      * 4. 如果是读操作，则使用 slave , 否则使用默认
      */
-    val jdbcTemplate: JdbcTemplate
+    val jdbcTemplate: NamedParameterJdbcTemplate
         get() {
             var isRead = this is SqlBaseQueryClip;
 
@@ -99,23 +99,23 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
                 //其它参数按数据源配置参数
                 var ds = db.sql.getDataSource(uri, username, password);
 
-                return JdbcTemplate(ds, true);
+                return NamedParameterJdbcTemplate(ds);
             }
 
             var ds = db.sql.sqlEvents.getDataSource(this.tableName, isRead) ?: scopes.GetLatest<DataSourceScope>()?.value
             if (ds != null) {
-                return JdbcTemplate(ds, true);
+                return NamedParameterJdbcTemplate(ds);
             }
 
             if (isRead) {
                 if (SpringUtil.containsBean("slave", DataSource::class.java)) {
                     ds = SpringUtil.getBeanByName<DataSource>("slave")
-                    return JdbcTemplate(ds, true);
+                    return NamedParameterJdbcTemplate(ds);
                 }
             }
 
             ds = SpringUtil.getBean<DataSource>()
-            return JdbcTemplate(ds);
+            return NamedParameterJdbcTemplate(ds);
         }
 
 
@@ -259,7 +259,7 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
         var error: Exception? = null;
         try {
             retJsons =
-                jdbcTemplate.queryForList(executeData.executeSql, *executeData.executeParameters).toMutableList()
+                jdbcTemplate.query(executeData.executeSql, executeData.executeParameters, JsonMapRowMapper()) as MutableList<MutableMap<String, Any?>>
             db.executeTime = LocalDateTime.now() - startAt
 
 //            if (retJsons.size > 0) {

@@ -17,7 +17,7 @@ import java.io.Serializable
  * Created by yuxh on 2018/7/2
  */
 class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntity: M) :
-    SqlBaseExecuteClip(mainEntity.tableName) {
+        SqlBaseExecuteClip(mainEntity.tableName) {
 
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -73,16 +73,16 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
 
         //把 布尔值 改为 1,0
         entity::class.java.AllFields
-            .forEach {
-                var key = it.name;
-                var value = ent.get(key);
-                if (value == null) {
-                    ent.remove(key);
-                    return@forEach
-                }
+                .forEach {
+                    var key = it.name;
+                    var value = ent.get(key);
+                    if (value == null) {
+                        ent.remove(key);
+                        return@forEach
+                    }
 
-                ent.set(key, proc_value(value));
-            }
+                    ent.set(key, proc_value(value));
+                }
 
         this.entities.add(ent)
         return this
@@ -108,22 +108,22 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
             var keys = entity.keys;
 
             var insertColumns = this.mainEntity.getColumns().filter { it.name != autoIncrmentKey }
-                .filter {
-                    if (it.name.IsIn(keys) == false) return@filter false;
+                    .filter {
+                        if (it.name.IsIn(keys) == false) return@filter false;
 
-                    var v = entity.get(it.name);
-                    if (v == null) {
-                        return@filter false;
-                    }
-
-                    //如果是时间，且为空字符串， 则不插入
-                    if (it.dbType.isDateOrTime()) {
-                        if (v is String && v.isEmpty()) {
+                        var v = entity.get(it.name);
+                        if (v == null) {
                             return@filter false;
                         }
+
+                        //如果是时间，且为空字符串， 则不插入
+                        if (it.dbType.isDateOrTime()) {
+                            if (v is String && v.isEmpty()) {
+                                return@filter false;
+                            }
+                        }
+                        return@filter true;
                     }
-                    return@filter true;
-                }
 
             if (columns.any()) {
                 insertColumns = insertColumns.Intersect(columns, { a, b -> a.name == b.name })
@@ -131,7 +131,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
 
             var exp = "insert into ${mainEntity.quoteTableName} (${
                 insertColumns.map { "${db.sql.getSqlQuoteName(it.name)}" }.joinToString(",")
-            }) values (${insertColumns.map { "{${it.name}}" }.joinToString(",")})";
+            }) values (${insertColumns.map { ":${it.name}" }.joinToString(",")})";
 
             var executeSql = SingleSqlData(exp, entity)
 
@@ -279,27 +279,8 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
         var error: Exception? = null;
         var index = 1;
         try {
-            result = jdbcTemplate.update(PreparedStatementCreator {
-                var ps = it.prepareStatement(executeSql)
+            result = jdbcTemplate.batchUpdate(executeSql, entities.Skip(skip).take(take).toTypedArray()).size
 
-
-                entities.Skip(skip).take(take).forEach { ent ->
-                    insertColumns.forEach {
-                        ps.setValue(index++, SqlParameterData(it.dbType.javaType, ent.getOrDefault(it.name, null)))
-                    }
-                }
-
-                if (config.debug) {
-                    msg_log.add(
-                        "[参数]\n${
-                            entities.map { ent ->
-                                insertColumns.map { column -> ent.getStringValue(column.name) }.joinToString(",")
-                            }.joinToString("\n")
-                        }"
-                    )
-                }
-                return@PreparedStatementCreator ps
-            })
             db.executeTime = LocalDateTime.now() - startAt
 
             msg_log.add("批量插入完成 ${result} 条!")
@@ -333,14 +314,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
         if (autoIncrmentKey.HasValue) {
             var idKey = GeneratedKeyHolder()
             try {
-                n = jdbcTemplate.update(PreparedStatementCreator {
-                    var ps = it.prepareStatement(executeData.executeSql, Statement.RETURN_GENERATED_KEYS)
-                    executeData.parameters.forEachIndexed { index, item ->
-                        ps.setValue(index + 1, item)
-                    }
-
-                    return@PreparedStatementCreator ps
-                }, idKey)
+                n = jdbcTemplate.update(executeData.executeSql, executeData.executeParameters, idKey)
 
                 db.executeTime = LocalDateTime.now() - startAt
                 db.lastAutoId = idKey.key.toInt()
@@ -350,7 +324,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
             } finally {
                 SqlLogger.logInsert(error, tableName, {
                     var msg_log = mutableListOf("[sql] ${executeData.executeSql}")
-                    msg_log.add("[参数] ${executeData.executeParameters.joinToString(",")}")
+                    msg_log.add("[参数] ${executeData.executeParameters.ToJson()}")
                     msg_log.add("[id] ${db.lastAutoId}")
                     msg_log.add("[result] ${n}")
                     msg_log.add("[耗时] ${db.executeTime}")
@@ -374,15 +348,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
         } else {
             //没有自增Id的情况
             try {
-                n = jdbcTemplate.update(PreparedStatementCreator {
-                    var ps = it.prepareStatement(executeData.executeSql)
-
-                    executeData.parameters.forEachIndexed { index, item ->
-                        ps.setValue(index + 1, item)
-                    }
-
-                    return@PreparedStatementCreator ps
-                })
+                n = jdbcTemplate.update(executeData.executeSql, executeData.parameterDefines)
                 db.executeTime = LocalDateTime.now() - startAt
 
             } catch (e: Exception) {
@@ -391,7 +357,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
             } finally {
                 SqlLogger.logInsert(error, tableName, {
                     var msg_log = mutableListOf("[sql] ${executeData.executeSql}")
-                    msg_log.add("[参数] ${executeData.executeParameters.joinToString(",")}")
+                    msg_log.add("[参数] ${executeData.executeParameters.ToJson()}")
                     msg_log.add("[result] ${n}")
                     msg_log.add("[耗时] ${db.executeTime}")
 
