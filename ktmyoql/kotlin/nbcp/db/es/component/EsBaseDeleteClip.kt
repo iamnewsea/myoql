@@ -119,6 +119,6 @@ open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhere
             EsLogger.logDelete(error,collectionName,request,response)
         }
 
-        return ret;
+//        return ret;
     }
 }

@@ -2,8 +2,6 @@ package nbcp.db.redis.proxy
 
 import nbcp.comm.*
 import nbcp.db.redis.BaseRedisProxy
-import nbcp.db.redis.RedisRenewalTypeEnum
-import java.io.Serializable
 
 /**
  * 列表，主要做队列用。
@@ -53,8 +51,8 @@ class RedisListProxy @JvmOverloads constructor(
 
     fun popPush(key: String, targetGroup: String, targetKey: String): String {
         var cacheKey = getFullKey(key);
-        var targetKey = BaseRedisProxy.getFullKey(targetGroup, targetKey)
-        return stringCommand.opsForList().rightPopAndLeftPush(cacheKey, targetKey).AsString()
+        var targetKeyValue = BaseRedisProxy.getFullKey(targetGroup, targetKey)
+        return stringCommand.opsForList().rightPopAndLeftPush(cacheKey, targetKeyValue).AsString()
     }
 
     /**

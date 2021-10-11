@@ -142,11 +142,11 @@ data class moer_map(val _pname: String)
     }
 
     fun getEntityName(name: String): String {
-        var name = name;
+        var nameValue = name;
         nameMapping.forEach {
-            name = name.replace(it.key, it.value)
+            nameValue = nameValue.replace(it.key, it.value)
         }
-        return name[0].lowercase() + name.substring(1);
+        return nameValue[0].lowercase() + nameValue.substring(1);
     }
 
     fun getGroups(basePackage: String, anyEntityClass: Class<*>): HashMap<String, MutableList<Class<*>>> {

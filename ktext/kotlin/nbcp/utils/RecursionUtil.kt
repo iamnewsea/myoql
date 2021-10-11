@@ -1,7 +1,6 @@
 package nbcp.utils
 
 import nbcp.comm.*
-import nbcp.db.ITreeData
 
 /**
  * Created by udi on 17-4-10.
@@ -30,59 +29,59 @@ enum class RecursionReturnEnum private constructor(val value: Int) {
 object RecursionUtil {
 
     fun <T> filter(
-        container: List<T>,
-        producer: (T) -> MutableList<T>,
-        idCallback: (T) -> String,
-        callback: (Set<T>, Int) -> Boolean
+            container: List<T>,
+            producer: (T) -> MutableList<T>,
+            idCallback: (T) -> String,
+            callback: (Set<T>, Int) -> Boolean
     ) {
         var list_queryed_ids = mutableListOf<String>();
         var list_wbs_ids = mutableSetOf<String>();
 
         //如果菜单树中有匹配项，则显示向上的路径，显示下级所有节点。
         RecursionUtil.execute<T>(
-            container,
-            producer,
-            { wbs, index ->
-                if (callback(wbs, index) == false) {
-                    return@execute RecursionReturnEnum.Go
-                }
+                container,
+                producer,
+                { wbs, index ->
+                    if (callback(wbs, index) == false) {
+                        return@execute RecursionReturnEnum.Go
+                    }
 
-                var item = wbs.last();
-                var item_id = idCallback(item)
-                list_queryed_ids.add(item_id)
+                    val item = wbs.last();
+                    val item_id = idCallback(item)
+                    list_queryed_ids.add(item_id)
 
-                if (container != null) {
-                    list_wbs_ids.addAll(
-                        RecursionUtil.getWbs(
-                            container,
-                            producer,
-                            { item2 ->
-                                return@getWbs idCallback(item2) == item_id
-                            }).map { idCallback(it) }
-                    )
-                } else {
-                    list_wbs_ids.add(item_id);
-                }
-                return@execute RecursionReturnEnum.StopSub
-            });
+                    if (container.any()) {
+                        list_wbs_ids.addAll(
+                                RecursionUtil.getWbs(
+                                        container,
+                                        producer,
+                                        { item2 ->
+                                            return@getWbs idCallback(item2) == item_id
+                                        }).map { idCallback(it) }
+                        )
+                    } else {
+                        list_wbs_ids.add(item_id);
+                    }
+                    return@execute RecursionReturnEnum.StopSub
+                });
 
 
         RecursionUtil.execute<T>(
-            container,
-            producer,
-            { wbs, _ ->
-                var item = wbs.last();
-                var item_id = idCallback(item)
-                if (list_wbs_ids.contains(item_id) == false) {
-                    return@execute RecursionReturnEnum.Remove;
-                }
+                container,
+                producer,
+                { wbs, _ ->
+                    var item = wbs.last();
+                    var item_id = idCallback(item)
+                    if (list_wbs_ids.contains(item_id) == false) {
+                        return@execute RecursionReturnEnum.Remove;
+                    }
 
-                if (list_queryed_ids.contains(item_id)) {
-                    return@execute RecursionReturnEnum.StopSub;
-                }
+                    if (list_queryed_ids.contains(item_id)) {
+                        return@execute RecursionReturnEnum.StopSub;
+                    }
 
-                return@execute RecursionReturnEnum.Go;
-            }
+                    return@execute RecursionReturnEnum.Go;
+                }
         );
     }
 
@@ -93,18 +92,18 @@ object RecursionUtil {
      * @param consumer: 消费者，参数：Wbs对象，当前对象的索引。
      */
     fun <T> execute(
-        container: List<T>,
-        producer: (T) -> MutableList<T>,
-        consumer: (Set<T>, Int) -> RecursionReturnEnum
+            container: List<T>,
+            producer: (T) -> MutableList<T>,
+            consumer: (Set<T>, Int) -> RecursionReturnEnum
     ): Int {
         return _execute(container as MutableList<T>, producer, consumer);
     }
 
     private fun <T> _execute(
-        container: MutableList<T>,
-        producer: (T) -> MutableList<T>,
-        consumer: (Set<T>, Int) -> RecursionReturnEnum,
-        parents: Set<T> = setOf()
+            container: MutableList<T>,
+            producer: (T) -> MutableList<T>,
+            consumer: (Set<T>, Int) -> RecursionReturnEnum,
+            parents: Set<T> = setOf()
     ): Int {
         if (container.size == 0) return 0
         var counted = 0;
@@ -141,9 +140,9 @@ object RecursionUtil {
      * @param consumer: 生产者
      */
     fun <T> findOne(
-        container: Collection<T>,
-        producer: (T) -> Collection<T>,
-        consumer: (T) -> Boolean
+            container: Collection<T>,
+            producer: (T) -> Collection<T>,
+            consumer: (T) -> Boolean
     ): T? {
         for (i in container.indices) {
             val item = container.elementAt(i)
@@ -161,10 +160,10 @@ object RecursionUtil {
      */
     @JvmOverloads
     fun <T> getWbs(
-        container: Collection<T>,
-        producer: (T) -> Collection<T>,
-        consumer: (T) -> Boolean,
-        parents: List<T> = listOf()
+            container: Collection<T>,
+            producer: (T) -> Collection<T>,
+            consumer: (T) -> Boolean,
+            parents: List<T> = listOf()
     ): MutableList<T> {
         for (i in container.indices) {
             val item = container.elementAt(i)
@@ -227,11 +226,11 @@ object RecursionUtil {
      */
     @JvmOverloads
     fun recursionJson(
-        json: Map<*, *>,
-        consumerMap: (Map<*, *>) -> Boolean,
-        consumerList: ((Collection<*>) -> Boolean)? = null,
-        consumerObject: ((Any) -> Boolean)? = null,
-        deepth: Int = 0
+            json: Map<*, *>,
+            consumerMap: (Map<*, *>) -> Boolean,
+            consumerList: ((Collection<*>) -> Boolean)? = null,
+            consumerObject: ((Any) -> Boolean)? = null,
+            deepth: Int = 0
     ): Boolean {
         if (consumerMap(json) == false) {
             return false;
@@ -249,35 +248,35 @@ object RecursionUtil {
                 return@ForEachExt true;
             } else if (type.isArray) {
                 return@ForEachExt recursionArray(
-                    value as Array<*>,
-                    consumerMap,
-                    consumerList,
-                    consumerObject,
-                    deepth + 1
+                        value as Array<*>,
+                        consumerMap,
+                        consumerList,
+                        consumerObject,
+                        deepth + 1
                 );
             } else if (type.IsCollectionType) {
                 return@ForEachExt recursionList(
-                    value as Collection<*>,
-                    consumerMap,
-                    consumerList,
-                    consumerObject,
-                    deepth + 1
+                        value as Collection<*>,
+                        consumerMap,
+                        consumerList,
+                        consumerObject,
+                        deepth + 1
                 );
             } else if (type.IsMapType) {
                 return@ForEachExt recursionJson(
-                    value as Map<*, *>,
-                    consumerMap,
-                    consumerList,
-                    consumerObject,
-                    deepth + 1
+                        value as Map<*, *>,
+                        consumerMap,
+                        consumerList,
+                        consumerObject,
+                        deepth + 1
                 );
             } else {
                 return@ForEachExt recursionObject(
-                    value,
-                    consumerMap,
-                    consumerList,
-                    consumerObject,
-                    deepth + 1
+                        value,
+                        consumerMap,
+                        consumerList,
+                        consumerObject,
+                        deepth + 1
                 );
             }
         }
@@ -292,11 +291,11 @@ object RecursionUtil {
      */
     @JvmOverloads
     fun recursionAny(
-        value: Any,
-        consumerMap: (Map<*, *>) -> Boolean,
-        consumerList: ((Collection<*>) -> Boolean)? = null,
-        consumerObject: ((Any) -> Boolean)? = null,
-        deepth: Int = 0
+            value: Any,
+            consumerMap: (Map<*, *>) -> Boolean,
+            consumerList: ((Collection<*>) -> Boolean)? = null,
+            consumerObject: ((Any) -> Boolean)? = null,
+            deepth: Int = 0
     ): Boolean {
         var type = value::class.java;
         if (type.IsSimpleType()) {
@@ -313,11 +312,11 @@ object RecursionUtil {
     }
 
     private fun recursionObject(
-        value: Any,
-        consumerMap: (Map<*, *>) -> Boolean,
-        consumerList: ((Collection<*>) -> Boolean)? = null,
-        consumerObject: ((Any) -> Boolean)? = null,
-        deepth: Int = 0
+            value: Any,
+            consumerMap: (Map<*, *>) -> Boolean,
+            consumerList: ((Collection<*>) -> Boolean)? = null,
+            consumerObject: ((Any) -> Boolean)? = null,
+            deepth: Int = 0
     ): Boolean {
 
         if (consumerObject != null) {
@@ -327,57 +326,55 @@ object RecursionUtil {
             }
         }
 
-        var type = value::class.java;
-
-        return type.AllFields.ForEachExt { it, index ->
+        return value::class.java.AllFields.ForEachExt { it, index ->
 
 //            var key = it.name;
-            var value = it.get(value);
+            val fieldValue = it.get(value);
 
-            if (value == null) {
+            if (fieldValue == null) {
                 return@ForEachExt true;
             }
 
-            var type = value::class.java;
+            var type = fieldValue::class.java;
             if (type.IsSimpleType()) {
                 return@ForEachExt true;
             } else if (type.isArray) {
                 return@ForEachExt recursionArray(
-                    value as Array<*>,
-                    consumerMap,
-                    consumerList,
-                    consumerObject,
-                    deepth + 1
+                        fieldValue as Array<*>,
+                        consumerMap,
+                        consumerList,
+                        consumerObject,
+                        deepth + 1
                 );
             } else if (type.IsCollectionType) {
                 return@ForEachExt recursionList(
-                    value as Collection<*>,
-                    consumerMap,
-                    consumerList,
-                    consumerObject,
-                    deepth + 1
+                        fieldValue as Collection<*>,
+                        consumerMap,
+                        consumerList,
+                        consumerObject,
+                        deepth + 1
                 );
             } else if (type.IsMapType) {
                 return@ForEachExt recursionJson(
-                    value as Map<*, *>,
-                    consumerMap,
-                    consumerList,
-                    consumerObject,
-                    deepth + 1
+                        fieldValue as Map<*, *>,
+                        consumerMap,
+                        consumerList,
+                        consumerObject,
+                        deepth + 1
                 );
             } else {
-                return@ForEachExt recursionObject(value, consumerMap, consumerList, consumerObject, deepth + 1);
+                return@ForEachExt recursionObject(fieldValue, consumerMap, consumerList, consumerObject, deepth + 1);
             }
         }
     }
 
     @JvmOverloads
     fun recursionArray(
-        array: Array<*>,
-        consumerMap: (Map<*, *>) -> Boolean,
-        consumerList: ((Collection<*>) -> Boolean)? = null,
-        consumerObject: ((Any) -> Boolean)? = null,
-        deepth: Int = 0
+            array: Array<*>,
+            consumerMap: (Map<*, *>) -> Boolean,
+            consumerList: ((Collection<*>) -> Boolean)? = null,
+            consumerObject: ((Any) -> Boolean)? = null,
+            deepth: Int = 0
     ): Boolean {
 
         return recursionList(array.toList(), consumerMap, consumerList, consumerObject, deepth);
@@ -385,11 +382,11 @@ object RecursionUtil {
 
     @JvmOverloads
     fun recursionList(
-        array: Collection<*>,
-        consumerMap: (Map<*, *>) -> Boolean,
-        consumerList: ((Collection<*>) -> Boolean)? = null,
-        consumerObject: ((Any) -> Boolean)? = null,
-        deepth: Int = 0
+            array: Collection<*>,
+            consumerMap: (Map<*, *>) -> Boolean,
+            consumerList: ((Collection<*>) -> Boolean)? = null,
+            consumerObject: ((Any) -> Boolean)? = null,
+            deepth: Int = 0
     ): Boolean {
 
         if (consumerList != null) {
@@ -411,35 +408,35 @@ object RecursionUtil {
                 return@ForEachExt true;
             } else if (type.isArray) {
                 return@ForEachExt recursionArray(
-                    value as Array<*>,
-                    consumerMap,
-                    consumerList,
-                    consumerObject,
-                    deepth + 1
+                        value as Array<*>,
+                        consumerMap,
+                        consumerList,
+                        consumerObject,
+                        deepth + 1
                 );
             } else if (type.IsCollectionType) {
                 return@ForEachExt recursionList(
-                    value as Collection<*>,
-                    consumerMap,
-                    consumerList,
-                    consumerObject,
-                    deepth + 1
+                        value as Collection<*>,
+                        consumerMap,
+                        consumerList,
+                        consumerObject,
+                        deepth + 1
                 );
             } else if (type.IsMapType) {
                 return@ForEachExt recursionJson(
-                    value as Map<*, *>,
-                    consumerMap,
-                    consumerList,
-                    consumerObject,
-                    deepth + 1
+                        value as Map<*, *>,
+                        consumerMap,
+                        consumerList,
+                        consumerObject,
+                        deepth + 1
                 );
             } else {
                 return@ForEachExt recursionObject(
-                    value,
-                    consumerMap,
-                    consumerList,
-                    consumerObject,
-                    deepth + 1
+                        value,
+                        consumerMap,
+                        consumerList,
+                        consumerObject,
+                        deepth + 1
                 );
             }
         }

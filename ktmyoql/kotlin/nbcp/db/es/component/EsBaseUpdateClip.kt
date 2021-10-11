@@ -150,7 +150,7 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
                 }
             }
 
-            ret = entities.size;
+//            ret = entities.size;
             db.affectRowCount = entities.size
             return db.affectRowCount
         } catch (e: Exception) {

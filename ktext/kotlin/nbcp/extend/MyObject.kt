@@ -34,7 +34,6 @@ fun <T> T.IsIn(vararg values: T): Boolean {
     return this.IsIn(null, *values);
 }
 
-@JvmOverloads
 fun <T> T.IsIn(equalFunc: ((T, T) -> Boolean)?, vararg values: T): Boolean {
     for (i in values) {
         if (equalFunc == null) {

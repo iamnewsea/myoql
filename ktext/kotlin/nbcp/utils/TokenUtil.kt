@@ -39,7 +39,6 @@ object TokenUtil {
     /**
      * 根据用户体系生成新的 token。
      */
-    @JvmOverloads
     fun generateToken(): String {
 //        var userType = getUserSystemType(oldRequestToken)
 //        if (userType.isEmpty()) {

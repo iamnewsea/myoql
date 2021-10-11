@@ -409,6 +409,7 @@ ${props.joinToString("\n")}
         var props = entType.AllFields
                 .filter { it.name != "Companion" }
                 .map {
+                    //TODO 再调试一下
                     var v1 = getMetaValue(it, entTypeName, 1)
 
                     return@map "| ${it.name} | ${it.type.simpleName} |   |"

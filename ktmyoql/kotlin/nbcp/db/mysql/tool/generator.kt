@@ -256,19 +256,19 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
     }
 
     fun genEntity(groupName: String, entType: Class<*>): EntityResult {
-        var tableName = entType.name.split(".").last();
+        val tableName = entType.name.split(".").last();
         if (tableName.endsWith("\$Companion")) {
             return EntityResult();
         }
 
         var autoIncrementKey = "";
-        var uks = mutableSetOf<String>()
+        val uks = mutableSetOf<String>()
 //        var rks = mutableSetOf<String>()
-        var fks = mutableSetOf<FkDefine>()
-        var pks = mutableListOf<String>()
-        var columns = mutableListOf<String>()
-        var columns_spread = mutableListOf<String>()
-        var columns_convertValue = mutableListOf<String>()
+        val fks = mutableSetOf<FkDefine>()
+        val pks = mutableListOf<String>()
+        val columns = mutableListOf<String>()
+        val columns_spread = mutableListOf<String>()
+        val columns_convertValue = mutableListOf<String>()
 
         var props = mutableListOf<String>();
         var idMethods = mutableListOf<String>()
@@ -310,8 +310,8 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                                         ?: "") + ")\n";
                     }
 
-                    var dbType = DbType.of(field.type)
-                    if (dbType == DbType.Other) {
+                    val fieldDbType = DbType.of(field.type)
+                    if (fieldDbType == DbType.Other) {
 
                         //看是否是展开列。
 
@@ -349,13 +349,13 @@ fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName}>.s
 
                             subFields
                                     .forEach {
-                                        var db_column_name = db_column_name + "_" + it.name;
-                                        var dbType = DbType.of(it.type)
+                                        val db_column_name_value = db_column_name + "_" + it.name;
+                                        val dbType = DbType.of(it.type)
 
-                                        columns.add(db_column_name);
+                                        columns.add(db_column_name_value);
 
-                                        var item =
-                                                """val ${field.name}_${it.name} = SqlColumnName(DbType.${dbType.name}, this.getAliaTableName(),"${db_column_name}")""".ToTab(
+                                        val item =
+                                                """val ${field.name}_${it.name} = SqlColumnName(DbType.${dbType.name}, this.getAliaTableName(),"${db_column_name_value}")""".ToTab(
                                                         1
                                                 )
                                         props.add(item);
@@ -375,7 +375,7 @@ fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName}>.s
                     }
 
                     var item =
-                            """${ann_converter}val ${field.name} = SqlColumnName(DbType.${dbType.name}, this.getAliaTableName(),"${db_column_name}")""".ToTab(
+                            """${ann_converter}val ${field.name} = SqlColumnName(DbType.${fieldDbType.name}, this.getAliaTableName(),"${db_column_name}")""".ToTab(
                                     1
                             )
                     props.add(item);

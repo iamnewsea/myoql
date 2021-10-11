@@ -275,7 +275,7 @@ fun Class<*>.AnySuperClass(filter: (Class<*>) -> Boolean): Boolean {
  * 按路径找。
  */
 fun Class<*>.GetFieldPath(vararg fieldNames: String): Field? {
-    var ret: Field? = null
+//    var ret: Field? = null
     var fieldName = fieldNames.first();
 
     var field = this.FindField(fieldName);
@@ -292,7 +292,7 @@ fun Class<*>.GetFieldPath(vararg fieldNames: String): Field? {
 fun ParameterizedType.GetActualClass(index: Int, callback: (() -> Class<*>?)? = null): Class<*> {
     var a1 = this.actualTypeArguments[index];
     if (a1 is Class<*>) {
-        return a1 as Class<*>
+        return a1
     } else if (a1 is WildcardType) {
         //类型是 List<枚举> 时，返回
         return a1.upperBounds[0] as Class<*>

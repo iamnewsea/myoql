@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 class MasterAlternateMapTest : TestBase() {
     @Test
     fun abc() {
-        val m = MasterAlternateStack<String>({
+        MasterAlternateStack<String>({
             println(it)
         })
 

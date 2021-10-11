@@ -63,7 +63,7 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                             var xssfReader = XSSFReader(xlsxPackage)
                             var iter = xssfReader.sheetsData as XSSFReader.SheetIterator
                             while (iter.hasNext()) {
-                                iter.next().use { stream ->
+                                iter.next().use { _ ->
                                     ret.add(iter.sheetName);
                                 }
                             }

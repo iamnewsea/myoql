@@ -154,7 +154,7 @@ class MongoEntityCollector : BeanPostProcessor {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityInsert, EventResult>>()
         usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
-            insertEvent.ForEachExt { it, index ->
+            insertEvent.ForEachExt { it, _ ->
                 var ret = it.beforeInsert(insert);
                 if (!ret.result) {
                     return@ForEachExt false;
