@@ -41,18 +41,17 @@ fun Cell?.getStringValue(evaluator: FormulaEvaluator): String {
 
 /**
  * Excel 导入导出。
- * @param excelStream: 必须是可重复读的流!
  */
-class ExcelComponent(val excelStream: InputStream) {
+class ExcelComponent(val excelStream: () -> InputStream) {
     val sheetNames: Array<String>
         get() {
             var ret = mutableListOf<String>()
 
-            FileMagic.prepareToCheckMagic(excelStream).use { file ->
+            FileMagic.prepareToCheckMagic(excelStream()).use { file ->
                 val fm = FileMagic.valueOf(file)
                 when (fm) {
                     FileMagic.OOXML -> {
-                        WorkbookFactory.create(excelStream).use { book ->
+                        WorkbookFactory.create(excelStream()).use { book ->
                             for (i in 0..(book.numberOfSheets - 1)) {
                                 ret.add(book.getSheetAt(i).sheetName)
                             }
@@ -60,7 +59,7 @@ class ExcelComponent(val excelStream: InputStream) {
                     }
 
                     FileMagic.OLE2 -> {
-                        OPCPackage.open(excelStream).use { xlsxPackage ->
+                        OPCPackage.open(excelStream()).use { xlsxPackage ->
                             var xssfReader = XSSFReader(xlsxPackage)
                             var iter = xssfReader.sheetsData as XSSFReader.SheetIterator
                             while (iter.hasNext()) {
@@ -84,7 +83,7 @@ class ExcelComponent(val excelStream: InputStream) {
     }
 
 
-    class ExcelSheetComponent(val sheetName: String, val excelStream: InputStream) {
+    class ExcelSheetComponent(val sheetName: String, val excelStream: () -> InputStream) {
         private var columns: Array<out String> = arrayOf()
         private var rowOffset: Int = 0;
         private var pks: Array<out String> = arrayOf()
@@ -187,7 +186,7 @@ class ExcelComponent(val excelStream: InputStream) {
                     throw RuntimeException("${sheetName}多余的主键定义:${ext_pks.joinToString(",")}");
                 }
             }
-            FileMagic.prepareToCheckMagic(excelStream).use { file ->
+            FileMagic.prepareToCheckMagic(excelStream()).use { file ->
 
                 val fm = FileMagic.valueOf(file)
                 var lined = 0;
@@ -289,10 +288,6 @@ class ExcelComponent(val excelStream: InputStream) {
         }
 
 
-        /**
-         * 回写数据
-         * @param outputStream: Excel模板的文件流
-         */
         fun <T : Any> writeData(outputStream: OutputStream, column_offset: Int = 0, table: DataTable<T>) {
             writeData(outputStream, column_offset) { rowIndex ->
                 return@writeData table.rows.getOrNull(rowIndex)?.ConvertType(JsonMap::class.java) as JsonMap?
@@ -302,7 +297,7 @@ class ExcelComponent(val excelStream: InputStream) {
         private fun readOle2ExcelData(
             filter: (JsonMap, Map<Int, String>) -> Boolean
         ) {
-            WorkbookFactory.create(excelStream).use { book ->
+            WorkbookFactory.create(excelStream()).use { book ->
 
                 var sheet: Sheet;
 
@@ -389,7 +384,7 @@ class ExcelComponent(val excelStream: InputStream) {
 
 
         private fun readOpenXmlExcelData(filter: (JsonMap, Map<Int, String>) -> Boolean) {
-            OPCPackage.open(excelStream).use { xlsxPackage ->
+            OPCPackage.open(excelStream()).use { xlsxPackage ->
 
                 var xssfReader = XSSFReader(xlsxPackage)
                 var iter: XSSFReader.SheetIterator
@@ -429,7 +424,6 @@ class ExcelComponent(val excelStream: InputStream) {
                     }
                 }
 
-                println("找不到Excel文件的Sheet ${sheetName} ！")
                 throw java.lang.Exception("找不到Excel文件的Sheet ${sheetName} ！")
             }
         }

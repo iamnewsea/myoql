@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 class ExcelTest : TestBase() {
     @Test
     fun abc() {
-        var excel = ExcelComponent(FileInputStream("""/home/udi/Desktop/a.xlsx"""));
+        var excel = ExcelComponent { FileInputStream("""/home/udi/Desktop/a.xlsx""") }
         println(excel.sheetNames.joinToString())
 
 
