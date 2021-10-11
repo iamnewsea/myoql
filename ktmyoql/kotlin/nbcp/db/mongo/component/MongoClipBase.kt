@@ -33,7 +33,7 @@ open class MongoClipBase(var collectionName: String) : Serializable {
             var dataSourceName = config.getDataSourceName(this.collectionName, isRead)
 
             if (dataSourceName.HasValue) {
-                var uri = SpringUtil.context.environment.getProperty("app.mongo.${dataSourceName}-ds")
+                var uri = SpringUtil.context.environment.getProperty("app.mongo.ds.${dataSourceName}-ds")
                 return db.mongo.getMongoTemplateByUri(uri) ?: throw RuntimeException("创建Mongo连接失败");
             }
 
