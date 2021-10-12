@@ -316,7 +316,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                         //生成关系表
                         if (propertyType.IsCollectionType || Map::class.java.isAssignableFrom(propertyType)) {
                             var item =
-                                    """`${columnName}` LongText not null  "default '[]'" comment ''"""
+                                    """`${columnName}` LongText not null  default '[]' comment ''"""
                             list.add(item);
                         } else {
                             propertyType.AllFields.forEach {
