@@ -263,17 +263,16 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 
         var autoIncrementKey = "";
         val uks = mutableSetOf<String>()
-//        var rks = mutableSetOf<String>()
         val fks = mutableSetOf<FkDefine>()
         val pks = mutableListOf<String>()
         val columns = mutableListOf<String>()
         val columns_spread = mutableListOf<String>()
         val columns_convertValue = mutableListOf<String>()
 
-        var props = mutableListOf<String>();
-        var idMethods = mutableListOf<String>()
-        var extMethods = mutableListOf<String>()
-        var entityTypeName = getEntityClassName(tableName)
+        val props = mutableListOf<String>();
+        val idMethods = mutableListOf<String>()
+        val extMethods = mutableListOf<String>()
+        val entityTypeName = getEntityClassName(tableName)
 
         entType.AllFields
                 .filter { it.name != "Companion" }
