@@ -194,7 +194,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
             return null;
         }
 
-        val value = queryMap.get(key)
+        var value = queryMap.get(key)
 
         if (value == null) {
             if (parameter.parameterType.IsBooleanType) {
@@ -202,44 +202,41 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
             }
             return null;
         }
-
-        var resultValue: Any? = null
         //如果得到了多个值。进行转换。
         if (value is Collection<*>) {
             //如果参数是 List.
             if (parameter.parameterType.isArray) {
                 if (parameter.parameterType.componentType.IsStringType) {
-                    resultValue = value.toTypedArray()
+                    value = value.toTypedArray()
                 } else {
-                    resultValue = value.map { it!!.ConvertType(parameter.parameterType.componentType) }
+                    value = value.map { it!!.ConvertType(parameter.parameterType.componentType) }
                             .toTypedArray()
                 }
             } else if (parameter.parameterType.IsCollectionType) {
                 var genType = (parameter.genericParameterType as ParameterizedType).GetActualClass(0);
                 if (!genType.IsStringType) {
 
-                    resultValue = value.map { it!!.ConvertType(genType) }
+                    value = value.map { it!!.ConvertType(genType) }
                 }
             } else if (parameter.parameterType.IsStringType) {
-                resultValue = value.joinToString(",")
+                value = value.joinToString(",")
             }
 
-            return resultValue;
+            return value;
         }
 
 
         //如果得到了一个值，但是参数是 List.
         if (parameter.parameterType.isArray) {
-            resultValue = arrayOf(value.ConvertType(parameter.parameterType.componentType))
+            value = arrayOf(value.ConvertType(parameter.parameterType.componentType))
         } else if (parameter.parameterType.IsCollectionType) {
             val genType = (parameter.genericParameterType as ParameterizedType).GetActualClass(0);
-            resultValue = listOf(value.ConvertType(genType))
+            value = listOf(value.ConvertType(genType))
         } else if (!parameter.parameterType.IsStringType) {
-            resultValue = value.ConvertType(parameter.parameterType)
+            value = value.ConvertType(parameter.parameterType)
         }
 
-
-        return resultValue;
+        return value;
     }
 
 }

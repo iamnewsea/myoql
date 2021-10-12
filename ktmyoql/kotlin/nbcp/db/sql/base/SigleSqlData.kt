@@ -23,31 +23,31 @@ open class SingleSqlData @JvmOverloads constructor(
 //    }
 
 
-    fun toExecuteSqlAndParameters(): SqlExecuteData {
-        var exp = this.expression;
-        var parameters = mutableListOf<SqlParameterData>()
-
-        """\{([^}]+)}""".toRegex(RegexOption.DOT_MATCHES_ALL)
-            .findAll(this.expression)
-            .sortedByDescending { it.range.start }
-            .forEach {
-                var key = it.groupValues[1]
-//                    var key_var = it.groupValues[0]
-
-                exp = exp.Slice(0, it.range.start) + "?" + exp.substring(it.range.endInclusive + 1)
-
-                var value = this.values[key]
-                if (value == null) {
-                    parameters.add(SqlParameterData(String::class.java, null))
-                } else {
-                    parameters.add(SqlParameterData(this.values[key]!!::class.java, this.values[key]!!))
-                }
-            }
-
-
-        parameters.reverse()
-        return SqlExecuteData(exp, parameters.toTypedArray())
-    }
+//    fun toExecuteSqlAndParameters(): SqlExecuteData {
+//        var exp = this.expression;
+//        var parameters = mutableListOf<SqlParameterData>()
+//
+//        """\{([^}]+)}""".toRegex(RegexOption.DOT_MATCHES_ALL)
+//            .findAll(this.expression)
+//            .sortedByDescending { it.range.start }
+//            .forEach {
+//                var key = it.groupValues[1]
+////                    var key_var = it.groupValues[0]
+//
+//                exp = exp.Slice(0, it.range.start) + "?" + exp.substring(it.range.endInclusive + 1)
+//
+//                var value = this.values[key]
+//                if (value == null) {
+//                    parameters.add(SqlParameterData(String::class.java, null))
+//                } else {
+//                    parameters.add(SqlParameterData(this.values[key]!!::class.java, this.values[key]!!))
+//                }
+//            }
+//
+//
+//        parameters.reverse()
+//        return SqlExecuteData(exp, parameters.toTypedArray())
+//    }
 
 
     operator fun plus(other: SingleSqlData): SingleSqlData {
