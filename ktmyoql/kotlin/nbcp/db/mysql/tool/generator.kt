@@ -45,11 +45,11 @@ class generator {
     }
 
     fun work(
-            targetFileName: String, //目标文件
-            basePackage: String,    //实体的包名
-            anyEntityClass: Class<*>, //任意实体的类名
-            nameMapping: StringMap = StringMap(), // 名称转换
-            ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
+        targetFileName: String, //目标文件
+        basePackage: String,    //实体的包名
+        anyEntityClass: Class<*>, //任意实体的类名
+        nameMapping: StringMap = StringMap(), // 名称转换
+        ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
     ) {
         this.nameMapping = nameMapping
         var p = File.separator;
@@ -68,7 +68,7 @@ class generator {
         println("---------------生成 dbr---------------")
 
         writeToFile(
-                """package nbcp.db.sql.table
+            """package nbcp.db.sql.table
 
 import nbcp.db.*
 import nbcp.db.sql.*
@@ -89,13 +89,13 @@ import org.springframework.stereotype.Component
         groups.forEach { group ->
 
             writeToFile(
-                    """
+                """
 @Component("sql.${group.key}")
 @MetaDataGroup("${group.key}")
 class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
     override fun getEntities():Set<BaseMetaData> = setOf(${
-                        group.value.map { genVarName(it).GetSafeKotlinName() }.joinToString(",")
-                    })
+                    group.value.map { genVarName(it).GetSafeKotlinName() }.joinToString(",")
+                })
 """
             )
             println("${group.key}:")
@@ -143,16 +143,16 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 
 
         ClassUtil.findClasses(basePackage, anyEntityClass)
-                .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
-                .forEach {
-                    var groupName = it.getAnnotation(DbEntityGroup::class.java).value;
+            .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
+            .forEach {
+                var groupName = it.getAnnotation(DbEntityGroup::class.java).value;
 
-                    if (ret.containsKey(groupName) == false) {
-                        ret[groupName] = mutableListOf();
-                    }
-
-                    ret[groupName]!!.add(it)
+                if (ret.containsKey(groupName) == false) {
+                    ret[groupName] = mutableListOf();
                 }
+
+                ret[groupName]!!.add(it)
+            }
 
 
         return ret
@@ -190,8 +190,8 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 
             return@filter true;
         }
-                .distinctBy { it.name }
-                .toMutableList()
+            .distinctBy { it.name }
+            .toMutableList()
 
         var subClasses = mutableListOf<Class<*>>()
         ret.forEach {
@@ -261,137 +261,22 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
             return EntityResult();
         }
 
-        var autoIncrementKey = "";
-        val uks = mutableSetOf<String>()
-        val fks = mutableSetOf<FkDefine>()
-        val pks = mutableListOf<String>()
-        val columns = mutableListOf<String>()
-        val columns_spread = mutableListOf<String>()
-        val columns_convertValue = mutableListOf<String>()
-
-        val props = mutableListOf<String>();
+//        var autoIncrementKey = "";
+//        val uks = mutableSetOf<String>()
+//        val fks = mutableSetOf<FkDefine>()
+//        val pks = mutableListOf<String>()
+//        val columns = mutableListOf<String>()
+//        val columns_spread = mutableListOf<String>()
+//        val columns_convertValue = mutableListOf<String>()
+//
+//        val props = mutableListOf<String>();
+//        val extMethods = mutableListOf<String>()
+//        val entityTypeName = getEntityClassName(tableName)
         val idMethods = mutableListOf<String>()
-        val extMethods = mutableListOf<String>()
-        val entityTypeName = getEntityClassName(tableName)
 
-        entType.AllFields
-                .filter { it.name != "Companion" }
-                .forEach { field ->
-                    field.isAccessible = true
-                    var db_column_name = field.name;
+        val columnMetaDefines = getColumnMetaDefines(groupName, entType);
 
-//                    var dbName = field.getAnnotation(DbName::class.java);
-//                    if (dbName != null) {
-//                        db_column_name = dbName.value;
-//                    }
-
-
-                    if (field.getAnnotation(SqlAutoIncrementKey::class.java) != null) {
-                        autoIncrementKey = db_column_name
-                        uks.add(db_column_name)
-                    }
-
-                    if (field.getAnnotation(DbKey::class.java) != null) {
-                        pks.add(db_column_name);
-                    }
-
-                    var fk_define = field.getAnnotation(SqlFk::class.java)
-                    if (fk_define != null) {
-                        fks.add(FkDefine(tableName, db_column_name, fk_define.refTable, fk_define.refTableColumn))
-                    }
-
-                    var converter = field.getAnnotation(ConverterValueToDb::class.java)
-                    var ann_converter = "";
-                    if (converter != null) {
-                        columns_convertValue.add(db_column_name);
-                        ann_converter =
-                                "@ConverterValueToDb(" + (converter.value.map { it.qualifiedName + "::class" }.joinToString(",")
-                                        ?: "") + ")\n";
-                    }
-
-                    val fieldDbType = DbType.of(field.type)
-                    if (fieldDbType == DbType.Other) {
-
-                        //看是否是展开列。
-
-                        if (field.type.IsCollectionType || Map::class.java.isAssignableFrom(field.type)) {
-                            columns.add(db_column_name);
-
-                            var item =
-                                    """${ann_converter}val ${field.name} = SqlColumnName(DbType.Json, this.getAliaTableName(),"${db_column_name}")""".ToTab(
-                                            1
-                                    )
-                            props.add(item);
-
-                            return@forEach
-                        } else {
-                            columns_spread.add(db_column_name);
-
-                            var spread_methods = mutableListOf<String>()
-                            var subFields = field.type.AllFields
-                                    .filter { it.name != "Companion" }
-
-                            spread_methods.add(
-                                    """
-fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName}>.set_${tableName}_${db_column_name}(${db_column_name}:${field.type.name}):SqlUpdateClip<${
-                                        MyUtil.getBigCamelCase(
-                                                groupName
-                                        )
-                                    }Group.${entityTypeName}>{
-    return this${
-                                        subFields.map { ".set{ it." + db_column_name + "_" + it.name + " to " + db_column_name + "." + it.name + " }" }
-                                                .joinToString("\n\t\t\t")
-                                    }
-}
-"""
-                            )
-
-                            subFields
-                                    .forEach {
-                                        val db_column_name_value = db_column_name + "_" + it.name;
-                                        val dbType = DbType.of(it.type)
-
-                                        columns.add(db_column_name_value);
-
-                                        val item =
-                                                """val ${field.name}_${it.name} = SqlColumnName(DbType.${dbType.name}, this.getAliaTableName(),"${db_column_name_value}")""".ToTab(
-                                                        1
-                                                )
-                                        props.add(item);
-                                    }
-
-
-
-                            extMethods.addAll(spread_methods)
-
-                            return@forEach
-                        }
-//                        else {
-//                            throw RuntimeException("未识别的数据类型,表：${tableName},列:${db_column_name},如果定义复杂列，请在列在添加 @SqlSpreadColumn 注解")
-//                        }
-                    } else {
-                        columns.add(db_column_name);
-                    }
-
-                    var item =
-                            """${ann_converter}val ${field.name} = SqlColumnName(DbType.${fieldDbType.name}, this.getAliaTableName(),"${db_column_name}")""".ToTab(
-                                    1
-                            )
-                    props.add(item);
-                }
-
-
-
-        if (pks.any()) {
-            uks.add(pks.joinToString(","))
-        }
-
-        kotlin.run {
-            var uks_define = entType.getAnnotation(DbUks::class.java)
-            if (uks_define != null) {
-                uks.addAll(uks_define.value)
-            }
-        }
+        val entityTypeName = columnMetaDefines.entityTypeName;
 
 //        kotlin.run {
 //            var rks_define = entType.getAnnotation(SqlRks::class.java)
@@ -401,13 +286,15 @@ fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName}>.s
 //        }
 
 
-        var uks2 = uks.map { """ arrayOf(${it.split(",").map { "\"" + it + "\"" }.joinToString(",")}) """ }
+        var uks2 =
+            columnMetaDefines.uks.map { """ arrayOf(${it.split(",").map { "\"" + it + "\"" }.joinToString(",")}) """ }
 //        var rks2 = rks.map { """ arrayOf(${it.split(",").map { "\"" + it + "\"" }.joinToString(",")}) """ }
         var fks_exp_string =
-                fks.map { """FkDefine("${it.table}","${it.column}","${it.refTable}","${it.refColumn}") """ }.toTypedArray()
+            columnMetaDefines.fks.map { """FkDefine("${it.table}","${it.column}","${it.refTable}","${it.refColumn}") """ }
+                .toTypedArray()
 
 
-        uks.forEach { uk ->
+        columnMetaDefines.uks.forEach { uk ->
             var keys = uk.split(",")
             //检测
             keys.forEach {
@@ -417,47 +304,56 @@ fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName}>.s
             }
 
             idMethods.add(
-                    """
+                """
     fun queryBy${
-                        keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
-                    } (${
-                        keys.map {
-                            "${MyUtil.getSmallCamelCase(it)}: ${
-                                entType.GetFieldPath(
-                                        *it.split(".").toTypedArray()
-                                )!!.type.kotlinTypeName
-                            }"
-                        }.joinToString(",")
-                    }): SqlQueryClip<${entityTypeName}, ${entType.name}> {
-        return this.query()${keys.map { ".where{ it.${it.replace(".","_")} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+                    keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
+                } (${
+                    keys.map {
+                        "${MyUtil.getSmallCamelCase(it)}: ${
+                            entType.GetFieldPath(
+                                *it.split(".").toTypedArray()
+                            )!!.type.kotlinTypeName
+                        }"
+                    }.joinToString(",")
+                }): SqlQueryClip<${entityTypeName}, ${entType.name}> {
+        return this.query()${
+                    keys.map { ".where{ it.${it.replace(".", "_")} match ${MyUtil.getSmallCamelCase(it)} }" }
+                        .joinToString("")
+                }
     }
 
     fun deleteBy${
-                        keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
-                    } (${
-                        keys.map {
-                            "${MyUtil.getSmallCamelCase(it)}: ${
-                                entType.GetFieldPath(
-                                        *it.split(".").toTypedArray()
-                                )!!.type.kotlinTypeName
-                            }"
-                        }.joinToString(",")
-                    }): SqlDeleteClip<${entityTypeName}> {
-        return this.delete()${keys.map { ".where{ it.${it.replace(".","_")} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+                    keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
+                } (${
+                    keys.map {
+                        "${MyUtil.getSmallCamelCase(it)}: ${
+                            entType.GetFieldPath(
+                                *it.split(".").toTypedArray()
+                            )!!.type.kotlinTypeName
+                        }"
+                    }.joinToString(",")
+                }): SqlDeleteClip<${entityTypeName}> {
+        return this.delete()${
+                    keys.map { ".where{ it.${it.replace(".", "_")} match ${MyUtil.getSmallCamelCase(it)} }" }
+                        .joinToString("")
+                }
     }
 
     fun updateBy${
-                        keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
-                    } (${
-                        keys.map {
-                            "${MyUtil.getSmallCamelCase(it)}: ${
-                                entType.GetFieldPath(
-                                        *it.split(".").toTypedArray()
-                                )!!.type.kotlinTypeName
-                            }"
-                        }.joinToString(",")
-                    }): SqlUpdateClip<${entityTypeName}> {
-        return this.update()${keys.map { ".where{ it.${it.replace(".","_")} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+                    keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
+                } (${
+                    keys.map {
+                        "${MyUtil.getSmallCamelCase(it)}: ${
+                            entType.GetFieldPath(
+                                *it.split(".").toTypedArray()
+                            )!!.type.kotlinTypeName
+                        }"
+                    }.joinToString(",")
+                }): SqlUpdateClip<${entityTypeName}> {
+        return this.update()${
+                    keys.map { ".where{ it.${it.replace(".", "_")} match ${MyUtil.getSmallCamelCase(it)} }" }
+                        .joinToString("")
+                }
     }
 """
             )
@@ -474,22 +370,174 @@ fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName}>.s
         ret.body = """
 class ${entityTypeName}(datasource:String="")
     :SqlBaseMetaTable<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java,"${dbName}") {
-${props.joinToString("\n")}
+${columnMetaDefines.props.joinToString("\n")}
 
     override fun getSpreadColumns(): Array<String> { return arrayOf<String>(${
-            columns_spread.map { "\"" + it + "\"" }.joinToString(",")
+            columnMetaDefines.columns_spread.map { "\"" + it + "\"" }.joinToString(",")
         })}
     override fun getConvertValueColumns(): Array<String> { return arrayOf<String>(${
-            columns_convertValue.map { "\"" + it + "\"" }.joinToString(",")
+            columnMetaDefines.columns_convertValue.map { "\"" + it + "\"" }.joinToString(",")
         })}
-    override fun getColumns(): SqlColumnNames { return SqlColumnNames(${columns.joinToString(",")})}
-    override fun getAutoIncrementKey(): String { return "${autoIncrementKey}"}
+    override fun getColumns(): SqlColumnNames { return SqlColumnNames(${columnMetaDefines.columns.joinToString(",")})}
+    override fun getAutoIncrementKey(): String { return "${columnMetaDefines.autoIncrementKey}"}
     override fun getUks(): Array<Array<String>>{ return arrayOf(${uks2.joinToString(",")} )}
     override fun getFks(): Array<FkDefine>{ return arrayOf(${fks_exp_string.joinToString(",")})}
 
 ${idMethods.joinToString("\n")}
 }"""
-        ret.ext = extMethods.joinToString("\n");
+        ret.ext = columnMetaDefines.extMethods.joinToString("\n");
+
+        return ret;
+    }
+
+    data class ColumnMetaDefine(
+        var tableName: String = "",
+        var entityTypeName: String = "",
+        var autoIncrementKey: String = "",
+        var uks: MutableList<String> = mutableListOf(),
+        var pks: MutableList<String> = mutableListOf(),
+        var columns_convertValue: MutableList<String> = mutableListOf(),
+        var columns: MutableList<String> = mutableListOf(),
+        var columns_spread: MutableList<String> = mutableListOf(),
+        var props: MutableList<String> = mutableListOf(),
+        var extMethods: MutableList<String> = mutableListOf(),
+        var fks: MutableList<FkDefine> = mutableListOf()
+    )
+
+    private fun getColumnMetaDefines(
+        groupName: String,
+
+        entType: Class<*>
+    ): ColumnMetaDefine {
+        var ret = ColumnMetaDefine();
+
+        val tableName = entType.name.split(".").last();
+        ret.tableName = tableName
+        if (ret.tableName.endsWith("\$Companion")) {
+            return ret;
+        }
+
+        val entityTypeName = getEntityClassName(ret.tableName)
+        ret.entityTypeName = entityTypeName;
+
+
+        var fk_define = entType.getAnnotation(SqlFks::class.java)
+        if (fk_define != null) {
+            fk_define.value.forEach {
+                ret.fks.add(FkDefine(tableName, it.fieldName, it.refTable, it.refTableColumn))
+            }
+        }
+
+        entType.AllFields
+            .filter { it.name != "Companion" }
+            .forEach { field ->
+                field.isAccessible = true
+                var db_column_name = field.name;
+
+//                    var dbName = field.getAnnotation(DbName::class.java);
+//                    if (dbName != null) {
+//                        db_column_name = dbName.value;
+//                    }
+
+                if (field.getAnnotation(SqlAutoIncrementKey::class.java) != null) {
+                    ret.autoIncrementKey = db_column_name
+                    ret.uks.add(db_column_name)
+                }
+
+                if (field.getAnnotation(DbKey::class.java) != null) {
+                    ret.pks.add(db_column_name);
+                }
+
+
+                var converter = field.getAnnotation(ConverterValueToDb::class.java)
+                var ann_converter = "";
+                if (converter != null) {
+                    ret.columns_convertValue.add(db_column_name);
+                    ann_converter =
+                        "@ConverterValueToDb(" + (converter.value.map { it.qualifiedName + "::class" }.joinToString(",")
+                            ?: "") + ")\n";
+                }
+
+                val fieldDbType = DbType.of(field.type)
+                if (fieldDbType == DbType.Other) {
+
+                    //看是否是展开列。
+                    if (field.type.IsCollectionType || Map::class.java.isAssignableFrom(field.type)) {
+                        ret.columns.add(db_column_name);
+
+                        var item =
+                            """${ann_converter}val ${field.name} = SqlColumnName(DbType.Json, this.getAliaTableName(),"${db_column_name}")""".ToTab(
+                                1
+                            )
+                        ret.props.add(item);
+
+                        return@forEach
+                    } else {
+                        ret.columns_spread.add(db_column_name);
+
+                        var spread_methods = mutableListOf<String>()
+                        var subFields = field.type.AllFields
+                            .filter { it.name != "Companion" }
+
+                        spread_methods.add(
+                            """
+fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName}>.set_${tableName}_${db_column_name}(${db_column_name}:${field.type.name}):SqlUpdateClip<${
+                                MyUtil.getBigCamelCase(
+                                    groupName
+                                )
+                            }Group.${entityTypeName}>{
+    return this${
+                                subFields.map { ".set{ it." + db_column_name + "_" + it.name + " to " + db_column_name + "." + it.name + " }" }
+                                    .joinToString("\n\t\t\t")
+                            }
+}
+"""
+                        )
+
+                        subFields
+                            .forEach {
+                                val db_column_name_value = db_column_name + "_" + it.name;
+                                val dbType = DbType.of(it.type)
+
+                                ret.columns.add(db_column_name_value);
+
+                                val item =
+                                    """val ${field.name}_${it.name} = SqlColumnName(DbType.${dbType.name}, this.getAliaTableName(),"${db_column_name_value}")""".ToTab(
+                                        1
+                                    )
+                                ret.props.add(item);
+                            }
+
+
+
+                        ret.extMethods.addAll(spread_methods)
+
+                        return@forEach
+                    }
+//                        else {
+//                            throw RuntimeException("未识别的数据类型,表：${tableName},列:${db_column_name},如果定义复杂列，请在列在添加 @SqlSpreadColumn 注解")
+//                        }
+                } else {
+                    ret.columns.add(db_column_name);
+                }
+
+                var item =
+                    """${ann_converter}val ${field.name} = SqlColumnName(DbType.${fieldDbType.name}, this.getAliaTableName(),"${db_column_name}")""".ToTab(
+                        1
+                    )
+                ret.props.add(item);
+            }
+
+
+        if (ret.pks.any()) {
+            ret.uks.add(ret.pks.joinToString(","))
+        }
+
+
+        var uks_define = entType.getAnnotation(DbUks::class.java)
+        if (uks_define != null) {
+            ret.uks.addAll(uks_define.value)
+        }
 
         return ret;
     }

@@ -22,20 +22,17 @@ import kotlin.reflect.KClass
 annotation class SqlAutoIncrementKey()
 
 /**
- * 实体上定义的隔离分区键 ,它的维度要适中，起到隔离一批数据的作用。 (目前仅一组有效.),如 @DbUks("city_id")
- */
-//@Repeatable
-//@Target(AnnotationTarget.CLASS)
-//@Retention(AnnotationRetention.RUNTIME)
-//annotation class SqlRks(vararg val rkColumns: String)//多个逗号隔开
-
-/**
- * 实体字段上定义的外键关系，如： @SqlFk("s_user", "id")
+ * 实体上定义的外键关系，如： @SqlFks(SqlFk("s_user", "id"))
  */
 @Repeatable
-@Target(AnnotationTarget.FIELD)
+@Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class SqlFk(val refTable: String, val refTableColumn: String)
+annotation class SqlFks(vararg val value: SqlFk)//多个逗号隔开
+
+
+@Repeatable
+@Retention(AnnotationRetention.SOURCE)
+annotation class SqlFk(val fieldName:String, val refTable: String, val refTableColumn: String)
 
 
 /**
