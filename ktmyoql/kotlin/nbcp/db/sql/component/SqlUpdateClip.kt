@@ -150,7 +150,7 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity:
 //                    setValue = tab_converter.get(setKey.name)?.convert(setValue.toString()) ?: setValue
 //                }
 
-                ret += SingleSqlData(setKey.fullName + " = {${setKey.jsonKeyName}}", JsonMap(setKey.jsonKeyName to setValue))
+                ret += SingleSqlData(setKey.fullName + " = :${setKey.jsonKeyName}", JsonMap(setKey.jsonKeyName to setValue))
             }
         }
 
