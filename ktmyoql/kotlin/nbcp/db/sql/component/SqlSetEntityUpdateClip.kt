@@ -122,7 +122,7 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEnt
         whereColumns2.forEach { column ->
             var value = MyUtil.getPrivatePropertyValue(entity, column.name)
 
-            where.and(WhereData("${column.fullName} = {${column.jsonKeyName}}", JsonMap(column.jsonKeyName to value)))
+            where.and(WhereData("${column.fullName} = :${column.jsonKeyName}", JsonMap(column.jsonKeyName to value)))
         }
 
 
