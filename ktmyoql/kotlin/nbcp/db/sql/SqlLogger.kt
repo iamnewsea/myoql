@@ -13,11 +13,11 @@ object SqlLogger {
         return@lazy SpringUtil.getBean<SqlTableLogProperties>()
     }
 
-    fun logQuery(error: Exception?, tableDbName: String, executeData: SqlExecuteData, result: Any) {
+    fun logQuery(error: Exception?, tableDbName: String, executeData: SingleSqlData, result: Any) {
         var getMsg: () -> String = getMsg@{
             var msg_log = mutableListOf(
-                "[select] ${executeData.executeSql}",
-                "[参数] ${executeData.executeParameters.ToJson()}"
+                "[select] ${executeData.expression}",
+                "[参数] ${executeData.values.ToJson()}"
             )
 
             if (config.debug) {
@@ -60,11 +60,11 @@ object SqlLogger {
     }
 
 
-    fun logExec(error: Exception?, tableDbName: String, executeData: SqlExecuteData, n: Int) {
+    fun logExec(error: Exception?, tableDbName: String, executeData: SingleSqlData, n: Int) {
         var getMsg: () -> String = getMsg@{
             var msg_log = mutableListOf(
-                "[sql] ${executeData.executeSql}",
-                "[参数] ${executeData.executeParameters.ToJson()}",
+                "[sql] ${executeData.expression}",
+                "[参数] ${executeData.values.ToJson()}",
                 "[result] ${n}",
                 "[耗时] ${db.executeTime}"
             )
@@ -95,12 +95,12 @@ object SqlLogger {
         }
     }
 
-    fun logDelete(error: Exception?, tableDbName: String, executeData: SqlExecuteData, n: Int) {
+    fun logDelete(error: Exception?, tableDbName: String, executeData: SingleSqlData, n: Int) {
         var getMsg: () -> String = getMsg@{
             var msg_log = mutableListOf(
                 "" +
-                        "[delete] ${executeData.executeSql}",
-                "[参数] ${executeData.executeParameters.ToJson()}",
+                        "[delete] ${executeData.expression}",
+                "[参数] ${executeData.values.ToJson()}",
                 "[result] ${n}",
                 "[耗时] ${db.executeTime}"
             )
@@ -175,12 +175,12 @@ object SqlLogger {
 //        }
 //    }
 
-    fun logUpdate(error: Exception?, tableName: String, executeData: SqlExecuteData, n: Int) {
+    fun logUpdate(error: Exception?, tableName: String, executeData: SingleSqlData, n: Int) {
 
         var getMsg: () -> String = getMsg@{
             var msg_log = mutableListOf(
-                "[update] ${executeData.executeSql}",
-                "[参数] ${executeData.executeParameters.ToJson()}",
+                "[update] ${executeData.expression}",
+                "[参数] ${executeData.values.ToJson()}",
                 "[result] ${n}",
                 "[耗时] ${db.executeTime}"
             )

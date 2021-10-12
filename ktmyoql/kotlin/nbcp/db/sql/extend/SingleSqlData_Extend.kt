@@ -145,70 +145,70 @@ fun <M : SqlBaseMetaTable<out T>, T : Serializable> M.case(): CaseWhenData<M, T>
 /**
  * @param index : 从1开始.
  */
-fun PreparedStatement.setValue(index: Int, param: SqlParameterData) {
-    var sqlType = DbType.of(param.type).sqlType
-    if (param.value == null) {
-        this.setNull(index, sqlType)
-        return
-    }
-
-    var value = param.value
-
-    if (sqlType == java.sql.Types.VARCHAR) {
-        this.setString(index, value.AsString())
-        return
-    } else if (sqlType == java.sql.Types.INTEGER) {
-        this.setInt(index, param.value.AsInt())
-        return
-    } else if (sqlType == java.sql.Types.BIGINT) {
-        this.setLong(index, param.value.AsLong())
-        return
-    } else if (sqlType == java.sql.Types.SMALLINT) {
-        this.setShort(index, param.value.AsInt().toShort())
-        return
-    } else if (sqlType == java.sql.Types.TINYINT) {
-        this.setByte(index, param.value.AsInt().toByte())
-        return
-    } else if (sqlType == java.sql.Types.BIT) {
-        this.setByte(index, param.value.AsInt().toByte())
-        return
-    } else if (sqlType == java.sql.Types.TIMESTAMP) {
-        var v = param.value.AsLocalDateTime()
-        if (v == null) {
-            this.setTimestamp(index, null);
-        } else {
-            this.setTimestamp(index, java.sql.Timestamp.valueOf(v))
-        }
-        return
-    } else if (sqlType == java.sql.Types.DATE) {
-        var v = param.value.AsDate()
-        if (v == null) {
-            this.setDate(index, null);
-        } else {
-            this.setDate(index, java.sql.Date(v.time))
-        }
-        return
-    } else if (sqlType == java.sql.Types.TIME) {
-        var v = param.value.AsLocalTime();
-        if (v == null) {
-            this.setTime(index, null);
-        } else {
-            this.setTime(index, java.sql.Time(v.toSecondOfDay() * 1000L))
-        }
-        return
-    } else if (sqlType == java.sql.Types.FLOAT) {
-        this.setFloat(index, param.value.AsFloat())
-        return
-    } else if (sqlType == java.sql.Types.DOUBLE) {
-        this.setDouble(index, param.value.AsDouble())
-        return
-    } else if (sqlType == java.sql.Types.DECIMAL) {
-        this.setBigDecimal(index, param.value.AsBigDecimal())
-        return
-    }
-
-    throw RuntimeException("不识别的数据类型:${index} , ${sqlType}")
-}
+//fun PreparedStatement.setValue(index: Int, param: SqlParameterData) {
+//    var sqlType = DbType.of(param.type).sqlType
+//    if (param.value == null) {
+//        this.setNull(index, sqlType)
+//        return
+//    }
+//
+//    var value = param.value
+//
+//    if (sqlType == java.sql.Types.VARCHAR) {
+//        this.setString(index, value.AsString())
+//        return
+//    } else if (sqlType == java.sql.Types.INTEGER) {
+//        this.setInt(index, param.value.AsInt())
+//        return
+//    } else if (sqlType == java.sql.Types.BIGINT) {
+//        this.setLong(index, param.value.AsLong())
+//        return
+//    } else if (sqlType == java.sql.Types.SMALLINT) {
+//        this.setShort(index, param.value.AsInt().toShort())
+//        return
+//    } else if (sqlType == java.sql.Types.TINYINT) {
+//        this.setByte(index, param.value.AsInt().toByte())
+//        return
+//    } else if (sqlType == java.sql.Types.BIT) {
+//        this.setByte(index, param.value.AsInt().toByte())
+//        return
+//    } else if (sqlType == java.sql.Types.TIMESTAMP) {
+//        var v = param.value.AsLocalDateTime()
+//        if (v == null) {
+//            this.setTimestamp(index, null);
+//        } else {
+//            this.setTimestamp(index, java.sql.Timestamp.valueOf(v))
+//        }
+//        return
+//    } else if (sqlType == java.sql.Types.DATE) {
+//        var v = param.value.AsDate()
+//        if (v == null) {
+//            this.setDate(index, null);
+//        } else {
+//            this.setDate(index, java.sql.Date(v.time))
+//        }
+//        return
+//    } else if (sqlType == java.sql.Types.TIME) {
+//        var v = param.value.AsLocalTime();
+//        if (v == null) {
+//            this.setTime(index, null);
+//        } else {
+//            this.setTime(index, java.sql.Time(v.toSecondOfDay() * 1000L))
+//        }
+//        return
+//    } else if (sqlType == java.sql.Types.FLOAT) {
+//        this.setFloat(index, param.value.AsFloat())
+//        return
+//    } else if (sqlType == java.sql.Types.DOUBLE) {
+//        this.setDouble(index, param.value.AsDouble())
+//        return
+//    } else if (sqlType == java.sql.Types.DECIMAL) {
+//        this.setBigDecimal(index, param.value.AsBigDecimal())
+//        return
+//    }
+//
+//    throw RuntimeException("不识别的数据类型:${index} , ${sqlType}")
+//}
 
 
 val SqlBaseMetaTable<out Serializable>.quoteTableName: String

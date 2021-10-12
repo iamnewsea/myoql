@@ -174,14 +174,14 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity:
         }
 
         var sql = toSql()
-        var executeData = sql.toExecuteSqlAndParameters();
+//        var executeData = sql.toExecuteSqlAndParameters();
 
         var startAt = LocalDateTime.now();
 
         var error: Exception? = null;
         var n = -1;
         try {
-            n = jdbcTemplate.update(executeData.executeSql, executeData.executeParameters)
+            n = jdbcTemplate.update(sql.expression, sql.values)
             db.executeTime = LocalDateTime.now() - startAt
 //            if (n > 0) {
 //                cacheService.updated4BrokeCache(sql)
@@ -190,7 +190,7 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity:
             error = e;
             throw e;
         } finally {
-            SqlLogger.logUpdate(error, tableName, executeData, n);
+            SqlLogger.logUpdate(error, tableName, sql, n);
         }
 
         settings.forEach {

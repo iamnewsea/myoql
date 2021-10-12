@@ -64,13 +64,13 @@ class SqlDeleteClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity: M) :
         }
 
         val sql = toSql()
-        val executeData = sql.toExecuteSqlAndParameters();
+//        val executeData = sql.toExecuteSqlAndParameters();
         val startAt = LocalDateTime.now();
 
         var n = -1;
         var error:Exception? = null;
         try {
-            n = jdbcTemplate.update(executeData.executeSql, executeData.executeParameters)
+            n = jdbcTemplate.update(sql.expression, sql.values)
             db.executeTime = LocalDateTime.now() - startAt
 
 //            if (n > 0) {
@@ -80,7 +80,7 @@ class SqlDeleteClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity: M) :
             error = e;
             throw e;
         } finally {
-            SqlLogger.logDelete(error,tableName,executeData, n);
+            SqlLogger.logDelete(error,tableName,sql, n);
         }
 
         settings.forEach {

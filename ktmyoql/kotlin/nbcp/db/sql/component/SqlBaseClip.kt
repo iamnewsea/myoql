@@ -102,7 +102,8 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
                 return NamedParameterJdbcTemplate(ds);
             }
 
-            var ds = db.sql.sqlEvents.getDataSource(this.tableName, isRead) ?: scopes.GetLatest<DataSourceScope>()?.value
+            var ds =
+                db.sql.sqlEvents.getDataSource(this.tableName, isRead) ?: scopes.GetLatest<DataSourceScope>()?.value
             if (ds != null) {
                 return NamedParameterJdbcTemplate(ds);
             }
@@ -252,14 +253,18 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
 //        }
 
 
-        var executeData = sql.toExecuteSqlAndParameters()
+//        var executeData = sql //.toExecuteSqlAndParameters()
 //            logger.info(executeData.executeSql +"  [" + executeData.parameters.map { it.value.AsString() }.joinToString(",") +"]");
         var startAt = LocalDateTime.now();
 
         var error: Exception? = null;
         try {
             retJsons =
-                jdbcTemplate.query(executeData.executeSql, executeData.executeParameters, JsonMapRowMapper()) as MutableList<MutableMap<String, Any?>>
+                jdbcTemplate.query(
+                    sql.expression,
+                    sql.values,
+                    JsonMapRowMapper()
+                ) as MutableList<MutableMap<String, Any?>>
             db.executeTime = LocalDateTime.now() - startAt
 
 //            if (retJsons.size > 0) {
@@ -270,7 +275,7 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
             error = e;
             throw e;
         } finally {
-            SqlLogger.logQuery(error, this.tableName, executeData, retJsons)
+            SqlLogger.logQuery(error, this.tableName, sql, retJsons)
         }
 
 

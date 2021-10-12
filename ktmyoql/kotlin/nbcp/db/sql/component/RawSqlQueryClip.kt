@@ -41,20 +41,20 @@ class RawExecuteSqlClip(var sql: SingleSqlData, tableName: String) : SqlBaseExec
     override fun exec(): Int {
         db.affectRowCount = -1;
         var sql = toSql()
-        var executeData = sql.toExecuteSqlAndParameters();
+//        var executeData = sql.toExecuteSqlAndParameters();
 
         val startAt = LocalDateTime.now()
 
         var n = -1;
         var error:Exception? = null;
         try {
-            n = jdbcTemplate.update(executeData.executeSql, executeData.executeParameters)
+            n = jdbcTemplate.update(sql.expression, sql.values)
             db.executeTime = LocalDateTime.now() - startAt
         } catch (e: Exception) {
             error = e;
             throw e;
         } finally {
-            SqlLogger.logExec(error  ,tableName,executeData, n );
+            SqlLogger.logExec(error  ,tableName,sql, n );
         }
 
 

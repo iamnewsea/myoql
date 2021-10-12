@@ -8,6 +8,7 @@ import nbcp.db.BaseEntity
 
 import nbcp.utils.*
 import nbcp.db.db
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import java.lang.RuntimeException
 import java.sql.Statement
 import java.time.LocalDateTime
@@ -303,7 +304,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
         var sql = toSql()
         if (sql.expression.isEmpty()) return 0;
 
-        var executeData = sql.toExecuteSqlAndParameters();
+//        var executeData = sql.toExecuteSqlAndParameters();
 
         var startAt = LocalDateTime.now();
 
@@ -314,7 +315,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
         if (autoIncrmentKey.HasValue) {
             var idKey = GeneratedKeyHolder()
             try {
-                n = jdbcTemplate.update(executeData.executeSql, executeData.executeParameters, idKey)
+                n = jdbcTemplate.update(sql.expression, MapSqlParameterSource(sql.values), idKey)
 
                 db.executeTime = LocalDateTime.now() - startAt
                 db.lastAutoId = idKey.key.toInt()
@@ -323,8 +324,8 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
                 throw e;
             } finally {
                 SqlLogger.logInsert(error, tableName, {
-                    var msg_log = mutableListOf("[sql] ${executeData.executeSql}")
-                    msg_log.add("[参数] ${executeData.executeParameters.ToJson()}")
+                    var msg_log = mutableListOf("[sql] ${sql.expression}")
+                    msg_log.add("[参数] ${sql.values.ToJson()}")
                     msg_log.add("[id] ${db.lastAutoId}")
                     msg_log.add("[result] ${n}")
                     msg_log.add("[耗时] ${db.executeTime}")
@@ -348,7 +349,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
         } else {
             //没有自增Id的情况
             try {
-                n = jdbcTemplate.update(executeData.executeSql, executeData.parameterDefines)
+                n = jdbcTemplate.update(sql.expression, sql.values)
                 db.executeTime = LocalDateTime.now() - startAt
 
             } catch (e: Exception) {
@@ -356,8 +357,8 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
                 throw e;
             } finally {
                 SqlLogger.logInsert(error, tableName, {
-                    var msg_log = mutableListOf("[sql] ${executeData.executeSql}")
-                    msg_log.add("[参数] ${executeData.executeParameters.ToJson()}")
+                    var msg_log = mutableListOf("[sql] ${sql.expression}")
+                    msg_log.add("[参数] ${sql.values.ToJson()}")
                     msg_log.add("[result] ${n}")
                     msg_log.add("[耗时] ${db.executeTime}")
 

@@ -9,7 +9,7 @@ import kotlin.reflect.full.memberProperties
 import java.io.Serializable
 
 class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M) :
-        SqlBaseQueryClip(mainEntity.tableName) {
+    SqlBaseQueryClip(mainEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -103,27 +103,27 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
 
         var fk = fks.first()
         return WhereData(
-                "${db.sql.getSqlQuoteName(fk.table)}.${db.sql.getSqlQuoteName(fk.column)} = ${
-                    db.sql.getSqlQuoteName(
-                            fk.refTable
-                    )
-                }.${db.sql.getSqlQuoteName(fk.refColumn)}"
+            "${db.sql.getSqlQuoteName(fk.table)}.${db.sql.getSqlQuoteName(fk.column)} = ${
+                db.sql.getSqlQuoteName(
+                    fk.refTable
+                )
+            }.${db.sql.getSqlQuoteName(fk.refColumn)}"
         )
     }
 
     @JvmOverloads
     fun <M2 : SqlBaseMetaTable<out T2>, T2 : Serializable> join(
-            joinTable: M2,
-            onWhere: (M, M2) -> WhereData,
-            select: ((M2) -> SqlColumnNames)? = null
+        joinTable: M2,
+        onWhere: (M, M2) -> WhereData,
+        select: ((M2) -> SqlColumnNames)? = null
     ): SqlQueryClip<M, T> {
         this.joins.add(
-                JoinTableData(
-                        "join",
-                        joinTable,
-                        onWhere(this.mainEntity, joinTable),
-                        if (select == null) SqlColumnNames() else select(joinTable)
-                )
+            JoinTableData(
+                "join",
+                joinTable,
+                onWhere(this.mainEntity, joinTable),
+                if (select == null) SqlColumnNames() else select(joinTable)
+            )
         )
         return this
     }
@@ -133,8 +133,8 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
      */
     @JvmOverloads
     fun <M2 : SqlBaseMetaTable<out T2>, T2 : Serializable> join(
-            joinTable: M2,
-            select: ((M2) -> SqlColumnNames)? = null
+        joinTable: M2,
+        select: ((M2) -> SqlColumnNames)? = null
     ): SqlQueryClip<M, T> {
         this.join(joinTable, { _, _ -> getJoinOnWhere(joinTable) }, select)
         return this
@@ -142,15 +142,15 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
 
     @JvmOverloads
     fun <M2 : SqlBaseMetaTable<out T2>, T2 : Serializable> left_join(
-            joinTable: M2,
-            onWhere: (M, M2) -> WhereData,
-            select: ((M2) -> SqlColumnNames)? = null
+        joinTable: M2,
+        onWhere: (M, M2) -> WhereData,
+        select: ((M2) -> SqlColumnNames)? = null
     ): SqlQueryClip<M, T> {
         this.joins.add(
-                JoinTableData(
-                        "left join", joinTable, onWhere(this.mainEntity, joinTable), select?.invoke(joinTable)
-                        ?: SqlColumnNames()
-                )
+            JoinTableData(
+                "left join", joinTable, onWhere(this.mainEntity, joinTable), select?.invoke(joinTable)
+                    ?: SqlColumnNames()
+            )
         )
         return this
     }
@@ -160,8 +160,8 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
      */
     @JvmOverloads
     fun <M2 : SqlBaseMetaTable<out T2>, T2 : Serializable> left_join(
-            joinTable: M2,
-            select: ((M2) -> SqlColumnNames)? = null
+        joinTable: M2,
+        select: ((M2) -> SqlColumnNames)? = null
     ): SqlQueryClip<M, T> {
         this.left_join(joinTable, { _, _ -> getJoinOnWhere(joinTable) }, select)
         return this
@@ -195,13 +195,13 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
                 } else {
                     ret.expression += this.subSelect!!.columns.map {
                         this.subSelectAlias + "." + db.sql.getSqlQuoteName(
-                                it.getAliasName()
+                            it.getAliasName()
                         )
                     }.joinToString(",")
                 }
             } else {
                 var selectColumn = columns.map { this.subSelectAlias + "." + db.sql.getSqlQuoteName(it.getAliasName()) }
-                        .joinToString(",")
+                    .joinToString(",")
 
                 ret.expression += selectColumn
             }
@@ -209,7 +209,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
             joins.forEach {
                 if (it.select.any()) {
                     ret.expression += "," + it.select.map { this.subSelectAlias + "." + db.sql.getSqlQuoteName(it.getAliasName()) }
-                            .joinToString(",")
+                        .joinToString(",")
                 }
             }
 
@@ -372,7 +372,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
             it.ConvertJson(entityClass)
 //            mapToEntity(it, { entityClass.newInstance() })
         }
-                .firstOrNull()
+            .firstOrNull()
     }
 
     override fun toMap(): JsonMap? {
@@ -400,7 +400,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
 
         //校验, 必须是表的列.
         var surplusColumns =
-                select.columns.map { it.getAliasName() }.minus(insertTable::class.memberProperties.map { it.name })
+            select.columns.map { it.getAliasName() }.minus(insertTable::class.memberProperties.map { it.name })
         if (surplusColumns.any()) {
             throw RuntimeException("插入 select 语句时,发现多余的列: ${surplusColumns.joinToString(",")}")
         }
@@ -409,15 +409,15 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
             select.columns.map { "${db.sql.getSqlQuoteName(it.getAliasName())}" }.joinToString(",")
         }) ";
 
-        var sql = select.toSql().toExecuteSqlAndParameters()
-
-        var executeData = SqlExecuteData(exp + sql.executeSql, sql.parameterDefines)
+        var sql = select.toSql() //.toExecuteSqlAndParameters()
+        sql.expression = exp + sql.expression;
+//        var executeData = SqlExecuteData(exp + sql.executeSql, sql.parameterDefines)
 
         var error: Exception? = null;
         var n = -1;
         var startAt = LocalDateTime.now()
         try {
-            n = jdbcTemplate.update(executeData.executeSql, executeData.executeParameters)
+            n = jdbcTemplate.update(sql.expression, sql.values)
             db.executeTime = LocalDateTime.now() - startAt
 
 //            if (n > 0) {
@@ -427,7 +427,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
             error = e;
             throw e;
         } finally {
-            SqlLogger.logQuery(error, tableName, executeData, n);
+            SqlLogger.logQuery(error, tableName, sql, n);
         }
 
         db.affectRowCount = n
