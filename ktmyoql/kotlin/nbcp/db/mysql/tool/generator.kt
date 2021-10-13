@@ -48,6 +48,7 @@ class generator {
         targetFileName: String, //目标文件
         basePackage: String,    //实体的包名
         anyEntityClass: Class<*>, //任意实体的类名
+        entityFilter: ((Class<*>) -> Boolean) = { true },
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
     ) {
@@ -87,6 +88,11 @@ import org.springframework.stereotype.Component
         var exts = mutableListOf<String>();
 
         groups.forEach { group ->
+            var groupEntitys = group.value.filter(entityFilter);
+            if (groupEntitys.any() == false) {
+                return@forEach
+            }
+
 
             writeToFile(
                 """
@@ -94,27 +100,29 @@ import org.springframework.stereotype.Component
 @MetaDataGroup("${group.key}")
 class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
     override fun getEntities():Set<BaseMetaData> = setOf(${
-                    group.value.map { genVarName(it).GetSafeKotlinName() }.joinToString(",")
+                    groupEntitys.map { genVarName(it).GetSafeKotlinName() }.joinToString(",")
                 })
 """
             )
             println("${group.key}:")
-            group.value.forEach { entityType ->
-                count++;
-                println("${count.toString().padStart(2, ' ')} 生成实体：${group.key}.${entityType.simpleName}".ToTab(1))
-                writeToFile(genVarEntity(entityType).ToTab(1))
-            }
+            groupEntitys
+                .forEach { entityType ->
+                    count++;
+                    println("${count.toString().padStart(2, ' ')} 生成实体：${group.key}.${entityType.simpleName}".ToTab(1))
+                    writeToFile(genVarEntity(entityType).ToTab(1))
+                }
 
             writeToFile("\n")
 
-            group.value.forEach { entityType ->
-                var item = genEntity(MyUtil.getSmallCamelCase(group.key), entityType)
+            groupEntitys
+                .forEach { entityType ->
+                    var item = genEntity(MyUtil.getSmallCamelCase(group.key), entityType)
 
-                if (item.ext.HasValue) {
-                    exts.add(item.ext);
+                    if (item.ext.HasValue) {
+                        exts.add(item.ext);
+                    }
+                    writeToFile(item.body.ToTab(1))
                 }
-                writeToFile(item.body.ToTab(1))
-            }
 
             writeToFile("""}""")
         }
@@ -388,6 +396,7 @@ ${idMethods.joinToString("\n")}
         ret.ext = columnMetaDefines.extMethods.joinToString("\n");
         return ret;
     }
+
     data class ColumnMetaDefine(
         var tableName: String = "",
         var entityTypeName: String = "",
@@ -404,12 +413,12 @@ ${idMethods.joinToString("\n")}
 
     private fun getColumnMetaDefines(
         groupName: String,
-
-        entType: Class<*>
+        entType: Class<*>,
+        parentEntityPrefix: String = ""
     ): ColumnMetaDefine {
         var ret = ColumnMetaDefine();
 
-        val tableName = entType.name.split(".").last();
+        val tableName = parentEntityPrefix + entType.name.split(".").last();
         ret.tableName = tableName
         if (ret.tableName.endsWith("\$Companion")) {
             return ret;
@@ -422,7 +431,14 @@ ${idMethods.joinToString("\n")}
         val fk_define = entType.getAnnotation(SqlFks::class.java)
         if (fk_define != null) {
             fk_define.value.forEach {
-                ret.fks.add(FkDefine(tableName, it.fieldName, it.refTable, it.refTableColumn))
+                ret.fks.add(
+                    FkDefine(
+                        tableName,
+                        parentEntityPrefix + it.fieldName,
+                        parentEntityPrefix + it.refTable,
+                        parentEntityPrefix + it.refTableColumn
+                    )
+                )
             }
         }
 
@@ -435,7 +451,7 @@ ${idMethods.joinToString("\n")}
             .filter { it.name != "Companion" }
             .forEach { field ->
                 field.isAccessible = true
-                var db_column_name = field.name;
+                var db_column_name = parentEntityPrefix + field.name;
 
 //                    var dbName = field.getAnnotation(DbName::class.java);
 //                    if (dbName != null) {
@@ -469,63 +485,39 @@ ${idMethods.joinToString("\n")}
                         ret.columns.add(db_column_name);
 
                         var item =
-                            """${ann_converter}val ${field.name} = SqlColumnName(DbType.Json, this.getAliaTableName(),"${db_column_name}")""".ToTab(
+                            """${ann_converter}val ${parentEntityPrefix + field.name} = SqlColumnName(DbType.Json, this.getAliaTableName(),"${db_column_name}")""".ToTab(
                                 1
                             )
                         ret.props.add(item);
 
                         return@forEach
                     } else {
-                        ret.columns_spread.add(db_column_name);
+                        var pep = parentEntityPrefix;
+                        if (pep.HasValue) {
+                            pep += "_";
+                        }
+                        pep += field.name + "_"
 
-                        var spread_methods = mutableListOf<String>()
-                        var subFields = field.type.AllFields
-                            .filter { it.name != "Companion" }
+                        var spreadResult = getColumnMetaDefines(groupName, field.type, pep);
 
-                        spread_methods.add(
-                            """
-fun SqlUpdateClip<${MyUtil.getBigCamelCase(groupName)}Group.${entityTypeName}>.set_${tableName}_${db_column_name}(${db_column_name}:${field.type.name}):SqlUpdateClip<${
-                                MyUtil.getBigCamelCase(
-                                    groupName
-                                )
-                            }Group.${entityTypeName}>{
-    return this${
-                                subFields.map { ".set{ it." + db_column_name + "_" + it.name + " to " + db_column_name + "." + it.name + " }" }
-                                    .joinToString("\n\t\t\t")
-                            }
-}
-"""
-                        )
+                        ret.uks.addAll(spreadResult.uks)
+                        ret.columns_convertValue.addAll(spreadResult.columns_convertValue)
+                        ret.columns.addAll(spreadResult.columns)
+                        ret.columns_spread.addAll(spreadResult.columns)
+                        ret.props.addAll(spreadResult.props)
+                        ret.extMethods.addAll(spreadResult.extMethods)
+                        ret.fks.addAll(spreadResult.fks)
 
-                        subFields
-                            .forEach {
-                                val db_column_name_value = db_column_name + "_" + it.name;
-                                val dbType = DbType.of(it.type)
-
-                                ret.columns.add(db_column_name_value);
-
-                                val item =
-                                    """val ${field.name}_${it.name} = SqlColumnName(DbType.${dbType.name}, this.getAliaTableName(),"${db_column_name_value}")""".ToTab(
-                                        1
-                                    )
-                                ret.props.add(item);
-                            }
-
-
-
-                        ret.extMethods.addAll(spread_methods)
 
                         return@forEach
                     }
-//                        else {
-//                            throw RuntimeException("未识别的数据类型,表：${tableName},列:${db_column_name},如果定义复杂列，请在列在添加 @SqlSpreadColumn 注解")
-//                        }
+
                 } else {
                     ret.columns.add(db_column_name);
                 }
 
                 var item =
-                    """${ann_converter}val ${field.name} = SqlColumnName(DbType.${fieldDbType.name}, this.getAliaTableName(),"${db_column_name}")""".ToTab(
+                    """${ann_converter}val ${parentEntityPrefix + field.name} = SqlColumnName(DbType.${fieldDbType.name}, this.getAliaTableName(),"${db_column_name}")""".ToTab(
                         1
                     )
                 ret.props.add(item);

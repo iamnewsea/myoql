@@ -8,7 +8,6 @@ import nbcp.comm.usingScope
 import nbcp.utils.*
 import nbcp.db.*
 import org.slf4j.LoggerFactory
-import org.springframework.boot.logging.LogLevel
 import org.springframework.stereotype.Component
 
 /**
@@ -30,7 +29,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
 
     override fun beforeUpdate(update: MongoBaseUpdateClip): EventResult {
         var refs =
-            MongoEntityCollector.refsMap.filter { MyUtil.getSmallCamelCase(it.masterEntityClass.simpleName) == update.collectionName }
+            MongoEntityCollector.refsMap.filter { MyUtil.getSmallCamelCase(it.refEntityClass.simpleName) == update.collectionName }
         if (refs.any() == false) {
             return EventResult(true, null)
         }
@@ -40,13 +39,13 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
         //update set 指定了其它表引用的冗余列。
         var setData = update.getChangedFieldData();
 
-        var masterNameFields = refs.map { it.masterNameField }.toSet();
+        var masterNameFields = refs.map { it.refNameField }.toSet();
 
         var setCascadeColumns = setData.keys.intersect(masterNameFields);
         if (setCascadeColumns.any() == false) {
             return EventResult(true, null)
         }
-        var masterIdFields = refs.map { it.masterIdField }.toSet();
+        var masterIdFields = refs.map { it.refIdField }.toSet();
 
         //如果按id更新。
         var whereMap = update.getMongoCriteria(*update.whereData.toTypedArray()).toDocument();
@@ -54,19 +53,19 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
         var idValues = mutableMapOf<String, Array<String>>()
 
         refs.forEach { ref ->
-            if (setData.containsKey(ref.masterNameField) == false) {
+            if (setData.containsKey(ref.refNameField) == false) {
                 return@forEach
             }
 
-            var idValue = idValues.getOrPut(ref.masterIdField) {
-                if (whereMap.keys.contains(ref.masterIdField)) {
+            var idValue = idValues.getOrPut(ref.refIdField) {
+                if (whereMap.keys.contains(ref.refIdField)) {
 
-                    return@getOrPut arrayOf(whereMap.getStringValue(ref.masterIdField).AsString())
+                    return@getOrPut arrayOf(whereMap.getStringValue(ref.refIdField).AsString())
                 } else {
                     //查询数据，把Id查出来。
                     var query = MongoBaseQueryClip(update.collectionName)
                     query.whereData.addAll(update.whereData)
-                    query.selectField(ref.masterIdField)
+                    query.selectField(ref.refIdField)
 
                     return@getOrPut query.toList(String::class.java).toTypedArray()
                 }
@@ -77,7 +76,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
                 CascadeUpdateEventDataModel(
                     ref,
                     idValue,
-                    setData.getValue(ref.masterNameField)
+                    setData.getValue(ref.refNameField)
                 )
             )
         }

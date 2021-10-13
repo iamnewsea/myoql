@@ -16,8 +16,7 @@ class tool : TestBase() {
         nbcp.db.mysql.tool.generator().work(
             File(path).parentFile.path + "/ktmyoql/kotlin/nbcp/db/sql/dbr_base_tables.kt",
             "nbcp.db.sql.entity.",
-            s_city::class.java,
-            StringMap(), listOf()
+            s_city::class.java
         )
     }
 
