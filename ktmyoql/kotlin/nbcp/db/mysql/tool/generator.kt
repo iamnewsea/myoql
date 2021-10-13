@@ -498,16 +498,17 @@ ${idMethods.joinToString("\n")}
                         }
                         pep += field.name + "_"
 
+                        ret.columns_spread.add(field.name)
+
                         var spreadResult = getColumnMetaDefines(groupName, field.type, pep);
 
                         ret.uks.addAll(spreadResult.uks)
                         ret.columns_convertValue.addAll(spreadResult.columns_convertValue)
                         ret.columns.addAll(spreadResult.columns)
-                        ret.columns_spread.addAll(spreadResult.columns)
+                        ret.columns_spread.addAll(spreadResult.columns_spread)
                         ret.props.addAll(spreadResult.props)
                         ret.extMethods.addAll(spreadResult.extMethods)
                         ret.fks.addAll(spreadResult.fks)
-
 
                         return@forEach
                     }
