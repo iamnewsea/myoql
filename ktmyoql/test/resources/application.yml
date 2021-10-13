@@ -65,14 +65,14 @@ spring:
   data:
     mongodb:
 #      uri: mongodb://dev:123@dev8.cn:27017/cms
-      host: dev8.cn
+      host: mongo
       database: cms
       username: dev
       password: 123
   redis:
     timeout: 3000
     database: 0
-    host: saas-dev.nancal.com
+    host: redis
     password: 1@#4
     port: 6379
   rabbitmq:

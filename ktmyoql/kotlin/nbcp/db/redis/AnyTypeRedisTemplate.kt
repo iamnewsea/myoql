@@ -8,7 +8,8 @@ import org.springframework.data.redis.core.ScanOptions
 /**
  * 使用 scan 替代 keys
  */
-fun RedisTemplate<*, *>.scanKeys(pattern: String, limit: Int = 999): Set<String> {
+@JvmOverloads
+fun RedisTemplate<*, *>.scanKeys(pattern: String, limit: Int = 9999, callback: (String) -> Boolean) {
     var list = mutableSetOf<String>()
 
     this.connectionFactory
@@ -22,10 +23,11 @@ fun RedisTemplate<*, *>.scanKeys(pattern: String, limit: Int = 999): Set<String>
                     .build()
             ).use { result ->
                 while (result.hasNext()) {
-                    var item = result.next();
-                    list.add(String(item))
+                    val key = String(result.next())
+                    if (callback(key) == false) {
+                        break;
+                    }
                 }
             }
         }
-    return list;
 }

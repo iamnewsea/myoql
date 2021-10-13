@@ -4,17 +4,12 @@ import nbcp.comm.*
 import nbcp.db.db
 import nbcp.db.redis.scanKeys
 import nbcp.utils.CodeUtil
-import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.redis.connection.Message
 import org.springframework.data.redis.connection.MessageListener
 import org.springframework.data.redis.core.StringRedisTemplate
-import org.springframework.data.redis.listener.ChannelTopic
-import org.springframework.data.redis.listener.PatternTopic
-import org.springframework.data.redis.listener.RedisMessageListenerContainer
-import org.springframework.data.redis.listener.adapter.MessageListenerAdapter
 import java.time.LocalDateTime
 import kotlin.concurrent.thread
 
@@ -85,8 +80,6 @@ open class RedisCacheDbDynamicService : InitializingBean {
     lateinit var redisTemplate: StringRedisTemplate;
 
 
-
-
     private var working = false;
     var lastConsumerAt = LocalDateTime.now();
 
@@ -129,61 +122,63 @@ open class RedisCacheDbDynamicService : InitializingBean {
 //    }
 
     fun brokeCacheItem(cacheBroke: BrokeRedisCacheData) {
-        var pattern = cacheBroke.getTablePattern()
+        brokeMainTable(cacheBroke);
+        brokeJoinTable(cacheBroke);
+    }
 
-        for (i in 0..999) {
-            var all_keys = redisTemplate.scanKeys(pattern);
-            if (all_keys.any() == false) {
-                break;
-            }
+    private fun brokeJoinTable(cacheBroke: BrokeRedisCacheData) {
+        var pattern = cacheBroke.getJoinTablePattern();
 
+        redisTemplate.scanKeys(pattern) {
+            redisTemplate.delete(it);
+            return@scanKeys true;
+        }
+    }
 
+    private fun brokeMainTable(cacheBroke: BrokeRedisCacheData) {
+        val pattern = cacheBroke.getTablePattern()
+
+        // :id~
+        val other_group_keys_pattern =
+            "${FromRedisCacheData.GROUP_JOIN_CHAR}${cacheBroke.groupKey}${FromRedisCacheData.KEY_VALUE_JOIN_CHAR}"
+
+        // :id~1@
+        val this_group_keys_pattern =
+            "${FromRedisCacheData.GROUP_JOIN_CHAR}${cacheBroke.groupKey}${FromRedisCacheData.KEY_VALUE_JOIN_CHAR}${cacheBroke.groupValue}${FromRedisCacheData.TAIL_CHAR}"
+
+        redisTemplate.scanKeys(pattern) { key ->
             //如果是删除全表。
             if (cacheBroke.groupKey.isEmpty() || cacheBroke.groupValue.isEmpty()) {
-                redisTemplate.delete(all_keys);
-                continue;
+                redisTemplate.delete(key);
+                return@scanKeys true;
             }
 
             //先移除不含 ~ 的key
-            var like_sql_keys = all_keys.filter { it.contains(FromRedisCacheData.KEY_VALUE_JOIN_CHAR) == false };
-            if (like_sql_keys.any()) {
-                redisTemplate.delete(like_sql_keys)
-                all_keys = all_keys.minus(like_sql_keys);
+            val like_sql_keys = key.contains(FromRedisCacheData.KEY_VALUE_JOIN_CHAR) == false;
+            if (like_sql_keys) {
+                redisTemplate.delete(key)
+                return@scanKeys true;
             }
 
-            var other_group_keys_pattern =
-                "${FromRedisCacheData.GROUP_JOIN_CHAR}${cacheBroke.groupKey}${FromRedisCacheData.KEY_VALUE_JOIN_CHAR}"
+
             //破坏其它维度的分组
-            var other_group_keys =
-                all_keys.filter { it.contains(other_group_keys_pattern) == false };
-            if (other_group_keys.any()) {
-                redisTemplate.delete(other_group_keys);
-                all_keys = all_keys.minus(other_group_keys);
+            var other_group_keys = key.contains(other_group_keys_pattern) == false;
+            if (other_group_keys) {
+                redisTemplate.delete(key);
+                return@scanKeys true;
             }
 
-            var this_group_keys_pattern =
-                "${FromRedisCacheData.GROUP_JOIN_CHAR}${cacheBroke.groupKey}${FromRedisCacheData.KEY_VALUE_JOIN_CHAR}${cacheBroke.groupValue}${FromRedisCacheData.TAIL_CHAR}"
+
             //再精准破坏 key,value分组的。
-            var this_group_keys =
-                all_keys.filter { it.contains(this_group_keys_pattern) };
-
-            if (this_group_keys.any()) {
-                redisTemplate.delete(this_group_keys);
-                all_keys = all_keys.minus(this_group_keys);
-            }
-        }
-
-
-        pattern = cacheBroke.getJoinTablePattern();
-
-        for (i in 0..999) {
-            var list = redisTemplate.scanKeys(pattern);
-            if (list.any() == false) {
-                break;
+            var this_group_keys = key.contains(this_group_keys_pattern);
+            if (this_group_keys) {
+                redisTemplate.delete(key);
+                return@scanKeys true;
             }
 
-            redisTemplate.delete(list);
+            return@scanKeys true;
         }
+
     }
 
 
