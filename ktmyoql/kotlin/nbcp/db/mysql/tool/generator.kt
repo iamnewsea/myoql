@@ -282,9 +282,9 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 //        val entityTypeName = getEntityClassName(tableName)
         val idMethods = mutableListOf<String>()
 
-        val columnMetaDefines = getColumnMetaDefines(groupName, entType);
+        val entityTypeName = getEntityClassName(entType.name.split(".").last())
+        val columnMetaDefines = getColumnMetaDefines(groupName, entityTypeName, entType);
 
-        val entityTypeName = columnMetaDefines.entityTypeName;
 
 //        kotlin.run {
 //            var rks_define = entType.getAnnotation(SqlRks::class.java)
@@ -399,7 +399,7 @@ ${idMethods.joinToString("\n")}
 
     data class ColumnMetaDefine(
             var tableName: String = "",
-            var entityTypeName: String = "",
+//            var entityTypeName: String = "",
             var autoIncrementKey: String = "",
             var uks: MutableList<String> = mutableListOf(),
             var pks: MutableList<String> = mutableListOf(),
@@ -412,20 +412,22 @@ ${idMethods.joinToString("\n")}
     )
 
     private fun getColumnMetaDefines(
+            //原始的组名
             groupName: String,
+            //原始的Meta数据，表名
+            entityTypeName: String,
+            //可递归的类名
             entType: Class<*>,
-            parentEntityPrefix: String = ""
+            parentEntityPrefixs: Array<String> = arrayOf()
     ): ColumnMetaDefine {
-        var ret = ColumnMetaDefine();
+        val ret = ColumnMetaDefine();
+        val parentEntityPrefix = parentEntityPrefixs.map { it + "_" }.joinToString("")
 
         val tableName = parentEntityPrefix + entType.name.split(".").last();
         ret.tableName = tableName
         if (ret.tableName.endsWith("\$Companion")) {
             return ret;
         }
-
-        val entityTypeName = getEntityClassName(ret.tableName)
-        ret.entityTypeName = entityTypeName;
 
 
         val fk_define = entType.getAnnotation(SqlFks::class.java)
@@ -493,7 +495,9 @@ ${idMethods.joinToString("\n")}
                             return@forEach
                         } else {
                             ret.columns_spread.add(parentEntityPrefix + field.name)
-                            var spreadResult = getColumnMetaDefines(groupName, field.type, parentEntityPrefix + field.name + "_");
+                            ret.extMethods.add(getExtMethod(groupName, entityTypeName, parentEntityPrefixs + field.name, field.type))
+
+                            var spreadResult = getColumnMetaDefines(groupName, entityTypeName, field.type, parentEntityPrefixs + field.name);
 
                             ret.uks.addAll(spreadResult.uks)
                             ret.columns_convertValue.addAll(spreadResult.columns_convertValue)
@@ -529,5 +533,35 @@ ${idMethods.joinToString("\n")}
         }
 
         return ret;
+    }
+
+    private fun getExtMethod(groupName: String, entityTypeName: String, spreadColumnNames: Array<String>, spreadColumnType: Class<*>): String {
+
+        var GroupName = MyUtil.getBigCamelCase(groupName)
+        var paramName = spreadColumnNames.joinToString("_")
+        return """
+fun SqlUpdateClip<${GroupName}Group.${entityTypeName}>.set_${paramName}(${paramName}:${spreadColumnType.name}):SqlUpdateClip<${GroupName}Group.${entityTypeName}>{
+    return this${getSpreadFields(spreadColumnNames, spreadColumnType).joinToString("\n\t\t")}
+}
+"""
+    }
+
+    private fun getSpreadFields(spreadColumnNames: Array<String>, spreadColumnType: Class<*>, varLen: Int = spreadColumnNames.size): List<String> {
+        var list = mutableListOf<String>()
+        spreadColumnType.AllFields
+                .forEach {
+                    var dbType = DbType.of(it.type)
+
+                    if (dbType != DbType.Other || it.type.IsCollectionType || Map::class.java.isAssignableFrom(it.type)) {
+                        var varName = spreadColumnNames.take(varLen).joinToString("_")
+                        var subVarNameWithDot = spreadColumnNames.Slice(varLen).map { it + "." }.joinToString("");
+                        list.add(".set{ it." + spreadColumnNames.joinToString("_") + "_" + it.name + " to " + varName + "." + subVarNameWithDot + it.name + " }");
+                        return@forEach
+                    }
+
+                    list.addAll(getSpreadFields(spreadColumnNames + it.name, it.type, varLen));
+                }
+
+        return list;
     }
 }
