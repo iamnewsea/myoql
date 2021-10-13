@@ -500,7 +500,7 @@ ${idMethods.joinToString("\n")}
 
                         ret.columns_spread.add(pep)
 
-                        var spreadResult = getColumnMetaDefines(groupName, field.type, pep + "_");
+                        var spreadResult = getColumnMetaDefines(groupName, field.type, pep);
 
                         ret.uks.addAll(spreadResult.uks)
                         ret.columns_convertValue.addAll(spreadResult.columns_convertValue)
