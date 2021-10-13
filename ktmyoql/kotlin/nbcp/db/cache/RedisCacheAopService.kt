@@ -25,12 +25,12 @@ open class RedisCacheAopService {
 
 
         fun getRequestParamFullUrl(request: Any): String {
-            var clazz = Class.forName("javax.servlet.http.HttpServletRequest")
-            var requestClass = request::class.java
+            val clazz = Class.forName("javax.servlet.http.HttpServletRequest")
+            val requestClass = request::class.java
             if (clazz.isAssignableFrom(requestClass) == false) return "";
 
-            var getRequestURI = requestClass.getMethod("getRequestURI")
-            var getQueryString = requestClass.getMethod("getQueryString")
+            val getRequestURI = requestClass.getMethod("getRequestURI")
+            val getQueryString = requestClass.getMethod("getQueryString")
             return getRequestURI.invoke(request).toString() + "?" + getQueryString.invoke(request).AsString()
         }
     }
@@ -45,18 +45,18 @@ open class RedisCacheAopService {
      */
     @Around("@annotation(nbcp.db.cache.FromRedisCache)")
     fun cacheSelect(joinPoint: ProceedingJoinPoint): Any? {
-        var signature = joinPoint.signature as MethodSignature;
-        var method = signature.method
-        var cache = method.getAnnotationsByType(FromRedisCache::class.java).firstOrNull()
+        val signature = joinPoint.signature as MethodSignature;
+        val method = signature.method
+        val cache = method.getAnnotationsByType(FromRedisCache::class.java).firstOrNull()
 
-        var args = joinPoint.args
+        val args = joinPoint.args
         if (cache == null || cache.table.isEmpty() || cache.cacheSeconds <= 0) {
             return joinPoint.proceed(args)
         }
 
 
-        var variables = LocalVariableTableParameterNameDiscoverer().getParameterNames(method) ?: arrayOf()
-        var variableMap = JsonMap();
+        val variables = LocalVariableTableParameterNameDiscoverer().getParameterNames(method) ?: arrayOf()
+        val variableMap = JsonMap();
         for (i in variables.indices) {
             variableMap.put(variables.get(i), args.get(i))
         }
@@ -70,7 +70,7 @@ open class RedisCacheAopService {
                     var httpContext = Class.forName("nbcp.web.HttpContext")
                     ext += ":" + getRequestParamFullUrl(httpContext.getMethod("getRequest").invoke(null))
                 } catch (e: Exception) {
-                    logger.error("在Web环境下找不到 HttpContext.request，忽略缓存中的路径",e)
+                    logger.error("在Web环境下找不到 HttpContext.request，忽略缓存中的路径", e)
                 }
             }
 
@@ -88,7 +88,7 @@ open class RedisCacheAopService {
             }
         }
 
-        var cacheData = FromRedisCacheData.of(cache, ext, variableMap);
+        val cacheData = FromRedisCacheData.of(cache, ext, variableMap);
 
         return cacheData.usingRedisCache(signature.returnType, {
             return@usingRedisCache joinPoint.proceed(args)
@@ -101,17 +101,17 @@ open class RedisCacheAopService {
      */
     @Around("@annotation(nbcp.db.cache.BrokeRedisCache)")
     fun cacheBroke(joinPoint: ProceedingJoinPoint): Any? {
-        var signature = joinPoint.signature as MethodSignature;
-        var method = signature.method
-        var cache = method.getAnnotationsByType(BrokeRedisCache::class.java).firstOrNull()
+        val signature = joinPoint.signature as MethodSignature;
+        val method = signature.method
+        val cache = method.getAnnotationsByType(BrokeRedisCache::class.java).firstOrNull()
 
-        var args = joinPoint.args
+        val args = joinPoint.args
 
         if (cache != null && cache.table.HasValue) {
             brokeCache(method, args, cache);
         }
 
-        var ret = joinPoint.proceed(args)
+        val ret = joinPoint.proceed(args)
 
         if (cache != null && cache.table.HasValue) {
             brokeCache(method, args, cache);
@@ -120,8 +120,8 @@ open class RedisCacheAopService {
     }
 
     private fun brokeCache(method: Method, args: Array<Any>, cache: BrokeRedisCache) {
-        var variables = LocalVariableTableParameterNameDiscoverer().getParameterNames(method) ?: arrayOf()
-        var variableMap = JsonMap();
+        val variables = LocalVariableTableParameterNameDiscoverer().getParameterNames(method) ?: arrayOf()
+        val variableMap = JsonMap();
         for (i in variables.indices) {
             variableMap.put(variables.get(i), args.get(i))
         }

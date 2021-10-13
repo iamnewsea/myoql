@@ -66,7 +66,7 @@ class AppCacheTestKotlinService {
         var sql = "select * from tab where city=:city";
         var map = JsonMap("city" to "010")
         var list = FromRedisCacheData(3000, "tab2", arrayOf(), "city", city.toString(), sql + map.ToJson())
-            .usingRedisCache {
+            .usingRedisCache(Document::class.java) {
                 var list = Document(); // jdbcTemplate.queryList(sql,map)
                 list.put("name", "cache-test");
                 list.put("city", city.toString());

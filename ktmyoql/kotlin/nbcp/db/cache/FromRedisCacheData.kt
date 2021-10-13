@@ -43,8 +43,8 @@ data class FromRedisCacheData(
         val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
         fun of(cacheForSelect: FromRedisCache, sql: String, variableMap: JsonMap): FromRedisCacheData {
-            var spelExecutor = CacheKeySpelExecutor(variableMap);
-            var ret = FromRedisCacheData();
+            val spelExecutor = CacheKeySpelExecutor(variableMap);
+            val ret = FromRedisCacheData();
             ret.cacheSeconds = cacheForSelect.cacheSeconds;
             ret.table = spelExecutor.getVariableValue(cacheForSelect.table);
             ret.joinTables = cacheForSelect.joinTables;
@@ -52,6 +52,14 @@ data class FromRedisCacheData(
             ret.groupValue = spelExecutor.getVariableValue(cacheForSelect.groupValue);
             ret.sql = spelExecutor.getVariableValue(cacheForSelect.sql.AsString(sql));
             return ret
+        }
+
+
+        /**
+         * 缓存数据源，使用系统固定的数据库，不涉及分组及上下文切换。
+         */
+        private val redisTemplate by lazy {
+            return@lazy SpringUtil.getBean<StringRedisTemplate>()
         }
 
         const val SQL_CACHE_PREFIX = "sc"
@@ -81,8 +89,8 @@ data class FromRedisCacheData(
      * scan:   sc:table1:*:table1~column1#value1@*
      */
     fun getCacheKey(): String {
-        var cache = this;
-        var ret = mutableListOf<String>();
+        val cache = this;
+        val ret = mutableListOf<String>();
         ret.add(SQL_CACHE_PREFIX)
         ret.add(cache.table);
 
@@ -96,7 +104,7 @@ data class FromRedisCacheData(
         }
 
 
-        var part2 = mutableListOf<String>()
+        val part2 = mutableListOf<String>()
         if (cache.groupKey.HasValue && cache.groupValue.HasValue) {
             part2.add("${cache.groupKey}${KEY_VALUE_JOIN_CHAR}${cache.groupValue}")
         } else {
@@ -105,7 +113,7 @@ data class FromRedisCacheData(
 
         part2.add(TAIL_CHAR.toString())
 
-        var ext = cache.sql
+        val ext = cache.sql
         if (ext.length > 32) {
             part2.add(Md5Util.getBase64Md5(ext))
         } else {
@@ -118,7 +126,7 @@ data class FromRedisCacheData(
     }
 
 
-    inline fun <reified T> usingRedisCache(consumer: Supplier<T>): T {
+    fun <T> usingRedisCache(clazz: Class<T>, consumer: Supplier<T>): T {
         val cacheKey = this.getCacheKey()
 
         if (this.cacheSeconds >= 0 && cacheKey.HasValue) {
@@ -126,7 +134,7 @@ data class FromRedisCacheData(
             val cacheValue = redisTemplate.opsForValue().get(cacheKey).AsString()
             if (cacheValue.HasValue) {
                 logger.warn("从Redis缓存加载数据:${this.ToJson()}")
-                return cacheValue.FromJson(T::class.java)!!
+                return cacheValue.FromJson(clazz)!!
             }
         }
 
@@ -139,13 +147,8 @@ data class FromRedisCacheData(
                 cacheSeconds = config.getConfig("app.cache.${this.table}").AsInt(180);
             }
 
-
             if (cacheSeconds > 0) {
-                /**
-                 * 缓存数据源，使用系统固定的数据库，不涉及分组及上下文切换。
-                 */
-                SpringUtil.getBean<StringRedisTemplate>().opsForValue()
-                    .set(cacheKey, ret.ToJson(), Duration.ofSeconds(cacheSeconds.toLong()));
+                redisTemplate.opsForValue().set(cacheKey, ret.ToJson(), Duration.ofSeconds(cacheSeconds.toLong()));
             }
         }
         return ret;
