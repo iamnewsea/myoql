@@ -63,15 +63,17 @@ class AppCacheTestKotlinService {
 
 
     fun code_cache_select(city: Int): MutableList<Document> {
-        var d1 = FromRedisCacheData(3000, "tab2", arrayOf(), "city", city.toString(), "自定义Sql:${city}")
-            .usingRedisCache(Document::class.java) {
-                var d1 = Document();
-                d1.put("name", "cache-test");
-                d1.put("city", city.toString());
-                return@usingRedisCache d1;
+        var sql = "select * from tab where city=:city";
+        var map = JsonMap("city" to "010")
+        var list = FromRedisCacheData(3000, "tab2", arrayOf(), "city", city.toString(), sql + map.ToJson())
+            .usingRedisCache {
+                var list = Document(); // jdbcTemplate.queryList(sql,map)
+                list.put("name", "cache-test");
+                list.put("city", city.toString());
+                return@usingRedisCache list;
             }
 
-        return mutableListOf(d1)
+        return mutableListOf(list)
     }
 
 

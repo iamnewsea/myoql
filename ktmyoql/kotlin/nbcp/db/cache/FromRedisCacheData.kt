@@ -40,7 +40,7 @@ data class FromRedisCacheData(
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+        val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
         fun of(cacheForSelect: FromRedisCache, sql: String, variableMap: JsonMap): FromRedisCacheData {
             var spelExecutor = CacheKeySpelExecutor(variableMap);
@@ -52,14 +52,6 @@ data class FromRedisCacheData(
             ret.groupValue = spelExecutor.getVariableValue(cacheForSelect.groupValue);
             ret.sql = spelExecutor.getVariableValue(cacheForSelect.sql.AsString(sql));
             return ret
-        }
-
-
-        /**
-         * 缓存数据源，使用系统固定的数据库，不涉及分组及上下文切换。
-         */
-        private val redisTemplate by lazy {
-            return@lazy SpringUtil.getBean<StringRedisTemplate>()
         }
 
         const val SQL_CACHE_PREFIX = "sc"
@@ -126,19 +118,19 @@ data class FromRedisCacheData(
     }
 
 
-    fun <T> usingRedisCache(clazz: Class<T>, consumer: Supplier<Any>): T {
-        var cacheKey = this.getCacheKey()
+    inline fun <reified T> usingRedisCache(consumer: Supplier<T>): T {
+        val cacheKey = this.getCacheKey()
 
         if (this.cacheSeconds >= 0 && cacheKey.HasValue) {
-            var redisTemplate = SpringUtil.getBean<StringRedisTemplate>();
-            var cacheValue = redisTemplate.opsForValue().get(cacheKey).AsString()
+            val redisTemplate = SpringUtil.getBean<StringRedisTemplate>();
+            val cacheValue = redisTemplate.opsForValue().get(cacheKey).AsString()
             if (cacheValue.HasValue) {
                 logger.warn("从Redis缓存加载数据:${this.ToJson()}")
-                return cacheValue.FromJson(clazz)!!
+                return cacheValue.FromJson(T::class.java)!!
             }
         }
 
-        var ret = consumer.get();
+        val ret = consumer.get();
 
         if (cacheSeconds >= 0 && cacheKey.HasValue) {
             var cacheSeconds = this.cacheSeconds
@@ -147,10 +139,15 @@ data class FromRedisCacheData(
                 cacheSeconds = config.getConfig("app.cache.${this.table}").AsInt(180);
             }
 
+
             if (cacheSeconds > 0) {
-                redisTemplate.opsForValue().set(cacheKey, ret.ToJson(), Duration.ofSeconds(cacheSeconds.toLong()));
+                /**
+                 * 缓存数据源，使用系统固定的数据库，不涉及分组及上下文切换。
+                 */
+                SpringUtil.getBean<StringRedisTemplate>().opsForValue()
+                    .set(cacheKey, ret.ToJson(), Duration.ofSeconds(cacheSeconds.toLong()));
             }
         }
-        return ret as T;
+        return ret;
     }
 }

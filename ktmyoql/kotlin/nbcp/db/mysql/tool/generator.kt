@@ -386,10 +386,8 @@ ${columnMetaDefines.props.joinToString("\n")}
 ${idMethods.joinToString("\n")}
 }"""
         ret.ext = columnMetaDefines.extMethods.joinToString("\n");
-
         return ret;
     }
-
     data class ColumnMetaDefine(
         var tableName: String = "",
         var entityTypeName: String = "",
@@ -421,12 +419,17 @@ ${idMethods.joinToString("\n")}
         ret.entityTypeName = entityTypeName;
 
 
-        var fk_define = entType.getAnnotation(SqlFks::class.java)
+        val fk_define = entType.getAnnotation(SqlFks::class.java)
         if (fk_define != null) {
             fk_define.value.forEach {
                 ret.fks.add(FkDefine(tableName, it.fieldName, it.refTable, it.refTableColumn))
             }
         }
+
+//        val entDbType = DbType.of(entType)
+//        if (entDbType != DbType.Other) {
+//            throw RuntimeException("遇到了简单类型?")
+//        }
 
         entType.AllFields
             .filter { it.name != "Companion" }
