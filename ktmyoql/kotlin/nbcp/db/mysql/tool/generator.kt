@@ -282,8 +282,9 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 //        val entityTypeName = getEntityClassName(tableName)
         val idMethods = mutableListOf<String>()
 
-        val entityTypeName = getEntityClassName(entType.name.split(".").last())
-        val columnMetaDefines = getColumnMetaDefines(groupName, entityTypeName, entType);
+        val entityName = entType.name.split(".").last();
+        val entityTableMetaName = getEntityClassName(entityName)
+        val columnMetaDefines = getColumnMetaDefines(groupName, entityName, entType);
 
 
 //        kotlin.run {
@@ -323,7 +324,7 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                                 )!!.type.kotlinTypeName
                             }"
                         }.joinToString(",")
-                    }): SqlQueryClip<${entityTypeName}, ${entType.name}> {
+                    }): SqlQueryClip<${entityTableMetaName}, ${entType.name}> {
         return this.query()${
                         keys.map { ".where{ it.${it.replace(".", "_")} match ${MyUtil.getSmallCamelCase(it)} }" }
                                 .joinToString("")
@@ -340,7 +341,7 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                                 )!!.type.kotlinTypeName
                             }"
                         }.joinToString(",")
-                    }): SqlDeleteClip<${entityTypeName}> {
+                    }): SqlDeleteClip<${entityTableMetaName}> {
         return this.delete()${
                         keys.map { ".where{ it.${it.replace(".", "_")} match ${MyUtil.getSmallCamelCase(it)} }" }
                                 .joinToString("")
@@ -357,7 +358,7 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                                 )!!.type.kotlinTypeName
                             }"
                         }.joinToString(",")
-                    }): SqlUpdateClip<${entityTypeName}> {
+                    }): SqlUpdateClip<${entityTableMetaName}> {
         return this.update()${
                         keys.map { ".where{ it.${it.replace(".", "_")} match ${MyUtil.getSmallCamelCase(it)} }" }
                                 .joinToString("")
@@ -376,7 +377,7 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 
         val ret = EntityResult();
         ret.body = """
-class ${entityTypeName}(datasource:String="")
+class ${entityTableMetaName}(datasource:String="")
     :SqlBaseMetaTable<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java,"${dbName}") {
 ${columnMetaDefines.props.joinToString("\n")}
 
@@ -415,7 +416,7 @@ ${idMethods.joinToString("\n")}
             //原始的组名
             groupName: String,
             //原始的Meta数据，表名
-            entityTypeName: String,
+            entityName: String,
             //可递归的类名
             entType: Class<*>,
             parentEntityPrefixs: Array<String> = arrayOf()
@@ -495,9 +496,9 @@ ${idMethods.joinToString("\n")}
                             return@forEach
                         } else {
                             ret.columns_spread.add(parentEntityPrefix + field.name)
-                            ret.extMethods.add(getExtMethod(groupName, entityTypeName, parentEntityPrefixs + field.name, field.type))
+                            ret.extMethods.add(getExtMethod(groupName, entityName, parentEntityPrefixs + field.name, field.type))
 
-                            var spreadResult = getColumnMetaDefines(groupName, entityTypeName, field.type, parentEntityPrefixs + field.name);
+                            var spreadResult = getColumnMetaDefines(groupName, entityName, field.type, parentEntityPrefixs + field.name);
 
                             ret.uks.addAll(spreadResult.uks)
                             ret.columns_convertValue.addAll(spreadResult.columns_convertValue)
@@ -535,12 +536,14 @@ ${idMethods.joinToString("\n")}
         return ret;
     }
 
-    private fun getExtMethod(groupName: String, entityTypeName: String, spreadColumnNames: Array<String>, spreadColumnType: Class<*>): String {
+    private fun getExtMethod(groupName: String, entityName: String, spreadColumnNames: Array<String>, spreadColumnType: Class<*>): String {
 
-        var GroupName = MyUtil.getBigCamelCase(groupName)
-        var paramName = spreadColumnNames.joinToString("_")
+        val GroupName = MyUtil.getBigCamelCase(groupName)
+        val paramName = spreadColumnNames.joinToString("_")
+        val entityTableMetaName = getEntityClassName(entityName)
+
         return """
-fun SqlUpdateClip<${GroupName}Group.${entityTypeName}>.set_${paramName}(${paramName}:${spreadColumnType.name}):SqlUpdateClip<${GroupName}Group.${entityTypeName}>{
+fun SqlUpdateClip<${GroupName}Group.${entityTableMetaName}>.set_${MyUtil.getSmallCamelCase(entityName)}_${paramName}(${paramName}:${spreadColumnType.name}):SqlUpdateClip<${GroupName}Group.${entityTableMetaName}>{
     return this${getSpreadFields(spreadColumnNames, spreadColumnType).joinToString("\n\t\t")}
 }
 """
