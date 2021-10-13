@@ -496,11 +496,11 @@ ${idMethods.joinToString("\n")}
                         if (pep.HasValue) {
                             pep += "_";
                         }
-                        pep += field.name + "_"
+                        pep += field.name
 
-                        ret.columns_spread.add(field.name)
+                        ret.columns_spread.add(pep)
 
-                        var spreadResult = getColumnMetaDefines(groupName, field.type, pep);
+                        var spreadResult = getColumnMetaDefines(groupName, field.type, pep + "_");
 
                         ret.uks.addAll(spreadResult.uks)
                         ret.columns_convertValue.addAll(spreadResult.columns_convertValue)
