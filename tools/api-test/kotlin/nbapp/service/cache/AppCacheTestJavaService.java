@@ -27,7 +27,7 @@ public class AppCacheTestJavaService {
      * @param city
      * @return
      */
-    @FromRedisCache(cacheSeconds = 300, table = "tab1", joinTables = {}, groupKey = "city", groupValue = "#city")
+    @FromRedisCache(cacheSeconds = 3000, table = "tab1", joinTables = {}, groupKey = "city", groupValue = "#city")
     public List<Document> cache_select(Integer city) {
         List<Document> list = new LinkedList();
 
@@ -42,7 +42,7 @@ public class AppCacheTestJavaService {
     }
 
 
-    @FromRedisCache(cacheSeconds = 300, table = "tab1", joinTables = {}, groupKey = "id", groupValue = "#id")
+    @FromRedisCache(cacheSeconds = 3000, table = "tab1", joinTables = {}, groupKey = "id", groupValue = "#id")
     public List<Document> cache_select_id(Integer id) {
         List<Document> list = new LinkedList();
 

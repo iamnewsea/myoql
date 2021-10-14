@@ -31,6 +31,8 @@ public class CacheTestJavaController {
         System.out.println("查从缓存中出!");
         System.out.println(appCacheTestJavaService.cache_select(1));
         System.out.println(appCacheTestJavaService.code_cache_select(1));
+        System.out.println(appCacheTestJavaService.cache_select_id(3));
+        System.out.println(appCacheTestJavaService.cache_select_id(4));
         System.out.println(appCacheTestJavaService.cache_select(2));
         System.out.println(appCacheTestJavaService.code_cache_select(2));
         System.out.println("查询完成----------------------------！");

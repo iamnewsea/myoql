@@ -87,7 +87,7 @@ data class BrokeRedisCacheData(
 
             //破坏其它维度的隔离键
             val notMatchGroup = cacheBroke.groupKey.map { "[^${it}]" }.joinToString("")
-            pattern = "sc:${cacheBroke.table}/*\\?${notMatchGroup}=*"
+            pattern = "sc:${cacheBroke.table}/*\\?${notMatchGroup}[^=]*"
             redisTemplate.scanKeys(pattern) { key ->
                 redisTemplate.delete(key)
                 return@scanKeys true;
