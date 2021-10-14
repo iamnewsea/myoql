@@ -2,7 +2,10 @@ package nbcp.db.cache
 
 import nbcp.comm.*
 import nbcp.db.db
+import nbcp.db.redis.scanKeys
 import nbcp.utils.SpringUtil
+import org.slf4j.LoggerFactory
+import org.springframework.data.redis.core.StringRedisTemplate
 
 
 data class BrokeRedisCacheData(
@@ -20,21 +23,24 @@ data class BrokeRedisCacheData(
     }
 
     fun brokeCache() {
+        brokeCacheItemNoWait(this)
+
         db.rer_base.sqlCacheBroker.add(config.applicationName, this.ToJson());
 
         //发布消息通知
         SpringUtil.getBean<RedisCacheDbDynamicService>().publish()
     }
 
-//    fun getTablePattern(): String {
-//        return "${FromRedisCacheData.SQL_CACHE_PREFIX}${FromRedisCacheData.GROUP_JOIN_CHAR}${this.table}${FromRedisCacheData.GROUP_JOIN_CHAR}*";
-//    }
-//
-//    fun getJoinTablePattern(): String {
-//        return "${FromRedisCacheData.SQL_CACHE_PREFIX}${FromRedisCacheData.GROUP_JOIN_CHAR}*${FromRedisCacheData.JOIN_TABLE_CHAR}${this.table}${FromRedisCacheData.JOIN_TABLE_CHAR}*"
+
+//    class BrokeTask(val brokeCacheData: BrokeRedisCacheData) {
+//        fun waitDone() {
+//            brokeCacheItemNoWait(brokeCacheData)
+//        }
 //    }
 
     companion object {
+        val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+
         fun of(cacheForBroke: BrokeRedisCache, variableMap: JsonMap): BrokeRedisCacheData {
             var spelExecutor = CacheKeySpelExecutor(variableMap);
             var ret = BrokeRedisCacheData();
@@ -42,6 +48,58 @@ data class BrokeRedisCacheData(
             ret.groupKey = spelExecutor.getVariableValue(cacheForBroke.groupKey);
             ret.groupValue = spelExecutor.getVariableValue(cacheForBroke.groupValue);
             return ret;
+        }
+
+
+        internal fun brokeCacheItemNoWait(cacheBroke: BrokeRedisCacheData) {
+            logger.Important("执行破坏缓存:${cacheBroke.ToJson()}")
+
+            val redisTemplate = SpringUtil.getBean<StringRedisTemplate>();
+            if (cacheBroke.groupKey.isEmpty() || cacheBroke.groupValue.isEmpty()) {
+                brokeJoinTable(redisTemplate, cacheBroke.table);
+
+
+                //破坏主表
+                val pattern = "sc:${cacheBroke.table}/*";
+                redisTemplate.scanKeys(pattern) { key ->
+                    redisTemplate.delete(key)
+                    return@scanKeys true;
+                }
+                return;
+            }
+
+            brokeJoinTable(redisTemplate, cacheBroke.table);
+
+            //破坏没有隔离键的
+            var pattern = "sc:${cacheBroke.table}/*[^?]*"
+            redisTemplate.scanKeys(pattern) { key ->
+                redisTemplate.delete(key)
+                return@scanKeys true;
+            }
+
+            //破坏其它维度的隔离键
+            val notMatchGroup = cacheBroke.groupKey.map { "[^${it}]" }.joinToString("")
+            pattern = "sc:${cacheBroke.table}/*\\?${notMatchGroup}=*"
+            redisTemplate.scanKeys(pattern) { key ->
+                redisTemplate.delete(key)
+                return@scanKeys true;
+            }
+
+            //破坏当前隔离键值。
+            pattern = "sc:${cacheBroke.table}/*\\?${cacheBroke.groupKey}=${cacheBroke.groupValue}@*"
+            redisTemplate.scanKeys(pattern) { key ->
+                redisTemplate.delete(key)
+                return@scanKeys true;
+            }
+        }
+
+        private fun brokeJoinTable(redisTemplate: StringRedisTemplate, joinTableName: String) {
+            var pattern = "*/${joinTableName}/*"
+
+            redisTemplate.scanKeys(pattern) {
+                redisTemplate.delete(it);
+                return@scanKeys true;
+            }
         }
     }
 }

@@ -107,9 +107,9 @@ open class RedisCacheAopService {
 
         val args = joinPoint.args
 
-        if (cache != null && cache.table.HasValue) {
-            brokeCache(method, args, cache);
-        }
+//        if (cache != null && cache.table.HasValue) {
+//            brokeCache(method, args, cache);
+//        }
 
         val ret = joinPoint.proceed(args)
 

@@ -16,7 +16,7 @@ fun RedisTemplate<*, *>.scanKeys(pattern: String, limit: Int = 9999, callback: (
     if (config.productLineName.HasValue &&
         !searchPatternValue.startsWith(config.productLineName + ":")
     ) {
-        searchPatternValue = config.productLineName + ":"
+        searchPatternValue = config.productLineName + ":" + searchPatternValue
     }
 
     this.scanAllKeys(searchPatternValue, limit, callback)
