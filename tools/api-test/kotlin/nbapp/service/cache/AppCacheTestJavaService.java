@@ -19,7 +19,6 @@ import java.util.List;
  */
 
 @Service
-@MyLogLevel(LogLevelScope.info)
 public class AppCacheTestJavaService {
     /**
      * 查询时使用缓存。使用注解
