@@ -66,7 +66,7 @@ data class FromRedisCacheData(
 
     /**
      * sc=sqlcache
-     * sc:查询主表/连接表/排序/?查询主表隔离键=查询主表隔离键值#md5
+     * sc:查询主表/连接表/排序/?查询主表隔离键=查询主表隔离键值@md5
      */
     fun getCacheKey(): String {
         val cache = this;
@@ -85,7 +85,7 @@ data class FromRedisCacheData(
             ret.add("?${cache.groupKey}=${cache.groupValue}")
         }
 
-        ret.add("#")
+        ret.add("@")
         ret.add(Md5Util.getBase64Md5(cache.sql))
 
         return ret.joinToString("")

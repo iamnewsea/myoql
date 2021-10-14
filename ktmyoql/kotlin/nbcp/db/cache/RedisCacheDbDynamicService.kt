@@ -153,7 +153,7 @@ open class RedisCacheDbDynamicService : InitializingBean {
         }
 
         //破坏当前隔离键值。
-        pattern = "sc:${cacheBroke.table}/*\\?${cacheBroke.groupKey}=${cacheBroke.groupValue}#*"
+        pattern = "sc:${cacheBroke.table}/*\\?${cacheBroke.groupKey}=${cacheBroke.groupValue}@*"
         redisTemplate.scanKeys(pattern) { key ->
             redisTemplate.delete(key)
             return@scanKeys true;
@@ -161,7 +161,7 @@ open class RedisCacheDbDynamicService : InitializingBean {
     }
 
     private fun brokeJoinTable(joinTableName: String) {
-        var pattern = "*~${joinTableName}~*"
+        var pattern = "*/${joinTableName}/*"
 
         redisTemplate.scanKeys(pattern) {
             redisTemplate.delete(it);

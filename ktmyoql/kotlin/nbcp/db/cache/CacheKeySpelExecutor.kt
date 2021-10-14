@@ -43,7 +43,7 @@ class CacheKeySpelExecutor(val variableMap: JsonMap) {
         //转为全角
         return retString
             .replace(":", "：")
-            .replace("~", "～")
+            .replace("/", "／")
             .replace("?", "？")
             .replace("=", "＝")
             .replace("@", "＠")
