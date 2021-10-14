@@ -1,17 +1,32 @@
 package nbcp.db.redis
 
 import nbcp.comm.AsLong
+import nbcp.comm.HasValue
+import nbcp.comm.config
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ScanOptions
 
 
 /**
- * 使用 scan 替代 keys
+ * 使用 scan 替代 keys,仅限于当前产品线
  */
 @JvmOverloads
 fun RedisTemplate<*, *>.scanKeys(pattern: String, limit: Int = 9999, callback: (String) -> Boolean) {
-    var list = mutableSetOf<String>()
+    var searchPatternValue = pattern;
+    if (config.productLineName.HasValue &&
+        !searchPatternValue.startsWith(config.productLineName + ":")
+    ) {
+        searchPatternValue = config.productLineName + ":"
+    }
 
+    this.scanAllKeys(searchPatternValue, limit, callback)
+}
+
+/**
+ * 不受产品线前缀的影响
+ */
+@JvmOverloads
+fun RedisTemplate<*, *>.scanAllKeys(pattern: String, limit: Int = 9999, callback: (String) -> Boolean) {
     this.connectionFactory
         .connection
         .use { conn ->

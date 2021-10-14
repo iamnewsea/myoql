@@ -40,7 +40,6 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
         }
 
     fun getFullKey(key: String): String {
-
         if (key.startsWith(group + ":")) return key;
         return arrayOf(group, key).filter { it.isNotEmpty() }.joinToString(":");
     }

@@ -146,72 +146,12 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
     }
 
     /**
-     * 请使用 ConvertJson 方法
+     * 生成缓存Md5
      */
-//    @Deprecated("请使用 ConvertJson 方法")
-//    fun <T3 : Any> mapToEntity(retJson: Map<String, Any?>, entityFunc: () -> T3): T3 {
-//        var entity = entityFunc()
-//
-//        if (retJson.keys.any() == false) {
-//            return entity
-//        }
-//
-//        var clazz = entity::class.java
-//
-//        //只取第一列的值. JsonMap 也必须仅有一列.
-//        if (clazz.IsSimpleType()) {
-//            if (retJson.keys.size != 1) {
-//                throw RuntimeException("查询单列数据时返回了多列数据!")
-//            }
-//            var ret2 = retJson.values.firstOrNull()
-//            if (ret2 == null) {
-//                return entity
-//            }
-//            return ret2.ConvertType(clazz) as T3
-//        }
-//
-//        if (Map::class.java.isAssignableFrom(clazz)) {
-//
-//            //types[0] 必须是 String
-//            var valueType = (clazz.genericSuperclass as ParameterizedTypeImpl).GetActualClass(1);
-//
-//            var entMap = entity as MutableMap<String, Any?>
-//
-//            if (valueType == String::class.java) {
-//                retJson.forEach {
-//                    entMap.put(it.key, it.value.AsString())
-//                }
-//            } else if (Number::class.java.isAssignableFrom(valueType)) {
-//                retJson.forEach {
-//                    entMap.put(it.key, it.value?.ConvertType(valueType))
-//                }
-//            } else {
-//                retJson.forEach {
-//                    entMap.put(it.key, it.value)
-//                }
-//            }
-//            entMap.putAll(retJson)
-//
-//            return entity
-//        }
-//
-//        clazz.AllFields.forEach {
-//            if (retJson.containsKey(it.name) == false) {
-//                return@forEach
-//            }
-//
-//            var value = retJson[it.name]?.ConvertType(it.type)
-//
-//            if (value == null) {
-//                return@forEach
-//            }
-//
-//            it.isAccessible = true
-//            it.set(entity, value);
-//        }
-//
-//        return entity
-//    }
+    fun toCacheKeyMd5(): String {
+        var sql = this.toSql();
+        return Md5Util.getBase64Md5(sql.expression + sql.values.ToJson())
+    }
 
     fun toMapList(): MutableList<JsonMap> {
         return toMapList(toSql());
