@@ -70,8 +70,16 @@ data class BrokeRedisCacheData(
 
             brokeJoinTable(redisTemplate, cacheBroke.table);
 
-            //破坏没有隔离键的
-            var pattern = "sc:${cacheBroke.table}/*[^?]*"
+            //破坏没有隔离键的,没有隔离键分两种情况：
+            //A 有连接表
+            var pattern = "sc:${cacheBroke.table}/*/@*"
+            redisTemplate.scanKeys(pattern) { key ->
+                redisTemplate.delete(key)
+                return@scanKeys true;
+            }
+
+            //B 没有连接表
+            pattern = "sc:${cacheBroke.table}/@*"
             redisTemplate.scanKeys(pattern) { key ->
                 redisTemplate.delete(key)
                 return@scanKeys true;
