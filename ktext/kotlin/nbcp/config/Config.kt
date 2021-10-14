@@ -44,6 +44,14 @@ object config {
         }
     }
 
+    /**
+     * redis 前缀
+     */
+    @JvmStatic
+    val productLineName by lazy {
+        return@lazy getConfig("app.product-line.name").AsString()
+    }
+
     @JvmStatic
     fun getConfig(key: String, defaultValue: String): String {
         return SpringUtil.context.environment.getProperty(key) ?: defaultValue

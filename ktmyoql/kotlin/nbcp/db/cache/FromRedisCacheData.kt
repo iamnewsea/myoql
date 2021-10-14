@@ -99,7 +99,7 @@ data class FromRedisCacheData(
             val redisTemplate = SpringUtil.getBean<StringRedisTemplate>();
             val cacheValue = redisTemplate.opsForValue().get(cacheKey).AsString()
             if (cacheValue.HasValue) {
-                logger.warn("从Redis缓存加载数据:${this.ToJson()}")
+                logger.info("从Redis缓存加载数据:${this.ToJson()}")
                 return cacheValue.FromJson(clazz)!!
             }
         }
