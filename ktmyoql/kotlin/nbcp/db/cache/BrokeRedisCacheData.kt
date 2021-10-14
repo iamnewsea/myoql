@@ -26,13 +26,13 @@ data class BrokeRedisCacheData(
         SpringUtil.getBean<RedisCacheDbDynamicService>().publish()
     }
 
-    fun getTablePattern(): String {
-        return "${FromRedisCacheData.SQL_CACHE_PREFIX}${FromRedisCacheData.GROUP_JOIN_CHAR}${this.table}${FromRedisCacheData.GROUP_JOIN_CHAR}*";
-    }
-
-    fun getJoinTablePattern(): String {
-        return "${FromRedisCacheData.SQL_CACHE_PREFIX}${FromRedisCacheData.GROUP_JOIN_CHAR}*${FromRedisCacheData.JOIN_TABLE_CHAR}${this.table}${FromRedisCacheData.JOIN_TABLE_CHAR}*"
-    }
+//    fun getTablePattern(): String {
+//        return "${FromRedisCacheData.SQL_CACHE_PREFIX}${FromRedisCacheData.GROUP_JOIN_CHAR}${this.table}${FromRedisCacheData.GROUP_JOIN_CHAR}*";
+//    }
+//
+//    fun getJoinTablePattern(): String {
+//        return "${FromRedisCacheData.SQL_CACHE_PREFIX}${FromRedisCacheData.GROUP_JOIN_CHAR}*${FromRedisCacheData.JOIN_TABLE_CHAR}${this.table}${FromRedisCacheData.JOIN_TABLE_CHAR}*"
+//    }
 
     companion object {
         fun of(cacheForBroke: BrokeRedisCache, variableMap: JsonMap): BrokeRedisCacheData {

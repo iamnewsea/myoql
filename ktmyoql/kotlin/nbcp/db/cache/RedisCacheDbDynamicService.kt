@@ -122,65 +122,51 @@ open class RedisCacheDbDynamicService : InitializingBean {
 //    }
 
     fun brokeCacheItem(cacheBroke: BrokeRedisCacheData) {
-        brokeMainTable(cacheBroke);
-        brokeJoinTable(cacheBroke);
+        if (cacheBroke.groupKey.isEmpty() || cacheBroke.groupValue.isEmpty()) {
+            brokeJoinTable(cacheBroke.table);
+
+
+            //破坏主表
+            val pattern = "sc:${cacheBroke.table}/*";
+            redisTemplate.scanKeys(pattern) { key ->
+                redisTemplate.delete(key)
+                return@scanKeys true;
+            }
+            return;
+        }
+
+        brokeJoinTable(cacheBroke.table);
+
+        //破坏没有隔离键的
+        var pattern = "sc:${cacheBroke.table}/*[^?]*"
+        redisTemplate.scanKeys(pattern) { key ->
+            redisTemplate.delete(key)
+            return@scanKeys true;
+        }
+
+        //破坏其它维度的隔离键
+        val notMatchGroup = cacheBroke.groupKey.map { "[^${it}]" }.joinToString("")
+        pattern = "sc:${cacheBroke.table}/*\\?${notMatchGroup}=*"
+        redisTemplate.scanKeys(pattern) { key ->
+            redisTemplate.delete(key)
+            return@scanKeys true;
+        }
+
+        //破坏当前隔离键值。
+        pattern = "sc:${cacheBroke.table}/*\\?${cacheBroke.groupKey}=${cacheBroke.groupValue}#*"
+        redisTemplate.scanKeys(pattern) { key ->
+            redisTemplate.delete(key)
+            return@scanKeys true;
+        }
     }
 
-    private fun brokeJoinTable(cacheBroke: BrokeRedisCacheData) {
-        var pattern = cacheBroke.getJoinTablePattern();
+    private fun brokeJoinTable(joinTableName: String) {
+        var pattern = "*~${joinTableName}~*"
 
         redisTemplate.scanKeys(pattern) {
             redisTemplate.delete(it);
             return@scanKeys true;
         }
     }
-
-    private fun brokeMainTable(cacheBroke: BrokeRedisCacheData) {
-        val pattern = cacheBroke.getTablePattern()
-
-        // :id~
-        val other_group_keys_pattern =
-            "${FromRedisCacheData.GROUP_JOIN_CHAR}${cacheBroke.groupKey}${FromRedisCacheData.KEY_VALUE_JOIN_CHAR}"
-
-        // :id~1@
-        val this_group_keys_pattern =
-            "${FromRedisCacheData.GROUP_JOIN_CHAR}${cacheBroke.groupKey}${FromRedisCacheData.KEY_VALUE_JOIN_CHAR}${cacheBroke.groupValue}${FromRedisCacheData.TAIL_CHAR}"
-
-        redisTemplate.scanKeys(pattern) { key ->
-            //如果是删除全表。
-            if (cacheBroke.groupKey.isEmpty() || cacheBroke.groupValue.isEmpty()) {
-                redisTemplate.delete(key);
-                return@scanKeys true;
-            }
-
-            //先移除不含 ~ 的key
-            val like_sql_keys = key.contains(FromRedisCacheData.KEY_VALUE_JOIN_CHAR) == false;
-            if (like_sql_keys) {
-                redisTemplate.delete(key)
-                return@scanKeys true;
-            }
-
-
-            //破坏其它维度的分组
-            var other_group_keys = key.contains(other_group_keys_pattern) == false;
-            if (other_group_keys) {
-                redisTemplate.delete(key);
-                return@scanKeys true;
-            }
-
-
-            //再精准破坏 key,value分组的。
-            var this_group_keys = key.contains(this_group_keys_pattern);
-            if (this_group_keys) {
-                redisTemplate.delete(key);
-                return@scanKeys true;
-            }
-
-            return@scanKeys true;
-        }
-
-    }
-
-
 }
 

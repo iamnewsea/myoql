@@ -34,7 +34,6 @@ class CacheKeySpelExecutor(val variableMap: JsonMap) {
     }
 
 
-
     fun getVariableValue(it: String): String {
         var retString = it;
         if (it.contains("#")) {
@@ -44,15 +43,16 @@ class CacheKeySpelExecutor(val variableMap: JsonMap) {
         //转为全角
         return retString
             .replace(":", "：")
-            .replace("|", "｜")
             .replace("~", "～")
+            .replace("?", "？")
+            .replace("=", "＝")
             .replace("@", "＠")
             .remove(
-                " ", "　", "\t", "\r", "\n",
-                FromRedisCacheData.GROUP_JOIN_CHAR.toString(),
-                FromRedisCacheData.JOIN_TABLE_CHAR.toString(),
-                FromRedisCacheData.KEY_VALUE_JOIN_CHAR.toString(),
-                FromRedisCacheData.TAIL_CHAR.toString()
+                " ", /*半角空格*/
+                "　" /*全角空格*/,
+                "\t",
+                "\r",
+                "\n"
             )
     }
 }

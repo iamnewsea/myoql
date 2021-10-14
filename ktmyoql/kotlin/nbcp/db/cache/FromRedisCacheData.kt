@@ -61,68 +61,34 @@ data class FromRedisCacheData(
         private val redisTemplate by lazy {
             return@lazy SpringUtil.getBean<StringRedisTemplate>()
         }
-
-        const val SQL_CACHE_PREFIX = "sc"
-        const val GROUP_JOIN_CHAR = ':'
-        const val JOIN_TABLE_CHAR = '|';
-        const val KEY_VALUE_JOIN_CHAR = '~';
-        const val TAIL_CHAR = '@';
     }
 
 
     /**
      * sc=sqlcache
-     * key规则：4部分：(冒号分隔的部分)
-     *  1. sc标志
-     *  2. {主表}
-     *  3. |{join_tables.sort().join("|")}| 或 空字符串
-     *  4. {主表key}~{key_value}@{sql/md5}
-     *
-     * 如： sc:主表:|join_tab1|join_tab2|:cityCode~010@select*from主表wherecityCode=010anddeleted!=0
-     * 查主表规则：  sc:表:*
-     * 查join表规则:  sc:*|表|* , join表为空，没有|
-     * 查主表key:   sc:*:表key#*
-     * 查主表value:  sc:*~表value@*
-     *
-     * 约束:  每个部分不能出现半角 冒号，竖线，~, @,出现部分用全角代替
-     *
-     * scan:   sc:table1:*:table1~column1#value1@*
+     * sc:查询主表/连接表/排序/?查询主表隔离键=查询主表隔离键值#md5
      */
     fun getCacheKey(): String {
         val cache = this;
         val ret = mutableListOf<String>();
-        ret.add(SQL_CACHE_PREFIX)
+        ret.add("sc:")
         ret.add(cache.table);
+        ret.add("/")
 
         if (cache.joinTables.any()) {
             ret.add(
-                JOIN_TABLE_CHAR + cache.joinTables.toSortedSet()
-                    .joinToString(JOIN_TABLE_CHAR.toString()) + JOIN_TABLE_CHAR
+                cache.joinTables.toSortedSet().map { it + "/" }.joinToString("")
             )
-        } else {
-            ret.add("")
         }
 
-
-        val part2 = mutableListOf<String>()
         if (cache.groupKey.HasValue && cache.groupValue.HasValue) {
-            part2.add("${cache.groupKey}${KEY_VALUE_JOIN_CHAR}${cache.groupValue}")
-        } else {
-            part2.add("")
+            ret.add("?${cache.groupKey}=${cache.groupValue}")
         }
 
-        part2.add(TAIL_CHAR.toString())
+        ret.add("#")
+        ret.add(Md5Util.getBase64Md5(cache.sql))
 
-        val ext = cache.sql
-        if (ext.length > 32) {
-            part2.add(Md5Util.getBase64Md5(ext))
-        } else {
-            part2.add(ext)
-        }
-
-        ret.add(part2.joinToString(""))
-
-        return ret.joinToString(GROUP_JOIN_CHAR.toString())
+        return ret.joinToString("")
     }
 
 
