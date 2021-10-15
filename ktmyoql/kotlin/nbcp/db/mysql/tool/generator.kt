@@ -402,14 +402,14 @@ ${idMethods.joinToString("\n")}
             var tableName: String = "",
 //            var entityTypeName: String = "",
             var autoIncrementKey: String = "",
-            var uks: MutableList<String> = mutableListOf(),
-            var pks: MutableList<String> = mutableListOf(),
-            var columns_convertValue: MutableList<String> = mutableListOf(),
-            var columns: MutableList<String> = mutableListOf(),
-            var columns_spread: MutableList<String> = mutableListOf(),
-            var props: MutableList<String> = mutableListOf(),
-            var extMethods: MutableList<String> = mutableListOf(),
-            var fks: MutableList<FkDefine> = mutableListOf()
+            var uks: MutableSet<String> = mutableSetOf(),
+            var pks: MutableSet<String> = mutableSetOf(),
+            var columns_convertValue: MutableSet<String> = mutableSetOf(),
+            var columns: MutableSet<String> = mutableSetOf(),
+            var columns_spread: MutableSet<String> = mutableSetOf(),
+            var props: MutableSet<String> = mutableSetOf(),
+            var extMethods: MutableSet<String> = mutableSetOf(),
+            var fks: MutableSet<FkDefine> = mutableSetOf()
     )
 
     private fun getColumnMetaDefines(

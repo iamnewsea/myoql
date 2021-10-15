@@ -403,9 +403,9 @@ ${props.joinToString("\n")}
             return "";
         }
 
-        var pks = mutableSetOf<String>()
+        val pks = mutableSetOf<String>()
 
-        var props = entType.AllFields
+        val props = entType.AllFields
             .filter { it.name != "Companion" }
             .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
             .map {
@@ -422,19 +422,19 @@ ${props.joinToString("\n")}
                 } else {
                     return@map "${CodeGeneratorHelper.getFieldComment(it)}val ${it.name} = ${retValue}".ToTab(1)
                 }
-            }
+            }.toSet()
 
-        var entityTypeName = entTypeName + "Entity"
+        val entityTypeName = entTypeName + "Entity"
         var dbName = entType.getAnnotation(DbName::class.java)?.value ?: ""
 
         if (dbName.isEmpty()) {
             dbName = MyUtil.getSmallCamelCase(entType.simpleName)
         }
 
-        var idMethods = mutableListOf<String>()
+        val idMethods = mutableSetOf<String>()
 
         //每一项是 用逗号分隔的主键组合
-        var uks = mutableSetOf<String>();
+        val uks = mutableSetOf<String>();
         if (pks.any()) {
             uks.add(pks.joinToString(","))
         }
@@ -501,7 +501,7 @@ ${props.joinToString("\n")}
             )
         }
 
-        var ent = """${CodeGeneratorHelper.getEntityComment(entType)}class ${entityTypeName}(collectionName: String ="")
+        val ent = """${CodeGeneratorHelper.getEntityComment(entType)}class ${entityTypeName}(collectionName: String ="")
     :MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java,collectionName.AsString("${dbName}")) {
 ${props.joinToString("\n")}
 ${idMethods.joinToString("\n")}
