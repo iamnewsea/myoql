@@ -378,12 +378,9 @@ open class MyAllFilter : Filter {
 
             if (resStringValue.HasValue) {
                 msg.add("[response body]:")
-                val logResLength = request.queryJson.get("-log-res-length-").AsInt();
-                var subLen = 512;
+                val logResLength = request.queryJson.get("-log-res-length-").AsInt(1024);
+                var subLen = logResLength / 2;
 
-                if (logResLength > 0) {
-                    subLen = logResLength / 2;
-                }
                 if (resStringValue.length > logResLength) {
                     msg.add("\t" + resStringValue.substring(0, subLen) + "〘…〙" + resStringValue.Slice(-subLen))
                 } else {
