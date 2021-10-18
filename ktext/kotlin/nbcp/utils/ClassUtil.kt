@@ -59,25 +59,25 @@ object ClassUtil {
 
     fun getClasses(basePackage: String): Set<String> {
         return Reflections(
-                ConfigurationBuilder()
-                        .forPackages(basePackage)
-                        .setScanners(SubTypesScanner(false))
+            ConfigurationBuilder()
+                .forPackages(basePackage)
+                .setScanners(SubTypesScanner(false))
         ).allTypes
     }
 
     fun getClassesWithBaseType(basePackage: String, baseType: Class<*>): Set<Class<*>> {
         return Reflections(
-                ConfigurationBuilder()
-                        .forPackages(basePackage)
-                        .setScanners(SubTypesScanner())
+            ConfigurationBuilder()
+                .forPackages(basePackage)
+                .setScanners(SubTypesScanner())
         ).getSubTypesOf(baseType)
     }
 
     fun getClassesWithAnnotationType(basePackage: String, annotationType: Class<out Annotation>): Set<Class<*>> {
         return Reflections(
-                ConfigurationBuilder()
-                        .forPackages(basePackage)
-                        .setScanners(SubTypesScanner(false), TypeAnnotationsScanner())
+            ConfigurationBuilder()
+                .forPackages(basePackage)
+                .setScanners(SubTypesScanner(false), TypeAnnotationsScanner())
         ).getTypesAnnotatedWith(annotationType)
     }
 
@@ -107,13 +107,13 @@ object ClassUtil {
             if (path.startsWith("file:/")) {
                 index = "file:/".length;
             }
-            return File(path.Slice(index - 1, 0 - "!/BOOT-INF/classes!/".length))
+            return File(path.Slice(index - 1, -"!/BOOT-INF/classes!/".length))
         } else if (url.protocol == "file") {
             //值是： /D:/code/sites/server/admin/target/classes/
             //处理文件路径中中文的问题。
             var targetPath = File(path).parentFile
             var mvn_file = targetPath.listFiles { it -> it.name == "maven-archiver" }.firstOrNull()
-                    ?.listFiles { it -> it.name == "pom.properties" }?.firstOrNull()
+                ?.listFiles { it -> it.name == "pom.properties" }?.firstOrNull()
             if (mvn_file != null) {
                 var jarFile_lines = mvn_file.readLines()
                 var version = jarFile_lines.first { it.startsWith("version=") }.split("=").last()
@@ -200,15 +200,15 @@ object ClassUtil {
         var classLeader = Thread.currentThread().contextClassLoader
         val urlEnumeration = classLeader.getResources(basePackPath)
         var jarPath = File(
-                classLeader.getResource(oneClass.name.replace('.', '/') + ".class").path.Slice(
-                        0,
-                        0 - oneClass.name.length - ".class".length
-                )
+            classLeader.getResource(oneClass.name.replace('.', '/') + ".class").path.Slice(
+                0,
+                -oneClass.name.length - ".class".length
+            )
         ).path;
 
         while (urlEnumeration.hasMoreElements()) {
             val url =
-                    urlEnumeration.nextElement()//得到的结果大概是：jar:file:/C:/Users/ibm/.m2/repository/junit/junit/4.12/junit-4.12.jar!/org/junit
+                urlEnumeration.nextElement()//得到的结果大概是：jar:file:/C:/Users/ibm/.m2/repository/junit/junit/4.12/junit-4.12.jar!/org/junit
             val protocol = url.protocol//大概是jar
             if ("jar".equals(protocol, ignoreCase = true)) {
                 ret.addAll(getClassesFromJar(url, basePack, filter))
@@ -235,14 +235,14 @@ object ClassUtil {
             return ""
         }
 
-        return path2.Slice(0, 0 - ".class".length)
+        return path2.Slice(0, -".class".length)
     }
 
     private fun getClassesFromFile(
-            fullPath: String,
-            basePack: String,
-            jarPath: String,
-            filter: ((Class<*>) -> Boolean)? = null
+        fullPath: String,
+        basePack: String,
+        jarPath: String,
+        filter: ((Class<*>) -> Boolean)? = null
     ): List<Class<*>> {
         var list = mutableListOf<Class<*>>()
         var className = ""

@@ -90,9 +90,9 @@ open class MyAllFilter : Filter {
     private fun getLogLevel(httpRequest: HttpServletRequest): LogLevelScope? {
         var logLevel: Level? = null;
 
-        var logLevelString = httpRequest.queryJson.get("log-level").AsString();
+        var logLevelString = httpRequest.queryJson.get("-log-level-").AsString();
         if (logLevelString.HasValue &&
-            config.adminToken == httpRequest.findParameterStringValue("admin-token")
+            config.adminToken == httpRequest.findParameterStringValue("-admin-token-")
         ) {
             if (logLevelString.IsNumberic()) {
                 var logLevelInt = logLevelString.AsInt()
@@ -178,7 +178,7 @@ open class MyAllFilter : Filter {
                     return@Error msgs.joinToString(const.line_break)
                 }
 
-                if (request.findParameterStringValue("iniframe").AsBoolean()) {
+                if (request.findParameterStringValue("-iniframe-").AsBoolean()) {
                     response.parentAlert(e.message ?: "服务器错误")
                 } else {
                     response.WriteTextValue(e.message ?: "服务器错误")
@@ -202,7 +202,7 @@ open class MyAllFilter : Filter {
                     msgs.add("<----]]")
                     return@Error msgs.joinToString(const.line_break)
                 }
-                if (request.findParameterStringValue("iniframe").AsBoolean()) {
+                if (request.findParameterStringValue("-iniframe-").AsBoolean()) {
                     response.parentAlert(e.message ?: "服务器错误")
                 } else {
                     response.WriteTextValue(e.message ?: "服务器错误")
@@ -369,7 +369,7 @@ open class MyAllFilter : Filter {
 
         val endAt = LocalDateTime.now();
         logger.Info {
-            var msg = mutableListOf<String>()
+            val msg = mutableListOf<String>()
             msg.add("[response] ${request.requestURI} ${response.status} ${endAt - startAt}")
 
             for (h in response.headerNames) {
@@ -378,8 +378,14 @@ open class MyAllFilter : Filter {
 
             if (resStringValue.HasValue) {
                 msg.add("[response body]:")
-                if (resStringValue.length > 1024) {
-                    msg.add("\t" + resStringValue.substring(0, 512) + "〘…〙" + resStringValue.Slice(-512))
+                val logResLength = request.queryJson.get("-log-res-length-").AsInt();
+                var subLen = 512;
+
+                if (logResLength > 0) {
+                    subLen = logResLength / 2;
+                }
+                if (resStringValue.length > logResLength) {
+                    msg.add("\t" + resStringValue.substring(0, subLen) + "〘…〙" + resStringValue.Slice(-subLen))
                 } else {
                     msg.add("\t" + resStringValue)
                 }

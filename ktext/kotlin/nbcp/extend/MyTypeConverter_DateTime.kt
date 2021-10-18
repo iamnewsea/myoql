@@ -171,11 +171,11 @@ fun String.ConvertToLocalDateTime(dateTimeFormatter: DateTimeFormatter? = null):
     }
 
     var timePartString =
-            if (withZ) {
-                strValue.Slice(0, -1)
-            } else {
-                strValue
-            }
+        if (withZ) {
+            strValue.Slice(0, -1)
+        } else {
+            strValue
+        }
 
     var zoneSecond = 0;
     if (withZ) {
@@ -188,7 +188,7 @@ fun String.ConvertToLocalDateTime(dateTimeFormatter: DateTimeFormatter? = null):
         var timezoneOffset = (timezoneValueMatch.groupValues[2] + ":00").AsLocalTime()?.totalSeconds ?: 0
 
         if (timezoneValueMatch.groupValues[1] == "-") {
-            timezoneOffset = 0 - timezoneOffset
+            timezoneOffset = -timezoneOffset
         }
 
         timePartString = timePartString.substring(0, timezoneValueMatch.range.start)
