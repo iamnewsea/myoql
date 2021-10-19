@@ -3,7 +3,6 @@ package nbcp.myOqlBeanProcessor
 
 import nbcp.comm.HasValue
 import nbcp.comm.config
-import nbcp.db.cache.RedisCacheDbDynamicService
 import nbcp.db.redis.MyRedisKeySerializerWithProductLine
 import nbcp.db.redis.RedisRenewalDynamicService
 import nbcp.utils.SpringUtil
@@ -63,12 +62,12 @@ class MyOqlBeanProcessor_Redis : BeanPostProcessor {
 
     @EventListener
     fun onApplicationReady(event: ApplicationReadyEvent) {
-        //如果存在 Redis环境，但是没有 RedisCacheDbDynamicService，就构造一个，保证在Redis环境下至少一个。
-        if (SpringUtil.containsBean(StringRedisTemplate::class.java) &&
-            !SpringUtil.containsBean(RedisCacheDbDynamicService::class.java)
-        ) {
-            SpringUtil.registerBeanDefinition(RedisCacheDbDynamicService())
-        }
+//        //如果存在 Redis环境，但是没有 RedisCacheDbDynamicService，就构造一个，保证在Redis环境下至少一个。
+//        if (SpringUtil.containsBean(StringRedisTemplate::class.java) &&
+//            !SpringUtil.containsBean(RedisCacheDbDynamicService::class.java)
+//        ) {
+//            SpringUtil.registerBeanDefinition(RedisCacheDbDynamicService())
+//        }
     }
 
 }
