@@ -38,17 +38,12 @@ class GroupLogIntercepter {
         var groupLog = method.getAnnotation(GroupLog::class.java) ?: targetClass.getAnnotation(GroupLog::class.java);
 
         if (groupLog == null) {
-            return invoke(joinPoint);
+            return joinPoint.proceed(joinPoint.args)
         }
 
         return usingScope(GroupLogScope.of(groupLog)) {
             MDC.put("group", groupLog.value)
-            return@usingScope invoke(joinPoint);
+            return@usingScope joinPoint.proceed(joinPoint.args)
         }
-    }
-
-    private fun invoke(joinPoint: ProceedingJoinPoint): Any? {
-        var args = joinPoint.args
-        return joinPoint.proceed(args)
     }
 }

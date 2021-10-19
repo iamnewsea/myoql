@@ -92,7 +92,7 @@ data class FromRedisCacheData(
     }
 
 
-    fun <T> usingRedisCache(clazz: Class<T>, consumer: Supplier<T>): T {
+    fun <T> usingRedisCache(clazz: Class<out T>, consumer: Supplier<T>): T {
         val cacheKey = this.getCacheKey()
 
         if (this.cacheSeconds >= 0 && cacheKey.HasValue) {

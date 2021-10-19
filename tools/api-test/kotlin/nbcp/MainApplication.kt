@@ -23,7 +23,7 @@ import java.util.*
 
 @SpringBootApplication(
     exclude = arrayOf(
-        DataSourceAutoConfiguration::class,
+//        DataSourceAutoConfiguration::class,
 //        RedisAutoConfiguration::class,
 //        MongoAutoConfiguration::class,
         RabbitAutoConfiguration::class,
