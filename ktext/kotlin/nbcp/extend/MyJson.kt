@@ -79,6 +79,20 @@ fun <T> String.FromJsonWithDefaultValue(
     return this.FromJson<T>(collectionClass, style) ?: collectionClass.newInstance()
 }
 
+@JvmOverloads
+fun <T> String.FromListJson(collectionClass: Class<T>, style: JsonSceneEnumScope? = null): List<T> {
+    if (this.isEmpty()) return listOf()
+    val mapper = style.getJsonMapper();
+
+    try {
+        var t = mapper.getTypeFactory().constructParametricType(List::class.java, collectionClass);
+        return mapper.readValue<List<T>>(this, t) ?: listOf<T>()
+    } catch (e: Exception) {
+        var msg = "Json转换出错！Json数据：${this}\n 类型:${collectionClass.name} \n 错误消息:" + e.message;
+        throw RuntimeException(msg, e);
+    }
+}
+
 
 @JvmOverloads
 fun <T> String.FromJson(collectionClass: Class<T>, style: JsonSceneEnumScope? = null): T? {
@@ -88,25 +102,18 @@ fun <T> String.FromJson(collectionClass: Class<T>, style: JsonSceneEnumScope? = 
         return this as T
     }
 
-    var jsonString = this
-    if (jsonString.isEmpty()) {
-        return null;
-    }
+    val mapper = style.getJsonMapper();
 
-    var mapper = style.getJsonMapper();
-
-    var ret: T?
     try {
-        ret = mapper.readValue(jsonString, collectionClass)
+        return mapper.readValue(this, collectionClass)
     } catch (e: Exception) {
-        var msg = "Json转换出错！Json数据：${jsonString}\n 类型:${collectionClass.name} \n 错误消息:" + e.message;
+        var msg = "Json转换出错！Json数据：${this}\n 类型:${collectionClass.name} \n 错误消息:" + e.message;
         throw RuntimeException(msg, e);
     }
-    return ret!!;
 }
 
 @JvmOverloads
-fun <T> Any.ConvertJson(clazz: Class<T>,style: JsonSceneEnumScope? = null): T {
+fun <T> Any.ConvertJson(clazz: Class<T>, style: JsonSceneEnumScope? = null): T {
     if (clazz.isAssignableFrom(this::class.java)) {
         return this as T;
     }

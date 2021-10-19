@@ -1,7 +1,10 @@
 package nbcp.mysql.test
 
+import nbcp.comm.JsonMap
 import nbcp.comm.OpenAction
 import nbcp.comm.ToJson
+import nbcp.db.mongo.entity.SysCity
+import nbcp.db.mybatis.CacheForMyBatisPlusBaseMapper
 import nbcp.db.mybatis.mapper.CityMapper
 import nbcp.mapper.CityMapperPlus
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,7 +21,10 @@ class MybatisTest {
 
     @GetMapping("/batis")
     fun batis() {
-        var d = cityMapper.selectById(110);
+
+        var where = JsonMap();
+        where["code"]  = 110;
+        var d = cityMapper.selectByMap(where);
         println(d.ToJson())
     }
 }

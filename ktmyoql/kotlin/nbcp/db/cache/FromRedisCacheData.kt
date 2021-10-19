@@ -6,6 +6,7 @@ import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
 import org.springframework.data.redis.core.StringRedisTemplate
 import java.time.Duration
+import java.util.function.Consumer
 import java.util.function.Supplier
 
 /**
@@ -91,8 +92,16 @@ data class FromRedisCacheData(
         return ret.joinToString("")
     }
 
+    fun <T> usingRedisCache(cacheType: Class<out T>, consumer: Supplier<T>): T {
+        return usingRedisCache({ it.FromJson(cacheType)!! }, consumer);
+    }
 
-    fun <T> usingRedisCache(clazz: Class<out T>, consumer: Supplier<T>): T {
+    fun <T> usingRedisCacheForList(cacheType: Class<out T>, consumer: Supplier<List<T>>): List<T> {
+        return usingRedisCache({ it.FromListJson(cacheType) }, consumer);
+    }
+
+    private fun <T> usingRedisCache(cacheString: java.util.function.Function<String, T>, consumer: Supplier<T>): T {
+
         val cacheKey = this.getCacheKey()
 
         if (this.cacheSeconds >= 0 && cacheKey.HasValue) {
@@ -100,7 +109,11 @@ data class FromRedisCacheData(
             val cacheValue = redisTemplate.opsForValue().get(cacheKey).AsString()
             if (cacheValue.HasValue) {
                 logger.Important("查到Redis缓存数据! cacheKey:${cacheKey},sql:${this.sql}")
-                return cacheValue.FromJson(clazz)!!
+//                if (clazz == Any::class.java || clazz == java.lang.Object::class.java) {
+//                    return cacheValue as T;
+//                }
+//                return cacheValue.FromJson(clazz)!!
+                return cacheString.apply(cacheValue)
             }
         }
 

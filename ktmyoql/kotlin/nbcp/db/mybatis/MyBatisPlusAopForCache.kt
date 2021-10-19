@@ -4,57 +4,78 @@ import nbcp.comm.*
 import nbcp.db.cache.BrokeRedisCacheData
 import nbcp.db.cache.FromRedisCacheData
 import nbcp.utils.MyUtil
+import org.aopalliance.intercept.MethodInterceptor
+import org.aopalliance.intercept.MethodInvocation
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.reflect.MethodSignature
+import org.springframework.aop.Advisor
+import org.springframework.aop.support.DefaultPointcutAdvisor
+import org.springframework.aop.support.annotation.AnnotationMatchingPointcut
+import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
+import java.lang.reflect.Proxy
 
-
-@Aspect
 @Component
-class MyBatisPlusAopForCache {
-    @Around("@within(nbcp.db.mybatis.CacheForMyBatisPlusBaseMapper)")
-    fun logPoint(joinPoint: ProceedingJoinPoint): Any? {
-        val signature = joinPoint.signature as MethodSignature;
-        val method = signature.method
-        val cache = method.getAnnotationsByType(CacheForMyBatisPlusBaseMapper::class.java).firstOrNull()
+class MyBatisCache {
+    @Bean
+    fun get(): Advisor {
+        var pointcut = AnnotationMatchingPointcut(CacheForMyBatisPlusBaseMapper::class.java, true);
+        return DefaultPointcutAdvisor(pointcut, MyBatisPlusAopForCache())
+    }
+}
+
+class MyBatisPlusAopForCache : MethodInterceptor {
+    override fun invoke(invocation: MethodInvocation): Any? {
+
+        var target = Proxy.getInvocationHandler(invocation.`this`!!)
+
+        var type = MyUtil.getPrivatePropertyValue(target, "mapperInterface") as Class<*>
+
+        val cache = type.getAnnotationsByType(CacheForMyBatisPlusBaseMapper::class.java).firstOrNull()
         if (cache == null) {
-            return joinPoint.proceed(joinPoint.args);
+            return invocation.proceed();
         }
 
+        val method = invocation.method
         //执行前。
         val tableName = cache.value.simpleName!!;
 
         if (method.name == "selectById") {
-            val cacheValue = selectById(joinPoint, cache);
+            val cacheValue = selectById(invocation, cache);
             if (cacheValue != null) {
                 return cacheValue.usingRedisCache(cache.value.java) {
-                    return@usingRedisCache joinPoint.proceed(joinPoint.args)
+                    return@usingRedisCache invocation.proceed()
                 }
             }
         }
 
-        if (method.name.IsIn(
-                "selectBatchIds",
-                "selectByMap",
-                "selectOne",
-                "selectCount",
-                "selectList",
-                "selectMaps",
-                "selectObjs",
-                "selectPage",
-                "selectMapsPage"
-            )
+
+        if (method.name.IsIn("selectBatchIds", "selectByMap", "selectList")
         ) {
-            return FromRedisCacheData(cache.cacheSeconds, tableName, arrayOf(), "", "", getMethodFullName(joinPoint))
+            return FromRedisCacheData(cache.cacheSeconds, tableName, arrayOf(), "", "", getMethodFullName(invocation))
+                .usingRedisCacheForList(cache.value.java) {
+                    return@usingRedisCacheForList invocation.proceed() as List<*>
+                }
+        }
+
+        if (method.name == "selectCount") {
+            return FromRedisCacheData(cache.cacheSeconds, tableName, arrayOf(), "", "", getMethodFullName(invocation))
+                .usingRedisCache(Long::class.java) {
+                    return@usingRedisCache invocation.proceed()
+                }
+        }
+
+        if (method.name == "selectOne") {
+            return FromRedisCacheData(cache.cacheSeconds, tableName, arrayOf(), "", "", getMethodFullName(invocation))
                 .usingRedisCache(cache.value.java) {
-                    return@usingRedisCache joinPoint.proceed(joinPoint.args)
+                    return@usingRedisCache invocation.proceed()
                 }
         }
 
 
-        val ret = joinPoint.proceed(joinPoint.args)
+        val ret = invocation.proceed()
 
 
         //int insert(T entity);
@@ -64,22 +85,22 @@ class MyBatisPlusAopForCache {
         }
 
         if (method.name == "deleteById") {
-            deleteById(joinPoint, cache)
+            deleteById(invocation, cache)
             return ret;
         }
 
         if (method.name == "deleteByMap") {
-            deleteByMap(joinPoint, cache)
+            deleteByMap(invocation, cache)
             return ret;
         }
 
         if (method.name == "deleteBatchIds") {
-            deleteBatchIds(joinPoint, cache)
+            deleteBatchIds(invocation, cache)
             return ret;
         }
 
         if (method.name == "updateById") {
-            deleteById(joinPoint, cache)
+            deleteById(invocation, cache)
             return ret;
         }
 
@@ -87,24 +108,30 @@ class MyBatisPlusAopForCache {
         return ret;
     }
 
-    private fun selectById(joinPoint: ProceedingJoinPoint, cache: CacheForMyBatisPlusBaseMapper): FromRedisCacheData? {
+    private fun selectById(invocation: MethodInvocation, cache: CacheForMyBatisPlusBaseMapper): FromRedisCacheData? {
         val tableName = cache.value.simpleName!!;
-        val idValue = joinPoint.args[0].AsString();
+        val idValue = invocation.arguments[0].AsString();
         if (idValue.isEmpty()) return null;
 
-        return FromRedisCacheData(cache.cacheSeconds, tableName, arrayOf(), "id", idValue, getMethodFullName(joinPoint))
+        return FromRedisCacheData(
+            cache.cacheSeconds,
+            tableName,
+            arrayOf(),
+            "id",
+            idValue,
+            getMethodFullName(invocation)
+        )
     }
 
-    private fun getMethodFullName(joinPoint: ProceedingJoinPoint): String {
-        val signature = joinPoint.signature as MethodSignature;
-        val method = signature.method
-        return method.declaringClass.name + "." + method.name + joinPoint.args.ToJson()
+    private fun getMethodFullName(invocation: MethodInvocation): String {
+        val method = invocation.method
+        return method.declaringClass.name + "." + method.name + invocation.arguments.ToJson()
     }
 
-    private fun deleteBatchIds(joinPoint: ProceedingJoinPoint, cache: CacheForMyBatisPlusBaseMapper) {
+    private fun deleteBatchIds(invocation: MethodInvocation, cache: CacheForMyBatisPlusBaseMapper) {
         val tableName = cache.value.simpleName!!;
 
-        val deleteValue = joinPoint.args[0] as Collection<*>?;
+        val deleteValue = invocation.arguments[0] as Collection<*>?;
         if (deleteValue == null) return;
 
 
@@ -113,10 +140,10 @@ class MyBatisPlusAopForCache {
         }
     }
 
-    private fun deleteByMap(joinPoint: ProceedingJoinPoint, cache: CacheForMyBatisPlusBaseMapper) {
+    private fun deleteByMap(invocation: MethodInvocation, cache: CacheForMyBatisPlusBaseMapper) {
         val tableName = cache.value.simpleName!!;
 
-        val deleteValue = joinPoint.args[0] as Map<*, *>?;
+        val deleteValue = invocation.arguments[0] as Map<*, *>?;
         if (deleteValue == null) return;
 
         if (cache.groupKey.HasValue) {
@@ -133,10 +160,10 @@ class MyBatisPlusAopForCache {
         }
     }
 
-    private fun deleteById(joinPoint: ProceedingJoinPoint, cache: CacheForMyBatisPlusBaseMapper) {
+    private fun deleteById(invocation: MethodInvocation, cache: CacheForMyBatisPlusBaseMapper) {
         val tableName = cache.value.simpleName!!;
 
-        val deleteValue = joinPoint.args[0];
+        val deleteValue = invocation.arguments[0];
         if (deleteValue == null) return;
 
         val deleteValueType = deleteValue::class.java
