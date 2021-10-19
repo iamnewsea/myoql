@@ -48,8 +48,8 @@ object config {
      * redis 前缀
      */
     @JvmStatic
-    val productLineName by lazy {
-        return@lazy getConfig("app.product-line.name").AsString()
+    val productLineCode by lazy {
+        return@lazy getConfig("app.product-line.code").AsString()
     }
 
     @JvmStatic

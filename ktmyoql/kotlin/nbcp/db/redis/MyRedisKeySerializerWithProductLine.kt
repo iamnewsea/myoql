@@ -10,10 +10,10 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 class MyRedisKeySerializerWithProductLine : StringRedisSerializer() {
     override fun serialize(key: String): ByteArray {
         var key2 = key;
-        if (config.productLineName.HasValue &&
-            !key2.startsWith(config.productLineName + ":")
+        if (config.productLineCode.HasValue &&
+            !key2.startsWith(config.productLineCode + ":")
         ) {
-            key2 = config.productLineName + ":" + key2;
+            key2 = config.productLineCode + ":" + key2;
 
         }
         return super.serialize(key2)
@@ -21,10 +21,10 @@ class MyRedisKeySerializerWithProductLine : StringRedisSerializer() {
 
     override fun deserialize(bytes: ByteArray?): String {
         var key2 = super.deserialize(bytes)
-        if (config.productLineName.HasValue &&
-            !key2.startsWith(config.productLineName + ":")
+        if (config.productLineCode.HasValue &&
+            !key2.startsWith(config.productLineCode + ":")
         ) {
-            key2 = key2.substring(config.productLineName.length + 1);
+            key2 = key2.substring(config.productLineCode.length + 1);
 
         }
         return key2;

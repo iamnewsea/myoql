@@ -12,7 +12,7 @@
     <parent>
         <groupId>cn.dev8</groupId>
         <artifactId>kotlin-boot-parent</artifactId>
-        <version>0.2.5-SNAPSHOT</version>
+        <version>0.2.6-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -20,7 +20,7 @@
         <springfox-swagger.version>2.9.2</springfox-swagger.version>
         <springfox-swagger-ui.version>3.0.0</springfox-swagger-ui.version>
         <swagger-bootstrap-ui.version>1.9.6</swagger-bootstrap-ui.version>
-        <myoql.version>0.2.5-SNAPSHOT</myoql.version>
+        <myoql.version>0.2.6-SNAPSHOT</myoql.version>
         <mybatis-boot.version>2.0.1</mybatis-boot.version>
     </properties>
 
