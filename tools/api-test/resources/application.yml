@@ -9,7 +9,7 @@ app:
       secret: nancal.123
       region:
   product-line:
-    name: myoql
+    code: myoql
 spring:
   application:
     name: admin-api
