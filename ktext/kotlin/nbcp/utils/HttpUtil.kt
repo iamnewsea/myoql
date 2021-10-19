@@ -20,10 +20,10 @@ import javax.net.ssl.SSLSocketFactory
 
 
 data class FileMessage @JvmOverloads constructor(
-        var fullPath: String = "",
-        var name: String = "",
-        var extName: String = "",
-        var msg: String = ""
+    var fullPath: String = "",
+    var name: String = "",
+    var extName: String = "",
+    var msg: String = ""
 );
 
 /**
@@ -31,9 +31,9 @@ data class FileMessage @JvmOverloads constructor(
  */
 fun getTextTypeFromContentType(contentType: String): Boolean {
     return contentType.contains("json", true) ||
-            contentType.contains("htm", true) ||
-            contentType.contains("text", true) ||
-            contentType.contains("urlencoded", true)
+        contentType.contains("htm", true) ||
+        contentType.contains("text", true) ||
+        contentType.contains("urlencoded", true)
 }
 
 //@Configuration
@@ -112,6 +112,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
     var request = HttpRequestData()
     var response = HttpResponseData()
 
+    var logResponseLength = 1024;
 
     /**
      * 加密使用，可用于 PKCS12
@@ -165,7 +166,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
             requestBody = postJson.ToJson()
         } else {
             requestBody =
-                    postJson.map { it.key + "=" + JsUtil.encodeURIComponent(it.value.AsString()) }.joinToString("&");
+                postJson.map { it.key + "=" + JsUtil.encodeURIComponent(it.value.AsString()) }.joinToString("&");
         }
 
         return doPost(requestBody);
@@ -202,7 +203,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         try {
             if (this.sslSocketFactory != null) {
                 (conn as javax.net.ssl.HttpsURLConnection)
-                        .setSSLSocketFactory(this.sslSocketFactory)
+                    .setSSLSocketFactory(this.sslSocketFactory)
             }
 
             conn.instanceFollowRedirects = this.request.instanceFollowRedirects
@@ -273,7 +274,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
                 } else if (this.response.resultIsText) {
                     DataInputStream(responseStream).use { input ->
                         this.response.resultBody =
-                                toByteArray(input).toString(Charset.forName(this.response.charset));
+                            toByteArray(input).toString(Charset.forName(this.response.charset));
                     }
                 }
             }
@@ -287,7 +288,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
             }
 
 
-            logger.InfoError(this.status != 200) {
+            logger.InfoError(!this.status.Between(200, 399)) {
                 var msgs = mutableListOf<String>();
                 msgs.add("${conn.requestMethod} ${url}\t[status:${this.status}]");
 
@@ -298,12 +299,20 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
                 if (this.status == 0) {
                     msgs.add("[Timeout]");
                 } else {
-
-                    var k10Size = 10240
-                    //小于 10K
+                    var subLen = logResponseLength / 2;
+                    //小于 1K
                     if (this.request.postIsText && this.request.postBody.any()) {
                         msgs.add("---")
-                        msgs.add(this.request.postBody.take(k10Size).toByteArray().toString(const.utf8))
+                        if (this.request.postBody.length < logResponseLength) {
+                            msgs.add(this.request.postBody)
+                        } else {
+                            msgs.add(
+                                this.request.postBody.substring(
+                                    0,
+                                    subLen
+                                ) + "〘…〙" + this.request.postBody.Slice(-subLen)
+                            )
+                        }
                     }
 
                     msgs.add("---")
@@ -312,12 +321,19 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
                         return@map "\t${it.key}:${it.value}"
                     }.joinToString(const.line_break))
 
-                    //小于10K
+                    //小于1K
                     if (this.response.resultIsText && this.response.resultBody.any()) {
-                        msgs.add(
-                                this.response.resultBody.take(k10Size).toByteArray()
-                                        .toString(Charset.forName(this.response.charset.AsString("UTF-8")))
-                        )
+
+                        if (this.response.resultBody.length < logResponseLength) {
+                            msgs.add(this.response.resultBody)
+                        } else {
+                            msgs.add(
+                                this.response.resultBody.substring(
+                                    0,
+                                    subLen
+                                ) + "〘…〙" + this.response.resultBody.Slice(-subLen)
+                            )
+                        }
                     }
                 }
 
@@ -438,7 +454,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
 
         this.request.postAction = { out ->
             out.write(
-                    """--${boundary}
+                """--${boundary}
 Content-Disposition: form-data; name="${fileName}"; filename="blob"
 Content-Type: application/octet-stream
 

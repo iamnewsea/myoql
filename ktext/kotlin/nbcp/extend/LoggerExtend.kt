@@ -21,14 +21,14 @@ import java.util.*
  * 该方法会忽略 LogLevel，使用 isInfoEnabled，isErrorEnabled 先进行判断是否记录日志
  */
 inline fun Logger.InfoError(error: Boolean, msgFunc: (() -> String)) {
-    if (this.scopeInfoLevel) {
-        var msg = msgFunc();
-        if (msg.isEmpty()) return;
-        this.info(msg)
-    } else if (error && this.scopeErrorLevel) {
+    if (error && this.scopeErrorLevel) {
         var msg = msgFunc();
         if (msg.isEmpty()) return;
         this.error(msg)
+    } else if (this.scopeInfoLevel) {
+        var msg = msgFunc();
+        if (msg.isEmpty()) return;
+        this.info(msg)
     }
 }
 
