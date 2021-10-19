@@ -10,21 +10,14 @@ import org.springframework.boot.web.servlet.ServletComponentScan
 
 import nbcp.comm.*
 import nbcp.utils.*
-import nbcp.db.*
-import nbcp.db.cache.RedisCacheDbDynamicService
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
 
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-import org.springframework.boot.logging.LogLevel
 import org.springframework.boot.web.context.WebServerApplicationContext
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.*
-import org.springframework.data.redis.connection.RedisConnectionFactory
-import org.springframework.data.redis.listener.ChannelTopic
-import org.springframework.data.redis.listener.RedisMessageListenerContainer
-import org.springframework.data.redis.listener.adapter.MessageListenerAdapter
 import java.util.*
 
 
