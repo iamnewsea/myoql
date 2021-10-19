@@ -23,12 +23,64 @@ data class BrokeRedisCacheData(
     }
 
     fun brokeCache() {
-        brokeCacheItemNoWait(this)
+        val cacheBroke = this;
+        logger.Important("执行破坏缓存:${cacheBroke.ToJson()}")
 
-        db.rer_base.sqlCacheBroker.add(config.applicationName, this.ToJson());
+        val redisTemplate = SpringUtil.getBean<StringRedisTemplate>();
+        if (cacheBroke.groupKey.isEmpty() || cacheBroke.groupValue.isEmpty()) {
+            brokeJoinTable(redisTemplate, cacheBroke.table);
 
-        //发布消息通知
-        SpringUtil.getBean<RedisCacheDbDynamicService>().publish()
+
+            //破坏主表
+            val pattern = "sc:${cacheBroke.table}/*";
+            redisTemplate.scanKeys(pattern) { key ->
+                redisTemplate.delete(key)
+                return@scanKeys true;
+            }
+            return;
+        }
+
+        brokeJoinTable(redisTemplate, cacheBroke.table);
+
+        //破坏没有隔离键的,没有隔离键分两种情况：
+        //A 有连接表
+        var pattern = "sc:${cacheBroke.table}/*/@*"
+        redisTemplate.scanKeys(pattern) { key ->
+            redisTemplate.delete(key)
+            return@scanKeys true;
+        }
+
+        //B 没有连接表
+        pattern = "sc:${cacheBroke.table}/@*"
+        redisTemplate.scanKeys(pattern) { key ->
+            redisTemplate.delete(key)
+            return@scanKeys true;
+        }
+
+        //破坏其它维度的隔离键
+        val notMatchGroup = cacheBroke.groupKey.map { "[^${it}]" }.joinToString("")
+        pattern = "sc:${cacheBroke.table}/*\\?${notMatchGroup}[^=]*"
+        redisTemplate.scanKeys(pattern) { key ->
+            redisTemplate.delete(key)
+            return@scanKeys true;
+        }
+
+        //破坏当前隔离键值。
+        pattern = "sc:${cacheBroke.table}/*\\?${cacheBroke.groupKey}=${cacheBroke.groupValue}@*"
+        redisTemplate.scanKeys(pattern) { key ->
+            redisTemplate.delete(key)
+            return@scanKeys true;
+        }
+    }
+
+
+    private fun brokeJoinTable(redisTemplate: StringRedisTemplate, joinTableName: String) {
+        var pattern = "*/${joinTableName}/*"
+
+        redisTemplate.scanKeys(pattern) {
+            redisTemplate.delete(it);
+            return@scanKeys true;
+        }
     }
 
 
@@ -50,64 +102,5 @@ data class BrokeRedisCacheData(
             return ret;
         }
 
-
-        internal fun brokeCacheItemNoWait(cacheBroke: BrokeRedisCacheData) {
-            logger.Important("执行破坏缓存:${cacheBroke.ToJson()}")
-
-            val redisTemplate = SpringUtil.getBean<StringRedisTemplate>();
-            if (cacheBroke.groupKey.isEmpty() || cacheBroke.groupValue.isEmpty()) {
-                brokeJoinTable(redisTemplate, cacheBroke.table);
-
-
-                //破坏主表
-                val pattern = "sc:${cacheBroke.table}/*";
-                redisTemplate.scanKeys(pattern) { key ->
-                    redisTemplate.delete(key)
-                    return@scanKeys true;
-                }
-                return;
-            }
-
-            brokeJoinTable(redisTemplate, cacheBroke.table);
-
-            //破坏没有隔离键的,没有隔离键分两种情况：
-            //A 有连接表
-            var pattern = "sc:${cacheBroke.table}/*/@*"
-            redisTemplate.scanKeys(pattern) { key ->
-                redisTemplate.delete(key)
-                return@scanKeys true;
-            }
-
-            //B 没有连接表
-            pattern = "sc:${cacheBroke.table}/@*"
-            redisTemplate.scanKeys(pattern) { key ->
-                redisTemplate.delete(key)
-                return@scanKeys true;
-            }
-
-            //破坏其它维度的隔离键
-            val notMatchGroup = cacheBroke.groupKey.map { "[^${it}]" }.joinToString("")
-            pattern = "sc:${cacheBroke.table}/*\\?${notMatchGroup}[^=]*"
-            redisTemplate.scanKeys(pattern) { key ->
-                redisTemplate.delete(key)
-                return@scanKeys true;
-            }
-
-            //破坏当前隔离键值。
-            pattern = "sc:${cacheBroke.table}/*\\?${cacheBroke.groupKey}=${cacheBroke.groupValue}@*"
-            redisTemplate.scanKeys(pattern) { key ->
-                redisTemplate.delete(key)
-                return@scanKeys true;
-            }
-        }
-
-        private fun brokeJoinTable(redisTemplate: StringRedisTemplate, joinTableName: String) {
-            var pattern = "*/${joinTableName}/*"
-
-            redisTemplate.scanKeys(pattern) {
-                redisTemplate.delete(it);
-                return@scanKeys true;
-            }
-        }
     }
 }
