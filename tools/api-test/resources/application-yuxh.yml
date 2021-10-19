@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url2: jdbc:mysql://mariadb:3306/lowcode?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://mariadb:3306/lowcode?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=Asia/Shanghai
     username: dev
     password: 123
 

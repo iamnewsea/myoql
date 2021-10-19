@@ -38,13 +38,13 @@ class MybatisDbConfig {
         }
 
 
-        SpringUtil.registerBeanDefinition(mapperScannerConfigurer())
+        SpringUtil.registerBeanDefinition(mybatisMapperScannerConfigurer())
         SpringUtil.registerBeanDefinition(MyBatisTransactionManagementConfig())
 
-        var sqlSessionFactoryBean = sqlSessionFactoryBean();
+        var sqlSessionFactoryBean = mybatisSessionFactoryBean();
         if (sqlSessionFactoryBean != null) {
             SpringUtil.registerBeanDefinition(sqlSessionFactoryBean)
-            SpringUtil.registerBeanDefinition(sqlSessionTemplate(sqlSessionFactoryBean))
+            SpringUtil.registerBeanDefinition(mybatisSessionTemplate(sqlSessionFactoryBean))
         }
     }
 
@@ -54,7 +54,7 @@ class MybatisDbConfig {
     }
 
 
-    fun mapperScannerConfigurer(): MapperScannerConfigurer {
+    fun mybatisMapperScannerConfigurer(): MapperScannerConfigurer {
         val mapperScannerConfigurer = MapperScannerConfigurer()
         //获取之前注入的beanName为sqlSessionFactory的对象
         mapperScannerConfigurer.setSqlSessionFactoryBeanName("sqlSessionFactory")
@@ -64,7 +64,7 @@ class MybatisDbConfig {
     }
 
 
-    fun sqlSessionFactoryBean(): SqlSessionFactory? {
+    fun mybatisSessionFactoryBean(): SqlSessionFactory? {
         val bean = SqlSessionFactoryBean()
         bean.setDataSource(dataSource)
 
@@ -81,7 +81,7 @@ class MybatisDbConfig {
         return bean.`object`
     }
 
-    fun sqlSessionTemplate(sqlSessionFactory: SqlSessionFactory): SqlSessionTemplate {
+    fun mybatisSessionTemplate(sqlSessionFactory: SqlSessionFactory): SqlSessionTemplate {
         return SqlSessionTemplate(sqlSessionFactory)
     }
 }

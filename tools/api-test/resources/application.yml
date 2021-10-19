@@ -26,7 +26,6 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       maximum-pool-size: 20
-      jdbc-url:
 
 
     driver-class-name: com.mysql.cj.jdbc.Driver
