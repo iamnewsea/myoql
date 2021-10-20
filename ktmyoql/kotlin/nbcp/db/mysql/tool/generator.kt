@@ -398,7 +398,7 @@ ${idMethods.joinToString("\n")}
         return ret;
     }
 
-    data class ColumnMetaDefine(
+    data class ColumnMetaDefine @JvmOverloads constructor(
             var tableName: String = "",
 //            var entityTypeName: String = "",
             var autoIncrementKey: String = "",

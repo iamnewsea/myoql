@@ -6,10 +6,11 @@ import nbcp.db.redis.scanKeys
 import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
 import org.springframework.data.redis.core.StringRedisTemplate
+import kotlin.reflect.KClass
 
 
-data class BrokeRedisCacheData(
-    var table: String,
+data class BrokeRedisCacheData @JvmOverloads constructor(
+    var table: String = "",
     /**
      * 破坏表的隔离键，如: "cityCode"
      */
@@ -17,9 +18,19 @@ data class BrokeRedisCacheData(
     /**
      * 破坏表的隔离键值，如: "010"
      */
-    var groupValue: String
+    var groupValue: String,
+    /**
+     * 如果 table 为空，则使用 table = tableClass.name
+     */
+    val tableClass: KClass<*> = Boolean::class
 ) {
     constructor() : this("", "", "") {
+    }
+
+    init {
+        if (this.table.isEmpty() && !this.tableClass.java.IsSimpleType()) {
+            this.table = this.tableClass.java.simpleName
+        }
     }
 
     fun brokeCache() {
@@ -94,9 +105,10 @@ data class BrokeRedisCacheData(
         val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
         fun of(cacheForBroke: BrokeRedisCache, variableMap: JsonMap): BrokeRedisCacheData {
-            var spelExecutor = CacheKeySpelExecutor(variableMap);
-            var ret = BrokeRedisCacheData();
-            ret.table = spelExecutor.getVariableValue(cacheForBroke.table);
+            val spelExecutor = CacheKeySpelExecutor(variableMap);
+            val ret = BrokeRedisCacheData();
+
+            ret.table = spelExecutor.getVariableValue(cacheForBroke.getTableName());
             ret.groupKey = spelExecutor.getVariableValue(cacheForBroke.groupKey);
             ret.groupValue = spelExecutor.getVariableValue(cacheForBroke.groupValue);
             return ret;

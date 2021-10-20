@@ -22,7 +22,7 @@ import java.time.*
 @MyLogLevel(LogLevelScope.info)
 class AppCacheTestKotlinService {
 
-    @FromRedisCache(300, "tab2", arrayOf(), "city", "#city")
+    @FromRedisCache("tab2", arrayOf(), "city", "#city")
     fun cache_select(city: Int): MutableList<Document> {
         var result = db.mor_base.sysAnnex.aggregate()
             .addPipeLineRawString(PipeLineEnum.match, """ { "group" : "lowcode"} """.replace("##", "$"))

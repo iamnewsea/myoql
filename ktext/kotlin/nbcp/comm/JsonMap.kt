@@ -150,7 +150,7 @@ open class JsonMap : StringKeyMap<Any?> {
 
 
 //差异数据: T 表示第一个数据，R表示第2个数据。如： 123， 234 ，common = 23 , more = 1 , less = 4
-data class DiffData<T, R>(
+data class DiffData<T, R> @JvmOverloads constructor(
         //公共索引,key=第一个数据索引， value = 第二个数据索引。
         var commonIndexMap: Map<Int, Int> = mapOf<Int, Int>(),
         //第一部分多出的数据

@@ -71,7 +71,7 @@ insert 返回结果：
 }]
 }
  */
-data class EsResultMsg(
+data class EsResultMsg @JvmOverloads constructor(
     var error: Boolean = true,
     var took: Int = 0,
     var action: String = "", //create

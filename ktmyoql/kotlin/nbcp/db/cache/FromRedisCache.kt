@@ -2,6 +2,7 @@ package nbcp.db.cache
 
 import nbcp.comm.*
 import java.lang.annotation.Inherited
+import kotlin.reflect.KClass
 
 /**
  * Sql Select Cache
@@ -10,11 +11,10 @@ import java.lang.annotation.Inherited
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class FromRedisCache(
-    val cacheSeconds: Int,
     /**
      * 缓存表
      */
-    val table: String,
+    val table: String = "",
     /**
      * 缓存关联表
      */
@@ -31,9 +31,24 @@ annotation class FromRedisCache(
     /**
      * 唯一值
      */
-    val sql: String = ""
+    val sql: String = "",
+
+    val cacheSeconds: Int = 3600,
+    /**
+     * 如果 table 为空，则使用 table = tableClass.name
+     */
+    val tableClass: KClass<*> = Boolean::class
 ) {
 }
 
+
+fun FromRedisCache.getTableName():String{
+    var tableName = this.table
+
+    if( tableName.isEmpty() && this.tableClass.java.IsSimpleType()){
+        tableName = this.tableClass.java.simpleName;
+    }
+    return tableName;
+}
 
 

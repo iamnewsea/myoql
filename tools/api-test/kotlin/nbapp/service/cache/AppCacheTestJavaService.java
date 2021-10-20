@@ -61,7 +61,7 @@ public class AppCacheTestJavaService {
      * @return
      */
     public List<Document> code_cache_select(Integer city) {
-        Document d2 = new FromRedisCacheData(3000, "tab1", new String[]{}, "city", city.toString(), "code_cache_select" + city)
+        Document d2 = new FromRedisCacheData("tab1", new String[]{}, "city", city.toString(), "code_cache_select" + city)
                 .usingRedisCache(Document.class, () -> {
                     Document d1 = new Document();
                     d1.put("name", "cache-方法");

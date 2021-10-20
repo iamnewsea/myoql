@@ -21,7 +21,7 @@ import java.time.*
 @Service
 class AppCacheTestKotlinService {
 
-    @FromRedisCache(300, "tab2", arrayOf(), "city", "#city")
+    @FromRedisCache("tab2", arrayOf(), "city", "#city")
     fun cache_select(city: Int): MutableList<Document> {
         var result = db.mor_base.sysAnnex.aggregate()
             .addPipeLineRawString(PipeLineEnum.match, """ { "group" : "lowcode"} """.replace("##", "$"))
@@ -64,7 +64,7 @@ class AppCacheTestKotlinService {
     fun code_cache_select(city: Int): MutableList<Document> {
         var sql = "select * from tab where city=:city";
         var map = JsonMap("city" to "010")
-        var list = FromRedisCacheData(3000, "tab2", arrayOf(), "city", city.toString(), sql + map.ToJson())
+        var list = FromRedisCacheData("tab2", arrayOf(), "city", city.toString(), sql + map.ToJson())
             .usingRedisCache(Document::class.java) {
                 var list = Document(); // jdbcTemplate.queryList(sql,map)
                 list.put("name", "cache-test");

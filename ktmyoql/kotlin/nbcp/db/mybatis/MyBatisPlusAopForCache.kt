@@ -54,21 +54,42 @@ class MyBatisPlusAopForCache : MethodInterceptor {
 
         if (method.name.IsIn("selectBatchIds", "selectByMap", "selectList")
         ) {
-            return FromRedisCacheData(cache.cacheSeconds, tableName, arrayOf(), "", "", getMethodFullName(invocation))
+            return FromRedisCacheData(
+                tableName,
+                arrayOf(),
+                "",
+                "",
+                getMethodFullName(invocation),
+                cacheSeconds = cache.cacheSeconds
+            )
                 .usingRedisCacheForList(cache.value.java) {
                     return@usingRedisCacheForList invocation.proceed() as List<*>
                 }
         }
 
         if (method.name == "selectCount") {
-            return FromRedisCacheData(cache.cacheSeconds, tableName, arrayOf(), "", "", getMethodFullName(invocation))
+            return FromRedisCacheData(
+                tableName,
+                arrayOf(),
+                "",
+                "",
+                getMethodFullName(invocation),
+                cacheSeconds = cache.cacheSeconds
+            )
                 .usingRedisCache(Long::class.java) {
                     return@usingRedisCache invocation.proceed()
                 }
         }
 
         if (method.name == "selectOne") {
-            return FromRedisCacheData(cache.cacheSeconds, tableName, arrayOf(), "", "", getMethodFullName(invocation))
+            return FromRedisCacheData(
+                tableName,
+                arrayOf(),
+                "",
+                "",
+                getMethodFullName(invocation),
+                cacheSeconds = cache.cacheSeconds
+            )
                 .usingRedisCache(cache.value.java) {
                     return@usingRedisCache invocation.proceed()
                 }
@@ -114,12 +135,12 @@ class MyBatisPlusAopForCache : MethodInterceptor {
         if (idValue.isEmpty()) return null;
 
         return FromRedisCacheData(
-            cache.cacheSeconds,
             tableName,
             arrayOf(),
             "id",
             idValue,
-            getMethodFullName(invocation)
+            getMethodFullName(invocation),
+            cacheSeconds = cache.cacheSeconds,
         )
     }
 

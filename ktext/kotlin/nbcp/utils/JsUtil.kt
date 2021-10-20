@@ -39,7 +39,7 @@ object JsUtil {
 }
 
 
-data class UrlQueryJsonData(
+data class UrlQueryJsonData @JvmOverloads constructor(
     var path: String = "",
     var queryJson: StringMap = StringMap(),
     var hash: String = ""

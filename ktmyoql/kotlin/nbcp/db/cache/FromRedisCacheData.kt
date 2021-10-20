@@ -8,16 +8,18 @@ import org.springframework.data.redis.core.StringRedisTemplate
 import java.time.Duration
 import java.util.function.Consumer
 import java.util.function.Supplier
+import kotlin.reflect.KClass
 
 /**
  * CacheForSelect 的数据类
  */
-data class FromRedisCacheData(
-    var cacheSeconds: Int,
+
+data class FromRedisCacheData @JvmOverloads constructor(
+
     /**
      * 缓存表
      */
-    var table: String,
+    var table: String = "",
     /**
      * 缓存关联表
      */
@@ -34,9 +36,20 @@ data class FromRedisCacheData(
     /**
      * 唯一值
      */
-    var sql: String
+    var sql: String,
+    var cacheSeconds: Int = 3600,
+    /**
+     * 如果 table 为空，则使用 table = tableClass.name
+     */
+    val tableClass: KClass<*> = Boolean::class
 ) {
-    constructor() : this(0, "", arrayOf(), "", "", "") {
+    init {
+        if (this.table.isEmpty() && !this.tableClass.java.IsSimpleType()) {
+            this.table = this.tableClass.java.simpleName
+        }
+    }
+
+    constructor() : this("", arrayOf(), "", "", "") {
 
     }
 
@@ -47,7 +60,8 @@ data class FromRedisCacheData(
             val spelExecutor = CacheKeySpelExecutor(variableMap);
             val ret = FromRedisCacheData();
             ret.cacheSeconds = cacheForSelect.cacheSeconds;
-            ret.table = spelExecutor.getVariableValue(cacheForSelect.table);
+
+            ret.table = spelExecutor.getVariableValue(cacheForSelect.getTableName());
             ret.joinTables = cacheForSelect.joinTables;
             ret.groupKey = spelExecutor.getVariableValue(cacheForSelect.groupKey);
             ret.groupValue = spelExecutor.getVariableValue(cacheForSelect.groupValue);

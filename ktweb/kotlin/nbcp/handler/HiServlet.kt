@@ -32,11 +32,16 @@ open class HiServlet : HttpServlet() {
     }
 
     private fun proc(request: HttpServletRequest, response: HttpServletResponse) {
-        var json = JsonMap();
+        val json = JsonMap();
 
-        var jarFile = ClassUtil.getStartingJarFile();
+        val jarFile = ClassUtil.getStartingJarFile();
+        json["应用名称"] = SpringUtil.context.environment.getProperty("app.cn_name");
         json["spring.application.name"] = SpringUtil.context.environment.getProperty("spring.application.name");
         json["当前配置"] = SpringUtil.context.environment.getProperty("spring.profiles.active");
+        json["产品线"] =
+            SpringUtil.context.environment.getProperty("app.product-line.name") + " : " +
+                SpringUtil.context.environment.getProperty("app.product-line.code");
+
         json["启动文件名"] = jarFile.name;
         json["启动文件生成时间"] = Date(jarFile.lastModified()).AsString();
         json["登录用户Id"] = request.UserId;
@@ -44,23 +49,24 @@ open class HiServlet : HttpServlet() {
         json["JAVA_VERSION"] = System.getenv("JAVA_VERSION");
         json["JAVA_OPTS"] = System.getenv("JAVA_OPTS");
         json["POD名称"] = System.getenv("HOSTNAME");
-        json["镜像版本号"] = System.getenv("VERSION").AsString();
 
-        var gitCommitId = System.getenv("GIT_COMMIT_ID").AsString();
+        json["镜像版本号"] = System.getenv("DOCKER_IMAGE_VERSION").AsString();
+
+        val gitCommitId = System.getenv("GIT_COMMIT_ID").AsString();
         if (gitCommitId.HasValue) {
             json["Git提交Id"] = gitCommitId;
         }
-        var gitCommitTime = System.getenv("GIT_COMMIT_TIME").AsString();
+        val gitCommitTime = System.getenv("GIT_COMMIT_TIME").AsString();
         if (gitCommitTime.HasValue) {
             json["Git提交时间"] = gitCommitTime;
         }
 
-        var sleep = (request.findParameterValue("sleep").AsFloat() * 1000).toLong();
+        val sleep = (request.findParameterValue("sleep").AsFloat() * 1000).toLong();
         if (sleep > 0 && sleep <= 3600_000) {
             Thread.sleep(sleep);
         }
 
-        var status = request.findParameterValue("status").AsInt()
+        val status = request.findParameterValue("status").AsInt()
         if (status.HasValue) {
             response.status = status
         }

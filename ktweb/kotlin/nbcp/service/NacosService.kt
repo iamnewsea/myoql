@@ -96,7 +96,7 @@ open class NacosService {
         }
     }
 
-    data class NacosInstanceHostData(
+    data class NacosInstanceHostData @JvmOverloads constructor(
             var ip: String = "",
             var port: Int = 0,
             var valid: Boolean = false,
@@ -111,7 +111,7 @@ open class NacosService {
             var ephemeral: Boolean = false
     )
 
-    data class NacosInstanceData(
+    data class NacosInstanceData @JvmOverloads constructor(
             var hosts: MutableList<NacosInstanceHostData> = mutableListOf(),
             var dom: String = "",
             var name: String = "",

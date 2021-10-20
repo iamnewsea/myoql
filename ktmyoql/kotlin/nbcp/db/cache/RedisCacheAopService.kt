@@ -50,7 +50,7 @@ open class RedisCacheAopService {
         val cache = method.getAnnotationsByType(FromRedisCache::class.java).firstOrNull()
 
         val args = joinPoint.args
-        if (cache == null || cache.table.isEmpty() || cache.cacheSeconds <= 0) {
+        if (cache == null || cache.getTableName().isEmpty() || cache.cacheSeconds <= 0) {
             return joinPoint.proceed(args)
         }
 
@@ -113,7 +113,7 @@ open class RedisCacheAopService {
 
         val ret = joinPoint.proceed(args)
 
-        if (cache != null && cache.table.HasValue) {
+        if (cache != null && cache.getTableName().HasValue) {
             brokeCache(method, args, cache);
         }
         return ret;

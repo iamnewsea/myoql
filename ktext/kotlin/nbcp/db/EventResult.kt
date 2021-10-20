@@ -3,7 +3,7 @@ package nbcp.db
 /**
  * 更新或删除事件执行的结果
  */
-data class EventResult(
+data class EventResult @JvmOverloads constructor(
     /**
      * 执行结果 ，返回 false 将停止后面的执行。
      */

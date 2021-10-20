@@ -1,6 +1,7 @@
 package nbcp.mapper
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
+import nbcp.db.cache.FromRedisCache
 import nbcp.db.mongo.entity.SysCity
 import nbcp.db.mybatis.CacheForMyBatisPlusBaseMapper
 import org.apache.ibatis.annotations.*

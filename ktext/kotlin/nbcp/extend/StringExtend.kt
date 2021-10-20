@@ -95,7 +95,7 @@ fun String.remove(vararg removeChars: String, ignoreCase: Boolean = false): Stri
     return this.split(*willRemoveChars.toTypedArray(), ignoreCase = ignoreCase).joinToString("")
 }
 
-data class CharFlowSetting(
+data class CharFlowSetting @JvmOverloads constructor(
         var index: Int = 0,
         var item: Char = 0.toChar(),
         var prevCutIndex: Int = 0,
@@ -165,7 +165,7 @@ fun String.cutWith(callback: ((CharFlowSetting) -> Boolean)): List<String> {
 /**
  * 定义引用定义，开始符号，结束符号，逃逸符号。
  */
-data class TokenQuoteDefine(
+data class TokenQuoteDefine @JvmOverloads constructor(
         var start: Char,
         var end: Char = 0.toChar(),
         var escape: Char = '\\'
