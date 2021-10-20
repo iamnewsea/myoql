@@ -32,4 +32,13 @@ class JsonTest : TestBase() {
 
         println(d.CloneObject().ToJson())
     }
+
+    @Test
+    fun test_list_json() {
+        var d = listOf(ddd())
+        d[0].n = "OK";
+        d[0].d = "ee"
+
+        println(d.ToJson().FromListJson(ddd::class.java).ToJson())
+    }
 }

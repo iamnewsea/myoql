@@ -73,51 +73,66 @@ fun <T> T.ToJson(style: JsonSceneEnumScope? = null): String {
 
 @JvmOverloads
 fun <T> String.FromJsonWithDefaultValue(
-    collectionClass: Class<T>,
-    style: JsonSceneEnumScope? = null
+        collectionClass: Class<T>,
+        style: JsonSceneEnumScope? = null
 ): T {
     return this.FromJson<T>(collectionClass, style) ?: collectionClass.newInstance()
 }
 
+/**
+ * 转为List
+ * @param componentClass :组件类型
+ */
 @JvmOverloads
-fun <T> String.FromListJson(collectionClass: Class<T>, style: JsonSceneEnumScope? = null): List<T> {
+fun <T> String.FromListJson(componentClass: Class<T>, style: JsonSceneEnumScope? = null): List<T> {
     if (this.isEmpty()) return listOf()
     val mapper = style.getJsonMapper();
 
     try {
-        var t = mapper.getTypeFactory().constructParametricType(List::class.java, collectionClass);
+        var t = mapper.getTypeFactory().constructParametricType(List::class.java, componentClass);
         return mapper.readValue<List<T>>(this, t) ?: listOf<T>()
     } catch (e: Exception) {
-        var msg = "Json转换出错！Json数据：${this}\n 类型:${collectionClass.name} \n 错误消息:" + e.message;
+        var msg = "Json转换出错！Json数据：${this}\n 类型:${componentClass.name} \n 错误消息:" + e.message;
         throw RuntimeException(msg, e);
     }
 }
 
 
 @JvmOverloads
-fun <T> String.FromJson(collectionClass: Class<T>, style: JsonSceneEnumScope? = null): T? {
+fun <T> String.FromJson(clazz: Class<T>, style: JsonSceneEnumScope? = null): T? {
     if (this.isEmpty()) return null
 
-    if (collectionClass == String::class.java) {
+    if (clazz == String::class.java) {
         return this as T
     }
 
     val mapper = style.getJsonMapper();
 
     try {
-        return mapper.readValue(this, collectionClass)
+        return mapper.readValue(this, clazz)
     } catch (e: Exception) {
-        var msg = "Json转换出错！Json数据：${this}\n 类型:${collectionClass.name} \n 错误消息:" + e.message;
+        var msg = "Json转换出错！Json数据：${this}\n 类型:${clazz.name} \n 错误消息:" + e.message;
         throw RuntimeException(msg, e);
     }
 }
 
 @JvmOverloads
-fun <T> Any.ConvertJson(clazz: Class<T>, style: JsonSceneEnumScope? = null): T {
+fun <T> Any.ConvertJson(clazz: Class<out T>, style: JsonSceneEnumScope? = null): T {
     if (clazz.isAssignableFrom(this::class.java)) {
         return this as T;
     }
     return style.getJsonMapper().convertValue(this, clazz)
+}
+
+/**
+ * 转换为List
+ * @param componentClass: 组件类型
+ */
+@JvmOverloads
+fun <T> Any.ConvertListJson(componentClass: Class<out T>, style: JsonSceneEnumScope? = null): List<T> {
+    val mapper = style.getJsonMapper();
+    val t = mapper.getTypeFactory().constructParametricType(List::class.java, componentClass);
+    return mapper.convertValue(this, t)
 }
 
 
