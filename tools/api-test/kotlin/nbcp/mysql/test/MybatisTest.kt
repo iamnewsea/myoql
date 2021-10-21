@@ -17,14 +17,42 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/test/kt")
 class MybatisTest {
     @Autowired
-    lateinit var cityMapper: CityMapperPlus;
+    lateinit var cityMapper: CityMapper
+
+    @Autowired
+    lateinit var cityMapperPlus: CityMapperPlus
 
     @GetMapping("/batis")
     fun batis() {
-
         var where = JsonMap();
-        where["code"]  = 110;
-        var d = cityMapper.selectByMap(where);
-        println(d.ToJson())
+        where["code"] = 110;
+
+        println("查110，220")
+        cityMapper.findNameByCode(110);
+        cityMapper.findNameByCode(220);
+
+        println("破 110")
+        cityMapper.updateByCode(110,"bj")
+
+        println("查110，220")
+        cityMapper.findNameByCode(110);
+        cityMapper.findNameByCode(220);
+    }
+
+    @GetMapping("/batis_plus")
+    fun batis_plus() {
+        var where = JsonMap();
+        where["code"] = 110;
+
+        println("查110，220")
+        cityMapperPlus.findNameByCode(110);
+        cityMapperPlus.findNameByCode(220);
+
+        println("破 110")
+        cityMapperPlus.updateByCode(110,"bj")
+
+        println("查110，220")
+        cityMapperPlus.findNameByCode(110);
+        cityMapperPlus.findNameByCode(220);
     }
 }

@@ -45,7 +45,7 @@ annotation class FromRedisCache(
 fun FromRedisCache.getTableName():String{
     var tableName = this.table
 
-    if( tableName.isEmpty() && this.tableClass.java.IsSimpleType()){
+    if( tableName.isEmpty() && !this.tableClass.java.IsSimpleType()){
         tableName = this.tableClass.java.simpleName;
     }
     return tableName;

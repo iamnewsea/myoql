@@ -1,6 +1,9 @@
 package nbcp.db.mybatis.mapper
 
 
+import nbcp.db.cache.BrokeRedisCache
+import nbcp.db.cache.FromRedisCache
+import nbcp.mapper.s_city
 import org.apache.ibatis.annotations.*
 import org.springframework.cache.annotation.Cacheable
 
@@ -10,15 +13,19 @@ import org.springframework.cache.annotation.Cacheable
 @Mapper
 //@CacheNamespace(implementation=(nbcp.db.mybatis.RedisCacheMyBatis::class))
 interface CityMapper {
+
+    @FromRedisCache(tableClass = s_city::class,groupKey = "code",groupValue = "#code")
     @Select("select name from s_city where code = #{code}")
 //    @Results(value = arrayOf(Result(column = "password", property = "password")))
     fun findNameByCode(@Param("code") code: Int): String // SysCity?
 
+    @BrokeRedisCache(tableClass = s_city::class,groupKey = "code",groupValue = "#code")
     @Update("update s_city set pinyin= #{pinyin} where code = #{code}")
-    fun updateByCode(@Param("code") code: String, @Param("pinyin") pinyin: String): Int
+    fun updateByCode(@Param("code") code: Int, @Param("pinyin") pinyin: String): Int
 
+    @BrokeRedisCache(tableClass = s_city::class)
     @Delete("delete from s_city where code = #{code}")
-    fun deleteByCode(@Param("code") code: String): Int
+    fun deleteByCode(@Param("code") code: Int): Int
 
     /**
      * 应该忽略掉  null 的列. 不好写,就是思路不对.
