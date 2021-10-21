@@ -5,6 +5,8 @@ package nbcp.comm
 
 import java.lang.RuntimeException
 import java.lang.reflect.*
+import java.io.IOException
+
 
 val clazzesIsSimpleDefine = mutableSetOf<Class<*>>()
 
@@ -151,7 +153,7 @@ fun <T> Class<T>.GetEnumList(values: String = ""): List<T> {
     valuesField.isAccessible = true;
 
     var valuesInEnum = valuesField.get(null)
-    if( valuesInEnum is Array<*>){
+    if (valuesInEnum is Array<*>) {
         return (valuesInEnum as Array<T>).toList();
     }
 //    else if( valuesInEnum is List<*>){
@@ -169,8 +171,8 @@ fun <T> Class<T>.GetEnumNumberField(): Field? {
 
     var ret_fields = this.declaredFields.filter {
         (it.modifiers and Modifier.PRIVATE) > 0 &&
-                (it.modifiers and Modifier.STATIC == 0) &&
-                it.type.IsNumberType
+            (it.modifiers and Modifier.STATIC == 0) &&
+            it.type.IsNumberType
     }
     if (ret_fields.size == 1) {
         var ret = ret_fields.first();
@@ -189,8 +191,8 @@ fun <T> Class<T>.GetEnumStringField(): Field? {
 
     var ret_fields = this.declaredFields.filter {
         (it.modifiers and Modifier.PRIVATE) > 0 &&
-                it.modifiers and Modifier.STATIC == 0 &&
-                it.type.IsStringType
+            it.modifiers and Modifier.STATIC == 0 &&
+            it.type.IsStringType
     }
 
     if (ret_fields.any()) {
@@ -310,4 +312,14 @@ fun Class<*>.GetFirstTypeArguments(): Array<Type> {
     }
     if (this.superclass == null) return arrayOf()
     return this.superclass.GetFirstTypeArguments();
+}
+
+
+/**
+ * 获取方法参数名
+ */
+fun Method.getParameterNames(): List<String> {
+    return this.parameters.map { it.name }
+
+    //还有： LocalVariableTableParameterNameDiscoverer().getParameterNames(method)
 }

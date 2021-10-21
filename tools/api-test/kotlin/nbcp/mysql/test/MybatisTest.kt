@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import javax.servlet.http.HttpServletRequest
 
 
 @RestController
@@ -23,7 +24,7 @@ class MybatisTest {
     lateinit var cityMapperPlus: CityMapperPlus
 
     @GetMapping("/batis")
-    fun batis() {
+    fun batis(request:HttpServletRequest) {
         var where = JsonMap();
         where["code"] = 110;
 

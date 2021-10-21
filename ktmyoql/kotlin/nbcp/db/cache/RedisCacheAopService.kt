@@ -7,8 +7,6 @@ import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.reflect.MethodSignature
 import org.slf4j.LoggerFactory
-import org.springframework.core.LocalVariableTableParameterNameDiscoverer
-import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
 import java.lang.reflect.Method
 
@@ -54,37 +52,38 @@ open class RedisCacheAopService {
             return joinPoint.proceed(args)
         }
 
-
-        val variables = LocalVariableTableParameterNameDiscoverer().getParameterNames(method) ?: arrayOf()
-        val variableMap = JsonMap();
-        for (i in variables.indices) {
-            variableMap.put(variables.get(i), args.get(i))
-        }
-
-        var ext = "";
-        if (cache.sql.isEmpty()) {
-            ext = signature.declaringType.name;
-
-            if (config.isInWebEnv) {
-                try {
-                    var httpContext = Class.forName("nbcp.web.HttpContext")
-                    ext += ":" + getRequestParamFullUrl(httpContext.getMethod("getRequest").invoke(null))
-                } catch (e: Exception) {
-                    logger.error("在Web环境下找不到 HttpContext.request，忽略缓存中的路径", e)
-                }
-            }
-
-            if (variableMap.any()) {
-                //排除掉 任一基类的 package 包含 javax.servlet.http 的。
-
-                ext += ":" + variableMap.values.filter {
-                    if (it == null) return@filter false;
-                    if (it.javaClass.AnySuperClass { it.name.startsWith("javax.servlet.http.") }) {
+        //如果有 HttpRequest,则添加Url
+        var hasHttpRequest = false;
+        val variableMap = JsonMap(
+            method.parameters
+                .filter {
+                    if (it.type.AnySuperClass { it.name == "javax.servlet.ServletRequest" }) {
+                        hasHttpRequest = true;
                         return@filter false;
                     }
 
                     return@filter true;
-                }.ToJson()
+                }
+                .mapIndexed { index, it -> it.name to args.get(index) }
+        );
+
+        var ext = "";
+
+        if (cache.sql.isEmpty()) {
+            ext = signature.declaringType.name;
+
+            try {
+                if (hasHttpRequest) {
+                    val httpContext = Class.forName("nbcp.web.HttpContext")
+                    ext += getRequestParamFullUrl(httpContext.getMethod("getRequest").invoke(null));
+                }
+            } catch (e: Exception) {
+                logger.error("在Web环境下找不到 HttpContext.request，忽略缓存中的路径", e)
+            }
+
+
+            if (variableMap.any()) {
+                ext += ":" + variableMap.values.ToJson()
             }
         }
 
@@ -120,11 +119,17 @@ open class RedisCacheAopService {
     }
 
     private fun brokeCache(method: Method, args: Array<Any>, cache: BrokeRedisCache) {
-        val variables = LocalVariableTableParameterNameDiscoverer().getParameterNames(method) ?: arrayOf()
-        val variableMap = JsonMap();
-        for (i in variables.indices) {
-            variableMap.put(variables.get(i), args.get(i))
-        }
+        val variableMap = JsonMap(
+            method.parameters
+                .filter {
+                    if (it.type.AnySuperClass { it.name == "javax.servlet.ServletRequest" }) {
+                        return@filter false;
+                    }
+
+                    return@filter true;
+                }
+                .mapIndexed { index, it -> it.name to args.get(index) }
+        );
 
         BrokeRedisCacheData.of(cache, variableMap).brokeCache();
     }
