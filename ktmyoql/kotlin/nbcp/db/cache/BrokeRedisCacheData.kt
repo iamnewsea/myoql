@@ -35,7 +35,7 @@ data class BrokeRedisCacheData @JvmOverloads constructor(
 
     fun brokeCache() {
         val cacheBroke = this;
-        logger.Important("执行破坏缓存:${cacheBroke.ToJson()}")
+        logger.Important("!执行破坏缓存! ${cacheBroke.ToJson()}")
 
         val redisTemplate = SpringUtil.getBean<StringRedisTemplate>();
         if (cacheBroke.groupKey.isEmpty() || cacheBroke.groupValue.isEmpty()) {
