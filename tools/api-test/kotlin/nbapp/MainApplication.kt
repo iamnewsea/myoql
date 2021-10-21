@@ -1,4 +1,4 @@
-package nbcp
+package nbapp
 
 
 import nbapp.mvc.dev2.AppCacheTestKotlinService
@@ -33,9 +33,9 @@ import java.util.*
 @EnableScheduling
 @ServletComponentScan
 @Import(
-    SpringUtil::class, AppCacheTestJavaService::class, AppCacheTestKotlinService::class
+    SpringUtil::class
 )
-//@ComponentScan("nbapp.**")
+@ComponentScan("nbapp.**")
 //@EnableCircuitBreaker
 open class MainApplication {
     companion object {

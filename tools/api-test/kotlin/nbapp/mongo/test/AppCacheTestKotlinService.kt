@@ -1,4 +1,4 @@
-package nbcp.mongo.test
+package nbapp.mongo.test
 
 import nbcp.comm.*
 import nbcp.db.*

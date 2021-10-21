@@ -1,4 +1,4 @@
-package nbcp.mongo.test;
+package nbapp.mongo.test;
 
 import org.springframework.stereotype.Service;
 import nbcp.comm.*;

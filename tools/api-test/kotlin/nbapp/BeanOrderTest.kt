@@ -1,4 +1,4 @@
-package nbcp
+package nbapp
 
 import nbcp.comm.JsonMap
 import nbcp.utils.SpringUtil

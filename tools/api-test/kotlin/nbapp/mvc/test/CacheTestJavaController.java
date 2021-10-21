@@ -1,4 +1,4 @@
-package nbcp.mvc.test;
+package nbapp.mvc.test;
 
 import nbapp.service.cache.AppCacheTestJavaService;
 import org.springframework.beans.factory.annotation.Autowired;
