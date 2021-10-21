@@ -20,6 +20,11 @@ public class CacheTestJavaController {
 
     @GetMapping("/cache")
     void cach_city1() throws InterruptedException {
+        /**
+         * 场景： 缓存数据，可以按 城市 进行分组隔离。 即：北京的缓存 和 南京的缓存 是隔离的，当有用户破坏了北京的缓存， 南京的缓存不受影响。
+         *
+         * 以下是按 city 和 id 两个维度进行隔离的例子
+         */
         System.out.println("加载，city:1,2 ,id=3,4");
         System.out.println(appCacheTestJavaService.cache_select(1));
         System.out.println(appCacheTestJavaService.code_cache_select(1));

@@ -28,6 +28,8 @@ public class AppCacheTestJavaService {
      */
     @FromRedisCache(cacheSeconds = 3000, table = "tab1", joinTables = {}, groupKey = "city", groupValue = "#city")
     public List<Document> cache_select(Integer city) {
+
+        System.out.println("从数据库查询: " + city);
         List<Document> list = new LinkedList();
 
         Document d1 = new Document();
@@ -43,6 +45,7 @@ public class AppCacheTestJavaService {
 
     @FromRedisCache(cacheSeconds = 3000, table = "tab1", joinTables = {}, groupKey = "id", groupValue = "#id")
     public List<Document> cache_select_id(Integer id) {
+        System.out.println("从数据库查询: " + id);
         List<Document> list = new LinkedList();
 
         Document d1 = new Document();
@@ -63,9 +66,12 @@ public class AppCacheTestJavaService {
     public List<Document> code_cache_select(Integer city) {
         Document d2 = new FromRedisCacheData("tab1", new String[]{}, "city", city.toString(), "code_cache_select" + city)
                 .usingRedisCache(Document.class, () -> {
+
+                    System.out.println("从数据库查询: " + city);
                     Document d1 = new Document();
                     d1.put("name", "cache-方法");
                     d1.put("city", city.toString());
+
                     return d1;
                 });
 
