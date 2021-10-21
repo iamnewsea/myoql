@@ -1,11 +1,11 @@
-package nbcp.mvc.dev2
+package nbapp.mvc.cache
 
 import io.swagger.annotations.Api
-import nbapp.mvc.dev2.AppCacheTestKotlinService
-import org.springframework.web.bind.annotation.RestController
+import nbapp.cache.AppCacheTestKotlinService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 /**
  * Created by CodeGenerator at 2021-04-11 23:42:19
@@ -34,5 +34,3 @@ class CacheTestKotlinController {
         appCacheTestKotlinService.code_cache_select(2)
     }
 }
-
-

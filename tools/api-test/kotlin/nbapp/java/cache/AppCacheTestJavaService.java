@@ -1,4 +1,4 @@
-package nbapp.service.cache;
+package nbapp.java.cache;
 
 import org.springframework.stereotype.Service;
 import nbcp.comm.*;

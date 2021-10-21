@@ -1,18 +1,13 @@
-package nbapp.mysql.test
+package nbapp.mvc.cache
 
+import nbapp.db.mapper.CityMapperPlus
 import nbcp.comm.JsonMap
-import nbcp.comm.OpenAction
-import nbcp.comm.ToJson
-import nbcp.db.mongo.entity.SysCity
-import nbcp.db.mybatis.CacheForMyBatisPlusBaseMapper
-import nbcp.db.mybatis.mapper.CityMapper
-import nbapp.mapper.CityMapperPlus
+import nbapp.db.mybatis.mapper.CityMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import javax.servlet.http.HttpServletRequest
-
 
 @RestController
 @RequestMapping("/test/kt")
@@ -24,7 +19,7 @@ class MybatisTest {
     lateinit var cityMapperPlus: CityMapperPlus
 
     @GetMapping("/batis")
-    fun batis(request:HttpServletRequest) {
+    fun batis(request: HttpServletRequest) {
         var where = JsonMap();
         where["code"] = 110;
 

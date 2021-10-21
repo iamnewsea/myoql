@@ -3,6 +3,7 @@ package nbcp.myOqlBeanProcessor
 
 import nbcp.comm.HasValue
 import nbcp.comm.config
+import nbcp.db.cache.RedisCacheAopService
 import nbcp.db.redis.MyRedisKeySerializerWithProductLine
 import nbcp.db.redis.RedisRenewalDynamicService
 import nbcp.utils.SpringUtil
@@ -22,7 +23,7 @@ import java.lang.reflect.Modifier
 @Component
 @Import(SpringUtil::class)
 @ConditionalOnClass(StringRedisTemplate::class)
-class MyOqlBeanProcessor_Redis : BeanPostProcessor {
+class MyOqlBeanProcessorRedis : BeanPostProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -58,6 +59,7 @@ class MyOqlBeanProcessor_Redis : BeanPostProcessor {
 
     private fun loadRedisDependencyBeans() {
         SpringUtil.registerBeanDefinition(RedisRenewalDynamicService())
+//        SpringUtil.registerBeanDefinition(RedisCacheAopService())
     }
 
     @EventListener

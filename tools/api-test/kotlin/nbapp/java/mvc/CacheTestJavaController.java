@@ -1,6 +1,6 @@
-package nbapp.mvc.test;
+package nbapp.java.mvc;
 
-import nbapp.service.cache.AppCacheTestJavaService;
+import nbapp.java.cache.AppCacheTestJavaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import nbcp.db.mongo.entity.*;

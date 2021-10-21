@@ -1,4 +1,4 @@
-package nbapp.mongo.test;
+package nbapp.java.mongo;
 
 import org.springframework.stereotype.Service;
 import nbcp.comm.*;
@@ -20,7 +20,7 @@ import java.util.List;
 
 @Service
 @MyLogLevel(LogLevelScope.info)
-public class AppCacheTestJavaService {
+public class JavaCrudTest {
     /**
      * 查询时使用缓存。使用注解
      *

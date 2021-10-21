@@ -10,6 +10,9 @@ app:
       region:
   product-line:
     code: myoql
+
+  mybatis:
+    package: db.mapper
 spring:
   application:
     name: admin-api

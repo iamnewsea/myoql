@@ -19,7 +19,7 @@ import java.net.NetworkInterface
  * https://nacos.io/zh-cn/docs/open-api.html
  */
 @Service
-@Import(value = [SpringUtil::class, SnowFlake::class, AppJsonMapper::class])
+@Import(value = [SpringUtil::class])
 open class NacosService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

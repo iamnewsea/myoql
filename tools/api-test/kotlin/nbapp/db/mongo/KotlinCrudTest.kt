@@ -1,33 +1,27 @@
-package nbapp.mongo.test
+package nbapp.db.mongo
 
-import nbcp.comm.*
-import nbcp.db.*
-import nbcp.db.cache.BrokeRedisCache
-import nbcp.db.cache.BrokeRedisCacheData
+import nbcp.comm.LogLevelScope
+import nbcp.comm.MyLogLevel
 import nbcp.db.cache.FromRedisCache
-import nbcp.db.cache.FromRedisCacheData
-import nbcp.db.mongo.*
-import nbcp.db.mongo.entity.*
-import nbcp.web.*
+import nbcp.db.db
+import nbcp.db.mongo.PipeLineEnum
+import nbcp.db.mongo.aggregate
 import org.bson.Document
-import org.springframework.boot.logging.LogLevel
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.*
-import java.time.*
 
 /**
  * Created by CodeGenerator at 2021-04-11 23:42:19
  */
 @Service
 @MyLogLevel(LogLevelScope.info)
-class AppCacheTestKotlinService {
+class KotlinCrudTest {
 
     @FromRedisCache("tab2", arrayOf(), "city", "#city")
     fun cache_select(city: Int): MutableList<Document> {
         var result = db.mor_base.sysAnnex.aggregate()
             .addPipeLineRawString(PipeLineEnum.match, """ { "group" : "lowcode"} """.replace("##", "$"))
             .addPipeLineRawString(
-                PipeLineEnum.group, """
+                    PipeLineEnum.group, """
 {
     _id: { 扩展名: "##ext" },
     总数: { ##sum : 1 },
@@ -61,5 +55,3 @@ class AppCacheTestKotlinService {
         return result;
     }
 }
-
-

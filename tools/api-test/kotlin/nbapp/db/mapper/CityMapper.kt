@@ -1,31 +1,17 @@
-package nbapp.mapper
+package nbapp.db.mybatis.mapper
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper
+
 import nbcp.db.cache.BrokeRedisCache
 import nbcp.db.cache.FromRedisCache
-import nbcp.db.mongo.entity.SysCity
-import nbcp.db.mybatis.CacheForMyBatisPlusBaseMapper
+import nbapp.db.mapper.s_city
 import org.apache.ibatis.annotations.*
-import org.springframework.context.annotation.Primary
-
-
-class s_city {
-    var code: Int = 0
-    var name: String = ""
-    var fullName: String = ""
-    var level: Int = 0
-    var pinyin: String = ""
-    var pcode = 0
-}
 
 /**
  * Created by udi on 2017.2.27.
  */
 @Mapper
-@CacheForMyBatisPlusBaseMapper(s_city::class)
 //@CacheNamespace(implementation=(nbcp.db.mybatis.RedisCacheMyBatis::class))
-interface CityMapperPlus : BaseMapper<s_city> {
-
+interface CityMapper {
 
     @FromRedisCache(tableClass = s_city::class,groupKey = "code",groupValue = "#code")
     @Select("select name from s_city where code = #{code}")

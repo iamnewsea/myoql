@@ -1,19 +1,16 @@
-package nbapp.mvc.dev2
+package nbapp.cache
 
-import nbcp.comm.*
-import nbcp.db.*
+import nbcp.comm.JsonMap
+import nbcp.comm.ToJson
 import nbcp.db.cache.BrokeRedisCache
 import nbcp.db.cache.BrokeRedisCacheData
 import nbcp.db.cache.FromRedisCache
 import nbcp.db.cache.FromRedisCacheData
-import nbcp.db.mongo.*
-import nbcp.db.mongo.entity.*
-import nbcp.web.*
+import nbcp.db.db
+import nbcp.db.mongo.PipeLineEnum
+import nbcp.db.mongo.aggregate
 import org.bson.Document
-import org.springframework.boot.logging.LogLevel
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.*
-import java.time.*
 
 /**
  * Created by CodeGenerator at 2021-04-11 23:42:19
@@ -26,7 +23,7 @@ class AppCacheTestKotlinService {
         var result = db.mor_base.sysAnnex.aggregate()
             .addPipeLineRawString(PipeLineEnum.match, """ { "group" : "lowcode"} """.replace("##", "$"))
             .addPipeLineRawString(
-                PipeLineEnum.group, """
+                    PipeLineEnum.group, """
 {
     _id: { 扩展名: "##ext" },
     总数: { ##sum : 1 },
@@ -85,5 +82,3 @@ class AppCacheTestKotlinService {
         BrokeRedisCacheData("tab2", "city", city.toString()).brokeCache();
     }
 }
-
-

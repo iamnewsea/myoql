@@ -1,14 +1,13 @@
 package nbapp
 
 
-import nbapp.mvc.dev2.AppCacheTestKotlinService
-import nbapp.service.cache.AppCacheTestJavaService
 import org.slf4j.LoggerFactory
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.web.servlet.ServletComponentScan
 
 import nbcp.comm.*
+import nbcp.db.cache.EnableMyOqlRedisCache
 import nbcp.utils.*
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
 
@@ -30,12 +29,13 @@ import java.util.*
         ElasticsearchDataAutoConfiguration::class
     )
 )
+@EnableMyOqlRedisCache
 @EnableScheduling
 @ServletComponentScan
 @Import(
     SpringUtil::class
 )
-@ComponentScan("nbapp.**")
+//@ComponentScan("nbapp.**")
 //@EnableCircuitBreaker
 open class MainApplication {
     companion object {

@@ -6,7 +6,7 @@ spring:
 
   redis:
     host: redis
-    password: 1@#4
+    password: Pactera@123654
     port: 6379
     timeout: 3000
 

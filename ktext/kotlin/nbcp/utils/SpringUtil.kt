@@ -1,8 +1,7 @@
 package nbcp.utils
 
 import nbcp.comm.*
-import nbcp.component.BaseJsonMapper
-import nbcp.component.DbJsonMapper
+import nbcp.component.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.beans.factory.support.BeanDefinitionBuilder
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.support.GenericBeanDefinition
 import org.springframework.boot.context.properties.bind.Binder
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
+import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Primary
 import org.springframework.core.PriorityOrdered
 import org.springframework.core.annotation.Order
@@ -29,6 +29,7 @@ import java.util.function.Supplier
  */
 @Component
 @Order(PriorityOrdered.HIGHEST_PRECEDENCE)
+@Import(value = [SnowFlake::class, AppJsonMapper::class, DbJsonMapper::class, WebJsonMapper::class])
 class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -79,9 +80,9 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
         @JvmStatic
         @JvmOverloads
         fun registerBeanDefinition(
-            name: String,
-            instance: Any,
-            callback: ((BeanDefinitionBuilder) -> Unit) = {}
+                name: String,
+                instance: Any,
+                callback: ((BeanDefinitionBuilder) -> Unit) = {}
         ) {
             registry.registerBeanDefinition(name, getGenericBeanDefinition(instance, callback));
         }
@@ -181,8 +182,8 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
          * 动态创建Bean
          */
         fun getGenericBeanDefinition(
-            instance: Any,
-            callback: ((BeanDefinitionBuilder) -> Unit) = {}
+                instance: Any,
+                callback: ((BeanDefinitionBuilder) -> Unit) = {}
         ): GenericBeanDefinition {
             var type = instance::class.java
             val builder = BeanDefinitionBuilder.genericBeanDefinition(type);
@@ -252,9 +253,9 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
         BaseJsonMapper.addSerializer(LocalDate::class.java, LocalDateJsonSerializer(), LocalDateJsonDeserializer())
         BaseJsonMapper.addSerializer(LocalTime::class.java, LocalTimeJsonSerializer(), LocalTimeJsonDeserializer())
         BaseJsonMapper.addSerializer(
-            LocalDateTime::class.java,
-            LocalDateTimeJsonSerializer(),
-            LocalDateTimeJsonDeserializer()
+                LocalDateTime::class.java,
+                LocalDateTimeJsonSerializer(),
+                LocalDateTimeJsonDeserializer()
         )
         BaseJsonMapper.addSerializer(Timestamp::class.java, TimestampJsonSerializer(), TimestampJsonDeserializer())
     }

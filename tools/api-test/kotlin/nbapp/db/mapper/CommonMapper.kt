@@ -1,4 +1,4 @@
-package nbcp.db.mybatis.mapper
+package nbapp.db.mybatis.mapper
 
 import org.apache.ibatis.annotations.*
 
