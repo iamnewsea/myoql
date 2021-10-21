@@ -38,9 +38,10 @@ data class BrokeRedisCacheData @JvmOverloads constructor(
         logger.Important("!执行破坏缓存! ${cacheBroke.ToJson()}")
 
         val redisTemplate = SpringUtil.getBean<StringRedisTemplate>();
+
+        //场景： 对表全量删除
         if (cacheBroke.groupKey.isEmpty() || cacheBroke.groupValue.isEmpty()) {
             brokeJoinTable(redisTemplate, cacheBroke.table);
-
 
             //破坏主表
             val pattern = "sc:${cacheBroke.table}/*";
@@ -51,9 +52,10 @@ data class BrokeRedisCacheData @JvmOverloads constructor(
             return;
         }
 
+        //场景，有隔离键
         brokeJoinTable(redisTemplate, cacheBroke.table);
 
-        //破坏没有隔离键的,没有隔离键分两种情况：
+        //破坏没有隔离键的（如全量查询）,没有隔离键分两种情况：
         //A 有连接表
         var pattern = "sc:${cacheBroke.table}/*/@*"
         redisTemplate.scanKeys(pattern) { key ->
