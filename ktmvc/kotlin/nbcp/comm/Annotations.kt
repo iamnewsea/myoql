@@ -9,14 +9,6 @@ import kotlin.reflect.KClass
  * Created by udi on 17-3-30.
  */
 
-//interface JsonModelMessageConverter {
-//    fun apply(request: HttpServletRequest): Any?
-//}
-//
-//interface JsonReturnModelMessageConverter {
-//    fun apply(request: HttpServletRequest, value:Any?): Any?
-//}
-
 /**
  * 不需要权限的Action
  * 定义配置类，继承 HandlerInterceptorAdapter，判断是否有注解。
@@ -34,19 +26,6 @@ annotation class OpenAction
 @Target(AnnotationTarget.VALUE_PARAMETER, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class JsonModel()
-
-
-//@Target(AnnotationTarget.FUNCTION)
-//@Retention(AnnotationRetention.RUNTIME)
-//annotation class JsonReturnModel(val value: KClass<out JsonReturnModelMessageConverter> = JsonReturnModelMessageConverter::class)
-
-/**
- * 记录Action日志级别的注解，value = ch.qos.logback.classic.Level.级别
- * Level.toLevel识别的参数，不区分大小写，如：all|trace|debug|info|error|off
- */
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class MyLogLevel(val value: LogLevelScope)
 
 
 /**

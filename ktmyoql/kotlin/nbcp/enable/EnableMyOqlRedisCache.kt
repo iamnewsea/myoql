@@ -1,5 +1,6 @@
-package nbcp.db.cache
+package nbcp.enable
 
+import nbcp.db.cache.RedisCacheAopService
 import nbcp.myOqlBeanProcessor.MyOqlBeanProcessorRedis
 import nbcp.utils.SpringUtil
 import org.springframework.context.annotation.Import

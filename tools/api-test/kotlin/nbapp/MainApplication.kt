@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.web.servlet.ServletComponentScan
 
 import nbcp.comm.*
-import nbcp.db.cache.EnableMyOqlRedisCache
+import nbcp.enable.EnableMyOqlRedisCache
 import nbcp.utils.*
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
 
