@@ -21,21 +21,21 @@ import java.util.*
 
 
 @SpringBootApplication(
-    exclude = arrayOf(
+        exclude = arrayOf(
 //        DataSourceAutoConfiguration::class,
 //        RedisAutoConfiguration::class,
 //        MongoAutoConfiguration::class,
-        RabbitAutoConfiguration::class,
-        ElasticsearchDataAutoConfiguration::class
-    )
+                RabbitAutoConfiguration::class,
+                ElasticsearchDataAutoConfiguration::class
+        )
 )
-@EnableMyOqlRedisCache
+//@EnableMyOqlRedisCache
 @EnableScheduling
 @ServletComponentScan
 @Import(
-    SpringUtil::class
+        SpringUtil::class
 )
-//@ComponentScan("nbapp.**")
+@ComponentScan(value = ["nbapp.**", "nbcp.**"])
 //@EnableCircuitBreaker
 open class MainApplication {
     companion object {
@@ -78,15 +78,15 @@ fun main(args: Array<String>) {
 
     usingScope(LogLevelScope.info) {
         MainApplication.logger.info(
-            MyUtil.getCenterEachLine(
-                """
+                MyUtil.getCenterEachLine(
+                        """
 ================================================
 ${context.debugServerInfo}
 ================================================
 """.split("\n")
-            )
-                .map { ' '.NewString(6) + it }
-                .joinToString("\n")
+                )
+                        .map { ' '.NewString(6) + it }
+                        .joinToString("\n")
         )
     }
 
