@@ -21,7 +21,7 @@ import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 
 @Component
-@Import(SpringUtil::class)
+
 @ConditionalOnClass(StringRedisTemplate::class)
 class MyOqlBeanProcessorRedis : BeanPostProcessor {
     companion object {

@@ -29,7 +29,6 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import java.util.function.Consumer
 
 @Component
-@Import(SpringUtil::class)
 class MyMvcBeanProcessor : BeanPostProcessor {
     companion object {
         private var inited = false;

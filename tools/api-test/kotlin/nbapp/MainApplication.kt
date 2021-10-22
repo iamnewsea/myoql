@@ -32,9 +32,6 @@ import java.util.*
 //@EnableMyOqlRedisCache
 @EnableScheduling
 @ServletComponentScan
-@Import(
-        SpringUtil::class
-)
 @ComponentScan(value = ["nbapp.**", "nbcp.**"])
 //@EnableCircuitBreaker
 open class MainApplication {

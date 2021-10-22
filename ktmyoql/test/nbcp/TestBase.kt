@@ -29,7 +29,7 @@ import java.time.LocalDateTime
 
 //@SpringBootApplication(exclude = arrayOf(MongoAutoConfiguration::class, RedisAutoConfiguration::class))
 @SpringBootApplication(exclude = arrayOf(MongoAutoConfiguration::class, RabbitAutoConfiguration::class))
-@Import(SpringUtil::class)
+
 open class KtMyoqlTestApplication {
 
     companion object {

@@ -17,7 +17,7 @@ import javax.sql.DataSource
 
 @EnableTransactionManagement
 @Component
-@Import(SpringUtil::class)
+
 @ConditionalOnClass(SqlSessionFactory::class)
 class MybatisDbConfig {
 

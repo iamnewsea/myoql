@@ -8,6 +8,6 @@ import java.lang.annotation.Inherited
 @Inherited
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-@Import(value = [SpringUtil::class, GroupLogIntercepter::class])
+@Import(value = [GroupLogIntercepter::class])
 annotation class EnableMyOqlGroupLog {
 }

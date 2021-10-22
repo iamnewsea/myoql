@@ -47,7 +47,7 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
         val context: ApplicationContext
             get() {
                 if (contextField == null) {
-                    throw RuntimeException("需要@Import(SpringUtil::class)")
+                    throw RuntimeException("SpringUtil 初始化失败!")
                 }
                 return contextField!!
             }
@@ -58,7 +58,7 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
         val beanFactory: ConfigurableListableBeanFactory
             get() {
                 if (beanFactoryField == null) {
-                    throw RuntimeException("需要@Import(SpringUtil::class)")
+                    throw RuntimeException("SpringUtil 初始化失败!")
                 }
                 return beanFactoryField!!
             }
@@ -69,7 +69,7 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
         val registry: BeanDefinitionRegistry
             get() {
                 if (registryField == null) {
-                    throw RuntimeException("需要@Import(SpringUtil::class)")
+                    throw RuntimeException("SpringUtil 初始化失败!")
                 }
                 return registryField!!
             }

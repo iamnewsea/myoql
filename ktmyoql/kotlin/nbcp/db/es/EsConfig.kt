@@ -22,7 +22,6 @@ import java.lang.RuntimeException
 
 //@Configuration
 //@ConditionalOnProperty("spring.elasticsearch.rest.uris")
-//@Import(SpringUtil::class)
 //@Lazy
 //class MyOqlEsConfig {
 //    companion object {

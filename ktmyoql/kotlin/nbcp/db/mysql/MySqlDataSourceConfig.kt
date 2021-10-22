@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component
 import javax.sql.DataSource
 
 @Component
-@Import(SpringUtil::class)
 @ConditionalOnClass(MysqlDataSource::class)
 class MySqlDataSourceConfig {
     companion object {

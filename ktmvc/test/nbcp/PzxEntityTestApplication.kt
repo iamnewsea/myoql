@@ -13,7 +13,6 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 
 
 @SpringBootApplication(exclude = [MongoAutoConfiguration::class, MongoDataAutoConfiguration::class, DataSourceAutoConfiguration::class])
-@Import(SpringUtil::class)
 open class PzxEntityTestApplication {
 
     companion object {

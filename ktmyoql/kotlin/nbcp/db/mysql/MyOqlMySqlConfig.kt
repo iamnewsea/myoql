@@ -35,7 +35,7 @@
 // */
 //@Configuration(proxyBeanMethods = false)
 //@ConditionalOnProperty("spring.datasource.url")
-//@Import(SpringUtil::class)
+//
 //@AutoConfigureAfter(DataSourceAutoConfiguration::class)
 //@ConditionalOnBean(DataSourceAutoConfiguration::class)
 //internal class MyOqlMySqlConfig {

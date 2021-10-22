@@ -1,5 +1,6 @@
 package nbcp.myOqlBeanProcessor
 
+import nbcp.db.mybatis.MyBatisPlusRedisCacheConfig
 import nbcp.db.mysql.service.UploadFileSqlService
 import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
@@ -10,9 +11,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Component
 
 @Component
-@Import(SpringUtil::class)
+
 @ConditionalOnClass(NamedParameterJdbcTemplate::class)
-class MyOqlBeanProcessor_DataSource : BeanPostProcessor {
+class MyOqlBeanProcessorJdbcTemplate : BeanPostProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -30,6 +31,7 @@ class MyOqlBeanProcessor_DataSource : BeanPostProcessor {
 
     private fun loadJdbcDependencyBeans() {
         SpringUtil.registerBeanDefinition(UploadFileSqlService())
+        SpringUtil.registerBeanDefinition(MyBatisPlusRedisCacheConfig())
     }
 
 }

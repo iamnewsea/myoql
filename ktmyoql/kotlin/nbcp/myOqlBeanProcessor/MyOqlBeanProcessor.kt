@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Import
 import org.springframework.stereotype.Component
 
 @Component
-@Import(SpringUtil::class)
 class MyOqlBeanProcessor : BeanPostProcessor {
     companion object {
         private var inited = false;

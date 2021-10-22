@@ -13,7 +13,6 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 
 
 @SpringBootApplication
-@Import(SpringUtil::class)
 open class PzxEntityTestApplication {
 
     companion object {

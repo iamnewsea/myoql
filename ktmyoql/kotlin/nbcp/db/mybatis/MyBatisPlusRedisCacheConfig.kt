@@ -17,16 +17,16 @@ import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
 import java.lang.reflect.Proxy
 
-@Component
-class MyBatisCache {
+
+class MyBatisPlusRedisCacheConfig {
     @Bean
     fun get(): Advisor {
         var pointcut = AnnotationMatchingPointcut(CacheForMyBatisPlusBaseMapper::class.java, true);
-        return DefaultPointcutAdvisor(pointcut, MyBatisPlusAopForCache())
+        return DefaultPointcutAdvisor(pointcut, MyBatisPlusAopForCacheForMyBatisPlusBaseMapper())
     }
 }
 
-class MyBatisPlusAopForCache : MethodInterceptor {
+class MyBatisPlusAopForCacheForMyBatisPlusBaseMapper : MethodInterceptor {
     override fun invoke(invocation: MethodInvocation): Any? {
 
         var target = Proxy.getInvocationHandler(invocation.`this`!!)

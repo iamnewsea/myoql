@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.stereotype.Component
 
 @Component
-@Import(SpringUtil::class)
+
 @ConditionalOnClass(RabbitTemplate::class)
 class MyOqlBeanProcessor_Rabbit : BeanPostProcessor {
     companion object {
