@@ -1,0 +1,7 @@
+org.springframework.beans.factory.config.BeanPostProcessor=\
+nbcp.myOqlBeanProcessor.MyOqlBeanProcessor\
+,nbcp.myOqlBeanProcessor.MyOqlBeanProcessorMongo\
+,nbcp.myOqlBeanProcessor.MyOqlBeanProcessorRabbit\
+,nbcp.myOqlBeanProcessor.MyOqlBeanProcessorRedis\
+,nbcp.myOqlBeanProcessor.MyOqlBeanProcessorJdbcTemplate\
+,nbcp.db.es.EsEntityCollector

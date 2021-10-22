@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 @Component
 
 @ConditionalOnClass(RabbitTemplate::class)
-class MyOqlBeanProcessor_Rabbit : BeanPostProcessor {
+class MyOqlBeanProcessorRabbit : BeanPostProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
