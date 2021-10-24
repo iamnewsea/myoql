@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 @Component
 
 @ConditionalOnClass(NamedParameterJdbcTemplate::class)
-class MyOqlBeanProcessorJdbcTemplate : BeanPostProcessor {
+class MyOqlJdbcTemplateConfig : BeanPostProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

@@ -1,0 +1,12 @@
+org.springframework.web.servlet.config.annotation.WebMvcConfigurer=\
+  nbcp.config.MySwaggerConfig
+javax.servlet.Filter=\
+    nbcp.filter.MyAllFilter\
+    ,bcp.filter.MyOqlCrossFilter
+org.springframework.beans.factory.InitializingBean=\
+  nbcp.service.UserAuthenticationService\
+  ,nbcp.service.UploadService\
+  ,nbcp.service.UploadFileForLocalService\
+  ,nbcp.service.UploadFileForMinioService\
+  ,nbcp.service.UploadFileForAliOssService
+

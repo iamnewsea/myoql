@@ -1,4 +1,4 @@
-package nbcp.app
+package nbcp.comm
 
 import nbcp.scope.*
 import nbcp.comm.usingScope
@@ -28,7 +28,7 @@ data class GroupLogScope @JvmOverloads constructor(var value: String = "") : ISc
 
 @Aspect
 @Component
-class GroupLogIntercepter {
+class GroupLogAopService {
     @Around("@within(nbcp.app.GroupLog) || @annotation(nbcp.app.GroupLog)")
     fun intercept(joinPoint: ProceedingJoinPoint): Any? {
         var targetClass = joinPoint.target.javaClass;

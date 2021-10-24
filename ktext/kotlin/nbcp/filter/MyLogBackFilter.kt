@@ -7,8 +7,8 @@ import ch.qos.logback.classic.turbo.TurboFilter
 import ch.qos.logback.core.filter.AbstractMatcherFilter
 import ch.qos.logback.core.filter.Filter
 import ch.qos.logback.core.spi.FilterReply
-import nbcp.app.GroupLog
-import nbcp.app.GroupLogScope
+import nbcp.comm.GroupLog
+import nbcp.comm.GroupLogScope
 import nbcp.comm.*
 import nbcp.utils.*
 import org.slf4j.MDC

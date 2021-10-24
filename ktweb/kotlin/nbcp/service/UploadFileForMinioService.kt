@@ -5,6 +5,7 @@ import nbcp.comm.FullName
 import nbcp.comm.HasValue
 import nbcp.utils.MyUtil
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.stereotype.Service
@@ -14,7 +15,7 @@ import java.io.InputStream
 
 @Service
 @ConditionalOnClass(MinioClient::class)
-class UploadFileForMinioService {
+class UploadFileForMinioService : InitializingBean {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -48,7 +49,7 @@ class UploadFileForMinioService {
         lateinit var minioClient: MinioClient
         try {
             minioClient =
-                MinioClient.builder().endpoint(MINIO_ENDPOINT).credentials(MINIO_ACCESSKEY, MINIO_SECRETKEY).build()
+                    MinioClient.builder().endpoint(MINIO_ENDPOINT).credentials(MINIO_ACCESSKEY, MINIO_SECRETKEY).build()
         } catch (e: Exception) {
             logger.error(e.message + " . endpoint: ${MINIO_ENDPOINT}")
             throw e;
@@ -56,28 +57,28 @@ class UploadFileForMinioService {
 
         // bucket 不存在，创建
         if (!minioClient.bucketExists(
-                BucketExistsArgs
-                    .builder()
-                    .bucket(group)
-                    .apply {
-                        if (MINIO_REGION.HasValue) {
-                            this.region(MINIO_REGION)
-                        }
-                    }
-                    .build()
-            )
+                        BucketExistsArgs
+                                .builder()
+                                .bucket(group)
+                                .apply {
+                                    if (MINIO_REGION.HasValue) {
+                                        this.region(MINIO_REGION)
+                                    }
+                                }
+                                .build()
+                )
         ) {
 
             minioClient.makeBucket(
-                MakeBucketArgs
-                    .builder()
-                    .bucket(group)
-                    .apply {
-                        if (MINIO_REGION.HasValue) {
-                            this.region(MINIO_REGION)
-                        }
-                    }
-                    .build()
+                    MakeBucketArgs
+                            .builder()
+                            .bucket(group)
+                            .apply {
+                                if (MINIO_REGION.HasValue) {
+                                    this.region(MINIO_REGION)
+                                }
+                            }
+                            .build()
             )
         }
 
@@ -90,20 +91,24 @@ class UploadFileForMinioService {
         return fileStream.use {
             val size = it.available().toLong();
             val response = minioClient.putObject(
-                PutObjectArgs.builder()
-                    .bucket(group).contentType(contentType)
-                    .stream(it, size, -1)
-                    .`object`(fileName)
-                    .apply {
-                        if (MINIO_REGION.HasValue) {
-                            this.region(MINIO_REGION)
-                        }
-                    }
-                    .build()
+                    PutObjectArgs.builder()
+                            .bucket(group).contentType(contentType)
+                            .stream(it, size, -1)
+                            .`object`(fileName)
+                            .apply {
+                                if (MINIO_REGION.HasValue) {
+                                    this.region(MINIO_REGION)
+                                }
+                            }
+                            .build()
             )
 
 
             return@use MINIO_ENDPOINT + "/" + response.bucket() + "/" + response.`object`()
         }
+    }
+
+    override fun afterPropertiesSet() {
+
     }
 }

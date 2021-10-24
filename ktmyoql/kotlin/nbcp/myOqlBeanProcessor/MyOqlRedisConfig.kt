@@ -23,7 +23,7 @@ import java.lang.reflect.Modifier
 @Component
 
 @ConditionalOnClass(StringRedisTemplate::class)
-class MyOqlBeanProcessorRedis : BeanPostProcessor {
+class MyOqlRedisConfig : BeanPostProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

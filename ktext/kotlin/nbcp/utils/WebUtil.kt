@@ -46,20 +46,5 @@ object WebUtil {
         // https://www.iana.org/assignments/media-types/media-types.xhtml
 
         return true;
-
-//        for (c in arrayOf<String>(
-//            "application/",
-//            "audio/",
-//            "font/",
-//            "example/",
-//            "image/",
-//            "message/",
-//            "model/",
-//            "multipart/",
-//            "video/"
-//        )) {
-//            if (contentType.startsWith(c, 0, true)) return true;
-//        }
-//        return false;
     }
 }

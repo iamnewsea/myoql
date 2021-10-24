@@ -1,7 +1,7 @@
 package nbcp.base
 
 import nbcp.TestBase
-import nbcp.app.GroupLog
+import nbcp.comm.GroupLog
 import nbcp.comm.*
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory

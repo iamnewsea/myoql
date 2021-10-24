@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component
 @Component
 
 @ConditionalOnClass(MongoTemplate::class)
-class MyOqlBeanProcessorMongo : BeanPostProcessor {
+class MyOqlMongoConfig : BeanPostProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

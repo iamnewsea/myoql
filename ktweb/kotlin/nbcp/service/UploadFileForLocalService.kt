@@ -2,6 +2,7 @@ package nbcp.service
 
 import nbcp.comm.FullName
 import nbcp.comm.HasValue
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.io.File
@@ -9,7 +10,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 
 @Service
-class UploadFileForLocalService {
+class UploadFileForLocalService :InitializingBean{
     /**
      * 上传到本地时使用该配置,最后不带 "/"
      */
@@ -47,5 +48,9 @@ class UploadFileForLocalService {
             }
         }
         return targetFileName;
+    }
+
+    override fun afterPropertiesSet() {
+
     }
 }

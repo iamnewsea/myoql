@@ -1,7 +1,10 @@
 org.springframework.beans.factory.config.BeanPostProcessor=\
-nbcp.myOqlBeanProcessor.MyOqlBeanProcessor\
-,nbcp.myOqlBeanProcessor.MyOqlBeanProcessorMongo\
-,nbcp.myOqlBeanProcessor.MyOqlBeanProcessorRabbit\
-,nbcp.myOqlBeanProcessor.MyOqlBeanProcessorRedis\
-,nbcp.myOqlBeanProcessor.MyOqlBeanProcessorJdbcTemplate\
+nbcp.myOqlBeanProcessor.MyOqlJsonConfig\
+,nbcp.myOqlBeanProcessor.MyOqlMongoConfig\
+,nbcp.myOqlBeanProcessor.MyOqlRabbitMqConfig\
+,nbcp.myOqlBeanProcessor.MyOqlRedisConfig\
+,nbcp.myOqlBeanProcessor.MyOqlJdbcTemplateConfig\
 ,nbcp.db.es.EsEntityCollector
+
+org.springframework.beans.factory.InitializingBean=\
+  nbcp.db.cache.RedisCacheAopService

@@ -2,6 +2,7 @@ package nbcp.config
 
 import nbcp.comm.AsInt
 import nbcp.comm.config
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -17,7 +18,7 @@ import java.util.concurrent.Executor
 @Configuration
 @EnableScheduling
 @ConditionalOnProperty(name = ["app.scheduler"], havingValue = "true", matchIfMissing = true)
-class TaskConfig {
+class TaskConfig : InitializingBean {
 
     @Bean
     fun myoqlTaskExecutor(): ThreadPoolTaskExecutor {
@@ -27,5 +28,9 @@ class TaskConfig {
         executor.setQueueCapacity(config.getConfig("app.executor.queue-capacity").AsInt(64))
         executor.initialize()
         return executor
+    }
+
+    override fun afterPropertiesSet() {
+        
     }
 }

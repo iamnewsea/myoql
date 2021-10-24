@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.stereotype.Component
 
 @Component
-class MyOqlBeanProcessor : BeanPostProcessor {
+class MyOqlJsonConfig : BeanPostProcessor {
     companion object {
         private var inited = false;
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

@@ -7,6 +7,7 @@ import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.reflect.MethodSignature
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.stereotype.Component
 import java.lang.reflect.Method
 
@@ -17,7 +18,7 @@ import java.lang.reflect.Method
  */
 @Aspect
 @Component
-open class RedisCacheAopService {
+open class RedisCacheAopService : InitializingBean {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
@@ -55,16 +56,16 @@ open class RedisCacheAopService {
         //如果有 HttpRequest,则添加Url
         var hasHttpRequest = false;
         val variableMap = JsonMap(
-            method.parameters
-                .filter {
-                    if (it.type.AnySuperClass { it.name == "javax.servlet.ServletRequest" }) {
-                        hasHttpRequest = true;
-                        return@filter false;
-                    }
+                method.parameters
+                        .filter {
+                            if (it.type.AnySuperClass { it.name == "javax.servlet.ServletRequest" }) {
+                                hasHttpRequest = true;
+                                return@filter false;
+                            }
 
-                    return@filter true;
-                }
-                .mapIndexed { index, it -> it.name to args.get(index) }
+                            return@filter true;
+                        }
+                        .mapIndexed { index, it -> it.name to args.get(index) }
         );
 
         var ext = "";
@@ -120,17 +121,21 @@ open class RedisCacheAopService {
 
     private fun brokeCache(method: Method, args: Array<Any>, cache: BrokeRedisCache) {
         val variableMap = JsonMap(
-            method.parameters
-                .filter {
-                    if (it.type.AnySuperClass { it.name == "javax.servlet.ServletRequest" }) {
-                        return@filter false;
-                    }
+                method.parameters
+                        .filter {
+                            if (it.type.AnySuperClass { it.name == "javax.servlet.ServletRequest" }) {
+                                return@filter false;
+                            }
 
-                    return@filter true;
-                }
-                .mapIndexed { index, it -> it.name to args.get(index) }
+                            return@filter true;
+                        }
+                        .mapIndexed { index, it -> it.name to args.get(index) }
         );
 
         BrokeRedisCacheData.of(cache, variableMap).brokeCache();
+    }
+
+    override fun afterPropertiesSet() {
+
     }
 }

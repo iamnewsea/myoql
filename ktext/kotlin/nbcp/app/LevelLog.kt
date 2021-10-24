@@ -4,6 +4,7 @@ import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.reflect.MethodSignature
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.stereotype.Component
 
 /**
@@ -22,7 +23,7 @@ annotation class MyLogLevel(val value: LogLevelScope)
  */
 @Aspect
 @Component
-open class LogLevelIntercepter {
+open class LogLevelAopService :InitializingBean {
 
     //@annotation 表示拦截方法级别上的注解。
     //@within 表示拦截类级别上的注解。
@@ -47,5 +48,9 @@ open class LogLevelIntercepter {
         usingScope(level.value) {
             return joinPoint.proceed(joinPoint.args)
         }
+    }
+
+    override fun afterPropertiesSet() {
+
     }
 }

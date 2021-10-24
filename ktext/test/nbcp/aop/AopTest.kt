@@ -1,7 +1,7 @@
 package nbcp.aop
 
 import nbcp.TestBase
-import nbcp.app.GroupLog
+import nbcp.comm.GroupLog
 import nbcp.comm.kotlinTypeName
 import nbcp.db.EventResult
 import nbcp.utils.ProxyUtil

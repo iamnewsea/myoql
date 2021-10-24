@@ -1,1 +1,7 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=nbcp.utils.SpringUtil
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  nbcp.utils.SpringUtil
+
+org.springframework.beans.factory.InitializingBean=\
+  nbcp.comm.LogLevelAopService\
+  ,nbcp.comm.GroupLogAopService\
+  ,nbcp.config.TaskConfig

@@ -3,13 +3,14 @@ package nbcp.service
 import nbcp.comm.*
 import nbcp.db.LoginUserModel
 import nbcp.db.redis.proxy.RedisStringProxy
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.stereotype.Component
 
 /**
  * 表示 config.userSystem 配置的用户体系的 redis 项，格式如： {config.userSystem}token:{id}
  */
 @Component
-class UserAuthenticationService {
+class UserAuthenticationService :InitializingBean {
 
     /**
      * 保存到 Redis 的 token
@@ -48,5 +49,9 @@ class UserAuthenticationService {
      */
     fun deleteToken(vararg tokens: String) {
         userSystemRedis.deleteKeys(*tokens)
+    }
+
+    override fun afterPropertiesSet() {
+
     }
 }
