@@ -1,7 +1,6 @@
 package nbcp.myOqlBeanProcessor
 
 
-
 import nbcp.comm.clazzesIsSimpleDefine
 import nbcp.component.BaseJsonMapper
 import nbcp.component.DbJsonMapper
@@ -11,10 +10,12 @@ import org.bson.Document
 import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.context.annotation.Import
 import org.springframework.stereotype.Component
 
 @Component
+@ConditionalOnClass(value = [ObjectId::class, Document::class])
 class MyOqlJsonConfig : BeanPostProcessor {
     companion object {
         private var inited = false;
