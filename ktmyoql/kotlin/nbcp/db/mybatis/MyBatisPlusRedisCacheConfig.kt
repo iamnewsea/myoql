@@ -23,20 +23,10 @@ import org.springframework.context.annotation.Configuration
 import java.lang.reflect.Proxy
 
 
-class BatisRedisCachePointcut(var clazz: Class<out Annotation>): Pointcut{
-    override fun getClassFilter(): ClassFilter {
-        return ClassFilter.TRUE
-    }
-
-    override fun getMethodMatcher(): MethodMatcher {
-        return AnnotationMethodMatcher(clazz)
-    }
-}
-
 @Configuration
 class MyBatisRedisCachePointcutAdvisor {
 
-    class MyBatisPlusAopForCacheForMyBatisPlusBaseMapper : MethodInterceptor {
+    private class MyBatisPlusAopForCacheForMyBatisPlusBaseMapper : MethodInterceptor {
         override fun invoke(invocation: MethodInvocation): Any? {
 
             var target = Proxy.getInvocationHandler(invocation.`this`!!)
@@ -65,44 +55,44 @@ class MyBatisRedisCachePointcutAdvisor {
             if (method.name.IsIn("selectBatchIds", "selectByMap", "selectList")
             ) {
                 return FromRedisCacheData(
-                    tableName,
-                    arrayOf(),
-                    "",
-                    "",
-                    getMethodFullName(invocation),
-                    cacheSeconds = cache.cacheSeconds
+                        tableName,
+                        arrayOf(),
+                        "",
+                        "",
+                        getMethodFullName(invocation),
+                        cacheSeconds = cache.cacheSeconds
                 )
-                    .usingRedisCacheForList(cache.value.java) {
-                        return@usingRedisCacheForList invocation.proceed() as List<*>
-                    }
+                        .usingRedisCacheForList(cache.value.java) {
+                            return@usingRedisCacheForList invocation.proceed() as List<*>
+                        }
             }
 
             if (method.name == "selectCount") {
                 return FromRedisCacheData(
-                    tableName,
-                    arrayOf(),
-                    "",
-                    "",
-                    getMethodFullName(invocation),
-                    cacheSeconds = cache.cacheSeconds
+                        tableName,
+                        arrayOf(),
+                        "",
+                        "",
+                        getMethodFullName(invocation),
+                        cacheSeconds = cache.cacheSeconds
                 )
-                    .usingRedisCache(Long::class.java) {
-                        return@usingRedisCache invocation.proceed()
-                    }
+                        .usingRedisCache(Long::class.java) {
+                            return@usingRedisCache invocation.proceed()
+                        }
             }
 
             if (method.name == "selectOne") {
                 return FromRedisCacheData(
-                    tableName,
-                    arrayOf(),
-                    "",
-                    "",
-                    getMethodFullName(invocation),
-                    cacheSeconds = cache.cacheSeconds
+                        tableName,
+                        arrayOf(),
+                        "",
+                        "",
+                        getMethodFullName(invocation),
+                        cacheSeconds = cache.cacheSeconds
                 )
-                    .usingRedisCache(cache.value.java) {
-                        return@usingRedisCache invocation.proceed()
-                    }
+                        .usingRedisCache(cache.value.java) {
+                            return@usingRedisCache invocation.proceed()
+                        }
             }
 
 
@@ -145,12 +135,12 @@ class MyBatisRedisCachePointcutAdvisor {
             if (idValue.isEmpty()) return null;
 
             return FromRedisCacheData(
-                tableName,
-                arrayOf(),
-                "id",
-                idValue,
-                getMethodFullName(invocation),
-                cacheSeconds = cache.cacheSeconds,
+                    tableName,
+                    arrayOf(),
+                    "id",
+                    idValue,
+                    getMethodFullName(invocation),
+                    cacheSeconds = cache.cacheSeconds,
             )
         }
 
