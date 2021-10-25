@@ -1,5 +1,6 @@
 package nbcp.db.mybatis
 
+import com.mysql.cj.jdbc.MysqlDataSource
 import nbcp.comm.config
 import nbcp.utils.SpringUtil
 import org.apache.ibatis.session.SqlSessionFactory
@@ -17,8 +18,7 @@ import javax.sql.DataSource
 
 @EnableTransactionManagement
 @Component
-
-@ConditionalOnClass(SqlSessionFactory::class)
+@ConditionalOnClass(value = [SqlSessionFactory::class])
 class MybatisDbConfig {
 
     @EventListener
@@ -77,7 +77,7 @@ class MybatisDbConfig {
 //        config.addInterceptor(UpdateInterceptor())
         config.addInterceptor(MyBatisInterceptor())
         bean.setConfiguration(config)
-        
+
         return bean.`object`
     }
 

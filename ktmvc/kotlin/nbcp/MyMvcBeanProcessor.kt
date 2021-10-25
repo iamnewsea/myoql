@@ -1,4 +1,4 @@
-package nbcp
+package nbcp.web
 
 import nbcp.comm.Important
 import nbcp.comm.clazzesIsSimpleDefine

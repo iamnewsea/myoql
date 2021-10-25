@@ -18,8 +18,7 @@ import java.util.concurrent.Executor
 @Configuration
 @EnableScheduling
 @ConditionalOnProperty(name = ["app.scheduler"], havingValue = "true", matchIfMissing = true)
-class TaskConfig : InitializingBean {
-
+class TaskConfig {
     @Bean
     fun myoqlTaskExecutor(): ThreadPoolTaskExecutor {
         val executor = ThreadPoolTaskExecutor()
@@ -28,9 +27,5 @@ class TaskConfig : InitializingBean {
         executor.setQueueCapacity(config.getConfig("app.executor.queue-capacity").AsInt(64))
         executor.initialize()
         return executor
-    }
-
-    override fun afterPropertiesSet() {
-        
     }
 }

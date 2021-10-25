@@ -1,10 +1,8 @@
-org.springframework.beans.factory.config.BeanPostProcessor=\
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 nbcp.myOqlBeanProcessor.MyOqlJsonConfig\
 ,nbcp.myOqlBeanProcessor.MyOqlMongoConfig\
 ,nbcp.myOqlBeanProcessor.MyOqlRabbitMqConfig\
 ,nbcp.myOqlBeanProcessor.MyOqlRedisConfig\
-,nbcp.myOqlBeanProcessor.MyOqlJdbcTemplateConfig\
-,nbcp.db.es.EsEntityCollector
-
-org.springframework.beans.factory.InitializingBean=\
-  nbcp.db.cache.RedisCacheAopService
+,nbcp.db.es.EsEntityCollector\
+,nbcp.db.MyOqlApplicationPreparedEvent\
+,nbcp.db.cache.RedisCacheAopService

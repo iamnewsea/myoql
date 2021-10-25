@@ -80,9 +80,9 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
         @JvmStatic
         @JvmOverloads
         fun registerBeanDefinition(
-                name: String,
-                instance: Any,
-                callback: ((BeanDefinitionBuilder) -> Unit) = {}
+            name: String,
+            instance: Any,
+            callback: ((BeanDefinitionBuilder) -> Unit) = {}
         ) {
             registry.registerBeanDefinition(name, getGenericBeanDefinition(instance, callback));
         }
@@ -182,8 +182,8 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
          * 动态创建Bean
          */
         fun getGenericBeanDefinition(
-                instance: Any,
-                callback: ((BeanDefinitionBuilder) -> Unit) = {}
+            instance: Any,
+            callback: ((BeanDefinitionBuilder) -> Unit) = {}
         ): GenericBeanDefinition {
             var type = instance::class.java
             val builder = BeanDefinitionBuilder.genericBeanDefinition(type);
@@ -253,9 +253,9 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
         BaseJsonMapper.addSerializer(LocalDate::class.java, LocalDateJsonSerializer(), LocalDateJsonDeserializer())
         BaseJsonMapper.addSerializer(LocalTime::class.java, LocalTimeJsonSerializer(), LocalTimeJsonDeserializer())
         BaseJsonMapper.addSerializer(
-                LocalDateTime::class.java,
-                LocalDateTimeJsonSerializer(),
-                LocalDateTimeJsonDeserializer()
+            LocalDateTime::class.java,
+            LocalDateTimeJsonSerializer(),
+            LocalDateTimeJsonDeserializer()
         )
         BaseJsonMapper.addSerializer(Timestamp::class.java, TimestampJsonSerializer(), TimestampJsonDeserializer())
     }

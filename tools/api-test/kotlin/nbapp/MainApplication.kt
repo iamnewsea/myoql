@@ -31,7 +31,6 @@ import java.util.*
 //@EnableMyOqlRedisCache
 @EnableScheduling
 @ServletComponentScan
-@ComponentScan(value = ["nbapp.**", "nbcp.**"])
 //@EnableCircuitBreaker
 open class MainApplication {
     companion object {

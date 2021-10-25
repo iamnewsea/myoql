@@ -18,7 +18,7 @@ import java.lang.reflect.Method
  */
 @Aspect
 @Component
-open class RedisCacheAopService : InitializingBean {
+open class RedisCacheAopService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
@@ -56,16 +56,16 @@ open class RedisCacheAopService : InitializingBean {
         //如果有 HttpRequest,则添加Url
         var hasHttpRequest = false;
         val variableMap = JsonMap(
-                method.parameters
-                        .filter {
-                            if (it.type.AnySuperClass { it.name == "javax.servlet.ServletRequest" }) {
-                                hasHttpRequest = true;
-                                return@filter false;
-                            }
+            method.parameters
+                .filter {
+                    if (it.type.AnySuperClass { it.name == "javax.servlet.ServletRequest" }) {
+                        hasHttpRequest = true;
+                        return@filter false;
+                    }
 
-                            return@filter true;
-                        }
-                        .mapIndexed { index, it -> it.name to args.get(index) }
+                    return@filter true;
+                }
+                .mapIndexed { index, it -> it.name to args.get(index) }
         );
 
         var ext = "";
@@ -121,21 +121,17 @@ open class RedisCacheAopService : InitializingBean {
 
     private fun brokeCache(method: Method, args: Array<Any>, cache: BrokeRedisCache) {
         val variableMap = JsonMap(
-                method.parameters
-                        .filter {
-                            if (it.type.AnySuperClass { it.name == "javax.servlet.ServletRequest" }) {
-                                return@filter false;
-                            }
+            method.parameters
+                .filter {
+                    if (it.type.AnySuperClass { it.name == "javax.servlet.ServletRequest" }) {
+                        return@filter false;
+                    }
 
-                            return@filter true;
-                        }
-                        .mapIndexed { index, it -> it.name to args.get(index) }
+                    return@filter true;
+                }
+                .mapIndexed { index, it -> it.name to args.get(index) }
         );
 
         BrokeRedisCacheData.of(cache, variableMap).brokeCache();
-    }
-
-    override fun afterPropertiesSet() {
-
     }
 }

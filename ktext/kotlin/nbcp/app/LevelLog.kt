@@ -16,14 +16,12 @@ import org.springframework.stereotype.Component
 annotation class MyLogLevel(val value: LogLevelScope)
 
 
-
-
 /**
  * 对注解了 MyLogLevel 的Bean或方法，使用 usingScope(LogLevel.NoLog) 包裹
  */
 @Aspect
 @Component
-open class LogLevelAopService :InitializingBean {
+open class LogLevelAopService {
 
     //@annotation 表示拦截方法级别上的注解。
     //@within 表示拦截类级别上的注解。
@@ -48,9 +46,5 @@ open class LogLevelAopService :InitializingBean {
         usingScope(level.value) {
             return joinPoint.proceed(joinPoint.args)
         }
-    }
-
-    override fun afterPropertiesSet() {
-
     }
 }

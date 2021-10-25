@@ -1,5 +1,9 @@
 package nbcp.db.mybatis
 
+import com.baomidou.mybatisplus.core.conditions.AbstractWrapper
+import com.baomidou.mybatisplus.core.conditions.ISqlSegment
+import com.baomidou.mybatisplus.core.conditions.Wrapper
+import com.baomidou.mybatisplus.core.mapper.BaseMapper
 import nbcp.comm.*
 import nbcp.db.cache.BrokeRedisCacheData
 import nbcp.db.cache.FromRedisCacheData
@@ -13,23 +17,28 @@ import org.aspectj.lang.reflect.MethodSignature
 import org.springframework.aop.Advisor
 import org.springframework.aop.support.DefaultPointcutAdvisor
 import org.springframework.aop.support.annotation.AnnotationMatchingPointcut
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
+import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Conditional
+import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Component
 import java.lang.reflect.Proxy
 
 
+@Configuration
+@ConditionalOnClass(BaseMapper::class)
+class DefaultPointcutAdvisor {
+    @Bean
+    fun getAdvisor(): Advisor {
+        val pointcut = AnnotationMatchingPointcut(CacheForMyBatisPlusBaseMapper::class.java, true);
+        return DefaultPointcutAdvisor(pointcut, MyBatisPlusAopForCacheForMyBatisPlusBaseMapper())
+    }
+}
 
 class MyBatisPlusAopForCacheForMyBatisPlusBaseMapper : MethodInterceptor {
-    companion object{
-        /**
-         * Bean 会被动态注册
-         */
-        fun getAdvisor(): Advisor {
-            val pointcut = AnnotationMatchingPointcut(CacheForMyBatisPlusBaseMapper::class.java, true);
-            return DefaultPointcutAdvisor(pointcut, MyBatisPlusAopForCacheForMyBatisPlusBaseMapper())
-        }
-    }
-
     override fun invoke(invocation: MethodInvocation): Any? {
 
         var target = Proxy.getInvocationHandler(invocation.`this`!!)
@@ -149,7 +158,13 @@ class MyBatisPlusAopForCacheForMyBatisPlusBaseMapper : MethodInterceptor {
 
     private fun getMethodFullName(invocation: MethodInvocation): String {
         val method = invocation.method
-        return method.declaringClass.name + "." + method.name + invocation.arguments.ToJson()
+        return method.declaringClass.name + "." + method.name + invocation.arguments.map {
+            if (it is ISqlSegment) {
+                return@map it.getSqlSegment()
+            }
+
+            return@map it.ToJson()
+        }.joinToString(",")
     }
 
     private fun deleteBatchIds(invocation: MethodInvocation, cache: CacheForMyBatisPlusBaseMapper) {
