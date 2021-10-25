@@ -29,7 +29,7 @@ data class GroupLogScope @JvmOverloads constructor(var value: String = "") : ISc
 @Aspect
 @Component
 class GroupLogAopService {
-    @Around("@within(nbcp.app.GroupLog) || @annotation(nbcp.app.GroupLog)")
+    @Around("@within(nbcp.comm.GroupLog) || @annotation(nbcp.comm.GroupLog)")
     fun intercept(joinPoint: ProceedingJoinPoint): Any? {
         var targetClass = joinPoint.target.javaClass;
         var signature = joinPoint.signature as MethodSignature;
