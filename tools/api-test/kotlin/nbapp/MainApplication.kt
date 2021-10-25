@@ -65,13 +65,6 @@ fun main(args: Array<String>) {
 
 //    var appMap = SpringUtil.binder.bindOrCreate("app", JsonMap::class.java)
 
-    var d = MyEvent("token");
-    SpringUtil.context.publishEvent(d);
-
-
-    println("是否包含 DataSourceAutoConfiguration: " + SpringUtil.containsBean(DataSourceAutoConfiguration::class.java))
-    println("是否包含 DataSourceAutoConfiguration: " + SpringUtil.context.containsBean(DataSourceAutoConfiguration::class.java.name))
-
     usingScope(LogLevelScope.info) {
         MainApplication.logger.info(
                 MyUtil.getCenterEachLine(

@@ -23,125 +23,12 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import java.util.*
 
-@Component
-class NormalBean : InitializingBean {
-    override fun afterPropertiesSet() {
-        println("6::::InitializingBean")
-    }
-}
-
-@Configuration
-class BeanOrderTest : InitializingBean {
-    @Bean
-    fun abc(): JsonMap {
-        var b = Binder.get(SpringUtil.context.environment)
-        b.bind("spring.datasource2", DataSourceProperties::class.java)
-
-        println("5... 内部Bean JsonMap")
-        return JsonMap();
-    }
-
-    override fun afterPropertiesSet() {
-        println("5::::@Configuration")
-    }
-}
-
-@Component
-class BeanNameTest : BeanNameAware {
-    override fun setBeanName(name: String) {
-        println("4:::::BeanNameAware")
-    }
-}
-
-@Component
-class BeanFactoryAwareTest : BeanFactoryAware {
-    override fun setBeanFactory(beanFactory: BeanFactory) {
-        println("3:::::BeanFactoryAware")
-    }
-}
-
-@Component
-class ApplicationContextAwareTest : ApplicationContextAware {
-    override fun setApplicationContext(applicationContext: ApplicationContext) {
-        println("2:::::ApplicationContextAware")
-    }
-}
-
-@Component
-class BeanFactoryPostProcessorTest : BeanFactoryPostProcessor {
-    override fun postProcessBeanFactory(beanFactory: ConfigurableListableBeanFactory) {
-        println("1 :::::BeanFactoryPostProcessor")
-    }
-}
-
 
 @Component
 class post1 : BeanPostProcessor {
     override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
-        if (bean.javaClass == DataSourceAutoConfiguration::class.java ||
-            bean.javaClass == EventConfig::class.java ||
-            bean.javaClass == RedisAutoConfiguration::class.java
-        ) {
-            println("::::postProcessBeforeInitialization：${beanName}")
-        }
-
-
         println("：：：：${beanName}----${bean.javaClass.name}")
 
         return super.postProcessBeforeInitialization(bean, beanName)
     }
 }
-
-@Component
-class post333 : ConfigurationPropertiesBindingPostProcessor() {
-    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
-
-//        var d = ConfigurationPropertiesBean.get(SpringUtil.context,Properties(),"ddd");
-
-        var ret = super.postProcessBeforeInitialization(bean, beanName)
-        return ret;
-    }
-}
-
-
-class MyEvent(var e: String) : ApplicationEvent(Any()) {
-
-}
-
-
-//@ConditionalOnBean 出现的时机太早了。 要推迟。
-@Component
-class EventConfig {
-    val hasDataSource by lazy {
-        return@lazy SpringUtil.containsBean(DataSourceAutoConfiguration::class.java)
-    }
-
-    @EventListener
-    fun onApplicationEvent(event: MyEvent) {
-
-        if (hasDataSource) {
-            event.e = "exist datasource"
-        } else {
-            event.e = "no datasource"
-        }
-
-        println(event.e)
-    }
-
-    @EventListener
-    fun onE1(event: ContextRefreshedEvent) {
-        println("ContextRefreshedEvent")
-    }
-
-    @EventListener
-    fun onE2(event: ContextRefreshedEvent) {
-        println("ContextClosedEvent")
-    }
-
-    @EventListener
-    fun onE3(event: ContextStartedEvent) {
-        println("ContextStartedEvent")
-    }
-}
-
-

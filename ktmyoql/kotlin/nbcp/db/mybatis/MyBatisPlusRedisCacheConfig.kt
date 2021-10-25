@@ -18,15 +18,18 @@ import org.springframework.stereotype.Component
 import java.lang.reflect.Proxy
 
 
-class MyBatisPlusRedisCacheConfig {
-    @Bean
-    fun get(): Advisor {
-        var pointcut = AnnotationMatchingPointcut(CacheForMyBatisPlusBaseMapper::class.java, true);
-        return DefaultPointcutAdvisor(pointcut, MyBatisPlusAopForCacheForMyBatisPlusBaseMapper())
-    }
-}
 
 class MyBatisPlusAopForCacheForMyBatisPlusBaseMapper : MethodInterceptor {
+    companion object{
+        /**
+         * Bean 会被动态注册
+         */
+        fun getAdvisor(): Advisor {
+            val pointcut = AnnotationMatchingPointcut(CacheForMyBatisPlusBaseMapper::class.java, true);
+            return DefaultPointcutAdvisor(pointcut, MyBatisPlusAopForCacheForMyBatisPlusBaseMapper())
+        }
+    }
+
     override fun invoke(invocation: MethodInvocation): Any? {
 
         var target = Proxy.getInvocationHandler(invocation.`this`!!)

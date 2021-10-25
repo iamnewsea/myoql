@@ -1,6 +1,6 @@
 package nbcp.myOqlBeanProcessor
 
-import nbcp.db.mybatis.MyBatisPlusRedisCacheConfig
+import nbcp.db.mybatis.MyBatisPlusAopForCacheForMyBatisPlusBaseMapper
 import nbcp.db.mysql.service.UploadFileSqlService
 import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
@@ -31,7 +31,7 @@ class MyOqlJdbcTemplateConfig : BeanPostProcessor {
 
     private fun loadJdbcDependencyBeans() {
         SpringUtil.registerBeanDefinition(UploadFileSqlService())
-        SpringUtil.registerBeanDefinition(MyBatisPlusRedisCacheConfig())
+        SpringUtil.registerBeanDefinition(MyBatisPlusAopForCacheForMyBatisPlusBaseMapper.getAdvisor())
     }
 
 }
