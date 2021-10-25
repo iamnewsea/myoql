@@ -29,7 +29,7 @@ import java.time.LocalDateTime
 abstract class TestBase {
 
     init {
-        System.setProperty("app.upload.host","http://dev8.cn")
+        System.setProperty("app.upload.host", "http://dev8.cn")
 //        GenericXmlApplicationContext().environment.setActiveProfiles("test")
 
 //        println(SpringUtil.context.environment.activeProfiles)
@@ -48,6 +48,6 @@ abstract class TestBase {
         }
         var endAt = LocalDateTime.now()
 
-        println((endAt - startAt).toString())
+        println((endAt.minus(startAt)).toString())
     }
 }
