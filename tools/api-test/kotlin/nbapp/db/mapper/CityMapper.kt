@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.*
 
 /**
  * Created by udi on 2017.2.27.
+ * mybatis Mapper 使用 FromRedisCache BrokeRedisCache 的例子。
  */
 @Mapper
 //@CacheNamespace(implementation=(nbcp.db.mybatis.RedisCacheMyBatis::class))

@@ -19,7 +19,7 @@ import java.util.List;
  */
 
 @Service
-public class AppCacheTestJavaService {
+public class TestJavaService {
     /**
      * 查询时使用缓存。使用注解
      *
@@ -27,11 +27,12 @@ public class AppCacheTestJavaService {
      * @return
      */
     @FromRedisCache(cacheSeconds = 3000, table = "tab1", joinTables = {}, groupKey = "city", groupValue = "#city")
-    public List<Document> cache_select(Integer city) {
+    public List<Document> queryByCity(Integer city) {
 
-        System.out.println("从数据库查询: " + city);
+        System.out.println("从数据库查询 city: " + city);
         List<Document> list = new LinkedList();
 
+        //随便给个查询
         Document d1 = new Document();
         d1.put("name", "cache-注解");
         d1.put("city", city.toString());
@@ -44,10 +45,11 @@ public class AppCacheTestJavaService {
 
 
     @FromRedisCache(cacheSeconds = 3000, table = "tab1", joinTables = {}, groupKey = "id", groupValue = "#id")
-    public List<Document> cache_select_id(Integer id) {
-        System.out.println("从数据库查询: " + id);
+    public List<Document> queryById(Integer id) {
+        System.out.println("从数据库查询 id: " + id);
         List<Document> list = new LinkedList();
 
+        //随便给个查询
         Document d1 = new Document();
         d1.put("name", "cache-注解");
         d1.put("id", id.toString());
@@ -63,11 +65,12 @@ public class AppCacheTestJavaService {
      * @param city
      * @return
      */
-    public List<Document> code_cache_select(Integer city) {
+    public List<Document> queryByCityOtherCondition(Integer city) {
         Document d2 = new FromRedisCacheData("tab1", new String[]{}, "city", city.toString(), "code_cache_select" + city)
                 .usingRedisCache(Document.class, () -> {
 
-                    System.out.println("从数据库查询: " + city);
+                    System.out.println("从数据库查询 city: " + city);
+                    //随便给个查询
                     Document d1 = new Document();
                     d1.put("name", "cache-方法");
                     d1.put("city", city.toString());
@@ -87,7 +90,7 @@ public class AppCacheTestJavaService {
      * @param city
      */
     @BrokeRedisCache(table = "tab1", groupKey = "city", groupValue = "#city")
-    public void cache_broke(Integer city) {
+    public void deleteAllCity(Integer city) {
         System.out.println();
     }
 
@@ -97,7 +100,7 @@ public class AppCacheTestJavaService {
      *
      * @param city
      */
-    public void code_cache_broke(Integer city) {
+    public void updateAllCity(Integer city) {
         new BrokeRedisCacheData("tab1", "city", city.toString()).brokeCache();
     }
 }

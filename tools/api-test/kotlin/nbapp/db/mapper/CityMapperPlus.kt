@@ -18,12 +18,13 @@ class s_city {
 
 /**
  * Created by udi on 2017.2.27.
+ * mybatis plus Mapper 使用 FromRedisCache BrokeRedisCache 的例子。
+ * 必须添加： CacheForMyBatisPlusBaseMapper 才能使 BaseMapper 的方法破坏缓存。
  */
 @Mapper
 @CacheForMyBatisPlusBaseMapper(s_city::class)
 //@CacheNamespace(implementation=(nbcp.db.mybatis.RedisCacheMyBatis::class))
 interface CityMapperPlus : BaseMapper<s_city> {
-
 
     @FromRedisCache(tableClass = s_city::class,groupKey = "code",groupValue = "#code")
     @Select("select name from s_city where code = #{code}")
