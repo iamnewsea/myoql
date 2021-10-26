@@ -61,9 +61,7 @@ private fun proc_mongo_match(key: MongoColumnName, value: Any?): Pair<String, An
 
     if (type.isEnum) {
         value = value.toString();
-    } else if (type == LocalDateTime::class.java ||
-            type == LocalDate::class.java
-    ) {
+    } else if (type == LocalDateTime::class.java || type == LocalDate::class.java) {
         value = value.AsLocalDateTime().AsDate()
     } else if (type.IsStringType) {
         if (keyIsId) {
@@ -158,7 +156,7 @@ infix fun MongoColumnName.match(to: Any?): Criteria {
 
 //array_all
 infix fun MongoColumnName.match_all(to: Array<*>): Criteria {
-    val (key, tos) = proc_mongo_match(this, to)
+    val (key, tos) = proc_mongo_match(this, to.toSet())
 
     return Criteria.where(key).`all`(*(tos as Array<*>));
 }
@@ -216,13 +214,13 @@ infix fun MongoColumnName.match_in(to: Collection<*>): Criteria {
 
 //db.test1.find({"age":{"$in":['值1','值2',.....]}})
 infix fun MongoColumnName.match_in(to: Array<*>): Criteria {
-    var (key, tos) = proc_mongo_match(this, to)
+    var (key, tos) = proc_mongo_match(this, to.toSet())
 
     return Criteria.where(key).`in`(*(tos as Array<*>));
 }
 
 infix fun MongoColumnName.match_notin(to: Array<*>): Criteria {
-    var (key, tos) = proc_mongo_match(this, to)
+    var (key, tos) = proc_mongo_match(this, to.toSet())
     return Criteria.where(key).`nin`(*(tos as Array<*>));
 }
 
