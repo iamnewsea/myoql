@@ -84,7 +84,7 @@ private fun proc_mongo_match(key: MongoColumnName, value: Any?): Pair<String, An
                 return@map getObjectIdValueTypeIfNeed(it);
             }
             return@map it
-        }
+        }.toTypedArray()
     } else if (value is Pair<*, *>) {
         var v1 = value.first;
         if (v1 != null && v1::class.java.isEnum) {
