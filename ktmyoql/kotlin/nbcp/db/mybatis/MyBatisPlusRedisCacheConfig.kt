@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Configuration
 import java.lang.reflect.Proxy
 
 
+@ConditionalOnClass(BaseMapper::class)
 @Configuration
 class MyBatisRedisCachePointcutAdvisor {
 
@@ -208,8 +209,8 @@ class MyBatisRedisCachePointcutAdvisor {
         }
     }
 
+    //@ConditionalOnClass用在类上面是绝对可靠的。但只要在具有@Bean的方法上使用@ConditionalOnClass时，要注意返回值类是否与条件类相关。
     @Bean
-    @ConditionalOnClass(BaseMapper::class)
     fun getMybatisPlusBaseMapperAdvisor(): Advisor {
         val pointcut = AnnotationMatchingPointcut(CacheForMyBatisPlusBaseMapper::class.java, true);
         return DefaultPointcutAdvisor(pointcut, MyBatisPlusAopForCacheForMyBatisPlusBaseMapper())
