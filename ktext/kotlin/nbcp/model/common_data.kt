@@ -52,9 +52,15 @@ open class IdNameUrl @JvmOverloads constructor(var id: String = "", name: String
 open class IdNamePath @JvmOverloads constructor(id: String = "", name: String = "", @Cn("路径") var path: String = "") :
     IdName(id, name) {}
 
+/**
+ * 只能用于 code 不变的情况。
+ */
 open class CodeName @JvmOverloads constructor(@Cn("编码") var code: String = "", @Cn("名称") var name: String = "") :
     Serializable {}
 
+/**
+ * 只能用于 code 不变的情况。
+ */
 open class CodeValue @JvmOverloads constructor(@Cn("编码") var code: String = "", @Cn("值") var value: String = "") :
     Serializable {}
 
