@@ -1,4 +1,4 @@
-package nbcp.myOqlBeanProcessor
+package nbcp.bean
 
 import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory

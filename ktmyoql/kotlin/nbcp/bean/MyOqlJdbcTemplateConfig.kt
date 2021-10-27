@@ -1,4 +1,4 @@
-//package nbcp.myOqlBeanProcessor
+//package nbcp.bean
 //
 //import com.mysql.cj.jdbc.MysqlDataSource
 //import nbcp.db.mybatis.DefaultPointcutAdvisor

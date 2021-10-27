@@ -1,4 +1,4 @@
-package nbcp.myOqlBeanProcessor
+package nbcp.bean
 
 
 import nbcp.comm.HasValue
