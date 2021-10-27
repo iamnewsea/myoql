@@ -1,7 +1,10 @@
 package nbcp.component
 
+import nbcp.comm.AsInt
 import nbcp.comm.AsLocalDateTime
 import nbcp.comm.ToLocalDateTime
+import nbcp.comm.config
+import nbcp.utils.MyUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
@@ -54,13 +57,16 @@ class SnowFlake : InitializingBean {
     /**
      * 机器标识Id, 默认为1 ， 范围：1 - 1023
      */
-    @Value("\${app.machine-id:1}")
-    var machineId: Int = 1
+    var machineId: Int = 100 + MyUtil.getRandomWithMaxValue(900);
 
     private var sequence = 0L //序列号
     private var lastStmp = -1L //上一次时间戳
     override fun afterPropertiesSet() {
-        require(!(machineId > MAX_MACHINE_NUM || machineId < 1)) { "app.machine-id 值的范围必须是 1-1023" }
+        val appMachineId = config.getConfig("app.machine-id").AsInt()
+
+        if (appMachineId <= MAX_MACHINE_NUM && appMachineId >= 1) {
+            this.machineId = appMachineId;
+        }
     }
 
     /**

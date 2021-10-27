@@ -1,8 +1,1 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-nbcp.myOqlBeanProcessor.MyOqlJsonConfig\
-,nbcp.myOqlBeanProcessor.MyOqlMongoConfig\
-,nbcp.myOqlBeanProcessor.MyOqlRabbitMqConfig\
-,nbcp.myOqlBeanProcessor.MyOqlRedisConfig\
-,nbcp.db.es.EsEntityCollector\
-,nbcp.db.MyOqlApplicationPreparedEvent\
-,nbcp.db.cache.RedisCacheAopService
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=nbcp.MyOqlInitConfig

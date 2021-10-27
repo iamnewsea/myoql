@@ -4,13 +4,26 @@ import nbcp.db.sql.*;
 import nbcp.comm.ForEachExt
 import nbcp.db.*
 import org.springframework.beans.factory.config.BeanPostProcessor
+import org.springframework.context.annotation.Import
 import org.springframework.stereotype.Component
 import javax.sql.DataSource
 import java.io.Serializable
+
 /**
  * 事件处理中心
  */
 @Component
+@Import(
+    value = [
+        SqlConvertValueToDbEventForInsert::class,
+        SqlConvertValueToDbEventForUpdate::class,
+        SqlDustbinEvent::class,
+        SqlSpreadColumnEventForInsert::class,
+        SqlSpreadColumnEventForSelect::class,
+        SqlTableDataSource::class,
+        SqlTableLogProperties::class,
+    ]
+)
 class SqlEntityCollector : BeanPostProcessor {
     companion object {
         //需要删 除后放入垃圾箱的实体

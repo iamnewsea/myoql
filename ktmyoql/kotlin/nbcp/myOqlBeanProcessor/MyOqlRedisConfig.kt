@@ -5,6 +5,7 @@ import nbcp.comm.HasValue
 import nbcp.comm.config
 import nbcp.db.cache.RedisCacheAopService
 import nbcp.db.redis.MyRedisKeySerializerWithProductLine
+import nbcp.db.redis.RedisDataSource
 import nbcp.db.redis.RedisRenewalDynamicService
 import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
@@ -23,6 +24,7 @@ import java.lang.reflect.Modifier
 @Component
 
 @ConditionalOnClass(StringRedisTemplate::class)
+@Import(value=[RedisDataSource::class])
 class MyOqlRedisConfig : BeanPostProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

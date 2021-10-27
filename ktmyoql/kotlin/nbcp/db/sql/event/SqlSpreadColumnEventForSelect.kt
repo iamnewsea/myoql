@@ -9,7 +9,7 @@ import java.io.Serializable
  *
  */
 @Component
-class SqlSpreadColumnEvent_Select : ISqlEntitySelect {
+class SqlSpreadColumnEventForSelect : ISqlEntitySelect {
     override fun beforeSelect(select: SqlBaseQueryClip): EventResult? {
 //        var select  = select as SqlQueryClip< SqlBaseMetaTable<out Serializable>, Serializable>
 //        var spreads = select.mainEntity.getSpreadColumns();

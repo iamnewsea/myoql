@@ -13,7 +13,7 @@ import kotlin.reflect.full.createInstance
  *
  */
 @Component
-class SqlConvertValueToDbEvent_Insert : ISqlEntityInsert {
+class SqlConvertValueToDbEventForInsert : ISqlEntityInsert {
     override fun beforeInsert(insert: SqlInsertClip<*, *>): EventResult? {
 
         var annotations = mutableMapOf<Field, Array<out KClass<out IConverter>>>()

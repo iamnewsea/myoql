@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
  * 处理删除数据后转移到垃圾箱功能
  */
 @Component
-class SqlSpreadColumnEvent_Insert : ISqlEntityInsert {
+class SqlSpreadColumnEventForInsert : ISqlEntityInsert {
     override fun beforeInsert(insert: SqlInsertClip<*, *>): EventResult? {
 
 //        var annotations = mutableListOf<Field>()

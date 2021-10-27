@@ -21,7 +21,6 @@ import org.springframework.data.mongodb.core.convert.MappingMongoConverter
 import org.springframework.stereotype.Component
 
 @Component
-
 @ConditionalOnClass(MongoTemplate::class)
 class MyOqlMongoConfig : BeanPostProcessor {
     companion object {

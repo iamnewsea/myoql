@@ -3,6 +3,7 @@ package nbcp.db.mysql
 import com.mysql.cj.jdbc.MysqlDataSource
 import com.zaxxer.hikari.HikariDataSource
 import nbcp.comm.HasValue
+import nbcp.db.sql.component.JsonMapRowMapper
 import nbcp.utils.SpringUtil
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component
 import javax.sql.DataSource
 
 @Component
+@Import(JsonMapRowMapper::class)
 @ConditionalOnClass(MysqlDataSource::class)
 class MySqlDataSourceConfig {
     companion object {

@@ -12,7 +12,7 @@ import kotlin.reflect.full.createInstance
  *
  */
 @Component
-class SqlConvertValueToDbEvent_Update : ISqlEntityUpdate {
+class SqlConvertValueToDbEventForUpdate : ISqlEntityUpdate {
     override fun beforeUpdate(update: SqlUpdateClip<*>): EventResult? {
         var annotations = mutableMapOf<Field, Array<out KClass<out IConverter>>>()
         update.mainEntity.tableClass.AllFields.forEach {

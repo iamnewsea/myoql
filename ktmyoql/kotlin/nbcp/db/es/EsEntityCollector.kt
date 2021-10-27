@@ -2,22 +2,35 @@ package nbcp.db.es
 
 import nbcp.comm.*
 import nbcp.db.*
+import nbcp.db.es.event.EsInsertEvent
+import nbcp.db.es.tool.EsIndexDataSource
+import nbcp.db.es.tool.EsTableLogProperties
 import nbcp.scope.*
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.context.annotation.Import
 import org.springframework.stereotype.Component
 import java.io.Serializable
 
 @Component
 @ConditionalOnProperty("spring.elasticsearch.rest.uris")
+@Import(
+    value = [
+        EsIndexDataSource::class,
+        EsTableLogProperties::class,
+        EsInsertEvent::class
+    ]
+)
 class EsEntityCollector : BeanPostProcessor {
     companion object {
         @JvmStatic
         //需要删 除后放入垃圾箱的实体
         val dustbinEntitys = mutableSetOf<Class<*>>()  //es entity class
+
         @JvmStatic
         val logHistoryMap = linkedMapOf<Class<*>, Array<String>>()
+
         // 冗余字段的引用。如 user.corp.name 引用的是  corp.name
         @JvmStatic
         val refsMap = mutableListOf<DbEntityFieldRefData>()
@@ -28,9 +41,11 @@ class EsEntityCollector : BeanPostProcessor {
         //注册的 Update Bean
         @JvmStatic
         val insertEvent = mutableListOf<IEsEntityInsert>()
+
         //注册的 Update Bean
         @JvmStatic
         val updateEvent = mutableListOf<IEsEntityUpdate>()
+
         //注册的 Delete Bean
         @JvmStatic
         val deleteEvent = mutableListOf<IEsEntityDelete>()
@@ -113,7 +128,7 @@ class EsEntityCollector : BeanPostProcessor {
             refsMap.add(DbEntityFieldRefData(entityClass, ref))
         }
 
-        if( entityClass.superclass !=null) {
+        if (entityClass.superclass != null) {
             addRef(entityClass.superclass);
         }
     }

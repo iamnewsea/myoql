@@ -1,4 +1,4 @@
-package nbcp.web
+package nbcp
 
 import nbcp.comm.Important
 import nbcp.comm.clazzesIsSimpleDefine
@@ -29,7 +29,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import java.util.function.Consumer
 
 @Component
-class MyMvcBeanProcessor : BeanPostProcessor {
+class MyMvcInitConfig : BeanPostProcessor {
     companion object {
         private var inited = false;
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

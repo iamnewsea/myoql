@@ -6,12 +6,26 @@ import nbcp.comm.usingScope
 import nbcp.db.*
 import nbcp.db.mongo.event.*
 import org.springframework.beans.factory.config.BeanPostProcessor
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.context.annotation.Import
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
 import java.io.Serializable
 
 
 @Component
+@Import(
+    value = [
+        MongoCollectionDataSource::class,
+        MongoCollectionLogProperties::class,
+        MongoCascadeUpdateEvent::class,
+        MongoDustbinEvent::class,
+        MongoInsertEvent::class,
+        MongoLogHistoryUpdateEvent::class,
+        MongoUpdateAtEvent::class,
+    ]
+)
+@ConditionalOnClass(MongoTemplate::class)
 class MongoEntityCollector : BeanPostProcessor {
     companion object {
         //需要删 除后放入垃圾箱的实体
