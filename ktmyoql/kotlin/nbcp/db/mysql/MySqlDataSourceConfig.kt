@@ -17,7 +17,7 @@ import javax.sql.DataSource
 
 @Component
 @Import(JsonMapRowMapper::class)
-@ConditionalOnClass(MysqlDataSource::class)
+@ConditionalOnClass(DataSource::class)
 class MySqlDataSourceConfig {
     companion object {
         @JvmStatic

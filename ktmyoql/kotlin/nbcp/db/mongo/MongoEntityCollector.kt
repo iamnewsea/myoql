@@ -14,17 +14,6 @@ import java.io.Serializable
 
 
 @Component
-@Import(
-    value = [
-        MongoCollectionDataSource::class,
-        MongoCollectionLogProperties::class,
-        MongoCascadeUpdateEvent::class,
-        MongoDustbinEvent::class,
-        MongoInsertEvent::class,
-        MongoLogHistoryUpdateEvent::class,
-        MongoUpdateAtEvent::class,
-    ]
-)
 @ConditionalOnClass(MongoTemplate::class)
 class MongoEntityCollector : BeanPostProcessor {
     companion object {

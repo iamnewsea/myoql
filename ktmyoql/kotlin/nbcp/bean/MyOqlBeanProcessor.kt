@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component
 
 @Component
 @ConditionalOnClass(value = [ObjectId::class, Document::class])
-class MyOqlJsonConfig : BeanPostProcessor {
+class MyOqlMongoJsonSerializerConfig : BeanPostProcessor {
     companion object {
         private var inited = false;
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

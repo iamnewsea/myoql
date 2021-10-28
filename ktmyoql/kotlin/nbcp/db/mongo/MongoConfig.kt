@@ -1,25 +1,13 @@
 package nbcp.db.mongo
 
 import nbcp.comm.*
-import nbcp.db.AbstractMyOqlMultipleDataSourceProperties
+import nbcp.db.MyOqlMultipleDataSourceDefine
 import nbcp.db.MongoCrudEnum
-import nbcp.utils.SpringUtil
+import nbcp.db.MyOqlBaseActionLogDefine
 import org.springframework.beans.factory.InitializingBean
-import org.springframework.boot.autoconfigure.AutoConfigureAfter
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.*
-import org.springframework.core.convert.support.GenericConversionService
-import org.springframework.core.type.AnnotatedTypeMetadata
-import org.springframework.data.mongodb.MongoDatabaseFactory
-import org.springframework.data.mongodb.MongoTransactionManager
-import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver
-import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper
-import org.springframework.data.mongodb.core.convert.MappingMongoConverter
-import org.springframework.data.mongodb.core.mapping.MongoMappingContext
 import org.springframework.stereotype.Component
 
 
@@ -90,62 +78,12 @@ import org.springframework.stereotype.Component
  */
 @ConfigurationProperties(prefix = "app.mongo.ds")
 @Component
-class MongoCollectionDataSource : AbstractMyOqlMultipleDataSourceProperties() {
+class MongoCollectionDataSource : MyOqlMultipleDataSourceDefine() {
 }
-
 
 
 @ConfigurationProperties(prefix = "app.mongo.log")
 @Component
-class MongoCollectionLogProperties :  InitializingBean{
-    var find: List<String> = listOf()
-    var insert: List<String> = listOf()
-    var update: List<String> = listOf()
-    var remove: List<String> = listOf()
+class MongoCollectionLogProperties : MyOqlBaseActionLogDefine("app.mongo.log-default") {
 
-
-
-    fun getFindLog(tableDbName: String): Boolean {
-        if (find.contains(tableDbName.lowercase())) return true;
-        if (logDefault.contains(MongoCrudEnum.find)) return true;
-        return false;
-    }
-
-    fun getInsertLog(tableDbName: String): Boolean {
-        if (insert.contains(tableDbName.lowercase())) return true;
-        if (logDefault.contains(MongoCrudEnum.insert)) return true;
-        return false
-    }
-
-    fun getUpdateLog(tableDbName: String): Boolean {
-        if (update.contains(tableDbName.lowercase())) return true;
-        if (logDefault.contains(MongoCrudEnum.update)) return true;
-        return false;
-    }
-
-    fun getRemoveLog(tableDbName: String): Boolean {
-        if (remove.contains(tableDbName.lowercase())) return true;
-        if (logDefault.contains(MongoCrudEnum.remove)) return true;
-        return false;
-    }
-
-
-    val logDefault by lazy {
-        var value = config.getConfig("app.mongo.log-default").AsString().trim();
-        if (value.HasValue) {
-            if (value == "*") {
-                return@lazy MongoCrudEnum::class.java.GetEnumList()
-            }
-            return@lazy MongoCrudEnum::class.java.GetEnumList(value)
-        }
-        return@lazy listOf<MongoCrudEnum>()
-    }
-
-
-    override fun afterPropertiesSet() {
-        find = find.map { it.lowercase() }
-        insert = insert.map { it.lowercase() }
-        update = update.map { it.lowercase() }
-        remove = remove.map { it.lowercase() }
-    }
 }

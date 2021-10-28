@@ -3,20 +3,8 @@ package nbcp.db.redis
 /**
  * Created by udi on 17-3-19.
  */
-import nbcp.db.AbstractMyOqlMultipleDataSourceProperties
-import org.springframework.boot.autoconfigure.AutoConfigureAfter
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+import nbcp.db.MyOqlMultipleDataSourceDefine
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.cache.annotation.EnableCaching
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.data.redis.connection.DefaultStringRedisConnection
-import org.springframework.data.redis.connection.RedisConnection
-import org.springframework.data.redis.connection.RedisConnectionFactory
-import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.data.redis.core.SetOperations
-import org.springframework.data.redis.serializer.RedisSerializer
 import org.springframework.stereotype.Component
 
 //
@@ -171,7 +159,7 @@ import org.springframework.stereotype.Component
  */
 @ConfigurationProperties(prefix = "app.redis.ds")
 @Component
-class RedisDataSource : AbstractMyOqlMultipleDataSourceProperties() {
+class RedisDataSource : MyOqlMultipleDataSourceDefine() {
 }
 
 //

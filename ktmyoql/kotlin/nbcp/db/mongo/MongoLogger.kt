@@ -7,7 +7,6 @@ import nbcp.db.db
 import nbcp.utils.SpringUtil
 import org.bson.Document
 import org.slf4j.LoggerFactory
-import org.springframework.boot.logging.LogLevel
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 
@@ -19,15 +18,15 @@ object MongoLogger {
 
 
     fun logFind(error: Exception?, collectionName: String, queryJson: String, result: Document?) {
-        log(error, collectionName, queryJson, result?.ToJson() ?: "", mongoLog::getFindLog)
+        log(error, collectionName, queryJson, result?.ToJson() ?: "", mongoLog::getQueryLog)
     }
 
     fun logFind(error: Exception?, collectionName: String, queryJson: Query, result: JsonMap) {
-        log(error, collectionName, queryJson.queryObject.toJson(), result.ToJson(), mongoLog::getFindLog)
+        log(error, collectionName, queryJson.queryObject.toJson(), result.ToJson(), mongoLog::getQueryLog)
     }
 
     fun logFind(error: Exception?, collectionName: String, getMsg: () -> String) {
-        log(error, collectionName, mongoLog::getFindLog, getMsg);
+        log(error, collectionName, mongoLog::getQueryLog, getMsg);
     }
 
     fun logInsert(error: java.lang.Exception?, collectionName: String, entities: MutableList<Any>) {
@@ -96,7 +95,7 @@ ${if (result.HasValue) ("[result] " + result + "\n") else ""}[耗时] ${db.execu
     }
 
     fun logDelete(error: Exception?, collectionName: String, query: Query, result: DeleteResult?) {
-        log(error, collectionName, mongoLog::getRemoveLog, {
+        log(error, collectionName, mongoLog::getDeleteLog, {
             return@log "delete:[" + collectionName + "] " + query.queryObject.toJson() + ",result:${result?.ToJson()}"
         })
 

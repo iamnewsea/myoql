@@ -11,7 +11,6 @@ import nbcp.utils.SpringUtil
 import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.slf4j.LoggerFactory
-import org.springframework.boot.logging.LogLevel
 
 
 object EsLogger {
@@ -21,18 +20,18 @@ object EsLogger {
     }
 
     fun logGet(error: Exception?, esName: String, request: Request, response: Response?) {
-        log(error,esName,request,response,esLog::getGetLog)
+        log(error,esName,request,response,esLog::getQueryLog)
     }
 
     fun logDelete(error: Exception?, esName: String, request: Request, response: Response?) {
         log(error,esName,request,response,esLog::getDeleteLog)
     }
     fun logPost(error: Exception?, esName: String, request: Request, response: Response?) {
-        log(error,esName,request,response,esLog::getPostLog)
+        log(error,esName,request,response,esLog::getInsertLog)
     }
 
     fun logPut(error: Exception?, esName: String, request: Request, response: Response?) {
-        log(error,esName,request,response,esLog::getPutLog)
+        log(error,esName,request,response,esLog::getUpdateLog)
     }
 
 

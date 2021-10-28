@@ -15,13 +15,6 @@ import java.io.Serializable
 
 @Component
 @ConditionalOnProperty("spring.elasticsearch.rest.uris")
-@Import(
-    value = [
-        EsIndexDataSource::class,
-        EsTableLogProperties::class,
-        EsInsertEvent::class
-    ]
-)
 class EsEntityCollector : BeanPostProcessor {
     companion object {
         @JvmStatic

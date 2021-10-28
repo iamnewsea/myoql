@@ -52,7 +52,7 @@ object SqlLogger {
 
 
         //如果指定了输出Sql
-        if (sqlLog.getSelectLog(tableDbName)) {
+        if (sqlLog.getQueryLog(tableDbName)) {
             usingScope(LogLevelScope.info) {
                 logger.info(getMsg())
             }

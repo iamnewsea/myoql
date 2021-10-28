@@ -3,7 +3,7 @@ package nbcp.db
 import org.springframework.beans.factory.InitializingBean
 
 
-abstract class AbstractMyOqlMultipleDataSourceProperties : InitializingBean {
+abstract class MyOqlMultipleDataSourceDefine : InitializingBean {
     /**
      * key 数据库的bean名称。value 是表名
      */

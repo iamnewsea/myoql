@@ -4,7 +4,6 @@ import nbcp.db.mongo.*;
 import nbcp.db.*
 import nbcp.db.mongo.entity.*
 import org.bson.Document
-import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.BasicQuery
 import org.springframework.stereotype.Component
