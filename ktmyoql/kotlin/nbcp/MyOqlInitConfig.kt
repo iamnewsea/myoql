@@ -100,7 +100,6 @@ class MyOqlBeanImporter : ImportBeanDefinitionRegistrar, ResourceLoaderAware, Be
  *
  * @author: jiaYao
  */
-@Component
 class MyClassPathBeanDefinitionScanner(registry: BeanDefinitionRegistry?, useDefaultFilters: Boolean) :
     ClassPathBeanDefinitionScanner(registry, useDefaultFilters) {
     /**
