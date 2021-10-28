@@ -35,7 +35,6 @@ class MyOqlMongoConfig : BeanPostProcessor {
             converter.typeMapper = DefaultMongoTypeMapper(null)
             (converter.conversionService as GenericConversionService).addConverter(Date2LocalDateTimeConverter())
 
-            loadMongoDependencyBeans();
         } else if (bean is MongoProperties) {
             //修改默认连接池参数
             if (bean.uri.HasValue) {
@@ -50,11 +49,6 @@ class MyOqlMongoConfig : BeanPostProcessor {
 
         return ret;
     }
-
-    private fun loadMongoDependencyBeans() {
-        SpringUtil.registerBeanDefinition(UploadFileMongoService())
-    }
-
 
     /**
      * 系统预热之后，最后执行事件。

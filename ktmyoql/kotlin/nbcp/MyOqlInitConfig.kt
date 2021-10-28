@@ -28,6 +28,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.type.AnnotationMetadata
 import org.springframework.core.type.filter.AssignableTypeFilter
+import org.springframework.stereotype.Component
 
 @Configuration
 @Import(
@@ -48,16 +49,21 @@ import org.springframework.core.type.filter.AssignableTypeFilter
 
         MyBatisRedisCachePointcutAdvisor::class,
         RedisCacheAopService::class,
+
+        MyOqlBeanImporter::class
     ]
 )
 //@ComponentScan("nbcp.db.mongo.event")
-class MyOqlInitConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAware, BeanFactoryAware {
+class MyOqlInitConfig {
 
     @EventListener
     fun prepared(ev: ApplicationPreparedEvent) {
-
+        val msg = "myoql"
     }
+}
 
+@Component
+class MyOqlBeanImporter : ImportBeanDefinitionRegistrar, ResourceLoaderAware, BeanFactoryAware {
     private lateinit var resourceLoader: ResourceLoader
     private lateinit var beanFactory: BeanFactory;
 
@@ -94,6 +100,7 @@ class MyOqlInitConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAware, Bean
  *
  * @author: jiaYao
  */
+@Component
 class MyClassPathBeanDefinitionScanner(registry: BeanDefinitionRegistry?, useDefaultFilters: Boolean) :
     ClassPathBeanDefinitionScanner(registry, useDefaultFilters) {
     /**
@@ -130,8 +137,6 @@ class MyClassPathBeanDefinitionScanner(registry: BeanDefinitionRegistry?, useDef
 
         addIncludeFilter(AssignableTypeFilter(MyOqlMultipleDataSourceDefine::class.java))
         addIncludeFilter(AssignableTypeFilter(MyOqlBaseActionLogDefine::class.java))
-
-
 
 
         /**

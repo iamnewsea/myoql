@@ -6,11 +6,14 @@ import nbcp.db.mongo.entity.*
 import nbcp.db.mongo.*
 import nbcp.db.mongo.table.MongoBaseGroup
 import nbcp.model.IUploadFileDbService
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.context.annotation.Primary
+import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Service
 
 
 @Primary
+@ConditionalOnClass(MongoTemplate::class)
 class UploadFileMongoService : IUploadFileDbService {
     companion object {
     }

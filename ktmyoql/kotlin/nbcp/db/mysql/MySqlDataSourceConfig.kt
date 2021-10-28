@@ -1,6 +1,5 @@
 package nbcp.db.mysql
 
-import com.mysql.cj.jdbc.MysqlDataSource
 import com.zaxxer.hikari.HikariDataSource
 import nbcp.comm.HasValue
 import nbcp.db.sql.component.JsonMapRowMapper

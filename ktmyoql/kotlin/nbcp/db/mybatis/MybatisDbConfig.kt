@@ -1,6 +1,5 @@
 package nbcp.db.mybatis
 
-import com.mysql.cj.jdbc.MysqlDataSource
 import nbcp.comm.config
 import nbcp.utils.SpringUtil
 import org.apache.ibatis.session.SqlSessionFactory
