@@ -11,44 +11,59 @@ import kotlin.reflect.KClass
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class FromRedisCache(
-    /**
-     * 缓存表
-     */
-    val table: String = "",
-    /**
-     * 缓存关联表
-     */
-    val joinTables: Array<String> = arrayOf(),
-    /**
-     * 缓存表的隔离键或主键, 如:"cityCode"
-     */
-    val groupKey: String = "",
-    /**
-     * 缓存表的隔离值,如: "010"
-     */
-    val groupValue: String = "",
+        /**
+         * 如果 table 为空，则使用 table = tableClass.name
+         */
+        val tableClass: KClass<*> = Boolean::class,
 
-    /**
-     * 唯一值
-     */
-    val sql: String = "",
+        /**
+         * 缓存关联表
+         */
+        val joinTableClasses: Array<KClass<*>> = arrayOf(),
 
-    val cacheSeconds: Int = 3600,
-    /**
-     * 如果 table 为空，则使用 table = tableClass.name
-     */
-    val tableClass: KClass<*> = Boolean::class
+        /**
+         * 缓存表的隔离键或主键, 如:"cityCode"
+         */
+        val groupKey: String = "",
+        /**
+         * 缓存表的隔离值,如: "010"
+         */
+        val groupValue: String = "",
+
+        /**
+         * 唯一值
+         */
+        val sql: String = "",
+
+        val cacheSeconds: Int = 3600,
+        /**
+         * 缓存表
+         */
+        val table: String = "",
+        /**
+         * 缓存关联表
+         */
+        val joinTables: Array<String> = arrayOf(),
 ) {
 }
 
 
-fun FromRedisCache.getTableName():String{
+fun FromRedisCache.getTableName(): String {
     var tableName = this.table
 
-    if( tableName.isEmpty() && !this.tableClass.java.IsSimpleType()){
+    if (tableName.isEmpty() && !this.tableClass.java.IsSimpleType()) {
         tableName = this.tableClass.java.simpleName;
     }
     return tableName;
+}
+
+fun FromRedisCache.getJoinTableNames(): Array<String> {
+    var joinTables = this.joinTables;
+
+    if (joinTables.isEmpty() && !this.joinTableClasses.any()) {
+        joinTables = this.joinTableClasses.map { it.simpleName!! }.toTypedArray()
+    }
+    return joinTables;
 }
 
 
