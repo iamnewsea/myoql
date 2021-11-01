@@ -62,7 +62,7 @@ data class FromRedisCacheData @JvmOverloads constructor(
             ret.cacheSeconds = cacheForSelect.cacheSeconds;
 
             ret.table = spelExecutor.getVariableValue(cacheForSelect.getTableName());
-            ret.joinTables = cacheForSelect.joinTables;
+            ret.joinTables = cacheForSelect.getJoinTableNames();
             ret.groupKey = spelExecutor.getVariableValue(cacheForSelect.groupKey);
             ret.groupValue = spelExecutor.getVariableValue(cacheForSelect.groupValue);
             ret.sql = spelExecutor.getVariableValue(cacheForSelect.sql.AsString(sql));

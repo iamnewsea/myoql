@@ -18,12 +18,12 @@ import org.springframework.stereotype.Service
 @Service
 class AppCacheTestKotlinService {
 
-    @FromRedisCache("tab2", arrayOf(), "city", "#city")
+    @FromRedisCache(table = "tab2", groupKey = "city", groupValue = "#city")
     fun cache_select(city: Int): MutableList<Document> {
         var result = db.mor_base.sysAnnex.aggregate()
-            .addPipeLineRawString(PipeLineEnum.match, """ { "group" : "lowcode"} """.replace("##", "$"))
-            .addPipeLineRawString(
-                    PipeLineEnum.group, """
+                .addPipeLineRawString(PipeLineEnum.match, """ { "group" : "lowcode"} """.replace("##", "$"))
+                .addPipeLineRawString(
+                        PipeLineEnum.group, """
 {
     _id: { 扩展名: "##ext" },
     总数: { ##sum : 1 },
@@ -31,9 +31,9 @@ class AppCacheTestKotlinService {
     最大: { ##max: "##size" }
 }
             """.replace("##", "$")
-            )
-            .addPipeLineRawString(PipeLineEnum.sort, """ { "_id.扩展名":1 } """)
-            .toMapList()
+                )
+                .addPipeLineRawString(PipeLineEnum.sort, """ { "_id.扩展名":1 } """)
+                .toMapList()
 
         /**
          * 生成的语句：
@@ -62,18 +62,18 @@ class AppCacheTestKotlinService {
         var sql = "select * from tab where city=:city";
         var map = JsonMap("city" to "010")
         var list = FromRedisCacheData("tab2", arrayOf(), "city", city.toString(), sql + map.ToJson())
-            .usingRedisCache(Document::class.java) {
-                var list = Document(); // jdbcTemplate.queryList(sql,map)
-                list.put("name", "cache-test");
-                list.put("city", city.toString());
-                return@usingRedisCache list;
-            }
+                .usingRedisCache(Document::class.java) {
+                    var list = Document(); // jdbcTemplate.queryList(sql,map)
+                    list.put("name", "cache-test");
+                    list.put("city", city.toString());
+                    return@usingRedisCache list;
+                }
 
         return mutableListOf(list)
     }
 
 
-    @BrokeRedisCache("tab2", "city", "#city")
+    @BrokeRedisCache(table = "tab2", groupKey = "city", groupValue = "#city")
     fun cache_broke(city: Int) {
     }
 
