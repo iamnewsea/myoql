@@ -61,6 +61,7 @@ object db_mongo {
 
     /**
      * 获取 MongoTemplate ,将会有一个连接的线程在等待，所以要避免 usingScope 而不释放。
+     * @param uri: 格式 mongodb://dev:123@mongo:27017/cms ，用户名密码出现特殊字符，需要替换：@ -> %40 , : -> %3A
      */
     fun getMongoTemplateByUri(uri: String): MongoTemplate? {
         if (uri.isEmpty()) return null;
@@ -69,7 +70,8 @@ object db_mongo {
         if (ret != null) {
             return ret;
         }
-        var dbFactory = SimpleMongoClientDatabaseFactory(uri);
+        val dbFactory = SimpleMongoClientDatabaseFactory(uri);
+
         val converter =
             MappingMongoConverter(DefaultDbRefResolver(dbFactory), SpringUtil.getBean<MongoMappingContext>())
         converter.setTypeMapper(DefaultMongoTypeMapper(null));
