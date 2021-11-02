@@ -43,16 +43,16 @@ open class ApiResult<T> @JvmOverloads constructor(msg: String = "", code: Int = 
 
 
 class ParameterInvalidException @JvmOverloads constructor(msg: String = "") :
-        RuntimeException(msg.AsString("参数非法"))
+    RuntimeException(msg.AsString("参数非法"))
 
 class NoDataException @JvmOverloads constructor(msg: String = "") :
-        RuntimeException(msg.AsString("找不到数据"))
+    RuntimeException(msg.AsString("找不到数据"))
 
 class ExecuteDbException @JvmOverloads constructor(msg: String = "") :
-        RuntimeException(msg.AsString("操作数据库失败"))
+    RuntimeException(msg.AsString("操作数据库失败"))
 
 class ServerException @JvmOverloads constructor(msg: String = "") :
-        RuntimeException(msg.AsString("服务器异常"))
+    RuntimeException(msg.AsString("服务器异常"))
 
 /**
  * 查询对象
@@ -98,4 +98,36 @@ open class ListResult<T>() : JsonResult() {
         this.value = value;
         return this;
     }
+}
+
+
+/**
+ * 为了接收数据方便
+ */
+class ListTypedMapResult<T>(var clazz: Class<T>) : JsonMap() {
+    var msg: String
+        get() {
+            return this.get("msg").AsString();
+        }
+        set(value) {
+            this.set("msg", value);
+        }
+
+    var code: Int
+        get() {
+            return this.get("code").AsInt();
+        }
+        set(value) {
+            this.set("code", value);
+        }
+
+    var data: List<T>
+        get() {
+            val _data = this.get("data");
+            if (_data == null) return listOf();
+            return (_data as List<Any>).map { it.ConvertJson(clazz) }
+        }
+        set(value) {
+            this.set("data", value);
+        }
 }
