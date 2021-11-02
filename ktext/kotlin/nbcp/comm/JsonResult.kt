@@ -104,7 +104,7 @@ open class ListResult<T>() : JsonResult() {
 /**
  * 为了接收数据方便
  */
-class ListTypedMapResult<T>(var clazz: Class<T>) : JsonMap() {
+class TypedMapResult<T>() : JsonMap() {
     var msg: String
         get() {
             return this.get("msg").AsString();
@@ -121,11 +121,11 @@ class ListTypedMapResult<T>(var clazz: Class<T>) : JsonMap() {
             this.set("code", value);
         }
 
-    var data: List<T>
+    var data: T?
         get() {
             val _data = this.get("data");
-            if (_data == null) return listOf();
-            return (_data as List<Any>).map { it.ConvertJson(clazz) }
+            if (_data == null) return null;
+            return _data as T
         }
         set(value) {
             this.set("data", value);
