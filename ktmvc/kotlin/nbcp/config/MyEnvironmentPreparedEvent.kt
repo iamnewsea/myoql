@@ -9,8 +9,8 @@ import org.springframework.core.env.StandardEnvironment
 
 class MyEnvironmentPreparedEvent : ApplicationListener<ApplicationEnvironmentPreparedEvent> {
     override fun onApplicationEvent(event: ApplicationEnvironmentPreparedEvent) {
-        val jsonMap = JsonMap();
-        val map = MapPropertySource("ops", jsonMap);
-        event.environment.propertySources.addBefore(StandardEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, map)
+//        val jsonMap = JsonMap();
+//        val map = MapPropertySource("ops", jsonMap);
+//        event.environment.propertySources.addBefore(StandardEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, map)
     }
 }
