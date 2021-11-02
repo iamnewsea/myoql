@@ -146,17 +146,30 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
 
     fun doGet(): String {
         this.request.requestMethod = "GET"
+        return doNet()
+    }
 
-        var retData = doNet()
 
-        return retData;
+    fun doPut(postJson: JsonMap): String {
+        if (this.request.contentType.isEmpty()) {
+            this.request.contentType = "application/json;charset=UTF-8"
+        }
+
+        var requestBody = "";
+        if (this.request.contentType.contains("json")) {
+            requestBody = postJson.ToJson()
+        } else {
+            requestBody =
+                postJson.map { it.key + "=" + JsUtil.encodeURIComponent(it.value.AsString()) }.joinToString("&");
+        }
+
+        return doPut(requestBody);
     }
 
     /**
      * Post请求
      */
     fun doPost(postJson: JsonMap): String {
-
         if (this.request.contentType.isEmpty()) {
             this.request.contentType = "application/json;charset=UTF-8"
         }
@@ -170,6 +183,23 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         }
 
         return doPost(requestBody);
+    }
+
+    @JvmOverloads
+    fun doPut(requestBody: String = ""): String {
+//        logger.Info { "[post]\t${url}\n${requestHeader.map { it.key + ":" + it.value }.joinToString("\n")}" }
+
+        if (this.request.headers.containsKey("Accept") == false) {
+            this.request.headers.set("Accept", "application/json")
+        }
+
+        this.request.requestMethod = "PUT"
+
+        if (requestBody.HasValue) {
+            this.setPostBody(requestBody)
+        }
+
+        return doNet()
     }
 
     /**
@@ -189,10 +219,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
             this.setPostBody(requestBody)
         }
 
-        var ret = doNet()
-
-
-        return ret;
+        return doNet()
     }
 
     fun doNet(): String {
@@ -337,7 +364,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
                     }
                 }
 
-                var content = msgs.joinToString(const.line_break);
+                val content = msgs.joinToString(const.line_break);
                 msgs.clear();
                 return@InfoError content;
             }
@@ -352,7 +379,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         val buffer = ByteArray(4096)
 
         while (true) {
-            var n = input.read(buffer);
+            val n = input.read(buffer);
             if (n == -1) {
                 break;
             }
@@ -366,11 +393,11 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
      * @param filePath:保存位置，优先使用Url中的文件名，如果存在，则用唯一Code命名。
      */
     fun doDownloadFile(filePath: String): FileMessage {
-        var CACHESIZE = 1024 * 1024;
+        val CACHESIZE = 1024 * 1024;
 
-        var remoteImage = url;
-        var ret = FileMessage();
-        var extInfo = FileExtentionInfo(remoteImage);
+        val remoteImage = url;
+        val ret = FileMessage();
+        val extInfo = FileExtentionInfo(remoteImage);
         if (extInfo.extName.isEmpty()) {
             extInfo.extName = "png";
             extInfo.extType = FileExtentionTypeEnum.Image;
@@ -379,12 +406,12 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         ret.name = extInfo.name;
         ret.extName = extInfo.extName;
 
-        var oriFile = filePath + File.separatorChar + extInfo.name + "." + extInfo.extName;
-        var tempFile = filePath + File.separatorChar + CodeUtil.getCode() + "." + extInfo.extName;
+        val oriFile = filePath + File.separatorChar + extInfo.name + "." + extInfo.extName;
+        val tempFile = filePath + File.separatorChar + CodeUtil.getCode() + "." + extInfo.extName;
 
         ret.fullPath = tempFile;
 
-        var destFilePath = File(tempFile)
+        val destFilePath = File(tempFile)
 
         try {
             if (destFilePath.parentFile.exists() == false) {
@@ -401,10 +428,8 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         }
 
         this.request.requestMethod = "GET"
-
         this.response.resultAction = { input ->
-
-            var bytes = ByteArray(CACHESIZE);
+            val bytes = ByteArray(CACHESIZE);
 
             while (true) {
                 val bytes_len = input.read(bytes)
@@ -436,9 +461,9 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
      * @return 上传文件返回的结果，如Json：{id,name,url,msg}
      */
     fun uploadFile(fileName: String, fileStream: InputStream): String {
-        var CACHESIZE = 1024 * 1024;
+        val CACHESIZE = 1024 * 1024;
 
-        var boundary = "------" + CodeUtil.getCode();
+        val boundary = "------" + CodeUtil.getCode();
 
         this.request.requestMethod = "POST"
         this.request.connectTimeout = 1200_000
