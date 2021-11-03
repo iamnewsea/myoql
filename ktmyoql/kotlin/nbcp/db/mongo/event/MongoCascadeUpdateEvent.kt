@@ -61,7 +61,6 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
             }
 
             var idValue = idValues.getOrPut(ref.refIdField) {
-
                 val refIdField = whereMap.keys.firstOrNull { key ->
                     if (key == ref.refIdField) {
                         return@firstOrNull true
@@ -86,18 +85,31 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
                 }
 
                 //查询数据，把Id查出来。
-                var query = MongoBaseQueryClip(update.collectionName)
-                query.whereData.addAll(update.whereData)
-                query.selectField(ref.refIdField)
+                val IdValueQuery = MongoBaseQueryClip(update.collectionName)
+                IdValueQuery.whereData.addAll(update.whereData)
+                IdValueQuery.selectField(ref.refIdField)
 
-                return@getOrPut query.toList(String::class.java).toTypedArray()
+                return@getOrPut IdValueQuery.toList(String::class.java).toTypedArray()
+            }
+
+            val masterNameValue = updateSetFields.getValue(ref.refNameField);
+
+            //判断新值，旧值是否相等
+            val nameValueQuery = MongoBaseQueryClip(update.collectionName)
+            nameValueQuery.whereData.addAll(update.whereData)
+            nameValueQuery.selectField(ref.refNameField)
+
+            val dbNameValues = nameValueQuery.toList(String::class.java).toSet();
+
+            if (dbNameValues.size == 1 && dbNameValues.first() == masterNameValue) {
+                return EventResult(true, null)
             }
 
             list.add(
                 CascadeUpdateEventDataModel(
                     ref,
                     idValue,
-                    updateSetFields.getValue(ref.refNameField)
+                    masterNameValue
                 )
             )
         }
@@ -110,29 +122,28 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
             return;
         }
 
-        var ret = eventData.extData as Collection<CascadeUpdateEventDataModel>
-        if (ret.any() == false) return;
+        var cascadeUpdates = eventData.extData as Collection<CascadeUpdateEventDataModel>
+        if (cascadeUpdates.any() == false) return;
 
 
-        ret.forEach { ref ->
-            if (ref.masterIdValues.any()) {
+        cascadeUpdates
+            .filter { it.masterIdValues.any() }
+            .forEach { ref ->
                 val targetCollection = MyUtil.getSmallCamelCase(ref.ref.entityClass.simpleName)
+
                 val update2 = MongoBaseUpdateClip(targetCollection)
-                update2.whereData.add(MongoColumnName(ref.ref.idField) match_in ref.masterIdValues.map {
+                update2.whereData.add(MongoColumnName(ref.ref.idField) match_in ref.masterIdValues.map { updatedId ->
                     getObjectIdValueTypeIfNeed(
-                        it
+                        updatedId
                     )
                 })
                 update2.setValue(ref.ref.nameField, ref.masterNameValue)
-
                 update2.exec();
-
 
                 usingScope(LogLevelScope.info) {
                     logger.info("因为更新 ${update.collectionName}: ${ref.masterIdValues.joinToString(",")} + ${ref.masterNameValue} 而导致级联更新 ${targetCollection}：${ref.ref.idField} + ${ref.ref.nameField}")
                 }
             }
-        }
     }
 
 }
