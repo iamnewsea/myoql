@@ -52,7 +52,7 @@ open class NacosService {
         val group = group.AsString("DEFAULT_GROUP")
         var searchType = "blur"; // blur： 模糊，  accurate ：精确
         val http =
-                HttpUtil("${serverHost.AsString(this.serverHost)}/v1/cs/configs?dataId=${dataId.AsString("*")}&group=${group}&tenant=$ns&pageNo=${pageNumber}&pageSize=100&search=${searchType}")
+                HttpUtil("${getServerFullHost(serverHost)}/v1/cs/configs?dataId=${dataId.AsString("*")}&group=${group}&tenant=$ns&pageNo=${pageNumber}&pageSize=100&search=${searchType}")
         val res = http.doGet();
         if (http.status != 200) {
             return ListResult("ns:$ns,dataId:$dataId,group:$group , 获取nacos配置错误 : $res")
@@ -75,7 +75,7 @@ open class NacosService {
 
     fun getConfig(serverHost: String, ns: String, group: String, dataId: String): ApiResult<String> {
         val group = group.AsString("DEFAULT_GROUP")
-        val http = HttpUtil("${serverHost.AsString(this.serverHost)}/v1/cs/configs?dataId=${dataId}&group=${group}&tenant=$ns")
+        val http = HttpUtil("${getServerFullHost(serverHost)}/v1/cs/configs?dataId=${dataId}&group=${group}&tenant=$ns")
         val res = http.doGet();
         if (http.status == 200) {
             return ApiResult.of(res)
@@ -92,7 +92,7 @@ open class NacosService {
     ): JsonResult {
         val type = "yaml"
 
-        val http = HttpUtil("${serverHost.AsString(this.serverHost)}/v1/cs/configs")
+        val http = HttpUtil("${getServerFullHost(serverHost)}/v1/cs/configs")
         val res =
                 http.doPost(
                         "dataId=$dataId&group=${group.AsString("DEFAULT_GROUP")}&tenant=$ns&content=${
@@ -230,23 +230,27 @@ ${end_sign}
             var metadata: StringMap = StringMap()
     )
 
-
-    private val serverHost: String by lazy {
-        var ret = SpringUtil.context.environment.getProperty("spring.cloud.nacos.discovery.server-addr").AsString()
-
+    private fun getServerFullHost(host: String): String {
+        var ret = host;
+        if (ret.isEmpty()) {
+            ret = SpringUtil.context.environment.getProperty("spring.cloud.nacos.discovery.server-addr").AsString();
+        }
         if (!ret.startsWith("http://", true) && !ret.startsWith("https://", true)) {
             ret = "http://${ret}"
         }
 
         if (ret.endsWith("/")) {
-            ret = ret.substring(0, ret.length - 2);
+            ret = ret.substring(0, ret.length - 1);
         }
 
         if (ret.endsWith("/nacos") == false) {
             ret = ret + "/nacos"
         }
+        return ret;
+    }
 
-        return@lazy ret
+    private val serverHost: String by lazy {
+        return@lazy getServerFullHost("")
     }
 
     /**
@@ -264,7 +268,7 @@ ${end_sign}
         query["groupName"] = group;
         query["namespaceId"] = namespaceId;
 
-        val http = HttpUtil("${serverHost.AsString(this.serverHost)}/v1/ns/instance/list?${query.toUrlQuery()}")
+        val http = HttpUtil("${getServerFullHost(serverHost)}/v1/ns/instance/list?${query.toUrlQuery()}")
         val res = http.doGet();
         if (http.status != 200) {
             throw RuntimeException("ns:$namespaceId,dataId:$serviceName,group:$group , 获取nacos实例错误 : $res")
