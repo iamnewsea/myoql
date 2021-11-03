@@ -66,10 +66,10 @@ class MyHttpResponseWrapper private constructor(private val response: HttpServle
         @Throws(IOException::class)
         get() {
             flushBuffer()
-            var size = this.out.bos.size();
-
-            //大于1MB，算文件下载。不记录。
-            if (size > 1048576) return null;
+//            var size = this.out.bos.size();
+//
+//            //大于1MB，算文件下载。不记录。
+//            if (size > 1048576) return null;
 
             var result: ByteArray = this.out.bos.toByteArray()
             if (result.size == 0) return ByteArray(0)
