@@ -3,6 +3,7 @@ package nbcp.db.mongo
 import nbcp.scope.*
 import nbcp.comm.*
 import nbcp.db.BaseEntity
+import nbcp.db.MyOqlOrmScope
 import nbcp.db.db
 import nbcp.db.mongo.*
 import java.io.*
@@ -74,7 +75,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
             mongoTemplate.insert(entities, this.collectionName)
             db.executeTime = LocalDateTime.now() - startAt
 
-            usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+            usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
                 settingResult.forEach {
                     it.first.insert(this, it.second)
                 }

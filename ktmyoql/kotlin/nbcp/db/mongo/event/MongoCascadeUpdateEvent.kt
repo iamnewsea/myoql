@@ -1,10 +1,7 @@
 package nbcp.db.mongo.event;
 
+import nbcp.comm.*
 import nbcp.db.mongo.*;
-import nbcp.comm.AsString
-import nbcp.comm.LogLevelScope
-import nbcp.comm.getStringValue
-import nbcp.comm.usingScope
 import nbcp.utils.*
 import nbcp.db.*
 import org.slf4j.LoggerFactory
@@ -28,6 +25,11 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
 
 
     override fun beforeUpdate(update: MongoBaseUpdateClip): EventResult {
+        if (scopes.getLatest(MyOqlOrmScope.IgnoreCascadeUpdate) != null) {
+            return EventResult(true, null)
+        }
+
+
         var refs =
             MongoEntityCollector.refsMap.filter { MyUtil.getSmallCamelCase(it.refEntityClass.simpleName) == update.collectionName }
         if (refs.any() == false) {
@@ -37,15 +39,16 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
         var list = mutableListOf<CascadeUpdateEventDataModel>()
 
         //update set 指定了其它表引用的冗余列。
-        var setData = update.getChangedFieldData();
+        var updateSetFields = update.getChangedFieldData();
 
         var masterNameFields = refs.map { it.refNameField }.toSet();
 
-        var setCascadeColumns = setData.keys.intersect(masterNameFields);
+        var setCascadeColumns = updateSetFields.keys.intersect(masterNameFields);
         if (setCascadeColumns.any() == false) {
+            //如果没有修改关联字段。直接退出。
             return EventResult(true, null)
         }
-        var masterIdFields = refs.map { it.refIdField }.toSet();
+//        var masterIdFields = refs.map { it.refIdField }.toSet();
 
         //如果按id更新。
         var whereMap = update.getMongoCriteria(*update.whereData.toTypedArray()).toDocument();
@@ -53,34 +56,51 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
         var idValues = mutableMapOf<String, Array<String>>()
 
         refs.forEach { ref ->
-            if (setData.containsKey(ref.refNameField) == false) {
+            if (updateSetFields.containsKey(ref.refNameField) == false) {
                 return@forEach
             }
 
             var idValue = idValues.getOrPut(ref.refIdField) {
-                if (whereMap.keys.contains(ref.refIdField)) {
 
-                    return@getOrPut arrayOf(whereMap.getStringValue(ref.refIdField).AsString())
-                } else {
-                    //查询数据，把Id查出来。
-                    var query = MongoBaseQueryClip(update.collectionName)
-                    query.whereData.addAll(update.whereData)
-                    query.selectField(ref.refIdField)
+                val refIdField = whereMap.keys.firstOrNull { key ->
+                    if (key == ref.refIdField) {
+                        return@firstOrNull true
+                    }
 
-                    return@getOrPut query.toList(String::class.java).toTypedArray()
+                    if (key == "_id" && ref.refIdField == "id") {
+                        return@firstOrNull true
+                    }
+
+                    if (key.endsWith("._id") && ref.refIdField.endsWith(".id") &&
+                        key.Slice(0, -4) == ref.refIdField.Slice(0, -3)
+                    ) {
+                        return@firstOrNull true;
+                    }
+
+                    return@firstOrNull false
                 }
-            }
 
+
+                if (refIdField != null) {
+                    return@getOrPut arrayOf(whereMap.getStringValue(refIdField).AsString())
+                }
+
+                //查询数据，把Id查出来。
+                var query = MongoBaseQueryClip(update.collectionName)
+                query.whereData.addAll(update.whereData)
+                query.selectField(ref.refIdField)
+
+                return@getOrPut query.toList(String::class.java).toTypedArray()
+            }
 
             list.add(
                 CascadeUpdateEventDataModel(
                     ref,
                     idValue,
-                    setData.getValue(ref.refNameField)
+                    updateSetFields.getValue(ref.refNameField)
                 )
             )
         }
-
 
         return EventResult(true, list)
     }
@@ -104,7 +124,9 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
                     )
                 })
                 update2.setValue(ref.ref.nameField, ref.masterNameValue)
+
                 update2.exec();
+
 
                 usingScope(LogLevelScope.info) {
                     logger.info("因为更新 ${update.collectionName}: ${ref.masterIdValues.joinToString(",")} + ${ref.masterNameValue} 而导致级联更新 ${targetCollection}：${ref.ref.idField} + ${ref.ref.nameField}")

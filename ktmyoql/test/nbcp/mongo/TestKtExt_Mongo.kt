@@ -34,4 +34,9 @@ class TestKtExt_Mongo : TestBase() {
         val d = UserCodeGenerator.genVueCard("MongoBase", db.mor_base.basicUserLoginInfo)
         println(d)
     }
+
+    @Test
+    fun updateCascade(){
+        db.mor_base.sysAnnex
+    }
 }

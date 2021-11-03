@@ -136,7 +136,7 @@ class EsEntityCollector : BeanPostProcessor {
     fun onQuering(query: EsBaseQueryClip): Array<Pair<IEsEntityQuery, EventResult>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IEsEntityQuery, EventResult>>()
-        usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+        usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
             queryEvent.ForEachExt { it, _ ->
                 var ret = it.beforeQuery(query);
                 if (ret.result == false) {
@@ -152,7 +152,7 @@ class EsEntityCollector : BeanPostProcessor {
     fun onInserting(insert: EsBaseInsertClip): Array<Pair<IEsEntityInsert, EventResult>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IEsEntityInsert, EventResult>>()
-        usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+        usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
             insertEvent.ForEachExt { it, _ ->
                 var ret = it.beforeInsert(insert);
                 if (ret.result == false) {
@@ -168,7 +168,7 @@ class EsEntityCollector : BeanPostProcessor {
     fun onUpdating(update: EsBaseUpdateClip): Array<Pair<IEsEntityUpdate, EventResult>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IEsEntityUpdate, EventResult>>()
-        usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+        usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
             updateEvent.ForEachExt { it, _ ->
                 var ret = it.beforeUpdate(update);
                 if (!ret.result) {
@@ -185,7 +185,7 @@ class EsEntityCollector : BeanPostProcessor {
 
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IEsEntityDelete, EventResult>>()
-        usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+        usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
             deleteEvent.ForEachExt { it, _ ->
                 var ret = it.beforeDelete(delete);
                 if (ret.result == false) {

@@ -3,6 +3,7 @@ package nbcp.db.mongo
 
 import com.mongodb.client.result.DeleteResult
 import nbcp.comm.*
+import nbcp.db.MyOqlOrmScope
 import nbcp.db.db
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
@@ -71,7 +72,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Serializable>>(var moerEnt
             db.affectRowCount = ret;
 
             if (ret > 0) {
-                usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+                usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
                     settingResult.forEach {
                         it.first.delete(this, it.second)
                     }

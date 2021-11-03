@@ -42,7 +42,7 @@ open class MongoClipBase(var collectionName: String) : Serializable {
 
             var ds =
                 db.mongo.mongoEvents.getDataSource(this.collectionName, isRead)
-                    ?: scopes.GetLatest<MongoTemplateScope>()?.value
+                    ?: scopes.getLatest<MongoTemplateScope>()?.value
             if (ds != null) {
                 return ds;
             }

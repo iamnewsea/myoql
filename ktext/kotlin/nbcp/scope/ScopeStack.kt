@@ -9,7 +9,6 @@ class ScopeStack : Stack<IScopeData>() {
     /**
      * 按类型获取当前域 ,  互斥枚举类型：枚举有 mutexGroup:String 属性。
      */
-
     inline fun <reified R : IScopeData> getScopeTypes(): Set<R> {
         return getScopeTypes(R::class.java);
     }
@@ -75,16 +74,15 @@ class ScopeStack : Stack<IScopeData>() {
      * 查找最近添加的。
      * @param enumValues: 如果有值，则精确查找该值进行返回。
      */
-    inline fun <reified R : IScopeData> GetLatest(vararg enumValues: R): R? {
-        var clazz = R::class.java;
-        return GetLatest(clazz,*enumValues);
+    inline fun <reified R : IScopeData> getLatest(vararg enumValues: R): R? {
+        return getLatest(R::class.java, *enumValues);
     }
 
-    fun <R : IScopeData> GetLatest(clazz: Class<R>, vararg enumValues: R): R? {
+    fun <R : IScopeData> getLatest(clazz: Class<R>, vararg enumValues: R): R? {
         if (this.size == 0) return null
 
         for (i in this.indices.reversed()) {
-            var item = this[i];
+            val item = this[i];
             if (clazz.isAssignableFrom(item.javaClass)) {
                 if (enumValues.isEmpty() || enumValues.contains(item)) {
                     return item as R;

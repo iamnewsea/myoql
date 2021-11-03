@@ -1,17 +1,11 @@
 package nbcp.tool
 
-import java.io.IOException
-import java.io.StringWriter
-import java.lang.Exception
-import java.util.*
-import freemarker.cache.ClassTemplateLoader
 import freemarker.ext.beans.StringModel
 import freemarker.template.*
 import nbcp.comm.*
 import nbcp.db.RemoveToSysDustbin
 import nbcp.scope.ContextMapScope
 import nbcp.utils.MyUtil
-import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
@@ -206,7 +200,7 @@ class Freemarker_GetKotlinType : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
         var paramValue = _get_value_item(p0[0])
         if (paramValue is String) {
-            return (scopes.GetLatest<ContextMapScope>()!!.value
+            return (scopes.getLatest<ContextMapScope>()!!.value
                 .get("fields") as List<Field>)
                 .first { it.name == paramValue }
                 .type
@@ -221,7 +215,7 @@ class Freemarker_Has : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
         var paramValue = _get_value_item(p0[0])
         if (paramValue is String) {
-            return (scopes.GetLatest<ContextMapScope>()!!.value
+            return (scopes.getLatest<ContextMapScope>()!!.value
                 .get("fields") as List<Field>)
                 .any { it.name == paramValue }
         }
@@ -234,7 +228,7 @@ class Freemarker_Has : TemplateMethodModelEx {
  */
 class Freemarker_HasDustbin : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
-        return (scopes.GetLatest<ContextMapScope>()!!.value
+        return (scopes.getLatest<ContextMapScope>()!!.value
             .get("entity_type") as Class<*>)
             .getAnnotation(RemoveToSysDustbin::class.java) != null
     }

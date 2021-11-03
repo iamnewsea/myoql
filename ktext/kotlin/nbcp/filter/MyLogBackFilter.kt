@@ -4,14 +4,10 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.classic.turbo.TurboFilter
-import ch.qos.logback.core.filter.AbstractMatcherFilter
 import ch.qos.logback.core.filter.Filter
 import ch.qos.logback.core.spi.FilterReply
-import nbcp.comm.GroupLog
 import nbcp.comm.GroupLogScope
 import nbcp.comm.*
-import nbcp.utils.*
-import org.slf4j.MDC
 import org.slf4j.Marker
 
 
@@ -42,7 +38,7 @@ class MyLogBackFilter : TurboFilter() {
             return FilterReply.DENY;
         }
 
-        val log = scopes.GetLatest<LogLevelScope>()
+        val log = scopes.getLatest<LogLevelScope>()
         if (log != null) {
             if (level.levelInt >= log.value) {
                 return FilterReply.ACCEPT
@@ -119,7 +115,7 @@ class MyGroupLogBackFilter : Filter<ILoggingEvent>() {
     var group: String = "";
 
     override fun decide(event: ILoggingEvent?): FilterReply {
-        val groupScope = scopes.GetLatest<GroupLogScope>();
+        val groupScope = scopes.getLatest<GroupLogScope>();
         if (groupScope != null) {
             return if (groupScope.value == group) FilterReply.ACCEPT else FilterReply.DENY
         }

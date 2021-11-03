@@ -15,6 +15,8 @@ import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.annotation.Import
 import org.springframework.context.event.EventListener
 import org.springframework.core.convert.support.GenericConversionService
+import org.springframework.data.mongodb.MongoDatabaseFactory
+import org.springframework.data.mongodb.MongoTransactionManager
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter
@@ -45,6 +47,12 @@ class MyOqlMongoConfig : BeanPostProcessor {
                     bean.uri = urlJson.toUrl();
                 }
             }
+        }
+        else if( bean is MongoDatabaseFactory){
+            println("MongoDatabaseFactory~~~")
+        }
+        else if( bean is MongoTransactionManager){
+            println("MongoTransactionManager~~~")
         }
 
         return ret;

@@ -5,7 +5,6 @@ import nbcp.utils.*
 import nbcp.db.db
 import nbcp.db.es.tool.EsIndexDataSource
 import org.elasticsearch.client.RestClient
-import org.springframework.data.mongodb.core.MongoTemplate
 import java.io.Serializable
 
 /**
@@ -38,7 +37,7 @@ open class EsClipBase(var collectionName: String) : Serializable {
             }
 
             var ds =
-                db.es.esEvents.getDataSource(this.collectionName, isRead) ?: scopes.GetLatest<RestClientScope>()?.value
+                db.es.esEvents.getDataSource(this.collectionName, isRead) ?: scopes.getLatest<RestClientScope>()?.value
             if (ds != null) {
                 return ds;
             }

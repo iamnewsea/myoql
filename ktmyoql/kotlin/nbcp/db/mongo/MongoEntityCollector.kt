@@ -140,7 +140,7 @@ class MongoEntityCollector : BeanPostProcessor {
     fun onQuering(query: MongoBaseQueryClip): Array<Pair<IMongoEntityQuery, EventResult>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityQuery, EventResult>>()
-        usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+        usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
             queryEvent.ForEachExt { it, _ ->
                 var ret = it.beforeQuery(query);
                 if (!ret.result) {
@@ -156,7 +156,7 @@ class MongoEntityCollector : BeanPostProcessor {
     fun onInserting(insert: MongoBaseInsertClip): Array<Pair<IMongoEntityInsert, EventResult>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityInsert, EventResult>>()
-        usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+        usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
             insertEvent.ForEachExt { it, _ ->
                 var ret = it.beforeInsert(insert);
                 if (!ret.result) {
@@ -172,7 +172,7 @@ class MongoEntityCollector : BeanPostProcessor {
     fun onUpdating(update: MongoBaseUpdateClip): Array<Pair<IMongoEntityUpdate, EventResult>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityUpdate, EventResult>>()
-        usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+        usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
             updateEvent.ForEachExt { it, _ ->
                 var ret = it.beforeUpdate(update);
                 if (ret.result == false) {
@@ -189,7 +189,7 @@ class MongoEntityCollector : BeanPostProcessor {
 
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityDelete, EventResult>>()
-        usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+        usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
             deleteEvent.ForEachExt { it, _ ->
                 var ret = it.beforeDelete(delete);
                 if (!ret.result) {

@@ -19,7 +19,7 @@ object db_redis {
             return SpringUtil.getBean(dataSourceName) as StringRedisTemplate
         }
 
-        return scopes.GetLatest<RedisTemplateScope>()?.value
+        return scopes.getLatest<RedisTemplateScope>()?.value
             ?: SpringUtil.getBean<StringRedisTemplate>()
     }
 }

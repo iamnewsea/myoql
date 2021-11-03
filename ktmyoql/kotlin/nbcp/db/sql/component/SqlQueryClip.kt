@@ -452,7 +452,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
             if (data.size < this.take) {
                 ret.total = data.size;
             } else {
-                usingScope(arrayOf(OrmLogScope.IgnoreExecuteTime, OrmLogScope.IgnoreAffectRow)) {
+                usingScope(arrayOf(MyOqlOrmScope.IgnoreExecuteTime, MyOqlOrmScope.IgnoreAffectRow)) {
                     ret.total = count()
                 }
             }

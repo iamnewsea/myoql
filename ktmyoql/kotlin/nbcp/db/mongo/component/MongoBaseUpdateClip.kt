@@ -2,6 +2,7 @@ package nbcp.db.mongo
 
 import com.mongodb.client.result.UpdateResult
 import nbcp.comm.*
+import nbcp.db.MyOqlOrmScope
 import nbcp.utils.*
 import nbcp.db.db
 import nbcp.scope.*
@@ -13,7 +14,7 @@ import java.time.LocalDateTime
 
 open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IMongoWhereable {
     companion object {
-        private val logger =LoggerFactory.getLogger(this::class.java.declaringClass)
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
     val whereData = mutableListOf<Criteria>()
@@ -134,19 +135,26 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
 
         var ret = -1;
         var startAt = LocalDateTime.now()
-        var error:Exception?= null
+        var error: Exception? = null
         var query = Query.query(criteria)
-        var result :UpdateResult? = null;
+        var result: UpdateResult? = null;
         try {
-             result = mongoTemplate.updateMulti(
-                    query,
-                    update,
-                    collectionName);
+            result = mongoTemplate.updateMulti(
+                query,
+                update,
+                collectionName
+            );
 
             db.executeTime = LocalDateTime.now() - startAt
 
             if (result.modifiedCount > 0) {
-                usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+                usingScope(
+                    arrayOf(
+                        MyOqlOrmScope.IgnoreAffectRow,
+                        MyOqlOrmScope.IgnoreExecuteTime,
+                        MyOqlOrmScope.IgnoreUpdateAt
+                    )
+                ) {
                     settingResult.forEach {
                         it.first.update(this, it.second)
                     }
@@ -159,7 +167,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             error = e;
             throw e;
         } finally {
-            MongoLogger.logUpdate(error,collectionName, query, update , result)
+            MongoLogger.logUpdate(error, collectionName, query, update, result)
 //            logger.InfoError(ret < 0) {
 //                """[update] ${this.collectionName}
 //[where] ${criteria.criteriaObject.ToJson()}

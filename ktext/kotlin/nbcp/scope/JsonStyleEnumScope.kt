@@ -5,7 +5,6 @@ import nbcp.component.AppJsonMapper
 import nbcp.component.BaseJsonMapper
 import nbcp.component.DbJsonMapper
 import nbcp.component.WebJsonMapper
-import nbcp.scope.IScopeData
 import nbcp.utils.SpringUtil
 
 
@@ -22,7 +21,7 @@ enum class JsonSceneEnumScope : IScopeData {
 fun JsonSceneEnumScope?.getJsonMapper(): BaseJsonMapper {
     var style: JsonSceneEnumScope? = this;
     if (style == null) {
-        style = scopes.GetLatest<JsonSceneEnumScope>()
+        style = scopes.getLatest<JsonSceneEnumScope>()
     }
 
     if (style == null) {

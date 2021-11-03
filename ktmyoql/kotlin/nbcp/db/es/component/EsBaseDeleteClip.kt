@@ -1,6 +1,7 @@
 package nbcp.db.es
 
 import nbcp.comm.*
+import nbcp.db.MyOqlOrmScope
 import nbcp.utils.*
 import nbcp.db.db
 import nbcp.db.es.*
@@ -103,7 +104,7 @@ open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhere
             db.executeTime = LocalDateTime.now() - startAt
 //            responseBody = response.entity.content.readBytes().toString(const.utf8)
 
-            usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+            usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
                 settingResult.forEach {
                     it.first.delete(this, it.second)
                 }

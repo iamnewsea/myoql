@@ -151,7 +151,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             db.affectRowCount = cursor.size;
 
 
-            usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+            usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
                 settingResult.forEach {
                     it.first.query(this, it.second)
                 }
@@ -274,8 +274,8 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             if (ret.data.size < this.take) {
                 ret.total = ret.data.size;
             } else {
-                usingScope(OrmLogScope.IgnoreExecuteTime) {
-                    usingScope(OrmLogScope.IgnoreAffectRow) {
+                usingScope(MyOqlOrmScope.IgnoreExecuteTime) {
+                    usingScope(MyOqlOrmScope.IgnoreAffectRow) {
                         ret.total = count()
                     }
                 }

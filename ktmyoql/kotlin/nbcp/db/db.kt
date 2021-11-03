@@ -5,8 +5,6 @@ import nbcp.utils.*
 import nbcp.db.mongo.table.MongoBaseGroup
 import nbcp.db.redis.RedisBaseGroup
 import nbcp.db.sql.table.SqlBaseGroup
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 import java.time.Duration
 import nbcp.scope.*
 import java.io.Serializable
@@ -85,7 +83,7 @@ object db {
             return _affectRowCount.get()
         }
         set(value) {
-            if (scopes.GetLatest(OrmLogScope.IgnoreAffectRow) != null) {
+            if (scopes.getLatest(MyOqlOrmScope.IgnoreAffectRow) != null) {
                 return;
             }
             _affectRowCount.set(value);
@@ -117,7 +115,7 @@ object db {
             return _executeTime.get()
         }
         set(value) {
-            if (scopes.GetLatest(OrmLogScope.IgnoreExecuteTime) != null) {
+            if (scopes.getLatest(MyOqlOrmScope.IgnoreExecuteTime) != null) {
                 return;
             }
             _executeTime.set(value);

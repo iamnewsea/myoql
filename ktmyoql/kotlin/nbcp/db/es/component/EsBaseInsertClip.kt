@@ -114,7 +114,7 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
                 throw RuntimeException(responseBody.toString())
             }
 
-            usingScope(arrayOf(OrmLogScope.IgnoreAffectRow, OrmLogScope.IgnoreExecuteTime)) {
+            usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
                 settingResult.forEach {
                     it.first.insert(this, it.second)
                 }
