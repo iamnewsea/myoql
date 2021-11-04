@@ -27,32 +27,41 @@ open class NacosService {
     }
 
     data class NacosConfigItemData(
-            var id: String = "",
-            var dataId: String = "",
-            var group: String = "",
-            var content: String = "",
-            var tenant: String = "",
-            var type: String = ""
+        var id: String = "",
+        var dataId: String = "",
+        var group: String = "",
+        var content: String = "",
+        var tenant: String = "",
+        var type: String = ""
     )
 
     data class NacosConfigsResponseDataModel(
-            var totalCount: Int = 0,
-            var pageNumber: Int = 0,
-            var pagesAvailable: Int = 0,
-            var pageItems: Array<NacosConfigItemData> = arrayOf()
+        var totalCount: Int = 0,
+        var pageNumber: Int = 0,
+        var pagesAvailable: Int = 0,
+        var pageItems: Array<NacosConfigItemData> = arrayOf()
     )
 
-    fun queryConfigs(
-            serverHost: String,
-            ns: String,
-            group: String,
-            dataId: String,
-            pageNumber: Int = 1
+    fun listConfigs(
+        serverHost: String,
+        ns: String,
+        group: String,
+        dataId: String
+    ): ListResult<NacosConfigItemData> {
+        return queryConfigs(serverHost, ns, group, dataId, 1)
+    }
+
+    private fun queryConfigs(
+        serverHost: String,
+        ns: String,
+        group: String,
+        dataId: String,
+        pageNumber: Int = 1
     ): ListResult<NacosConfigItemData> {
         val group = group.AsString("DEFAULT_GROUP")
         var searchType = "blur"; // blur： 模糊，  accurate ：精确
         val http =
-                HttpUtil("${getServerFullHost(serverHost)}/v1/cs/configs?dataId=${dataId.AsString("*")}&group=${group}&tenant=$ns&pageNo=${pageNumber}&pageSize=100&search=${searchType}")
+            HttpUtil("${getServerFullHost(serverHost)}/v1/cs/configs?dataId=${dataId.AsString("*")}&group=${group}&tenant=$ns&pageNo=${pageNumber}&pageSize=100&search=${searchType}")
         val res = http.doGet();
         if (http.status != 200) {
             return ListResult("ns:$ns,dataId:$dataId,group:$group , 获取nacos配置错误 : $res")
@@ -72,7 +81,6 @@ open class NacosService {
         return ListResult.of(list)
     }
 
-
     fun getConfig(serverHost: String, ns: String, group: String, dataId: String): ApiResult<String> {
         val group = group.AsString("DEFAULT_GROUP")
         val http = HttpUtil("${getServerFullHost(serverHost)}/v1/cs/configs?dataId=${dataId}&group=${group}&tenant=$ns")
@@ -84,23 +92,23 @@ open class NacosService {
     }
 
     fun setConfig(
-            serverHost: String,
-            ns: String,
-            group: String,
-            dataId: String,
-            @RequestBody content: String
+        serverHost: String,
+        ns: String,
+        group: String,
+        dataId: String,
+        @RequestBody content: String
     ): JsonResult {
         val type = "yaml"
 
         val http = HttpUtil("${getServerFullHost(serverHost)}/v1/cs/configs")
         val res =
-                http.doPost(
-                        "dataId=$dataId&group=${group.AsString("DEFAULT_GROUP")}&tenant=$ns&content=${
-                            JsUtil.encodeURIComponent(
-                                    content
-                            )
-                        }&type=$type"
-                )
+            http.doPost(
+                "dataId=$dataId&group=${group.AsString("DEFAULT_GROUP")}&tenant=$ns&content=${
+                    JsUtil.encodeURIComponent(
+                        content
+                    )
+                }&type=$type"
+            )
 
         if (http.status == 200) {
             return JsonResult()
@@ -112,11 +120,11 @@ open class NacosService {
 
 
     fun setGateway(
-            serverHost: String,
-            ns: String,
-            app_name: String,
-            author: String,
-            data_id: String
+        serverHost: String,
+        ns: String,
+        app_name: String,
+        author: String,
+        data_id: String
     ): JsonResult {
         var group = "DEFAULT_GROUP"
 
@@ -154,8 +162,8 @@ ${end_sign}
 
         if (startIndex >= 0 && endIndex >= 0) {
             lines =
-                    (lines.take(startIndex).trimEmptyLine() + const.line_break + lines.takeLast(lines.size - endIndex - 1)
-                            .trimEmptyLine()).toMutableList()
+                (lines.take(startIndex).trimEmptyLine() + const.line_break + lines.takeLast(lines.size - endIndex - 1)
+                    .trimEmptyLine()).toMutableList()
         }
 
         for (i in lines.indices) {
@@ -204,30 +212,30 @@ ${end_sign}
 
 
     data class NacosInstanceHostData @JvmOverloads constructor(
-            var ip: String = "",
-            var port: Int = 0,
-            var valid: Boolean = false,
-            var healthy: Boolean = false,
-            var marked: Boolean = false,
-            var instanceId: String = "",
-            var metadata: StringMap = StringMap(),
-            var enabled: Boolean = false,
-            var weight: Int = 0,
-            var clusterName: String = "",
-            var serviceName: String = "",
-            var ephemeral: Boolean = false
+        var ip: String = "",
+        var port: Int = 0,
+        var valid: Boolean = false,
+        var healthy: Boolean = false,
+        var marked: Boolean = false,
+        var instanceId: String = "",
+        var metadata: StringMap = StringMap(),
+        var enabled: Boolean = false,
+        var weight: Int = 0,
+        var clusterName: String = "",
+        var serviceName: String = "",
+        var ephemeral: Boolean = false
     )
 
     data class NacosInstanceData @JvmOverloads constructor(
-            var hosts: MutableList<NacosInstanceHostData> = mutableListOf(),
-            var dom: String = "",
-            var name: String = "",
-            var cacheMillis: Int = 0,
-            var lastRefTime: Long = 0L,
-            var checksum: String = "",
-            var clusters: String = "",
-            var env: String = "",
-            var metadata: StringMap = StringMap()
+        var hosts: MutableList<NacosInstanceHostData> = mutableListOf(),
+        var dom: String = "",
+        var name: String = "",
+        var cacheMillis: Int = 0,
+        var lastRefTime: Long = 0L,
+        var checksum: String = "",
+        var clusters: String = "",
+        var env: String = "",
+        var metadata: StringMap = StringMap()
     )
 
     private fun getServerFullHost(host: String): String {
@@ -258,10 +266,10 @@ ${end_sign}
      */
     @JvmOverloads
     fun getNacosInstances(
-            serverHost: String,
-            namespaceId: String,
-            serviceName: String,
-            group: String = "DEFAULT_GROUP"
+        serverHost: String,
+        namespaceId: String,
+        serviceName: String,
+        group: String = "DEFAULT_GROUP"
     ): MutableSet<String> {
         val query = StringMap();
         query["serviceName"] = serviceName;
@@ -302,11 +310,11 @@ ${end_sign}
      */
     @JvmOverloads
     fun getSnowFlakeMachineId(
-            namespaceId: String,
-            serviceName: String,
-            ip: String,
-            port: Int = 80,
-            group: String = "DEFAULT_GROUP"
+        namespaceId: String,
+        serviceName: String,
+        ip: String,
+        port: Int = 80,
+        group: String = "DEFAULT_GROUP"
     ): Int {
 
         val nacosInstancesIpPort = getNacosInstances(serverHost, namespaceId, serviceName, group)
@@ -314,15 +322,15 @@ ${end_sign}
 
         if (ip.isEmpty()) {
             localUsedIpPort = nacosInstancesIpPort.intersect(getIpAddresses().map { it + ":" + port })
-                    .apply {
-                        //随机一个 500-1000之间的id
-                        if (this.size != 1) {
-                            val machineId = 500 + MyUtil.getRandomWithMaxValue(500);
-                            SpringUtil.getBean<SnowFlake>().machineId = machineId;
-                            return machineId
-                        }
+                .apply {
+                    //随机一个 500-1000之间的id
+                    if (this.size != 1) {
+                        val machineId = 500 + MyUtil.getRandomWithMaxValue(500);
+                        SpringUtil.getBean<SnowFlake>().machineId = machineId;
+                        return machineId
                     }
-                    .first();
+                }
+                .first();
         }
 
         if (nacosInstancesIpPort.contains(localUsedIpPort) == false) {
@@ -333,8 +341,8 @@ ${end_sign}
         val appName = namespaceId + "-" + serviceName;
         //第一次初始化应用。
         val redisInstances = db.rer_base.nacosInstance.getMap(appName)
-                .mapValues { it.value.AsInt() }
-                .toMutableMap()
+            .mapValues { it.value.AsInt() }
+            .toMutableMap()
 
 
         if (redisInstances.isEmpty() || !redisInstances.containsKey(localUsedIpPort)) {
