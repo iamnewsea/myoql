@@ -32,7 +32,7 @@ open class NacosService {
         var group: String = "",
         var content: String = "",
         var tenant: String = "",
-        var type: String = ""
+        var type: String? = null //模糊查找时为空。
     )
 
     data class NacosConfigsResponseDataModel(
@@ -96,9 +96,9 @@ open class NacosService {
         ns: String,
         group: String,
         dataId: String,
-        @RequestBody content: String
+        type: String,
+        content: String
     ): JsonResult {
-        val type = "yaml"
 
         val http = HttpUtil("${getServerFullHost(serverHost)}/v1/cs/configs")
         val res =
@@ -107,7 +107,7 @@ open class NacosService {
                     JsUtil.encodeURIComponent(
                         content
                     )
-                }&type=$type"
+                }&type=${type.AsString("yaml")}"
             )
 
         if (http.status == 200) {
@@ -186,7 +186,7 @@ ${end_sign}
             break;
         }
 
-        var ret = setConfig(serverHost, ns, group, data_id, lines.joinToString("\n"));
+        var ret = setConfig(serverHost, ns, group, data_id, "", lines.joinToString("\n"));
         if (ret.msg.HasValue) {
             return JsonResult(ret.msg);
         }
@@ -241,9 +241,13 @@ ${end_sign}
     private fun getServerFullHost(host: String): String {
         var ret = host;
         if (ret.isEmpty()) {
-            ret = SpringUtil.context.environment.getProperty("spring.cloud.nacos.discovery.server-addr").AsString();
+            ret = SpringUtil.context.environment.getProperty("spring.cloud.nacos.config.server-addr").AsString();
         }
         if (!ret.startsWith("http://", true) && !ret.startsWith("https://", true)) {
+            if (!ret.contains(":")) {
+                ret = ret + ":8848"
+            }
+
             ret = "http://${ret}"
         }
 
