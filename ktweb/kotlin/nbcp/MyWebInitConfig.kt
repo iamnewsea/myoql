@@ -1,9 +1,9 @@
 package nbcp
 
+import nbcp.base.service.*
 import nbcp.config.MySwaggerConfig
-import nbcp.filter.MyAllFilter
-import nbcp.filter.MyOqlCrossFilter
-import nbcp.service.*
+import nbcp.base.filter.MyAllFilter
+import nbcp.base.filter.MyOqlCrossFilter
 import org.springframework.boot.context.event.ApplicationPreparedEvent
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
@@ -13,8 +13,8 @@ import org.springframework.context.event.EventListener
 @Import(
     value = [
         MySwaggerConfig::class,
-        MyAllFilter::class,
         MyOqlCrossFilter::class,
+        MyAllFilter::class,
         UserAuthenticationService::class,
         UploadService::class,
         UploadFileForLocalService::class,

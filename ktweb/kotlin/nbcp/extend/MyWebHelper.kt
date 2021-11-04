@@ -1,6 +1,8 @@
 package nbcp.web
 
 import io.jsonwebtoken.Jwts
+import nbcp.base.mvc.HttpContext
+import nbcp.base.mvc.MyHttpRequestWrapper
 import nbcp.comm.*
 import nbcp.data.TokenStorageTypeEnum
 import nbcp.utils.*
@@ -13,7 +15,7 @@ import nbcp.db.sql.SqlSetEntityUpdateClip
 import nbcp.extend.RequestGetLoginUserModelEvent
 import nbcp.extend.RequestSetLoginUserModelEvent
 import nbcp.extend.RequestTokenEvent
-import nbcp.service.UserAuthenticationService
+import nbcp.base.service.UserAuthenticationService
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import java.io.Serializable

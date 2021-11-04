@@ -3,7 +3,7 @@
     <springProperty scope="context" name="logLevel" source="logging.level.root"/>
     <springProperty scope="context" name="logPath" source="logging.file.path"/>
     <springProperty scope="context" name="name" source="spring.application.name"/>
-    <turboFilter class="nbcp.filter.MyLogBackFilter"></turboFilter>
+    <turboFilter class="nbcp.base.filter.MyLogBackFilter"></turboFilter>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -21,7 +21,7 @@
             <!-- 30 days -->
             <maxHistory>30</maxHistory>
         </rollingPolicy>
-        <filter class="nbcp.filter.MyGroupLogBackFilter"></filter>
+        <filter class="nbcp.base.filter.MyGroupLogBackFilter"></filter>
     </appender>
     <appender name="FILE-TASK-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logPath:-logs}/${name:-log}-task.txt</file>
@@ -33,7 +33,7 @@
             <!-- 30 days -->
             <maxHistory>30</maxHistory>
         </rollingPolicy>
-        <filter class="nbcp.filter.MyGroupLogBackFilter">
+        <filter class="nbcp.base.filter.MyGroupLogBackFilter">
             <group>task</group>
         </filter>
     </appender>
@@ -48,7 +48,7 @@
             <!-- 30 days -->
             <maxHistory>30</maxHistory>
         </rollingPolicy>
-        <filter class="nbcp.filter.MyGroupLogBackFilter">
+        <filter class="nbcp.base.filter.MyGroupLogBackFilter">
             <group>main</group>
         </filter>
     </appender>

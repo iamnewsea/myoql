@@ -3,6 +3,7 @@
 
 package nbcp.web
 
+import nbcp.base.mvc.MyHttpRequestWrapper
 import nbcp.comm.*
 import org.springframework.http.MediaType
 import nbcp.utils.*

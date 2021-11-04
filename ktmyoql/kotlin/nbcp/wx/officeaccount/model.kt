@@ -1,2 +1,0 @@
-package nbcp.wx.officeaccount
-

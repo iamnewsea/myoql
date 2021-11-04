@@ -6,7 +6,7 @@
 
     <property name="pattern" value="%d{yyyy-MM-dd HH:mm:ss} [%X{tid}] %-5level [%class:%line] -%msg%n" />
 
-    <turboFilter class="nbcp.filter.MyLogBackFilter"></turboFilter>
+    <turboFilter class="nbcp.base.filter.MyLogBackFilter"></turboFilter>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
