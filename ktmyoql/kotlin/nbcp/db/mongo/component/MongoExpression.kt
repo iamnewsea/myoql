@@ -72,7 +72,11 @@ class MongoExpression : JsonMap {
     /**
      * 返回 列名:表达式
      */
-    fun As(columnName: String): JsonMap {
-        return JsonMap(columnName to this)
+    fun As(columnName: String): MongoExpression {
+        return MongoExpression(columnName to this)
+    }
+
+    fun toMongoColumnName(): MongoColumnName {
+        return MongoColumnName(this.ToJson())
     }
 }

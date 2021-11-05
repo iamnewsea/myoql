@@ -64,11 +64,11 @@ spring:
 
   data:
     mongodb:
-#      uri: mongodb://dev:123@dev8.cn:27017/cms
-      host: mongo
-      database: cms
-      username: dev
-      password: 123
+      uri: mongodb://dev:123@mongo:27017/cms
+#      host: mongo
+#      database: cms
+#      username: dev
+#      password: 123
   redis:
     timeout: 3000
     database: 0

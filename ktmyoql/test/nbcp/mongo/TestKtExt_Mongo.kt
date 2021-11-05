@@ -5,6 +5,7 @@ import nbcp.TestBase
 import nbcp.comm.*
 import nbcp.db.IdName
 import nbcp.db.db
+import nbcp.db.mongo.*
 import nbcp.db.mongo.entity.BasicUser
 import nbcp.db.mongo.entity.SysLog
 import nbcp.db.sql.doInsert
@@ -36,7 +37,19 @@ class TestKtExt_Mongo : TestBase() {
     }
 
     @Test
-    fun updateCascade(){
-        db.mor_base.sysAnnex
+    fun testCond() {
+        usingScope(LogLevelScope.info) {
+            db.mor_base.sysAnnex.aggregate()
+                    .addPipeLine(PipeLineEnum.addFields,
+                            db.mongo.cond(db.mor_base.sysAnnex.group match "digitalthread", "1", "0").As("u")
+                    )
+                    .addPipeLine(PipeLineEnum.sort, JsonMap("u" to 1))
+                    .limit(0, 2)
+                    .toList()
+                    .forEach {
+                        println(it.ToJson())
+                    }
+
+        }
     }
 }
