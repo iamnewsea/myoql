@@ -94,7 +94,8 @@ fun SqlColumnName.character_length(alias: String = ""): SingleSqlData {
     return op_ext_sql(this, "character_length", alias);
 }
 
-fun SingleSqlData.ifNull(elseValue: SingleSqlData, alias: String): SingleSqlData {
+@JvmOverloads
+fun SingleSqlData.ifNull(elseValue: SingleSqlData, alias: String = ""): SingleSqlData {
     var ret = this.CloneObject();
     ret.expression = "ifNull(${this.expression},"
 
