@@ -273,7 +273,11 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     }
 
 
-    fun toMapListResult(): ListResult<JsonMap> {
-        return toListResult(JsonMap::class.java);
+    fun toMapList(): List<Document> {
+        return toList(Document::class.java);
+
+    }
+    fun toMapListResult(): ListResult<Document> {
+        return toListResult(Document::class.java);
     }
 }

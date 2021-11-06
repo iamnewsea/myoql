@@ -40,10 +40,10 @@ class DevYapiDataTypeController {
             var query = MongoBaseQueryClip("interface")
 
             var where = (MongoColumnName("req_body_other") match_like "title\":\":") match_or
-                (MongoColumnName("res_body") match_like "title\":\":")
+                    (MongoColumnName("res_body") match_like "title\":\":")
 
             query.whereData.add(where)
-            var list = query.toList(JsonMap::class.java);
+            var list = query.toMapList();
 
             list.forEach {
                 var id = it.getIntValue("id");
@@ -93,7 +93,7 @@ class DevYapiDataTypeController {
 
         var items_msg = mutableListOf<String>();
 
-        RecursionUtil.recursionJson(json,   { jsonValue  ->
+        RecursionUtil.recursionJson(json, { jsonValue ->
             if (jsonValue.containsKey("title") == false) {
                 return@recursionJson true
             }
