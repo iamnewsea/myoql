@@ -9,6 +9,7 @@ import nbcp.db.db
 import org.springframework.data.mongodb.core.query.Criteria
 import java.io.Serializable
 import java.lang.RuntimeException
+import java.time.Duration
 
 /**
  * Created by udi on 17-4-24.
@@ -25,7 +26,7 @@ open class MongoClipBase(var collectionName: String) : Serializable {
      * 3. 当前作用域
      * 4. 使用默认
      */
-    val mongoTemplate: MongoTemplate
+    val mongoTemplate1: MongoTemplate
         get() {
             var isRead = this is MongoBaseQueryClip || this is MongoAggregateClip<*, *>;
 
@@ -41,8 +42,8 @@ open class MongoClipBase(var collectionName: String) : Serializable {
             }
 
             var ds =
-                db.mongo.mongoEvents.getDataSource(this.collectionName, isRead)
-                    ?: scopes.getLatest<MongoTemplateScope>()?.value
+                    db.mongo.mongoEvents.getDataSource(this.collectionName, isRead)
+                            ?: scopes.getLatest<MongoTemplateScope>()?.value
             if (ds != null) {
                 return ds;
             }
@@ -56,6 +57,24 @@ open class MongoClipBase(var collectionName: String) : Serializable {
         if (where.size == 1) return where[0];
         return Criteria().andOperator(*where);
     }
+
+    /**
+     * 执行的语句
+     */
+    var script: String = ""
+        get() = field
+        protected set;
+
+    /**
+     * 影响行数
+     */
+    var affectRowCount: Int = 0
+        get() = field
+        protected set;
+
+    var executeTime: Duration = Duration.ZERO
+        get() = field
+        protected set;
 }
 
 interface IMongoWhereable {

@@ -213,7 +213,8 @@ cursor: {} } """
         var startAt = LocalDateTime.now();
         var error:Exception? = null ;
         try {
-            result = mongoTemplate.executeCommand(queryJson)
+            this.script = queryJson;
+            result = mongoTemplate1.executeCommand(queryJson)
             db.executeTime = LocalDateTime.now() - startAt
         } catch (e: Exception) {
             error = e;

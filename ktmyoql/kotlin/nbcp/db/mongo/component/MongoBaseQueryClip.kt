@@ -63,11 +63,6 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             return mutableListOf();
         }
 
-//        var isString = clazz.IsStringType;
-//        if (clazz.IsSimpleType()) {
-//            isString = clazz.name == "java.lang.String";
-//        }
-
         var criteria = this.getMongoCriteria(*whereData.toTypedArray());
         var projection = Document();
         selectColumns.forEach {
@@ -97,8 +92,11 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         }
 
         var startAt = LocalDateTime.now();
-        var cursor = mongoTemplate.find(query, Document::class.java, this.collectionName)
-        db.executeTime = LocalDateTime.now() - startAt
+        this.script = this.getQueryScript(criteria);
+        var cursor = mongoTemplate1.find(query, Document::class.java, this.collectionName)
+
+        this.executeTime = LocalDateTime.now() - startAt
+        db.executeTime = this.executeTime
 
         var ret = mutableListOf<R>();
         var lastKey = selectColumns.lastOrNull() ?: selectProjections.map { it.key }.lastOrNull() ?: ""
@@ -118,14 +116,6 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                 if (mapFunc != null) {
                     mapFunc(it);
                 }
-
-//                if (isString) {
-//                    if (lastKey.isEmpty()) {
-//                        lastKey = it.keys.last()
-//                    }
-//
-//                    ret.add(it.GetComplexPropertyValue(*lastKey.split(".").toTypedArray()) as R)
-//                } else
                 if (clazz.IsSimpleType()) {
                     if (lastKey.isEmpty()) {
                         lastKey = it.keys.last()
@@ -141,15 +131,14 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                     if (Document::class.java.isAssignableFrom(clazz)) {
                         ret.add(it as R);
                     } else {
-//                    var ent = mapper.toEntity(it)
                         var ent = it.ConvertJson(clazz)
                         ret.add(ent);
                     }
                 }
             }
 
-            db.affectRowCount = cursor.size;
-
+            this.affectRowCount = cursor.size;
+            db.affectRowCount = this.affectRowCount;
 
             usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
                 settingResult.forEach {
@@ -163,26 +152,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         } finally {
             fun getMsgs(): String {
                 var msgs = mutableListOf<String>()
-                msgs.add("[query] " + this.collectionName);
-                msgs.add("[where] " + criteria.criteriaObject.ToJson())
-                if (selectColumns.any() || selectProjections.any()) {
-                    msgs.add(
-                        "[select] " + arrayOf(
-                            selectColumns.joinToString(","),
-                            selectProjections.ToJson()
-                        ).joinToString(",")
-                    )
-                }
-
-                if (unSelectColumns.any()) {
-                    msgs.add("[unselect] " + unSelectColumns.joinToString(","))
-                }
-                if (sort.any()) {
-                    msgs.add("[sort] " + sort.ToJson())
-                }
-                if (skip > 0 || take > 0) {
-                    msgs.add("[limit] ${skip},${take}")
-                }
+                msgs.add(this.script)
 
                 if (config.debug) {
                     msgs.add("[result] ${cursor.ToJson()}")
@@ -200,16 +170,32 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             MongoLogger.logFind(error, collectionName, ::getMsgs);
         }
 
-
-//        if (total != null && skip == 0) {
-//            if (ret.size < take) {
-//                total(ret.size);
-//            } else {
-//                total(this.count())
-//            }
-//        }
-
         return ret
+    }
+
+    private fun getQueryScript(criteria: Criteria): String {
+        var msgs = mutableListOf<String>()
+        msgs.add("[query] " + this.collectionName);
+        msgs.add("[where] " + criteria.criteriaObject.ToJson())
+        if (selectColumns.any() || selectProjections.any()) {
+            msgs.add(
+                    "[select] " + arrayOf(
+                            selectColumns.joinToString(","),
+                            selectProjections.ToJson()
+                    ).joinToString(",")
+            )
+        }
+
+        if (unSelectColumns.any()) {
+            msgs.add("[unselect] " + unSelectColumns.joinToString(","))
+        }
+        if (sort.any()) {
+            msgs.add("[sort] " + sort.ToJson())
+        }
+        if (skip > 0 || take > 0) {
+            msgs.add("[limit] ${skip},${take}")
+        }
+        return msgs.joinToString(const.line_break)
     }
 
 
