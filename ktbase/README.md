@@ -158,10 +158,10 @@ plugin.toolkit.log.grpc.reporter.upstream_timeout=${SW_GRPC_LOG_GRPC_UPSTREAM_TI
 
 # 使用
 ```
-<!-- https://mvnrepository.com/artifact/cn.dev8/ktext -->
+<!-- https://mvnrepository.com/artifact/cn.dev8/ktbase -->
 <dependency>
     <groupId>cn.dev8</groupId>
-    <artifactId>ktext</artifactId>
+    <artifactId>ktbase</artifactId>
     <version>${project.version}</version>
 </dependency>
 ```

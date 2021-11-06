@@ -162,7 +162,7 @@
 
         <dependency>
             <groupId>cn.dev8</groupId>
-            <artifactId>ktext</artifactId>
+            <artifactId>ktbase</artifactId>
             <version>${project.version}</version>
             <!--            <exclusions>-->
             <!--                <exclusion>-->

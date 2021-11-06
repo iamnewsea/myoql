@@ -5,7 +5,7 @@
 - python sync_version.py
 - 本地安装： python install_jar.py  
 - 安装到远程仓库：python publish ${version}
-- 本发安装单个Jar包： python install_jar.py -f ktext
+- 本发安装单个Jar包： python install_jar.py -f ktbase
 
 
     > 设置版本： mvn versions:set -DnewVersion=1.0.6-SNAPSHOT

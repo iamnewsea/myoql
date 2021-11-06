@@ -8,7 +8,7 @@ import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-private val logger = LoggerFactory.getLogger("ktext.MyObject.DateTimeConverter")
+private val logger = LoggerFactory.getLogger("ktbase.MyObject.DateTimeConverter")
 
 fun Any?.AsLocalDate(): LocalDate? {
     return this.AsLocalDateTime()?.toLocalDate();

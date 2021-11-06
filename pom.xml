@@ -8,7 +8,7 @@
     <name>kotlin-boot-parent</name>
 
     <modules>
-        <module>ktext</module>
+        <module>ktbase</module>
         <module>ktmyoql</module>
         <module>ktmvc</module>
         <module>ktweb</module>
