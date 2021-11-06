@@ -214,8 +214,8 @@ cursor: {} } """
         var error:Exception? = null ;
         try {
             this.script = queryJson;
-            result = mongoTemplate1.executeCommand(queryJson)
-            db.executeTime = LocalDateTime.now() - startAt
+            result = mongoTemplate.executeCommand(queryJson)
+            this.executeTime = LocalDateTime.now() - startAt
         } catch (e: Exception) {
             error = e;
             throw e;
@@ -238,13 +238,13 @@ cursor: {} } """
 
         var ret = mutableListOf<Document>()
         if (result.getDouble("ok") != 1.0) {
-            db.affectRowCount = result.getDouble("ok").AsInt()
+            this.affectRowCount = result.getDouble("ok").AsInt()
             return ret
         }
 
         var list = ((result.get("cursor") as Document).get("firstBatch") as ArrayList<Document>);
 
-        db.affectRowCount = list.size;
+        this.affectRowCount = list.size;
 
         list.forEach {
             db.mongo.procResultData_id2Id(it);

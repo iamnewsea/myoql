@@ -26,7 +26,7 @@ open class MongoClipBase(var collectionName: String) : Serializable {
      * 3. 当前作用域
      * 4. 使用默认
      */
-    val mongoTemplate1: MongoTemplate
+    val mongoTemplate: MongoTemplate
         get() {
             var isRead = this is MongoBaseQueryClip || this is MongoAggregateClip<*, *>;
 
@@ -66,15 +66,24 @@ open class MongoClipBase(var collectionName: String) : Serializable {
         protected set;
 
     /**
-     * 影响行数
+     * 影响行数.
+     * 对于更新来说，是匹配行数
+     * 对于删除来说，是删除的行数
      */
     var affectRowCount: Int = 0
         get() = field
-        protected set;
+        protected set(value) {
+            field = value;
+            db.affectRowCount = value;
+        }
 
     var executeTime: Duration = Duration.ZERO
         get() = field
-        protected set;
+        protected set(value) {
+            field = value;
+            db.executeTime = value;
+        }
+
 }
 
 interface IMongoWhereable {

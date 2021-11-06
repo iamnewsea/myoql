@@ -1,13 +1,8 @@
 package nbcp.db.mongo
 
-import nbcp.scope.*
 import nbcp.comm.*
-import nbcp.db.BaseEntity
 import nbcp.db.MyOqlOrmScope
 import nbcp.db.db
-import nbcp.db.mongo.*
-import java.io.*
-import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.time.LocalDateTime
@@ -73,7 +68,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
         var error: Exception? = null;
         try {
             mongoTemplate.insert(entities, this.collectionName)
-            db.executeTime = LocalDateTime.now() - startAt
+            this.executeTime = LocalDateTime.now() - startAt
 
             usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
                 settingResult.forEach {
@@ -81,9 +76,8 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
                 }
             }
 
-//            ret = entities.size;
-            db.affectRowCount = entities.size
-            return db.affectRowCount
+            this.affectRowCount = entities.size
+            return this.affectRowCount
         } catch (e: Exception) {
             error = e;
             throw e;

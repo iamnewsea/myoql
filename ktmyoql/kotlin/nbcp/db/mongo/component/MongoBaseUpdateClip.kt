@@ -3,9 +3,7 @@ package nbcp.db.mongo
 import com.mongodb.client.result.UpdateResult
 import nbcp.comm.*
 import nbcp.db.MyOqlOrmScope
-import nbcp.utils.*
 import nbcp.db.db
-import nbcp.scope.*
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.CriteriaDefinition
@@ -139,13 +137,14 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         var query = Query.query(criteria)
         var result: UpdateResult? = null;
         try {
+            this.script = getUpdateScript(criteria,update)
             result = mongoTemplate.updateMulti(
                 query,
                 update,
                 collectionName
             );
 
-            db.executeTime = LocalDateTime.now() - startAt
+            this.executeTime = LocalDateTime.now() - startAt
 
             if (result.modifiedCount > 0) {
                 usingScope(
@@ -162,7 +161,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             }
 
             ret = result.matchedCount.toInt();
-            db.affectRowCount = ret
+            this.affectRowCount = ret
         } catch (e: Exception) {
             error = e;
             throw e;
@@ -179,6 +178,16 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
 
 
         return ret;
+    }
+
+    private fun getUpdateScript(where: Criteria,
+                                update: org.springframework.data.mongodb.core.query.Update): String {
+        var msgs = mutableListOf<String>()
+        msgs.add("[update] " + this.collectionName);
+        msgs.add("[where] " + where.criteriaObject.toJson())
+        msgs.add("[update] " + update.updateObject.toJson())
+
+        return msgs.joinToString(const.line_break)
     }
 
 }

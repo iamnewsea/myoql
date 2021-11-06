@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import java.lang.Exception
 import java.time.LocalDateTime
-import nbcp.scope.*
 
 open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMongoWhereable {
     var whereData = mutableListOf<Criteria>()
@@ -39,12 +38,12 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     private fun getCacheKey(): String {
         var unKeys = mutableListOf<String>()
 
-        unKeys.add(whereData.map { it.criteriaObject.ToJson() }.joinToString("&"))
+        unKeys.add(whereData.map { it.criteriaObject.toJson() }.joinToString("&"))
         unKeys.add(skip.toString())
         unKeys.add(take.toString())
-        unKeys.add(sort.ToJson())
+        unKeys.add(sort.toJson())
         unKeys.add(selectColumns.joinToString(","))
-        unKeys.add(selectProjections.ToJson())
+        unKeys.add(selectProjections.toJsonString())
         unKeys.add(unSelectColumns.joinToString(","))
 
 
@@ -93,10 +92,9 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
 
         var startAt = LocalDateTime.now();
         this.script = this.getQueryScript(criteria);
-        var cursor = mongoTemplate1.find(query, Document::class.java, this.collectionName)
+        var cursor = mongoTemplate.find(query, Document::class.java, this.collectionName)
 
         this.executeTime = LocalDateTime.now() - startAt
-        db.executeTime = this.executeTime
 
         var ret = mutableListOf<R>();
         var lastKey = selectColumns.lastOrNull() ?: selectProjections.map { it.key }.lastOrNull() ?: ""
@@ -138,7 +136,6 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             }
 
             this.affectRowCount = cursor.size;
-            db.affectRowCount = this.affectRowCount;
 
             usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
                 settingResult.forEach {
@@ -163,7 +160,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                     msgs.add("[skipNullRows] ${skipNullCount}")
                 }
 
-                msgs.add("[耗时] ${db.executeTime}")
+                msgs.add("[耗时] ${this.executeTime}")
                 return msgs.joinToString(const.line_break);
             }
 
@@ -176,12 +173,12 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     private fun getQueryScript(criteria: Criteria): String {
         var msgs = mutableListOf<String>()
         msgs.add("[query] " + this.collectionName);
-        msgs.add("[where] " + criteria.criteriaObject.ToJson())
+        msgs.add("[where] " + criteria.criteriaObject.toJson())
         if (selectColumns.any() || selectProjections.any()) {
             msgs.add(
                     "[select] " + arrayOf(
                             selectColumns.joinToString(","),
-                            selectProjections.ToJson()
+                            selectProjections.toJsonString()
                     ).joinToString(",")
             )
         }
@@ -206,10 +203,12 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         var startAt = LocalDateTime.now();
         var ret = -1;
         var error: Exception? = null
-        var query = Query.query(this.getMongoCriteria(*whereData.toTypedArray()));
+        val criteria = this.getMongoCriteria(*whereData.toTypedArray())
+        var query = Query.query(criteria);
         try {
+            this.script = getQueryScript(criteria)
             ret = mongoTemplate.count(query, collectionName).toInt()
-            db.executeTime = LocalDateTime.now() - startAt
+            this.executeTime = LocalDateTime.now() - startAt
         } catch (e: Exception) {
             error = e;
             throw e;
@@ -228,11 +227,14 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     fun exists(): Boolean {
         var startAt = LocalDateTime.now();
         var ret: Boolean? = null;
-        var query = Query.query(this.getMongoCriteria(*whereData.toTypedArray()));
+        val criteria = this.getMongoCriteria(*whereData.toTypedArray());
+        var query = Query.query(criteria);
         var error: Exception? = null;
         try {
+            this.script = getQueryScript(criteria)
             ret = mongoTemplate.exists(query, collectionName);
-            db.executeTime = LocalDateTime.now() - startAt
+            this.executeTime = LocalDateTime.now() - startAt;
+            this.affectRowCount = 1;
         } catch (e: Exception) {
             error = e
             throw e;

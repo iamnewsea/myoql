@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.query.Query
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.time.LocalDateTime
-import nbcp.scope.*
 import java.io.Serializable
 /**
  * Created by udi on 17-4-17.
@@ -64,12 +63,11 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Serializable>>(var moerEnt
         var result: DeleteResult? = null;
         var query = Query.query(criteria)
         try {
+            this.script = getDeleteScript(criteria);
             result = mongoTemplate.remove(query, collectionName);
-
-            db.executeTime = LocalDateTime.now() - startAt
-
+            this.executeTime = LocalDateTime.now() - startAt
             ret = result.deletedCount.toInt()
-            db.affectRowCount = ret;
+            this.affectRowCount = ret;
 
             if (ret > 0) {
                 usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
@@ -85,7 +83,14 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Serializable>>(var moerEnt
             MongoLogger.logDelete(error,collectionName,query,result);
         }
 
-
         return ret;
+    }
+
+    private fun getDeleteScript(where: Criteria): String {
+        var msgs = mutableListOf<String>()
+        msgs.add("[delete] " + this.collectionName);
+        msgs.add("[where] " + where.criteriaObject.toJson())
+
+        return msgs.joinToString(const.line_break)
     }
 }
