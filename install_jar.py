@@ -53,7 +53,7 @@ if __name__=='__main__':
     if not file:
         file = "ktweb"
 
-    install ="mvn clean install -Dmaven.test.skip=true -Dmaven.test.skip=true -e -U -pl %s -am "%(file)
+    install ="mvn clean install -Dmaven.test.skip=true -e -U -pl %s -am "%(file)
 
     print("-------------------------------------------------------------------------------")
     print("")
