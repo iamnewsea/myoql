@@ -184,8 +184,8 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
                                 update: org.springframework.data.mongodb.core.query.Update): String {
         var msgs = mutableListOf<String>()
         msgs.add("[update] " + this.collectionName);
-        msgs.add("[where] " + where.criteriaObject.toJson())
-        msgs.add("[update] " + update.updateObject.toJson())
+        msgs.add("[where] " + where.criteriaObject.ToJson())
+        msgs.add("[update] " + update.updateObject.ToJson())
 
         return msgs.joinToString(const.line_break)
     }

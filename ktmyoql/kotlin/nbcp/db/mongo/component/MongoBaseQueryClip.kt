@@ -38,12 +38,12 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     private fun getCacheKey(): String {
         var unKeys = mutableListOf<String>()
 
-        unKeys.add(whereData.map { it.criteriaObject.toJson() }.joinToString("&"))
+        unKeys.add(whereData.map { it.criteriaObject.ToJson() }.joinToString("&"))
         unKeys.add(skip.toString())
         unKeys.add(take.toString())
-        unKeys.add(sort.toJson())
+        unKeys.add(sort.ToJson())
         unKeys.add(selectColumns.joinToString(","))
-        unKeys.add(selectProjections.toJsonString())
+        unKeys.add(selectProjections.ToJson())
         unKeys.add(unSelectColumns.joinToString(","))
 
 
@@ -173,12 +173,12 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     private fun getQueryScript(criteria: Criteria): String {
         var msgs = mutableListOf<String>()
         msgs.add("[query] " + this.collectionName);
-        msgs.add("[where] " + criteria.criteriaObject.toJson())
+        msgs.add("[where] " + criteria.criteriaObject.ToJson())
         if (selectColumns.any() || selectProjections.any()) {
             msgs.add(
                     "[select] " + arrayOf(
                             selectColumns.joinToString(","),
-                            selectProjections.toJsonString()
+                            selectProjections.ToJson()
                     ).joinToString(",")
             )
         }

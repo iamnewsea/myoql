@@ -89,7 +89,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Serializable>>(var moerEnt
     private fun getDeleteScript(where: Criteria): String {
         var msgs = mutableListOf<String>()
         msgs.add("[delete] " + this.collectionName);
-        msgs.add("[where] " + where.criteriaObject.toJson())
+        msgs.add("[where] " + where.criteriaObject.ToJson())
 
         return msgs.joinToString(const.line_break)
     }

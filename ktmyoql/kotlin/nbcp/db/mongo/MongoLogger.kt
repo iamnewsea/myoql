@@ -22,7 +22,7 @@ object MongoLogger {
     }
 
     fun logFind(error: Exception?, collectionName: String, queryJson: Query, result: JsonMap) {
-        log(error, collectionName, queryJson.queryObject.toJson(), result.ToJson(), mongoLog::getQueryLog)
+        log(error, collectionName, queryJson.queryObject.ToJson(), result.ToJson(), mongoLog::getQueryLog)
     }
 
     fun logFind(error: Exception?, collectionName: String, getMsg: () -> String) {
@@ -87,7 +87,7 @@ ${if (result.HasValue) ("[result] " + result + "\n") else ""}[耗时] ${db.execu
     fun logUpdate(error: Exception?, collectionName: String, query: Query, update: Update, result: UpdateResult?) {
         log(error, collectionName, mongoLog::getUpdateLog, {
             return@log """[update] ${collectionName}
-[where] ${query.queryObject.toJson()}
+[where] ${query.queryObject.ToJson()}
 [set] ${update.ToJson()}
 [result] ${result?.ToJson()}
 [耗时] ${db.executeTime}"""
@@ -96,7 +96,7 @@ ${if (result.HasValue) ("[result] " + result + "\n") else ""}[耗时] ${db.execu
 
     fun logDelete(error: Exception?, collectionName: String, query: Query, result: DeleteResult?) {
         log(error, collectionName, mongoLog::getDeleteLog, {
-            return@log "delete:[" + collectionName + "] " + query.queryObject.toJson() + ",result:${result?.ToJson()}"
+            return@log "delete:[" + collectionName + "] " + query.queryObject.ToJson() + ",result:${result?.ToJson()}"
         })
 
     }
