@@ -108,8 +108,10 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         var error: Exception? = null;
         var skipNullCount = 0;
         try {
-            db.mongo.procResultData_id2Id(cursor);
             cursor.forEach {
+                db.mongo.procResultData_id2Id(it);
+                db.mongo.procResultDocumentJsonData(it);
+
 
                 if (mapFunc != null) {
                     mapFunc(it);
@@ -176,10 +178,10 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         msgs.add("[where] " + criteria.criteriaObject.ToJson())
         if (selectColumns.any() || selectProjections.any()) {
             msgs.add(
-                    "[select] " + arrayOf(
-                            selectColumns.joinToString(","),
-                            selectProjections.ToJson()
-                    ).joinToString(",")
+                "[select] " + arrayOf(
+                    selectColumns.joinToString(","),
+                    selectProjections.ToJson()
+                ).joinToString(",")
             )
         }
 
@@ -277,6 +279,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         return toList(Document::class.java);
 
     }
+
     fun toMapListResult(): ListResult<Document> {
         return toListResult(Document::class.java);
     }
