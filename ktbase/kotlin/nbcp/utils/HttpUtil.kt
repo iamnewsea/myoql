@@ -337,7 +337,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
                                 this.request.postBody.substring(
                                     0,
                                     subLen
-                                ) + "〘…〙" + this.request.postBody.Slice(-subLen)
+                                ) + "\n〘…〙\n" + this.request.postBody.Slice(-subLen)
                             )
                         }
                     }
@@ -358,7 +358,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
                                 this.response.resultBody.substring(
                                     0,
                                     subLen
-                                ) + "〘…〙" + this.response.resultBody.Slice(-subLen)
+                                ) + "\n〘…〙\n" + this.response.resultBody.Slice(-subLen)
                             )
                         }
                     }

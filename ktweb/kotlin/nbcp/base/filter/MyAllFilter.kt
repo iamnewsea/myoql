@@ -365,7 +365,7 @@ open class MyAllFilter : Filter {
                 var subLen = logResLength / 2;
 
                 if (resStringValue.length > logResLength) {
-                    msg.add("\t" + resStringValue.substring(0, subLen) + "〘…〙" + resStringValue.Slice(-subLen))
+                    msg.add("\t" + resStringValue.substring(0, subLen) + "\n〘…〙\n" + resStringValue.Slice(-subLen))
                 } else {
                     msg.add("\t" + resStringValue)
                 }
