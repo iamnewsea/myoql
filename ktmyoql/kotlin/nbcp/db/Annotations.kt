@@ -12,7 +12,7 @@ import kotlin.reflect.KClass
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class MetaDataGroup(val group: String)
+annotation class MetaDataGroup(val value: String)
 
 /**
  * 标记实体删除之前是否保存到垃圾箱
@@ -27,7 +27,7 @@ annotation class RemoveToSysDustbin()
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class DbEntityLogHistory(vararg val fields: String)
+annotation class DbEntityLogHistory(vararg val value: String)
 
 /**
  * 重复性

@@ -1,5 +1,6 @@
 package nbcp
 
+import nbcp.bean.*
 import nbcp.db.mongo.MongoEntityCollector
 import nbcp.db.mongo.event.*
 import nbcp.db.mongo.service.UploadFileMongoService
@@ -7,16 +8,13 @@ import nbcp.db.mybatis.MyBatisRedisCachePointcutAdvisor
 import nbcp.db.mybatis.MybatisDbConfig
 import nbcp.db.mysql.MySqlDataSourceConfig
 import nbcp.db.mysql.service.UploadFileSqlService
-import nbcp.bean.MyOqlMongoJsonSerializerConfig
-import nbcp.bean.MyOqlMongoConfig
-import nbcp.bean.MyOqlRabbitMqConfig
-import nbcp.bean.MyOqlRedisConfig
 import nbcp.db.MyOqlBaseActionLogDefine
 import nbcp.db.MyOqlMultipleDataSourceDefine
 import nbcp.db.cache.RedisCacheAopService
 import nbcp.db.es.*
 import nbcp.db.sql.event.*
 import nbcp.model.IUploadFileDbService
+import nbcp.utils.SpringUtil
 import org.springframework.beans.factory.BeanFactory
 import org.springframework.beans.factory.BeanFactoryAware
 import org.springframework.beans.factory.config.BeanDefinitionHolder
@@ -59,6 +57,11 @@ class MyOqlInitConfig {
     @EventListener
     fun prepared(ev: ApplicationPreparedEvent) {
         val msg = "myoql"
+
+        val flyways =  SpringUtil.getBeanWithNull(FlywayInitCollector::class.java)
+        if( flyways != null ){
+            flyways.syncVersionWork();
+        }
     }
 }
 

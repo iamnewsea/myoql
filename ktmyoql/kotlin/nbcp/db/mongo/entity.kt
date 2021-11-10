@@ -279,11 +279,9 @@ open class SysDustbin @JvmOverloads constructor(
 @Cn("数据版本")
 open class FlywayVersion @JvmOverloads constructor(
     @Cn("版本")
-    var version: String = "",
+    var version: Int = 0,
     @Cn("备注")
     var remark: String = "",
-    @Cn("创建者")
-    var creator: IdName = IdName(),
     @Cn("执行的类")
     var execClass: String = "",
     var execSeconds: Int = 0,

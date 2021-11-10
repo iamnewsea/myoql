@@ -7,7 +7,6 @@ import nbcp.db.*
 import nbcp.db.mongo.event.*
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
-import org.springframework.context.annotation.Import
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
 import java.io.Serializable
@@ -107,7 +106,7 @@ class MongoEntityCollector : BeanPostProcessor {
     private fun addLogHistory(entityClass: Class<out Serializable>) {
         var logHistory = entityClass.getAnnotation(DbEntityLogHistory::class.java)
         if (logHistory != null) {
-            logHistoryMap.put(entityClass, logHistory.fields.map { it }.toTypedArray());
+            logHistoryMap.put(entityClass, logHistory.value.map { it }.toTypedArray());
         }
     }
 

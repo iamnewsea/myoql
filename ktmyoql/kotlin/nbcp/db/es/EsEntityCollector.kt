@@ -2,14 +2,10 @@ package nbcp.db.es
 
 import nbcp.comm.*
 import nbcp.db.*
-import nbcp.db.es.event.EsInsertEvent
-import nbcp.db.es.tool.EsIndexDataSource
-import nbcp.db.es.tool.EsTableLogProperties
 import nbcp.scope.*
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.context.annotation.Import
 import org.springframework.stereotype.Component
 import java.io.Serializable
 
@@ -103,7 +99,7 @@ class EsEntityCollector : BeanPostProcessor {
     private fun addLogHistory(entityClass: Class<out Serializable>) {
         var logHistory = entityClass.getAnnotation(DbEntityLogHistory::class.java)
         if (logHistory != null) {
-            logHistoryMap.put(entityClass, logHistory.fields.map { it }.toTypedArray());
+            logHistoryMap.put(entityClass, logHistory.value.map { it }.toTypedArray());
         }
     }
 
