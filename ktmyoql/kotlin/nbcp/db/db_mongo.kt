@@ -252,15 +252,19 @@ object db_mongo {
             var type = item::class.java;
             if (type.IsStringType == false) return false;
             var v_string_value = item.toString()
-            return v_string_value.startsWith("Document{{") && v_string_value.endsWith("}}")
+            return v_string_value.contains("{{") && v_string_value.endsWith("}}")
         }
 
         fun procDocumentString(v_string_value: String): Any {
             //Document{{answerRole=Patriarch}}
             //目前只发现一个键值对形式的。
-            var ary = v_string_value.Slice(10, -2).split("=")
-            var json = Document();
-            json.set(ary[0], ary[1]);
+            val startIndex = v_string_value.indexOf("{{");
+
+            val json = StringMap();
+            v_string_value.Slice(startIndex + 2, -2).split(",").forEach { item ->
+                val sect = item.split("=");
+                json.put(sect[0], sect[1]);
+            }
             return json;
         }
 
