@@ -194,10 +194,17 @@ object db_mongo {
     fun procResultData_id2Id(value: MutableMap<*, *>, remove_id: Boolean = true) {
         var keys = value.keys.toTypedArray();
         var needReplace = keys.contains("_id") && !keys.contains("id")
+
         for (k in keys) {
             var v = value.get(k);
             if (needReplace && (k == "_id")) {
-                (value as MutableMap<Any, Any?>).set("id", v?.toString() ?: "");
+                if (v == null) {
+                    v = "";
+                } else if (v is ObjectId) {
+                    v = v.toString()
+                }
+
+                (value as MutableMap<Any, Any?>).set("id", v);
                 if (remove_id) {
                     value.remove("_id")
                 }

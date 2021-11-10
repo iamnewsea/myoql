@@ -57,13 +57,13 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     fun <R> toList(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): MutableList<R> {
         db.affectRowCount = -1;
 
-        var settingResult = db.mongo.mongoEvents.onQuering(this)
+        val settingResult = db.mongo.mongoEvents.onQuering(this)
         if (settingResult.any { it.second.result == false }) {
             return mutableListOf();
         }
 
-        var criteria = this.getMongoCriteria(*whereData.toTypedArray());
-        var projection = Document();
+        val criteria = this.getMongoCriteria(*whereData.toTypedArray());
+        val projection = Document();
         selectColumns.forEach {
             projection.put(it, 1)
         }
@@ -76,7 +76,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             projection.put(it, 0)
         }
 
-        var query = BasicQuery(criteria.toDocument(), projection);
+        val query = BasicQuery(criteria.toDocument(), projection);
 
         if (this.skip > 0) {
             query.skip(this.skip.AsLong())
@@ -90,13 +90,13 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             query.sortObject = sort
         }
 
-        var startAt = LocalDateTime.now();
+        val startAt = LocalDateTime.now();
         this.script = this.getQueryScript(criteria);
-        var cursor = mongoTemplate.find(query, Document::class.java, this.collectionName)
+        val cursor = mongoTemplate.find(query, Document::class.java, this.collectionName)
 
         this.executeTime = LocalDateTime.now() - startAt
 
-        var ret = mutableListOf<R>();
+        val ret = mutableListOf<R>();
         var lastKey = selectColumns.lastOrNull() ?: selectProjections.map { it.key }.lastOrNull() ?: ""
 
         if (lastKey == "_id") {
@@ -121,7 +121,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                         lastKey = it.keys.last()
                     }
 
-                    var value = it.GetComplexPropertyValue(*lastKey.split(".").toTypedArray());
+                    val value = MyUtil.getPathValue(it, *lastKey.split(".").toTypedArray());
                     if (value != null) {
                         ret.add(value.ConvertType(clazz) as R);
                     } else {
@@ -131,7 +131,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                     if (Document::class.java.isAssignableFrom(clazz)) {
                         ret.add(it as R);
                     } else {
-                        var ent = it.ConvertJson(clazz)
+                        val ent = it.ConvertJson(clazz)
                         ret.add(ent);
                     }
                 }
@@ -150,7 +150,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             throw e;
         } finally {
             fun getMsgs(): String {
-                var msgs = mutableListOf<String>()
+                val msgs = mutableListOf<String>()
                 msgs.add(this.script)
 
                 if (config.debug) {
