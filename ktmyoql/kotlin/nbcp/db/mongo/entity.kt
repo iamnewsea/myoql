@@ -284,7 +284,9 @@ open class FlywayVersion @JvmOverloads constructor(
     var remark: String = "",
     @Cn("执行的类")
     var execClass: String = "",
-    var execSeconds: Int = 0,
+
+    var startAt: LocalDateTime = LocalDateTime.now(),
+    var finishAt: LocalDateTime? = null,
     var isSuccess: Boolean = false
 ) : BaseEntity()
 

@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2021-10-27 17:38:38
+//generate auto @2021-11-10 18:40:14
 
 class IdUrlMeta (private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
@@ -522,16 +522,12 @@ class MongoBaseGroup : IDataGroup{
         @Cn("备注")
         val remark = MongoColumnName("remark")
         /**
-        * 创建者
-        */
-        @Cn("创建者")
-        val creator = IdNameMeta("creator")
-        /**
         * 执行的类
         */
         @Cn("执行的类")
         val execClass = MongoColumnName("execClass")
-        val execSeconds = MongoColumnName("execSeconds")
+        val startAt = MongoColumnName("startAt")
+        val finishAt = MongoColumnName("finishAt")
         val isSuccess = MongoColumnName("isSuccess")
         /**
         * 创建时间
