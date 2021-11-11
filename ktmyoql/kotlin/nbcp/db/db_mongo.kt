@@ -148,6 +148,33 @@ object db_mongo {
         return MongoExpression("$" + operator.toString() to rawValue)
     }
 
+    /**
+     * cond 中应用 ifNull
+     */
+    fun ifNull(vararg expression: String): MongoExpression {
+
+        /*
+db.getCollection("adminRole").aggregate(
+[
+    {
+        $project:
+            {
+                "id": 1,
+                "createAt": 1, "updateAt": 1,
+                "sort":
+                    { $ifNull: ['$updateAt', "$createAt"] }
+            }
+    },
+    {
+        $sort: { sort: -1}
+    }
+]
+)
+ */
+
+        return MongoExpression("$" + PipeLineOperatorEnum.ifNull.toString() to expression)
+    }
+
 
     /**
      * 把 _id 转换为 id
