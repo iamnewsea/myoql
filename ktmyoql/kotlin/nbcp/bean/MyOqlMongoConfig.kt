@@ -47,12 +47,9 @@ class MyOqlMongoConfig : BeanPostProcessor {
                     bean.uri = urlJson.toUrl();
                 }
             }
-        }
-        else if( bean is MongoDatabaseFactory){
-            println("MongoDatabaseFactory~~~")
-        }
-        else if( bean is MongoTransactionManager){
-            println("MongoTransactionManager~~~")
+        } else if (bean is MongoDatabaseFactory) {
+            //添加 MongoTransactionManager ，使 mongo 支持 @Transactional 注解
+            SpringUtil.registerBeanDefinition(MongoTransactionManager(bean))
         }
 
         return ret;

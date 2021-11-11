@@ -1,9 +1,6 @@
 package nbcp.bean
 
-import nbcp.comm.ForEachExt
 import nbcp.comm.Important
-import nbcp.comm.minus
-import nbcp.comm.usingScope
 import nbcp.db.*
 import nbcp.db.mongo.*
 import nbcp.db.mongo.entity.FlywayVersion
@@ -13,7 +10,6 @@ import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
-import java.io.Serializable
 import java.time.LocalDateTime
 
 @Component
@@ -24,11 +20,11 @@ class FlywayInitCollector : BeanPostProcessor {
 
         //需要删 除后放入垃圾箱的实体
         @JvmStatic
-        val flyways = mutableListOf<IFlywayInit>()  //mongo entity class
+        val flyways = mutableListOf<FlywayVersionBaseService>()  //mongo entity class
     }
 
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
-        if (bean is IFlywayInit) {
+        if (bean is FlywayVersionBaseService) {
             flyways.add(bean)
         }
 
@@ -61,7 +57,7 @@ class FlywayInitCollector : BeanPostProcessor {
                 ent.startAt = LocalDateTime.now()
 
                 try {
-                    it.init();
+                    it.initData();
                     ent.isSuccess = true;
                     ent.finishAt = LocalDateTime.now();
                     db.mor_base.flywayVersion.doInsert(ent);
