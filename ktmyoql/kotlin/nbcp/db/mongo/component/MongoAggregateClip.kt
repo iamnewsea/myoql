@@ -29,7 +29,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Serializable>(var m
     /**
      * 通用函数
      */
-    fun addPipeLine(key: PipeLineEnum, json: JsonMap): MongoAggregateClip<M, E> {
+    fun addPipeLine(key: PipeLineEnum, json: Map<String,Any?>): MongoAggregateClip<M, E> {
         this.pipeLines.add("\$${key}" to json);
         return this;
     }
