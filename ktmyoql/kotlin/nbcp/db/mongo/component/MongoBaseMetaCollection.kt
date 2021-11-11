@@ -40,6 +40,14 @@ abstract class MongoBaseMetaCollection<T : Serializable>(val entityClass: Class<
      * 插入单条实体
      */
     fun doInsert(entity: T): String {
+        return insertAny(entity);
+    }
+
+    fun doInsert(entity: Map<*, Any?>): String {
+        return insertAny(entity);
+    }
+
+    private fun insertAny(entity: Any): String {
         var batchInsert = MongoBaseInsertClip(this.tableName)
         batchInsert.addEntity(entity)
         batchInsert.exec();
