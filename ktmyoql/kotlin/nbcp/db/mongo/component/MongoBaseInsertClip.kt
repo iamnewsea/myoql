@@ -55,6 +55,11 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
 //        throw RuntimeException("不支持插入类型：${entity.javaClass}")
     }
 
+
+    fun addEntities(entities: List<Any>) {
+        this.entities.addAll(entities)
+    }
+
     fun exec(): Int {
         db.affectRowCount = -1;
 //        var ret = -1;
