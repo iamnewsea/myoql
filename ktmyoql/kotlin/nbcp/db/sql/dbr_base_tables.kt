@@ -9,7 +9,7 @@ import nbcp.comm.*
 import nbcp.utils.*
 import org.springframework.stereotype.Component
 
-//generate auto @2021-10-02 13:13:36
+//generate auto @2021-11-11 13:46:55
 
 
 @Component("sql.SqlBase")
@@ -44,7 +44,6 @@ class SqlBaseGroup : IDataGroup{
     
         override fun getSpreadColumns(): Array<String> { return arrayOf<String>("creator")}
         override fun getConvertValueColumns(): Array<String> { return arrayOf<String>("id")}
-        override fun getColumns(): SqlColumnNames { return SqlColumnNames(name,tags,ext,size,imgWidth,imgHeight,url,creator_id,creator_name,group,corpId,errorMsg,id,createAt)}
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
@@ -79,7 +78,6 @@ class SqlBaseGroup : IDataGroup{
     
         override fun getSpreadColumns(): Array<String> { return arrayOf<String>()}
         override fun getConvertValueColumns(): Array<String> { return arrayOf<String>()}
-        override fun getColumns(): SqlColumnNames { return SqlColumnNames(code,shortName,name,level,lng,lat,pinyin,telCode,postCode,pcode)}
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("code")  )}
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
@@ -112,7 +110,6 @@ class SqlBaseGroup : IDataGroup{
     
         override fun getSpreadColumns(): Array<String> { return arrayOf<String>("creator")}
         override fun getConvertValueColumns(): Array<String> { return arrayOf<String>("id")}
-        override fun getColumns(): SqlColumnNames { return SqlColumnNames(table,remark,creator_id,creator_name,data,id,createAt)}
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
@@ -148,7 +145,6 @@ class SqlBaseGroup : IDataGroup{
     
         override fun getSpreadColumns(): Array<String> { return arrayOf<String>()}
         override fun getConvertValueColumns(): Array<String> { return arrayOf<String>("id")}
-        override fun getColumns(): SqlColumnNames { return SqlColumnNames(module,type,tags,msg,request,data,response,creatorId,id,createAt)}
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
@@ -169,14 +165,14 @@ class SqlBaseGroup : IDataGroup{
     }
 }
 
-fun SqlUpdateClip<SqlBaseGroup.s_annex_table>.set_s_annex_creator(creator:nbcp.db.IdName):SqlUpdateClip<SqlBaseGroup.s_annex_table>{
+fun SqlUpdateClip<SqlBaseGroup.s_annex_table>.set_sAnnex_creator(creator:nbcp.db.IdName):SqlUpdateClip<SqlBaseGroup.s_annex_table>{
     return this.set{ it.creator_id to creator.id }
-			.set{ it.creator_name to creator.name }
+		.set{ it.creator_name to creator.name }
 }
 
 
-fun SqlUpdateClip<SqlBaseGroup.s_dustbin_table>.set_s_dustbin_creator(creator:nbcp.db.IdName):SqlUpdateClip<SqlBaseGroup.s_dustbin_table>{
+fun SqlUpdateClip<SqlBaseGroup.s_dustbin_table>.set_sDustbin_creator(creator:nbcp.db.IdName):SqlUpdateClip<SqlBaseGroup.s_dustbin_table>{
     return this.set{ it.creator_id to creator.id }
-			.set{ it.creator_name to creator.name }
+		.set{ it.creator_name to creator.name }
 }
 

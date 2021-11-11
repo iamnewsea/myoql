@@ -387,13 +387,13 @@ ${columnMetaDefines.props.joinToString("\n")}
     override fun getConvertValueColumns(): Array<String> { return arrayOf<String>(${
             columnMetaDefines.columns_convertValue.map { "\"" + it + "\"" }.joinToString(",")
         })}
-    override fun getColumns(): SqlColumnNames { return SqlColumnNames(${columnMetaDefines.columns.joinToString(",")})}
     override fun getAutoIncrementKey(): String { return "${columnMetaDefines.autoIncrementKey}"}
     override fun getUks(): Array<Array<String>>{ return arrayOf(${uks2.joinToString(",")} )}
     override fun getFks(): Array<FkDefine>{ return arrayOf(${fks_exp_string.joinToString(",")})}
 
 ${idMethods.joinToString("\n")}
 }"""
+        //override fun getColumns(): SqlColumnNames { return SqlColumnNames(${columnMetaDefines.columns.joinToString(",")})}
         ret.ext = columnMetaDefines.extMethods.joinToString("\n");
         return ret;
     }

@@ -1,6 +1,7 @@
 package nbcp.db.mongo
 
 
+import nbcp.comm.AllFields
 import nbcp.comm.AsString
 import nbcp.comm.FindField
 import org.springframework.data.mongodb.core.query.Criteria
@@ -19,6 +20,19 @@ abstract class MongoBaseMetaCollection<T : Serializable>(val entityClass: Class<
     //    abstract fun getColumns(): Array<String>;
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java)
+    }
+
+    @Transient
+    private var _columns = arrayOf<MongoColumnName>()
+    fun getColumns(): Array<MongoColumnName> {
+        if (_columns.isNotEmpty()) {
+            return _columns;
+        }
+
+        _columns = this::class.java.AllFields.filter { MongoColumnName::class.java.isAssignableFrom(it.type) }
+            .map { it.get(this) as MongoColumnName }
+            .toTypedArray()
+        return _columns;
     }
 
 

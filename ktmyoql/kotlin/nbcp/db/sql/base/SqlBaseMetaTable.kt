@@ -3,31 +3,41 @@ package nbcp.db.sql
 import nbcp.comm.AllFields
 import nbcp.comm.AsString
 import nbcp.db.*
+import nbcp.db.mongo.MongoColumnName
 import java.lang.reflect.Modifier
 import java.io.Serializable
 
-abstract class SqlBaseMetaTable<T : Serializable>(val tableClass: Class<T>, tableName: String)
-    : BaseMetaData(tableName) {
+abstract class SqlBaseMetaTable<T : Serializable>(val tableClass: Class<T>, tableName: String) :
+    BaseMetaData(tableName) {
     abstract fun getUks(): Array<Array<String>>
     abstract fun getFks(): Array<FkDefine>
-//    abstract fun getRks(): Array<Array<String>>
+
+    //    abstract fun getRks(): Array<Array<String>>
     abstract fun getAutoIncrementKey(): String
-    abstract fun getColumns(): SqlColumnNames
+
+    //    abstract fun getColumns(): SqlColumnNames
     abstract fun getSpreadColumns(): Array<String>
     abstract fun getConvertValueColumns(): Array<String>
 
-//    fun getColumns(): SqlColumnNames {
-//        var ret = SqlColumnNames()
-//        ret.addAll(this::class.java.AllFields
-//                .filter { it.type == SqlColumnName::class.java }
-//                .map { it.isAccessible = true; it.get(this) as SqlColumnName }
-//        )
-//
-//        return ret;
-//    }
+    @Transient
+    private var _columns = SqlColumnNames()
+    fun getColumns(): SqlColumnNames {
+        if (_columns.isNotEmpty()) {
+            return _columns;
+        }
+
+        _columns = SqlColumnNames(*this::class.java.AllFields
+            .filter { it.type == SqlColumnName::class.java }
+            .map { it.get(this) as SqlColumnName }
+            .toTypedArray()
+        )
+
+        return _columns;
+    }
 
 
     protected var tableAliaValue: String = ""
+
     /**
      * this.tableAliaValue.AsString(this.tableName)
      */

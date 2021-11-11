@@ -214,12 +214,11 @@ val Class<*>.AllFields: List<Field>
         var fields = this.declaredFields.filter {
             if (it.modifiers and Modifier.STATIC > 0) return@filter false;
             if (it.modifiers and Modifier.TRANSIENT > 0) return@filter false;
-            true
-        };
 
-        fields.forEach {
             it.isAccessible = true;
-        }
+
+            return@filter true
+        };
 
         ret.addAll(fields);
 
