@@ -49,12 +49,6 @@ open class MyAllFilter : Filter {
         var httpRequest = request as HttpServletRequest
         var httpResponse = response as HttpServletResponse
 
-        if (!config.getConfig("app.filter.enabled").AsBoolean(true)) {
-            HttpContext.init(httpRequest, httpResponse);
-            chain?.doFilter(request, response)
-            return;
-        }
-
         var request_id = httpRequest.tokenValue;
 
         MDC.put("request_id", request_id)

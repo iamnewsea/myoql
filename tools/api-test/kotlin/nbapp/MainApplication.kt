@@ -1,6 +1,9 @@
 package nbapp
 
 
+import nbcp.MyWebInitConfig
+import nbcp.base.filter.MyAllFilter
+import nbcp.base.filter.MyOqlCrossFilter
 import org.slf4j.LoggerFactory
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -21,6 +24,7 @@ import java.util.*
 
 @SpringBootApplication(
         exclude = arrayOf(
+                MyOqlCrossFilter::class,
 //        DataSourceAutoConfiguration::class,
 //        RedisAutoConfiguration::class,
 //        MongoAutoConfiguration::class,

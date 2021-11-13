@@ -10,19 +10,6 @@ import org.springframework.context.annotation.Import
 import org.springframework.context.event.EventListener
 
 @Configuration
-@Import(
-    value = [
-        MySwaggerConfig::class,
-        MyOqlCrossFilter::class,
-        MyAllFilter::class,
-        UserAuthenticationService::class,
-        UploadService::class,
-        UploadFileForLocalService::class,
-        UploadFileForMinioService::class,
-        UploadFileForAliOssService::class
-    ]
-)
-//@ComponentScan("nbcp.db.mongo.event")
 class MyWebInitConfig {
 
     @EventListener

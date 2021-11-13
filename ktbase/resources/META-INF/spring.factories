@@ -1,3 +1,5 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  nbcp.utils.SpringUtil\
-  ,nbcp.KotlinExtendInitConfig
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=nbcp.utils.SpringUtil\
+,nbcp.KotlinExtendInitConfig\
+,nbcp.comm.LogLevelAopService\
+,nbcp.comm.GroupLogAopService\
+,nbcp.config.TaskConfig

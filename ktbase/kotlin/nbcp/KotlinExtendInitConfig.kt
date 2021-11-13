@@ -15,9 +15,6 @@ import org.springframework.stereotype.Component
 @Import(
     value = [
         SpringUtil::class,
-        LogLevelAopService::class,
-        GroupLogAopService::class,
-        TaskConfig::class
     ]
 )
 class KotlinExtendInitConfig {
