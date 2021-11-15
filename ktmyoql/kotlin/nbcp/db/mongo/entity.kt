@@ -32,22 +32,7 @@ open class BasicUser @JvmOverloads constructor(
 
     @Cn("身份证")
     var identityCard: IdentityCardData = IdentityCardData(),
-
-    @Cn("居住城市")
-    var liveCity: CityCodeName = CityCodeName(),
-    @Cn("常住地址")
-    var liveLocation: String = "",  //常住地
-    @Cn("工作城市")
-    var workCity: CityCodeName = CityCodeName(),
-    @Cn("工作地址")
-    var workLocation: String = ""  //工作地
 ) : BaseEntity() {
-
-//    var name: String
-//        get() = this.identityCard.name
-//        set(value) {
-//            this.identityCard.name = value
-//        }
 }
 
 /**
@@ -71,19 +56,6 @@ open class BasicUserLoginInfo @JvmOverloads constructor(
     var password: String = "",  // Md5Util.getBase64Md5(pwd)
     @Cn("最后登录时间")
     var lastLoginAt: LocalDateTime = LocalDateTime.now(),
-
-    @Cn("授权码")
-    var authorizeCode: String = "", //授权码
-    @Cn("授权码创建时间")
-    var authorizeCodeCreateAt: LocalDateTime = LocalDateTime.now(),
-
-    @Cn("第三方应用的令牌(登录用户的token只在redis里)")
-    var token: String = "",         //常用数据，也会放到主表。
-    @Cn("第三方应用的刷新令牌")
-    var freshToken: String = "",
-
-    @Cn("授权应用")
-    var grantApps: MutableList<IdName> = mutableListOf(),   //授权的App
 
     @Cn("是否已锁定")
     var isLocked: Boolean = false,
@@ -116,34 +88,6 @@ open class SysOrganization @JvmOverloads constructor(
     var lockedRemark: String = ""
 ) : BaseEntity()
 
-/**
- * 应用中心
- */
-@Document
-@DbEntityGroup("MongoBase")
-@Cn("系统应用")
-open class SysApplication @JvmOverloads constructor(
-    @Cn("键")
-    var key: String = "",                    // 应用Id，CodeUtil.getCode()
-    @Cn("应用名称")
-    var name: String = "",                  //应用名称
-    @Cn("备注")
-    var remark: String = "",
-    @Cn("安全域名")
-    var hostDomainName: String = "",            // 安全域名，http 或 https 开头。
-    @Cn("应用密钥")
-    var secret: String = "",                    //应用密钥，Api用。
-    @Cn("更新回调地址")
-    var userUpdateHookCallbackUrl: String = "",     //用户更新后，通知App的回调。
-    @Cn("授权范围")
-    var authorizeRange: MutableList<String> = mutableListOf(),  //需要授权的信息
-    @Cn("所属组织")
-    var org: IdName = IdName(),             //所属组织信息
-    @Cn("就否已锁定")
-    var isLocked: Boolean = false,
-    @Cn("锁定详情")
-    var loadRemark: String = ""
-) : BaseEntity()
 
 
 //系统附件表

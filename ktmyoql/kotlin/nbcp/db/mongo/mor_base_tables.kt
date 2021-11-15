@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2021-11-10 18:40:14
+//generate auto @2021-11-15 16:25:06
 
 class IdUrlMeta (private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
@@ -63,17 +63,6 @@ class IdentityCardDataMeta (private val _pname: String) : MongoColumnName() {
     */
     @Cn("身份证地址")
     val location = join(this._pname, "location")
-
-    override fun toString(): String {
-        return join(this._pname).toString()
-    }
-}
-
-class CityCodeNameMeta (private val _pname: String) : MongoColumnName() {
-    constructor(_val: MongoColumnName) : this(_val.toString()) {}
-
-    val name = join(this._pname, "name")
-    val code = join(this._pname, "code")
 
     override fun toString(): String {
         return join(this._pname).toString()
@@ -137,6 +126,17 @@ class BaseResponseDataMeta (private val _pname: String) : MongoColumnName() {
     val body = join(this._pname, "body")
     val header = join_map(this._pname, "header")/*:map*/
     val result = join(this._pname, "result")
+
+    override fun toString(): String {
+        return join(this._pname).toString()
+    }
+}
+
+class CityCodeNameMeta (private val _pname: String) : MongoColumnName() {
+    constructor(_val: MongoColumnName) : this(_val.toString()) {}
+
+    val name = join(this._pname, "name")
+    val code = join(this._pname, "code")
 
     override fun toString(): String {
         return join(this._pname).toString()
@@ -215,7 +215,7 @@ class BusinessLicenseDataMeta (private val _pname: String) : MongoColumnName() {
 @Component("mongo.MongoBase")
 @MetaDataGroup("MongoBase")
 class MongoBaseGroup : IDataGroup{
-    override fun getEntities():Set<BaseMetaData> = setOf(basicUser,basicUserLoginInfo,flywayVersion,sysAnnex,sysApplication,sysCity,sysDustbin,sysLog,sysOrganization)
+    override fun getEntities():Set<BaseMetaData> = setOf(basicUser,basicUserLoginInfo,flywayVersion,sysAnnex,sysCity,sysDustbin,sysLog,sysOrganization)
 
     /**
     * 用户信息
@@ -233,10 +233,6 @@ class MongoBaseGroup : IDataGroup{
     * 系统附件
     */
     val sysAnnex get() = SysAnnexEntity();
-    /**
-    * 系统应用
-    */
-    val sysApplication get() = SysApplicationEntity();
     /**
     * 城市令牌
     */
@@ -297,26 +293,6 @@ class MongoBaseGroup : IDataGroup{
         */
         @Cn("身份证")
         val identityCard = IdentityCardDataMeta("identityCard")
-        /**
-        * 居住城市
-        */
-        @Cn("居住城市")
-        val liveCity = CityCodeNameMeta("liveCity")
-        /**
-        * 常住地址
-        */
-        @Cn("常住地址")
-        val liveLocation = MongoColumnName("liveLocation")
-        /**
-        * 工作城市
-        */
-        @Cn("工作城市")
-        val workCity = CityCodeNameMeta("workCity")
-        /**
-        * 工作地址
-        */
-        @Cn("工作地址")
-        val workLocation = MongoColumnName("workLocation")
         /**
         * 创建时间
         */
@@ -405,31 +381,6 @@ class MongoBaseGroup : IDataGroup{
         */
         @Cn("最后登录时间")
         val lastLoginAt = MongoColumnName("lastLoginAt")
-        /**
-        * 授权码
-        */
-        @Cn("授权码")
-        val authorizeCode = MongoColumnName("authorizeCode")
-        /**
-        * 授权码创建时间
-        */
-        @Cn("授权码创建时间")
-        val authorizeCodeCreateAt = MongoColumnName("authorizeCodeCreateAt")
-        /**
-        * 第三方应用的令牌(登录用户的token只在redis里)
-        */
-        @Cn("第三方应用的令牌(登录用户的token只在redis里)")
-        val token = MongoColumnName("token")
-        /**
-        * 第三方应用的刷新令牌
-        */
-        @Cn("第三方应用的刷新令牌")
-        val freshToken = MongoColumnName("freshToken")
-        /**
-        * 授权应用
-        */
-        @Cn("授权应用")
-        val grantApps = IdNameMeta("grantApps")
         /**
         * 是否已锁定
         */
@@ -614,76 +565,6 @@ class MongoBaseGroup : IDataGroup{
         */
         @Cn("错误消息")
         val errorMsg = MongoColumnName("errorMsg")
-        /**
-        * 创建时间
-        */
-        @Cn("创建时间")
-        val createAt = MongoColumnName("createAt")
-        /**
-        * 更新时间
-        */
-        @Cn("更新时间")
-        val updateAt = MongoColumnName("updateAt")
-    
-    }
-    
-    /**
-    * 系统应用
-    */
-    @Cn("系统应用")
-    class SysApplicationEntity(collectionName: String ="")
-        :MongoBaseMetaCollection<nbcp.db.mongo.entity.SysApplication>(nbcp.db.mongo.entity.SysApplication::class.java,collectionName.AsString("sysApplication")) {
-        val id = MongoColumnName("_id")
-        /**
-        * 应用名称
-        */
-        @Cn("应用名称")
-        val name = MongoColumnName("name")
-        /**
-        * 键
-        */
-        @Cn("键")
-        val key = MongoColumnName("key")
-        /**
-        * 备注
-        */
-        @Cn("备注")
-        val remark = MongoColumnName("remark")
-        /**
-        * 安全域名
-        */
-        @Cn("安全域名")
-        val hostDomainName = MongoColumnName("hostDomainName")
-        /**
-        * 应用密钥
-        */
-        @Cn("应用密钥")
-        val secret = MongoColumnName("secret")
-        /**
-        * 更新回调地址
-        */
-        @Cn("更新回调地址")
-        val userUpdateHookCallbackUrl = MongoColumnName("userUpdateHookCallbackUrl")
-        /**
-        * 授权范围
-        */
-        @Cn("授权范围")
-        val authorizeRange = MongoColumnName("authorizeRange")
-        /**
-        * 所属组织
-        */
-        @Cn("所属组织")
-        val org = IdNameMeta("org")
-        /**
-        * 就否已锁定
-        */
-        @Cn("就否已锁定")
-        val isLocked = MongoColumnName("isLocked")
-        /**
-        * 锁定详情
-        */
-        @Cn("锁定详情")
-        val loadRemark = MongoColumnName("loadRemark")
         /**
         * 创建时间
         */
