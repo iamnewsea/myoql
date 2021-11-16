@@ -78,7 +78,7 @@ class ${entity}AutoController {
         var userId = request.UserId
 
         dbr.${w(group)}.${entity}.updateWithEntity(entity)
-            .withRequestParams(request.json.keys)
+            .withRequestParams()
             .run {
                 if (entity.${idKey}.HasValue) {
                     return@run this.execUpdate()

@@ -79,7 +79,7 @@ ${endif}
     var userId = request.UserId;
 
     dbr.${group|w}.${entity}.updateWithEntity(entity)
-        .withRequestParams(request.json.keys)
+        .withRequestParams()
         .run {
             if (entity.${idKey}.HasValue){
                 return@run  this.execUpdate()
