@@ -34,11 +34,19 @@ class EsQueryData {
         }
 
         fun addShould(vararg where: WhereData){
+            if( this.should == null){
+                this.should = mutableListOf();
+            }
 
+            this.should!!.addAll(where);
         }
 
         fun addMust(vararg where: WhereData){
+            if( this.must == null){
+                this.must = mutableListOf();
+            }
 
+            this.must!!.addAll(where);
         }
     }
 
