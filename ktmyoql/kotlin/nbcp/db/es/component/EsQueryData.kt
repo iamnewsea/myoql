@@ -26,8 +26,8 @@ class EsQueryData {
         var must: MutableList<JsonMap>? = null
 
         fun hasValue(): Boolean {
-            if (should.isNullOrEmpty() == null) return true;
-            if (must.isNullOrEmpty() == null) return true;
+            if (!should.isNullOrEmpty()) return true;
+            if (!must.isNullOrEmpty()) return true;
 
 
             return false;
