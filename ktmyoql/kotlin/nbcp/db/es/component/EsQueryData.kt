@@ -24,6 +24,7 @@ class EsQueryData {
     class BooleanData {
         var should: MutableList<JsonMap>? = null
         var must: MutableList<JsonMap>? = null
+        var minimum_should_match: Int? = null
 
         fun hasValue(): Boolean {
             if (!should.isNullOrEmpty()) return true;
@@ -33,16 +34,17 @@ class EsQueryData {
             return false;
         }
 
-        fun addShould(vararg where: WhereData){
-            if( this.should == null){
+        fun addShould(vararg where: WhereData) {
+            if (this.should == null) {
                 this.should = mutableListOf();
+                this.minimum_should_match = 1;
             }
 
             this.should!!.addAll(where);
         }
 
-        fun addMust(vararg where: WhereData){
-            if( this.must == null){
+        fun addMust(vararg where: WhereData) {
+            if (this.must == null) {
                 this.must = mutableListOf();
             }
 
@@ -51,7 +53,6 @@ class EsQueryData {
     }
 
     var bool = BooleanData()
-
 
 
     fun hasValue(): Boolean {
