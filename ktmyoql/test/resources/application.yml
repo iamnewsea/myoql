@@ -75,6 +75,10 @@ spring:
     host: redis
     password: 1@#4
     port: 6379
+  elasticsearch:
+    rest:
+      uris: http://es:9200
+
   rabbitmq:
     host:
     port:

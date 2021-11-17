@@ -3,30 +3,35 @@ package nbcp.db.es.tool
 import nbcp.comm.*
 import nbcp.db.*
 import nbcp.utils.*
+import org.elasticsearch.client.RestClient
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.*
 import org.springframework.stereotype.Component
 
 
-//@Configuration
-//@ConditionalOnProperty("spring.elasticsearch.rest.uris")
-//@Lazy
-//class MyOqlEsConfig {
-//    companion object {
-//        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
-//    }
-//
-//    @Bean
-//    @Lazy
-//    fun myoqlEsDataSource(): RestClient {
-//        return db.es.getRestClient(
-//            config.getConfig("spring.elasticsearch.rest.uris", ""),
-//            config.getConfig("spring.elasticsearch.path-prefix", ""),
-//            config.getConfig("spring.elasticsearch.timeout").AsInt()
-//        )
-//    }
-//}
+@Component
+@ConditionalOnClass(RestClient::class)
+@ConditionalOnProperty("spring.elasticsearch.rest.uris")
+@Lazy
+class MyOqlEsConfig {
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    }
+
+    @Bean
+    @Lazy
+    fun myoqlEsDataSource(): RestClient {
+        return db.es.getRestClient(
+            config.getConfig("spring.elasticsearch.rest.uris", ""),
+            config.getConfig("spring.elasticsearch.path-prefix", ""),
+            config.getConfig("spring.elasticsearch.timeout").AsInt()
+        )
+    }
+}
 
 /**
  * 定义Es不同的数据源
