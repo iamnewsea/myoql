@@ -10,13 +10,14 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
 import org.springframework.boot.context.event.ApplicationPreparedEvent
 import org.springframework.context.annotation.Import
 import org.springframework.context.event.EventListener
+import org.springframework.jdbc.core.RowMapper
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Component
 import javax.sql.DataSource
 
 @Component
+@ConditionalOnClass(value = arrayOf(RowMapper::class))
 @Import(JsonMapRowMapper::class)
-@ConditionalOnClass(DataSource::class)
 class MySqlDataSourceConfig {
     companion object {
         @JvmStatic
@@ -30,7 +31,7 @@ class MySqlDataSourceConfig {
     @EventListener
     fun prepared(ev: ApplicationPreparedEvent) {
         if (SpringUtil.context.environment.getProperty("spring.datasource.url").isNullOrEmpty() &&
-                SpringUtil.context.environment.getProperty("spring.datasource.hikari.jdbc-url").isNullOrEmpty()
+            SpringUtil.context.environment.getProperty("spring.datasource.hikari.jdbc-url").isNullOrEmpty()
         ) {
             return;
         }
@@ -44,7 +45,7 @@ class MySqlDataSourceConfig {
 
 
         var slaveDataProperties =
-                SpringUtil.binder.bindOrCreate("spring.datasource-slave", DataSourceProperties::class.java);
+            SpringUtil.binder.bindOrCreate("spring.datasource-slave", DataSourceProperties::class.java);
         if (slaveDataProperties.url.HasValue) {
             var dataSourceSlave = slaveDataProperties.getDataSource()
             SpringUtil.registerBeanDefinition("slaveDataSource", dataSourceSlave)
@@ -55,6 +56,6 @@ class MySqlDataSourceConfig {
 
     private fun DataSourceProperties.getDataSource(): HikariDataSource {
         return this.initializeDataSourceBuilder().type(HikariDataSource::class.java)
-                .build() as HikariDataSource
+            .build() as HikariDataSource
     }
 }
