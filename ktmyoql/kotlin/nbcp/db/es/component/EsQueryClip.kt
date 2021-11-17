@@ -48,14 +48,14 @@ class EsQueryClip<M : EsBaseMetaEntity<E>, E : Serializable>(var moerEntity: M)
         return this
     }
 
-    fun where(where: WhereData): EsQueryClip<M, E> {
-        this.search.query.putAll(where)
+    fun should(vararg where: (M) -> WhereData): EsQueryClip<M, E> {
+        this.search.query.bool.addShould(*where.map { it.invoke(this.moerEntity) }.toTypedArray())
         return this;
     }
 
-
-    fun where(where: (M) -> WhereData): EsQueryClip<M, E> {
-        return this.where(where(this.moerEntity));
+    fun must(vararg where: (M) -> WhereData): EsQueryClip<M, E> {
+        this.search.query.bool.addMust(*where.map { it.invoke(this.moerEntity) }.toTypedArray())
+        return this;
     }
 
 //    fun whereOr(vararg wheres: (M) -> SearchBodyClip): EsQueryClip<M, E> {
@@ -67,13 +67,6 @@ class EsQueryClip<M : EsBaseMetaEntity<E>, E : Serializable>(var moerEntity: M)
 //
 //        return this;
 //    }
-
-    fun whereIf(whereIf: Boolean, whereData: ((M) -> WhereData)): EsQueryClip<M, E> {
-        if (whereIf == false) return this;
-
-
-        return this.where(whereData)
-    }
 
     fun select(vararg columns: EsColumnName): EsQueryClip<M, E> {
         this.search._source.addAll(columns.map { it.toString() })

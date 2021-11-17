@@ -6,7 +6,7 @@ fun <M : EsBaseMetaEntity<T>, T : Serializable> M.query(): EsQueryClip<M, T> = E
 
 
 fun <M : EsBaseMetaEntity<T>, T : Serializable> M.queryById(id: String): EsQueryClip<M, T> = this.query()
-        .where("id" match id);
+    .must({ "id" match id })
 
 
 //fun <M : EsBaseEntity<E>, E : Serializable> M.updateById(id: String): EsUpdateClip<M> {
@@ -24,11 +24,11 @@ fun <M : EsBaseMetaEntity<T>, T : Serializable> M.queryById(id: String): EsQuery
 //    return EsSetEntityUpdateClip(this,entity);
 //}
 
-fun <M : EsBaseMetaEntity<E>, E : Serializable> M.batchInsert(): EsInsertClip<M,E> {
+fun <M : EsBaseMetaEntity<E>, E : Serializable> M.batchInsert(): EsInsertClip<M, E> {
     return EsInsertClip(this);
 }
 
-fun <M : EsBaseMetaEntity<E>, E : Serializable> M.update(): EsUpdateClip<M,E> {
+fun <M : EsBaseMetaEntity<E>, E : Serializable> M.update(): EsUpdateClip<M, E> {
     return EsUpdateClip(this);
 }
 

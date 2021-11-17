@@ -1,6 +1,7 @@
 package nbcp.db.es
 
 import nbcp.comm.*
+import nbcp.db.es.component.EsQueryData
 
 /**
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/search-search.html
@@ -25,7 +26,7 @@ class SearchBodyClip {
 	}
 },
      */
-    var query: JsonMap = JsonMap()
+    var query = EsQueryData()
 
     /*
 "filter": {
@@ -103,7 +104,7 @@ class SearchBodyClip {
         if (this.take > 0) {
             json["size"] = this.take
         }
-        if (this.query.isNotEmpty()) {
+        if (this.query.hasValue()) {
             json["query"] = this.query
         }
 
