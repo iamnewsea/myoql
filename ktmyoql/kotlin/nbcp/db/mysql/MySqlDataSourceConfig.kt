@@ -10,13 +10,14 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
 import org.springframework.boot.context.event.ApplicationPreparedEvent
 import org.springframework.context.annotation.Import
 import org.springframework.context.event.EventListener
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Component
 import javax.sql.DataSource
 
 @Component
-@ConditionalOnClass(value = arrayOf(RowMapper::class))
+@ConditionalOnClass(value = arrayOf(JdbcTemplate::class))
 @Import(JsonMapRowMapper::class)
 class MySqlDataSourceConfig {
     companion object {

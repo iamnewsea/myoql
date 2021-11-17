@@ -8,11 +8,12 @@ import nbcp.db.sql.doInsert
 import nbcp.db.sql.entity.s_annex
 import nbcp.model.IUploadFileDbService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import javax.sql.DataSource
 
 @Component
-@ConditionalOnClass(DataSource::class)
+@ConditionalOnClass(value = arrayOf(JdbcTemplate::class))
 class UploadFileSqlService : IUploadFileDbService {
     override fun insert(annex: SysAnnex): Int {
         var ent = annex.ConvertJson(s_annex::class.java);

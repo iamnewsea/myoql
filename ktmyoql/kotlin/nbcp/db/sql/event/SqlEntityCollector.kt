@@ -6,6 +6,7 @@ import nbcp.db.*
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.context.annotation.Import
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import javax.sql.DataSource
 import java.io.Serializable
@@ -14,7 +15,7 @@ import java.io.Serializable
  * 事件处理中心
  */
 @Component
-@ConditionalOnClass(DataSource::class)
+@ConditionalOnClass(value = arrayOf(JdbcTemplate::class))
 class SqlEntityCollector : BeanPostProcessor {
     companion object {
         //需要删 除后放入垃圾箱的实体
