@@ -16,32 +16,21 @@ import java.util.regex.Pattern
  * Created by udi on 17-7-10.
  */
 
-private fun proc_es_match(value: Any?): Any? {
-    if (value == null) {
-        return null;
-    }
+infix fun EsColumnName.term(target: Any?): WhereData {
+    var target = db.es.proc_es_value(target);
 
-    var type = value::class.java
-    if (type.isEnum) {
-        return value.toString();
-    } else if (type == LocalDateTime::class.java ||
-        type == LocalDate::class.java
-    ) {
-        return value.AsLocalDateTime().AsDate()
-    }
-
-    return value;
+    return WhereData("term" to JsonMap(
+        this.toString() to target
+    ))
 }
 
 
-infix fun String.match(to: Any?): WhereData {
-    return EsColumnName(this).match(to)
-}
+infix fun EsColumnName.match(target: Any?): WhereData {
+    var target = db.es.proc_es_value(target);
 
-infix fun EsColumnName.match(to: Any?): WhereData {
-    var to = proc_es_match(to);
-
-    return WhereData.eq(this.toString(), to);// Pair<String, T>(this, to);
+    return WhereData("match" to JsonMap(
+        this.toString() to target
+    ))
 }
 
 /*

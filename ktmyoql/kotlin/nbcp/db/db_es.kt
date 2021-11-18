@@ -8,6 +8,7 @@ import org.apache.http.HttpHost
 import org.elasticsearch.client.*
 import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
@@ -22,6 +23,31 @@ object db_es {
     //     val sqlEvents = SpringUtil.getBean<SqlEventConfig>();
     val esEvents by lazy {
         return@lazy SpringUtil.getBean<EsEntityCollector>();
+    }
+
+    fun proc_es_value(value: Any?): Any? {
+        if (value == null) {
+            return null;
+        }
+
+        var type = value::class.java
+        if (type.isEnum) {
+            return value.toString();
+        } else if (type == LocalDateTime::class.java ||
+            type == LocalDate::class.java
+        ) {
+            return value.AsLocalDateTime().AsDate()
+        }
+
+        return value;
+    }
+
+    fun multi_match(vararg target: Any?): WhereData {
+        var target = proc_es_value(target);
+
+        return WhereData("match" to JsonMap(
+            this.toString() to target
+        ))
     }
 
     private val restClientMap = mutableMapOf<String, RestClient>()

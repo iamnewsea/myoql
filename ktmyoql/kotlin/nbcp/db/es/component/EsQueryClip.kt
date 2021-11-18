@@ -7,8 +7,8 @@ import java.io.Serializable
  * EsQuery
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/search.html
  */
-class EsQueryClip<M : EsBaseMetaEntity<E>, E : Serializable>(var moerEntity: M)
-    : EsBaseQueryClip(moerEntity.tableName) {
+class EsQueryClip<M : EsBaseMetaEntity<E>, E : Serializable>(var moerEntity: M) :
+    EsBaseQueryClip(moerEntity.tableName) {
 
     @JvmOverloads
     fun routing(routing: String = ""): EsQueryClip<M, E> {
@@ -49,12 +49,17 @@ class EsQueryClip<M : EsBaseMetaEntity<E>, E : Serializable>(var moerEntity: M)
     }
 
     fun should(vararg where: (M) -> WhereData): EsQueryClip<M, E> {
-        this.search.query.bool.addShould(*where.map { it.invoke(this.moerEntity) }.toTypedArray())
+        this.search.query.addShould(*where.map { it.invoke(this.moerEntity) }.toTypedArray())
         return this;
     }
 
     fun must(vararg where: (M) -> WhereData): EsQueryClip<M, E> {
-        this.search.query.bool.addMust(*where.map { it.invoke(this.moerEntity) }.toTypedArray())
+        this.search.query.addMust(*where.map { it.invoke(this.moerEntity) }.toTypedArray())
+        return this;
+    }
+
+    fun must_not(vararg where: (M) -> WhereData): EsQueryClip<M, E> {
+        this.search.query.addMustNot(*where.map { it.invoke(this.moerEntity) }.toTypedArray())
         return this;
     }
 

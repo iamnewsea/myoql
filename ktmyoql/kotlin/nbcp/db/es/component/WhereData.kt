@@ -21,14 +21,14 @@ class WhereData : JsonMap {
     constructor(data: Collection<Pair<String, Any?>>) : super(data) {
     }
 
-    companion object {
-        @JvmStatic
-        fun eq(key: String, value: Any?): WhereData {
-            var ret = WhereData("term" to JsonMap(
-                    key to value
-            ));
-
-            return ret;
-        }
-    }
+//    companion object {
+//        @JvmStatic
+//        fun eq(key: String, value: Any?): WhereData {
+//            var ret = WhereData("term" to JsonMap(
+//                    key to value
+//            ));
+//
+//            return ret;
+//        }
+//    }
 }

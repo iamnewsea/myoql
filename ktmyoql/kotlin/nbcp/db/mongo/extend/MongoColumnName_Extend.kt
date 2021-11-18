@@ -4,6 +4,7 @@
 package nbcp.db.mongo
 
 import nbcp.comm.*
+import nbcp.db.db
 import org.bson.BasicBSONObject
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
@@ -36,75 +37,6 @@ fun getObjectIdValueTypeIfNeed(value: Any?): Any? {
     return value;
 }
 
-private fun proc_mongo_match(key: MongoColumnName, value: Any?): Pair<String, Any?> {
-    var keyValue = key
-    var keyString = keyValue.toString();
-    var keyIsId = false;
-    if (keyString == "id") {
-        keyValue = MongoColumnName("_id")
-        keyIsId = true;
-    } else if (keyString == "_id") {
-        keyIsId = true;
-    } else if (keyString.endsWith(".id")) {
-        keyValue = MongoColumnName(keyString.slice(0..keyString.length - 4) + "._id")
-        keyIsId = true;
-    } else if (keyString.endsWith("._id")) {
-        keyIsId = true;
-    }
-
-    if (value == null) {
-        return Pair<String, Any?>(keyValue.toString(), value);
-    }
-
-    var value = value;
-    var type = value::class.java
-
-    if (type.isEnum) {
-        value = value.toString();
-    } else if (type == LocalDateTime::class.java || type == LocalDate::class.java) {
-        value = value.AsLocalDateTime().AsDate()
-    } else if (type.IsStringType) {
-        if (keyIsId) {
-            value = getObjectIdValueTypeIfNeed(value);
-        }
-    } else if (type.isArray) {
-        value = (value as Array<*>).map {
-            if (it != null && it::class.java.isEnum) {
-                return@map it.toString()
-            }
-            return@map it
-        }.toTypedArray()
-    } else if (value is Collection<*>) {
-        value = value.map {
-            if (it != null && it::class.java.isEnum) {
-                return@map it.toString()
-            }
-
-            if (keyIsId) {
-                return@map getObjectIdValueTypeIfNeed(it);
-            }
-            return@map it
-        }.toTypedArray()
-    } else if (value is Pair<*, *>) {
-        var v1 = value.first;
-        if (v1 != null && v1::class.java.isEnum) {
-            v1 = v1.toString()
-        }
-
-        var v2 = value.second;
-        if (v2 != null && v2::class.java.isEnum) {
-            v2 = v2.toString()
-        }
-
-        if (keyIsId) {
-            v2 = getObjectIdValueTypeIfNeed(v2);
-        }
-
-        value = Pair<Any?, Any?>(v1, v2);
-    }
-
-    return Pair<String, Any?>(keyValue.toString(), value);
-}
 
 infix fun MongoColumnName.match_size(value: Int): Criteria {
     return Criteria.where(this.toString()).size(value);
@@ -131,14 +63,14 @@ infix fun MongoColumnName.match_like(like: String): Criteria {
 }
 
 infix fun MongoColumnName.match_not_equal(value: Any?): Criteria {
-    val (key, toValue) = proc_mongo_match(this, value);
+    val (key, toValue) = db.mongo.proc_mongo_key_value(this, value);
     return Criteria.where(key).`ne`(toValue)
 }
 
 
 /* mongo 3.4
 infix fun String.match_dbColumn_3_4(to: Any?): Criteria {
-    var (key, to) = proc_mongo_match(this, to);
+    var (key, to) = db.mongo.proc_mongo_key_value(this, to);
 
     return Criteria.where("$" + "where").`is`("this.${key} == this.${to}");// Pair<String, T>(this, to);
 }
@@ -149,14 +81,14 @@ infix fun String.match(to: Any?): Criteria {
 }
 
 infix fun MongoColumnName.match(to: Any?): Criteria {
-    val (key, toValue) = proc_mongo_match(this, to);
+    val (key, toValue) = db.mongo.proc_mongo_key_value(this, to);
 
     return Criteria.where(key).`is`(toValue);// Pair<String, T>(this, to);
 }
 
 //array_all
 infix fun MongoColumnName.match_all(to: Array<*>): Criteria {
-    val (key, tos) = proc_mongo_match(this, to.toSet())
+    val (key, tos) = db.mongo.proc_mongo_key_value(this, to.toSet())
 
     return Criteria.where(key).`all`(*(tos as Array<*>));
 }
@@ -168,29 +100,29 @@ infix fun MongoColumnName.match_all(to: Array<*>): Criteria {
 
 
 infix fun MongoColumnName.match_type(to: MongoTypeEnum): Criteria {
-    val (key, _) = proc_mongo_match(this, to);
+    val (key, _) = db.mongo.proc_mongo_key_value(this, to);
 
     return Criteria.where(key).`type`(to.value);// Pair<String, T>(this, to);
 }
 
 
 infix fun MongoColumnName.match_gte(to: Any): Criteria {
-    val (key, toValue) = proc_mongo_match(this, to);
+    val (key, toValue) = db.mongo.proc_mongo_key_value(this, to);
     return Criteria.where(key).gte(toValue!!);
 }
 
 infix fun MongoColumnName.match_lte(to: Any): Criteria {
-    val (key, toValue) = proc_mongo_match(this, to);
+    val (key, toValue) = db.mongo.proc_mongo_key_value(this, to);
     return Criteria.where(key).lte(toValue!!);
 }
 
 infix fun MongoColumnName.match_greaterThan(to: Any): Criteria {
-    val (key, toValue) = proc_mongo_match(this, to);
+    val (key, toValue) = db.mongo.proc_mongo_key_value(this, to);
     return Criteria.where(key).gt(toValue!!);
 }
 
 infix fun MongoColumnName.match_lessThan(to: Any): Criteria {
-    val (key, toValue) = proc_mongo_match(this, to);
+    val (key, toValue) = db.mongo.proc_mongo_key_value(this, to);
     return Criteria.where(key).lt(toValue!!);
 }
 
@@ -198,7 +130,7 @@ infix fun MongoColumnName.match_lessThan(to: Any): Criteria {
  * 大于等于并且小于。
  */
 infix fun MongoColumnName.match_between(value: Pair<Any, Any>): Criteria {
-    var (key, value2) = proc_mongo_match(this, value);
+    var (key, value2) = db.mongo.proc_mongo_key_value(this, value);
     var pair = value2 as Pair<Any, Any>
 
     var dict = BasicBSONObject()
@@ -214,13 +146,13 @@ infix fun MongoColumnName.match_in(to: Collection<*>): Criteria {
 
 //db.test1.find({"age":{"$in":['值1','值2',.....]}})
 infix fun MongoColumnName.match_in(to: Array<*>): Criteria {
-    var (key, tos) = proc_mongo_match(this, to.toSet())
+    var (key, tos) = db.mongo.proc_mongo_key_value(this, to.toSet())
 
     return Criteria.where(key).`in`(*(tos as Array<*>));
 }
 
 infix fun MongoColumnName.match_notin(to: Array<*>): Criteria {
-    var (key, tos) = proc_mongo_match(this, to.toSet())
+    var (key, tos) = db.mongo.proc_mongo_key_value(this, to.toSet())
     return Criteria.where(key).`nin`(*(tos as Array<*>));
 }
 
@@ -234,7 +166,7 @@ infix fun MongoColumnName.match_notin(to: Collection<*>): Criteria {
  * 判断数组有值,转化为：第一元素是否存在  MongoColumnName("tags.0")  match_exists true
  */
 infix fun MongoColumnName.match_exists(value: Boolean): Criteria {
-    var (key) = proc_mongo_match(this, null);
+    var (key) = db.mongo.proc_mongo_key_value(this, null);
     return Criteria.where(key).`exists`(value);
 }
 
@@ -257,7 +189,7 @@ infix fun MongoColumnName.match_hasValue(value: Boolean): Criteria {
  * https://docs.mongodb.com/manual/reference/operator/projection/elemMatch/index.html
  */
 infix fun MongoColumnName.match_elemMatch(value: Criteria): Criteria {
-    var (key) = proc_mongo_match(this, null);
+    var (key) = db.mongo.proc_mongo_key_value(this, null);
     return Criteria.where(key).`elemMatch`(value);
 }
 

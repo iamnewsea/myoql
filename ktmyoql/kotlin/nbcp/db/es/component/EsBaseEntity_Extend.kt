@@ -6,7 +6,7 @@ fun <M : EsBaseMetaEntity<T>, T : Serializable> M.query(): EsQueryClip<M, T> = E
 
 
 fun <M : EsBaseMetaEntity<T>, T : Serializable> M.queryById(id: String): EsQueryClip<M, T> = this.query()
-    .must({ "id" match id })
+    .must({ EsColumnName("id") term id })
 
 
 //fun <M : EsBaseEntity<E>, E : Serializable> M.updateById(id: String): EsUpdateClip<M> {

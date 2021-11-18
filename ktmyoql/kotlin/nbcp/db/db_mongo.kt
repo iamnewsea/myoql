@@ -16,6 +16,8 @@ import org.springframework.data.mongodb.core.convert.MappingMongoConverter
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext
 import org.springframework.data.mongodb.core.query.Criteria
 import java.io.Serializable
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 /**
  * 请使用 db.mongo
@@ -175,6 +177,76 @@ db.getCollection("adminRole").aggregate(
         return MongoExpression("$" + PipeLineOperatorEnum.ifNull.toString() to expression)
     }
 
+
+    fun proc_mongo_key_value(key: MongoColumnName, value: Any?): Pair<String, Any?> {
+        var keyValue = key
+        var keyString = keyValue.toString();
+        var keyIsId = false;
+        if (keyString == "id") {
+            keyValue = MongoColumnName("_id")
+            keyIsId = true;
+        } else if (keyString == "_id") {
+            keyIsId = true;
+        } else if (keyString.endsWith(".id")) {
+            keyValue = MongoColumnName(keyString.slice(0..keyString.length - 4) + "._id")
+            keyIsId = true;
+        } else if (keyString.endsWith("._id")) {
+            keyIsId = true;
+        }
+
+        if (value == null) {
+            return Pair<String, Any?>(keyValue.toString(), value);
+        }
+
+        var value = value;
+        var type = value::class.java
+
+        if (type.isEnum) {
+            value = value.toString();
+        } else if (type == LocalDateTime::class.java || type == LocalDate::class.java) {
+            value = value.AsLocalDateTime().AsDate()
+        } else if (type.IsStringType) {
+            if (keyIsId) {
+                value = getObjectIdValueTypeIfNeed(value);
+            }
+        } else if (type.isArray) {
+            value = (value as Array<*>).map {
+                if (it != null && it::class.java.isEnum) {
+                    return@map it.toString()
+                }
+                return@map it
+            }.toTypedArray()
+        } else if (value is Collection<*>) {
+            value = value.map {
+                if (it != null && it::class.java.isEnum) {
+                    return@map it.toString()
+                }
+
+                if (keyIsId) {
+                    return@map getObjectIdValueTypeIfNeed(it);
+                }
+                return@map it
+            }.toTypedArray()
+        } else if (value is Pair<*, *>) {
+            var v1 = value.first;
+            if (v1 != null && v1::class.java.isEnum) {
+                v1 = v1.toString()
+            }
+
+            var v2 = value.second;
+            if (v2 != null && v2::class.java.isEnum) {
+                v2 = v2.toString()
+            }
+
+            if (keyIsId) {
+                v2 = getObjectIdValueTypeIfNeed(v2);
+            }
+
+            value = Pair<Any?, Any?>(v1, v2);
+        }
+
+        return Pair<String, Any?>(keyValue.toString(), value);
+    }
 
     /**
      * 把 _id 转换为 id

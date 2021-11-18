@@ -6,8 +6,9 @@ import nbcp.db.es.WhereData
 /**
  * 先满足基本的查询
  */
-class EsQueryData {
+class EsQueryData : JsonMap() {
     /*
+    查询方式一：
 "query": {
     "bool": {
         "should": [{
@@ -18,6 +19,16 @@ class EsQueryData {
         ]
     }
 }
+查询方式二：https://www.cnblogs.com/yjf512/p/4897294.html
+{
+  "query": {
+    "multi_match": {
+        "query" : "我的宝马多少马力",
+        "fields" : ["title", "content"]
+    }
+  }
+}
+
      */
 
 
@@ -52,12 +63,46 @@ class EsQueryData {
         }
     }
 
-    var bool = BooleanData()
+    companion object {
+        private fun <T> JsonMap.touchMap(fieldName: String, callback: () -> T): T {
+            var b = this.get(fieldName);
+            if (b != null) {
+                return b as T;
+            }
+
+            this.set(fieldName, callback())
+            return this.get(fieldName) as T;
+        }
+    }
+
+    fun addShould(vararg where: WhereData) {
+        var b = this.touchMap("bool", { JsonMap() });
+        var should = b.touchMap("should", { mutableListOf<JsonMap>() });
+
+        b.set("minimum_should_match", 1);
+
+        should.addAll(where);
+    }
+
+    fun addMust(vararg where: WhereData) {
+        var b = this.touchMap("bool", { JsonMap() });
+        var must = b.touchMap("must", { mutableListOf<JsonMap>() });
 
 
+        must.addAll(where);
+    }
+
+    fun addMustNot(vararg where: WhereData) {
+        var b = this.touchMap("bool", { JsonMap() });
+        var must = b.touchMap("must_not", { mutableListOf<JsonMap>() });
+
+        must.addAll(where);
+    }
     fun hasValue(): Boolean {
-        if (bool.hasValue()) return true;
+        if (this.keys.size == 1 && this.containsKey("bool")) {
+            return (this.get("bool") as JsonMap).isNotEmpty()
+        }
 
-        return false;
+        return isNotEmpty();
     }
 }
