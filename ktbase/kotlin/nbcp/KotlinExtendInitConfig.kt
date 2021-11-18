@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component
 @Import(
     value = [
         SpringUtil::class,
+        ObjectMapperConfiguration::class
     ]
 )
 class KotlinExtendInitConfig {
