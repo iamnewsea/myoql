@@ -158,7 +158,10 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
             error = e;
             throw e;
         } finally {
-            EsLogger.logPut(error, collectionName, request, response);
+            EsLogger.logPut(
+                error, collectionName, request,
+                response?.statusLine?.statusCode.AsString() + "," + entities.size
+            );
         }
 
         return ret;

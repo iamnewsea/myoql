@@ -45,9 +45,11 @@ object db_es {
     fun multi_match(vararg target: Any?): WhereData {
         var target = proc_es_value(target);
 
-        return WhereData("match" to JsonMap(
-            this.toString() to target
-        ))
+        return WhereData(
+            "match" to JsonMap(
+                this.toString() to target
+            )
+        )
     }
 
     private val restClientMap = mutableMapOf<String, RestClient>()
@@ -154,7 +156,10 @@ object db_es {
             error = e;
             throw e;
         } finally {
-            EsLogger.logGet(error,name, request, response);
+            EsLogger.logGet(
+                error, name, request,
+                response?.statusLine?.statusCode.AsString()
+            );
         }
     }
 }

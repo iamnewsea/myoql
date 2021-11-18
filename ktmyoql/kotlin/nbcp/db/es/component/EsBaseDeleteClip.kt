@@ -72,7 +72,7 @@ open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhere
         }
 
         var request = Request("POST", "/_bulk" +
-                search.toUrlQuery().IfHasValue { "?" + it }
+            search.toUrlQuery().IfHasValue { "?" + it }
         )
 
         var data = mutableListOf<Any>()
@@ -93,7 +93,7 @@ open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhere
 
 //        var responseBody = "";
         val startAt = LocalDateTime.now()
-        var error: Exception?  = null
+        var error: Exception? = null
         var response: Response? = null
         try {
             response = esTemplate.performRequest(request)
@@ -117,7 +117,11 @@ open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhere
             error = e;
             throw e;
         } finally {
-            EsLogger.logDelete(error,collectionName,request,response)
+//            response.entity.content.ReadContentStringFromStream()
+            EsLogger.logDelete(
+                error, collectionName, request,
+                response?.statusLine?.statusCode.AsString() + "," + ids.size
+            )
         }
 
 //        return ret;

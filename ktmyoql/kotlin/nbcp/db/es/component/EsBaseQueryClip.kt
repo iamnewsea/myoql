@@ -42,29 +42,38 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
 
     var total: Int = -1;
 
-    private fun getRestResult(url: String, requestBody: String): String {
+    private fun getRestResult(url: String, requestBody: String): Map<String, Any?> {
         db.affectRowCount = 0;
 
-        var request = Request("POST", url);
+        val request = Request("POST", url);
         request.setJsonEntity(requestBody)
         var response: Response? = null
-        var startAt = LocalDateTime.now();
+        val startAt = LocalDateTime.now();
         var error: Exception? = null
-
+        var responseData: Map<String, Any?>? = null
         try {
             response = esTemplate.performRequest(request)
             db.executeTime = LocalDateTime.now() - startAt
 
             if (response.statusLine.statusCode != 200) {
-                return "";
+                return mapOf()
             }
-            return response.entity.content.readBytes().toString(const.utf8)
 
+            responseData = response.entity.content
+                .ReadContentStringFromStream()
+                .FromJson<Map<String, Any?>>() ?: mapOf();
+            return responseData;
         } catch (e: Exception) {
             error = e;
             throw e;
         } finally {
-            EsLogger.logGet(error, collectionName, request, response)
+            EsLogger.logGet(
+                error,
+                collectionName,
+                request,
+                response?.statusLine?.statusCode.AsString() + "," +
+                    responseData?.getStringValue("hits.total.value").AsString()
+            )
         }
     }
 
@@ -82,16 +91,14 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
         var list: List<Map<String, Any>> = listOf()
 
         var ret = mutableListOf<R>();
-        var url = getUrl()
+        var url = getUrl("_search")
 
         var requestBody = ""
         usingScope(arrayOf(JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.Compress)) {
             requestBody = this.search.toString()
         }
 
-        var responseBody = getRestResult(url, requestBody)
-
-        var result = responseBody.FromJson<Map<String, Any>>()!!;
+        var result = getRestResult(url, requestBody)
 
         var hits = result.getTypeValue<Map<String, *>>("hits");
         if (hits == null) {
@@ -170,16 +177,14 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
      */
     fun count(): Int {
         var count = 0;
-        var url = getUrl()
+        var url = getUrl("_count")
 
         var requestBody = ""
         usingScope(arrayOf(JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.Compress)) {
             requestBody = this.search.toString()
         }
 
-        var responseBody = getRestResult(url, requestBody)
-
-        var result = responseBody.FromJson<Map<String, Any>>()!!;
+        var result = getRestResult(url, requestBody)
 
         count = result.getIntValue("count")
 
@@ -192,16 +197,14 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
      */
     fun getAggregationResult(): Map<String, *> {
         var ret = JsonMap()
-        var url = getUrl()
+        var url = getUrl("_search")
 
         var requestBody = ""
         usingScope(arrayOf(JsonStyleEnumScope.DateUtcStyle, JsonStyleEnumScope.Compress)) {
             requestBody = this.search.toString()
         }
 
-        var responseBody = getRestResult(url, requestBody)
-
-        var result = responseBody.FromJson<Map<String, Any>>()!!;
+        var result = getRestResult(url, requestBody)
 
         var hits = result.getTypeValue<Map<String, *>>("hits");
         if (hits == null) {
@@ -216,14 +219,14 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
         return result.getTypeValue<Map<String, *>>("aggregations") ?: JsonMap()
     }
 
-    private fun getUrl(): String {
+    private fun getUrl(action:String): String {
         var search = JsonMap();
         if (this.routing.HasValue) {
             search.put("routing", this.routing)
         }
 
 
-        val url = "/${collectionName}/_search" + search.toUrlQuery().IfHasValue { "?" + it }
+        val url = "/${collectionName}/${action}" + search.toUrlQuery().IfHasValue { "?" + it }
         return url
     }
 }

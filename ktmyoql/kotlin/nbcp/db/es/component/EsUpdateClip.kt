@@ -11,6 +11,7 @@ import java.io.Serializable
 /**
  * EsUpdate
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/docs-update-by-query.html
+ * https://www.elastic.co/guide/cn/elasticsearch/guide/current/partial-updates.html
  */
 class EsUpdateClip<M : EsBaseMetaEntity<E>,E : Serializable>(var moerEntity: M)
     : EsBaseUpdateClip(moerEntity.tableName) {
