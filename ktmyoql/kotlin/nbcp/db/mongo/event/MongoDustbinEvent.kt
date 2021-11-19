@@ -1,5 +1,6 @@
 package nbcp.db.mongo.event;
 
+import nbcp.comm.AsString
 import nbcp.db.mongo.*;
 import nbcp.db.*
 import nbcp.db.mongo.entity.*
@@ -35,15 +36,17 @@ class MongoDustbinEvent : IMongoEntityDelete {
     }
 
     override fun delete(delete: MongoDeleteClip<*>, eventData: EventResult) {
-        val data = eventData.extData
-        if (data == null) return
+        val list = eventData.extData as List<Document>?
+        if (list.isNullOrEmpty()) return;
 
         val dustbin = SysDustbin()
 //        dustbin.id = ObjectId().toString()
         dustbin.table = delete.collectionName
-        dustbin.data = data as Serializable?;
+        dustbin.data = list as Serializable?;
         db.mor_base.sysDustbin.doInsert(dustbin)
 
-        logger.info("${delete.collectionName}.${(data as Document).getString("_id").toString()} 进了垃圾桶")
+        val list_ids = list.map { it.getString("_id").AsString() }
+
+        logger.info("${delete.collectionName}.${list_ids.joinToString(",")} 进了垃圾桶")
     }
 }
