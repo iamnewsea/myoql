@@ -40,7 +40,6 @@ class MongoDustbinEvent : IMongoEntityDelete {
         if (list.isNullOrEmpty()) return;
 
         val dustbin = SysDustbin()
-//        dustbin.id = ObjectId().toString()
         dustbin.table = delete.collectionName
         dustbin.data = list as Serializable?;
         db.mor_base.sysDustbin.doInsert(dustbin)
