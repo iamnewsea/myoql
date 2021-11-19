@@ -8,9 +8,7 @@ import nbcp.db.*
 import nbcp.scope.JsonSceneEnumScope
 import nbcp.base.service.UploadService
 import nbcp.web.*
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
-
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -25,7 +23,6 @@ import javax.servlet.http.HttpServletResponse
  *  2. 客户端调用 业务方法，把文件Id和业务关联。
  */
 @RestController
-@ConditionalOnBean(UploadService::class)
 class FileUploadController {
     @Autowired
     lateinit var uploadService: UploadService;
