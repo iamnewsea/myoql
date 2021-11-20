@@ -77,49 +77,31 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
     }
 
     override fun resolveArgument(
-            parameter: MethodParameter,
-            mavContainer: ModelAndViewContainer?,
-            nativeRequest: NativeWebRequest,
-            binderFactory: WebDataBinderFactory?
+        parameter: MethodParameter,
+        mavContainer: ModelAndViewContainer?,
+        nativeRequest: NativeWebRequest,
+        binderFactory: WebDataBinderFactory?
     ): Any? {
         if (mavContainer == null || binderFactory == null) return null
         val webRequest = (nativeRequest as ServletWebRequest).request
-        val myRequest = getMyRequest(webRequest);
-        var value: Any? = null
-        val key = parameter.parameterName
+        var value: Any? = getValueFromRequest(webRequest, parameter)
 
 
-        //获取 PathVariable 的值
-        value =
-                (webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as Map<String, Any?>?)?.get(key);
-
-        if (value == null && webRequest.queryString != null) {
-            value = getFromQuery(webRequest, parameter);
-        }
-
-        if (value == null && myRequest != null) {
-            var jsonModelValue = parameter.getParameterAnnotation(JsonModel::class.java)
-            if (jsonModelValue != null) {
-//                if (jsonModelValue.value.java.isInterface) {
-//                    return (myRequest.body ?: byteArrayOf()).toString(utf8).FromJson(parameter.parameterType);
-//                } else {
-//                    return jsonModelValue.value.java.newInstance().apply(webRequest)
-//                }
-
-                //如果用 JsonModel 接收 String 等简单参数？
-                var valueString = (myRequest.body ?: byteArrayOf()).toString(const.utf8);
-                if (parameter.parameterType.IsSimpleType()) {
-                    return valueString.ConvertType(parameter.parameterType);
-                }
-
-                return valueString.FromJson(parameter.parameterType);
-            }
-
-            value = myRequest.json.get(key)
-        }
-
+        //查值最后一步。 转值
         if (value == null) {
-            value = webRequest.getHeader(key)
+            if (parameter.parameterName == "skip") {
+                val pageNumber = getValueFromRequest(webRequest, parameter, "pageNumber").AsInt(-1)
+                val pageSize = getValueFromRequest(webRequest, parameter, "pageSize").AsInt(-1)
+
+                if (pageNumber > 0 && pageSize > 0) {
+                    return (pageNumber - 1) * pageSize
+                }
+            } else if (parameter.parameterName == "take") {
+                val pageNumber = getValueFromRequest(webRequest, parameter, "pageNumber").AsInt(-1)
+                if (pageNumber > 0) {
+                    return pageNumber
+                }
+            }
         }
 
         if (parameter.parameterType.IsStringType) {
@@ -167,6 +149,50 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         return value?.ConvertType(parameter.parameterType);
     }
 
+    private fun getValueFromRequest(
+        webRequest: HttpServletRequest,
+        parameter: MethodParameter,
+        key: String = ""
+    ): Any? {
+
+        var parameterName = key;
+        if (parameterName.isEmpty()) {
+            parameterName = parameter.parameterName
+        }
+
+        val myRequest = getMyRequest(webRequest);
+        //获取 PathVariable 的值
+        var value: Any? =
+            (webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as Map<String, Any?>?)?.get(
+                parameterName
+            );
+
+        if (value == null && webRequest.queryString != null) {
+            value = getFromQuery(webRequest, parameter);
+        }
+
+        if (value == null && myRequest != null) {
+            val jsonModelValue = parameter.getParameterAnnotation(JsonModel::class.java)
+            if (jsonModelValue != null) {
+                //如果用 JsonModel 接收 String 等简单参数？
+                val valueString = (myRequest.body ?: byteArrayOf()).toString(const.utf8);
+                if (parameter.parameterType.IsSimpleType()) {
+                    return valueString.ConvertType(parameter.parameterType);
+                }
+
+                return valueString.FromJson(parameter.parameterType);
+            }
+
+            value = myRequest.json.get(parameterName)
+        }
+
+        if (value == null) {
+            value = webRequest.getHeader(parameterName)
+        }
+
+        return value;
+    }
+
     private fun checkRequire(parameter: MethodParameter, webRequest: HttpServletRequest) {
         var require = parameter.getParameterAnnotation(Require::class.java)
         if (require == null) {
@@ -212,7 +238,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
                     value = value.toTypedArray()
                 } else {
                     value = value.map { it!!.ConvertType(parameter.parameterType.componentType) }
-                            .toTypedArray()
+                        .toTypedArray()
                 }
             } else if (parameter.parameterType.IsCollectionType) {
                 var genType = (parameter.genericParameterType as ParameterizedType).GetActualClass(0);

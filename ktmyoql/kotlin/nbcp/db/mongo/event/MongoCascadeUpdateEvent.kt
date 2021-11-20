@@ -141,7 +141,13 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
                 update2.exec();
 
                 usingScope(LogLevelScope.info) {
-                    logger.info("因为更新 ${update.collectionName}: ${ref.masterIdValues.joinToString(",")} + ${ref.masterNameValue} 而导致级联更新 ${targetCollection}：${ref.ref.idField} + ${ref.ref.nameField}")
+                    logger.info(
+                        "mongo级联更新${update2.affectRowCount}条记录,${update.collectionName}-->${targetCollection},${
+                            ref.masterIdValues.joinToString(
+                                ","
+                            )
+                        }-->(${ref.ref.idField},${ref.ref.nameField})"
+                    )
                 }
             }
     }
