@@ -171,8 +171,8 @@ fun <T> Class<T>.GetEnumNumberField(): Field? {
 
     var ret_fields = this.declaredFields.filter {
         (it.modifiers and Modifier.PRIVATE) > 0 &&
-            (it.modifiers and Modifier.STATIC == 0) &&
-            it.type.IsNumberType
+                (it.modifiers and Modifier.STATIC == 0) &&
+                it.type.IsNumberType
     }
     if (ret_fields.size == 1) {
         var ret = ret_fields.first();
@@ -191,8 +191,8 @@ fun <T> Class<T>.GetEnumStringField(): Field? {
 
     var ret_fields = this.declaredFields.filter {
         (it.modifiers and Modifier.PRIVATE) > 0 &&
-            it.modifiers and Modifier.STATIC == 0 &&
-            it.type.IsStringType
+                it.modifiers and Modifier.STATIC == 0 &&
+                it.type.IsStringType
     }
 
     if (ret_fields.any()) {
@@ -263,10 +263,14 @@ fun Class<*>.ForEachField(fieldCallback: (Field) -> Boolean) {
 
 
 /**
- * 向上查找任意满足的类。
+ * 向上查找任意满足的类或接口。
  */
 fun Class<*>.AnySuperClass(filter: (Class<*>) -> Boolean): Boolean {
     if (filter(this)) return true;
+    val intes = this.interfaces;
+    if (intes.any()) {
+        if (intes.any { filter(it) }) return true;
+    }
     var superClass = this.superclass;
     if (superClass == null) return false;
     return superclass.AnySuperClass(filter);
