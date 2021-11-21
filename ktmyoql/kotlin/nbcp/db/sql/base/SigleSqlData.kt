@@ -6,7 +6,7 @@ import nbcp.utils.CodeUtil
 import java.io.Serializable
 
 
-abstract class AliasBaseSqlSect : Serializable {
+abstract class BaseAliasSqlSect : Serializable {
     var aliaValue: String = ""
 
     abstract fun toSingleSqlData(): SqlParameterData;
@@ -16,7 +16,7 @@ abstract class AliasBaseSqlSect : Serializable {
 }
 
 
-open class SqlParameterData constructor() : AliasBaseSqlSect() {
+open class SqlParameterData constructor() : BaseAliasSqlSect() {
 
     var expression: String = ""
         get() {

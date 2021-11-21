@@ -40,42 +40,42 @@ infix fun SqlColumnNames.and(next: SqlColumnName): SqlColumnNames {
 //val SqlColumnName.desc: SqlOrderBy
 //    get() = SqlOrderBy(false, SingleSqlData(this.fullName))
 
-private fun op_ext_sql(baseSqlData: AliasBaseSqlSect, op: String): SqlParameterData {
-    if( baseSqlData is SqlParameterData) {
-        var clone = baseSqlData.CloneObject()
+private fun op_ext_sql(baseAliasSqlData: BaseAliasSqlSect, op: String): SqlParameterData {
+    if( baseAliasSqlData is SqlParameterData) {
+        var clone = baseAliasSqlData.CloneObject()
         clone.expression = "${op}(${clone.expression})"
         return clone;
     }
-    else if(baseSqlData is SqlColumnName){
-        var clone = baseSqlData.toSingleSqlData()
+    else if(baseAliasSqlData is SqlColumnName){
+        var clone = baseAliasSqlData.toSingleSqlData()
         clone.expression = "${op}(${clone.expression})"
         return clone;
     }
 
-    throw RuntimeException("不识别的类型:${baseSqlData::class.java.name}")
+    throw RuntimeException("不识别的类型:${baseAliasSqlData::class.java.name}")
 }
 
 
-fun AliasBaseSqlSect.sum(): SqlParameterData {
+fun BaseAliasSqlSect.sum(): SqlParameterData {
     return op_ext_sql(this, "sum");
 }
 
-fun AliasBaseSqlSect.count(): SqlParameterData {
+fun BaseAliasSqlSect.count(): SqlParameterData {
     return op_ext_sql(this, "count");
 }
 
 @JvmOverloads
-fun AliasBaseSqlSect.min(): SqlParameterData {
+fun BaseAliasSqlSect.min(): SqlParameterData {
     return op_ext_sql(this, "min");
 }
 
 @JvmOverloads
-fun AliasBaseSqlSect.max(): SqlParameterData {
+fun BaseAliasSqlSect.max(): SqlParameterData {
     return op_ext_sql(this, "max");
 }
 
 @JvmOverloads
-fun AliasBaseSqlSect.avg(): SqlParameterData {
+fun BaseAliasSqlSect.avg(): SqlParameterData {
     return op_ext_sql(this, "avg");
 }
 
@@ -90,12 +90,12 @@ fun AliasBaseSqlSect.avg(): SqlParameterData {
  * 字符个数
  */
 @JvmOverloads
-fun AliasBaseSqlSect.character_length( ): SqlParameterData {
+fun BaseAliasSqlSect.character_length( ): SqlParameterData {
     return op_ext_sql(this, "character_length" );
 }
 
 @JvmOverloads
-fun AliasBaseSqlSect.ifNull(elseValue: AliasBaseSqlSect): SqlParameterData {
+fun BaseAliasSqlSect.ifNull(elseValue: BaseAliasSqlSect): SqlParameterData {
     var ret = this.toSingleSqlData();
     ret.expression = "ifNull(${ret.expression},"
     ret += elseValue.toSingleSqlData()
@@ -104,15 +104,15 @@ fun AliasBaseSqlSect.ifNull(elseValue: AliasBaseSqlSect): SqlParameterData {
 }
 
 data class CaseWhenData<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntity: M) : Serializable {
-    private val caseWhens = mutableListOf<Pair<WhereData, AliasBaseSqlSect>>()
-    private lateinit var elseEnd: Pair<AliasBaseSqlSect, String>
+    private val caseWhens = mutableListOf<Pair<WhereData, BaseAliasSqlSect>>()
+    private lateinit var elseEnd: Pair<BaseAliasSqlSect, String>
 
-    fun whenThen(caseWhen: (M) -> WhereData, then: AliasBaseSqlSect): CaseWhenData<M, T> {
+    fun whenThen(caseWhen: (M) -> WhereData, then: BaseAliasSqlSect): CaseWhenData<M, T> {
         this.caseWhens.add(caseWhen(this.mainEntity) to then)
         return this;
     }
 
-    fun elseEnd(elseEnd: AliasBaseSqlSect, alias: String): SqlParameterData {
+    fun elseEnd(elseEnd: BaseAliasSqlSect, alias: String): SqlParameterData {
         var ret = SqlParameterData();
         ret.expression += "case";
 

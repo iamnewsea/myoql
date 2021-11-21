@@ -61,7 +61,7 @@ object db_sql {
         }
     }
 
-    fun mergeSqlData(vararg columns: AliasBaseSqlSect): SqlParameterData {
+    fun mergeSqlData(vararg columns: BaseAliasSqlSect): SqlParameterData {
         var ret = SqlParameterData();
 
         ret.expression = columns.map {

@@ -15,10 +15,10 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
     }
 
     private var whereDatas = WhereData()
-    val columns = mutableListOf<AliasBaseSqlSect>()
+    val columns = mutableListOf<BaseAliasSqlSect>()
     val joins = mutableListOf<JoinTableData<*, *>>()
     val orders = mutableListOf<SqlOrderBy>()
-    private val groups = mutableListOf<AliasBaseSqlSect>()
+    private val groups = mutableListOf<BaseAliasSqlSect>()
     private val having = WhereData()
     private var subSelect: SqlQueryClip<*, *>? = null //<out SqlBaseTable<out IBaseDbEntity>, out IBaseDbEntity>? = null
     private var subSelectAlias: String = ""
@@ -55,12 +55,12 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
     /**
      * 选择某列
      */
-    fun select(selectColumn: (M) -> AliasBaseSqlSect): SqlQueryClip<M, T> {
+    fun select(selectColumn: (M) -> BaseAliasSqlSect): SqlQueryClip<M, T> {
         this.columns.add(selectColumn(this.mainEntity));
         return this;
     }
 
-    fun groupBy(group: (M) -> AliasBaseSqlSect): SqlQueryClip<M, T> {
+    fun groupBy(group: (M) -> BaseAliasSqlSect): SqlQueryClip<M, T> {
         this.groups.add(group(this.mainEntity))
         return this;
     }

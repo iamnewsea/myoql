@@ -8,7 +8,7 @@ open class SqlColumnName(
         val dbType: DbType,
         tableName: String,
         name: String
-) : AliasBaseSqlSect() {
+) : BaseAliasSqlSect() {
     /**
      * 表名
      */
