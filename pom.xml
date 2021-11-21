@@ -191,7 +191,7 @@
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-stdlib</artifactId>
-                <version>${kotl in.version}</version>
+                <version>${kotlin.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.ow2.asm</groupId>
