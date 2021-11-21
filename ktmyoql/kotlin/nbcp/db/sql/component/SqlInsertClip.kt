@@ -1,7 +1,6 @@
 package nbcp.db.sql
 
 import org.slf4j.LoggerFactory
-import org.springframework.jdbc.core.PreparedStatementCreator
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import nbcp.comm.*
 import nbcp.db.BaseEntity
@@ -10,7 +9,6 @@ import nbcp.utils.*
 import nbcp.db.db
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import java.lang.RuntimeException
-import java.sql.Statement
 import java.time.LocalDateTime
 import java.io.Serializable
 
@@ -100,7 +98,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
         return this
     }
 
-    override fun toSql(): SingleSqlData {
+    override fun toSql(): SqlParameterData {
         var autoIncrmentKey = this.mainEntity.getAutoIncrementKey()
 
         if (entities.size == 1) {
@@ -134,13 +132,13 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
                 insertColumns.map { "${db.sql.getSqlQuoteName(it.name)}" }.joinToString(",")
             }) values (${insertColumns.map { ":${it.name}" }.joinToString(",")})";
 
-            var executeSql = SingleSqlData(exp, entity)
+            var executeSql = SqlParameterData(exp, entity)
 
             return executeSql
         }
 
         //在 exec 时直接生成批量
-        return SingleSqlData()
+        return SqlParameterData()
     }
 
     override fun exec(): Int {

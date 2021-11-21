@@ -3,7 +3,6 @@ package nbcp.db.sql
 import nbcp.comm.AllFields
 import nbcp.comm.AsString
 import nbcp.db.*
-import nbcp.db.mongo.MongoColumnName
 import java.lang.reflect.Modifier
 import java.io.Serializable
 

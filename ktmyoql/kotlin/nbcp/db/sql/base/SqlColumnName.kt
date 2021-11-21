@@ -2,37 +2,23 @@ package nbcp.db.sql
 
 import nbcp.comm.AsString
 import nbcp.comm.HasValue
-import nbcp.db.*
-import nbcp.db.sql.*
-import java.io.Serializable
 
 
 open class SqlColumnName(
-    val dbType: DbType,
-    tableName: String,
-    name: String
-) : SingleSqlData() {
+        val dbType: DbType,
+        tableName: String,
+        name: String
+) : AliasBaseSqlSect() {
+    /**
+     * 表名
+     */
     var tableName: String = tableName
-        get() {
-            return field
-        }
-        set(value) {
-            field = value;
-            super.expression = this.fullName
-        }
 
+    /**
+     * 列名
+     */
     var name: String = name
-        get() {
-            return field
-        }
-        set(value) {
-            field = value
-            super.expression = this.fullName
-        }
 
-    init {
-        super.expression = this.fullName
-    }
 
     companion object {
         @JvmStatic
@@ -46,7 +32,6 @@ open class SqlColumnName(
         }
     }
 
-    private var columnAliaValue: String = ""
 
     open val fullName: String
         get() {
@@ -60,9 +45,9 @@ open class SqlColumnName(
 
     //用于 json 中的 key
     //变量，必须是  {s_corp_name}
-    open val jsonKeyName: String
+    open val paramVarKeyName: String
         get() {
-            if (columnAliaValue.HasValue) return this.columnAliaValue
+            if (aliaValue.HasValue) return this.aliaValue
 
             if (this.tableName.HasValue) {
                 return "${this.tableName}_${this.name}"
@@ -74,19 +59,30 @@ open class SqlColumnName(
 
     fun alias(alias: String): SqlColumnName {
         if (alias == this.name) {
-            this.columnAliaValue = ""
+            this.aliaValue = ""
             return this;
         }
 
         val ret = SqlColumnName(dbType, tableName, name);
-        ret.columnAliaValue = alias;
+        ret.aliaValue = alias;
         return ret;
     }
 
     /**
      * 返回 columnAliaValue.AsString( name )
      */
-    fun getAliasName(): String = this.columnAliaValue.AsString(this.name)
+    override fun getAliasName(): String = this.aliaValue.AsString(this.name)
+
+
+    override fun toSingleSqlData(): SqlParameterData {
+        var ret = SqlParameterData()
+        if (this.aliaValue.HasValue && this.aliaValue != this.name) {
+            ret.aliaValue = this.aliaValue;
+        }
+        ret.expression = this.fullName
+
+        return ret;
+    }
 
     override fun toString(): String {
         return name
@@ -98,7 +94,7 @@ open class SqlColumnName(
 
         if (other == null) return false;
         if (other is SqlColumnName) {
-            return this.dbType == other.dbType && this.tableName == other.tableName && this.name == other.name && this.columnAliaValue == other.columnAliaValue
+            return this.dbType == other.dbType && this.tableName == other.tableName && this.name == other.name && this.aliaValue == other.aliaValue
         }
         return false;
     }

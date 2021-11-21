@@ -33,7 +33,7 @@ class SqlDeleteClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity: M) :
         return this;
     }
 
-    override fun toSql(): SingleSqlData {
+    override fun toSql(): SqlParameterData {
         if (whereDatas.hasValue == false) {
             throw RuntimeException("不允许执行没有 where 条件的 delete ${mainEntity.tableName} 语句")
         }
@@ -46,7 +46,7 @@ class SqlDeleteClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity: M) :
             exp += " limit ${take}"
         }
 
-        var execute = SingleSqlData(exp, values)
+        var execute = SqlParameterData(exp, values)
 
 
 //        if( logger.isInfoEnabled){

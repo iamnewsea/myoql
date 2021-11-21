@@ -44,7 +44,7 @@ fun proc_value(value: Any): Any {
 
 private fun SqlColumnName.column_match_value(op: String, value: Serializable): WhereData {
     var valueValue = proc_value(value);
-    return WhereData("${this.fullName} ${op} :${this.jsonKeyName}", JsonMap(this.jsonKeyName to valueValue))
+    return WhereData("${this.fullName} ${op} :${this.paramVarKeyName}", JsonMap(this.paramVarKeyName to valueValue))
 }
 
 /**
@@ -160,7 +160,7 @@ private fun SqlColumnName.column_match_between(min: Any, max: Any): WhereData {
     var minValue = proc_value(min);
     var maxValue = proc_value(max);
 
-    return WhereData("${this.fullName} >= :${this.jsonKeyName}_min and ${this.fullName} < :${this.jsonKeyName}_max", JsonMap("${this.jsonKeyName}_min" to minValue, "${this.jsonKeyName}_max" to maxValue));
+    return WhereData("${this.fullName} >= :${this.paramVarKeyName}_min and ${this.fullName} < :${this.paramVarKeyName}_max", JsonMap("${this.paramVarKeyName}_min" to minValue, "${this.paramVarKeyName}_max" to maxValue));
 }
 
 //fun SqlColumnName.match_between(min: Number, max: Number): WhereData = this.column_match_between(min, max)

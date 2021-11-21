@@ -1,19 +1,58 @@
 package nbcp.db.sql
 
 import nbcp.comm.*
-import nbcp.comm.Slice
-import nbcp.db.mysql.*
+import nbcp.db.db
 import nbcp.utils.CodeUtil
 import java.io.Serializable
-import java.util.LinkedHashSet
 
-open class SingleSqlData @JvmOverloads constructor(
-    // 使用 :变量名 表示 变量
-    var expression: String = "",
 
-    // JsonMap 的 key = corp_id
-    var values: JsonMap = JsonMap()
-) : Serializable {
+abstract class AliasBaseSqlSect : Serializable {
+    var aliaValue: String = ""
+
+    abstract fun toSingleSqlData(): SqlParameterData;
+    open fun getAliasName(): String {
+        return this.aliaValue
+    }
+}
+
+
+open class SqlParameterData constructor() : AliasBaseSqlSect() {
+
+    var expression: String = ""
+        get() {
+            if (this.aliaValue.HasValue) {
+                return "${field} as ${db.sql.getSqlQuoteName(this.aliaValue)}"
+            }
+            return field;
+        }
+        set(value) {
+            field = value;
+        }
+
+    var values: JsonMap = JsonMap();
+
+    constructor(
+            // 使用 :变量名 表示 变量
+            expression: String,
+
+            // JsonMap 的 key = corp_id
+            values: JsonMap = JsonMap()
+    ) : this() {
+        this.expression = expression;
+        this.values = values;
+    }
+
+    fun alias(alias: String): SqlParameterData {
+        this.aliaValue = alias;
+        return this;
+    }
+
+
+    override fun toSingleSqlData(): SqlParameterData {
+        return this.CloneObject()
+    }
+
+
     //
 //    private fun getJsonKeysFromExpression(): Set<String> {
 //        return """\{([^}]+)}""".toRegex(RegexOption.DOT_MATCHES_ALL)
@@ -50,8 +89,8 @@ open class SingleSqlData @JvmOverloads constructor(
 //    }
 
 
-    operator fun plus(other: SingleSqlData): SingleSqlData {
-        var other2 = SingleSqlData(other.expression, JsonMap(other.values));
+    operator fun plus(other: SqlParameterData): SqlParameterData {
+        var other2 = SqlParameterData(other.expression, JsonMap(other.values));
 
 
         //去除 #@
@@ -68,7 +107,7 @@ open class SingleSqlData @JvmOverloads constructor(
         }
 
 
-        return SingleSqlData(this.expression + other2.expression, this.values + other2.values);
+        return SqlParameterData(this.expression + other2.expression, JsonMap(this.values + other2.values));
     }
 //
 //    operator fun plus(expression: String): SingleSqlData {

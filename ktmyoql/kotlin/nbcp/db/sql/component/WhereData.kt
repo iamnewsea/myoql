@@ -1,10 +1,7 @@
 package nbcp.db.sql
 
 import nbcp.comm.*
-import nbcp.db.sql.*
-import nbcp.db.*
 import java.io.Serializable
-import java.util.LinkedHashSet
 
 
 /**
@@ -33,10 +30,10 @@ class WhereData : Serializable {
     var next: WhereData? = null;
 
     //生成单一个 WhereData
-    fun toSingleData(): SingleSqlData {
-        if (this.hasValue == false) return SingleSqlData();
+    fun toSingleData(): SqlParameterData {
+        if (this.hasValue == false) return SqlParameterData();
 
-        var ret = SingleSqlData();
+        var ret = SqlParameterData();
 
         if (this.child != null) {
             var c = this.child!!.toSingleData();
@@ -44,7 +41,7 @@ class WhereData : Serializable {
             ret += c;
             ret.expression += ")"
         } else {
-            ret += SingleSqlData(this.expression, this.values);
+            ret += SqlParameterData(this.expression, this.values);
         }
 
         if (this.next != null && this.linker.HasValue) {

@@ -135,17 +135,17 @@ open class JsonMap : StringKeyMap<Any?> {
     constructor(data: Collection<Pair<String, Any?>>) : super(data) {
     }
 
-    operator fun plus(other: JsonMap): JsonMap {
-        var ret = JsonMap()
-        ret.putAll(this)
-        ret.putAll(other)
-        return ret;
-    }
-
-
-    operator fun plusAssign(other: JsonMap) {
-        this.putAll(other)
-    }
+//    operator fun plus(other: JsonMap): JsonMap {
+//        var ret = JsonMap()
+//        ret.putAll(this)
+//        ret.putAll(other)
+//        return ret;
+//    }
+//
+//
+//    operator fun plusAssign(other: JsonMap) {
+//        this.putAll(other)
+//    }
 }
 
 

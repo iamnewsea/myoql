@@ -2,16 +2,14 @@ package nbcp.db
 
 import com.zaxxer.hikari.HikariDataSource
 import nbcp.comm.AsString
-import nbcp.comm.ToEnum
 import nbcp.comm.config
+import nbcp.db.sql.*
 import nbcp.utils.*
-import nbcp.db.sql.IDataGroup
-import nbcp.db.sql.SqlBaseMetaTable
 import nbcp.db.sql.event.*
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 import org.springframework.util.StringUtils
+import java.lang.RuntimeException
 import javax.sql.DataSource
 
 /**
@@ -63,6 +61,27 @@ object db_sql {
         }
     }
 
+    fun mergeSqlData(vararg columns: AliasBaseSqlSect): SqlParameterData {
+        var ret = SqlParameterData();
+
+        ret.expression = columns.map {
+            if (it is SqlColumnName) {
+                return@map it.toSingleSqlData()
+            } else if (it is SqlParameterData) {
+                return@map it
+            }
+            throw RuntimeException("不识别的类型:${it::class.java.name}")
+        }.map { it.expression }.joinToString(",")
+
+
+        columns.forEach {
+            if (it is SqlParameterData) {
+                ret.values += it.values
+            }
+        }
+
+        return ret;
+    }
 
     private val dataSourceMap = mutableMapOf<String, DataSource>();
 
@@ -80,7 +99,7 @@ object db_sql {
         properties.password = password;
 
         dataSource =
-            properties.initializeDataSourceBuilder().type(HikariDataSource::class.java).build() as HikariDataSource
+                properties.initializeDataSourceBuilder().type(HikariDataSource::class.java).build() as HikariDataSource
         if (StringUtils.hasText(properties.name)) {
             dataSource.poolName = properties.name
         }

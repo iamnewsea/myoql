@@ -4,38 +4,37 @@ import org.slf4j.LoggerFactory
 import nbcp.comm.*
 
 import nbcp.db.db
-import nbcp.db.sql.*
 import java.time.LocalDateTime
 
 //查询原生表。
-class RawQuerySqlClip(var sql: SingleSqlData, tableName: String) : SqlBaseQueryClip(tableName) {
+class RawQuerySqlClip(var sqlParameter: SqlParameterData, tableName: String) : SqlBaseQueryClip(tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
     constructor(sqlWithVar: String, sqlValue: JsonMap = JsonMap(), tableName: String = "")
-            : this(SingleSqlData(sqlWithVar, sqlValue), tableName) {
+            : this(SqlParameterData(sqlWithVar, sqlValue), tableName) {
 
     }
 
-    override fun toSql(): SingleSqlData {
-        return this.sql;
+    override fun toSql(): SqlParameterData {
+        return this.sqlParameter;
     }
 }
 
 
-class RawExecuteSqlClip(var sql: SingleSqlData, tableName: String) : SqlBaseExecuteClip(tableName) {
+class RawExecuteSqlClip(var sqlParameter: SqlParameterData, tableName: String) : SqlBaseExecuteClip(tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
     constructor(sqlWithVar: String, sqlValue: JsonMap = JsonMap(), tableName: String = "")
-            : this(SingleSqlData(sqlWithVar, sqlValue), tableName) {
+            : this(SqlParameterData(sqlWithVar, sqlValue), tableName) {
 
     }
 
-    override fun toSql(): SingleSqlData {
-        return this.sql;
+    override fun toSql(): SqlParameterData {
+        return this.sqlParameter;
     }
 
     override fun exec(): Int {

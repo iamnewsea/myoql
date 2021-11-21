@@ -7,10 +7,9 @@ import nbcp.comm.*
 import nbcp.db.db
 import java.io.Serializable
 import java.lang.RuntimeException
-import java.sql.PreparedStatement
 
 
-fun SingleSqlData.toWhereData(): WhereData {
+fun SqlParameterData.toWhereData(): WhereData {
     return WhereData(this.expression, this.values);
 }
 
@@ -18,12 +17,12 @@ fun SingleSqlData.toWhereData(): WhereData {
 //    return ColumnsData(this.expression, this.values)
 //}
 
-fun SqlColumnNames.toSelectSql(): String =
-    this.map {
-        if (it.getAliasName() == it.name) it.fullName
-        else
-            it.fullName + " as " + db.sql.getSqlQuoteName(it.getAliasName())
-    }.joinToString(",")
+//fun SqlColumnNames.toSelectSql(): String =
+//    this.map {
+//        if (it.getAliasName() == it.name) it.fullName
+//        else
+//            it.fullName + " as " + db.sql.getSqlQuoteName(it.getAliasName())
+//    }.joinToString(",")
 
 
 infix fun SqlColumnName.and(next: SqlColumnName): SqlColumnNames {
@@ -41,42 +40,43 @@ infix fun SqlColumnNames.and(next: SqlColumnName): SqlColumnNames {
 //val SqlColumnName.desc: SqlOrderBy
 //    get() = SqlOrderBy(false, SingleSqlData(this.fullName))
 
-private fun op_ext_sql(sqlData: SingleSqlData, op: String, alias: String): SingleSqlData {
-    var clone = sqlData.CloneObject()
-
-    var alias_value = alias;
-    if (alias_value.isEmpty()) {
-        if (clone is SqlColumnName) {
-            alias_value = "${op}_${clone.name}";
-        } else {
-            alias_value = "${op}_value"
-        }
+private fun op_ext_sql(baseSqlData: AliasBaseSqlSect, op: String): SqlParameterData {
+    if( baseSqlData is SqlParameterData) {
+        var clone = baseSqlData.CloneObject()
+        clone.expression = "${op}(${clone.expression})"
+        return clone;
     }
-    clone.expression = "${op}(${clone.expression}) ${alias_value}"
-    return clone;
+    else if(baseSqlData is SqlColumnName){
+        var clone = baseSqlData.toSingleSqlData()
+        clone.expression = "${op}(${clone.expression})"
+        return clone;
+    }
+
+    throw RuntimeException("不识别的类型:${baseSqlData::class.java.name}")
 }
 
-fun SingleSqlData.sum(alias: String): SingleSqlData {
-    return op_ext_sql(this, "sum", alias);
+
+fun AliasBaseSqlSect.sum(): SqlParameterData {
+    return op_ext_sql(this, "sum");
 }
 
-fun SqlColumnName.count(alias: String): SingleSqlData {
-    return op_ext_sql(this, "count", alias);
-}
-
-@JvmOverloads
-fun SqlColumnName.min(alias: String = ""): SingleSqlData {
-    return op_ext_sql(this, "min", alias);
-}
-
-@JvmOverloads
-fun SqlColumnName.max(alias: String = ""): SingleSqlData {
-    return op_ext_sql(this, "max", alias);
+fun AliasBaseSqlSect.count(): SqlParameterData {
+    return op_ext_sql(this, "count");
 }
 
 @JvmOverloads
-fun SqlColumnName.avg(alias: String = ""): SingleSqlData {
-    return op_ext_sql(this, "avg", alias);
+fun AliasBaseSqlSect.min(): SqlParameterData {
+    return op_ext_sql(this, "min");
+}
+
+@JvmOverloads
+fun AliasBaseSqlSect.max(): SqlParameterData {
+    return op_ext_sql(this, "max");
+}
+
+@JvmOverloads
+fun AliasBaseSqlSect.avg(): SqlParameterData {
+    return op_ext_sql(this, "avg");
 }
 
 //fun SqlColumnName.ifNull(elseValue: SingleSqlData, alias: String = ""): SingleSqlData {
@@ -90,32 +90,30 @@ fun SqlColumnName.avg(alias: String = ""): SingleSqlData {
  * 字符个数
  */
 @JvmOverloads
-fun SqlColumnName.character_length(alias: String = ""): SingleSqlData {
-    return op_ext_sql(this, "character_length", alias);
+fun AliasBaseSqlSect.character_length( ): SqlParameterData {
+    return op_ext_sql(this, "character_length" );
 }
 
 @JvmOverloads
-fun SingleSqlData.ifNull(elseValue: SingleSqlData, alias: String = ""): SingleSqlData {
-    var ret = this.CloneObject();
-    ret.expression = "ifNull(${this.expression},"
-
-    ret += elseValue
-
-    ret.expression += ") ${alias}"
+fun AliasBaseSqlSect.ifNull(elseValue: AliasBaseSqlSect): SqlParameterData {
+    var ret = this.toSingleSqlData();
+    ret.expression = "ifNull(${ret.expression},"
+    ret += elseValue.toSingleSqlData()
+    ret.expression += ")"
     return ret;
 }
 
 data class CaseWhenData<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntity: M) : Serializable {
-    private val caseWhens = mutableListOf<Pair<WhereData, SingleSqlData>>()
-    private lateinit var elseEnd: Pair<SingleSqlData, String>
+    private val caseWhens = mutableListOf<Pair<WhereData, AliasBaseSqlSect>>()
+    private lateinit var elseEnd: Pair<AliasBaseSqlSect, String>
 
-    fun whenThen(caseWhen: (M) -> WhereData, then: SingleSqlData): CaseWhenData<M, T> {
+    fun whenThen(caseWhen: (M) -> WhereData, then: AliasBaseSqlSect): CaseWhenData<M, T> {
         this.caseWhens.add(caseWhen(this.mainEntity) to then)
         return this;
     }
 
-    fun elseEnd(elseEnd: SingleSqlData, alias: String): SingleSqlData {
-        var ret = SingleSqlData();
+    fun elseEnd(elseEnd: AliasBaseSqlSect, alias: String): SqlParameterData {
+        var ret = SqlParameterData();
         ret.expression += "case";
 
         this.caseWhens.forEach {
@@ -125,11 +123,11 @@ data class CaseWhenData<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainE
             ret += where
 
             ret.expression += " then "
-            ret += it.second
+            ret += it.second.toSingleSqlData()
         }
 
         ret.expression += " else "
-        ret += elseEnd
+        ret += elseEnd.toSingleSqlData()
 
         ret.expression += " end ${alias}"
 
