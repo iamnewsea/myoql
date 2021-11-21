@@ -231,7 +231,8 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
             } else {
                 var selectColumn = db.sql.mergeSqlData(*columns.toTypedArray())
 
-                ret.expression += selectColumn
+                ret.expression += selectColumn.expression
+                ret.values += selectColumn.values
             }
 
             joins.forEach {
