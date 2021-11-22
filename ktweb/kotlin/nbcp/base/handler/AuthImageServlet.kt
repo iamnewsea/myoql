@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse
  * https://gitee.com/whvse/EasyCaptcha
  * 事实上， HandlerInterceptorAdapter 不会拦截 HttpServlet
  */
+@OpenAction
 @RestController()
 open class AuthImageServlet {
     @Autowired

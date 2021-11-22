@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse
  */
 data class cn_city_model(var c: Int, var n: String)
 
-
+@OpenAction
 @RestController
 open class CityServlet {
     @PostMapping("/child-citys")

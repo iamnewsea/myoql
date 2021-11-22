@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse
  * 1. HandlerInterceptorAdapter 不会拦截 HttpServlet。
  * 2. 不使用 @Controller 注解，不能生成Bean，不能使用 Aop
  */
+@OpenAction
 @RestController
 open class HiServlet {
     @GetMapping("/hi")

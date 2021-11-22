@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse
  * id,url: 两者必传其一
  * width,height
  */
+@OpenAction
 @RestController
 open class ImageGetServlet   {
 
