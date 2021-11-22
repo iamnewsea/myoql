@@ -5,8 +5,11 @@ import nbcp.utils.*
 import nbcp.db.mongo.*
 import nbcp.model.IUploadFileDbService
 import nbcp.web.*
-import javax.servlet.annotation.WebServlet
-import javax.servlet.http.HttpServlet
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RestController
+
+
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -15,14 +18,15 @@ import javax.servlet.http.HttpServletResponse
  * id,url: 两者必传其一
  * width,height
  */
-@WebServlet(urlPatterns = ["/image/dynamic"])
-open class ImageGetServlet : HttpServlet() {
+@RestController
+open class ImageGetServlet   {
 
     private val dbService by lazy {
         return@lazy SpringUtil.getBean<IUploadFileDbService>()
     }
 
-    override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
+    @GetMapping("/image/dynamic")
+    fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
         //附件数据库表中的Id
         var id = request.findParameterStringValue("id");
 

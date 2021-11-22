@@ -9,25 +9,24 @@ import nbcp.utils.ClassUtil
 import nbcp.utils.SpringUtil
 import nbcp.web.*
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RestController
 import java.lang.RuntimeException
 import java.util.*
-import javax.servlet.annotation.WebServlet
+
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import javax.servlet.http.HttpServlet
+
 
 /**
  * Created by udi on 17-4-6.
  * 1. HandlerInterceptorAdapter 不会拦截 HttpServlet。
  * 2. 不使用 @Controller 注解，不能生成Bean，不能使用 Aop
  */
-@WebServlet(urlPatterns = ["/hi"])
-open class HiServlet : HttpServlet() {
-    public override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
-        proc(request, response)
-    }
-
-    public override fun doPost(request: HttpServletRequest, response: HttpServletResponse) {
+@RestController
+open class HiServlet {
+    @GetMapping("/hi")
+    fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
         proc(request, response)
     }
 
@@ -39,8 +38,8 @@ open class HiServlet : HttpServlet() {
         json["spring.application.name"] = SpringUtil.context.environment.getProperty("spring.application.name");
         json["当前配置"] = SpringUtil.context.environment.getProperty("spring.profiles.active");
         json["产品线"] =
-            SpringUtil.context.environment.getProperty("app.product-line.name") + " : " +
-                SpringUtil.context.environment.getProperty("app.product-line.code");
+                SpringUtil.context.environment.getProperty("app.product-line.name") + " : " +
+                        SpringUtil.context.environment.getProperty("app.product-line.code");
 
         json["启动文件名"] = jarFile.name;
         json["启动文件生成时间"] = Date(jarFile.lastModified()).AsString();
@@ -73,9 +72,9 @@ open class HiServlet : HttpServlet() {
 
 
         response.WriteHtmlBodyValue("""<style>div{margin:10px;} span{margin:5px;font-size:16px;display:inline-block}</style>""" +
-            "<div>" + json
-            .map { "<span>" + it.key + " : " + it.value.AsString() + "</span>" }
-            .joinToString("<br />") + "</div>");
+                "<div>" + json
+                .map { "<span>" + it.key + " : " + it.value.AsString() + "</span>" }
+                .joinToString("<br />") + "</div>");
     }
 }
 

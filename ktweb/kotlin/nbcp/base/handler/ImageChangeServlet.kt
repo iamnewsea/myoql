@@ -6,14 +6,17 @@ import nbcp.db.mongo.*
 import nbcp.web.findParameterIntValue
 import nbcp.web.findParameterStringValue
 import nbcp.web.findParameterValue
-import javax.servlet.annotation.WebServlet
-import javax.servlet.http.HttpServlet
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RestController
+
+
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-@WebServlet(urlPatterns = ["/image/change"])
-open class ImageChangeServlet : HttpServlet() {
-    override fun doPost(request: HttpServletRequest, resp: HttpServletResponse) {
+@RestController
+open class ImageChangeServlet  {
+    @PostMapping("/image/change")
+    fun doPost(request: HttpServletRequest, resp: HttpServletResponse) {
         var action = request.findParameterStringValue("action").ToEnum(MongoImageActionEnum::class.java)!!
         var db = request.findParameterStringValue("db")
         var id = request.findParameterStringValue("id")

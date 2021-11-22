@@ -8,26 +8,31 @@ import nbcp.db.db
 import nbcp.utils.CodeUtil
 import nbcp.web.*
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RestController
 import java.lang.RuntimeException
-import javax.servlet.annotation.WebServlet
+
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import javax.servlet.http.HttpServlet
+
 
 /**
  * Created by udi on 20-8-27.
  */
-@WebServlet(urlPatterns = ["/open/code"])
-open class CodeServlet : HttpServlet() {
+@RestController()
+open class CodeServlet {
 
-    override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
+    @GetMapping("/open/code")
+    fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
         var code = CodeUtil.getCode();
         response.WriteJsonRawValue(ApiResult.of(code).ToJson())
     }
 
-    override fun doPost(request: HttpServletRequest, response: HttpServletResponse) {
-        var code = CodeUtil.getCode();
-        response.WriteJsonRawValue(ApiResult.of(code).ToJson())
-    }
+//    @PostMapping("/open/code")
+//    fun doPost(request: HttpServletRequest, response: HttpServletResponse) {
+//        var code = CodeUtil.getCode();
+//        response.WriteJsonRawValue(ApiResult.of(code).ToJson())
+//    }
 }
 

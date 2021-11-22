@@ -1,14 +1,12 @@
 package nbcp.base.handler
 
 import nbcp.comm.*
-import nbcp.db.*
-import nbcp.utils.*
 import nbcp.db.db
 import nbcp.db.mongo.*
 import nbcp.web.WriteJsonRawValue
 import nbcp.web.findParameterIntValue
-import javax.servlet.annotation.WebServlet
-import javax.servlet.http.HttpServlet
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RestController
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -18,11 +16,11 @@ import javax.servlet.http.HttpServletResponse
 data class cn_city_model(var c: Int, var n: String)
 
 
-@WebServlet(urlPatterns = ["/child-citys"])
-open class CityServlet : HttpServlet() {
-    override fun doPost(request: HttpServletRequest, response: HttpServletResponse) {
-
-        var pcode = request.findParameterIntValue("pcode") ;
+@RestController
+open class CityServlet {
+    @PostMapping("/child-citys")
+    fun doPost(request: HttpServletRequest, response: HttpServletResponse) {
+        var pcode = request.findParameterIntValue("pcode");
 
         if (pcode == 0) {
             throw NoDataException("城市code不能为空")

@@ -81,7 +81,7 @@ class MyOqlBeanImporter : ImportBeanDefinitionRegistrar, ResourceLoaderAware, Be
         registry: BeanDefinitionRegistry?
     ) {
         // 当前MyClassPathBeanDefinitionScanner已被修改为扫描带有指定注解的类
-        val scanner = MyClassPathBeanDefinitionScanner(registry, false)
+        val scanner = MyOqlClassPathBeanDefinitionScanner(registry, false)
         scanner.resourceLoader = resourceLoader
         scanner.registerFilters()
         scanner.doScan("nbcp")
@@ -103,7 +103,7 @@ class MyOqlBeanImporter : ImportBeanDefinitionRegistrar, ResourceLoaderAware, Be
  *
  * @author: jiaYao
  */
-class MyClassPathBeanDefinitionScanner(registry: BeanDefinitionRegistry?, useDefaultFilters: Boolean) :
+class MyOqlClassPathBeanDefinitionScanner(registry: BeanDefinitionRegistry?, useDefaultFilters: Boolean) :
     ClassPathBeanDefinitionScanner(registry, useDefaultFilters) {
     /**
      * @addIncludeFilter 将自定义的注解添加到扫描任务中
