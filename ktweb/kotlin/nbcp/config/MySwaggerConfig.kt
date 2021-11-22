@@ -22,7 +22,7 @@ import springfox.documentation.spring.web.plugins.Docket
 /**
  * 很奇怪，这个配置放到单独的Jar包里，swagger-ui.html 就不能访问，
  * 把下面的配置放到启动项目里，就起作用。
- * Spring Boot中只能有一个WebMvcConfigurationSupport配置类，所以使用 WebMvcConfigurer
+ * Spring Boot中只能有一个 WebMvcConfigurationSupport 配置类，所以使用 WebMvcConfigurer
  */
 @Configuration
 open class MySwaggerConfig : WebMvcConfigurer {

@@ -4,7 +4,6 @@ import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import nbcp.db.*
 
-import nbcp.utils.*
 import java.io.Serializable
 import java.time.LocalDateTime
 
@@ -93,7 +92,7 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity:
 //        return this
 //    }
 
-    override fun toSql(): SingleSqlData {
+    override fun toSql(): SqlParameterData {
         if (whereDatas.hasValue == false) {
             throw RuntimeException("不允许执行没有 where 条件的 update ${mainEntity.tableName} 语句")
         }
@@ -102,7 +101,7 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity:
             throw RuntimeException("update ${mainEntity.tableName}  where 需要 set 语句")
         }
 
-        var ret = SingleSqlData();
+        var ret = SqlParameterData();
         ret.expression += "update ${mainEntity.quoteTableName} ";
 
         var hasAlias = false;
@@ -150,7 +149,7 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity:
 //                    setValue = tab_converter.get(setKey.name)?.convert(setValue.toString()) ?: setValue
 //                }
 
-                ret += SingleSqlData(setKey.fullName + " = :${setKey.jsonKeyName}", JsonMap(setKey.jsonKeyName to setValue))
+                ret += SqlParameterData(setKey.fullName + " = :${setKey.paramVarKeyName}", JsonMap(setKey.paramVarKeyName to setValue))
             }
         }
 

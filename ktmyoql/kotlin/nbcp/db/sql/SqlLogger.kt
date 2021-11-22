@@ -4,7 +4,6 @@ import nbcp.comm.*
 import nbcp.db.db
 import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
-import org.springframework.boot.logging.LogLevel
 
 object SqlLogger {
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -13,11 +12,11 @@ object SqlLogger {
         return@lazy SpringUtil.getBean<SqlTableLogProperties>()
     }
 
-    fun logQuery(error: Exception?, tableDbName: String, executeData: SingleSqlData, result: Any) {
+    fun logQuery(error: Exception?, tableDbName: String, executeParameterData: SqlParameterData, result: Any) {
         var getMsg: () -> String = getMsg@{
             var msg_log = mutableListOf(
-                "[select] ${executeData.expression}",
-                "[参数] ${executeData.values.ToJson()}"
+                "[select] ${executeParameterData.expression}",
+                "[参数] ${executeParameterData.values.ToJson()}"
             )
 
             if (config.debug) {
@@ -60,11 +59,11 @@ object SqlLogger {
     }
 
 
-    fun logExec(error: Exception?, tableDbName: String, executeData: SingleSqlData, n: Int) {
+    fun logExec(error: Exception?, tableDbName: String, executeParameterData: SqlParameterData, n: Int) {
         var getMsg: () -> String = getMsg@{
             var msg_log = mutableListOf(
-                "[sql] ${executeData.expression}",
-                "[参数] ${executeData.values.ToJson()}",
+                "[sql] ${executeParameterData.expression}",
+                "[参数] ${executeParameterData.values.ToJson()}",
                 "[result] ${n}",
                 "[耗时] ${db.executeTime}"
             )
@@ -95,12 +94,12 @@ object SqlLogger {
         }
     }
 
-    fun logDelete(error: Exception?, tableDbName: String, executeData: SingleSqlData, n: Int) {
+    fun logDelete(error: Exception?, tableDbName: String, executeParameterData: SqlParameterData, n: Int) {
         var getMsg: () -> String = getMsg@{
             var msg_log = mutableListOf(
                 "" +
-                        "[delete] ${executeData.expression}",
-                "[参数] ${executeData.values.ToJson()}",
+                        "[delete] ${executeParameterData.expression}",
+                "[参数] ${executeParameterData.values.ToJson()}",
                 "[result] ${n}",
                 "[耗时] ${db.executeTime}"
             )
@@ -175,12 +174,12 @@ object SqlLogger {
 //        }
 //    }
 
-    fun logUpdate(error: Exception?, tableName: String, executeData: SingleSqlData, n: Int) {
+    fun logUpdate(error: Exception?, tableName: String, executeParameterData: SqlParameterData, n: Int) {
 
         var getMsg: () -> String = getMsg@{
             var msg_log = mutableListOf(
-                "[update] ${executeData.expression}",
-                "[参数] ${executeData.values.ToJson()}",
+                "[update] ${executeParameterData.expression}",
+                "[参数] ${executeParameterData.values.ToJson()}",
                 "[result] ${n}",
                 "[耗时] ${db.executeTime}"
             )

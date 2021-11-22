@@ -4,7 +4,6 @@ package nbcp.db.sql
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.db
-import org.slf4j.LoggerFactory
 import java.io.Serializable
 /**
  * Created by udi on 17-4-7.
@@ -69,7 +68,7 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEnt
     /**
      * 设置 sqlUpdate 对象
      */
-    override fun toSql(): SingleSqlData {
+    override fun toSql(): SqlParameterData {
         sqlUpdate = SqlUpdateClip<M>(mainEntity);
 
         var columns = this.mainEntity.getColumns()
@@ -122,7 +121,7 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEnt
         whereColumns2.forEach { column ->
             var value = MyUtil.getPrivatePropertyValue(entity, column.name)
 
-            where.and(WhereData("${column.fullName} = :${column.jsonKeyName}", JsonMap(column.jsonKeyName to value)))
+            where.and(WhereData("${column.fullName} = :${column.paramVarKeyName}", JsonMap(column.paramVarKeyName to value)))
         }
 
 

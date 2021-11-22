@@ -1,7 +1,6 @@
 package nbcp.db.sql
 
 import nbcp.comm.*
-import nbcp.db.ITreeData
 import java.io.Serializable
 
 class MyOqlTreeData<M : SqlBaseMetaTable<T>, T : Serializable>(

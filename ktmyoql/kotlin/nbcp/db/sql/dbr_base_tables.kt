@@ -2,11 +2,6 @@ package nbcp.db.sql.table
 
 import nbcp.db.*
 import nbcp.db.sql.*
-import nbcp.db.sql.entity.*
-import nbcp.db.mysql.*
-import nbcp.db.mysql.entity.*
-import nbcp.comm.*
-import nbcp.utils.*
 import org.springframework.stereotype.Component
 
 //generate auto @2021-11-11 13:46:55

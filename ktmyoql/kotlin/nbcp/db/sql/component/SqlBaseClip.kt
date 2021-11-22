@@ -132,7 +132,7 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
 //        }
 
 
-    abstract fun toSql(): SingleSqlData
+    abstract fun toSql(): SqlParameterData
 }
 
 
@@ -168,7 +168,7 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
         return ret;
     }
 
-    protected fun toMapList(sql: SingleSqlData): MutableList<JsonMap> {
+    protected fun toMapList(sqlParameter: SqlParameterData): MutableList<JsonMap> {
         db.affectRowCount = -1
 
         var settings = db.sql.sqlEvents.onSelecting(this)
@@ -201,8 +201,8 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
         try {
             retJsons =
                 jdbcTemplate.query(
-                    sql.expression,
-                    sql.values,
+                    sqlParameter.expression,
+                    sqlParameter.values,
                     JsonMapRowMapper()
                 ) as MutableList<MutableMap<String, Any?>>
             db.executeTime = LocalDateTime.now() - startAt
@@ -215,7 +215,7 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
             error = e;
             throw e;
         } finally {
-            SqlLogger.logQuery(error, this.tableName, sql, retJsons)
+            SqlLogger.logQuery(error, this.tableName, sqlParameter, retJsons)
         }
 
 
