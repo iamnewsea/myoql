@@ -13,25 +13,25 @@ import org.springframework.context.annotation.*
 import org.springframework.stereotype.Component
 
 
-@Component
-@ConditionalOnClass(RestClient::class)
-@ConditionalOnProperty("spring.elasticsearch.rest.uris")
-@Lazy
-class MyOqlEsConfig {
-    companion object {
-        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
-    }
-
-    @Bean
-    @Lazy
-    fun myoqlEsDataSource(): RestClient {
-        return db.es.getRestClient(
-            config.getConfig("spring.elasticsearch.rest.uris", ""),
-            config.getConfig("spring.elasticsearch.path-prefix", ""),
-            config.getConfig("spring.elasticsearch.timeout").AsInt()
-        )
-    }
-}
+//@Component
+//@ConditionalOnClass(RestClient::class)
+//@ConditionalOnProperty("spring.elasticsearch.rest.uris")
+//@Lazy
+//class MyOqlEsConfig {
+//    companion object {
+//        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+//    }
+//
+//    @Bean
+//    @Lazy
+//    fun myoqlEsDataSource(): RestClient {
+//        return db.es.getRestClient(
+//            config.getConfig("spring.elasticsearch.rest.uris", ""),
+//            config.getConfig("spring.elasticsearch.path-prefix", ""),
+//            config.getConfig("spring.elasticsearch.timeout").AsInt()
+//        )
+//    }
+//}
 
 /**
  * 定义Es不同的数据源
