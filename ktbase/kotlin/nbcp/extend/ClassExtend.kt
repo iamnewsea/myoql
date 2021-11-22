@@ -171,8 +171,8 @@ fun <T> Class<T>.GetEnumNumberField(): Field? {
 
     var ret_fields = this.declaredFields.filter {
         (it.modifiers and Modifier.PRIVATE) > 0 &&
-                (it.modifiers and Modifier.STATIC == 0) &&
-                it.type.IsNumberType
+            (it.modifiers and Modifier.STATIC == 0) &&
+            it.type.IsNumberType
     }
     if (ret_fields.size == 1) {
         var ret = ret_fields.first();
@@ -191,8 +191,8 @@ fun <T> Class<T>.GetEnumStringField(): Field? {
 
     var ret_fields = this.declaredFields.filter {
         (it.modifiers and Modifier.PRIVATE) > 0 &&
-                it.modifiers and Modifier.STATIC == 0 &&
-                it.type.IsStringType
+            it.modifiers and Modifier.STATIC == 0 &&
+            it.type.IsStringType
     }
 
     if (ret_fields.any()) {
@@ -232,7 +232,10 @@ val Class<*>.AllFields: List<Field>
 
 fun Class<*>.FindField(fieldName: String): Field? {
     val ret = this.declaredFields.find { it.name == fieldName };
-    if (ret != null) return ret;
+    if (ret != null) {
+        ret.isAccessible = true;
+        return ret;
+    }
 
 
     if (this.superclass == null || this.superclass == Any::class.java) {

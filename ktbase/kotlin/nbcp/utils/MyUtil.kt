@@ -381,7 +381,6 @@ object MyUtil {
 
         var type = entity::class.java.FindField(properties.first());
         if (type != null) {
-            type.isAccessible = true;
 
             var ret = type.get(entity);
             if (properties.size == 1) {
@@ -399,7 +398,6 @@ object MyUtil {
         if (type == null) {
             return;
         }
-        type.isAccessible = true;
         type.set(entity, value)
     }
 

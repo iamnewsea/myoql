@@ -63,7 +63,6 @@ abstract class MongoBaseMetaCollection<T : Serializable>(val entityClass: Class<
 
         var idField = entity.javaClass.FindField("id")
         if (idField != null) {
-            idField.isAccessible = true;
             return idField.get(entity).AsString();
         }
 
