@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse
  * 事实上， HandlerInterceptorAdapter 不会拦截 HttpServlet
  */
 @OpenAction
-@RestController()
+@RestController
 open class AuthImageServlet {
     @Autowired
     lateinit var userSystemService: UserAuthenticationService;

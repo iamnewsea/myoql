@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse
  * Created by udi on 20-8-27.
  */
 @OpenAction
-@RestController()
+@RestController
 open class CodeServlet {
 
     @GetMapping("/open/code")
