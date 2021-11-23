@@ -409,7 +409,7 @@ db.getCollection("adminRole").aggregate(
     }
 }
 
-class MongoDynamicEntity : JsonMap(), Serializable {}
+class MongoDynamicEntity : JsonMap() {}
 class MongoDynamicMetaEntity(collectionName: String) :
     MongoBaseMetaCollection<MongoDynamicEntity>(MongoDynamicEntity::class.java, collectionName) {
 }

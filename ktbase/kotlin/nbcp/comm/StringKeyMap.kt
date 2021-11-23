@@ -16,7 +16,7 @@ import java.io.Serializable
  * linkMapOf<String,String>("age","99") == linkMapOf<String,Any>("age" to "99")
  * linkMapOf<String,String>("age","99") != linkMapOf<String,Any>("age" to 99)
  */
-open class StringKeyMap<T> : LinkedHashMap<String, T>, Serializable {
+open class StringKeyMap<T> : LinkedHashMap<String, T> {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

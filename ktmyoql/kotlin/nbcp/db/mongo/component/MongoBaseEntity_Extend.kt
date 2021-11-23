@@ -2,6 +2,7 @@
 @file:JvmMultifileClass
 
 package nbcp.db.mongo
+
 import java.io.Serializable
 
 import org.bson.types.ObjectId
@@ -16,10 +17,11 @@ fun <M : MongoBaseMetaCollection<T>, T : Serializable> M.query(whereData: Criter
     return ret;
 }
 
-fun <M : MongoBaseMetaCollection<T>, T : Serializable> M.queryById(id: String): MongoQueryClip<M, T> = this.query().where("id" match id);
+fun <M : MongoBaseMetaCollection<T>, T : Serializable> M.queryById(id: String): MongoQueryClip<M, T> =
+    this.query().where("id" match id);
 
 
-fun <M : MongoBaseMetaCollection<E>, E : Serializable> M.updateById(id: String): MongoUpdateClip<M> {
+fun <M : MongoBaseMetaCollection<out Serializable>> M.updateById(id: String): MongoUpdateClip<M> {
     var idValue = id.trim()
     if (idValue.isEmpty()) {
         throw RuntimeException("按id更新mongo数据时，id不能为空！")
@@ -30,28 +32,29 @@ fun <M : MongoBaseMetaCollection<E>, E : Serializable> M.updateById(id: String):
 /**
  * 按实体单条更新。 默认使用Id更新，不会更新id。
  */
-fun <M : MongoBaseMetaCollection<E>, E : Serializable> M.updateWithEntity(entity: E): MongoSetEntityUpdateClip<M> {
+fun <M : MongoBaseMetaCollection<out Serializable>> M.updateWithEntity(entity: Serializable): MongoSetEntityUpdateClip<M> {
     return MongoSetEntityUpdateClip(this, entity);
 }
 
-fun <M : MongoBaseMetaCollection<E>, E : Serializable> M.batchInsert(): MongoInsertClip<M, E> {
+
+fun <M : MongoBaseMetaCollection<out Serializable>> M.batchInsert(): MongoInsertClip<M> {
     return MongoInsertClip(this);
 }
 
 
-fun <M : MongoBaseMetaCollection<E>, E : Serializable> M.updateById(id: ObjectId): MongoUpdateClip<M> {
+fun <M : MongoBaseMetaCollection<out Serializable>> M.updateById(id: ObjectId): MongoUpdateClip<M> {
     var ret = this.update();
     ret.where("id" match id);
     return ret;
 }
 
-fun <M : MongoBaseMetaCollection<E>, E : Serializable> M.update(): MongoUpdateClip<M> {
+fun <M : MongoBaseMetaCollection<out Serializable>> M.update(): MongoUpdateClip<M> {
     return MongoUpdateClip(this);
 }
 
-fun <M : MongoBaseMetaCollection<E>, E : Serializable> M.delete(): MongoDeleteClip<M> = MongoDeleteClip(this)
+fun <M : MongoBaseMetaCollection<out Serializable>> M.delete(): MongoDeleteClip<M> = MongoDeleteClip(this)
 
-fun <M : MongoBaseMetaCollection<E>, E : Serializable> M.deleteById(id: String): MongoDeleteClip<M> {
+fun <M : MongoBaseMetaCollection<out Serializable>> M.deleteById(id: String): MongoDeleteClip<M> {
     var ret = MongoDeleteClip(this);
     ret.where("id" match id)
     return ret;
