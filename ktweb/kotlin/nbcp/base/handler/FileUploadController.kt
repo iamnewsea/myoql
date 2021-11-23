@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse
  *  2. 客户端调用 业务方法，把文件Id和业务关联。
  */
 @RestController
-class FileUploadController {
+class FileUploadServlet {
     @Autowired
     lateinit var uploadService: UploadService;
 

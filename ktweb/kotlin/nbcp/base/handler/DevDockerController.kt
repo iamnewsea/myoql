@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @ConditionalOnProperty("server.dev")
 @RequestMapping("/dev/docker")
-class DevDockerController {
+class DevDockerServlet {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

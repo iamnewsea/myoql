@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @ConditionalOnProperty("server.dev")
 @RequestMapping("/dev/file")
-class DevFileController {
+class DevFileServlet {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

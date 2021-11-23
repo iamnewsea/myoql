@@ -18,7 +18,7 @@ import kotlin.reflect.jvm.javaType
 @RestController
 @ConditionalOnProperty("server.dev")
 @RequestMapping("/dev/mongo")
-class DevMongoController {
+class DevMongoServlet {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

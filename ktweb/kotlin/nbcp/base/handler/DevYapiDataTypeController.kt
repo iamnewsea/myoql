@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest
 @OpenAction
 @RestController
 @RequestMapping("/dev/yapi")
-class DevYapiDataTypeController {
+class DevYapiDataTypeServlet {
     /**
      * 修正 yapi 的数据类型,在 title 字段设置如下格式： :IdName,IdUrl,会对其下属性添加 id,name,url 字段。
      * @param typeMap , 形如： {"IdName": {id: {type:"string",description:"id",mock:"1"} ,name:{} }
