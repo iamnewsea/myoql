@@ -114,15 +114,7 @@
             <groupId>com.github.whvcse</groupId>
             <artifactId>easy-captcha</artifactId>
 <!--            <version>${captcha.version}</version>-->
-        </dependency>
-
-        <!--        <dependency>-->
-        <!--            <groupId>io.undertow</groupId>-->
-        <!--            <artifactId>undertow-servlet</artifactId>-->
-        <!--            <version>${undertow.version}</version>-->
-        <!--            <scope>provided</scope>-->
-        <!--        </dependency>-->
-
+        </dependency> 
     </dependencies>
 
     <build>
@@ -138,7 +130,7 @@
                 <version>${dokka.version}</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <phase>deploy</phase>
                         <goals>
                             <goal>dokka</goal>
                         </goals>
@@ -160,7 +152,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <phase>deploy</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
@@ -180,7 +172,7 @@
                 <version>${maven-plugin.version}</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <phase>deploy</phase>
                         <goals>
                             <goal>jar-no-fork</goal>
                         </goals>
