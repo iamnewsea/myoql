@@ -1,6 +1,6 @@
 package nbcp.db.es
 
 import nbcp.scope.IScopeData
-import org.elasticsearch.client.RestClient
+import org.elasticsearch.client.RestHighLevelClient
 
-data class RestClientScope(val value:RestClient):IScopeData;
+data class RestClientScope(val value: RestHighLevelClient):IScopeData;

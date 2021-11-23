@@ -1,9 +1,7 @@
 package nbcp.db.es
 
 import nbcp.db.EventResult
-import nbcp.db.mongo.MongoBaseQueryClip
-import org.elasticsearch.client.RestClient
-import org.springframework.data.mongodb.core.MongoTemplate
+import org.elasticsearch.client.RestHighLevelClient
 
 interface IEsEntityQuery {
     fun beforeQuery(query: EsBaseQueryClip): EventResult
@@ -37,5 +35,5 @@ interface IEsEntityDelete {
 
 
 interface IEsDataSource {
-    fun run(collection: String, isRead: Boolean): RestClient?
+    fun run(collection: String, isRead: Boolean): RestHighLevelClient?
 }

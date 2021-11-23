@@ -52,11 +52,11 @@ object db_es {
         )
     }
 
-    private val restClientMap = mutableMapOf<String, RestClient>()
+    private val restClientMap = mutableMapOf<String, RestHighLevelClient>()
 
     @JvmStatic
     @JvmOverloads
-    fun getRestClient(uri: String, pathPrefix: String = "", timeout: Int = 0): RestClient {
+    fun getRestClient(uri: String, pathPrefix: String = "", timeout: Int = 0): RestHighLevelClient {
 
         var key = "${uri}-${pathPrefix}-${timeout}"
         var retValue = restClientMap.get(key);
@@ -120,7 +120,7 @@ object db_es {
 //            httpClientBuilder.setProxy(HttpHost("proxy", 9000, "http"))
 //        }
 
-        retValue = builder.build();
+        retValue = RestHighLevelClient(builder)
 
         restClientMap.put(key, retValue);
         return retValue;

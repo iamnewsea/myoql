@@ -4,7 +4,7 @@
 
 spring.elasticsearch.rest.uris=http://ip:9200
 
-组件使用低级Api，进行Orm封装。
+组件使用高级别Api，进行Orm封装。
 程序需要引用
 ```
 <dependency>

@@ -4,7 +4,7 @@ import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.db
 import nbcp.db.es.tool.EsIndexDataSource
-import org.elasticsearch.client.RestClient
+import org.elasticsearch.client.RestHighLevelClient
 import java.io.Serializable
 
 /**
@@ -22,7 +22,7 @@ open class EsClipBase(var collectionName: String) : Serializable {
      * 3. 当前作用域
      * 4. 使用默认
      */
-    val esTemplate: RestClient
+    val esTemplate: RestHighLevelClient
         get() {
             var isRead = this is EsBaseQueryClip || this is EsAggregateClip<*, *>;
 
@@ -43,7 +43,7 @@ open class EsClipBase(var collectionName: String) : Serializable {
             }
 
 
-            return SpringUtil.getBean<RestClient>()
+            return SpringUtil.getBean<RestHighLevelClient>()
         }
 }
 

@@ -102,7 +102,7 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
         var responseBody = EsResultMsg()
         val startAt = LocalDateTime.now()
         try {
-            val response = esTemplate.performRequest(request)
+            val response = esTemplate.lowLevelClient.performRequest(request)
             if (response.statusLine.statusCode != 200) {
                 return ret;
             }

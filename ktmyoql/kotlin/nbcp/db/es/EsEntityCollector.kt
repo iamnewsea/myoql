@@ -4,13 +4,14 @@ import nbcp.comm.*
 import nbcp.db.*
 import nbcp.scope.*
 import org.elasticsearch.client.RestClient
+import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.stereotype.Component
 import java.io.Serializable
 
 @Component
-@ConditionalOnClass(RestClient::class)
+@ConditionalOnClass(RestHighLevelClient::class)
 class EsEntityCollector : BeanPostProcessor {
     companion object {
         @JvmStatic
@@ -197,8 +198,8 @@ class EsEntityCollector : BeanPostProcessor {
     /**
      * 在拦截器中获取数据源。
      */
-    fun getDataSource(collectionName: String, isRead: Boolean): RestClient? {
-        var ret: RestClient? = null;
+    fun getDataSource(collectionName: String, isRead: Boolean): RestHighLevelClient? {
+        var ret: RestHighLevelClient? = null;
 
         dataSources.firstOrNull { esDataSource ->
             ret = esDataSource.run(collectionName, isRead)

@@ -79,9 +79,9 @@ open class ListResult<T>() : JsonResult() {
     companion object {
         @JvmStatic
         @JvmOverloads
-        fun <T> of(data: List<T>, total: Int = -1): ListResult<T> {
+        fun <T> of(data: Collection<T>, total: Int = -1): ListResult<T> {
             var ret = ListResult<T>();
-            ret.data = data;
+            ret.data = data.toList();
             if (total < 0) {
                 ret.total = data.size;
             } else {
