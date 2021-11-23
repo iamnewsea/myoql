@@ -17,6 +17,10 @@ data class CascadeUpdateEventDataModel(
     var masterNameValue: Any?
 )
 
+/**
+ * 如果是级联更新数组，用下面的写法
+ * DbEntityFieldRef("corp.id","corp.$.name","SysCorporation","id","name")
+ */
 @Component
 class MongoCascadeUpdateEvent : IMongoEntityUpdate {
     companion object {

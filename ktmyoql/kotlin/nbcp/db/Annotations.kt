@@ -39,12 +39,12 @@ annotation class DbEntityFieldRefs(vararg val value: DbEntityFieldRef)
 /**
  * 在引用表上定义 引用字段 与其它主表是映射关系。当其它主表的name字段更新后，级联更新引用的name字段
  * 例子： 对user表标注：
- * DbEntityFieldRef("SysCorporation","corp.id:id","corp.name:name")
+ * DbEntityFieldRef("corp.id","corp.name","SysCorporation","id","name")
  * 或，如果fieldName相同，可省略后面的name
- * DbEntityFieldRef("SysCorporation","corp.id","corp.name")
+ * DbEntityFieldRef("corp.id","corp.name","SysCorporation")
  * 当 SysCorporation.name 发生变化后， 该表自动更新。
  *
- * 如果引用数据是在数组内，则可以使用 DbEntityFieldRef("id","name","SysCorporation","corp.id","corp.$.name")
+ * 如果引用数据是在数组内，则可以使用 DbEntityFieldRef("corp.id","corp.$.name","SysCorporation","id","name")
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
