@@ -1,11 +1,11 @@
-package nbcp.db.sql.event
+package nbcp.db.sql
 
 import nbcp.db.sql.*;
 import nbcp.comm.ForEachExt
 import nbcp.db.*
+import nbcp.db.sql.event.*
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
-import org.springframework.context.annotation.Import
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import javax.sql.DataSource
@@ -20,7 +20,7 @@ class SqlEntityCollector : BeanPostProcessor {
     companion object {
         //需要删 除后放入垃圾箱的实体
         @JvmStatic
-        val dustbinEntitys = mutableSetOf<Class<*>>()  //mongo meta class
+        val dustbinEntities = mutableSetOf<Class<*>>()  //mongo meta class
 
         // 冗余字段的引用。如 user.corp.name 引用的是  corp.name
         @JvmStatic
@@ -28,19 +28,19 @@ class SqlEntityCollector : BeanPostProcessor {
 
         //注册的 select Bean
         @JvmStatic
-        val selectEvent = mutableListOf<ISqlEntitySelect>()
+        val selectEvents = mutableListOf<ISqlEntitySelect>()
 
         //注册的 Insert Bean
         @JvmStatic
-        val insertEvent = mutableListOf<ISqlEntityInsert>()
+        val insertEvents = mutableListOf<ISqlEntityInsert>()
 
         //注册的 Update Bean
         @JvmStatic
-        val updateEvent = mutableListOf<ISqlEntityUpdate>()
+        val updateEvents = mutableListOf<ISqlEntityUpdate>()
 
         //注册的 Delete Bean
         @JvmStatic
-        val deleteEvent = mutableListOf<ISqlEntityDelete>()
+        val deleteEvents = mutableListOf<ISqlEntityDelete>()
 
         @JvmStatic
         val dataSources = mutableListOf<ISqlDataSource>()
@@ -63,19 +63,19 @@ class SqlEntityCollector : BeanPostProcessor {
         }
 
         if (bean is ISqlEntitySelect) {
-            selectEvent.add(bean)
+            selectEvents.add(bean)
         }
 
         if (bean is ISqlEntityInsert) {
-            insertEvent.add(bean)
+            insertEvents.add(bean)
         }
 
         if (bean is ISqlEntityUpdate) {
-            updateEvent.add(bean)
+            updateEvents.add(bean)
         }
 
         if (bean is ISqlEntityDelete) {
-            deleteEvent.add(bean)
+            deleteEvents.add(bean)
         }
 
         if (bean is ISqlDataSource) {
@@ -129,14 +129,14 @@ class SqlEntityCollector : BeanPostProcessor {
     private fun addDustbin(entityClass: Class<out Serializable>) {
         var dustbin = entityClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dustbin != null) {
-            dustbinEntitys.add(entityClass)
+            dustbinEntities.add(entityClass)
         }
     }
 
     fun onSelecting(select: SqlBaseQueryClip): Array<Pair<ISqlEntitySelect, EventResult?>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<ISqlEntitySelect, EventResult?>>()
-        selectEvent.ForEachExt { it, _ ->
+        selectEvents.ForEachExt { it, _ ->
             var ret = it.beforeSelect(select);
             if (ret != null && ret.result == false) {
                 return@ForEachExt false;
@@ -151,7 +151,7 @@ class SqlEntityCollector : BeanPostProcessor {
     fun onInserting(insert: SqlInsertClip<*, *>): Array<Pair<ISqlEntityInsert, EventResult?>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<ISqlEntityInsert, EventResult?>>()
-        insertEvent.ForEachExt { it, _ ->
+        insertEvents.ForEachExt { it, _ ->
             var ret = it.beforeInsert(insert);
             if (ret != null && ret.result == false) {
                 return@ForEachExt false;
@@ -166,7 +166,7 @@ class SqlEntityCollector : BeanPostProcessor {
     fun onUpdating(update: SqlUpdateClip<*>): Array<Pair<ISqlEntityUpdate, EventResult?>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<ISqlEntityUpdate, EventResult?>>()
-        updateEvent.ForEachExt { it, _ ->
+        updateEvents.ForEachExt { it, _ ->
             var ret = it.beforeUpdate(update);
             if (ret != null && ret.result == false) {
                 return@ForEachExt false;
@@ -181,7 +181,7 @@ class SqlEntityCollector : BeanPostProcessor {
 
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<ISqlEntityDelete, EventResult?>>()
-        deleteEvent.ForEachExt { it, _ ->
+        deleteEvents.ForEachExt { it, _ ->
             var ret = it.beforeDelete(delete);
             if (ret != null && ret.result == false) {
                 return@ForEachExt false;

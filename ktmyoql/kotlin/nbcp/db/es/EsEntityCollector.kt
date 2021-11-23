@@ -5,17 +5,17 @@ import nbcp.db.*
 import nbcp.scope.*
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.config.BeanPostProcessor
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.stereotype.Component
 import java.io.Serializable
 
 @Component
-@ConditionalOnProperty("spring.elasticsearch.rest.uris")
+@ConditionalOnClass(RestClient::class)
 class EsEntityCollector : BeanPostProcessor {
     companion object {
         @JvmStatic
         //需要删 除后放入垃圾箱的实体
-        val dustbinEntitys = mutableSetOf<Class<*>>()  //es entity class
+        val dustbinEntities = mutableSetOf<Class<*>>()  //es entity class
 
         @JvmStatic
         val logHistoryMap = linkedMapOf<Class<*>, Array<String>>()
@@ -25,19 +25,19 @@ class EsEntityCollector : BeanPostProcessor {
         val refsMap = mutableListOf<DbEntityFieldRefData>()
 
         @JvmStatic
-        val queryEvent = mutableListOf<IEsEntityQuery>()
+        val queryEvents = mutableListOf<IEsEntityQuery>()
 
         //注册的 Update Bean
         @JvmStatic
-        val insertEvent = mutableListOf<IEsEntityInsert>()
+        val insertEvents = mutableListOf<IEsEntityInsert>()
 
         //注册的 Update Bean
         @JvmStatic
-        val updateEvent = mutableListOf<IEsEntityUpdate>()
+        val updateEvents = mutableListOf<IEsEntityUpdate>()
 
         //注册的 Delete Bean
         @JvmStatic
-        val deleteEvent = mutableListOf<IEsEntityDelete>()
+        val deleteEvents = mutableListOf<IEsEntityDelete>()
 
         @JvmStatic
         val dataSources = mutableListOf<IEsDataSource>()
@@ -75,19 +75,19 @@ class EsEntityCollector : BeanPostProcessor {
         }
 
         if (bean is IEsEntityQuery) {
-            queryEvent.add(bean)
+            queryEvents.add(bean)
         }
 
         if (bean is IEsEntityInsert) {
-            insertEvent.add(bean)
+            insertEvents.add(bean)
         }
 
         if (bean is IEsEntityUpdate) {
-            updateEvent.add(bean)
+            updateEvents.add(bean)
         }
 
         if (bean is IEsEntityDelete) {
-            deleteEvent.add(bean)
+            deleteEvents.add(bean)
         }
 
         if (bean is IEsDataSource) {
@@ -125,7 +125,7 @@ class EsEntityCollector : BeanPostProcessor {
     private fun addDustbin(entityClass: Class<out Serializable>) {
         var dustbin = entityClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dustbin != null) {
-            dustbinEntitys.add(entityClass)
+            dustbinEntities.add(entityClass)
         }
     }
 
@@ -133,7 +133,7 @@ class EsEntityCollector : BeanPostProcessor {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IEsEntityQuery, EventResult>>()
         usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
-            queryEvent.ForEachExt { it, _ ->
+            queryEvents.ForEachExt { it, _ ->
                 var ret = it.beforeQuery(query);
                 if (ret.result == false) {
                     return@ForEachExt false;
@@ -149,7 +149,7 @@ class EsEntityCollector : BeanPostProcessor {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IEsEntityInsert, EventResult>>()
         usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
-            insertEvent.ForEachExt { it, _ ->
+            insertEvents.ForEachExt { it, _ ->
                 var ret = it.beforeInsert(insert);
                 if (ret.result == false) {
                     return@ForEachExt false;
@@ -165,7 +165,7 @@ class EsEntityCollector : BeanPostProcessor {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IEsEntityUpdate, EventResult>>()
         usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
-            updateEvent.ForEachExt { it, _ ->
+            updateEvents.ForEachExt { it, _ ->
                 var ret = it.beforeUpdate(update);
                 if (!ret.result) {
                     return@ForEachExt false;
@@ -182,7 +182,7 @@ class EsEntityCollector : BeanPostProcessor {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IEsEntityDelete, EventResult>>()
         usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
-            deleteEvent.ForEachExt { it, _ ->
+            deleteEvents.ForEachExt { it, _ ->
                 var ret = it.beforeDelete(delete);
                 if (ret.result == false) {
                     return@ForEachExt false;

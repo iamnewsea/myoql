@@ -12,6 +12,7 @@ import nbcp.db.MyOqlBaseActionLogDefine
 import nbcp.db.MyOqlMultipleDataSourceDefine
 import nbcp.db.cache.RedisCacheAopService
 import nbcp.db.es.*
+import nbcp.db.sql.*
 import nbcp.db.sql.event.*
 import nbcp.model.IUploadFileDbService
 import nbcp.utils.SpringUtil

@@ -18,7 +18,7 @@ class MongoEntityCollector : BeanPostProcessor {
     companion object {
         //需要删 除后放入垃圾箱的实体
         @JvmStatic
-        val dustbinEntitys = mutableSetOf<Class<*>>()  //mongo entity class
+        val dustbinEntities = mutableSetOf<Class<*>>()  //mongo entity class
 
         @JvmStatic
         val logHistoryMap = linkedMapOf<Class<*>, Array<String>>()
@@ -29,18 +29,18 @@ class MongoEntityCollector : BeanPostProcessor {
 
         //注册的 Update Bean
         @JvmStatic
-        val queryEvent = mutableListOf<IMongoEntityQuery>()
+        val queryEvents = mutableListOf<IMongoEntityQuery>()
 
         @JvmStatic
-        val insertEvent = mutableListOf<IMongoEntityInsert>()
+        val insertEvents = mutableListOf<IMongoEntityInsert>()
 
         //注册的 Update Bean
         @JvmStatic
-        val updateEvent = mutableListOf<IMongoEntityUpdate>()
+        val updateEvents = mutableListOf<IMongoEntityUpdate>()
 
         //注册的 Delete Bean
         @JvmStatic
-        val deleteEvent = mutableListOf<IMongoEntityDelete>()
+        val deleteEvents = mutableListOf<IMongoEntityDelete>()
 
         @JvmStatic
         val dataSources = mutableListOf<IMongoDataSource>()
@@ -81,19 +81,19 @@ class MongoEntityCollector : BeanPostProcessor {
         }
 
         if (bean is IMongoEntityQuery) {
-            queryEvent.add(bean)
+            queryEvents.add(bean)
         }
 
         if (bean is IMongoEntityInsert) {
-            insertEvent.add(bean)
+            insertEvents.add(bean)
         }
 
         if (bean is IMongoEntityUpdate) {
-            updateEvent.add(bean)
+            updateEvents.add(bean)
         }
 
         if (bean is IMongoEntityDelete) {
-            deleteEvent.add(bean)
+            deleteEvents.add(bean)
         }
 
         if (bean is IMongoDataSource) {
@@ -132,7 +132,7 @@ class MongoEntityCollector : BeanPostProcessor {
     private fun addDustbin(entityClass: Class<out Serializable>) {
         var dustbin = entityClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dustbin != null) {
-            dustbinEntitys.add(entityClass)
+            dustbinEntities.add(entityClass)
         }
     }
 
@@ -140,7 +140,7 @@ class MongoEntityCollector : BeanPostProcessor {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityQuery, EventResult>>()
         usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
-            queryEvent.ForEachExt { it, _ ->
+            queryEvents.ForEachExt { it, _ ->
                 var ret = it.beforeQuery(query);
                 if (!ret.result) {
                     return@ForEachExt false;
@@ -156,7 +156,7 @@ class MongoEntityCollector : BeanPostProcessor {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityInsert, EventResult>>()
         usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
-            insertEvent.ForEachExt { it, _ ->
+            insertEvents.ForEachExt { it, _ ->
                 var ret = it.beforeInsert(insert);
                 if (!ret.result) {
                     return@ForEachExt false;
@@ -172,7 +172,7 @@ class MongoEntityCollector : BeanPostProcessor {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityUpdate, EventResult>>()
         usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
-            updateEvent.ForEachExt { it, _ ->
+            updateEvents.ForEachExt { it, _ ->
                 var ret = it.beforeUpdate(update);
                 if (ret.result == false) {
                     return@ForEachExt false;
@@ -189,7 +189,7 @@ class MongoEntityCollector : BeanPostProcessor {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IMongoEntityDelete, EventResult>>()
         usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
-            deleteEvent.ForEachExt { it, _ ->
+            deleteEvents.ForEachExt { it, _ ->
                 var ret = it.beforeDelete(delete);
                 if (!ret.result) {
                     return@ForEachExt false;

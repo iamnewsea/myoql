@@ -1,12 +1,12 @@
-package nbcp.db.mongo.event;
+package nbcp.db.mongo;
 
 import nbcp.comm.AsString
 import nbcp.db.mongo.*;
 import nbcp.db.*
 import nbcp.db.mongo.entity.*
+import nbcp.db.mongo.event.*
 import org.bson.Document
 import org.slf4j.LoggerFactory
-import org.springframework.data.mongodb.core.query.BasicQuery
 import org.springframework.stereotype.Component
 import java.io.Serializable
 
@@ -21,7 +21,7 @@ class MongoDustbinEvent : IMongoEntityDelete {
     }
 
     override fun beforeDelete(delete: MongoDeleteClip<*>): EventResult {
-        var contains = MongoEntityCollector.dustbinEntitys.contains(delete.moerEntity.entityClass)
+        var contains = MongoEntityCollector.dustbinEntities.contains(delete.moerEntity.entityClass)
         if (contains == false) {
             return EventResult(true, null);
         }
