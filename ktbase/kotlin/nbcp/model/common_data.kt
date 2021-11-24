@@ -80,8 +80,10 @@ open class LoginUserModel @JvmOverloads constructor(
     id: String = "",
     var loginName: String = "",
     name: String = "",
-    var organization: IdName = IdName(),
-    var roles: List<String> = listOf() //角色
+    var org: IdName = IdName(),
+    var roles: List<String> = listOf(), //角色
+    var groups: List<String> = listOf(),
+    var depts: List<String> = listOf()
 ) : IdName(id, name) {
 
 

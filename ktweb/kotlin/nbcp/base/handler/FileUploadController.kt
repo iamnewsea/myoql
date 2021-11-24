@@ -39,7 +39,7 @@ class FileUploadServlet {
         }
 
         val ret =
-            uploadService.upload(request, IdName(request.UserId, request.UserName), request.LoginUser.organization.id);
+            uploadService.upload(request, IdName(request.UserId, request.UserName), request.LoginUser.org.id);
 
         if (ret.msg.HasValue) {
             response.WriteJsonRawValue(JsonResult(ret.msg).ToJson())

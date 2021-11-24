@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
  * 表示 config.userSystem 配置的用户体系的 redis 项，格式如： {config.userSystem}token:{id}
  */
 @Component
-class UserAuthenticationService :InitializingBean {
+class UserAuthenticationService : InitializingBean {
 
     /**
      * 保存到 Redis 的 token
@@ -30,8 +30,10 @@ class UserAuthenticationService :InitializingBean {
     /**
      * 获取登录token
      */
-    fun getLoginInfoFromToken(token: String): LoginUserModel? {
-        userSystemRedis.renewalKey(token);
+    fun getLoginInfoFromToken(token: String, renewal: Boolean = false): LoginUserModel? {
+        if (renewal) {
+            userSystemRedis.renewalKey(token);
+        }
         return userSystemRedis.get(token).FromJson<LoginUserModel>();
     }
 
