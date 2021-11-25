@@ -2,6 +2,7 @@ package nbcp.utils
 
 import nbcp.comm.AsString
 import nbcp.comm.StringMap
+import org.apache.http.HttpHeaders
 import java.io.DataOutputStream
 
 data class HttpRequestData @JvmOverloads constructor(
@@ -29,7 +30,7 @@ data class HttpRequestData @JvmOverloads constructor(
 
     fun setAuthorization(userName: String, password: String) {
         this.headers.set(
-            "Authorization",
+            HttpHeaders.AUTHORIZATION,
             HttpUtil.getBasicAuthorization(userName, password)
         )
     }

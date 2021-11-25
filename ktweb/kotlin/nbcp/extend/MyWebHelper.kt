@@ -16,6 +16,7 @@ import nbcp.extend.RequestGetLoginUserModelEvent
 import nbcp.extend.RequestSetLoginUserModelEvent
 import nbcp.extend.RequestTokenEvent
 import nbcp.base.service.UserAuthenticationService
+import nbcp.db.LoginNamePasswordData
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import java.io.Serializable
@@ -155,6 +156,20 @@ fun getJwtUserId(value: String): String {
 
     return "";
 }
+
+/**
+ * 获取基本认证的用户名密码
+ */
+val HttpServletRequest.authorizationBasicLoginUserPassword: LoginNamePasswordData
+    get() {
+        var key = org.apache.http.HttpHeaders.AUTHORIZATION
+        var value = this.getHeader(key);
+        if (value == null) {
+            return LoginNamePasswordData();
+        }
+        var value_decript = MyUtil.getStringContentFromBase64(value);
+        return HttpUtil.getLoginNamePassword(value_decript)
+    }
 
 /**
  * 由于 SameSite 限制，避免使用 Cookie，定义一个额外值来保持会话。使用 app.token-key 定义。
