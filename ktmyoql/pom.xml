@@ -157,7 +157,7 @@
                 <version>${dokka.version}</version>
                 <executions>
                     <execution>
-                        <phase>install</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>dokka</goal>
                         </goals>
@@ -179,7 +179,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>install</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
@@ -199,7 +199,7 @@
                 <version>${maven-plugin.version}</version>
                 <executions>
                     <execution>
-                        <phase>install</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>jar-no-fork</goal>
                         </goals>
