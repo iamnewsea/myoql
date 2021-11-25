@@ -238,7 +238,7 @@ val HttpServletRequest.tokenValue: String
 
 
 fun <M : MongoBaseMetaCollection<out Serializable>> MongoSetEntityUpdateClip<M>.withRequestParams(): MongoSetEntityUpdateClip<M> {
-    var keys = (HttpContext.request as MyHttpRequestWrapper).json.keys;
+    var keys = (HttpContext.request as MyHttpRequestWrapper).getPostJson().keys;
     keys.forEach { key ->
         this.withColumn { MongoColumnName(key) }
     }
@@ -246,7 +246,7 @@ fun <M : MongoBaseMetaCollection<out Serializable>> MongoSetEntityUpdateClip<M>.
 }
 
 fun <M : SqlBaseMetaTable<out Serializable>> SqlSetEntityUpdateClip<M>.withRequestParams(): SqlSetEntityUpdateClip<M> {
-    var keys = (HttpContext.request as MyHttpRequestWrapper).json.keys;
+    var keys = (HttpContext.request as MyHttpRequestWrapper).getPostJson().keys;
     var columns = this.mainEntity.getColumns();
     keys.forEach { key ->
         var column = columns.firstOrNull { it.name == key }

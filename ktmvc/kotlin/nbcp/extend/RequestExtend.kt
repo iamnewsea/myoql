@@ -105,7 +105,7 @@ val HttpServletRequest.ClientIp: String
  */
 val HttpServletRequest.queryJson: JsonMap
     get() {
-        var queryJson_key = "_Request_Query_Json_"
+        var queryJson_key = "[RequestQueryJson]"
         var dbValue = this.getAttribute(queryJson_key)
         if (dbValue != null) {
             return dbValue as JsonMap;
