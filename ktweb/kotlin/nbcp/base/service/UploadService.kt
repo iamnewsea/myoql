@@ -121,7 +121,7 @@ open class UploadService {
         annexInfo.corpId = corpId
 
         if (dbService.insert(annexInfo) == 0) {
-            return ApiResult("记录到数据出错")
+            return ApiResult.error("记录到数据出错")
         }
         return ApiResult.of(annexInfo)
     }

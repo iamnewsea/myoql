@@ -24,11 +24,11 @@ object ImageUtil {
      */
     fun zoomImageScale(sourceImage:InputStream, target: OutputStream, maxWidth: Int, maxHeight: Int): ApiResult<String> {
         if (maxWidth < 1) {
-            return ApiResult("目标宽度参数不合法");
+            return ApiResult.error("目标宽度参数不合法");
         }
 
         if (maxHeight < 1) {
-            return ApiResult("目标高度参数不合法");
+            return ApiResult.error("目标高度参数不合法");
         }
 
         var length = 8;
@@ -92,6 +92,6 @@ object ImageUtil {
 //                return "写入新文件失败: ${destFile.FullName}"
 //        }
 
-        return ApiResult(type)
+        return ApiResult.error(type)
     }
 }

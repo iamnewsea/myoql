@@ -31,19 +31,19 @@ open class ImageServlet {
 
     fun proc(db: String, id: String, image: IdUrl): JsonResult {
         if (db.isEmpty()) {
-            return JsonResult("缺少 db 定义")
+            return JsonResult.error("缺少 db 定义")
         }
 
         var dbs = db.split(".");
         if (dbs.size < 2) {
-            return JsonResult("db 非法")
+            return JsonResult.error("db 非法")
         }
 
         var table = dbs[0];
         var field = dbs.Skip(1).joinToString(".")
         var collection = MongoEntityCollector.getCollection(table);
         if (collection == null) {
-            return JsonResult("找不到集合")
+            return JsonResult.error("找不到集合")
         }
         return collection.imageSet(field, id, image)
     }

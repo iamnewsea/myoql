@@ -49,27 +49,27 @@ fun <M : MongoBaseMetaCollection<E>, E : Serializable> M.swap(fieldName: (M) -> 
  */
 fun <M : MongoBaseMetaCollection<E>, E : Serializable> M.swap(fieldName: String, id: String, index1: Int, index2: Int): JsonResult {
     if (index1 == index2) {
-        return JsonResult("非法")
+        return JsonResult.error("非法")
     }
     var info = this.queryById(id)
             .select(fieldName)
             .toEntity(Document::class.java);
 
     if (info == null) {
-        return JsonResult("找不到数据")
+        return JsonResult.error("找不到数据")
     }
 
     var imagesData = info.get(fieldName);
 
     if (imagesData == null || (imagesData is Collection<*> == false)) {
-        return JsonResult("找不到数据信息")
+        return JsonResult.error("找不到数据信息")
     }
 
     var images = imagesData as MutableList<*>;
 
 
     if (index1 >= images.size && index2 >= images.size) {
-        return JsonResult("索引超出范围")
+        return JsonResult.error("索引超出范围")
     }
 
     images.Swap(index1, index2);
@@ -79,7 +79,7 @@ fun <M : MongoBaseMetaCollection<E>, E : Serializable> M.swap(fieldName: String,
             .exec()
 
     if (db.affectRowCount == 0) {
-        return JsonResult("交换图片位置失败")
+        return JsonResult.error("交换图片位置失败")
     }
 
     return JsonResult()
@@ -94,13 +94,13 @@ fun <M : MongoBaseMetaCollection<E>, E : Serializable> M.imageChange(
 
     if (action == MongoImageActionEnum.add) {
         return this.add(fieldName, id, image).run {
-            if (this == 0) return@run JsonResult("添加图片失败")
+            if (this == 0) return@run JsonResult.error("添加图片失败")
             return@run JsonResult()
         };
     } else if (action == MongoImageActionEnum.remove) {
         return this.remove(fieldName, id, image.id).run {
             if (this == 0) {
-                return@run JsonResult("删除图片失败")
+                return@run JsonResult.error("删除图片失败")
             }
             return@run JsonResult();
         }

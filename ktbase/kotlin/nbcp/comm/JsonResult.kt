@@ -15,15 +15,44 @@ import java.util.ArrayList
 /**
  * 普通的返回对象。
  */
-open class JsonResult @JvmOverloads constructor(var msg: String = "", var code: Int = 0) : Serializable {
+open class JsonResult() : Serializable {
+    var code: Int = 0;
+    var msg: String = ""
+        get() {
+            return field
+        }
+        set(value) {
+            if (value.isEmpty()) code = 0
+            else if (value.HasValue && code == 0) code = -1
+            field = value;
+        }
+
     var cause: String? = null
+
+    companion object {
+        @JvmStatic
+        fun error(msg: String, code: Int = 0): JsonResult {
+            var ret = JsonResult();
+            ret.code = code;
+            ret.msg = msg;
+            return ret;
+        }
+    }
 }
 
-open class ApiResult<T> @JvmOverloads constructor(msg: String = "", code: Int = 0) : JsonResult(msg, code) {
+open class ApiResult<T>() : JsonResult() {
     var data: T? = null
     var value: Any? = null
 
     companion object {
+        @JvmStatic
+        fun <T> error(msg: String, code: Int = 0): ApiResult<T> {
+            var ret = ApiResult<T>();
+            ret.code = code;
+            ret.msg = msg;
+            return ret;
+        }
+
         @JvmStatic
         fun <T> of(data: T?): ApiResult<T> {
             var ret = ApiResult<T>();

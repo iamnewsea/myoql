@@ -27,7 +27,7 @@ object VideoUtil {
             val ftp = fFmpegFrameGrabber.lengthInFrames
             if (ftp <= 0) {
                 fFmpegFrameGrabber.stop()
-                return ApiResult("视频没有内容")
+                return ApiResult.error("视频没有内容")
             }
 
             //取第1帧做封装
@@ -35,7 +35,7 @@ object VideoUtil {
             var frame = fFmpegFrameGrabber.grabImage()
             if (frame == null) {
                 fFmpegFrameGrabber.stop()
-                return ApiResult("视频没有内容")
+                return ApiResult.error("视频没有内容")
             }
 
 

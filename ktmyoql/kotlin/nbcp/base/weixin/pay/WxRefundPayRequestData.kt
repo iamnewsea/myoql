@@ -82,10 +82,10 @@ data class WxRefundPayRequestData @JvmOverloads constructor(
             .Xml2Json()
             .get("xml")
             ?.ConvertJson(WxRefundPayResponseData::class.java)
-            ?: return JsonResult("请求中出错!");
+            ?: return JsonResult.error("请求中出错!");
 
         if (result.return_code != "SUCCESS" && result.result_code != "SUCCESS") {
-            return JsonResult("退款错误:" + result.return_msg.AsString(result.err_code_des));
+            return JsonResult.error("退款错误:" + result.return_msg.AsString(result.err_code_des));
         }
 
         return JsonResult()

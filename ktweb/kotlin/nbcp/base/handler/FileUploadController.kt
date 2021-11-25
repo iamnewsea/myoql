@@ -42,7 +42,7 @@ class FileUploadServlet {
             uploadService.upload(request, IdName(request.UserId, request.UserName), request.LoginUser.organization.id);
 
         if (ret.msg.HasValue) {
-            response.WriteJsonRawValue(JsonResult(ret.msg).ToJson())
+            response.WriteJsonRawValue(JsonResult.error(ret.msg).ToJson())
             return;
         }
 
@@ -51,7 +51,7 @@ class FileUploadServlet {
         response.contentType = "application/json;charset=UTF-8"
         usingScope(JsonSceneEnumScope.Web) {
             if (ids.size == 0) {
-                response.outputStream.write(JsonResult("上传失败").ToJson().toByteArray(const.utf8));
+                response.outputStream.write(JsonResult.error("上传失败").ToJson().toByteArray(const.utf8));
             } else if (ids.size == 1) {
                 response.outputStream.write(ApiResult.of(ids[0]).ToJson().toByteArray(const.utf8));
             } else {

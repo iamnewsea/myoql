@@ -36,11 +36,11 @@ object WxMiniProgramGroup {
         val ajax = HttpUtil(url);
         var data = ajax.doGet().FromJson<WxLoginInfoModel>();
         if (data == null) {
-            return ApiResult("网络错误")
+            return ApiResult.error("网络错误")
         }
 
         if (data.errmsg.HasValue) {
-            return ApiResult(data.errmsg)
+            return ApiResult.error(data.errmsg)
         }
 
         openId = data.openid;

@@ -73,14 +73,14 @@ class WxCorpPayToUserData @JvmOverloads constructor(
             .Xml2Json()
             .get("xml")
             ?.ConvertJson(WxRefundPayResponseData::class.java)
-            ?: return JsonResult("请求中出错!");
+            ?: return JsonResult.error("请求中出错!");
 
         if (result.return_code != "SUCCESS" && result.result_code != "SUCCESS") {
-            return JsonResult("发送红包出错:" + result.return_msg.AsString(result.err_code_des));
+            return JsonResult.error("发送红包出错:" + result.return_msg.AsString(result.err_code_des));
         }
 
         if (result.return_msg == "NO_AUTH") {
-            return JsonResult("发送红包出错:" + result.return_msg.AsString(result.err_code_des));
+            return JsonResult.error("发送红包出错:" + result.return_msg.AsString(result.err_code_des));
         }
 
         return JsonResult()

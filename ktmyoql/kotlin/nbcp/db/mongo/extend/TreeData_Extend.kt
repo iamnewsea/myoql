@@ -78,13 +78,13 @@ fun <M : MongoBaseMetaCollection<T>, T> M.deleteTreeNodeById(id: String): ApiRes
         where T : Serializable,
               T : ITreeData<*> {
     var result = this.findTreeById(id)
-//    if (result == null) return ApiResult("找不到数据")
+//    if (result == null) return ApiResult.error("找不到数据")
     var root = result.root;
     var parent = result.parent
 
     if (root.id == id) {
         if (this.deleteById(id).exec() == 0) {
-            return ApiResult("删除失败")
+            return ApiResult.error("删除失败")
         }
         return ApiResult();
     }
@@ -133,7 +133,7 @@ private fun <M : MongoBaseMetaCollection<T>, T> M.addTreeToTree(
     //添加新实体
     if (pid.isEmpty()) {
         if (this.doInsert(saveEntity).isEmpty()) {
-            return ApiResult("添加失败")
+            return ApiResult.error("添加失败")
         }
         return ApiResult.of(saveEntity.id);
     }

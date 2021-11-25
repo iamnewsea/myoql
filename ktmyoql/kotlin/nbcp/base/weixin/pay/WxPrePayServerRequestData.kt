@@ -69,7 +69,7 @@ data class WxPrePayServerRequestData @JvmOverloads constructor(
             ?.ConvertJson(WxPrePayServerResponseData::class.java)
 
         if (result == null) {
-            return ApiResult("请求中出错!")
+            return ApiResult.error("请求中出错!")
         }
 
         if (result.return_code != "SUCCESS" && result.result_code != "SUCCESS") {

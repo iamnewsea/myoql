@@ -32,19 +32,19 @@ open class ImageChangeServlet  {
 
     fun proc(action: MongoImageActionEnum, db: String, id: String, image: IdUrl, index1: Int, index2: Int): JsonResult {
         if (db.isEmpty()) {
-            return JsonResult("缺少 db 定义")
+            return JsonResult.error("缺少 db 定义")
         }
 
         var dbs = db.split(".");
         if (dbs.size < 2) {
-            return JsonResult("db 非法")
+            return JsonResult.error("db 非法")
         }
 
         var table = dbs[0];
         var field = dbs.Skip(1).joinToString(".")
         var collection = MongoEntityCollector.getCollection(table);
         if (collection == null) {
-            return JsonResult("找不到集合")
+            return JsonResult.error("找不到集合")
         }
         return collection.imageChange(action, field, id, image, index1, index2)
     }

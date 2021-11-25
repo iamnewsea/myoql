@@ -89,7 +89,7 @@ open class NacosService {
         if (http.status == 200) {
             return ApiResult.of(res)
         }
-        return ApiResult("ns:$ns,dataId:$dataId,group:$group , 获取nacos配置错误 : $res")
+        return ApiResult.error("ns:$ns,dataId:$dataId,group:$group , 获取nacos配置错误 : $res")
     }
 
     fun setConfig(
@@ -115,7 +115,7 @@ open class NacosService {
             return JsonResult()
         } else {
             HttpContext.response.status = 500;
-            return JsonResult("ns:$ns,dataId:$dataId,group:${group.AsString("DEFAULT_GROUP")} , 发布nacos错误 : $res")
+            return JsonResult.error("ns:$ns,dataId:$dataId,group:${group.AsString("DEFAULT_GROUP")} , 发布nacos错误 : $res")
         }
     }
 
@@ -147,7 +147,7 @@ ${end_sign}
 """
         var ret1 = getConfig(serverHost, ns, group, data_id);
         if (ret1.msg.HasValue) {
-            return JsonResult(ret1.msg);
+            return JsonResult.error(ret1.msg);
         }
         var content = ret1.data!!
 
@@ -158,7 +158,7 @@ ${end_sign}
 
 
         if ((startIndex >= 0) xor (endIndex >= 0)) {
-            return JsonResult("数据模板不匹配")
+            return JsonResult.error("数据模板不匹配")
         }
 
         if (startIndex >= 0 && endIndex >= 0) {
@@ -170,7 +170,7 @@ ${end_sign}
         for (i in lines.indices) {
             var line = lines[i];
             if (line.contains("\t")) {
-                return JsonResult("在 ${i}行中包含 tab 字符！")
+                return JsonResult.error("在 ${i}行中包含 tab 字符！")
             }
 
             if (space_count < 0) {
@@ -189,7 +189,7 @@ ${end_sign}
 
         var ret = setConfig(serverHost, ns, group, data_id, "", lines.joinToString("\n"));
         if (ret.msg.HasValue) {
-            return JsonResult(ret.msg);
+            return JsonResult.error(ret.msg);
         }
         return JsonResult();
     }

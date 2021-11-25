@@ -136,7 +136,7 @@ object WxSystemGroup {
         val tokenData = wx.officeAccount.getAccessToken(appSecret)
 
         if (tokenData.msg.HasValue) {
-            return ApiResult(tokenData.msg)
+            return ApiResult.error(tokenData.msg)
         }
 
         val token = tokenData.data!!.token
@@ -156,7 +156,7 @@ object WxSystemGroup {
 
         var bytes = http.doNet();
         if (http.status != 200 || http.response.contentType.contains("json")) {
-            return ApiResult(bytes)
+            return ApiResult.error(bytes)
         }
 
         return ApiResult.of(http)
@@ -201,7 +201,7 @@ object WxSystemGroup {
 //                }
 //
 //            } catch (t: Throwable) {
-//                return ApiResult("写入图片流出错$t")
+//                return ApiResult.error("写入图片流出错$t")
 //            }
 //
 ////但是在kotlin中等式不是一个表达式，所以不能那样子写，kotlin是这样的使用的，有几种写法：
@@ -226,7 +226,7 @@ object WxSystemGroup {
 //            }
 //*/
 //        } catch (e: Exception) {
-//            return ApiResult("获取图片出错$e")
+//            return ApiResult.error("获取图片出错$e")
 //        }
 //
 //        if (outStream.size() <100){
@@ -251,7 +251,7 @@ object WxSystemGroup {
 
         val url = HttpUtil();
         if (tokenData.msg.HasValue) {
-            return ApiResult(tokenData.msg)
+            return ApiResult.error(tokenData.msg)
         }
 
         url.url = "${wx_url}${tokenData.data!!.token}"
@@ -259,7 +259,7 @@ object WxSystemGroup {
 
         val ret = url.doPost(data.ToJson()).FromJson<wx_return_data>() ?: wx_return_data()
         if (ret.errcode != 0) {
-            return ApiResult(ret.errmsg);
+            return ApiResult.error(ret.errmsg);
         }
         return ApiResult();
     }
