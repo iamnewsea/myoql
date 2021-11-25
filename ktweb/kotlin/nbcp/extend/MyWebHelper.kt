@@ -160,7 +160,7 @@ fun getJwtUserId(value: String): String {
 /**
  * 获取基本认证的用户名密码
  */
-val HttpServletRequest.authorizationBasicLoginUserPassword: LoginNamePasswordData
+val HttpServletRequest.basicLoginNamePassword: LoginNamePasswordData
     get() {
         var key = org.apache.http.HttpHeaders.AUTHORIZATION
         var value = this.getHeader(key);
