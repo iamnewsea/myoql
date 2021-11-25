@@ -130,7 +130,7 @@
                 <version>${dokka.version}</version>
                 <executions>
                     <execution>
-                        <phase>deploy</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>dokka</goal>
                         </goals>
@@ -152,7 +152,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>deploy</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
