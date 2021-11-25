@@ -9,6 +9,7 @@ import org.springframework.http.MediaType
 import nbcp.utils.*
 import org.slf4j.LoggerFactory
 import org.springframework.web.servlet.HandlerMapping
+import java.lang.RuntimeException
 import javax.servlet.http.HttpServletRequest
 
 internal val logger = LoggerFactory.getLogger("nbcp.web.MyMvcHelper")
@@ -115,6 +116,87 @@ val HttpServletRequest.queryJson: JsonMap
         return dbValue2;
     }
 
+//文件上传或 大于 10 MB 会返回 null , throw RuntimeException("超过10MB不能获取Body!");
+val HttpServletRequest.postBody: ByteArray?
+    get() {
+        var postBodyValue = this.getAttribute("[PostBody]");
+        if (postBodyValue != null) {
+            return postBodyValue as ByteArray?
+        }
+
+
+        //如果 10MB
+        if (this.IsOctetContent) {
+            return null;
+        }
+        if (this.contentLength > config.maxHttpPostSize.toBytes()) {
+            throw RuntimeException("请求体超过${(config.maxHttpPostSize.toString()).AsInt()}!")
+        }
+        postBodyValue = this.inputStream.readBytes();
+        this.setAttribute("[PostBody]", postBodyValue)
+
+        return postBodyValue;
+    }
+
+private fun setValue(jm: JsonMap, prop: String, arykey: String, value: String) {
+    if (arykey.isEmpty()) {
+        jm[prop] = value;
+        return;
+    }
+
+    var keyLastIndex = arykey.indexOf(']');
+    var key = arykey.slice(1..keyLastIndex - 1);
+
+    if (jm.containsKey(key) == false) {
+        jm[key] = JsonMap();
+    }
+
+    setValue(jm[key] as JsonMap, key, arykey.substring(keyLastIndex + 1), value);
+}
+
+fun HttpServletRequest.getPostJson(): JsonMap {
+    var contentType = this.contentType;
+
+    if (contentType == null) {
+        contentType = MediaType.APPLICATION_JSON_VALUE
+    }
+
+    if (contentType.startsWith(MediaType.APPLICATION_JSON_VALUE)) {
+        val bodyString = (this.postBody ?: byteArrayOf()).toString(const.utf8).trim()
+
+        if (bodyString.startsWith("{") && bodyString.endsWith("}")) {
+            return bodyString.FromJsonWithDefaultValue();
+        }
+
+        throw RuntimeException("非法的Json")
+    } else if (contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
+        //按 key进行分组，假设客户端是：
+        // corp[id]=1&corp[name]=abc&role[id]=2&role[name]=def
+        //会分成两组 ret["corp"] = json1 , ret["role"] = json2;
+        //目前只支持两级。不支持  corp[role][id]
+        if (this.parameterNames.hasMoreElements()) {
+            val ret = JsonMap();
+            for (key in this.parameterNames) {
+                val value = this.getParameter(key);
+                val keyLastIndex = key.indexOf('[');
+                if (keyLastIndex >= 0) {
+                    val mk = key.slice(0..keyLastIndex - 1);
+
+                    setValue(ret, mk, key.substring(keyLastIndex), value);
+                } else {
+                    setValue(ret, key, "", value);
+                }
+            }
+        } else {
+            val bodyString = (this.postBody ?: byteArrayOf()).toString(const.utf8).trim()
+            return JsonMap.loadFromUrl(bodyString)
+        }
+    }
+
+    throw RuntimeException("不识别 content-type")
+}
+
+
 fun HttpServletRequest.findParameterStringValue(key: String): String {
     return this.findParameterValue(key).AsString()
 }
@@ -144,12 +226,12 @@ fun HttpServletRequest.findParameterValue(key: String): Any? {
         return ret;
     }
 
-    if (this is MyHttpRequestWrapper) {
-        ret = this.json.get(key)
-        if (ret != null) {
-            return ret;
-        }
+
+    ret = this.getPostJson().get(key)
+    if (ret != null) {
+        return ret;
     }
+
 
     //读取表单内容
     if (this.contentType != null && this.contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {

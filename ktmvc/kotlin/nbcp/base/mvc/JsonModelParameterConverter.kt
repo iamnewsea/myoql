@@ -11,6 +11,7 @@ import org.springframework.web.method.support.ModelAndViewContainer
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.web.fullUrl
+import nbcp.web.getPostJson
 import nbcp.web.queryJson
 import org.slf4j.LoggerFactory
 import org.springframework.web.servlet.HandlerMapping
@@ -60,21 +61,21 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         return true
     }
 
-    private fun getMyRequest(request: HttpServletRequest): MyHttpRequestWrapper? {
-        if (request is MyHttpRequestWrapper) {
-            return request;
-        }
-        if ((request is ServletRequestWrapper) == false) {
-            return null
-        }
-
-        var requestWrapper = request as ServletRequestWrapper
-        if (requestWrapper.request == null) {
-            return null;
-        }
-
-        return getMyRequest(requestWrapper.request as HttpServletRequest)
-    }
+//    private fun getMyRequest(request: HttpServletRequest): MyHttpRequestWrapper? {
+//        if (request is MyHttpRequestWrapper) {
+//            return request;
+//        }
+//        if ((request is ServletRequestWrapper) == false) {
+//            return null
+//        }
+//
+//        var requestWrapper = request as ServletRequestWrapper
+//        if (requestWrapper.request == null) {
+//            return null;
+//        }
+//
+//        return getMyRequest(requestWrapper.request as HttpServletRequest)
+//    }
 
     override fun resolveArgument(
         parameter: MethodParameter,
@@ -160,7 +161,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
             parameterName = parameter.parameterName
         }
 
-        val myRequest = getMyRequest(webRequest);
+//        val myRequest = getMyRequest(webRequest);
         //获取 PathVariable 的值
         var value: Any? =
             (webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as Map<String, Any?>?)?.get(
@@ -171,19 +172,19 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
             value = getFromQuery(webRequest, parameter);
         }
 
-        if (value == null && myRequest != null) {
+        if (value == null ) {
             val jsonModelValue = parameter.getParameterAnnotation(JsonModel::class.java)
             if (jsonModelValue != null) {
                 //如果用 JsonModel 接收 String 等简单参数？
-                val valueString = (myRequest.body ?: byteArrayOf()).toString(const.utf8);
+                val valueString = webRequest.getPostJson()
                 if (parameter.parameterType.IsSimpleType()) {
                     return valueString.ConvertType(parameter.parameterType);
                 }
 
-                return valueString.FromJson(parameter.parameterType);
+                return valueString.ConvertJson(parameter.parameterType);
             }
 
-            value = myRequest.json.get(parameterName)
+            value = webRequest.getPostJson().get(parameterName)
         }
 
         if (value == null) {

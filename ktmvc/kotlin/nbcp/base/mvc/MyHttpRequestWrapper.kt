@@ -47,77 +47,15 @@ private constructor(request: HttpServletRequest) : HttpServletRequestWrapper(req
     }
 
     //文件上传或 大于 10 MB 会返回 null , throw RuntimeException("超过10MB不能获取Body!");
-    val body: ByteArray? by lazy {
-        //如果 10MB
-        if (this.IsOctetContent) {
-            return@lazy null;
-        }
-        if (request.contentLength > config.maxHttpPostSize.toBytes()) {
-            throw RuntimeException("请求体超过${(config.maxHttpPostSize.toString()).AsInt()}!")
-        }
-//        body_read = true;
-        return@lazy request.inputStream.readBytes()
-    }
+//    private val body: ByteArray? by lazy {
+//
+//    }
 
-    val json: JsonMap by lazy {
-        var ret = JsonMap();
-
-
-        if (request.contentType == null) {
-            return@lazy ret;
-        }
-        if (request.contentType.startsWith(MediaType.APPLICATION_JSON_VALUE)) {
-            var bodyString = (body ?: byteArrayOf()).toString(const.utf8).trim()
-
-            if (bodyString.startsWith("{") && bodyString.endsWith("}")) {
-                ret = bodyString.FromJsonWithDefaultValue();
-            }
-        } else if (request.contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
-            //按 key进行分组，假设客户端是：
-            // corp[id]=1&corp[name]=abc&role[id]=2&role[name]=def
-            //会分成两组 ret["corp"] = json1 , ret["role"] = json2;
-            //目前只支持两级。不支持  corp[role][id]
-            if (request.parameterNames.hasMoreElements()) {
-                for (key in request.parameterNames) {
-                    var value = request.getParameter(key);
-                    var keyLastIndex = key.indexOf('[');
-                    if (keyLastIndex >= 0) {
-                        var mk = key.slice(0..keyLastIndex - 1);
-
-                        setValue(ret, mk, key.substring(keyLastIndex), value);
-                    } else {
-                        setValue(ret, key, "", value);
-                    }
-                }
-            } else {
-                var bodyString = (body ?: byteArrayOf()).toString(const.utf8).trim()
-                ret = JsonMap.loadFromUrl(bodyString)
-            }
-        }
-
-        return@lazy ret;
-    }
 
 //    val queryJson: JsonMap by lazy {
 //        JsonMap.loadFromUrl(this.queryString ?: "")
 //    }
 
-
-    private fun setValue(jm: JsonMap, prop: String, arykey: String, value: String) {
-        if (arykey.isEmpty()) {
-            jm[prop] = value;
-            return;
-        }
-
-        var keyLastIndex = arykey.indexOf(']');
-        var key = arykey.slice(1..keyLastIndex - 1);
-
-        if (jm.containsKey(key) == false) {
-            jm[key] = JsonMap();
-        }
-
-        setValue(jm[key] as JsonMap, key, arykey.substring(keyLastIndex + 1), value);
-    }
 
     @Throws(IOException::class)
     override fun getReader(): BufferedReader {
@@ -141,8 +79,16 @@ private constructor(request: HttpServletRequest) : HttpServletRequestWrapper(req
     @Throws(IOException::class)
     override fun getInputStream(): ServletInputStream {
 
-        val bais by lazy {
-            return@lazy ByteArrayInputStream(body);
+        val bais: ByteArrayInputStream by lazy {
+            //如果 10MB
+            if (this.IsOctetContent) {
+                throw RuntimeException("不能读取流二进制流!")
+            }
+            if (request.contentLength > config.maxHttpPostSize.toBytes()) {
+                throw RuntimeException("请求体超过${(config.maxHttpPostSize.toString()).AsInt()}!")
+            }
+//        body_read = true;
+            return@lazy request.inputStream.readBytes().inputStream()
         }
 
         return object : ServletInputStream() {
@@ -167,37 +113,6 @@ private constructor(request: HttpServletRequest) : HttpServletRequestWrapper(req
 
 
     fun getCookie(name: String): String = this.cookies?.firstOrNull { it.name == name }?.value ?: ""
-
-
-    //从 json, queryString,header中获取值。
-    fun getValue(key: String): String {
-        if (queryJson.containsKey(key)) {
-            var ret = queryJson.get(key)
-            if (ret != null) {
-                if (ret is String) return ret;
-                if (ret is Collection<*>) {
-                    return (ret as Collection<String>).joinToString(",")
-                }
-                throw RuntimeException("不识别的类型:${ret::class.java.name}")
-            }
-        }
-
-        if (json.containsKey(key)) {
-            var ret = json.get(key)
-            if (ret != null) {
-                if (ret is String) return ret;
-                else if (ret is Collection<*>) return ret.joinToString(",")
-                return ret.AsString()
-            }
-        }
-
-        var ret = this.getHeader(key)
-        if (ret != null) {
-            return ret
-        }
-
-        return "";
-    }
 
 }
 

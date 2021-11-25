@@ -306,7 +306,7 @@ open class MyAllFilter : Filter {
             }
 
 
-            var htmlString = (request.body ?: byteArrayOf()).toString(const.utf8)
+            var htmlString = (request.postBody ?: byteArrayOf()).toString(const.utf8)
             if (htmlString.HasValue) {
                 msgs.add("[request body]:")
                 msgs.add("\t" + htmlString)
