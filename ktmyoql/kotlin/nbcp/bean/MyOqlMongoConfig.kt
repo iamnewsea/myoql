@@ -48,8 +48,8 @@ class MyOqlMongoConfig : BeanPostProcessor {
                 }
             }
         } else if (bean is MongoDatabaseFactory) {
-            //添加 MongoTransactionManager ，使 mongo 支持 @Transactional 注解
-            SpringUtil.registerBeanDefinition(MongoTransactionManager(bean))
+            //系统默认会有一个 MongoTransactionManager。 不必自定义。如果自定义，必须是Primary
+            //SpringUtil.registerBeanDefinition("mongoTransactionManager",MongoTransactionManager(bean)){ it.setPrimary(true)}
         }
 
         return ret;
