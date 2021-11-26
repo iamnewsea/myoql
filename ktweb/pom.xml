@@ -36,15 +36,11 @@
         </dependency>
 
         <dependency>
-            <groupId>cn.dev8</groupId>
-            <artifactId>ktmyoql</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
 <!--            <version>${springfox-swagger.version}</version>-->
         </dependency>
+
         <dependency>
             <groupId>cn.dev8</groupId>
             <artifactId>ktmvc</artifactId>
@@ -55,6 +51,7 @@
             <artifactId>ktmyoql</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
