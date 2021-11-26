@@ -98,7 +98,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
                     return (pageNumber - 1) * pageSize
                 }
             } else if (parameter.parameterName == "take") {
-                val pageNumber = getValueFromRequest(webRequest, parameter, "pageNumber").AsInt(-1)
+                val pageNumber = getValueFromRequest(webRequest, parameter, "pageSize").AsInt(-1)
                 if (pageNumber > 0) {
                     return pageNumber
                 }
@@ -172,7 +172,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
             value = getFromQuery(webRequest, parameter);
         }
 
-        if (value == null ) {
+        if (value == null) {
             val jsonModelValue = parameter.getParameterAnnotation(JsonModel::class.java)
             if (jsonModelValue != null) {
                 //如果用 JsonModel 接收 String 等简单参数？
