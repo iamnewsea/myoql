@@ -343,6 +343,8 @@ open class MyAllFilter : Filter {
             response.contentType = "application/json;charset=UTF-8"
             val content = resStringValue.toByteArray(const.utf8);
 
+            //重设输出。
+            response.reset();
             response.setContentLength(content.size)
             response.outputStream.use {
                 it.write(content)
@@ -351,25 +353,23 @@ open class MyAllFilter : Filter {
         } else if (response.status == 204) {
         } else if (response.IsOctetContent) {
         } else {
-            var resValue = response.contentAsByteArray;
-            resStringValue = resValue.toString(const.utf8);
-
             if (callback.isNotEmpty() && response.contentType.contains("json")) {
+                resStringValue = response.contentAsByteArray.toString(const.utf8);
                 response.contentType = "application/javascript;charset=UTF-8"
                 val content = """${callback}(${resStringValue})""".toByteArray(const.utf8)
+
+                response.reset()
                 response.setContentLength(content.size)
                 response.outputStream.use {
                     it.write(content)
                     it.flush()
                 }
-            } else {
-                response.setContentLength(resValue.size)
-                response.outputStream.use {
-                    it.write(resValue)
-                    it.flush()
-                }
             }
         }
+
+
+        //写入到输出流
+        response.copyBodyToResponse()
 
         val endAt = LocalDateTime.now();
         logger.Info {
