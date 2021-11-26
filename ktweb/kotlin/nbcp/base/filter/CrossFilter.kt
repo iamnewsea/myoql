@@ -50,11 +50,12 @@ open class MyOqlCrossFilter : Filter {
         val httpRequest = request
         var httpResponse = response as HttpServletResponse
 
-        var request2: MyHttpRequestWrapper? = null
+        var request2: HttpServletRequest? = null
         httpRequest.getCorsResponseMap(this.allowOrigins.split(","), headers).apply {
             if (this.any() && httpRequest.method != "OPTIONS") {
-                request2 = MyHttpRequestWrapper.create(httpRequest);
-                request2!!.removeHeader("origin")
+                request2 = MyAllFilter.getRequestWrapper(httpRequest);
+
+                (request2 as MyHttpRequestWrapper).removeHeader("origin")
 
                 val originClient = request.getHeader("origin") ?: ""
                 logger.Important("处理了跨域,并移除了origin, 请求源:${originClient}, url:${httpRequest.fullUrl}")

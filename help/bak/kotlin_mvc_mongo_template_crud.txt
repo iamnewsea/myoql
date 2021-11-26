@@ -30,7 +30,7 @@ ${if:name}
 ${endif}
         @Require skip: Int,
         @Require take: Int,
-        request: MyHttpRequestWrapper
+        request: HttpServletRequest
     ): ListResult<${entity}> {
 
         mor.${group|w}.${entityField}.query()
@@ -55,7 +55,7 @@ ${endif}
     @PostMapping("/detail/{id}")
     fun detail(
         @Require id: String,
-        request: MyHttpRequestWrapper
+        request: HttpServletRequest
     ): ApiResult<${entity}> {
         mor.${group|w}.${entityField}.queryById(id)
             .toEntity()
@@ -72,7 +72,7 @@ ${endif}
     @PostMapping("/save")
     fun save(
       @JsonModel entity:${entity},
-      request: MyHttpRequestWrapper
+      request: HttpServletRequest
     ): ApiResult<String> {
 
     //鉴权
@@ -103,7 +103,7 @@ ${if:status}
     fun set(
         @Require id: String,
         @Require status: ${status_enum_class},
-        request: MyHttpRequestWrapper
+        request: HttpServletRequest
     ): JsonResult {
         //鉴权
         var userId = request.UserId;
@@ -126,7 +126,7 @@ ${endif}
     @PostMapping("/delete/{id}")
     fun delete(
       @Require id:String,
-      request: MyHttpRequestWrapper
+      request: HttpServletRequest
     ): JsonResult {
     //鉴权
     var userId = request.UserId;

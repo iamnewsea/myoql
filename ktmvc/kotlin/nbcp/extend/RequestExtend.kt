@@ -3,7 +3,6 @@
 
 package nbcp.web
 
-import nbcp.base.mvc.MyHttpRequestWrapper
 import nbcp.comm.*
 import org.springframework.http.MediaType
 import nbcp.utils.*
@@ -318,3 +317,5 @@ fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>, headers: L
     return retMap;
 }
 
+
+fun HttpServletRequest.getCookie(name: String): String = this.cookies?.firstOrNull { it.name == name }?.value ?: ""

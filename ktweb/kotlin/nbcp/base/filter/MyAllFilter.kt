@@ -3,7 +3,6 @@ package nbcp.base.filter
 import ch.qos.logback.classic.Level
 import nbcp.base.mvc.HttpContext
 import nbcp.base.mvc.MyHttpRequestWrapper
-import nbcp.base.mvc.MyHttpResponseWrapper
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.web.*
@@ -13,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
+import org.springframework.web.util.ContentCachingRequestWrapper
+import org.springframework.web.util.ContentCachingResponseWrapper
 import java.lang.reflect.UndeclaredThrowableException
 import java.time.LocalDateTime
 import javax.servlet.*
@@ -44,7 +45,18 @@ open class MyAllFilter : Filter {
     var ignoreLogUrls: List<String> = listOf()
 
     companion object {
+        private val UseClientCacheDataStatus = 280;
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+        fun getRequestWrapper(servletRequest: HttpServletRequest): MyHttpRequestWrapper {
+            return MyHttpRequestWrapper.create(servletRequest);
+        }
+
+        fun getResponseWrapper(servletResponse: HttpServletResponse): ContentCachingResponseWrapper {
+            if (servletResponse is ContentCachingResponseWrapper) {
+                return servletResponse
+            }
+            return ContentCachingResponseWrapper(servletResponse);
+        }
     }
 
     override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
@@ -135,8 +147,8 @@ open class MyAllFilter : Filter {
 
         //JSONP
         if (queryMap.containsKey("callback")) {
-            var request = MyHttpRequestWrapper.create(_request);
-            var response = MyHttpResponseWrapper.create(_response)
+            var request = getRequestWrapper(_request);
+            var response = getResponseWrapper(_response)
 
             response.characterEncoding = "utf-8";
 
@@ -224,8 +236,8 @@ open class MyAllFilter : Filter {
         _response: HttpServletResponse,
         chain: FilterChain?
     ) {
-        var request = MyHttpRequestWrapper.create(_request);
-        var response = MyHttpResponseWrapper.create(_response);
+        var request = MyAllFilter.getRequestWrapper(_request);
+        var response = MyAllFilter.getResponseWrapper(_response);
         request.characterEncoding = "utf-8";
 
         var startAt = LocalDateTime.now()
@@ -275,7 +287,7 @@ open class MyAllFilter : Filter {
         return err;
     }
 
-    fun setLang(request: MyHttpRequestWrapper) {
+    fun setLang(request: ContentCachingRequestWrapper) {
         var lang = request.getCookie("lang");
 
         if (lang.isEmpty()) {
@@ -292,7 +304,7 @@ open class MyAllFilter : Filter {
         }
     }
 
-    private fun beforeRequest(request: MyHttpRequestWrapper) {
+    private fun beforeRequest(request: ContentCachingRequestWrapper) {
         logger.Info {
             var msgs = mutableListOf<String>()
             msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
@@ -319,29 +331,42 @@ open class MyAllFilter : Filter {
 
 
     fun afterComplete(
-            request: MyHttpRequestWrapper,
-            response: MyHttpResponseWrapper,
-            callback: String,
-            startAt: LocalDateTime,
-            errorMsg: String
+        request: HttpServletRequest,
+        response: ContentCachingResponseWrapper,
+        callback: String,
+        startAt: LocalDateTime,
+        errorMsg: String
     ) {
         var error = errorMsg.HasValue;
         var resStringValue = errorMsg;
         if (error) {
             response.contentType = "application/json;charset=UTF-8"
-            response.result = resStringValue.toByteArray(const.utf8)
-        } else if (response.IsOctetContent == false) {
-            var resValue = response.result ?: byteArrayOf();
+            val content = resStringValue.toByteArray(const.utf8);
+
+            response.setContentLength(content.size)
+            response.outputStream.use {
+                it.write(content)
+                it.flush()
+            }
+        } else if (response.status == 204) {
+        } else if (response.IsOctetContent) {
+        } else {
+            var resValue = response.contentAsByteArray;
             resStringValue = resValue.toString(const.utf8);
 
             if (callback.isNotEmpty() && response.contentType.contains("json")) {
                 response.contentType = "application/javascript;charset=UTF-8"
-                response.result = """${callback}(${resStringValue})""".toByteArray(const.utf8)
+                val content = """${callback}(${resStringValue})""".toByteArray(const.utf8)
+                response.setContentLength(content.size)
+                response.outputStream.use {
+                    it.write(content)
+                    it.flush()
+                }
             } else {
-                if (response.status == 280) {
-                    response.result = byteArrayOf();
-                } else {
-                    response.result = resValue
+                response.setContentLength(resValue.size)
+                response.outputStream.use {
+                    it.write(resValue)
+                    it.flush()
                 }
             }
         }

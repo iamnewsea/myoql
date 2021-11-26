@@ -2,7 +2,6 @@ package nbcp.web
 
 import io.jsonwebtoken.Jwts
 import nbcp.base.mvc.HttpContext
-import nbcp.base.mvc.MyHttpRequestWrapper
 import nbcp.comm.*
 import nbcp.data.TokenStorageTypeEnum
 import nbcp.utils.*
@@ -238,7 +237,7 @@ val HttpServletRequest.tokenValue: String
 
 
 fun <M : MongoBaseMetaCollection<out Serializable>> MongoSetEntityUpdateClip<M>.withRequestParams(): MongoSetEntityUpdateClip<M> {
-    var keys = (HttpContext.request as MyHttpRequestWrapper).getPostJson().keys;
+    var keys = HttpContext.request.getPostJson().keys;
     keys.forEach { key ->
         this.withColumn { MongoColumnName(key) }
     }
@@ -246,7 +245,7 @@ fun <M : MongoBaseMetaCollection<out Serializable>> MongoSetEntityUpdateClip<M>.
 }
 
 fun <M : SqlBaseMetaTable<out Serializable>> SqlSetEntityUpdateClip<M>.withRequestParams(): SqlSetEntityUpdateClip<M> {
-    var keys = (HttpContext.request as MyHttpRequestWrapper).getPostJson().keys;
+    var keys = HttpContext.request.getPostJson().keys;
     var columns = this.mainEntity.getColumns();
     keys.forEach { key ->
         var column = columns.firstOrNull { it.name == key }

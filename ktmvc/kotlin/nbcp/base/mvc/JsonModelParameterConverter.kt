@@ -61,8 +61,8 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         return true
     }
 
-//    private fun getMyRequest(request: HttpServletRequest): MyHttpRequestWrapper? {
-//        if (request is MyHttpRequestWrapper) {
+//    private fun getMyRequest(request: HttpServletRequest): HttpServletRequest? {
+//        if (request is HttpServletRequest) {
 //            return request;
 //        }
 //        if ((request is ServletRequestWrapper) == false) {

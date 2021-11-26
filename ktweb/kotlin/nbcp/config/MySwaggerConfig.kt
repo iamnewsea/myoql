@@ -1,15 +1,14 @@
 package nbcp.config
 
 import nbcp.base.mvc.MyHttpRequestWrapper
-import nbcp.base.mvc.MyHttpResponseWrapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport
+import org.springframework.web.util.ContentCachingRequestWrapper
+import org.springframework.web.util.ContentCachingResponseWrapper
 import springfox.documentation.builders.PathSelectors
 import springfox.documentation.builders.RequestHandlerSelectors
 import springfox.documentation.service.ApiKey
@@ -18,6 +17,8 @@ import springfox.documentation.service.SecurityReference
 import springfox.documentation.spi.DocumentationType
 import springfox.documentation.spi.service.contexts.SecurityContext
 import springfox.documentation.spring.web.plugins.Docket
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 /**
  * 很奇怪，这个配置放到单独的Jar包里，swagger-ui.html 就不能访问，
@@ -45,7 +46,13 @@ open class MySwaggerConfig : WebMvcConfigurer {
     open fun petApi(): Docket {
         return Docket(DocumentationType.SWAGGER_2)
             .useDefaultResponseMessages(false)
-            .ignoredParameterTypes(*arrayOf(MyHttpRequestWrapper::class.java, MyHttpResponseWrapper::class.java))
+            .ignoredParameterTypes(
+                HttpServletRequest::class.java,
+                HttpServletResponse::class.java,
+                ContentCachingRequestWrapper::class.java,
+                ContentCachingResponseWrapper::class.java,
+                MyHttpRequestWrapper::class.java
+            )
             .select()
             .apis(RequestHandlerSelectors.basePackage(basePackage))
             .paths(PathSelectors.any())
