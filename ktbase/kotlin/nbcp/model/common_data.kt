@@ -8,13 +8,34 @@ import java.io.Serializable
  * Created by yuxh on 2018/11/13
  */
 
-open class IdValue @JvmOverloads constructor(var id: String = "", var value: String = "") : Serializable {}
+open class IdValue @JvmOverloads constructor(var id: String = "", var value: String = "") : Serializable {
+    override fun toString(): String {
+        if (this::class.java == IdValue::class.java) {
+            return "${id}:${value}"
+        }
+        return super.toString()
+    }
+}
 
 open class IdName @JvmOverloads constructor(var id: String = "", @Cn("名称") var name: String = "") :
-    Serializable {}
+    Serializable {
+    override fun toString(): String {
+        if (this::class.java == IdName::class.java) {
+            return "${id}:${name}"
+        }
+        return super.toString()
+    }
+}
 
 open class KeyValueString @JvmOverloads constructor(@Cn("键") var key: String = "", @Cn("值") var value: String = "") :
-    Serializable {}
+    Serializable {
+    override fun toString(): String {
+        if (this::class.java == KeyValueString::class.java) {
+            return "${key}:${value}"
+        }
+        return super.toString()
+    }
+}
 
 /**
  * 表示Mongo数据库里 Id，Url 的附件实体引用。
@@ -34,6 +55,13 @@ open class IdUrl() : BaseUrlModel() {
         this.id = id;
         this.url = url;
     }
+
+    override fun toString(): String {
+        if (this::class.java == IdUrl::class.java) {
+            return "${id}:${url}"
+        }
+        return super.toString()
+    }
 }
 
 open class NameUrl() : BaseUrlModel() {
@@ -44,31 +72,80 @@ open class NameUrl() : BaseUrlModel() {
         this.name = name;
         this.url = url;
     }
+
+    override fun toString(): String {
+        if (this::class.java == NameUrl::class.java) {
+            return "${name}:${url}"
+        }
+        return super.toString()
+    }
 }
 
 open class IdNameUrl @JvmOverloads constructor(var id: String = "", name: String = "", url: String = "") :
-    NameUrl(name, url)
+    NameUrl(name, url) {
+    override fun toString(): String {
+        if (this::class.java == IdNameUrl::class.java) {
+            return "${id}:${name}:${url}"
+        }
+        return super.toString()
+    }
+}
 
 open class IdNamePath @JvmOverloads constructor(id: String = "", name: String = "", @Cn("路径") var path: String = "") :
-    IdName(id, name) {}
+    IdName(id, name) {
+    override fun toString(): String {
+        if (this::class.java == IdNamePath::class.java) {
+            return "${id}:${name}:${path}"
+        }
+        return super.toString()
+    }
+}
 
 /**
  * 只能用于 code 不变的情况。
  */
 open class CodeName @JvmOverloads constructor(@Cn("编码") var code: String = "", @Cn("名称") var name: String = "") :
-    Serializable {}
+    Serializable {
+    override fun toString(): String {
+        if (this::class.java == CodeName::class.java) {
+            return "${code}:${name}"
+        }
+        return super.toString()
+    }
+}
 
 /**
  * 只能用于 code 不变的情况。
  */
 open class CodeValue @JvmOverloads constructor(@Cn("编码") var code: String = "", @Cn("值") var value: String = "") :
-    Serializable {}
+    Serializable {
+    override fun toString(): String {
+        if (this::class.java == CodeValue::class.java) {
+            return "${code}:${value}"
+        }
+        return super.toString()
+    }
+}
 
 open class IdCodeName @JvmOverloads constructor(var id: String = "", code: String = "", name: String = "") :
-    CodeName(code, name) {}
+    CodeName(code, name) {
+    override fun toString(): String {
+        if (this::class.java == IdCodeName::class.java) {
+            return "${id}:${code}:${name}"
+        }
+        return super.toString()
+    }
+}
 
 
-open class LoginNamePasswordData(var loginName: String = "", var password: String = "")
+open class LoginNamePasswordData(var loginName: String = "", var password: String = "") : Serializable {
+    override fun toString(): String {
+        if (this::class.java == LoginNamePasswordData::class.java) {
+            return "${loginName}:${password}"
+        }
+        return super.toString()
+    }
+}
 
 /**
  * 登录用户数据
