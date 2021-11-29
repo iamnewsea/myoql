@@ -49,14 +49,9 @@ fun HttpServletResponse.setDownloadFileName(fileName: String) {
 }
 
 
-
 val HttpServletResponse.IsOctetContent: Boolean
     get() {
-        if (this.contentType == null) {
-            return true
-        }
-
-        return WebUtil.contentTypeIsOctetContent(this.contentType)
+        return WebUtil.contentTypeIsOctetContent(this.contentType.AsString())
     }
 
 

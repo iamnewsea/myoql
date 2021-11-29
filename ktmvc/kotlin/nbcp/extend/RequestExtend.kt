@@ -30,11 +30,7 @@ video
  */
 val HttpServletRequest.IsOctetContent: Boolean
     get() {
-        if (this.contentType == null) {
-            return true
-        }
-
-        return WebUtil.contentTypeIsOctetContent(this.contentType);
+        return WebUtil.contentTypeIsOctetContent(this.contentType.AsString());
     }
 
 
@@ -43,10 +39,10 @@ private fun _getClientIp(request: HttpServletRequest): String {
     var remoteAddr = request.remoteAddr
     var realIp = request.getHeader("X-Real-IP") ?: "";
     var forwardIps = (request.getHeader("X-Forwarded-For") ?: "")
-            .split(",")
-            .map { it.trim() }
-            .filter { it.HasValue && !it.VbSame("unknown") && !MyUtil.isLocalIp(it) }
-            .toList();
+        .split(",")
+        .map { it.trim() }
+        .filter { it.HasValue && !it.VbSame("unknown") && !MyUtil.isLocalIp(it) }
+        .toList();
 
 
     if (MyUtil.isLocalIp(realIp)) {
@@ -280,8 +276,8 @@ fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>, headers: L
     if (requestOrigin.isEmpty()) return retMap;
 
     var allow = allowOrigins.any { requestOrigin.contains(it) } ||
-            requestOrigin.contains("localhost") ||
-            requestOrigin.contains("127.0.0");
+        requestOrigin.contains("localhost") ||
+        requestOrigin.contains("127.0.0");
 
     if (allow == false) {
         logger.warn("系统忽略未允许的跨域请求源:${requestOrigin_Ori}")
@@ -302,10 +298,10 @@ fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>, headers: L
 //    allowHeaders.add("Authorization")
 
     allowHeaders.addAll(
-            request.getHeader("Access-Control-Request-Headers")
-                    .AsString()
-                    .split(",")
-                    .filter { it.HasValue }
+        request.getHeader("Access-Control-Request-Headers")
+            .AsString()
+            .split(",")
+            .filter { it.HasValue }
     )
 
     allowHeaders.removeIf { it.isEmpty() }

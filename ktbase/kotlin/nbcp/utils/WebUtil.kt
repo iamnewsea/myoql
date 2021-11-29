@@ -28,6 +28,7 @@ object WebUtil {
     video
      */
     fun contentTypeIsOctetContent(contentType: String): Boolean {
+        if (contentType.isEmpty()) return false;
         if (contentType.startsWith("text/")) return false
 
 
