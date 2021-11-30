@@ -41,7 +41,7 @@ class WebJsonMapper : BaseJsonMapper(), InitializingBean {
 
         this.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.DEFAULT);
         this.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.DEFAULT);
-        this.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.DEFAULT);
+        this.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE);
         this.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.NONE);
 
         BaseJsonMapper.sers.forEach {

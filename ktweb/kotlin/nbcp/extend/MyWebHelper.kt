@@ -13,7 +13,7 @@ import nbcp.db.sql.SqlBaseMetaTable
 import nbcp.db.sql.SqlSetEntityUpdateClip
 import nbcp.extend.RequestGetLoginUserModelEvent
 import nbcp.extend.RequestSetLoginUserModelEvent
-import nbcp.extend.RequestTokenEvent
+import nbcp.extend.RequestGetTokenEvent
 import nbcp.base.service.UserAuthenticationService
 import nbcp.db.LoginNamePasswordData
 import org.slf4j.LoggerFactory
@@ -181,16 +181,10 @@ val HttpServletRequest.tokenValue: String
             return token.AsString();
         }
 
-        var event = RequestTokenEvent(this);
-        SpringUtil.context.publishEvent(event);
-        if (event.tokenValue.HasValue) return event.tokenValue;
 
         token = this.findParameterStringValue(config.tokenKey).AsString {
             //获取自定义 Authorization 中的 token,值必须以 st!开头。和 token 保持一致，redis key 不能有空格。
             var authorization = this.findParameterStringValue(HttpHeaders.AUTHORIZATION);
-//            if (authorization.startsWith("st!")) {
-//                return@AsString authorization.substring(3);
-//            }
 
             if (authorization.startsWith("Bearer ")) {
                 var value = authorization.substring("Bearer ".length)
@@ -206,28 +200,15 @@ val HttpServletRequest.tokenValue: String
             return@AsString "";
         }
 
-
-//        else {
-//            var tokenTime: LocalDateTime? = TokenUtil.getTokenCreateTime(token);
-//
-//            if (tokenTime == null) {
-//                newToken = TokenUtil.generateToken()
-//            } else {
-//                var now = LocalDateTime.now();
-//
-//                var diffSeconds = (now - tokenTime).seconds
-//                if (diffSeconds > config.tokenKeyExpireSeconds) {
-//                    this.userAuthenticationService.deleteToken(token);
-//                    newToken = TokenUtil.generateToken();
-//                } else {
-//                    newToken = token
-//                }
-//            }
-//        }
-
         if (token.isEmpty()) {
             token = TokenUtil.generateToken();
             HttpContext.response.setHeader(config.tokenKey, token)
+        }
+
+        var event = RequestGetTokenEvent(this, token);
+        SpringUtil.context.publishEvent(event);
+        if (event.token.HasValue) {
+            token = event.token
         }
 
         this.setAttribute(cacheKey, token)

@@ -100,7 +100,7 @@ val HttpServletRequest.ClientIp: String
  */
 val HttpServletRequest.queryJson: JsonMap
     get() {
-        var queryJson_key = "[RequestQueryJson]"
+        var queryJson_key = "[Request.QueryJson]"
         var dbValue = this.getAttribute(queryJson_key)
         if (dbValue != null) {
             return dbValue as JsonMap;
@@ -114,7 +114,8 @@ val HttpServletRequest.queryJson: JsonMap
 //文件上传或 大于 10 MB 会返回 null , throw RuntimeException("超过10MB不能获取Body!");
 val HttpServletRequest.postBody: ByteArray?
     get() {
-        var postBodyValue = this.getAttribute("[PostBody]");
+        val postBody_key = "[Request.PostBody]"
+        var postBodyValue = this.getAttribute(postBody_key);
         if (postBodyValue != null) {
             return postBodyValue as ByteArray?
         }
@@ -128,7 +129,7 @@ val HttpServletRequest.postBody: ByteArray?
             throw RuntimeException("请求体超过${(config.maxHttpPostSize.toString()).AsInt()}!")
         }
         postBodyValue = this.inputStream.readBytes();
-        this.setAttribute("[PostBody]", postBodyValue)
+        this.setAttribute(postBody_key, postBodyValue)
 
         return postBodyValue;
     }
