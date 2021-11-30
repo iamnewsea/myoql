@@ -63,9 +63,9 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
     }
 
     /**
-     * 更新，默认按 id 更新
+     * 执行更新, == exec ,语义清晰
      */
-    override fun exec(): Int {
+    fun execUpdate(): Int {
         if (whereColumns.any() == false) {
             whereColumns.add("id")
         }
@@ -161,13 +161,6 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
     }
 
     /**
-     * 执行更新, == exec ,语义清晰
-     */
-    fun execUpdate(): Int {
-        return this.exec();
-    }
-
-    /**
      * 执行插入
      */
     fun execInsert(): Int {
@@ -187,6 +180,13 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
             return this.execInsert()
         }
         return db.affectRowCount;
+    }
+
+    /**
+     * 更新，默认按 id 更新
+     */
+    override fun exec(): Int {
+        return updateOrAdd();
     }
 }
 
