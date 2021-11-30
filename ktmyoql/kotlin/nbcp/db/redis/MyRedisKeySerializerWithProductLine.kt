@@ -2,6 +2,7 @@ package nbcp.db.redis
 
 import nbcp.comm.HasValue
 import nbcp.comm.config
+import nbcp.comm.scopes
 import org.springframework.data.redis.serializer.StringRedisSerializer
 
 /**
@@ -10,24 +11,33 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 class MyRedisKeySerializerWithProductLine : StringRedisSerializer() {
     override fun serialize(key: String): ByteArray {
         var key2 = key;
-        if (config.redisProductLineCodePrefixEnable &&
-                config.productLineCode.HasValue &&
-                !key2.startsWith(config.productLineCode + ":")
-        ) {
-            key2 = config.productLineCode + ":" + key2;
+        val prefix = getProductLineCodePrefix();
+
+        if (prefix.HasValue && !key2.startsWith(prefix + ":")) {
+            key2 = prefix + ":" + key2;
         }
         return super.serialize(key2)
     }
 
     override fun deserialize(bytes: ByteArray?): String {
         var key2 = super.deserialize(bytes)
-        if (config.redisProductLineCodePrefixEnable &&
-                config.productLineCode.HasValue &&
-                !key2.startsWith(config.productLineCode + ":")
-        ) {
-            key2 = key2.substring(config.productLineCode.length + 1);
+        val prefix = getProductLineCodePrefix();
 
+        if (prefix.HasValue && !key2.startsWith(prefix + ":")) {
+            key2 = key2.substring(prefix.length + 1);
         }
         return key2;
+    }
+
+    private fun getProductLineCodePrefix(): String {
+        var productLineCodeScope = scopes.getLatest(RedisProductLineScope::class.java)
+        if (productLineCodeScope != null) {
+            return productLineCodeScope.productLineCode;
+        }
+
+        if (config.redisProductLineCodePrefixEnable) {
+            return config.productLineCode;
+        }
+        return "";
     }
 }
