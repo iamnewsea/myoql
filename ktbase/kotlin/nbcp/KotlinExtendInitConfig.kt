@@ -2,6 +2,7 @@ package nbcp
 
 import nbcp.comm.GroupLogAopService
 import nbcp.comm.LogLevelAopService
+import nbcp.component.NacosService
 import nbcp.config.TaskConfig
 import nbcp.utils.SpringUtil
 import org.springframework.boot.context.event.ApplicationPreparedEvent
@@ -15,7 +16,8 @@ import org.springframework.stereotype.Component
 @Import(
     value = [
         SpringUtil::class,
-        ObjectMapperConfiguration::class
+        ObjectMapperConfiguration::class,
+        NacosService::class
     ]
 )
 class KotlinExtendInitConfig {

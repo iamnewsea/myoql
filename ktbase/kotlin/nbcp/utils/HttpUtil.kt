@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory
 import java.awt.image.BufferedImage
 import java.io.*
 import java.net.HttpURLConnection
+import java.net.Inet4Address
+import java.net.NetworkInterface
 import java.net.URL
 import java.nio.charset.Charset
 import java.time.Duration
@@ -60,6 +62,26 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
+        @JvmStatic
+        val localIpAddresses by lazy {
+            val allNetInterfaces = NetworkInterface.getNetworkInterfaces()
+            var ips = mutableListOf<String>()
+            while (allNetInterfaces.hasMoreElements()) {
+                val netInterface = allNetInterfaces.nextElement() as NetworkInterface
+                if (netInterface.isLoopback || netInterface.isVirtual || !netInterface.isUp) {
+                    continue
+                }
+
+                val addresses = netInterface.inetAddresses
+                while (addresses.hasMoreElements()) {
+                    val ip = addresses.nextElement()
+                    if (ip != null && ip is Inet4Address) {
+                        ips.add(ip.getHostAddress())
+                    }
+                }
+            }
+            return@lazy ips.toSet();
+        }
 
         @JvmStatic
         fun getBasicAuthorization(userName: String, password: String): String {
