@@ -77,6 +77,7 @@ object FreemarkerUtil {
         all_params.put("is_object", Freemarker_IsObject())
         all_params.put("is_type", Freemarker_IsType())
 
+        all_params.put("all_fields", Freemarker_All_Field())
         all_params.put("field_is_enum_list", Freemarker_Field_IsEnumList())
         all_params.put("field_cn", Freemarker_Field_Cn())
         all_params.put("field_is_list", Freemarker_IsList())

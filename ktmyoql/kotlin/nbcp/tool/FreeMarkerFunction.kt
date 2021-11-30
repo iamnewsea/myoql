@@ -16,11 +16,10 @@ fun _get_value_item(p1: Any?): Any {
         throw RuntimeException("参数不能为空")
     }
 
-    var paramValue: Any? = null
+    var paramValue: Any? = p1
     if (p1 is StringModel) {
         paramValue = p1.wrappedObject;
-    }
-    else if (p1 is SimpleScalar) {
+    } else if (p1 is SimpleScalar) {
         paramValue = p1.asString
     }
 
@@ -103,6 +102,16 @@ class Freemarker_SmallCamelCase : TemplateMethodModelEx {
             return MyUtil.getSmallCamelCase(paramValue.name)
         } else if (paramValue is String) {
             return MyUtil.getSmallCamelCase(paramValue)
+        }
+        throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
+    }
+}
+
+class Freemarker_All_Field : TemplateMethodModelEx {
+    override fun exec(p0: MutableList<Any?>): Any {
+        var paramValue = _get_value_item(p0[0]);
+        if (paramValue is Class<*>) {
+            return paramValue.AllFields
         }
         throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
     }
