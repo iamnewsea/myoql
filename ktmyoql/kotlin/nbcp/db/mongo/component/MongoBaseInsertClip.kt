@@ -3,6 +3,8 @@ package nbcp.db.mongo
 import nbcp.comm.*
 import nbcp.db.MyOqlOrmScope
 import nbcp.db.db
+import nbcp.utils.RecursionUtil
+import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.time.LocalDateTime
@@ -62,7 +64,24 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
 
     fun exec(): Int {
         db.affectRowCount = -1;
-//        var ret = -1;
+
+        this.entities.forEach {
+            if (it is Map<*, *>) {
+                var map = it as Map<String, Any?>
+
+                RecursionUtil.recursionJson(map, { jsonValue ->
+                    var idValue = jsonValue.get("id")
+                    if (idValue != null) {
+
+                        if (idValue is String && ObjectId.isValid(idValue)) {
+                            (jsonValue as MutableMap<String, Any?>).set("id", ObjectId(idValue.toString()));
+                        }
+                    }
+
+                    return@recursionJson true;
+                })
+            }
+        }
 
         var settingResult = db.mongo.mongoEvents.onInserting(this)
         if (settingResult.any { it.second.result == false }) {

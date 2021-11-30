@@ -82,7 +82,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
                 var idValue = jsonValue.get("id")
                 if (idValue != null) {
 
-                    if (idValue is String) {
+                    if (idValue is String && ObjectId.isValid(idValue)) {
                         (jsonValue as MutableMap<String, Any?>).set("id", ObjectId(idValue.toString()));
                     }
                 }
