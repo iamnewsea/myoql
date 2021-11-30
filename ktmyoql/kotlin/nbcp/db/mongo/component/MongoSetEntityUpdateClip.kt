@@ -66,39 +66,65 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
      */
     override fun exec(): Int {
         if (whereColumns.any() == false) {
-            whereColumns.add("_id")
+            whereColumns.add("id")
         }
 
         var whereData2 = LinkedHashMap<String, Any?>()
         var setData2 = LinkedHashMap<String, Any?>()
 
         var update = MongoUpdateClip(this.moerEntity)
-        this.entity::class.java.AllFields.forEach {
-            var findKey = it.name;
-            if (it.name == "id") {
-                findKey = "_id"
-            }
 
-            if (whereColumns.contains(findKey)) {
-                var value = MyUtil.getPrivatePropertyValue(this.entity, it.name);
-                whereData2.put(it.name, value)
-                return@forEach
-            }
+        if( this.entity is Map<*,*>){
+            val map = this.entity as Map<*, *>
+            map.keys.map { it.toString() }.forEach {
+                var findKey = it;
+                val value = map.get(it);
 
-            if (it.name == "id") {
-                return@forEach
-            }
+                if (whereColumns.contains(findKey)) {
+                    whereData2.put(findKey, value)
+                    return@forEach
+                }
 
-            if (setColumns.any() && (setColumns.contains(it.name) == false)) {
-                return@forEach;
-            }
+                if (findKey == "id") {
+                    return@forEach
+                }
 
-            if (unsetColumns.contains(it.name)) {
-                return@forEach
-            }
+                if (setColumns.any() && (setColumns.contains(findKey) == false)) {
+                    return@forEach;
+                }
 
-            var value = MyUtil.getPrivatePropertyValue(this.entity, it.name);
-            setData2.put(it.name, value)
+                if (unsetColumns.contains(findKey)) {
+                    return@forEach
+                }
+
+                setData2.put(findKey, value)
+            }
+        }
+        else {
+            this.entity::class.java.AllFields.forEach {
+                var findKey = it.name;
+
+                if (whereColumns.contains(findKey)) {
+                    var value = MyUtil.getPrivatePropertyValue(this.entity, findKey);
+                    whereData2.put(findKey, value)
+                    return@forEach
+                }
+
+                if (findKey == "id") {
+                    return@forEach
+                }
+
+                if (setColumns.any() && (setColumns.contains(findKey) == false)) {
+                    return@forEach;
+                }
+
+                if (unsetColumns.contains(findKey)) {
+                    return@forEach
+                }
+
+                var value = MyUtil.getPrivatePropertyValue(this.entity, findKey);
+                setData2.put(findKey, value)
+            }
         }
 
         var setKeys = this.whereData.map { it.toDocument().keys.toTypedArray() }.Unwind();
