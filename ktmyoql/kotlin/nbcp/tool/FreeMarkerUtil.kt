@@ -59,7 +59,7 @@ object FreemarkerUtil {
      * @throws IOException
      * @throws TemplateException
      */
-    private fun processTemplate(template: Template, params: JsonMap): String {
+    private fun processTemplate(template: Template, params: Map<String, Any?>): String {
         val result = StringWriter()
 
         var all_params = JsonMap()
@@ -72,26 +72,28 @@ object FreemarkerUtil {
         all_params.put("W", Freemarker_BigCamelCase())
         all_params.put("w", Freemarker_SmallCamelCase())
 
-        all_params.put("field_is_enum_list", Freemarker_Field_IsEnumList())
-        all_params.put("field_cn", Freemarker_Field_Cn())
-        all_params.put("field_is_list", Freemarker_IsList())
-        all_params.put("field_list_type", Freemarker_Field_ListType())
-
         all_params.put("is_res", Freemarker_IsRes())
         all_params.put("is_in", Freemarker_IsIn())
         all_params.put("is_object", Freemarker_IsObject())
         all_params.put("is_type", Freemarker_IsType())
 
+        all_params.put("field_is_enum_list", Freemarker_Field_IsEnumList())
+        all_params.put("field_cn", Freemarker_Field_Cn())
+        all_params.put("field_is_list", Freemarker_IsList())
+        all_params.put("field_list_type", Freemarker_Field_ListType())
 
         template.process(all_params, result)
         return result.toString()
     }
 
+    /**
+     * 按模板的内容执行
+     */
     fun processContent(
         content: String,
         params: JsonMap
     ): String {
-        val template: Template = Template("template", StringReader(content), freemarkerConfig, "utf-8")
+        val template = Template("template", StringReader(content), freemarkerConfig, "utf-8")
         usingScope(ContextMapScope(params)) {
             return escapeString(processTemplate(template, params))
         }
@@ -111,6 +113,7 @@ object FreemarkerUtil {
         params: JsonMap
     ): String {
         val template: Template = freemarkerConfig.getTemplate(templateName)
+
         usingScope(ContextMapScope(params)) {
             return escapeString(processTemplate(template, params))
         }

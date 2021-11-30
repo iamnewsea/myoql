@@ -4,7 +4,7 @@ import freemarker.template.TemplateMethodModelEx
 import nbcp.comm.*
 import nbcp.db.IdName
 import nbcp.db.sql.*
-import nbcp.tool.FreemarkerUtil
+import nbcp.tool.*
 import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
 import java.time.LocalDateTime
