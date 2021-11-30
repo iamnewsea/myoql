@@ -4,6 +4,7 @@ package nbcp.db.mongo
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.db
+import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
 import java.io.Serializable
 
@@ -74,8 +75,21 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
 
         var update = MongoUpdateClip(this.moerEntity)
 
-        if( this.entity is Map<*,*>){
-            val map = this.entity as Map<*, *>
+        if (this.entity is Map<*, *>) {
+            val map = this.entity as MutableMap<*, *>
+
+            RecursionUtil.recursionJson(map, { jsonValue ->
+                var idValue = jsonValue.get("id")
+                if (idValue != null) {
+
+                    if (idValue is String) {
+                        (jsonValue as MutableMap<String, Any?>).set("id", ObjectId(idValue.toString()));
+                    }
+                }
+
+                return@recursionJson true;
+            })
+
             map.keys.map { it.toString() }.forEach {
                 var findKey = it;
                 val value = map.get(it);
@@ -99,8 +113,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
 
                 setData2.put(findKey, value)
             }
-        }
-        else {
+        } else {
             this.entity::class.java.AllFields.forEach {
                 var findKey = it.name;
 
