@@ -152,13 +152,13 @@ open class LoginNamePasswordData(var loginName: String = "", var password: Strin
  */
 open class LoginUserModel @JvmOverloads constructor(
     var token: String = "",
-    var freshToken: String = "",
     var system: String = "",
     var isAdmin: Boolean = false,
     id: String = "",
     var loginName: String = "",
     name: String = "",
     var organization: IdName = IdName(),
+    var freshToken: String = "",
     var roles: List<String> = listOf(), //角色
     var groups: List<String> = listOf(),
     var depts: List<String> = listOf()
