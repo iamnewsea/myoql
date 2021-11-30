@@ -74,7 +74,9 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
                     if (idValue != null) {
 
                         if (idValue is String && ObjectId.isValid(idValue)) {
-                            (jsonValue as MutableMap<String, Any?>).set("id", ObjectId(idValue.toString()));
+                            var jsonMap = jsonValue as MutableMap<String, Any?>
+                            jsonMap.set("_id", ObjectId(idValue.toString()));
+                            jsonMap.remove("id");
                         }
                     }
 

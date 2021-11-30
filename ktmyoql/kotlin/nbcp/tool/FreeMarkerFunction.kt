@@ -15,14 +15,15 @@ fun _get_value_item(p1: Any?): Any {
     if (p1 == null) {
         throw RuntimeException("参数不能为空")
     }
+
     var paramValue: Any? = null
     if (p1 is StringModel) {
         paramValue = p1.wrappedObject;
     }
-
-    if (p1 is SimpleScalar) {
+    else if (p1 is SimpleScalar) {
         paramValue = p1.asString
     }
+
     if (paramValue == null) {
         throw RuntimeException("参数不能为null")
     }
