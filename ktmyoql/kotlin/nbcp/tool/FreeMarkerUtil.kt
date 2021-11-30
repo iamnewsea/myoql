@@ -29,26 +29,19 @@ object FreemarkerUtil {
     /**
      * freemarker config
      */
-    private val freemarkerConfig: Configuration
-        get() {
-            var ret = Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS)
+    private fun getFreemarkerConfig(): Configuration {
+        var ret = Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS)
 
-            ret.setClassForTemplateLoading(FreemarkerUtil::class.java, "/myoql-template")
-            ret.setTemplateLoader(
-                ClassTemplateLoader(
-                    FreemarkerUtil::class.java,
-                    "/myoql-template"
-                )
-            )
-            //freemarkerConfig.setDirectoryForTemplateLoading(new File(templatePath, "templates/code-generator"));
-            ret.setNumberFormat("#")
-            ret.setClassicCompatible(true)
-            ret.setDefaultEncoding("UTF-8")
-            ret.setLocale(Locale.CHINA)
-            ret.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER)
 
-            return ret;
-        }
+        //freemarkerConfig.setDirectoryForTemplateLoading(new File(templatePath, "templates/code-generator"));
+        ret.setNumberFormat("#")
+        ret.setClassicCompatible(true)
+        ret.setDefaultEncoding("UTF-8")
+        ret.setLocale(Locale.CHINA)
+        ret.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER)
+
+        return ret;
+    }
 
     /**
      * process Template Into String
@@ -92,9 +85,13 @@ object FreemarkerUtil {
      */
     fun processContent(
         content: String,
-        params: JsonMap
+        params: JsonMap,
+        configCallback: (Configuration) -> Unit
     ): String {
-        val template = Template("template", StringReader(content), freemarkerConfig, "utf-8")
+        val config = getFreemarkerConfig();
+        configCallback(config);
+        
+        val template = Template("template", StringReader(content), config, "utf-8")
         usingScope(ContextMapScope(params)) {
             return escapeString(processTemplate(template, params))
         }
@@ -111,9 +108,12 @@ object FreemarkerUtil {
      */
     fun process(
         templateName: String,
-        params: JsonMap
+        params: JsonMap,
+        configCallback: (Configuration) -> Unit
     ): String {
-        val template: Template = freemarkerConfig.getTemplate(templateName)
+        val config = getFreemarkerConfig();
+        configCallback(config);
+        val template: Template = config.getTemplate(templateName)
 
         usingScope(ContextMapScope(params)) {
             return escapeString(processTemplate(template, params))

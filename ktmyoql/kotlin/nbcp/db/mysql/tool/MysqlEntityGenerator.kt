@@ -1,5 +1,6 @@
 package nbcp.db.mysql.tool
 
+import freemarker.cache.ClassTemplateLoader
 import freemarker.template.TemplateMethodModelEx
 import nbcp.comm.*
 import nbcp.db.IdName
@@ -50,7 +51,15 @@ object MysqlEntityGenerator {
                         "entitys" to entitys
                     )
 
-                    var code = FreemarkerUtil.process("mysql_markdown.ftl", map);
+                    var code = FreemarkerUtil.process("mysql_markdown.ftl", map, { ret ->
+                        ret.setClassForTemplateLoading(FreemarkerUtil::class.java, "/myoql-template")
+                        ret.setTemplateLoader(
+                            ClassTemplateLoader(
+                                FreemarkerUtil::class.java,
+                                "/myoql-template"
+                            )
+                        )
+                    });
                     ret.add(IdName(group, code));
                 }
 
@@ -74,7 +83,15 @@ object MysqlEntityGenerator {
                         "entitys" to entitys
                     )
 
-                    var code = FreemarkerUtil.process("mysql_myoql_entity.ftl", map);
+                    var code = FreemarkerUtil.process("mysql_myoql_entity.ftl", map, { ret ->
+                        ret.setClassForTemplateLoading(FreemarkerUtil::class.java, "/myoql-template")
+                        ret.setTemplateLoader(
+                            ClassTemplateLoader(
+                                FreemarkerUtil::class.java,
+                                "/myoql-template"
+                            )
+                        )
+                    });
                     ret.add(IdName(group, code));
                 }
 

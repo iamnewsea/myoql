@@ -1,5 +1,6 @@
 package nbcp.tool
 
+import freemarker.cache.ClassTemplateLoader
 import nbcp.comm.*
 import nbcp.db.Cn
 import nbcp.db.IdUrl
@@ -61,13 +62,13 @@ object CodeGeneratorHelper {
     fun IsListType(field: Field, clazz: String): Boolean {
 //        var clazz = T::class.java;
         return (
-                field.type.IsCollectionType &&
-                        (field.genericType as ParameterizedType).GetActualClass(
-                            0
-                        ).IsType(clazz)
+            field.type.IsCollectionType &&
+                (field.genericType as ParameterizedType).GetActualClass(
+                    0
+                ).IsType(clazz)
 
-                ) ||
-                (field.type.isArray && field.type.componentType.javaClass.IsType(clazz))
+            ) ||
+            (field.type.isArray && field.type.componentType.javaClass.IsType(clazz))
 
     }
 
@@ -76,7 +77,7 @@ object CodeGeneratorHelper {
      */
     fun IsListEnum(field: Field): Boolean {
         return (field.type.IsCollectionType && (field.genericType as ParameterizedType).GetActualClass(0).isEnum) ||
-                (field.type.isArray && field.type.componentType.javaClass.isEnum)
+            (field.type.isArray && field.type.componentType.javaClass.isEnum)
     }
 
 
@@ -131,6 +132,14 @@ object CodeGeneratorHelper {
             "has_dustbin" to Freemarker_HasDustbin()
         )
 
-        return FreemarkerUtil.process(fileName, mapDefine)
+        return FreemarkerUtil.process(fileName, mapDefine, { ret ->
+            ret.setClassForTemplateLoading(FreemarkerUtil::class.java, "/myoql-template")
+            ret.setTemplateLoader(
+                ClassTemplateLoader(
+                    FreemarkerUtil::class.java,
+                    "/myoql-template"
+                )
+            )
+        })
     }
 }
