@@ -89,7 +89,7 @@ class ServerException @JvmOverloads constructor(msg: String = "") :
 
 open class SortQueryItemModel {
     var field: String = "";
-    var desc: Boolean = false
+    var asc: Boolean = false
 }
 
 open class ListQueryModel {

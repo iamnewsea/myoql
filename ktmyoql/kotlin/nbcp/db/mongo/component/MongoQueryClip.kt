@@ -26,17 +26,17 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Serializable>(var moerE
      * 升序
      */
     fun orderByAsc(sortFunc: (M) -> MongoColumnName): MongoQueryClip<M, E> {
-        return this.orderBy(false, sortFunc(this.moerEntity).toString())
+        return this.orderBy(true, sortFunc(this.moerEntity).toString())
     }
 
     /**
      * 降序
      */
     fun orderByDesc(sortFunc: (M) -> MongoColumnName): MongoQueryClip<M, E> {
-        return this.orderBy(true, sortFunc(this.moerEntity).toString())
+        return this.orderBy(false, sortFunc(this.moerEntity).toString())
     }
 
-    fun orderBy(desc: Boolean, field: String): MongoQueryClip<M, E> {
+    fun orderBy(asc: Boolean, field: String): MongoQueryClip<M, E> {
         var sortName = field
         if (sortName == "id") {
             sortName = "_id"
@@ -44,7 +44,7 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Serializable>(var moerE
             sortName = sortName.slice(0..sortName.length - 3) + "._id";
         }
 
-        this.sort.put(sortName, if (desc) -1 else 1)
+        this.sort.put(sortName, if (asc) 1 else -1)
         return this;
     }
 
