@@ -168,7 +168,7 @@ fun HttpServletRequest.getPostJson(): JsonMap {
             return bodyString.FromJsonWithDefaultValue();
         }
 
-        throw RuntimeException("非法的Json")
+        return JsonMap();
     } else if (contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
         //按 key进行分组，假设客户端是：
         // corp[id]=1&corp[name]=abc&role[id]=2&role[name]=def
@@ -195,7 +195,8 @@ fun HttpServletRequest.getPostJson(): JsonMap {
         }
     }
 
-    throw RuntimeException("不识别 content-type:${contentType}")
+//    throw RuntimeException("不识别 content-type:${contentType}")
+    return JsonMap();
 }
 
 
