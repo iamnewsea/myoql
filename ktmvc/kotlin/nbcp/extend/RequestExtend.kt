@@ -174,8 +174,8 @@ fun HttpServletRequest.getPostJson(): JsonMap {
         // corp[id]=1&corp[name]=abc&role[id]=2&role[name]=def
         //会分成两组 ret["corp"] = json1 , ret["role"] = json2;
         //目前只支持两级。不支持  corp[role][id]
+        val ret = JsonMap();
         if (this.parameterNames.hasMoreElements()) {
-            val ret = JsonMap();
             for (key in this.parameterNames) {
                 val value = this.getParameter(key);
                 val keyLastIndex = key.indexOf('[');
@@ -187,6 +187,8 @@ fun HttpServletRequest.getPostJson(): JsonMap {
                     setValue(ret, key, "", value);
                 }
             }
+
+            return ret;
         } else {
             val bodyString = (this.postBody ?: byteArrayOf()).toString(const.utf8).trim()
             return JsonMap.loadFromUrl(bodyString)
