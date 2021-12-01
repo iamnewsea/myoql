@@ -329,7 +329,7 @@ db.getCollection("adminRole").aggregate(
         RecursionUtil.recursionAny(value, { json ->
             if (json is MutableMap<*, *>) {
                 var m_json = (json as MutableMap<String, Any?>);
-                if (json.contains("id")) {
+                if (json.containsKey("id") && !json.containsKey("_id")) {
                     var idValue = json.get("id");
 
                     if (idValue is String && ObjectId.isValid(idValue)) {

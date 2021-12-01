@@ -78,20 +78,6 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
         if (this.entity is Map<*, *>) {
             val map = this.entity as MutableMap<*, *>
 
-            RecursionUtil.recursionJson(map, { jsonValue ->
-                var idValue = jsonValue.get("id")
-                if (idValue != null) {
-
-                    if (idValue is String && ObjectId.isValid(idValue)) {
-                        var jsonMap = jsonValue as MutableMap<String, Any?>
-                        jsonMap.set("_id", ObjectId(idValue.toString()));
-                        jsonMap.remove("id");
-                    }
-                }
-
-                return@recursionJson true;
-            })
-
             map.keys.map { it.toString() }.forEach {
                 var findKey = it;
                 val value = map.get(it);

@@ -65,26 +65,6 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName), IM
     fun exec(): Int {
         db.affectRowCount = -1;
 
-        this.entities.forEach {
-            if (it is Map<*, *>) {
-                var map = it as Map<String, Any?>
-
-                RecursionUtil.recursionJson(map, { jsonValue ->
-                    var idValue = jsonValue.get("id")
-                    if (idValue != null) {
-
-                        if (idValue is String && ObjectId.isValid(idValue)) {
-                            var jsonMap = jsonValue as MutableMap<String, Any?>
-                            jsonMap.set("_id", ObjectId(idValue.toString()));
-                            jsonMap.remove("id");
-                        }
-                    }
-
-                    return@recursionJson true;
-                })
-            }
-        }
-
         var settingResult = db.mongo.mongoEvents.onInserting(this)
         if (settingResult.any { it.second.result == false }) {
             return 0;

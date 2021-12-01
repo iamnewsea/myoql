@@ -24,10 +24,10 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
      */
     protected val arrayFilters: MutableList<CriteriaDefinition> = mutableListOf()
 
-    public val setData = LinkedHashMap<String, Any?>()
-    protected val unsetData = mutableListOf<String>()
-    protected val pushData = LinkedHashMap<String, Any>() //加
-    protected val pullData = LinkedHashMap<String, Any>() //删
+    val setData = LinkedHashMap<String, Any?>()
+    val unsetData = mutableListOf<String>()
+    val pushData = LinkedHashMap<String, Any>() //加
+    val pullData = LinkedHashMap<String, Any>() //删
     protected val incData = LinkedHashMap<String, Int>() //
 
 
@@ -72,24 +72,24 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
 
         var update = org.springframework.data.mongodb.core.query.Update();
 
-        for (kv in setData) {
-            var value = kv.value;
-            if (value != null) {
-                value = db.mongo.procSetDocumentData(kv.value!!)
-                update = update.set(kv.key, value);
-            } else {
-                update = update.unset(kv.key);
-            }
-        }
+//        for (kv in setData) {
+//            var value = kv.value;
+//            if (value != null) {
+//                value = db.mongo.procSetDocumentData(kv.value!!)
+//                update = update.set(kv.key, value);
+//            } else {
+//                update = update.unset(kv.key);
+//            }
+//        }
 
         for (it in unsetData) {
             update = update.unset(it);
         }
 
-        for (kv in pushData) {
-            var value = db.mongo.procSetDocumentData(kv.value)
-            update = update.push(kv.key, value);
-        }
+//        for (kv in pushData) {
+//            var value = db.mongo.procSetDocumentData(kv.value)
+//            update = update.push(kv.key, value);
+//        }
 
 
         for (kv in pullData) {

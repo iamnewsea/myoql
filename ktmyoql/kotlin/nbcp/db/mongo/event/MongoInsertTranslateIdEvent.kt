@@ -13,7 +13,7 @@ import java.time.LocalDateTime
  * 同步处理，插入的实体，添加 createAt 字段。
  */
 @Component
-class MongoInsertEvent : IMongoEntityInsert {
+class MongoInsertTranslateIdEvent : IMongoEntityInsert {
     override fun beforeInsert(insert: MongoBaseInsertClip): EventResult {
         insert.entities.forEach { entity ->
 //            db.fillCityName(entity);
@@ -25,11 +25,13 @@ class MongoInsertEvent : IMongoEntityInsert {
 
                 entity.createAt = LocalDateTime.now();
             } else if (entity is MutableMap<*, *>) {
+
                 var map = entity as MutableMap<String, Any?>
-                if (map.get("_id").AsString().isNullOrEmpty()) {
-                    map.set("_id", ObjectId().toString())
+                if (map.get("id").AsString().isNullOrEmpty()) {
+                    map.set("id", ObjectId().toString())
                 }
                 map.set("createAt", LocalDateTime.now())
+
             } else {
                 //反射两个属性 id,createAt
                 var entityClassFields = entity.javaClass.AllFields
@@ -49,6 +51,10 @@ class MongoInsertEvent : IMongoEntityInsert {
                     }
                 }
             }
+
+
+            //设置实体内的 _id
+            db.mongo.procSetDocumentData(entity);
         }
 
         return EventResult(true, null);
