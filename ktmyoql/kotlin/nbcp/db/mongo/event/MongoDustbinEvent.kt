@@ -44,7 +44,7 @@ class MongoDustbinEvent : IMongoEntityDelete {
         dustbin.data = list as Serializable?;
         db.mor_base.sysDustbin.doInsert(dustbin)
 
-        val list_ids = list.map { it.getString("_id").AsString() }
+        val list_ids = list.map { it.get("_id").AsString() }
 
         logger.info("${delete.collectionName}.${list_ids.joinToString(",")} 进了垃圾桶")
     }
