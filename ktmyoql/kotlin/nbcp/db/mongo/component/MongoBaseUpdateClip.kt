@@ -72,24 +72,23 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
 
         var update = org.springframework.data.mongodb.core.query.Update();
 
-//        for (kv in setData) {
-//            var value = kv.value;
-//            if (value != null) {
-//                value = db.mongo.procSetDocumentData(kv.value!!)
-//                update = update.set(kv.key, value);
-//            } else {
-//                update = update.unset(kv.key);
-//            }
-//        }
+        for (kv in setData) {
+            var value = kv.value;
+            if (value != null) {
+                update = update.set(kv.key, value);
+            } else {
+                update = update.unset(kv.key);
+            }
+        }
 
         for (it in unsetData) {
             update = update.unset(it);
         }
 
-//        for (kv in pushData) {
-//            var value = db.mongo.procSetDocumentData(kv.value)
-//            update = update.push(kv.key, value);
-//        }
+        for (kv in pushData) {
+            var value = kv.value
+            update = update.push(kv.key, value);
+        }
 
 
         for (kv in pullData) {
@@ -114,6 +113,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
 
         //如果没有要更新的列.
         if (update.updateObject.keys.size == 0) {
+            logger.warn("没有要更新的列，忽略更新!")
             return 0;
         }
 
@@ -137,7 +137,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         var query = Query.query(criteria)
         var result: UpdateResult? = null;
         try {
-            this.script = getUpdateScript(criteria,update)
+            this.script = getUpdateScript(criteria, update)
             result = mongoTemplate.updateMulti(
                 query,
                 update,
@@ -180,8 +180,10 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         return ret;
     }
 
-    private fun getUpdateScript(where: Criteria,
-                                update: org.springframework.data.mongodb.core.query.Update): String {
+    private fun getUpdateScript(
+        where: Criteria,
+        update: org.springframework.data.mongodb.core.query.Update
+    ): String {
         var msgs = mutableListOf<String>()
         msgs.add("[update] " + this.collectionName);
         msgs.add("[where] " + where.criteriaObject.ToJson())
