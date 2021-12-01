@@ -67,6 +67,16 @@ class Freemarker_Field_Cn : TemplateMethodModelEx {
     }
 }
 
+class Freemarker_Field_Value : TemplateMethodModelEx {
+    override fun exec(p0: MutableList<Any?>): Any {
+        var paramObj = _get_value_item(p0[0]);
+        var paramName = _get_value_item(p0[1]).AsString();
+
+
+        return MyUtil.getPrivatePropertyValue(paramObj, paramName) ?: ""
+    }
+}
+
 class Freemarker_KebabCase : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
         var paramValue = _get_value_item(p0[0]);
@@ -145,10 +155,10 @@ class Freemarker_IsRes : TemplateMethodModelEx {
         var paramValue = _get_value_item(p0[0]);
         if (paramValue is Field) {
             return paramValue.type.isEnum ||
-                paramValue.type == Boolean::class.java
+                    paramValue.type == Boolean::class.java
         } else if (paramValue is Class<*>) {
             return paramValue.isEnum ||
-                paramValue == Boolean::class.java
+                    paramValue == Boolean::class.java
         }
         throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
     }
