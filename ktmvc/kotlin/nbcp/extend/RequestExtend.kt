@@ -193,7 +193,7 @@ fun HttpServletRequest.getPostJson(): JsonMap {
         }
     }
 
-    throw RuntimeException("不识别 content-type")
+    throw RuntimeException("不识别 content-type:${contentType}")
 }
 
 
