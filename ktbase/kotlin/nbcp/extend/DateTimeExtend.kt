@@ -119,8 +119,9 @@ fun Duration.toSummary(): String {
     if (minutes > 0) {
         ret.add("${minutes}分钟")
     }
-    if (seconds > 0) {
-        ret.add("${seconds}秒")
+    var ms = this.nano / 1_000_000
+    if (seconds > 0 || ms > 0) {
+        ret.add("${seconds}.${ms}秒")
     }
     return ret.joinToString("");
 }

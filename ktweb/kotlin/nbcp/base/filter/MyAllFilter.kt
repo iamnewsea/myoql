@@ -258,7 +258,7 @@ open class MyAllFilter : Filter {
             }
 
 
-            msgs.add("[response] ${response.status} ${endAt - startAt}")
+            msgs.add("[response] ${response.status} ${(endAt - startAt).toSummary()}")
 
             for (h in response.headerNames) {
                 msgs.add("\t${h}:${response.getHeader(h)}")
