@@ -64,17 +64,15 @@ open class MyAllFilter : Filter {
         var httpResponse = response as HttpServletResponse
 
         var request_id = httpRequest.tokenValue;
-
         MDC.put("request_id", request_id)
-
         var logLevel = getLogLevel(httpRequest);
 
         if (logLevel != null) {
             usingScope(logLevel) {
-                next(httpRequest, httpResponse, chain);
+                procFilter(httpRequest, httpResponse, chain);
             }
         } else {
-            next(httpRequest, httpResponse, chain);
+            procFilter(httpRequest, httpResponse, chain);
         }
     }
 
@@ -120,129 +118,20 @@ open class MyAllFilter : Filter {
         return logLevel.levelInt.ToEnum<LogLevelScope>()
     }
 
-    fun next(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain?) {
-
-        if (request.method == "GET") {
-            //JSONP
-            proc_get(request, response, chain);
-            return;
-        }
-
-
-        //如果是上传
-        //        if (request.contentLength > 10485760) {
-        //            chain?.doFilter(request, myResponse);
-        //            return;
-        //        }
-
-
-        procFilter(request, response, chain)
-    }
-
-    private fun proc_get(_request: HttpServletRequest, _response: HttpServletResponse, chain: FilterChain?) {
-        var startAt = LocalDateTime.now()
-
-
-        var queryMap = _request.queryJson
-
-        //JSONP
-        if (queryMap.containsKey("callback")) {
-            var request = getRequestWrapper(_request);
-            var response = getResponseWrapper(_response)
-
-            response.characterEncoding = "utf-8";
-
-            setLang(request);
-
-            RequestContextHolder.setRequestAttributes(ServletRequestAttributes(request, response))
-            beforeRequest(request);
-            try {
-                HttpContext.init(request, response);
-                chain?.doFilter(request, response);
-            } catch (e: Exception) {
-                logger.Error {
-                    var msgs = mutableListOf<String>()
-                    msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
-                    msgs.add(e.message ?: "服务器错误");
-                    msgs.add("<----]]")
-
-                    return@Error msgs.joinToString(const.line_break)
-                }
-
-                if (request.findParameterStringValue("-iniframe-").AsBoolean()) {
-                    response.parentAlert(e.message ?: "服务器错误")
-                } else {
-                    response.WriteTextValue(e.message ?: "服务器错误")
-                }
-                return;
-            }
-            afterComplete(request, response, queryMap.getStringValue("callback").AsString(), startAt, "");
-        } else {
-            //保持原始对象。
-            var request = _request;
-            var response = _response;
-
-            try {
-                HttpContext.init(request, response);
-                chain?.doFilter(request, response)
-            } catch (e: Exception) {
-                logger.Error {
-                    var msgs = mutableListOf<String>()
-                    msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
-                    msgs.add(e.message ?: "服务器错误");
-                    msgs.add("<----]]")
-                    return@Error msgs.joinToString(const.line_break)
-                }
-                if (request.findParameterStringValue("-iniframe-").AsBoolean()) {
-                    response.parentAlert(e.message ?: "服务器错误")
-                } else {
-                    response.WriteTextValue(e.message ?: "服务器错误")
-                }
-                return;
-            }
-        }
-
-
-        var endAt = LocalDateTime.now()
-
-        logger.Info {
-            var request = _request;
-            var response = _response;
-
-            var msgs = mutableListOf<String>()
-            msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
-            msgs.add("[response] ${response.status} ${endAt - startAt}")
-
-
-            for (h in response.headerNames) {
-                var key = h;
-                var headerValues = response.getHeaders(h);
-                if (headerValues.size > 1) {
-                    key = "[${key}]"
-                }
-
-                msgs.add("\t${key}:${headerValues.joinToString(",")}")
-            }
-
-            msgs.add("<----]]")
-            return@Info msgs.joinToString(const.line_break)
-        }
-
-    }
-
 
     private fun procFilter(
         _request: HttpServletRequest,
         _response: HttpServletResponse,
         chain: FilterChain?
     ) {
-        var request = MyAllFilter.getRequestWrapper(_request);
-        var response = MyAllFilter.getResponseWrapper(_response);
-        request.characterEncoding = "utf-8";
+        var request = getRequestWrapper(_request);
+        var response = getResponseWrapper(_response);
 
+        request.characterEncoding = "utf-8";
         var startAt = LocalDateTime.now()
 
         RequestContextHolder.setRequestAttributes(ServletRequestAttributes(request, response))
+        HttpContext.init(request, response);
 
         beforeRequest(request)
 
@@ -251,26 +140,26 @@ open class MyAllFilter : Filter {
         var errorMsg = ""
 
         try {
-
-            HttpContext.init(request, response);
             chain?.doFilter(request, response);
         } catch (e: Exception) {
-            logger.Error {
-                var err = getInnerException(e);
-                errorMsg = err.Detail.AsString(err.message.AsString()).AsString("(未知错误)")
-                var errorInfo = mutableListOf<String>()
-                errorInfo.add(err::class.java.simpleName + ": " + errorMsg)
-                errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }
-                    .take(24))
+            var err = getInnerException(e);
+            var errorInfo = mutableListOf<String>()
+            errorInfo.add(
+                err::class.java.simpleName + ": " + err.Detail.AsString(err.message.AsString()).AsString("(未知错误)")
+            )
 
-                return@Error errorInfo.joinToString(const.line_break)
-            }
+            errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }
+                .take(24))
 
-            errorMsg = JsonMap("msg" to errorMsg).ToJson()
+            errorMsg = errorInfo.joinToString(const.line_break)
             response.status = 500;
+        } finally {
+            var callback = "";
+            if (request.method == "GET") {
+                callback = request.queryJson.getStringValue("callback").AsString();
+            }
+            afterComplete(request, response, callback, startAt, errorMsg);
         }
-
-        afterComplete(request, response, "", startAt, errorMsg);
     }
 
     private fun getInnerException(e: Throwable): Throwable {
@@ -307,24 +196,7 @@ open class MyAllFilter : Filter {
     private fun beforeRequest(request: ContentCachingRequestWrapper) {
         logger.Info {
             var msgs = mutableListOf<String>()
-            msgs.add("[[----> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
-
-            if (request.headerNames.hasMoreElements()) {
-                msgs.add("[request header]:")
-            }
-
-            for (h in request.headerNames) {
-                msgs.add("\t${h}: ${request.getHeader(h)}")
-            }
-
-
-            var htmlString = (request.postBody ?: byteArrayOf()).toString(const.utf8)
-            if (htmlString.HasValue) {
-                msgs.add("[request body]:")
-                msgs.add("\t" + htmlString)
-            }
-
-
+            msgs.add("--> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
             return@Info msgs.joinToString(const.line_break)
         }
     }
@@ -337,9 +209,9 @@ open class MyAllFilter : Filter {
         startAt: LocalDateTime,
         errorMsg: String
     ) {
-        var error = errorMsg.HasValue;
+        var hasError = errorMsg.HasValue;
         var resStringValue = errorMsg;
-        if (error) {
+        if (hasError) {
             response.contentType = "application/json;charset=UTF-8"
             val content = resStringValue.toByteArray(const.utf8);
 
@@ -367,33 +239,49 @@ open class MyAllFilter : Filter {
             }
         }
 
-
         //写入到输出流
         response.copyBodyToResponse()
 
         val endAt = LocalDateTime.now();
-        logger.Info {
-            val msg = mutableListOf<String>()
-            msg.add("[response] ${request.requestURI} ${response.status} ${endAt - startAt}")
+        logger.InfoError(hasError) {
+            var msgs = mutableListOf<String>()
+            msgs.add("[--> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
+
+            if (request.headerNames.hasMoreElements()) {
+                msgs.add("[request header]:")
+            }
+
+            for (h in request.headerNames) {
+                msgs.add("\t${h}: ${request.getHeader(h)}")
+            }
+
+            var htmlString = (request.postBody ?: byteArrayOf()).toString(const.utf8)
+            if (htmlString.HasValue) {
+                msgs.add("[request body]:")
+                msgs.add("\t" + htmlString)
+            }
+
+
+            msgs.add("[response] ${response.status} ${endAt - startAt}")
 
             for (h in response.headerNames) {
-                msg.add("\t${h}:${response.getHeader(h)}")
+                msgs.add("\t${h}:${response.getHeader(h)}")
             }
 
             if (resStringValue.HasValue) {
-                msg.add("[response body]:")
+                msgs.add("[response body]:")
                 val logResLength = request.queryJson.get("-log-res-length-").AsInt(1024);
                 var subLen = logResLength / 2;
 
                 if (resStringValue.length > logResLength) {
-                    msg.add("\t" + resStringValue.substring(0, subLen) + "\n〘…〙\n" + resStringValue.Slice(-subLen))
+                    msgs.add("\t" + resStringValue.substring(0, subLen) + "\n〘…〙\n" + resStringValue.Slice(-subLen))
                 } else {
-                    msg.add("\t" + resStringValue)
+                    msgs.add("\t" + resStringValue)
                 }
             }
 
-            msg.add("<----]]")
-            return@Info msg.joinToString(const.line_break)
+            msgs.add("<--]")
+            return@InfoError msgs.joinToString(const.line_break)
         }
     }
 }
