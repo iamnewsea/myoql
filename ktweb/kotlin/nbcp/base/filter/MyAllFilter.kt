@@ -198,7 +198,7 @@ open class MyAllFilter : Filter {
     }
 
     private fun beforeRequest(request: ContentCachingRequestWrapper) {
-        logger.Important("--> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
+        logger.Important("[--> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
     }
 
 
@@ -245,7 +245,7 @@ open class MyAllFilter : Filter {
         val endAt = LocalDateTime.now();
         logger.InfoError(hasError) {
             var msgs = mutableListOf<String>()
-            msgs.add("[--> ${request.tokenValue} ${request.ClientIp} [${request.method}] ${request.fullUrl}")
+            msgs.add("--> ${request.tokenValue} ${request.ClientIp} [${request.method}] ${request.fullUrl}")
 
             for (h in request.headerNames) {
                 msgs.add("\t${h}: ${request.getHeader(h)}")
