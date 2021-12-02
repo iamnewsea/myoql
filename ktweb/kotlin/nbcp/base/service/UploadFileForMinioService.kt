@@ -49,36 +49,42 @@ class UploadFileForMinioService : InitializingBean {
         lateinit var minioClient: MinioClient
         try {
             minioClient =
-                    MinioClient.builder().endpoint(MINIO_ENDPOINT).credentials(MINIO_ACCESSKEY, MINIO_SECRETKEY).build()
+                MinioClient.builder().endpoint(MINIO_ENDPOINT).credentials(MINIO_ACCESSKEY, MINIO_SECRETKEY).build()
         } catch (e: Exception) {
-            logger.error(e.message + " . endpoint: ${MINIO_ENDPOINT}")
+            logger.error(e.message + " . 连接错误 endpoint: ${MINIO_ENDPOINT}")
+            throw e;
+        }
+
+        var exists = try {
+            minioClient.bucketExists(
+                BucketExistsArgs
+                    .builder()
+                    .bucket(group)
+                    .apply {
+                        if (MINIO_REGION.HasValue) {
+                            this.region(MINIO_REGION)
+                        }
+                    }
+                    .build()
+            )
+        } catch (e: Exception) {
+            logger.error(e.message + ". 可能连接错误导致获取桶出错!")
             throw e;
         }
 
         // bucket 不存在，创建
-        if (!minioClient.bucketExists(
-                        BucketExistsArgs
-                                .builder()
-                                .bucket(group)
-                                .apply {
-                                    if (MINIO_REGION.HasValue) {
-                                        this.region(MINIO_REGION)
-                                    }
-                                }
-                                .build()
-                )
-        ) {
+        if (!exists) {
 
             minioClient.makeBucket(
-                    MakeBucketArgs
-                            .builder()
-                            .bucket(group)
-                            .apply {
-                                if (MINIO_REGION.HasValue) {
-                                    this.region(MINIO_REGION)
-                                }
-                            }
-                            .build()
+                MakeBucketArgs
+                    .builder()
+                    .bucket(group)
+                    .apply {
+                        if (MINIO_REGION.HasValue) {
+                            this.region(MINIO_REGION)
+                        }
+                    }
+                    .build()
             )
         }
 
@@ -91,16 +97,16 @@ class UploadFileForMinioService : InitializingBean {
         return fileStream.use {
             val size = it.available().toLong();
             val response = minioClient.putObject(
-                    PutObjectArgs.builder()
-                            .bucket(group).contentType(contentType)
-                            .stream(it, size, -1)
-                            .`object`(fileName)
-                            .apply {
-                                if (MINIO_REGION.HasValue) {
-                                    this.region(MINIO_REGION)
-                                }
-                            }
-                            .build()
+                PutObjectArgs.builder()
+                    .bucket(group).contentType(contentType)
+                    .stream(it, size, -1)
+                    .`object`(fileName)
+                    .apply {
+                        if (MINIO_REGION.HasValue) {
+                            this.region(MINIO_REGION)
+                        }
+                    }
+                    .build()
             )
 
 
