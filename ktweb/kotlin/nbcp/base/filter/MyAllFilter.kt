@@ -9,6 +9,7 @@ import nbcp.web.*
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.logging.LogLevel
 import org.springframework.stereotype.Component
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
@@ -60,20 +61,35 @@ open class MyAllFilter : Filter {
     }
 
     override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
-        var httpRequest = request as HttpServletRequest
-        var httpResponse = response as HttpServletResponse
+        var request = getRequestWrapper(request as HttpServletRequest);
+        var response = getResponseWrapper(response as HttpServletResponse);
 
-        var request_id = httpRequest.tokenValue;
+        request.characterEncoding = "utf-8";
+
+        RequestContextHolder.setRequestAttributes(ServletRequestAttributes(request, response))
+        HttpContext.init(request, response);
+
+        //set lang
+        setLang(request)
+
+
+        var request_id = request.tokenValue;
         MDC.put("request_id", request_id)
-        var logLevel = getLogLevel(httpRequest);
+        var logLevel = getLogLevel(request);
 
         if (logLevel != null) {
-            usingScope(logLevel) {
-                procFilter(httpRequest, httpResponse, chain);
+            if (logLevel == LogLevelScope.off) {
+                chain?.doFilter(request, response)
+                return;
             }
-        } else {
-            procFilter(httpRequest, httpResponse, chain);
+
+            usingScope(logLevel) {
+                procFilter(request, response, chain);
+            }
+            return;
         }
+
+        procFilter(request, response, chain);
     }
 
     private fun getLogLevel(httpRequest: HttpServletRequest): LogLevelScope? {
@@ -120,25 +136,13 @@ open class MyAllFilter : Filter {
 
 
     private fun procFilter(
-        _request: HttpServletRequest,
-        _response: HttpServletResponse,
+        request: MyHttpRequestWrapper,
+        response: ContentCachingResponseWrapper,
         chain: FilterChain?
     ) {
-        var request = getRequestWrapper(_request);
-        var response = getResponseWrapper(_response);
-
-        request.characterEncoding = "utf-8";
         var startAt = LocalDateTime.now()
-
-        RequestContextHolder.setRequestAttributes(ServletRequestAttributes(request, response))
-        HttpContext.init(request, response);
-
         beforeRequest(request)
-
-        //set lang
-        setLang(request);
         var errorMsg = ""
-
         try {
             chain?.doFilter(request, response);
         } catch (e: Exception) {
@@ -155,9 +159,9 @@ open class MyAllFilter : Filter {
             response.status = 500;
         } finally {
             var callback = "";
-            if (request.method == "GET") {
-                callback = request.queryJson.getStringValue("callback").AsString();
-            }
+//            if (request.method == "GET") {
+//                callback = request.queryJson.getStringValue("callback").AsString();
+//            }
             afterComplete(request, response, callback, startAt, errorMsg);
         }
     }
@@ -194,11 +198,7 @@ open class MyAllFilter : Filter {
     }
 
     private fun beforeRequest(request: ContentCachingRequestWrapper) {
-        logger.Info {
-            var msgs = mutableListOf<String>()
-            msgs.add("--> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
-            return@Info msgs.joinToString(const.line_break)
-        }
+        logger.Important("--> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
     }
 
 
@@ -245,11 +245,7 @@ open class MyAllFilter : Filter {
         val endAt = LocalDateTime.now();
         logger.InfoError(hasError) {
             var msgs = mutableListOf<String>()
-            msgs.add("[--> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
-
-            if (request.headerNames.hasMoreElements()) {
-                msgs.add("[request header]:")
-            }
+            msgs.add("[--> ${request.tokenValue} ${request.ClientIp} [${request.method}] ${request.fullUrl}")
 
             for (h in request.headerNames) {
                 msgs.add("\t${h}: ${request.getHeader(h)}")
