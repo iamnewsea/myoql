@@ -51,6 +51,10 @@ class MyMvcInitConfig : BeanPostProcessor {
             if (bean.maxFileSize < DataSize.of(2, DataUnit.MEGABYTES)) {
                 bean.maxFileSize = DataSize.of(100, DataUnit.MEGABYTES)
             }
+
+            if (bean.maxRequestSize < DataSize.of(2, DataUnit.MEGABYTES)) {
+                bean.maxRequestSize = DataSize.of(100, DataUnit.MEGABYTES)
+            }
         }
 
         return super.postProcessBeforeInitialization(bean, beanName)
