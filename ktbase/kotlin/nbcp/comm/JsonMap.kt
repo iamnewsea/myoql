@@ -3,6 +3,7 @@ package nbcp.comm
 import org.slf4j.LoggerFactory
 import nbcp.utils.*
 import java.lang.RuntimeException
+import java.util.ArrayList
 
 open class JsonMap : StringKeyMap<Any?> {
     companion object {
@@ -71,8 +72,8 @@ open class JsonMap : StringKeyMap<Any?> {
 
                 var v_list = mutableListOf<String>()
                 var dbValue = ret[key];
-                if (dbValue is MutableList<*>) {
-                    v_list = dbValue as MutableList<String>;
+                if (dbValue is ArrayList<*>) {
+                    v_list = dbValue as ArrayList<String>;
                 } else {
                     if (dbValue != null) {
                         v_list.add(dbValue.AsString())

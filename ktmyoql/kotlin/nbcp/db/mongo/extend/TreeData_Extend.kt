@@ -58,7 +58,7 @@ fun <M : MongoBaseMetaCollection<T>, T> M.findTree(callback: ((ITreeData<*>) -> 
 
         RecursionUtil.execute<ITreeData<*>>(
             mutableListOf(current),
-            { it.children() as MutableList<ITreeData<*>> },
+            { it.children() as ArrayList<ITreeData<*>> },
             { wbs, _ ->
                 var item = wbs.last()
                 if (callback(item)) {
@@ -89,7 +89,7 @@ fun <M : MongoBaseMetaCollection<T>, T> M.deleteTreeNodeById(id: String): ApiRes
         return ApiResult();
     }
 
-    (parent!!.children() as MutableList<ITreeData<*>>).removeIf { it.id == id }
+    (parent!!.children() as ArrayList<ITreeData<*>>).removeIf { it.id == id }
 
     this.updateWithEntity(root as T).execUpdate();
     return ApiResult();
@@ -148,7 +148,7 @@ private fun <M : MongoBaseMetaCollection<T>, T> M.addTreeToTree(
     var root = targetTreeResult.root;
     var targetNode = targetTreeResult.current;
 
-    (targetNode.children() as MutableList<ITreeData<*>>).add(saveEntity);
+    (targetNode.children() as ArrayList<ITreeData<*>>).add(saveEntity);
 
     this.updateWithEntity(root as T).execUpdate();
     return ApiResult.of(root.id)

@@ -65,7 +65,7 @@ fun <M : MongoBaseMetaCollection<E>, E : Serializable> M.swap(fieldName: String,
         return JsonResult.error("找不到数据信息")
     }
 
-    var images = imagesData as MutableList<*>;
+    var images = imagesData as ArrayList<*>;
 
 
     if (index1 >= images.size && index2 >= images.size) {

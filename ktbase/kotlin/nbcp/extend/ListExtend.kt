@@ -3,6 +3,8 @@
 
 package nbcp.comm
 
+import java.util.ArrayList
+
 
 fun MutableList<*>.RemoveRange(startIndex: Int, endIndex: Int) {
     var startIndexValue = startIndex
@@ -137,7 +139,7 @@ fun Collection<*>.EqualArrayContent(other: Collection<*>, withIndex: Boolean = f
     return one.intersect(two).size == this.size;
 }
 
-inline fun <T> Collection<T>.Skip(skipNumber: Int): List<T> {
+inline fun <T> Iterable<T>.Skip(skipNumber: Int): List<T> {
     var ret = mutableListOf<T>();
     if (this.any() == false) return ret;
 
@@ -289,7 +291,7 @@ inline fun <reified T> Collection<T>.SplitGroup(operatorItem: (T) -> Boolean): L
 
     var prevIndex = 0;
     var index = -1;
-    var subSect:List<T>;
+    var subSect: List<T>;
 
     while (true) {
         index++;
@@ -345,4 +347,31 @@ fun <T> MutableList<T>.ModifyListMoveToFirst(itemCallback: (T) -> Boolean): List
     }
 
     return this;
+}
+
+/**
+ *
+ */
+fun Collection<*>.getObject(index: Int): Any? {
+    return this.elementAt<Any?>(index)
+}
+
+fun List<*>.getListObject(): List<Any?> {
+    return this as List<Any?>
+}
+
+fun Array<*>.getListObject(): Array<Any?> {
+    return this as Array<Any?>
+}
+
+fun List<Any?>.resetListItemType(clazz: Class<*>) {
+    var list = this as java.util.ArrayList<Any?>
+    for (i in list.indices) {
+        val itemValue = list.getObject(i)
+        if (itemValue == null) {
+            continue;
+        }
+
+        list.set(i, itemValue.ConvertType(clazz))
+    }
 }

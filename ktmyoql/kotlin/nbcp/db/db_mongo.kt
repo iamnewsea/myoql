@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.query.Criteria
 import java.io.Serializable
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.ArrayList
 
 /**
  * 请使用 db.mongo
@@ -389,11 +390,12 @@ db.getCollection("adminRole").aggregate(
             }
             return@recursionAny true
         }, { list ->
-            list.forEachIndexed { index, it ->
+            var arrayList = list as ArrayList<Any?>
+            arrayList.forEachIndexed { index, it ->
                 if (it == null || !testDocumentString(it)) {
                     return@forEachIndexed
                 }
-                (list as MutableList<Any>)[index] = procDocumentString(it.toString());
+                arrayList[index] = procDocumentString(it.toString());
             }
 
             return@recursionAny true
