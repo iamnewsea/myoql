@@ -30,15 +30,6 @@ enum class RecursionReturnEnum private constructor(val value: Int) {
 object RecursionUtil {
 
     fun <T> filter(
-        container: MutableList<out T>,
-        producer: (T) -> ArrayList<out T>,
-        idCallback: (T) -> String,
-        callback: (Set<T>, Int) -> Boolean
-    ) {
-        return filter(container as ArrayList<out T>, producer, idCallback, callback)
-    }
-
-    fun <T> filter(
         container: ArrayList<out T>,
         producer: (T) -> ArrayList<out T>,
         idCallback: (T) -> String,
@@ -111,10 +102,10 @@ object RecursionUtil {
 
     fun <T> execute(
         container: MutableList<out T>,
-        producer: (T) -> ArrayList<out T>,
+        producer: (T) -> MutableList<out T>,
         consumer: (Set<T>, Int) -> RecursionReturnEnum
     ): Int {
-        return _execute(container as ArrayList<out T>, producer, consumer);
+        return _execute(container as ArrayList<out T>, { producer.invoke(it) as ArrayList<out T> }, consumer);
     }
 
     private fun <T> _execute(
