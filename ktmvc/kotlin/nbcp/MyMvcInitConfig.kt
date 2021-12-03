@@ -12,6 +12,7 @@ import nbcp.utils.SpringUtil
 import nbcp.web.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
+import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.boot.context.event.ApplicationStartingEvent
 import org.springframework.context.ApplicationContext
@@ -24,6 +25,8 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter
 import org.springframework.scheduling.annotation.SchedulingConfiguration
 import org.springframework.stereotype.Component
+import org.springframework.util.unit.DataSize
+import org.springframework.util.unit.DataUnit
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
@@ -41,6 +44,13 @@ class MyMvcInitConfig : BeanPostProcessor {
             inited = true;
 
             init_app();
+        }
+
+        //如果小于2Mb，直接设置为100Mb
+        if (bean is MultipartProperties) {
+            if (bean.maxFileSize < DataSize.of(2, DataUnit.MEGABYTES)) {
+                bean.maxFileSize = DataSize.of(100, DataUnit.MEGABYTES)
+            }
         }
 
         return super.postProcessBeforeInitialization(bean, beanName)
