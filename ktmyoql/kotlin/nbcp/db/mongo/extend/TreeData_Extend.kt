@@ -57,7 +57,7 @@ fun <M : MongoBaseMetaCollection<T>, T> M.findTree(callback: ((ITreeData<*>) -> 
         var current = reader.next();
 
         RecursionUtil.execute<ITreeData<*>>(
-            mutableListOf(current),
+            mutableListOf(current) as java.util.ArrayList<ITreeData<*>>,
             { it.children() as ArrayList<ITreeData<*>> },
             { wbs, _ ->
                 var item = wbs.last()
