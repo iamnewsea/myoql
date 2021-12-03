@@ -38,8 +38,8 @@ class TreeResultData() : LinkedHashSet<ITreeData<*>>() {
  * 在数据库中遍历查找树节点。返回所在树中的 根，父，本身。
  */
 fun <M : MongoBaseMetaCollection<T>, T> M.findTreeById(id: String): TreeResultData
-        where T : Serializable,
-              T : ITreeData<*> {
+    where T : Serializable,
+          T : ITreeData<*> {
     return this.findTree { it.id == id };
 }
 
@@ -47,8 +47,8 @@ fun <M : MongoBaseMetaCollection<T>, T> M.findTreeById(id: String): TreeResultDa
  * 在数据库中遍历查找树节点。返回所在树中的 根，父，本身。
  */
 fun <M : MongoBaseMetaCollection<T>, T> M.findTree(callback: ((ITreeData<*>) -> Boolean)): TreeResultData
-        where T : Serializable,
-              T : ITreeData<*> {
+    where T : Serializable,
+          T : ITreeData<*> {
     var reader = BatchReader.init(5, { skip, take ->
         this.query().limit(skip, take).toList()
     });
@@ -57,7 +57,7 @@ fun <M : MongoBaseMetaCollection<T>, T> M.findTree(callback: ((ITreeData<*>) -> 
         var current = reader.next();
 
         RecursionUtil.execute<ITreeData<*>>(
-            mutableListOf(current) as java.util.ArrayList<ITreeData<*>>,
+            mutableListOf(current),
             { it.children() as ArrayList<ITreeData<*>> },
             { wbs, _ ->
                 var item = wbs.last()
@@ -75,8 +75,8 @@ fun <M : MongoBaseMetaCollection<T>, T> M.findTree(callback: ((ITreeData<*>) -> 
  * 删除树节点，可能删除的是根节点，也可能删除的是子级节点
  */
 fun <M : MongoBaseMetaCollection<T>, T> M.deleteTreeNodeById(id: String): ApiResult<String>
-        where T : Serializable,
-              T : ITreeData<*> {
+    where T : Serializable,
+          T : ITreeData<*> {
     var result = this.findTreeById(id)
 //    if (result == null) return ApiResult.error("找不到数据")
     var root = result.root;
@@ -106,8 +106,8 @@ fun <M : MongoBaseMetaCollection<T>, T> M.saveTreeToParent(
     pid: String,
     saveEntity: T
 ): ApiResult<String>
-        where T : Serializable,
-              T : ITreeData<*> {
+    where T : Serializable,
+          T : ITreeData<*> {
 
     if (saveEntity.id.HasValue) {
         this.deleteTreeNodeById(saveEntity.id).apply {
@@ -123,8 +123,8 @@ private fun <M : MongoBaseMetaCollection<T>, T> M.addTreeToTree(
     pid: String,
     saveEntity: T
 ): ApiResult<String>
-        where T : Serializable,
-              T : ITreeData<*> {
+    where T : Serializable,
+          T : ITreeData<*> {
 
     if (saveEntity.id.isEmpty()) {
         saveEntity.id = ObjectId().toString();
