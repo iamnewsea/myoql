@@ -3,8 +3,6 @@
 
 package nbcp.comm
 
-import java.util.ArrayList
-
 
 fun MutableList<*>.RemoveRange(startIndex: Int, endIndex: Int) {
     var startIndexValue = startIndex
@@ -365,7 +363,7 @@ fun Array<*>.getListObject(): Array<Any?> {
 }
 
 fun List<Any?>.resetListItemType(clazz: Class<*>) {
-    var list = this as java.util.ArrayList<Any?>
+    var list = this as ArrayList<Any?>
     for (i in list.indices) {
         val itemValue = list.getObject(i)
         if (itemValue == null) {

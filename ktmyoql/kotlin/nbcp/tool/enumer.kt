@@ -3,10 +3,6 @@ package nbcp.tool
 import nbcp.comm.*
 import nbcp.utils.ClassUtil
 import nbcp.utils.MyUtil
-import java.io.File
-import java.lang.RuntimeException
-import java.lang.reflect.Field
-import java.util.ArrayList
 
 /**
  * 枚举Js的生成器

@@ -1,11 +1,8 @@
 package nbcp.comm
 
-import org.slf4j.LoggerFactory
 import nbcp.comm.*
 import java.io.Serializable
 import java.lang.RuntimeException
-import java.lang.reflect.ParameterizedType
-import java.util.ArrayList
 
 
 /**

@@ -1,7 +1,6 @@
 package nbcp.utils
 
 import nbcp.comm.*
-import java.util.ArrayList
 
 /**
  * Created by udi on 17-4-10.
@@ -30,8 +29,8 @@ enum class RecursionReturnEnum private constructor(val value: Int) {
 object RecursionUtil {
 
     fun <T> filter(
-        container: ArrayList<out T>,
-        producer: (T) -> ArrayList<out T>,
+        container: List<T>,
+        producer: (T) -> MutableList<T>,
         idCallback: (T) -> String,
         callback: (Set<T>, Int) -> Boolean
     ) {
@@ -93,24 +92,16 @@ object RecursionUtil {
      * @param consumer: 消费者，参数：Wbs对象，当前对象的索引。
      */
     fun <T> execute(
-        container: ArrayList<out T>,
-        producer: (T) -> ArrayList<out T>,
+        container: List<T>,
+        producer: (T) -> MutableList<T>,
         consumer: (Set<T>, Int) -> RecursionReturnEnum
     ): Int {
-        return _execute(container, producer, consumer);
-    }
-
-    fun <T> execute(
-        container: MutableList<out T>,
-        producer: (T) -> MutableList<out T>,
-        consumer: (Set<T>, Int) -> RecursionReturnEnum
-    ): Int {
-        return _execute(container as ArrayList<out T>, { producer.invoke(it) as ArrayList<out T> }, consumer);
+        return _execute(container as MutableList<T>, producer, consumer);
     }
 
     private fun <T> _execute(
-        container: ArrayList<out T>,
-        producer: (T) -> ArrayList<out T>,
+        container: MutableList<T>,
+        producer: (T) -> MutableList<T>,
         consumer: (Set<T>, Int) -> RecursionReturnEnum,
         parents: Set<T> = setOf()
     ): Int {
@@ -149,8 +140,8 @@ object RecursionUtil {
      * @param consumer: 生产者
      */
     fun <T> findOne(
-        container: Collection<out T>,
-        producer: (T) -> Collection<out T>,
+        container: Collection<T>,
+        producer: (T) -> Collection<T>,
         consumer: (T) -> Boolean
     ): T? {
         for (i in container.indices) {
@@ -169,8 +160,8 @@ object RecursionUtil {
      */
     @JvmOverloads
     fun <T> getWbs(
-        container: Collection<out T>,
-        producer: (T) -> Collection<out T>,
+        container: Collection<T>,
+        producer: (T) -> Collection<T>,
         consumer: (T) -> Boolean,
         parents: List<T> = listOf()
     ): MutableList<T> {
@@ -212,7 +203,7 @@ object RecursionUtil {
      * @param root: 树节点的元素列表。上一级是空的根节点。
      * @param outcomer: 外来者，把它附加到树结构中去。 如果不匹配，则按新节点增加。
      */
-    fun <T> unionTree(root: ArrayList<T>, outcomer: T, producer: (T) -> ArrayList<T>, compare: (T, T) -> Boolean) {
+    fun <T> unionTree(root: MutableList<T>, outcomer: T, producer: (T) -> MutableList<T>, compare: (T, T) -> Boolean) {
 
         for (rootItem in root) {
             if (compare(rootItem, outcomer)) {

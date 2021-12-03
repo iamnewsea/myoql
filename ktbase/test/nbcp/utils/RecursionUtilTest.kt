@@ -32,11 +32,20 @@ class RecursionUtilTest : TestBase() {
             )
         )
 
-        var wbs = RecursionUtil.getWbs(mutableListOf(item1, item2), { it.get("items") as MutableList<JsonMap> }, {
-            it.get("id") == "2.1"
-        })
+        var wbs = RecursionUtil.getWbs(mutableListOf(item1, item2),
+            { it.get("items") as MutableList<JsonMap> }, {
+                it.get("id") == "2.1"
+            })
         println(wbs.map { it.get("id") }.joinToString(","))
 
+
+
+        RecursionUtil.execute(
+            listOf(item1, item2) ,
+            { it.get("items") as MutableList<JsonMap> }, { pwbs, index ->
+                println(pwbs)
+                return@execute RecursionReturnEnum.Go
+            })
     }
 
 }

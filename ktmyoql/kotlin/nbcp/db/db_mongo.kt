@@ -15,10 +15,8 @@ import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext
 import org.springframework.data.mongodb.core.query.Criteria
-import java.io.Serializable
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.ArrayList
 
 /**
  * 请使用 db.mongo
@@ -390,7 +388,7 @@ db.getCollection("adminRole").aggregate(
             }
             return@recursionAny true
         }, { list ->
-            var arrayList = list as ArrayList<Any?>
+            var arrayList = list as MutableList<Any?>
             arrayList.forEachIndexed { index, it ->
                 if (it == null || !testDocumentString(it)) {
                     return@forEachIndexed
