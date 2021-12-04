@@ -447,13 +447,12 @@ fun String.IsIn(vararg ts: String, ignoreCase: Boolean): Boolean {
 fun String.ToTab(deepth: Int): String {
     if (deepth == 0) return this;
 
-    return lineSequence().map {
-        var line = it.trim()
+    return lineSequence().map { line ->
         if (line.any() == false) {
             return@map "";
         }
         return@map "    ".Repeat(deepth) + line
-    }.joinToString("\n")
+    }.joinToString(const.line_break)
 }
 
 

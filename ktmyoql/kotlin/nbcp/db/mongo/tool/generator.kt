@@ -68,7 +68,7 @@ import nbcp.comm.*
 import nbcp.db.mongo.entity.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-${packages.map { "import" + it }.joinToString("\n")}
+${packages.map { "import" + it }.joinToString(const.line_break)}
 
 //generate auto @${LocalDateTime.now().AsString()}
 """
@@ -520,8 +520,8 @@ ${props.joinToString(const.line_break)}
         }
         val ent = """${CodeGeneratorHelper.getEntityComment(entType, varTableRemark)}${varTableCode}class ${entityTypeName}(collectionName: String ="")
         : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java,collectionName.AsString("${dbName}")) {
-${props.joinToString("\n")}
-${idMethods.joinToString("\n")}
+${props.joinToString(const.line_break)}
+${idMethods.joinToString(const.line_break)}
 }
 """
 
