@@ -108,7 +108,7 @@ open class ListResult<T>(
     companion object {
         @JvmStatic
         @JvmOverloads
-        inline fun <reified T> error(msg: String, code: Int = 0): ListResult<T> {
+        fun <T> error(msg: String, code: Int = 0): ListResult<T> {
             var ret = ListResult<T>();
             ret.code = code;
             ret.msg = msg;
