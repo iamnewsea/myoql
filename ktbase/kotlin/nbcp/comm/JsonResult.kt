@@ -117,7 +117,7 @@ open class ListResult<T>(
 
         @JvmStatic
         @JvmOverloads
-        inline fun <reified T> of(data: Collection<T>, total: Int = -1): ListResult<T> {
+        fun <T> of(data: Collection<T>, total: Int = -1): ListResult<T> {
             var ret = ListResult<T>();
             ret.data = data.toList();
             if (total < 0) {
