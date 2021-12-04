@@ -389,6 +389,7 @@ ${props.joinToString(const.line_break)}
         var varTable = entType.getAnnotationsByType(VarTable::class.java);
 
         var ret = mutableListOf<String>()
+        ret.add("")
         if (varTable.any()) {
             ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, " (变表)")}private val ${entityVarName} get() = ${entityTypeName}();""")
 
@@ -518,7 +519,7 @@ ${props.joinToString(const.line_break)}
             varTableCode = """@VarTable("${varTable[0].value}")${const.line_break}"""
         }
         val ent = """${CodeGeneratorHelper.getEntityComment(entType, varTableRemark)}${varTableCode}class ${entityTypeName}(collectionName: String ="")
-    :MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java,collectionName.AsString("${dbName}")) {
+        : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java,collectionName.AsString("${dbName}")) {
 ${props.joinToString("\n")}
 ${idMethods.joinToString("\n")}
 }
