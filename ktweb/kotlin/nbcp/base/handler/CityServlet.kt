@@ -3,6 +3,7 @@ package nbcp.base.handler
 import nbcp.comm.*
 import nbcp.db.db
 import nbcp.db.mongo.*
+import nbcp.db.mongo.entity.SysCity
 import nbcp.web.WriteJsonRawValue
 import nbcp.web.findParameterIntValue
 import org.springframework.web.bind.annotation.PostMapping
@@ -19,9 +20,7 @@ data class cn_city_model(var c: Int, var n: String)
 @RestController
 open class CityServlet {
     @PostMapping("/open/child-cities")
-    fun doPost(request: HttpServletRequest, response: HttpServletResponse) {
-        var pcode = request.findParameterIntValue("pcode");
-
+    fun child(@Require pcode: Int, response: HttpServletResponse): ListResult<cn_city_model> {
         if (pcode == 0) {
             throw NoDataException("城市code不能为空")
         }
@@ -31,12 +30,43 @@ open class CityServlet {
         }
 
         var list = db.mor_base.sysCity.query()
-                .select { it.code }
-                .select { it.shortName }
-                .where { it.pcode match pcode }
-                .toList()
-                .map { cn_city_model(it.code, it.shortName) }
+            .select { it.code }
+            .select { it.shortName }
+            .where { it.pcode match pcode }
+            .toList()
+            .map { cn_city_model(it.code, it.shortName) }
 
-        response.WriteJsonRawValue(ApiResult.of(list).ToJson())
+        return ListResult.of(list)
+    }
+
+    /**
+     * 返回 wbs 路径信息
+     */
+    @PostMapping("/open/city-full-info")
+    fun fullInfo(@Require code: Int, response: HttpServletResponse): ListResult<cn_city_model> {
+        if (code == 0) {
+            throw NoDataException("城市code不能为空")
+        }
+
+        var city_codes = getWbsCodes(code)
+
+        var list = db.mor_base.sysCity.query()
+            .select { it.code }
+            .select { it.shortName }
+            .where { it.pcode match_in city_codes }
+            .orderByAsc { it.code }
+            .toList()
+            .map { cn_city_model(it.code, it.shortName) }
+
+        return ListResult.of(list)
+    }
+
+    private fun getWbsCodes(code: Int): List<Int> {
+        var codeString = code.toString();
+        return setOf<String>(
+            codeString.substring(0..1) + "0000",
+            codeString.substring(0..3) + "00",
+            codeString.substring(0..5),
+        ).map { it.AsInt() };
     }
 }
