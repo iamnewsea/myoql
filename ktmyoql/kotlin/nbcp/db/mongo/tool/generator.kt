@@ -394,8 +394,8 @@ ${props.joinToString("\n")}
         if (varTable.any()) {
             ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, " (变表)")}private val ${entityVarName} get() = ${entityTypeName}();""")
 
-            var varName = MyUtil.getBigCamelCase(varTable[0].value);
-            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, " (变表)")}fun ${entityVarName}(with${varName}CollectionName: String)=${entityTypeName}(with${varName}CollectionName);""")
+            var varName = varTable[0].value;
+            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, " (变表)")}fun ${entityVarName}(${varName}: String)=${entityTypeName}("${entityVarName}-${'$'}{${varName}}");""")
         } else {
             ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType)}val ${entityVarName} get() = ${entityTypeName}();""")
         }
