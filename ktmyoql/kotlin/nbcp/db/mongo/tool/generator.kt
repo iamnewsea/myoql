@@ -86,8 +86,8 @@ ${packages.map { "import" + it }.joinToString(const.line_break)}
                     """
 @Component("mongo.${groupName}")
 @MetaDataGroup("${groupName}")
-class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
-    override fun getEntities():Set<BaseMetaData> = setOf(${
+class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup {
+    override fun getEntities(): Set<BaseMetaData> = setOf(${
                         group.value.map { genVarName(it).GetSafeKotlinName() }.joinToString(", ")
                     })
 """
@@ -112,17 +112,16 @@ class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
                 """
 
 
-private fun join(vararg args: String) : MongoColumnName{
+private fun join(vararg args: String) : MongoColumnName {
     return MongoColumnName( args.toList().filter{it.HasValue}.joinToString (".") )
 }
 
-private fun join_map(vararg args: String) : moer_map{
-    return moer_map(args.toList().filter{it.HasValue}.joinToString ("."))
+private fun join_map(vararg args: String) : moer_map {
+    return moer_map(args.toList().filter { it.HasValue }.joinToString ("."))
 }
 
-data class moer_map(val _pname: String)
-{
-    fun keys(keys: String): String{
+data class moer_map(val _pname: String) {
+    fun keys(keys: String): String {
         return this._pname + "." + keys
     }
 }
@@ -355,7 +354,7 @@ data class moer_map(val _pname: String)
 
 
         var ent =
-                """${CodeGeneratorHelper.getEntityComment(entType)}class ${entityTypeName}Meta(private val _pname: String) : MongoColumnName() {
+                """${CodeGeneratorHelper.getEntityComment(entType)}class ${entityTypeName}Meta(private val _pname: String) : MongoColumnName(){
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
 
 ${props.joinToString(const.line_break)}
@@ -476,8 +475,8 @@ ${props.joinToString(const.line_break)}
                                 )!!.type.kotlinTypeName
                             }"
                         }.joinToString(",")
-                    }) : MongoQueryClip<${entityTypeName}, ${entType.name}> {
-        return this.query()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+                    }): MongoQueryClip<${entityTypeName}, ${entType.name}> {
+        return this.query()${keys.map { ".where { it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
     fun deleteBy${
@@ -491,7 +490,7 @@ ${props.joinToString(const.line_break)}
                             }"
                         }.joinToString(",")
                     }) : MongoDeleteClip<${entityTypeName}> {
-        return this.delete()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+        return this.delete()${keys.map { ".where { it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
     fun updateBy${
@@ -518,8 +517,8 @@ ${props.joinToString(const.line_break)}
             varTableRemark = " (变表)"
             varTableCode = """@VarTable("${varTable[0].value}")${const.line_break}"""
         }
-        val ent = """${CodeGeneratorHelper.getEntityComment(entType, varTableRemark)}${varTableCode}class ${entityTypeName}(collectionName: String ="")
-        : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java,collectionName.AsString("${dbName}")) {
+        val ent = """${CodeGeneratorHelper.getEntityComment(entType, varTableRemark)}${varTableCode}class ${entityTypeName}(collectionName: String = "")
+        : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, collectionName.AsString("${dbName}")) {
 ${props.joinToString(const.line_break)}
 ${idMethods.joinToString(const.line_break)}
 }

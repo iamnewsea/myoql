@@ -19,6 +19,7 @@ annotation class Cn(val value: String)
 
 /**
  * 变表，表名中包含变量
+ * @param value: 表示变表的变量名。无存储意义。
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)

@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2021-12-05 02:50:20
+//generate auto @2021-12-05 03:13:49
 
 class MenuDefineMeta(private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
@@ -406,12 +406,6 @@ class MongoBaseGroup : IDataGroup {
          */
         @Cn("菜单名称")
         val name = MongoColumnName("name")
-
-        /**
-         * 所有者
-         */
-        @Cn("所有者")
-        val owner = MongoColumnName("owner")
 
         /**
          * 创建时间

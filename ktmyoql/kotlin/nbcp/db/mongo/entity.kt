@@ -278,8 +278,6 @@ data class SysDictionary(
 @DbEntityGroup("MongoBase")
 @VarTable("owner")
 data class AppMenu(
-        @Cn("所有者")
-        var owner: String,
         @Cn("创建时间")
         var createAt: LocalDateTime = LocalDateTime.now(),
         @Cn("更新时间")
