@@ -11,12 +11,12 @@ import java.lang.reflect.ParameterizedType
 import java.time.LocalDateTime
 
 object CodeGeneratorHelper {
-    fun getEntityCommentOnly(entType: Class<*>): String {
+    fun getEntityCommentOnly(entType: Class<*>, remark:String = ""): String {
         var cn = entType.getAnnotation(Cn::class.java)?.value ?: "";
         if (cn.isNullOrEmpty()) return "";
 
         return """/**
-* ${cn}
+* ${cn}${remark}
 */
 """
     }
@@ -24,12 +24,12 @@ object CodeGeneratorHelper {
     /**
      * 获取表的中文注释及Cn注解
      */
-    fun getEntityComment(entType: Class<*>): String {
+    fun getEntityComment(entType: Class<*>,remark:String = ""): String {
         var cn = entType.getAnnotation(Cn::class.java)?.value ?: "";
         if (cn.isNullOrEmpty()) return "";
 
         return """/**
-* ${cn}
+* ${cn}${remark}
 */
 @Cn("${cn}")
 """

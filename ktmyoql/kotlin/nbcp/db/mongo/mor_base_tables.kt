@@ -9,7 +9,47 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2021-11-15 16:25:06
+//generate auto @2021-12-05 01:24:06
+
+class MenuDefineMeta (private val _pname: String) : MongoColumnName() {
+    constructor(_val: MongoColumnName) : this(_val.toString()) {}
+
+    val id = join(this._pname, "_id")
+    /**
+    * 菜单名称
+    */
+    @Cn("菜单名称")
+    val name = join(this._pname, "name")
+    /**
+    * 菜单链接
+    */
+    @Cn("菜单链接")
+    val url = join(this._pname, "url")
+    /**
+    * class
+    */
+    @Cn("class")
+    val css = join(this._pname, "css")
+    /**
+    * 资源编码
+    */
+    @Cn("资源编码")
+    val code = join(this._pname, "code")
+    /**
+    * 排序
+    */
+    @Cn("排序")
+    val sort = join(this._pname, "sort")
+    /**
+    * 子菜单
+    */
+    @Cn("子菜单")
+    val menus = join(this._pname, "menus") /*:递归类*/
+
+    override fun toString(): String {
+        return join(this._pname).toString()
+    }
+}
 
 class IdUrlMeta (private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
@@ -94,14 +134,42 @@ class SerializableMeta (private val _pname: String) : MongoColumnName() {
     }
 }
 
+/**
+* 请求数据
+*/
+@Cn("请求数据")
 class BaseRequestDataMeta (private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
 
+    /**
+    * 访问地址
+    */
+    @Cn("访问地址")
     val url = join(this._pname, "url")
+    /**
+    * 访问方法
+    */
+    @Cn("访问方法")
     val method = join(this._pname, "method")
+    /**
+    * 调用链Id
+    */
+    @Cn("调用链Id")
     val traceId = join(this._pname, "traceId")
+    /**
+    * 请求体
+    */
+    @Cn("请求体")
     val body = join(this._pname, "body")
+    /**
+    * 请求头
+    */
+    @Cn("请求头")
     val header = join_map(this._pname, "header")/*:map*/
+    /**
+    * 客户端Ip
+    */
+    @Cn("客户端Ip")
     val clientIP = join(this._pname, "clientIP")
 
     override fun toString(): String {
@@ -119,12 +187,32 @@ class ObjectMeta (private val _pname: String) : MongoColumnName() {
     }
 }
 
+/**
+* 回发数据
+*/
+@Cn("回发数据")
 class BaseResponseDataMeta (private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
 
+    /**
+    * 状态码
+    */
+    @Cn("状态码")
     val status = join(this._pname, "status")
+    /**
+    * 响应体
+    */
+    @Cn("响应体")
     val body = join(this._pname, "body")
+    /**
+    * 响应头
+    */
+    @Cn("响应头")
     val header = join_map(this._pname, "header")/*:map*/
+    /**
+    * 结果
+    */
+    @Cn("结果")
     val result = join(this._pname, "result")
 
     override fun toString(): String {
@@ -215,8 +303,16 @@ class BusinessLicenseDataMeta (private val _pname: String) : MongoColumnName() {
 @Component("mongo.MongoBase")
 @MetaDataGroup("MongoBase")
 class MongoBaseGroup : IDataGroup{
-    override fun getEntities():Set<BaseMetaData> = setOf(basicUser,basicUserLoginInfo,flywayVersion,sysAnnex,sysCity,sysDustbin,sysLog,sysOrganization)
+    override fun getEntities():Set<BaseMetaData> = setOf(appMenu,basicUser,basicUserLoginInfo,flywayVersion,sysAnnex,sysCity,sysDictionary,sysDustbin,sysLog,sysOrganization)
 
+    /**
+    * 菜单 (变表)
+    */
+    private val appMenu get() = AppMenuEntity();
+    /**
+    * 菜单 (变表)
+    */
+    fun appMenu(withOwnerCollectionName: String)=AppMenuEntity(withOwnerCollectionName);
     /**
     * 用户信息
     */
@@ -238,6 +334,10 @@ class MongoBaseGroup : IDataGroup{
     */
     val sysCity get() = SysCityEntity();
     /**
+    * 字典
+    */
+    val sysDictionary get() = SysDictionaryEntity();
+    /**
     * 数据垃圾箱
     */
     val sysDustbin get() = SysDustbinEntity();
@@ -251,6 +351,62 @@ class MongoBaseGroup : IDataGroup{
     val sysOrganization get() = SysOrganizationEntity();
 
 
+    /**
+    * 菜单 (变表)
+    */
+    @Cn("菜单")
+    @VarTable("owner")
+    class AppMenuEntity(collectionName: String ="")
+        :MongoBaseMetaCollection<nbcp.db.mongo.entity.AppMenu>(nbcp.db.mongo.entity.AppMenu::class.java,collectionName.AsString("appMenu")) {
+        val id = MongoColumnName("_id")
+        /**
+        * 菜单名称
+        */
+        @Cn("菜单名称")
+        val name = MongoColumnName("name")
+        /**
+        * 所有者
+        */
+        @Cn("所有者")
+        val owner = MongoColumnName("owner")
+        /**
+        * 创建时间
+        */
+        @Cn("创建时间")
+        val createAt = MongoColumnName("createAt")
+        /**
+        * 更新时间
+        */
+        @Cn("更新时间")
+        val updateAt = MongoColumnName("updateAt")
+        /**
+        * 菜单链接
+        */
+        @Cn("菜单链接")
+        val url = MongoColumnName("url")
+        /**
+        * class
+        */
+        @Cn("class")
+        val css = MongoColumnName("css")
+        /**
+        * 资源编码
+        */
+        @Cn("资源编码")
+        val code = MongoColumnName("code")
+        /**
+        * 排序
+        */
+        @Cn("排序")
+        val sort = MongoColumnName("sort")
+        /**
+        * 子菜单
+        */
+        @Cn("子菜单")
+        val menus = MenuDefineMeta("menus")
+    
+    }
+    
     /**
     * 用户信息
     */
@@ -477,8 +633,20 @@ class MongoBaseGroup : IDataGroup{
         */
         @Cn("执行的类")
         val execClass = MongoColumnName("execClass")
+        /**
+        * 执行开始时间
+        */
+        @Cn("执行开始时间")
         val startAt = MongoColumnName("startAt")
+        /**
+        * 执行结束时间
+        */
+        @Cn("执行结束时间")
         val finishAt = MongoColumnName("finishAt")
+        /**
+        * 是否成功
+        */
+        @Cn("是否成功")
         val isSuccess = MongoColumnName("isSuccess")
         /**
         * 创建时间
@@ -661,6 +829,46 @@ class MongoBaseGroup : IDataGroup{
     }
     
     /**
+    * 字典
+    */
+    @Cn("字典")
+    class SysDictionaryEntity(collectionName: String ="")
+        :MongoBaseMetaCollection<nbcp.db.mongo.entity.SysDictionary>(nbcp.db.mongo.entity.SysDictionary::class.java,collectionName.AsString("sysDictionary")) {
+        val id = MongoColumnName("_id")
+        /**
+        * 所有者
+        */
+        @Cn("所有者")
+        val owner = MongoColumnName("owner")
+        /**
+        * 值
+        */
+        @Cn("值")
+        val key = MongoColumnName("key")
+        /**
+        * 值
+        */
+        @Cn("值")
+        val label = MongoColumnName("label")
+        /**
+        * 排序
+        */
+        @Cn("排序")
+        val sort = MongoColumnName("sort")
+        /**
+        * 创建时间
+        */
+        @Cn("创建时间")
+        val createAt = MongoColumnName("createAt")
+        /**
+        * 更新时间
+        */
+        @Cn("更新时间")
+        val updateAt = MongoColumnName("updateAt")
+    
+    }
+    
+    /**
     * 数据垃圾箱
     */
     @Cn("数据垃圾箱")
@@ -727,8 +935,20 @@ class MongoBaseGroup : IDataGroup{
         */
         @Cn("消息")
         val msg = MongoColumnName("msg")
+        /**
+        * 请求数据
+        */
+        @Cn("请求数据")
         val request = BaseRequestDataMeta("request")
+        /**
+        * 程序数据
+        */
+        @Cn("程序数据")
         val data = ObjectMeta("data")
+        /**
+        * 回发数据
+        */
+        @Cn("回发数据")
         val response = BaseResponseDataMeta("response")
         /**
         * 创建者Id

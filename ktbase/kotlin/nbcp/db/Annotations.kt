@@ -17,6 +17,12 @@ annotation class DbName(val value: String)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Cn(val value: String)
 
+/**
+ * 变表，表名中包含变量
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class VarTable(val value: String)
 
 /**
  * 实体字段上定义主键列，如实体的多个字段定义Key，认为是组合主键。
