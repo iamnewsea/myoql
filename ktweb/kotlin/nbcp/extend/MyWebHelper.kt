@@ -89,7 +89,10 @@ var HttpServletRequest.LoginUser: LoginUserModel
 
         var event = RequestGetLoginUserModelEvent(this);
         SpringUtil.context.publishEvent(event);
-        if (event.loginUser != null) return event.loginUser!!;
+        if (event.loginUser != null) {
+            this.LoginUser = event.loginUser!!
+            return event.loginUser!!;
+        }
 
         var token = this.tokenValue;
         if (config.tokenStorage == TokenStorageTypeEnum.Memory) {
