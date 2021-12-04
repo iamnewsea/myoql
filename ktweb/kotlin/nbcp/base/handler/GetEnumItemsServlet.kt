@@ -30,9 +30,10 @@ open class GetEnumItemsServlet {
 //    var tokenName: String = ""
 
     @GetMapping("/open/enum-items/list")
-    fun doGet(fullEnumClassName: String): ListResult<KeyValueString> {
-        var clazz = Class.forName(fullEnumClassName);
-        var nameField = clazz.GetEnumStringField();
+    fun doGet(enum: String): ListResult<KeyValueString> {
+        var clazz = Class.forName(enum);
+        var nameField = clazz.GetEnumNumberField();
+
         var list = clazz.GetEnumList().map {
             val key = it.toString();
             KeyValueString(key, nameField?.get(it).AsString(key))
