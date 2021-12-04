@@ -395,7 +395,7 @@ ${props.joinToString("\n")}
             ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, " (变表)")}private val ${entityVarName} get() = ${entityTypeName}();""")
 
             var varName = varTable[0].value;
-            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, " (变表)")}fun ${entityVarName}(${varName}: String)=${entityTypeName}("${entityVarName}-${'$'}{${varName}}");""")
+            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, " (变表)")}fun ${entityVarName}(${varName}: String) = ${entityTypeName}("${entityVarName}-${'$'}{${varName}}");""")
         } else {
             ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType)}val ${entityVarName} get() = ${entityTypeName}();""")
         }
