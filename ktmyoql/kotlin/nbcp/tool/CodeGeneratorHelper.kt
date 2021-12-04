@@ -16,8 +16,8 @@ object CodeGeneratorHelper {
         if (cn.isNullOrEmpty()) return "";
 
         return """/**
-* ${cn}${remark}
-*/
+ * ${cn}${remark}
+ */
 """
     }
 
@@ -29,8 +29,8 @@ object CodeGeneratorHelper {
         if (cn.isNullOrEmpty()) return "";
 
         return """/**
-* ${cn}${remark}
-*/
+ * ${cn}${remark}
+ */
 @Cn("${cn}")
 """
     }
@@ -39,8 +39,8 @@ object CodeGeneratorHelper {
         var cn = field.getAnnotation(Cn::class.java)?.value ?: "";
         if (cn.isNullOrEmpty()) return "";
         return """/**
-* ${cn}
-*/
+ * ${cn}
+ */
 @Cn("${cn}")
 """
     }

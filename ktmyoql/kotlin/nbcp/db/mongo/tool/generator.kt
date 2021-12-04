@@ -93,11 +93,11 @@ class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
 """
             )
             println("${groupName}:")
-            groupEntities.forEach {
-                writeToFile(genVarEntity(it).ToTab(1))
-            }
+            writeToFile(
+                    groupEntities.map { (genVarEntity(it).ToTab(1)) }.joinToString(const.line_break)
+            )
 
-            writeToFile("\n")
+            writeToFile(const.line_break)
 
             groupEntities.forEach {
                 count++;
@@ -235,7 +235,6 @@ data class moer_map(val _pname: String)
 
     private fun getMetaValue(fieldName: String, fieldType: Class<*>, parentTypeName: String): String {
 
-
         if (fieldName == "id") {
             return "join(this._pname, \"_id\")"
         }
@@ -349,17 +348,17 @@ data class moer_map(val _pname: String)
                 .map {
                     var v1 = getMetaValue(it, entType, entTypeName, 1)
 
-                    return@map "${CodeGeneratorHelper.getFieldComment(it)}val ${it.name} = ${v1}".ToTab(1)
+                    return@map "${const.line_break}${CodeGeneratorHelper.getFieldComment(it)}val ${it.name} = ${v1}".ToTab(1)
                 }
 
         var entityTypeName = entTypeName;
 
 
         var ent =
-                """${CodeGeneratorHelper.getEntityComment(entType)}class ${entityTypeName}Meta (private val _pname: String) : MongoColumnName() {
+                """${CodeGeneratorHelper.getEntityComment(entType)}class ${entityTypeName}Meta(private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
 
-${props.joinToString("\n")}
+${props.joinToString(const.line_break)}
 
     override fun toString(): String {
         return join(this._pname).toString()
