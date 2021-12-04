@@ -23,20 +23,16 @@ import javax.servlet.http.HttpServletResponse
 @OpenAction
 @RestController
 open class GetEnumItemsServlet {
-    /**
-     * 由于 SameSite 阻止跨域 Set-Cookie 的问题，所以使用请求参数 token 代替 cookie
-     */
-//    @Value("\${app.token-name:token}")
-//    var tokenName: String = ""
+    data class ValueLabelData(var value: String, var label: String)
 
     @GetMapping("/open/enum-items/list")
-    fun doGet(enum: String): ListResult<KeyValueString> {
+    fun doGet(enum: String): ListResult<ValueLabelData> {
         var clazz = Class.forName(enum);
         var nameField = clazz.GetEnumNumberField();
 
         var list = clazz.GetEnumList().map {
             val key = it.toString();
-            KeyValueString(key, nameField?.get(it).AsString(key))
+            ValueLabelData(key, nameField?.get(it).AsString(key))
         }
 
         return ListResult.of(list)
