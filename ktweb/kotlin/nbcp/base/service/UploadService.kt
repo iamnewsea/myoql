@@ -227,7 +227,7 @@ open class UploadService {
 
 
         if (msg.HasValue) {
-            return ListResult(msg);
+            return ListResult.error(msg);
         }
 
         return ListResult.of(list)

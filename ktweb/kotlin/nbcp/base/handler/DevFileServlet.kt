@@ -143,11 +143,11 @@ class DevFileServlet {
             } else {
                 BufferedReader(InputStreamReader(p.errorStream, "utf-8")).use { br ->
                     lines = br.readLines();
-                    return ListResult(lines.joinToString(","))
+                    return ListResult.error(lines.joinToString(","))
                 }
             }
         } catch (e: Exception) {
-            return ListResult(e.message ?: "error")
+            return ListResult.error(e.message ?: "error")
         }
     }
 }

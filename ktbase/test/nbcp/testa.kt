@@ -36,9 +36,9 @@ class testa : TestBase() {
     }
 
     data class abc(
-            var t: LocalDateTime = LocalDateTime.now(),
-            var i: Date = Date(),
-            var l: LocalDate = LocalDate.now()
+        var t: LocalDateTime = LocalDateTime.now(),
+        var i: Date = Date(),
+        var l: LocalDate = LocalDate.now()
     )
 
     @Test
@@ -90,11 +90,11 @@ class testa : TestBase() {
             } else {
                 BufferedReader(InputStreamReader(p.errorStream, "GBK")).use { br ->
                     lines = br.readLines();
-                    return ListResult(lines.joinToString(","))
+                    return ListResult.error(lines.joinToString(","))
                 }
             }
         } catch (e: Exception) {
-            return ListResult(e.message ?: "error")
+            return ListResult.error(e.message ?: "error")
         }
     }
 }

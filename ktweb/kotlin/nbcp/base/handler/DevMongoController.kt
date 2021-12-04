@@ -37,7 +37,7 @@ class DevMongoServlet {
     fun getEntities(group: String): ListResult<String> {
         var groupValue = group[0].uppercaseChar() + group.substring(1) + "Group"
         var groupObj = db.mongo.groups.firstOrNull { it::class.java.simpleName == groupValue }
-        if (groupObj == null) return ListResult("找不到group")
+        if (groupObj == null) return ListResult.error("找不到group")
 
         groupObj.getEntities().map { it.tableName }.apply { return ListResult.of(this) }
     }
@@ -54,10 +54,10 @@ class DevMongoServlet {
     fun getEntity(group: String, entity: String): ListResult<FieldModel> {
         var groupValue = group[0].uppercaseChar() + group.substring(1) + "Group"
         var groupObj = db.mongo.groups.firstOrNull { it::class.java.simpleName == groupValue }
-        if (groupObj == null) return ListResult("找不到group")
+        if (groupObj == null) return ListResult.error("找不到group")
 
         var entityObj = groupObj.getEntities().firstOrNull { it.tableName == entity };
-        if (entityObj == null) return ListResult("找不到entity")
+        if (entityObj == null) return ListResult.error("找不到entity")
 
 
         (entityObj as MongoBaseMetaCollection<*>).entityClass.kotlin.memberProperties.map {

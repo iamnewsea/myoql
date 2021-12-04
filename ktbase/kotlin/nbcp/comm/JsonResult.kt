@@ -1,6 +1,5 @@
 package nbcp.comm
 
-import nbcp.comm.*
 import java.io.Serializable
 import java.lang.RuntimeException
 
@@ -98,11 +97,9 @@ open class ListQueryModel {
 /**
  * 列表返回对象
  */
-open class ListResult<T>() : JsonResult() {
-    constructor(msg: String, code: Int = 0) : this() {
-        this.msg = msg;
-        this.code = code;
-    }
+open class ListResult<T>(
+    //@Transient val clazz: Class<T>
+) : JsonResult() {
 
     var total: Int = -1
     var data: List<T> = listOf()
@@ -111,7 +108,16 @@ open class ListResult<T>() : JsonResult() {
     companion object {
         @JvmStatic
         @JvmOverloads
-        fun <T> of(data: Collection<T>, total: Int = -1): ListResult<T> {
+        inline fun <reified T> error(msg: String, code: Int = 0): ListResult<T> {
+            var ret = ListResult<T>();
+            ret.code = code;
+            ret.msg = msg;
+            return ret;
+        }
+
+        @JvmStatic
+        @JvmOverloads
+        inline fun <reified T> of(data: Collection<T>, total: Int = -1): ListResult<T> {
             var ret = ListResult<T>();
             ret.data = data.toList();
             if (total < 0) {

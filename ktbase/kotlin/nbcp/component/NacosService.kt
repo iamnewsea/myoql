@@ -62,7 +62,7 @@ class NacosService {
         if (data.pagesAvailable > data.pageNumber) {
             var dataNext = queryConfigs(serverHost, ns, group, dataId, pageNumber + 1);
             if (dataNext.msg.HasValue) {
-                return ListResult(dataNext.msg);
+                return ListResult.error(dataNext.msg);
             }
             list.addAll(dataNext.data)
         }
