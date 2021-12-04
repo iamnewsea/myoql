@@ -88,7 +88,7 @@ ${packages.map { "import" + it }.joinToString("\n")}
 @MetaDataGroup("${groupName}")
 class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
     override fun getEntities():Set<BaseMetaData> = setOf(${
-                        group.value.map { genVarName(it).GetSafeKotlinName() }.joinToString(",")
+                        group.value.map { genVarName(it).GetSafeKotlinName() }.joinToString(", ")
                     })
 """
             )
@@ -359,7 +359,6 @@ data class moer_map(val _pname: String)
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
 
 ${props.joinToString(const.line_break)}
-
     override fun toString(): String {
         return join(this._pname).toString()
     }
