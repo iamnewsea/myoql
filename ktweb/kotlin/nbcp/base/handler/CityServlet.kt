@@ -18,7 +18,7 @@ data class cn_city_model(var c: Int, var n: String)
 @OpenAction
 @RestController
 open class CityServlet {
-    @PostMapping("/child-citys")
+    @PostMapping("/open/child-cities")
     fun doPost(request: HttpServletRequest, response: HttpServletResponse) {
         var pcode = request.findParameterIntValue("pcode");
 
