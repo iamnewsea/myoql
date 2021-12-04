@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.io.BufferedReader
 import java.io.File
-import java.io.InputStreamReader
 import java.time.LocalDate
 import java.time.LocalTime
 import javax.servlet.http.HttpServletResponse
@@ -124,7 +122,7 @@ class DevDockerServlet {
         execCmd("docker", "cp", "${container}:${work_path}/${name}", target);
 
 
-        var fileInfo = FileExtentionInfo(name);
+        var fileInfo = FileExtensionInfo(name);
         response.contentType = MyUtil.getMimeType(fileInfo.extName).AsString("text/plain")
 
         response.outputStream.write(File(target).readBytes())

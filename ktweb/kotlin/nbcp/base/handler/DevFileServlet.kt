@@ -2,10 +2,8 @@ package nbcp.base.handler
 
 import nbcp.comm.*
 import nbcp.utils.*
-import nbcp.db.IdUrl
 import nbcp.web.setDownloadFileName
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -16,8 +14,6 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 import java.lang.RuntimeException
-import java.time.LocalDate
-import java.time.LocalTime
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -96,7 +92,7 @@ class DevFileServlet {
             throw RuntimeException("文件 ${targetFile.FullName} 不存在")
         }
 
-        var fileInfo = FileExtentionInfo(name);
+        var fileInfo = FileExtensionInfo(name);
         response.contentType = MyUtil.getMimeType(fileInfo.extName).AsString("text/plain")
 
         response.outputStream.write(targetFile.readBytes())

@@ -36,35 +36,20 @@ open class UploadService {
 //    private var UPLOAD_GROUP = ""
 
 
-    private fun getFileInfo(fileName: String): FileExtentionInfo {
-        if (!fileName.contains('.')) {
-            return FileExtentionInfo("")
-        }
-
-        var fileNameValue = fileName;
-        fileNameValue = fileNameValue.Remove("/", "\\", "?", "#", "\"", "'", " ", "%", "&", ":", "@", "<", ">")
-        var extInfo = FileExtentionInfo(fileNameValue);
-
-        if (fileNameValue.length < 4) {
-            extInfo.name = "";
-        }
-        return extInfo;
-    }
-
     /**
      * @param vTempFile , 相对于 uploadPath 的相对路径.
      */
     private fun doUpload(
-            group: String,
-            file: MultipartFile,
-            fileName: String,
-            storageType: UploadStorageTypeEnum?,
-            user: IdName,
-            corpId: String
+        group: String,
+        file: MultipartFile,
+        fileName: String,
+        storageType: UploadStorageTypeEnum?,
+        user: IdName,
+        corpId: String
     ): ApiResult<SysAnnex> {
         var fileStream = file.inputStream;
 
-        var extInfo = getFileInfo(fileName)
+        var extInfo = FileExtensionInfo.ofFileName(fileName)
         if (extInfo.name.isEmpty()) {
             extInfo.name = CodeUtil.getCode()
         }
@@ -86,12 +71,12 @@ open class UploadService {
 
 
         //流不可重复读！！所以要重新从file中获取流
-        if (extInfo.extType == FileExtentionTypeEnum.Image) {
+        if (extInfo.extType == FileExtensionTypeEnum.Image) {
             val bufferedImage = ImageIO.read(file.inputStream)
             annexInfo.imgWidth = bufferedImage.getWidth();
             annexInfo.imgHeight = bufferedImage.getHeight();
 
-        } else if (extInfo.extType == FileExtentionTypeEnum.Video) {
+        } else if (extInfo.extType == FileExtensionTypeEnum.Video) {
             VideoUtil.getVideoInfo(file.inputStream).data.apply {
                 if (this != null) {
                     annexInfo.imgWidth = this.width;
@@ -102,7 +87,7 @@ open class UploadService {
                     var logoFile = UploadFileNameData();
                     logoFile.corpId = fileData.corpId;
                     logoFile.extName = "png";
-                    logoFile.extType = FileExtentionTypeEnum.Image;
+                    logoFile.extType = FileExtensionTypeEnum.Image;
                     logoFile.groupCorp = fileData.groupCorp;
                     logoFile.fileName = CodeUtil.getCode() + ".png";
 
@@ -153,10 +138,10 @@ open class UploadService {
      * 4. 如果是图片，第四级目录是原图片的像素数/万 ，如 800*600 = 480000,则文件夹名为 48 。 忽略小数部分。这样对大部分图片大体归类。
      */
     fun saveFile(
-            fileStream: InputStream,
-            group: String,
-            fileData: UploadFileNameData,
-            storageType: UploadStorageTypeEnum?
+        fileStream: InputStream,
+        group: String,
+        fileData: UploadFileNameData,
+        storageType: UploadStorageTypeEnum?
     ): String {
         var storageTypeValue = storageType;
 
@@ -195,9 +180,9 @@ open class UploadService {
      * 文件上传
      */
     fun upload(
-            request: HttpServletRequest,
-            user: IdName,
-            corpId: String,
+        request: HttpServletRequest,
+        user: IdName,
+        corpId: String,
     ): ListResult<SysAnnex> {
         var list = mutableListOf<SysAnnex>()
 
@@ -206,24 +191,24 @@ open class UploadService {
         var storageType = request.findParameterStringValue("storage-type").ToEnum<UploadStorageTypeEnum>()
 
         (request as StandardMultipartHttpServletRequest)
-                .multiFileMap
-                .toList()
-                .ForEachExt { it, _ ->
-                    var fileName = it.first;
-                    var files = it.second;
+            .multiFileMap
+            .toList()
+            .ForEachExt { it, _ ->
+                var fileName = it.first;
+                var files = it.second;
 
-                    files.ForEachExt for2@{ file, _ ->
-                        var ret1 = doUpload(group, file, fileName, storageType, user, corpId);
-                        if (ret1.msg.HasValue) {
-                            msg = ret1.msg;
-                            return@ForEachExt false
-                        }
-                        list.add(ret1.data!!);
-                        return@for2 true
+                files.ForEachExt for2@{ file, _ ->
+                    var ret1 = doUpload(group, file, fileName, storageType, user, corpId);
+                    if (ret1.msg.HasValue) {
+                        msg = ret1.msg;
+                        return@ForEachExt false
                     }
-
-                    return@ForEachExt true;
+                    list.add(ret1.data!!);
+                    return@for2 true
                 }
+
+                return@ForEachExt true;
+            }
 
 
         if (msg.HasValue) {

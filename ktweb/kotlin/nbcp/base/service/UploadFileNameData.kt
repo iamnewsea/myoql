@@ -1,16 +1,15 @@
 package nbcp.base.service
 
-import nbcp.comm.FileExtentionTypeEnum
+import nbcp.comm.FileExtensionTypeEnum
 import nbcp.comm.Format
 import nbcp.comm.HasValue
 import nbcp.utils.CodeUtil
-import java.io.File
 import java.time.LocalDate
 
 class UploadFileNameData @JvmOverloads constructor(var msg: String = "") {
     var fileName: String = ""
     var extName: String = ""
-    var extType: FileExtentionTypeEnum = FileExtentionTypeEnum.Other
+    var extType: FileExtensionTypeEnum = FileExtensionTypeEnum.Other
 
     //        var imgWidth: Int = 0
 //        var imgHeight: Int = 0

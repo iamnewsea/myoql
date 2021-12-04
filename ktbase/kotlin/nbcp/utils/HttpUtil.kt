@@ -419,10 +419,10 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
 
         val remoteImage = url;
         val ret = FileMessage();
-        val extInfo = FileExtentionInfo(remoteImage);
+        val extInfo = FileExtensionInfo.ofUrl(remoteImage);
         if (extInfo.extName.isEmpty()) {
             extInfo.extName = "png";
-            extInfo.extType = FileExtentionTypeEnum.Image;
+            extInfo.extType = FileExtensionTypeEnum.Image;
         }
 
         ret.name = extInfo.name;
