@@ -92,7 +92,7 @@ class DevFileServlet {
             throw RuntimeException("文件 ${targetFile.FullName} 不存在")
         }
 
-        var fileInfo = FileExtensionInfo(name);
+        var fileInfo = FileExtensionInfo.ofFileName(name);
         response.contentType = MyUtil.getMimeType(fileInfo.extName).AsString("text/plain")
 
         response.outputStream.write(targetFile.readBytes())

@@ -122,7 +122,7 @@ class DevDockerServlet {
         execCmd("docker", "cp", "${container}:${work_path}/${name}", target);
 
 
-        var fileInfo = FileExtensionInfo(name);
+        var fileInfo = FileExtensionInfo.ofFileName(name);
         response.contentType = MyUtil.getMimeType(fileInfo.extName).AsString("text/plain")
 
         response.outputStream.write(File(target).readBytes())
