@@ -54,39 +54,40 @@ class UploadFileForMinioService : InitializingBean {
             logger.error(e.message + " . 连接错误 endpoint: ${MINIO_ENDPOINT}")
             throw e;
         }
+        //不自动创建桶。因为要提前创建，要对桶进行授权。
 
-        var exists = try {
-            minioClient.bucketExists(
-                BucketExistsArgs
-                    .builder()
-                    .bucket(group)
-                    .apply {
-                        if (MINIO_REGION.HasValue) {
-                            this.region(MINIO_REGION)
-                        }
-                    }
-                    .build()
-            )
-        } catch (e: Exception) {
-            logger.error(e.message + ". 可能连接错误导致获取桶出错!")
-            throw e;
-        }
+//        var exists = try {
+//            minioClient.bucketExists(
+//                BucketExistsArgs
+//                    .builder()
+//                    .bucket(group)
+//                    .apply {
+//                        if (MINIO_REGION.HasValue) {
+//                            this.region(MINIO_REGION)
+//                        }
+//                    }
+//                    .build()
+//            )
+//        } catch (e: Exception) {
+//            logger.error(e.message + ". 可能连接错误导致获取桶出错!")
+//            throw e;
+//        }
 
         // bucket 不存在，创建
-        if (!exists) {
-
-            minioClient.makeBucket(
-                MakeBucketArgs
-                    .builder()
-                    .bucket(group)
-                    .apply {
-                        if (MINIO_REGION.HasValue) {
-                            this.region(MINIO_REGION)
-                        }
-                    }
-                    .build()
-            )
-        }
+//        if (!exists) {
+//
+//            minioClient.makeBucket(
+//                MakeBucketArgs
+//                    .builder()
+//                    .bucket(group)
+//                    .apply {
+//                        if (MINIO_REGION.HasValue) {
+//                            this.region(MINIO_REGION)
+//                        }
+//                    }
+//                    .build()
+//            )
+//        }
 
         val fileName = fileData.getTargetFileName('/')
 
@@ -109,8 +110,9 @@ class UploadFileForMinioService : InitializingBean {
                     .build()
             )
 
-
-            return@use MINIO_ENDPOINT + "/" + response.bucket() + "/" + response.`object`()
+            return@use listOf(MINIO_ENDPOINT, response.bucket(), response.`object`())
+                .map { it.trim('/') }
+                .joinToString("/")
         }
     }
 
