@@ -9,11 +9,11 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2021-12-05 03:37:24
+//generate auto @2021-12-05 14:28:30
+
 
 class MenuDefineMeta(private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
-
 
     val id = join(this._pname, "_id")
 
@@ -57,9 +57,9 @@ class MenuDefineMeta(private val _pname: String) : MongoColumnName() {
     }
 }
 
+
 class IdUrlMeta(private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
-
 
     val id = join(this._pname, "_id")
 
@@ -79,7 +79,6 @@ class IdUrlMeta(private val _pname: String) : MongoColumnName() {
 @Cn("身份证信息")
 class IdentityCardDataMeta(private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
-
 
     /**
      * 姓名
@@ -121,9 +120,9 @@ class IdentityCardDataMeta(private val _pname: String) : MongoColumnName() {
     }
 }
 
+
 class IdNameMeta(private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
-
 
     val id = join(this._pname, "_id")
 
@@ -137,9 +136,9 @@ class IdNameMeta(private val _pname: String) : MongoColumnName() {
     }
 }
 
+
 class SerializableMeta(private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
-
 
     override fun toString(): String {
         return join(this._pname).toString()
@@ -152,7 +151,6 @@ class SerializableMeta(private val _pname: String) : MongoColumnName() {
 @Cn("请求数据")
 class BaseRequestDataMeta(private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
-
 
     /**
      * 访问地址
@@ -194,9 +192,9 @@ class BaseRequestDataMeta(private val _pname: String) : MongoColumnName() {
     }
 }
 
+
 class ObjectMeta(private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
-
 
     override fun toString(): String {
         return join(this._pname).toString()
@@ -209,7 +207,6 @@ class ObjectMeta(private val _pname: String) : MongoColumnName() {
 @Cn("回发数据")
 class BaseResponseDataMeta(private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
-
 
     /**
      * 状态码
@@ -239,9 +236,9 @@ class BaseResponseDataMeta(private val _pname: String) : MongoColumnName() {
     }
 }
 
+
 class CityCodeNameMeta(private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
-
 
     val name = join(this._pname, "name")
 
@@ -257,7 +254,6 @@ class CityCodeNameMeta(private val _pname: String) : MongoColumnName() {
 @Cn("营业执照信息")
 class BusinessLicenseDataMeta(private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
-
 
     /**
      * 企业名称
@@ -343,7 +339,7 @@ class MongoBaseGroup : IDataGroup {
     /**
      * 菜单 (变表)
      */
-    fun appMenu(owner: String) = AppMenuEntity("appMenu-${owner}");
+    fun appMenu(tailPart: String) = AppMenuEntity("appMenu-$tailPart");
 
     /**
      * 用户信息
@@ -395,9 +391,8 @@ class MongoBaseGroup : IDataGroup {
      * 菜单 (变表)
      */
     @Cn("菜单")
-    @VarTable("owner")
     class AppMenuEntity(collectionName: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.AppMenu>(nbcp.db.mongo.entity.AppMenu::class.java, collectionName.AsString("appMenu")) {
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.AppMenu>(nbcp.db.mongo.entity.AppMenu::class.java, collectionName.AsString("appMenu")), IVarTable {
 
         val id = MongoColumnName("_id")
 

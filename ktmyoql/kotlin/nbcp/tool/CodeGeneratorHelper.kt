@@ -17,8 +17,7 @@ object CodeGeneratorHelper {
 
         return """/**
  * ${cn}${remark}
- */
-"""
+ */"""
     }
 
     /**
@@ -31,8 +30,7 @@ object CodeGeneratorHelper {
         return """/**
  * ${cn}${remark}
  */
-@Cn("${cn}")
-"""
+@Cn("${cn}")"""
     }
 
     fun getFieldComment(field: Field): String {
@@ -41,8 +39,7 @@ object CodeGeneratorHelper {
         return """/**
  * ${cn}
  */
-@Cn("${cn}")
-"""
+@Cn("${cn}")"""
     }
 
 

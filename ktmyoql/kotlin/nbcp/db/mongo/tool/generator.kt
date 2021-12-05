@@ -347,16 +347,17 @@ data class moer_map(val _pname: String) {
                 .map {
                     var v1 = getMetaValue(it, entType, entTypeName, 1)
 
-                    return@map "${CodeGeneratorHelper.getFieldComment(it)}val ${it.name} = ${v1}".ToTab(1)
+                    return@map """${CodeGeneratorHelper.getFieldComment(it)}
+val ${it.name} = ${v1}""".removeEmpltyLine().ToTab(1)
                 }
 
         var entityTypeName = entTypeName;
 
 
         var ent =
-                """${CodeGeneratorHelper.getEntityComment(entType)}class ${entityTypeName}Meta(private val _pname: String) : MongoColumnName() {
+                """${CodeGeneratorHelper.getEntityComment(entType)}
+class ${entityTypeName}Meta(private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
-
 ${props.map { const.line_break + it }.joinToString(const.line_break)}
     override fun toString(): String {
         return join(this._pname).toString()
@@ -385,17 +386,19 @@ ${props.map { const.line_break + it }.joinToString(const.line_break)}
         var entityTypeName = entTypeName + "Entity";
         var entityVarName = getEntityName(entTypeName).GetSafeKotlinName();
 
-        var varTable = entType.getAnnotationsByType(VarTable::class.java);
+        var varTable = IVarTable::class.java.isAssignableFrom(entType)
 
         var ret = mutableListOf<String>()
         ret.add("")
-        if (varTable.any()) {
-            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, " (变表)")}private val ${entityVarName} get() = ${entityTypeName}();""")
+        if (varTable) {
+            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, " (变表)")}
+private val ${entityVarName} get() = ${entityTypeName}();""")
 
-            var varName = varTable[0].value;
-            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, " (变表)")}fun ${entityVarName}(${varName}: String) = ${entityTypeName}("${entityVarName}-${'$'}{${varName}}");""")
+            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, " (变表)")}
+fun ${entityVarName}(tailPart: String) = ${entityTypeName}("${entityVarName}-${'$'}tailPart");""")
         } else {
-            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType)}val ${entityVarName} get() = ${entityTypeName}();""")
+            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType)}
+val ${entityVarName} get() = ${entityTypeName}();""")
         }
         return ret.joinToString(const.line_break)
 
@@ -425,11 +428,11 @@ ${props.map { const.line_break + it }.joinToString(const.line_break)}
 
                     var (retValue, retTypeIsBasicType) = getEntityValue1(it, entType)
                     if (retTypeIsBasicType) {
-                        return@map "${CodeGeneratorHelper.getFieldComment(it)}val ${it.name} = MongoColumnName(${retValue})".ToTab(
-                                1
-                        )
+                        return@map """${CodeGeneratorHelper.getFieldComment(it)}
+val ${it.name} = MongoColumnName(${retValue})""".removeEmpltyLine().ToTab(1)
                     } else {
-                        return@map "${CodeGeneratorHelper.getFieldComment(it)}val ${it.name} = ${retValue}".ToTab(1)
+                        return@map """${CodeGeneratorHelper.getFieldComment(it)}
+val ${it.name} = ${retValue}""".removeEmpltyLine().ToTab(1)
                     }
                 }.toSet()
 
@@ -510,15 +513,16 @@ ${props.map { const.line_break + it }.joinToString(const.line_break)}
             )
         }
 
-        var varTable = entType.getAnnotationsByType(VarTable::class.java);
+        var varTable = IVarTable::class.java.isAssignableFrom(entType);
         var varTableCode = "";
         var varTableRemark = "";
-        if (varTable.any()) {
+        if (varTable) {
             varTableRemark = " (变表)"
-            varTableCode = """@VarTable("${varTable[0].value}")${const.line_break}"""
+            varTableCode = """, IVarTable"""
         }
-        val ent = """${CodeGeneratorHelper.getEntityComment(entType, varTableRemark)}${varTableCode}class ${entityTypeName}(collectionName: String = "")
-    : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, collectionName.AsString("${dbName}")) {
+        val ent = """${CodeGeneratorHelper.getEntityComment(entType, varTableRemark)}
+class ${entityTypeName}(collectionName: String = "")
+    : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, collectionName.AsString("${dbName}"))${varTableCode} {
 ${props.map { const.line_break + it }.joinToString(const.line_break)}
 ${idMethods.joinToString(const.line_break)}
 }

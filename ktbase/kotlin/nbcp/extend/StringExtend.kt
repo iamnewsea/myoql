@@ -103,6 +103,17 @@ fun String.remove(vararg removeChars: Char, ignoreCase: Boolean = false): String
     return this.split(*removeStrings, ignoreCase = ignoreCase).joinToString("")
 }
 
+/**
+ * 去除空行
+ */
+fun String.removeEmpltyLine(withTrim: Boolean = false): String {
+    return this.lineSequence().filter {
+        if (withTrim) {
+            return@filter it.trim().any()
+        } else return@filter it.any()
+    }.joinToString(const.line_break)
+}
+
 data class CharFlowSetting @JvmOverloads constructor(
         var index: Int = 0,
         var item: Char = 0.toChar(),

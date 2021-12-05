@@ -9,21 +9,6 @@ import java.time.Duration
 import nbcp.scope.*
 import java.io.Serializable
 
-enum class DatabaseEnum {
-    Mongo,
-    Redis,
-    Hbase,
-    ElasticSearch,
-
-    Mysql,
-    Oracle,
-    Sqlite,
-    SqlServer,
-    Postgre
-}
-
-
-abstract class BaseMetaData(var tableName: String) : Serializable
 
 /**
  * 数据库上下文，及操作类。

@@ -276,13 +276,12 @@ data class SysDictionary(
 @Cn("菜单")
 @Document
 @DbEntityGroup("MongoBase")
-@VarTable("owner")
 data class AppMenu(
         @Cn("创建时间")
         var createAt: LocalDateTime = LocalDateTime.now(),
         @Cn("更新时间")
         var updateAt: LocalDateTime? = null,
-) : MenuDefine()
+) : MenuDefine(),IVarTable
 
 open class MenuDefine(
         override var id: String = "",
