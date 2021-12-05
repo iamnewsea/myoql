@@ -23,10 +23,12 @@ class TestKtExt_Json : TestBase() {
         usingScope(JsonSceneEnumScope.Web) {
             println(b.ToJson())
         }
+        println(b.ToJson(JsonSceneEnumScope.Web))
 
         usingScope(JsonSceneEnumScope.Db) {
             println(b.ToJson())
         }
+        println(b.ToJson(JsonSceneEnumScope.Db))
     }
 
     @Test
