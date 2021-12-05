@@ -11,6 +11,10 @@ class TestKtExt_Json : TestBase() {
         var isDeleted: Boolean? = false;
         var list = mutableListOf<IdName>();
         var ary = arrayOf<IdName>()
+
+        fun getAbc(): String {
+            return if (isDeleted == true) "dddd" else "nnnn"
+        }
     }
 
     @Test
@@ -39,7 +43,7 @@ class TestKtExt_Json : TestBase() {
         b.isDeleted = true;
 
 
-        var result   = ApiResult<Any>();
+        var result = ApiResult<Any>();
         result.data = b;
 
         var str = result.ToJson();
