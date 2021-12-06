@@ -121,12 +121,12 @@ open class UploadService {
     @Autowired
     lateinit var localUploader: UploadFileForLocalService
 
-    val minioUploader: UploadFileForMinioService? by lazy {
-        return@lazy SpringUtil.getBeanWithNull(UploadFileForMinioService::class.java)
+    val minioUploader: MinioBaseService? by lazy {
+        return@lazy SpringUtil.getBeanWithNull(MinioBaseService::class.java)
     }
 
-    val aliOssUploader: UploadFileForAliOssService? by lazy {
-        return@lazy SpringUtil.getBeanWithNull(UploadFileForAliOssService::class.java)
+    val aliOssUploader: AliOssBaseService? by lazy {
+        return@lazy SpringUtil.getBeanWithNull(AliOssBaseService::class.java)
     }
 
     /**

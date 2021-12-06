@@ -3,6 +3,8 @@ package nbcp.base.service
 import io.minio.*
 import nbcp.comm.FullName
 import nbcp.comm.HasValue
+import nbcp.comm.JsonResult
+import nbcp.comm.Skip
 import nbcp.utils.MyUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
@@ -15,7 +17,7 @@ import java.io.InputStream
 
 @Service
 @ConditionalOnClass(MinioClient::class)
-class UploadFileForMinioService : InitializingBean {
+class MinioBaseService : InitializingBean {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -36,24 +38,19 @@ class UploadFileForMinioService : InitializingBean {
         return MINIO_ENDPOINT.HasValue && MINIO_ACCESSKEY.HasValue && MINIO_SECRETKEY.HasValue
     }
 
+    private val minioClient by lazy {
+        return@lazy MinioClient.builder().endpoint(MINIO_ENDPOINT).credentials(MINIO_ACCESSKEY, MINIO_SECRETKEY).build()
+    }
+
     fun upload(fileStream: InputStream, group: String, fileData: UploadFileNameData): String {
         if (check() == false) {
-            return "";
+            throw java.lang.RuntimeException("minIO缺少配置项！")
         }
-
 
         if (group.isEmpty()) {
             throw java.lang.RuntimeException("minIO需要group值！")
         }
 
-        lateinit var minioClient: MinioClient
-        try {
-            minioClient =
-                MinioClient.builder().endpoint(MINIO_ENDPOINT).credentials(MINIO_ACCESSKEY, MINIO_SECRETKEY).build()
-        } catch (e: Exception) {
-            logger.error(e.message + " . 连接错误 endpoint: ${MINIO_ENDPOINT}")
-            throw e;
-        }
         //不自动创建桶。因为要提前创建，要对桶进行授权。
 
 //        var exists = try {
@@ -114,6 +111,37 @@ class UploadFileForMinioService : InitializingBean {
                 .map { it.trim('/') }
                 .joinToString("/")
         }
+    }
+
+
+    fun delete(url: String): JsonResult {
+        var path = url;
+        if (path.startsWith("http://", true) || path.startsWith("https://", true)) {
+            if (path.startsWith(MINIO_ENDPOINT, true) == false) {
+                return JsonResult.error("不识别Minio地址")
+            }
+
+            path = path.substring(MINIO_ENDPOINT.length);
+        }
+
+        var sects = path.split('/').filter { it.HasValue };
+        var group = sects[0];
+        var name = sects.Skip(1).joinToString("/")
+
+
+        minioClient.removeObject(
+            RemoveObjectArgs.builder()
+                .bucket(group)
+                .`object`(name)
+                .apply {
+                    if (MINIO_REGION.HasValue) {
+                        this.region(MINIO_REGION)
+                    }
+                }
+                .build()
+        )
+
+        return JsonResult();
     }
 
     override fun afterPropertiesSet() {

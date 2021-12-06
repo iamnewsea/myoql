@@ -12,6 +12,7 @@ import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import nbcp.comm.*
 import nbcp.utils.*
+import org.springframework.boot.autoconfigure.SpringBootApplication
 import java.time.Duration
 import java.time.LocalDateTime
 
@@ -23,7 +24,7 @@ import java.time.LocalDateTime
 @ExtendWith(SpringExtension::class)
 @WebAppConfiguration
 @SpringBootTest(classes = [PzxEntityTestApplication::class])
-//@TestPropertySource(locations = arrayOf("classpath:application.yml"))
+@TestPropertySource(locations = ["classpath:application.yml"])
 //@ActiveProfiles("unittest","productprofile")
 //注释 pom.xml 中的  project.build.resources.resource 中的 excludes
 abstract class TestBase {

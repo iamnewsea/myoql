@@ -5,6 +5,6 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=nbcp.MyWebInitCon
 ,nbcp.base.service.UserAuthenticationService\
 ,nbcp.base.service.UploadService\
 ,nbcp.base.service.UploadFileForLocalService\
-,nbcp.base.service.UploadFileForMinioService\
-,nbcp.base.service.UploadFileForAliOssService
+,nbcp.base.service.MinioBaseService\
+,nbcp.base.service.AliOssBaseService
 

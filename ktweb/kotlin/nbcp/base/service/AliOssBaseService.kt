@@ -27,7 +27,7 @@ import java.util.concurrent.*
 
 @Service
 @ConditionalOnClass(OSSClientBuilder::class)
-class UploadFileForAliOssService {
+class AliOssBaseService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -76,6 +76,5 @@ class UploadFileForAliOssService {
         }
         return "https://${group}.${endpoint}${fileName}"
     }
-
 
 }
