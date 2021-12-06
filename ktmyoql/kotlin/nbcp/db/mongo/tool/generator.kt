@@ -32,12 +32,12 @@ class generator {
     }
 
     fun work(
-        targetFileName: String,  //目标文件
-        basePackage: String,   //实体的包名
-        anyEntityClass: Class<*>,  //任意实体的类名
-        packages: Array<String> = arrayOf(),   //import 包名
-        nameMapping: StringMap = StringMap(), // 名称转换
-        ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
+            targetFileName: String,  //目标文件
+            basePackage: String,   //实体的包名
+            anyEntityClass: Class<*>,  //任意实体的类名
+            packages: Array<String> = arrayOf(),   //import 包名
+            nameMapping: StringMap = StringMap(), // 名称转换
+            ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
     ) {
         this.nameMapping = nameMapping;
 
@@ -59,7 +59,7 @@ class generator {
         println("开始生成 mor...")
 
         writeToFile(
-            """package nbcp.db.mongo.table
+                """package nbcp.db.mongo.table
 
 import nbcp.db.*
 import nbcp.db.mongo.*
@@ -68,7 +68,7 @@ import nbcp.comm.*
 import nbcp.db.mongo.entity.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-${packages.map { "import" + it }.joinToString("\n")}
+${packages.map { "import" + it }.joinToString(const.line_break)}
 
 //generate auto @${LocalDateTime.now().AsString()}
 """
@@ -83,21 +83,21 @@ ${packages.map { "import" + it }.joinToString("\n")}
             var groupEntities = group.value
 
             writeToFile(
-                """
+                    """
 @Component("mongo.${groupName}")
 @MetaDataGroup("${groupName}")
-class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
-    override fun getEntities():Set<BaseMetaData> = setOf(${
-                    group.value.map { genVarName(it).GetSafeKotlinName() }.joinToString(",")
-                })
+class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup {
+    override fun getEntities(): Set<BaseMetaData> = setOf(${
+                        group.value.map { genVarName(it).GetSafeKotlinName() }.joinToString(", ")
+                    })
 """
             )
             println("${groupName}:")
-            groupEntities.forEach {
-                writeToFile(genVarEntity(it).ToTab(1))
-            }
+            writeToFile(
+                    groupEntities.map { (genVarEntity(it).ToTab(1)) }.joinToString(const.line_break)
+            )
 
-            writeToFile("\n")
+            writeToFile(const.line_break)
 
             groupEntities.forEach {
                 count++;
@@ -109,20 +109,19 @@ class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
         }
 
         writeToFile(
-            """
+                """
 
 
-private fun join(vararg args: String) : MongoColumnName{
-    return MongoColumnName( args.toList().filter{it.HasValue}.joinToString (".") )
+private fun join(vararg args: String): MongoColumnName {
+    return MongoColumnName(args.toList().filter { it.HasValue }.joinToString("."))
 }
 
-private fun join_map(vararg args: String) : moer_map{
-    return moer_map(args.toList().filter{it.HasValue}.joinToString ("."))
+private fun join_map(vararg args: String): moer_map {
+    return moer_map(args.toList().filter { it.HasValue }.joinToString("."))
 }
 
-data class moer_map(val _pname: String)
-{
-    fun keys(keys: String): String{
+data class moer_map(val _pname: String) {
+    fun keys(keys: String): String {
         return this._pname + "." + keys
     }
 }
@@ -154,17 +153,17 @@ data class moer_map(val _pname: String)
 
 
         ClassUtil.findClasses(basePackage, anyEntityClass)
-            .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
-            .forEach {
+                .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
+                .forEach {
 
-                var groupName = it.getAnnotation(DbEntityGroup::class.java).value;
+                    var groupName = it.getAnnotation(DbEntityGroup::class.java).value;
 
-                if (ret.containsKey(groupName) == false) {
-                    ret[groupName] = mutableListOf();
+                    if (ret.containsKey(groupName) == false) {
+                        ret[groupName] = mutableListOf();
+                    }
+
+                    ret[groupName]!!.add(it)
                 }
-
-                ret[groupName]!!.add(it)
-            }
 
 
         return ret
@@ -176,33 +175,33 @@ data class moer_map(val _pname: String)
     fun findEmbClasses(clazz: Class<*>, deep: Int = 0): List<Class<*>> {
         if (deep == 6) return listOf();
         var ret = clazz.AllFields
-            .filter {
-                if (it.type.IsSimpleType()) return@filter false;
-                if (Map::class.java.isAssignableFrom(it.type)) {
-                    return@filter false;
-                }
+                .filter {
+                    if (it.type.IsSimpleType()) return@filter false;
+                    if (Map::class.java.isAssignableFrom(it.type)) {
+                        return@filter false;
+                    }
 
-                return@filter true;
-            }.map {
-                if (it.type.isArray) {
-                    return@map it.type.componentType;
-                }
-                if (List::class.java.isAssignableFrom(it.type)) {
-                    return@map (it.genericType as ParameterizedType).GetActualClass(0, {
-                        return@GetActualClass clazz.GetFirstTypeArguments()[0] as Class<*>;
-                    })
-                }
-                return@map it.type;
-            }.filter {
-                if (it.IsSimpleType()) return@filter false;
-                if (Map::class.java.isAssignableFrom(it)) {
-                    return@filter false;
-                }
+                    return@filter true;
+                }.map {
+                    if (it.type.isArray) {
+                        return@map it.type.componentType;
+                    }
+                    if (List::class.java.isAssignableFrom(it.type)) {
+                        return@map (it.genericType as ParameterizedType).GetActualClass(0, {
+                            return@GetActualClass clazz.GetFirstTypeArguments()[0] as Class<*>;
+                        })
+                    }
+                    return@map it.type;
+                }.filter {
+                    if (it.IsSimpleType()) return@filter false;
+                    if (Map::class.java.isAssignableFrom(it)) {
+                        return@filter false;
+                    }
 
-                return@filter true;
-            }
-            .distinctBy { it.name }
-            .toMutableList()
+                    return@filter true;
+                }
+                .distinctBy { it.name }
+                .toMutableList()
 
         var subClasses = mutableListOf<Class<*>>()
         ret.forEach {
@@ -214,7 +213,7 @@ data class moer_map(val _pname: String)
         return ret.distinctBy { it.name }
     }
 
-    fun getEmbClasses(groups: Map<String, MutableList<Class<*>>>) : MutableList<Class<*>> {
+    fun getEmbClasses(groups: Map<String, MutableList<Class<*>>>): MutableList<Class<*>> {
         var list = mutableListOf<Class<*>>()
 
         groups.values.forEach {
@@ -234,7 +233,6 @@ data class moer_map(val _pname: String)
     }
 
     private fun getMetaValue(fieldName: String, fieldType: Class<*>, parentTypeName: String): String {
-
 
         if (fieldName == "id") {
             return "join(this._pname, \"_id\")"
@@ -261,7 +259,7 @@ data class moer_map(val _pname: String)
             return ""
         }
 
-        return """${fieldType.name.split(".").last()}Meta(join(this._pname,"${fieldName}"))""";
+        return """${fieldType.name.split(".").last()}Meta(join(this._pname, "${fieldName}"))""";
     }
 
     private fun getMetaValue(field: Field, parentType: Class<*>, parentTypeName: String, deepth: Int): String {
@@ -301,13 +299,13 @@ data class moer_map(val _pname: String)
         }
 
         if (clazz.IsSimpleType() ||
-            Map::class.java.isAssignableFrom(clazz)
+                Map::class.java.isAssignableFrom(clazz)
         ) {
             return "\"${name}\"" to retTypeIsBasicType
         }
 
         if (List::class.java.isAssignableFrom(clazz) ||
-            clazz.isArray
+                clazz.isArray
         ) {
             //应该递归调用自己.
             return "" to retTypeIsBasicType
@@ -344,23 +342,23 @@ data class moer_map(val _pname: String)
         }
 
         var props = entType.AllFields
-            .filter { it.name != "Companion" }
-            .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
-            .map {
-                var v1 = getMetaValue(it, entType, entTypeName, 1)
+                .filter { it.name != "Companion" }
+                .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
+                .map {
+                    var v1 = getMetaValue(it, entType, entTypeName, 1)
 
-                return@map "${CodeGeneratorHelper.getFieldComment(it)}val ${it.name} = ${v1}".ToTab(1)
-            }
+                    return@map """${CodeGeneratorHelper.getFieldComment(it)}
+val ${it.name} = ${v1}""".removeEmpltyLine().ToTab(1)
+                }
 
         var entityTypeName = entTypeName;
 
 
         var ent =
-            """${CodeGeneratorHelper.getEntityComment(entType)}class ${entityTypeName}Meta (private val _pname: String) : MongoColumnName() {
+                """${CodeGeneratorHelper.getEntityComment(entType)}
+class ${entityTypeName}Meta(private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
-
-${props.joinToString("\n")}
-
+${props.map { const.line_break + it }.joinToString(const.line_break)}
     override fun toString(): String {
         return join(this._pname).toString()
     }
@@ -386,10 +384,24 @@ ${props.joinToString("\n")}
         }
 
         var entityTypeName = entTypeName + "Entity";
-        var entityVarName = getEntityName(entTypeName);
+        var entityVarName = getEntityName(entTypeName).GetSafeKotlinName();
 
-        return """${CodeGeneratorHelper.getEntityCommentOnly(entType)}val ${entityVarName.GetSafeKotlinName()} get() = ${entityTypeName}();"""
-//fun ${entityVarName}(collectionName: String)=${entityTypeName}(collectionName);""";
+        var varTable = IVarTable::class.java.isAssignableFrom(entType)
+
+        var ret = mutableListOf<String>()
+        ret.add("")
+        if (varTable) {
+            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, " (变表)")}
+private val ${entityVarName} get() = ${entityTypeName}();""")
+
+            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, " (变表)")}
+fun ${entityVarName}(tailPart: String) = ${entityTypeName}("${entityVarName}-${'$'}tailPart");""")
+        } else {
+            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType)}
+val ${entityVarName} get() = ${entityTypeName}();""")
+        }
+        return ret.joinToString(const.line_break)
+
     }
 
 
@@ -406,23 +418,23 @@ ${props.joinToString("\n")}
         val pks = mutableSetOf<String>()
 
         val props = entType.AllFields
-            .filter { it.name != "Companion" }
-            .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
-            .map {
+                .filter { it.name != "Companion" }
+                .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
+                .map {
 
-                if (it.getAnnotation(DbKey::class.java) != null) {
-                    pks.add(it.name);
-                }
+                    if (it.getAnnotation(DbKey::class.java) != null) {
+                        pks.add(it.name);
+                    }
 
-                var (retValue, retTypeIsBasicType) = getEntityValue1(it, entType)
-                if (retTypeIsBasicType) {
-                    return@map "${CodeGeneratorHelper.getFieldComment(it)}val ${it.name} = MongoColumnName(${retValue})".ToTab(
-                        1
-                    )
-                } else {
-                    return@map "${CodeGeneratorHelper.getFieldComment(it)}val ${it.name} = ${retValue}".ToTab(1)
-                }
-            }.toSet()
+                    var (retValue, retTypeIsBasicType) = getEntityValue1(it, entType)
+                    if (retTypeIsBasicType) {
+                        return@map """${CodeGeneratorHelper.getFieldComment(it)}
+val ${it.name} = MongoColumnName(${retValue})""".removeEmpltyLine().ToTab(1)
+                    } else {
+                        return@map """${CodeGeneratorHelper.getFieldComment(it)}
+val ${it.name} = ${retValue}""".removeEmpltyLine().ToTab(1)
+                    }
+                }.toSet()
 
         val entityTypeName = entTypeName + "Entity"
         var dbName = entType.getAnnotation(DbName::class.java)?.value ?: ""
@@ -455,56 +467,64 @@ ${props.joinToString("\n")}
 
 
             idMethods.add(
-                """
+                    """
     fun queryBy${
-                    keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
-                } (${
-                    keys.map {
-                        "${MyUtil.getSmallCamelCase(it)}: ${
-                            entType.GetFieldPath(
-                                *it.split(".").toTypedArray()
-                            )!!.type.kotlinTypeName
-                        }"
-                    }.joinToString(",")
-                }) : MongoQueryClip<${entityTypeName}, ${entType.name}> {
-        return this.query()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+                        keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
+                    }(${
+                        keys.map {
+                            "${MyUtil.getSmallCamelCase(it)}: ${
+                                entType.GetFieldPath(
+                                        *it.split(".").toTypedArray()
+                                )!!.type.kotlinTypeName
+                            }"
+                        }.joinToString(",")
+                    }): MongoQueryClip<${entityTypeName}, ${entType.name}> {
+        return this.query()${keys.map { ".where { it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
     fun deleteBy${
-                    keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
-                } (${
-                    keys.map {
-                        "${MyUtil.getSmallCamelCase(it)}: ${
-                            entType.GetFieldPath(
-                                *it.split(".").toTypedArray()
-                            )!!.type.kotlinTypeName
-                        }"
-                    }.joinToString(",")
-                }) : MongoDeleteClip<${entityTypeName}> {
-        return this.delete()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+                        keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
+                    }(${
+                        keys.map {
+                            "${MyUtil.getSmallCamelCase(it)}: ${
+                                entType.GetFieldPath(
+                                        *it.split(".").toTypedArray()
+                                )!!.type.kotlinTypeName
+                            }"
+                        }.joinToString(",")
+                    }): MongoDeleteClip<${entityTypeName}> {
+        return this.delete()${keys.map { ".where { it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
     fun updateBy${
-                    keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
-                } (${
-                    keys.map {
-                        "${MyUtil.getSmallCamelCase(it)}: ${
-                            entType.GetFieldPath(
-                                *it.split(".").toTypedArray()
-                            )!!.type.kotlinTypeName
-                        }"
-                    }.joinToString(",")
-                }) : MongoUpdateClip<${entityTypeName}> {
-        return this.update()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+                        keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
+                    }(${
+                        keys.map {
+                            "${MyUtil.getSmallCamelCase(it)}: ${
+                                entType.GetFieldPath(
+                                        *it.split(".").toTypedArray()
+                                )!!.type.kotlinTypeName
+                            }"
+                        }.joinToString(",")
+                    }): MongoUpdateClip<${entityTypeName}> {
+        return this.update()${keys.map { ".where { it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 """
             )
         }
 
-        val ent = """${CodeGeneratorHelper.getEntityComment(entType)}class ${entityTypeName}(collectionName: String ="")
-    :MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java,collectionName.AsString("${dbName}")) {
-${props.joinToString("\n")}
-${idMethods.joinToString("\n")}
+        var varTable = IVarTable::class.java.isAssignableFrom(entType);
+        var varTableCode = "";
+        var varTableRemark = "";
+        if (varTable) {
+            varTableRemark = " (变表)"
+            varTableCode = """, IVarTable"""
+        }
+        val ent = """${CodeGeneratorHelper.getEntityComment(entType, varTableRemark)}
+class ${entityTypeName}(collectionName: String = "")
+    : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, collectionName.AsString("${dbName}"))${varTableCode} {
+${props.map { const.line_break + it }.joinToString(const.line_break)}
+${idMethods.joinToString(const.line_break)}
 }
 """
 

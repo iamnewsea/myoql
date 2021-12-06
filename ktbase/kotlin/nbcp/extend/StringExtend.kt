@@ -53,19 +53,19 @@ fun String.IsNumberic(): Boolean {
 
     var hasDot = false;
     if (self.all {
-            if (it == '.') {
-                if (hasDot == false) {
-                    hasDot = true;
+                if (it == '.') {
+                    if (hasDot == false) {
+                        hasDot = true;
+                        return@all true;
+                    }
+                    return@all false;
+                }
+
+                if (it.isDigit()) {
                     return@all true;
                 }
                 return@all false;
-            }
-
-            if (it.isDigit()) {
-                return@all true;
-            }
-            return@all false;
-        } == false) {
+            } == false) {
         return false;
     }
 
@@ -103,12 +103,23 @@ fun String.remove(vararg removeChars: Char, ignoreCase: Boolean = false): String
     return this.split(*removeStrings, ignoreCase = ignoreCase).joinToString("")
 }
 
+/**
+ * 去除空行
+ */
+fun String.removeEmpltyLine(withTrim: Boolean = false): String {
+    return this.lineSequence().filter {
+        if (withTrim) {
+            return@filter it.trim().any()
+        } else return@filter it.any()
+    }.joinToString(const.line_break)
+}
+
 data class CharFlowSetting @JvmOverloads constructor(
-    var index: Int = 0,
-    var item: Char = 0.toChar(),
-    var prevCutIndex: Int = 0,
-    //休息状态，如在括号内部
-    var sleep: Boolean = false
+        var index: Int = 0,
+        var item: Char = 0.toChar(),
+        var prevCutIndex: Int = 0,
+        //休息状态，如在括号内部
+        var sleep: Boolean = false
 )
 
 /**
@@ -174,9 +185,9 @@ fun String.cutWith(callback: ((CharFlowSetting) -> Boolean)): List<String> {
  * 定义引用定义，开始符号，结束符号，逃逸符号。
  */
 data class TokenQuoteDefine @JvmOverloads constructor(
-    var start: Char,
-    var end: Char = 0.toChar(),
-    var escape: Char = '\\'
+        var start: Char,
+        var end: Char = 0.toChar(),
+        var escape: Char = '\\'
 ) {
     init {
         if (end.code == 0) {
@@ -249,14 +260,14 @@ fun String.nextIndexOf(startIndex: Int, until: (Char) -> Boolean): Int {
  */
 @JvmOverloads
 fun String.Tokenizer(
-    wordSplit: ((Char) -> Boolean)? = null,
-    quoteDefines: Array<TokenQuoteDefine> = arrayOf(
-        TokenQuoteDefine('`'),
-        TokenQuoteDefine('[', ']'),
-        TokenQuoteDefine('"'),
-        TokenQuoteDefine('\'')
-    ),
-    only1Blank: Boolean = true
+        wordSplit: ((Char) -> Boolean)? = null,
+        quoteDefines: Array<TokenQuoteDefine> = arrayOf(
+                TokenQuoteDefine('`'),
+                TokenQuoteDefine('[', ']'),
+                TokenQuoteDefine('"'),
+                TokenQuoteDefine('\'')
+        ),
+        only1Blank: Boolean = true
 ): List<String> {
     var wordSplit = wordSplit;
     if (wordSplit == null) {
@@ -331,10 +342,10 @@ fun String.Tokenizer(
  * 找下一个分词的位置，不能==startIndex
  */
 private fun getNextSplitIndex(
-    value: String,
-    startIndex: Int,
-    quoteDefines: Array<TokenQuoteDefine>,
-    wordSplit: (Char) -> Boolean
+        value: String,
+        startIndex: Int,
+        quoteDefines: Array<TokenQuoteDefine>,
+        wordSplit: (Char) -> Boolean
 ): Int {
 
     var startQuoteKeys = quoteDefines.map { it.start }.toTypedArray();
@@ -446,7 +457,13 @@ fun String.IsIn(vararg ts: String, ignoreCase: Boolean): Boolean {
  */
 fun String.ToTab(deepth: Int): String {
     if (deepth == 0) return this;
-    return this.prependIndent("    ".Repeat(deepth))
+
+    return lineSequence().map { line ->
+        if (line.any() == false) {
+            return@map "";
+        }
+        return@map "    ".Repeat(deepth) + line
+    }.joinToString(const.line_break)
 }
 
 
@@ -476,7 +493,7 @@ private fun getNodeText(node: Element): String? {
     for (index in 0..(childNode.length - 1)) {
         var subItem = childNode.item(index);
         if (subItem.nodeType != Node.TEXT_NODE &&
-            subItem.nodeType != Node.CDATA_SECTION_NODE
+                subItem.nodeType != Node.CDATA_SECTION_NODE
         ) {
             hasNode = true;
             break;
@@ -577,19 +594,19 @@ fun String.MatchPattern(pattern: String): StringMap {
     var tokens = mutableListOf<MatchPatternTokenItem>();
     var prevEndIndex = 0;
     Regex("""\b\w+\b""").findAll(pattern).toList()
-        .mapIndexed { _, it ->
-            var group = it.groups.firstOrNull();
-            if (group == null) {
-                return@mapIndexed
-            }
+            .mapIndexed { _, it ->
+                var group = it.groups.firstOrNull();
+                if (group == null) {
+                    return@mapIndexed
+                }
 
-            if (group.range.first > prevEndIndex) {
-                tokens.add(MatchPatternTokenItem(pattern.slice(prevEndIndex + 1..group.range.first - 1)))
-            }
+                if (group.range.first > prevEndIndex) {
+                    tokens.add(MatchPatternTokenItem(pattern.slice(prevEndIndex + 1..group.range.first - 1)))
+                }
 
-            tokens.add(MatchPatternTokenItem(group.value))
-            prevEndIndex = group.range.last;
-        }
+                tokens.add(MatchPatternTokenItem(group.value))
+                prevEndIndex = group.range.last;
+            }
 
     if (prevEndIndex + 1 < this.length) {
         tokens.add(MatchPatternTokenItem(pattern.substring(prevEndIndex + 1)))
@@ -659,10 +676,10 @@ fun <T> String.ToEnum(enumClazz: Class<T>): T? {
  */
 @JvmOverloads
 fun String.formatWithJson(
-    json: Map<String, String>,
-    style: String = "",
-    keyCallback: ((String) -> String)? = null,  //参数：原始key , 返回: 取map值的key
-    valueCallback: ((String, String?) -> String?)? = null  //参数： 原始key,value , 返回value
+        json: Map<String, String>,
+        style: String = "",
+        keyCallback: ((String) -> String)? = null,  //参数：原始key , 返回: 取map值的key
+        valueCallback: ((String, String?) -> String?)? = null  //参数： 原始key,value , 返回value
 
 ): String {
     var styleValue = style;
