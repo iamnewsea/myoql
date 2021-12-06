@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
 import java.io.InputStream
+import java.lang.RuntimeException
 import javax.imageio.ImageIO
 import javax.servlet.http.HttpServletRequest
 
@@ -198,6 +199,7 @@ open class UploadService {
                 var files = it.second;
 
                 files.ForEachExt for2@{ file, _ ->
+                    fileName = getBestFileName(fileName, file.originalFilename)
                     var ret1 = doUpload(group, file, fileName, storageType, user, corpId);
                     if (ret1.msg.HasValue) {
                         msg = ret1.msg;
@@ -216,5 +218,24 @@ open class UploadService {
         }
 
         return ListResult.of(list)
+    }
+
+    /**
+     * 找到最合适的文件名
+     */
+    private fun getBestFileName(fileName: String?, originalFilename: String?): String {
+        if (fileName == null && originalFilename == null) {
+            throw RuntimeException("找不到文件名")
+        }
+        if (fileName == null) {
+            return originalFilename!!;
+        }
+        if (originalFilename == null) return fileName;
+
+        if (fileName.contains(".")) {
+            return fileName
+        }
+
+        return originalFilename;
     }
 }
