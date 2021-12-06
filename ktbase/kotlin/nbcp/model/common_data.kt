@@ -153,6 +153,9 @@ open class LoginNamePasswordData(var loginName: String = "", var password: Strin
 open class LoginUserModel @JvmOverloads constructor(
     var token: String = "",
     var system: String = "",
+    /**
+     * 是否是超级管理员
+     */
     var isAdmin: Boolean = false,
     id: String = "",
     var loginName: String = "",
