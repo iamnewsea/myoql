@@ -53,7 +53,7 @@ open class CityServlet {
         var list = db.mor_base.sysCity.query()
             .select { it.code }
             .select { it.shortName }
-            .where { it.pcode match_in city_codes }
+            .where { it.code match_in city_codes }
             .orderByAsc { it.code }
             .toList()
             .map { cn_city_model(it.code, it.shortName) }
