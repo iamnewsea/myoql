@@ -9,53 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2021-12-05 14:28:30
-
-
-class MenuDefineMeta(private val _pname: String) : MongoColumnName() {
-    constructor(_val: MongoColumnName) : this(_val.toString()) {}
-
-    val id = join(this._pname, "_id")
-
-    /**
-     * 菜单名称
-     */
-    @Cn("菜单名称")
-    val name = join(this._pname, "name")
-
-    /**
-     * 菜单链接
-     */
-    @Cn("菜单链接")
-    val url = join(this._pname, "url")
-
-    /**
-     * class
-     */
-    @Cn("class")
-    val css = join(this._pname, "css")
-
-    /**
-     * 资源编码
-     */
-    @Cn("资源编码")
-    val code = join(this._pname, "code")
-
-    /**
-     * 排序
-     */
-    @Cn("排序")
-    val sort = join(this._pname, "sort")
-
-    /**
-     * 子菜单
-     */
-    @Cn("子菜单")
-    val menus = join(this._pname, "menus") /*:递归类*/
-    override fun toString(): String {
-        return join(this._pname).toString()
-    }
-}
+//generate auto @2021-12-06 11:11:39
 
 
 class IdUrlMeta(private val _pname: String) : MongoColumnName() {
@@ -329,17 +283,8 @@ class BusinessLicenseDataMeta(private val _pname: String) : MongoColumnName() {
 @Component("mongo.MongoBase")
 @MetaDataGroup("MongoBase")
 class MongoBaseGroup : IDataGroup {
-    override fun getEntities(): Set<BaseMetaData> = setOf(appMenu, basicUser, basicUserLoginInfo, flywayVersion, sysAnnex, sysCity, sysDictionary, sysDustbin, sysLog, sysOrganization)
+    override fun getEntities(): Set<BaseMetaData> = setOf(basicUser, basicUserLoginInfo, flywayVersion, sysAnnex, sysCity, sysDictionary, sysDustbin, sysLog, sysOrganization)
 
-
-    /**
-     * 菜单 (变表)
-     */
-    private val appMenu get() = AppMenuEntity();
-    /**
-     * 菜单 (变表)
-     */
-    fun appMenu(tailPart: String) = AppMenuEntity("appMenu-$tailPart");
 
     /**
      * 用户信息
@@ -386,65 +331,6 @@ class MongoBaseGroup : IDataGroup {
      */
     val sysOrganization get() = SysOrganizationEntity();
 
-
-    /**
-     * 菜单 (变表)
-     */
-    @Cn("菜单")
-    class AppMenuEntity(collectionName: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.AppMenu>(nbcp.db.mongo.entity.AppMenu::class.java, collectionName.AsString("appMenu")), IVarTable {
-
-        val id = MongoColumnName("_id")
-
-        /**
-         * 菜单名称
-         */
-        @Cn("菜单名称")
-        val name = MongoColumnName("name")
-
-        /**
-         * 创建时间
-         */
-        @Cn("创建时间")
-        val createAt = MongoColumnName("createAt")
-
-        /**
-         * 更新时间
-         */
-        @Cn("更新时间")
-        val updateAt = MongoColumnName("updateAt")
-
-        /**
-         * 菜单链接
-         */
-        @Cn("菜单链接")
-        val url = MongoColumnName("url")
-
-        /**
-         * class
-         */
-        @Cn("class")
-        val css = MongoColumnName("css")
-
-        /**
-         * 资源编码
-         */
-        @Cn("资源编码")
-        val code = MongoColumnName("code")
-
-        /**
-         * 排序
-         */
-        @Cn("排序")
-        val sort = MongoColumnName("sort")
-
-        /**
-         * 子菜单
-         */
-        @Cn("子菜单")
-        val menus = MenuDefineMeta("menus")
-
-    }
 
     /**
      * 用户信息

@@ -502,7 +502,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         this.request.postAction = { out ->
             out.write(
                 """--${boundary}
-Content-Disposition: form-data; name="${fileName}"; filename="blob"
+Content-Disposition: form-data; name="${fileName}"; filename="${fileName}"
 Content-Type: application/octet-stream
 
 """.replace("\n", "\r\n").toByteArray()

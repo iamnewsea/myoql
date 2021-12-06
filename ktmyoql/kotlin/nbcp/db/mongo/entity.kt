@@ -271,34 +271,3 @@ data class SysDictionary(
         @Cn("排序")
         var sort: Float = 0F,
 ) : BaseEntity()
-
-
-@Cn("菜单")
-@Document
-@DbEntityGroup("MongoBase")
-data class AppMenu(
-        @Cn("创建时间")
-        var createAt: LocalDateTime = LocalDateTime.now(),
-        @Cn("更新时间")
-        var updateAt: LocalDateTime? = null,
-) : MenuDefine(),IVarTable
-
-open class MenuDefine(
-        override var id: String = "",
-        @Cn("菜单名称")
-        var name: String = "",
-        @Cn("菜单链接")
-        var url: String = "",
-        @Cn("class")
-        var css: String = "",
-        @Cn("资源编码")
-        var code: String = "",
-        @Cn("排序")
-        var sort: Float = 0F,
-        @Cn("子菜单")
-        var menus: MutableList<MenuDefine> = mutableListOf()
-) : ITreeData<MenuDefine>, Serializable {
-    override fun children(): MutableList<MenuDefine> {
-        return this.menus;
-    }
-}
