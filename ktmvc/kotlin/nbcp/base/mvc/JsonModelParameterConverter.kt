@@ -15,11 +15,9 @@ import nbcp.web.getPostJson
 import nbcp.web.queryJson
 import org.slf4j.LoggerFactory
 import org.springframework.web.servlet.HandlerMapping
-import java.lang.RuntimeException
 import java.lang.reflect.Method
 import java.lang.reflect.ParameterizedType
 import javax.servlet.ServletRequest
-import javax.servlet.ServletRequestWrapper
 import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpSession
@@ -90,17 +88,9 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
 
         //查值最后一步。 转值
         if (value == null) {
-            if (parameter.parameterName == "skip") {
-                val pageNumber = getValueFromRequest(webRequest, parameter, "pageNumber").AsInt(-1)
-                val pageSize = getValueFromRequest(webRequest, parameter, "pageSize").AsInt(-1)
-
-                if (pageNumber > 0 && pageSize > 0) {
-                    return (pageNumber - 1) * pageSize
-                }
-            } else if (parameter.parameterName == "take") {
-                val pageNumber = getValueFromRequest(webRequest, parameter, "pageSize").AsInt(-1)
-                if (pageNumber > 0) {
-                    return pageNumber
+            translateAliasParam(webRequest, parameter).apply {
+                if (this != null) {
+                    return this;
                 }
             }
         }
@@ -150,13 +140,46 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         return value?.ConvertType(parameter.parameterType);
     }
 
+    /**
+     * 处理参数别名
+     */
+    private fun translateAliasParam(webRequest: HttpServletRequest, parameter: MethodParameter): Any? {
+
+        if (parameter.parameterName == "skip") {
+            val pageNumber = getValueFromRequest(webRequest, parameter, "pageNumber").AsInt(-1)
+            val pageSize = getValueFromRequest(webRequest, parameter, "pageSize").AsInt(-1)
+
+            if (pageNumber > 0 && pageSize > 0) {
+                return (pageNumber - 1) * pageSize
+            }
+
+            return null;
+        }
+
+        if (parameter.parameterName == "take") {
+            val pageNumber = getValueFromRequest(webRequest, parameter, "pageSize").AsInt(-1)
+            if (pageNumber > 0) {
+                return pageNumber
+            }
+            return null;
+        }
+
+        var kName = MyUtil.getKebabCase(parameter.parameterName);
+        if (kName != parameter.parameterName) {
+            return getValueFromRequest(webRequest, parameter, kName)
+        }
+
+
+        return null;
+    }
+
     private fun getValueFromRequest(
         webRequest: HttpServletRequest,
         parameter: MethodParameter,
-        key: String = ""
+        parameterName: String = ""
     ): Any? {
 
-        var parameterName = key;
+        var parameterName = parameterName;
         if (parameterName.isEmpty()) {
             parameterName = parameter.parameterName
         }
