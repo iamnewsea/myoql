@@ -177,6 +177,9 @@ object db {
     }
 
 
+    /**
+     * 简单模式
+     */
     @JvmStatic
     fun usingRedisCache(
         tableClass: KClass<*> = Boolean::class,
@@ -192,10 +195,9 @@ object db {
         /**
          * 唯一值
          */
-        sql: String,
-        cacheTime: Duration = Duration.ofHours(1)
+        sql: String
     ): FromRedisCacheData {
-        return usingRedisCache(tableClass.java.simpleName, arrayOf(), groupKey, groupValue, sql, cacheTime)
+        return usingRedisCache(tableClass.java.simpleName, arrayOf(), groupKey, groupValue, sql)
     }
 
 
