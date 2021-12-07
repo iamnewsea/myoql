@@ -7,6 +7,7 @@ import nbcp.comm.FindField
 import org.springframework.data.mongodb.core.query.Criteria
 import org.slf4j.LoggerFactory
 import nbcp.db.*;
+import org.springframework.data.mongodb.core.MongoTemplate
 import java.lang.RuntimeException
 import java.io.Serializable
 
@@ -33,6 +34,10 @@ abstract class MongoBaseMetaCollection<T : Serializable>(val entityClass: Class<
             .map { it.get(this) as MongoColumnName }
             .toTypedArray()
         return _columns;
+    }
+
+    fun getMongoTemplate():MongoTemplate{
+        return this.query().mongoTemplate;
     }
 
 

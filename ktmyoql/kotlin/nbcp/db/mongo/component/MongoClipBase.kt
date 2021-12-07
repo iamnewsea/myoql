@@ -41,9 +41,8 @@ open class MongoClipBase(var collectionName: String) : Serializable {
                 return db.mongo.getMongoTemplateByUri(uri) ?: throw RuntimeException("创建Mongo连接失败");
             }
 
-            var ds =
-                    db.mongo.mongoEvents.getDataSource(this.collectionName, isRead)
-                            ?: scopes.getLatest<MongoTemplateScope>()?.value
+            var ds = db.mongo.mongoEvents.getDataSource(this.collectionName, isRead)
+                ?: scopes.getLatest<MongoTemplateScope>()?.value
             if (ds != null) {
                 return ds;
             }
@@ -53,7 +52,7 @@ open class MongoClipBase(var collectionName: String) : Serializable {
         }
 
 
-    val actualTableName by lazy{
+    val actualTableName by lazy {
         db.mongo.mongoEvents.getActualTableName(collectionName);
     }
 
