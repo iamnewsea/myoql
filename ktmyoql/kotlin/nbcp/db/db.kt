@@ -197,7 +197,7 @@ object db {
          * 唯一值
          */
         sql: String,
-        consumer: Supplier<T>
+        consumer: Supplier<T?>
     ): T? {
         return usingRedisCache(tableClass.simpleName, arrayOf(), groupKey, groupValue, sql)
             .getJson(

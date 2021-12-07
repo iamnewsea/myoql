@@ -81,7 +81,7 @@ data class FromRedisCacheData @JvmOverloads internal constructor(
         return usingRedisCache({ it.FromListJson(cacheType) }, consumer) ?: listOf();
     }
 
-    private fun <T> usingRedisCache(cacheString: java.util.function.Function<String, T>, consumer: Supplier<T?>): T? {
+    private fun <T> usingRedisCache(converter: java.util.function.Function<String, T?>, consumer: Supplier<T?>): T? {
 
         val cacheKey = this.getCacheKey()
 
@@ -89,12 +89,12 @@ data class FromRedisCacheData @JvmOverloads internal constructor(
             val redisTemplate = SpringUtil.getBean<StringRedisTemplate>();
             val cacheValue = redisTemplate.opsForValue().get(cacheKey).AsString()
             if (cacheValue.HasValue) {
-                logger.Important("!查到Redis缓存数据! cacheKey:${cacheKey},sql:${this.sql}")
-//                if (clazz == Any::class.java || clazz == java.lang.Object::class.java) {
-//                    return cacheValue as T;
-//                }
-//                return cacheValue.FromJson(clazz)!!
-                return cacheString.apply(cacheValue)
+                converter.apply(cacheValue).apply {
+                    if (this != null) {
+                        logger.Important("!查到Redis缓存数据! cacheKey:${cacheKey},sql:${this.sql}")
+                        return this;
+                    }
+                }
             }
         }
 
