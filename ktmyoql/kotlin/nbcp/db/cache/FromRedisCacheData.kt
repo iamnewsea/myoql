@@ -12,7 +12,6 @@ import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 
-
 data class FromRedisCacheData @JvmOverloads internal constructor(
     /**
      * 缓存表
@@ -74,15 +73,15 @@ data class FromRedisCacheData @JvmOverloads internal constructor(
         return ret.joinToString("")
     }
 
-    fun <T> getJson(cacheType: Class<out T>, consumer: Supplier<T>): T {
-        return usingRedisCache({ it.FromJson(cacheType)!! }, consumer);
+    fun <T> getJson(cacheType: Class<out T>, consumer: Supplier<T?>): T? {
+        return usingRedisCache({ it.FromJson(cacheType) }, consumer);
     }
 
-    fun <T> getList(cacheType: Class<out T>, consumer: Supplier<List<T>>): List<T> {
-        return usingRedisCache({ it.FromListJson(cacheType) }, consumer);
+    fun <T> getList(cacheType: Class<out T>, consumer: Supplier<List<T>?>): List<T> {
+        return usingRedisCache({ it.FromListJson(cacheType) }, consumer) ?: listOf();
     }
 
-    private fun <T> usingRedisCache(cacheString: java.util.function.Function<String, T>, consumer: Supplier<T>): T {
+    private fun <T> usingRedisCache(cacheString: java.util.function.Function<String, T>, consumer: Supplier<T?>): T? {
 
         val cacheKey = this.getCacheKey()
 
@@ -100,6 +99,9 @@ data class FromRedisCacheData @JvmOverloads internal constructor(
         }
 
         val ret = consumer.get();
+        if (ret == null) {
+            return null;
+        }
 
         if (cacheSeconds >= 0 && cacheKey.HasValue) {
             var cacheSeconds = this.cacheSeconds

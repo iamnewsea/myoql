@@ -198,7 +198,7 @@ object db {
          */
         sql: String,
         consumer: Supplier<T>
-    ): T {
+    ): T? {
         return usingRedisCache(tableClass.simpleName, arrayOf(), groupKey, groupValue, sql)
             .getJson(
                 tableClass,
