@@ -21,6 +21,20 @@ annotation class MetaDataGroup(val value: String)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class RemoveToSysDustbin()
 
+/**
+ * 变表
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class VarTable(val value: String)
+
+
+/**
+ * 变库
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class VarDatabase(val value: String)
 
 /**
  * 记录当更新某些字段时,记录到日志表
@@ -52,11 +66,11 @@ annotation class DbEntityFieldRefs(vararg val value: DbEntityFieldRef)
 @Repeatable
 @Inherited
 annotation class DbEntityFieldRef(
-    val idField: String,
-    val nameField: String,
-    val refEntityClass: KClass<*>,
-    val refIdField: String = "",
-    val refNameField: String = ""
+        val idField: String,
+        val nameField: String,
+        val refEntityClass: KClass<*>,
+        val refIdField: String = "",
+        val refNameField: String = ""
 )
 
 

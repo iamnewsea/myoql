@@ -386,18 +386,29 @@ ${props.map { const.line_break + it }.joinToString(const.line_break)}
         var entityTypeName = entTypeName + "Entity";
         var entityVarName = getEntityName(entTypeName).GetSafeKotlinName();
 
-        var varTable = IVarTable::class.java.isAssignableFrom(entType)
+        var varTable = entType.getAnnotation(VarTable::class.java)
+        var varDb = entType.getAnnotation(VarDatabase::class.java)
+        var tailRemark = "";
+        if (varTable != null) {
+            tailRemark += " (变表)"
+        }
+        if (varDb != null) {
+            tailRemark += " (动态库)"
+        }
 
         var ret = mutableListOf<String>()
         ret.add("")
-        if (varTable) {
-            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, " (变表)")}
+        //可能既变表，又变库。可能两个参数。
+        var params = setOf(varDb?.value, varTable?.value).filter { it.HasValue };
+
+        if (params.any()) {
+            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
 private val ${entityVarName} get() = ${entityTypeName}();""")
 
-            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, " (变表)")}
-fun ${entityVarName}(tailPart: String) = ${entityTypeName}("${entityVarName}-${'$'}tailPart");""")
+            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
+fun ${entityVarName}(${params.map { it + ":String" }.joinToString(", ")}) = ${entityTypeName}("${entityVarName}-${params.map { "${'$'}{${it}}" }.joinToString("-")}");""")
         } else {
-            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType)}
+            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
 val ${entityVarName} get() = ${entityTypeName}();""")
         }
         return ret.joinToString(const.line_break)
@@ -513,16 +524,21 @@ val ${it.name} = ${retValue}""".removeEmpltyLine().ToTab(1)
             )
         }
 
-        var varTable = IVarTable::class.java.isAssignableFrom(entType);
+        var varTable = entType.getAnnotation(VarTable::class.java);
         var varTableCode = "";
         var varTableRemark = "";
-        if (varTable) {
+        if (varTable != null) {
             varTableRemark = " (变表)"
-            varTableCode = """, IVarTable"""
+            varTableCode = """${const.line_break}@VarTable("${varTable.value}")"""
         }
-        val ent = """${CodeGeneratorHelper.getEntityComment(entType, varTableRemark)}
+        var varDb = entType.getAnnotation(VarDatabase::class.java)
+        if (varDb != null) {
+            varTableRemark += " (动态库)"
+            varTableCode = """${const.line_break}@VarDatabase("${varDb.value}")"""
+        }
+        val ent = """${CodeGeneratorHelper.getEntityComment(entType, varTableRemark)}${varTableCode}
 class ${entityTypeName}(collectionName: String = "")
-    : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, collectionName.AsString("${dbName}"))${varTableCode} {
+    : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, collectionName.AsString("${dbName}")) {
 ${props.map { const.line_break + it }.joinToString(const.line_break)}
 ${idMethods.joinToString(const.line_break)}
 }
