@@ -141,7 +141,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             result = mongoTemplate.updateMulti(
                 query,
                 update,
-                actualTableName
+                this.collectionName
             );
 
             this.executeTime = LocalDateTime.now() - startAt
@@ -166,7 +166,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             error = e;
             throw e;
         } finally {
-            MongoLogger.logUpdate(error, actualTableName, query, update, result)
+            MongoLogger.logUpdate(error, this.collectionName, query, update, result)
 //            logger.InfoError(ret < 0) {
 //                """[update] ${this.collectionName}
 //[where] ${criteria.criteriaObject.ToJson()}
@@ -185,7 +185,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         update: org.springframework.data.mongodb.core.query.Update
     ): String {
         var msgs = mutableListOf<String>()
-        msgs.add("[update] " + this.actualTableName);
+        msgs.add("[update] " + this.collectionName);
         msgs.add("[where] " + where.criteriaObject.ToJson())
         msgs.add("[update] " + update.updateObject.ToJson())
 

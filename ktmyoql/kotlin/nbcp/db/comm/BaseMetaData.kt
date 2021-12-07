@@ -5,9 +5,11 @@ import nbcp.db.mongo.MongoEntityCollector
 import java.io.Serializable
 
 
-abstract class BaseMetaData(var tableName: String) : Serializable{
+abstract class BaseMetaData @JvmOverloads constructor(
+        var tableName: String,
+        /**
+         * 动态库使用
+         */
+        var databaseId: String = "") : Serializable {
 
-    val actualTableName by lazy {
-        db.mongo.mongoEvents.getActualTableName(tableName);
-    }
 }

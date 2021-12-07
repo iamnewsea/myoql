@@ -46,8 +46,8 @@ class MongoEntityCollector : BeanPostProcessor {
         @JvmStatic
         val dataSources = mutableListOf<IMongoDataSource>()
 
-        @JvmStatic
-        val collectionVarNames = mutableListOf<IMongoCollectionVarName>()
+//        @JvmStatic
+//        val collectionVarNames = mutableListOf<IMongoCollectionVarName>()
 
         /**
          * 根据名称查找定义的集合。
@@ -103,9 +103,9 @@ class MongoEntityCollector : BeanPostProcessor {
         if (bean is IMongoDataSource) {
             dataSources.add(bean);
         }
-        if (bean is IMongoCollectionVarName) {
-            collectionVarNames.add(bean);
-        }
+//        if (bean is IMongoCollectionVarName) {
+//            collectionVarNames.add(bean);
+//        }
 
         return super.postProcessAfterInitialization(bean, beanName)
     }
@@ -234,21 +234,21 @@ class MongoEntityCollector : BeanPostProcessor {
     }
 
 
-    fun getActualTableName(collectionName: String): String {
-        var ret = collectionName;
-
-        /**
-         * 按所有规则走一遍
-         */
-        collectionVarNames.all {
-            it.run(ret).apply {
-                if (this.HasValue) {
-                    ret = this;
-                }
-            }
-            return@all true;
-        }
-
-        return ret;
-    }
+//    fun getActualTableName(collectionName: String): String {
+//        var ret = collectionName;
+//
+//        /**
+//         * 按所有规则走一遍
+//         */
+//        collectionVarNames.all {
+//            it.run(ret).apply {
+//                if (this.HasValue) {
+//                    ret = this;
+//                }
+//            }
+//            return@all true;
+//        }
+//
+//        return ret;
+//    }
 }

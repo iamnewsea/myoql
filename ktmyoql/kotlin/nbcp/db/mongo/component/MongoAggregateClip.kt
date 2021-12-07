@@ -178,7 +178,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Serializable>(var m
         }.joinToString(",") + "]"
 
         var exp = """{
-aggregate: "${actualTableName}",
+aggregate: "${this.collectionName}",
 pipeline: ${pipeLineExpression} ,
 cursor: {} } """
         return exp;
@@ -220,7 +220,7 @@ cursor: {} } """
             error = e;
             throw e;
         } finally {
-            MongoLogger.logFind(error,actualTableName,queryJson,result);
+            MongoLogger.logFind(error,this.collectionName,queryJson,result);
 //            logger.InfoError(result == null) {
 //                """[aggregate] ${this.moerEntity.tableName}
 //[语句] ${queryJson}

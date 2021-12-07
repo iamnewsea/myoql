@@ -402,11 +402,32 @@ ${props.map { const.line_break + it }.joinToString(const.line_break)}
         var params = setOf(varDb?.value, varTable?.value).filter { it.HasValue };
 
         if (params.any()) {
-            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
-private val ${entityVarName} get() = ${entityTypeName}();""")
+            var varTableParam = "";
+            var varDbParam = "";
+
+            var varTableScopeVar = "\"\""
+            var varDbScopeVar = "\"\""
+
+            if (varTable != null) {
+                varTableParam = "-${'$'}{${varTable.value}}"
+                varTableScopeVar = """scopes.getLatest<VarTable${MyUtil.getBigCamelCase(varTable.value)}Scope>().value.AsString()"""
+            }
+
+            if (varDb != null) {
+                varDbParam = "${'$'}{${varDb.value}}"
+                varDbScopeVar = """scopes.getLatest<VarDatabase${MyUtil.getBigCamelCase(varDb.value)}Scope>().value.AsString()"""
+            }
 
             ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
-fun ${entityVarName}(${params.map { it + ":String" }.joinToString(", ")}) = ${entityTypeName}("${entityVarName}-${params.map { "${'$'}{${it}}" }.joinToString("-")}");""")
+val ${entityVarName} get() = ${entityTypeName}(${varTableScopeVar}, ${varDbScopeVar});""")
+
+
+
+
+            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
+fun ${entityVarName}(${params.map { it + ":String" }.joinToString(", ")}) = ${entityTypeName}("${entityVarName}${varTableParam}","${varDbParam}");""")
+
+
         } else {
             ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
 val ${entityVarName} get() = ${entityTypeName}();""")
@@ -537,8 +558,8 @@ val ${it.name} = ${retValue}""".removeEmpltyLine().ToTab(1)
             varTableCode = """${const.line_break}@VarDatabase("${varDb.value}")"""
         }
         val ent = """${CodeGeneratorHelper.getEntityComment(entType, varTableRemark)}${varTableCode}
-class ${entityTypeName}(collectionName: String = "")
-    : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, collectionName.AsString("${dbName}")) {
+class ${entityTypeName}(collectionName: String = "", databaseId: String = "")
+    : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, collectionName.AsString("${dbName}"), databaseId) {
 ${props.map { const.line_break + it }.joinToString(const.line_break)}
 ${idMethods.joinToString(const.line_break)}
 }
