@@ -263,6 +263,11 @@ object db {
 
 
     @JvmStatic
+    fun brokeRedisCache(tableClass: Class<*>, groupKey: String, groupValue: String) {
+        return BrokeRedisCacheData(tableClass.simpleName, groupKey, groupValue).brokeCache()
+    }
+
+    @JvmStatic
     fun brokeRedisCache(table: String, groupKey: String, groupValue: String) {
         return BrokeRedisCacheData(table, groupKey, groupValue).brokeCache()
     }
