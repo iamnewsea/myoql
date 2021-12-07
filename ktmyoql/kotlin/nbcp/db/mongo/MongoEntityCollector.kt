@@ -1,6 +1,7 @@
 package nbcp.db.mongo
 
 import nbcp.comm.ForEachExt
+import nbcp.comm.HasValue
 import nbcp.scope.*
 import nbcp.comm.usingScope
 import nbcp.db.*
@@ -44,6 +45,9 @@ class MongoEntityCollector : BeanPostProcessor {
 
         @JvmStatic
         val dataSources = mutableListOf<IMongoDataSource>()
+
+        @JvmStatic
+        val collectionVarNames = mutableListOf<IMongoCollectionVarName>()
 
         /**
          * 根据名称查找定义的集合。
@@ -98,6 +102,9 @@ class MongoEntityCollector : BeanPostProcessor {
 
         if (bean is IMongoDataSource) {
             dataSources.add(bean);
+        }
+        if (bean is IMongoCollectionVarName) {
+            collectionVarNames.add(bean);
         }
 
         return super.postProcessAfterInitialization(bean, beanName)
@@ -177,9 +184,9 @@ class MongoEntityCollector : BeanPostProcessor {
         var list = mutableListOf<UpdateEventResult>()
         usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
             updateEvents.ForEachExt { it, _ ->
-                var ret = it.beforeUpdate(update,chain);
-                if (ret.result ) {
-                    list.add(UpdateEventResult(it,chain,ret))
+                var ret = it.beforeUpdate(update, chain);
+                if (ret.result) {
+                    list.add(UpdateEventResult(it, chain, ret))
                 }
                 return@ForEachExt true
             }
@@ -197,9 +204,9 @@ class MongoEntityCollector : BeanPostProcessor {
         var list = mutableListOf<DeleteEventResult>()
         usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
             deleteEvents.ForEachExt { it, _ ->
-                var ret = it.beforeDelete(delete,chain);
-                if ( ret.result) {
-                    list.add(DeleteEventResult(it,chain,ret))
+                var ret = it.beforeDelete(delete, chain);
+                if (ret.result) {
+                    list.add(DeleteEventResult(it, chain, ret))
                 }
                 return@ForEachExt true
             }
@@ -221,6 +228,25 @@ class MongoEntityCollector : BeanPostProcessor {
             }
 
             return@firstOrNull true;
+        }
+
+        return ret;
+    }
+
+
+    fun getActualTableName(collectionName: String): String {
+        var ret = collectionName;
+
+        /**
+         * 按所有规则走一遍
+         */
+        collectionVarNames.all {
+            it.run(ret).apply {
+                if (this.HasValue) {
+                    ret = this;
+                }
+            }
+            return@all true;
         }
 
         return ret;

@@ -73,7 +73,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName) {
         var startAt = LocalDateTime.now()
         var error: Exception? = null;
         try {
-            mongoTemplate.insert(entities, this.collectionName)
+            mongoTemplate.insert(entities, this.actualTableName)
             this.executeTime = LocalDateTime.now() - startAt
 
             usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
@@ -88,7 +88,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName) {
             error = e;
             throw e;
         } finally {
-            MongoLogger.logInsert(error, collectionName, entities)
+            MongoLogger.logInsert(error, actualTableName, entities)
 //            logger.InfoError(ret < 0) {
 //                """[insert] ${this.collectionName}
 //${

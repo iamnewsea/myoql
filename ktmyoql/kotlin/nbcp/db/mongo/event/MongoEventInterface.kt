@@ -41,3 +41,8 @@ interface IMongoEntityDelete {
 interface IMongoDataSource {
     fun run(collection: String, isRead: Boolean): MongoTemplate?
 }
+
+
+interface IMongoCollectionVarName {
+    fun run(String: String): String
+}

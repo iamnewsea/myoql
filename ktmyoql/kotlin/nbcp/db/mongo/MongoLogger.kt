@@ -33,7 +33,7 @@ object MongoLogger {
         log(error, collectionName, entities.ToJson(), "", mongoLog::getInsertLog)
     }
 
-    fun log(
+    private fun log(
         error: Exception?, collectionName: String, queryJson: String, result: String, op: (String) -> Boolean
     ) {
         var getMsg: () -> String = getMsg@{
@@ -61,7 +61,7 @@ ${if (result.HasValue) ("[result] " + result + "\n") else ""}[耗时] ${db.execu
     }
 
 
-    fun log(
+    private fun log(
         error: Exception?, collectionName: String, op: (String) -> Boolean,
         getMsg: (() -> String)
     ) {
