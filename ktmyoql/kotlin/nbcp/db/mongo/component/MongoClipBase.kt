@@ -30,22 +30,33 @@ open class MongoClipBase(var collectionName: String) : Serializable {
         get() {
             var isRead = this is MongoBaseQueryClip || this is MongoAggregateClip<*, *>;
 
-            var config = SpringUtil.getBean<MongoCollectionDataSource>();
-            var dataSourceName = config.getDataSourceName(this.collectionName, isRead)
+            //配置是定海神针。
+            SpringUtil.getBean<MongoCollectionDataSource>().getDataSourceName(this.collectionName, isRead)
+                    .apply {
+                        if (this.HasValue) {
+                            var uri = SpringUtil.context.environment.getProperty("app.mongo.ds.${this}-ds")
+                            if (uri.isNullOrEmpty()) {
+                                throw RuntimeException("Mongo数据源配置项为空:app.mongo.ds.${this}-ds");
+                            }
+                            return db.mongo.getMongoTemplateByUri(uri) ?: throw RuntimeException("创建Mongo连接失败");
+                        }
+                    }
 
-            if (dataSourceName.HasValue) {
-                var uri = SpringUtil.context.environment.getProperty("app.mongo.ds.${dataSourceName}-ds")
-                if (uri.isNullOrEmpty()) {
-                    throw RuntimeException("Mongo数据源配置项为空:app.mongo.ds.${dataSourceName}-ds");
-                }
-                return db.mongo.getMongoTemplateByUri(uri) ?: throw RuntimeException("创建Mongo连接失败");
-            }
+            //定义动态数据源
+            db.mongo.mongoEvents.getDataSource(this.collectionName, isRead)
+                    .apply {
+                        if (this != null) {
+                            return this;
+                        }
+                    }
 
-            var ds = db.mongo.mongoEvents.getDataSource(this.collectionName, isRead)
-                ?: scopes.getLatest<MongoTemplateScope>()?.value
-            if (ds != null) {
-                return ds;
-            }
+
+            scopes.getLatest<MongoTemplateScope>()?.value
+                    .apply {
+                        if (this != null) {
+                            return this;
+                        }
+                    }
 
             //最后不分读写
             return SpringUtil.getBean<MongoTemplate>()
