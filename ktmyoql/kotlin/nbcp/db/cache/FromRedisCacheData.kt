@@ -1,7 +1,6 @@
 package nbcp.db.cache
 
 import nbcp.comm.*
-import nbcp.db.DbRedis
 import nbcp.utils.Md5Util
 import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory

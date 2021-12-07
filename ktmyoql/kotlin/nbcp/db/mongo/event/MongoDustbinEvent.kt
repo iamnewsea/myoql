@@ -20,7 +20,7 @@ class MongoDustbinEvent : IMongoEntityDelete {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    override fun beforeDelete(delete: MongoDeleteClip<*>): EventResult {
+    override fun beforeDelete(delete: MongoDeleteClip<*>,chain:EventChain): EventResult {
         var contains = MongoEntityCollector.dustbinEntities.contains(delete.moerEntity.entityClass)
         if (contains == false) {
             return EventResult(true, null);
@@ -35,7 +35,7 @@ class MongoDustbinEvent : IMongoEntityDelete {
         return EventResult(true, list)
     }
 
-    override fun delete(delete: MongoDeleteClip<*>, eventData: EventResult) {
+    override fun delete(delete: MongoDeleteClip<*>,chain:EventChain, eventData: EventResult) {
         val list = eventData.extData as List<Document>?
         if (list.isNullOrEmpty()) return;
 

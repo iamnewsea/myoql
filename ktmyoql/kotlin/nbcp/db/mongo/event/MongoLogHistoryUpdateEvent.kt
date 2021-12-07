@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class MongoLogHistoryUpdateEvent : IMongoEntityUpdate {
-    override fun beforeUpdate(update: MongoBaseUpdateClip): EventResult {
+    override fun beforeUpdate(update: MongoBaseUpdateClip,chain:EventChain): EventResult {
         var logs =
             MongoEntityCollector.logHistoryMap.filter { MyUtil.getSmallCamelCase(it.key.simpleName) == update.collectionName }
         if (logs.any() == false) {
@@ -44,7 +44,7 @@ class MongoLogHistoryUpdateEvent : IMongoEntityUpdate {
         return EventResult(true, list)
     }
 
-    override fun update(update: MongoBaseUpdateClip, eventData: EventResult) {
+    override fun update(update: MongoBaseUpdateClip,chain:EventChain, eventData: EventResult) {
         if (eventData.extData == null) {
             return;
         }

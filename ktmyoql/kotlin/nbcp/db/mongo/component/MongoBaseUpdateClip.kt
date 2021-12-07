@@ -64,7 +64,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         db.affectRowCount = -1;
 
         var settingResult = db.mongo.mongoEvents.onUpdating(this)
-        if (settingResult.any { it.second.result == false }) {
+        if (settingResult.any { it.result.result == false }) {
             return 0;
         }
 
@@ -155,7 +155,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
                     )
                 ) {
                     settingResult.forEach {
-                        it.first.update(this, it.second)
+                        it.event.update(this, it.chain,it.result)
                     }
                 }
             }

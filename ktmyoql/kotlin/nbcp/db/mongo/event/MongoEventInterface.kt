@@ -1,5 +1,6 @@
 package nbcp.db.mongo.event;
 
+import nbcp.db.EventChain
 import nbcp.db.mongo.*;
 import nbcp.db.EventResult
 import org.springframework.data.mongodb.core.MongoTemplate
@@ -23,18 +24,18 @@ interface IMongoEntityInsert {
  * 实体Update接口，标记 DbEntityUpdate 注解的类使用。
  */
 interface IMongoEntityUpdate {
-    fun beforeUpdate(update: MongoBaseUpdateClip): EventResult
+    fun beforeUpdate(update: MongoBaseUpdateClip, chain: EventChain): EventResult
 
-    fun update(update: MongoBaseUpdateClip, eventData: EventResult)
+    fun update(update: MongoBaseUpdateClip, chain: EventChain, eventData: EventResult)
 }
 
 /**
  * 实体 Delete 接口，标记 DbEntityDelete 注解的类使用。
  */
 interface IMongoEntityDelete {
-    fun beforeDelete(delete: MongoDeleteClip<*>): EventResult
+    fun beforeDelete(delete: MongoDeleteClip<*>, chain: EventChain): EventResult
 
-    fun delete(delete: MongoDeleteClip<*>, eventData: EventResult)
+    fun delete(delete: MongoDeleteClip<*>, chain: EventChain, eventData: EventResult)
 }
 
 interface IMongoDataSource {

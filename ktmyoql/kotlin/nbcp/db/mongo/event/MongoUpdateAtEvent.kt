@@ -11,7 +11,7 @@ import java.time.LocalDateTime
  */
 @Component
 class MongoUpdateAtEvent : IMongoEntityUpdate {
-    override fun beforeUpdate(update: MongoBaseUpdateClip): EventResult {
+    override fun beforeUpdate(update: MongoBaseUpdateClip,chain:EventChain): EventResult {
         if (scopes.getLatest(MyOqlOrmScope.IgnoreUpdateAt) != null) {
             return EventResult(true, null)
         }
@@ -22,6 +22,6 @@ class MongoUpdateAtEvent : IMongoEntityUpdate {
         return EventResult(true, null)
     }
 
-    override fun update(update: MongoBaseUpdateClip, eventData: EventResult) {
+    override fun update(update: MongoBaseUpdateClip,chain:EventChain, eventData: EventResult) {
     }
 }

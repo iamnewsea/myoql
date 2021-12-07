@@ -2,8 +2,6 @@ package nbcp.aop
 
 import nbcp.TestBase
 import nbcp.comm.GroupLog
-import nbcp.comm.kotlinTypeName
-import nbcp.db.EventResult
 import nbcp.utils.ProxyUtil
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory

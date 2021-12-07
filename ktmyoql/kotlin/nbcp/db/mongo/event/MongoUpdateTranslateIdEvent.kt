@@ -11,7 +11,7 @@ import java.time.LocalDateTime
  */
 @Component
 class MongoUpdateTranslateIdEvent : IMongoEntityUpdate {
-    override fun beforeUpdate(update: MongoBaseUpdateClip): EventResult {
+    override fun beforeUpdate(update: MongoBaseUpdateClip,chain:EventChain): EventResult {
 
         for (kv in update.setData) {
             var value = kv.value;
@@ -31,6 +31,6 @@ class MongoUpdateTranslateIdEvent : IMongoEntityUpdate {
         return EventResult(true, null)
     }
 
-    override fun update(update: MongoBaseUpdateClip, eventData: EventResult) {
+    override fun update(update: MongoBaseUpdateClip,chain:EventChain, eventData: EventResult) {
     }
 }

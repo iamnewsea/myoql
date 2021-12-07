@@ -168,37 +168,43 @@ class MongoEntityCollector : BeanPostProcessor {
         return list.toTypedArray()
     }
 
-    fun onUpdating(update: MongoBaseUpdateClip): Array<Pair<IMongoEntityUpdate, EventResult>> {
+    fun onUpdating(update: MongoBaseUpdateClip): List<UpdateEventResult> {
+        var query = MongoBaseQueryClip(update.collectionName);
+        query.whereData.addAll(update.whereData)
+        var chain = EventChain(query)
+
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<IMongoEntityUpdate, EventResult>>()
+        var list = mutableListOf<UpdateEventResult>()
         usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
             updateEvents.ForEachExt { it, _ ->
-                var ret = it.beforeUpdate(update);
-                if (ret.result == false) {
-                    return@ForEachExt false;
+                var ret = it.beforeUpdate(update,chain);
+                if (ret.result ) {
+                    list.add(UpdateEventResult(it,chain,ret))
                 }
-                list.add(it to ret)
                 return@ForEachExt true
             }
         }
-        return list.toTypedArray()
+        return list
     }
 
-    fun onDeleting(delete: MongoDeleteClip<*>): Array<Pair<IMongoEntityDelete, EventResult>> {
+    fun onDeleting(delete: MongoDeleteClip<*>): List<DeleteEventResult> {
+
+        var query = MongoBaseQueryClip(delete.collectionName);
+        query.whereData.addAll(delete.whereData)
+        var chain = EventChain(query)
 
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<IMongoEntityDelete, EventResult>>()
+        var list = mutableListOf<DeleteEventResult>()
         usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
             deleteEvents.ForEachExt { it, _ ->
-                var ret = it.beforeDelete(delete);
-                if (!ret.result) {
-                    return@ForEachExt false;
+                var ret = it.beforeDelete(delete,chain);
+                if ( ret.result) {
+                    list.add(DeleteEventResult(it,chain,ret))
                 }
-                list.add(it to ret)
                 return@ForEachExt true
             }
         }
-        return list.toTypedArray()
+        return list
     }
 
 

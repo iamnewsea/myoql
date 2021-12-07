@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.time.LocalDateTime
 import java.io.Serializable
+
 /**
  * Created by udi on 17-4-17.
  */
@@ -53,7 +54,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Serializable>>(var moerEnt
         var criteria = this.moerEntity.getMongoCriteria(*whereData.toTypedArray());
 
         var settingResult = db.mongo.mongoEvents.onDeleting(this)
-        if (settingResult.any { it.second.result == false }) {
+        if (settingResult.any { it.result.result == false }) {
             return 0;
         }
 
@@ -72,7 +73,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Serializable>>(var moerEnt
             if (ret > 0) {
                 usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
                     settingResult.forEach {
-                        it.first.delete(this, it.second)
+                        it.event.delete(this, it.chain, it.result)
                     }
                 }
             }
@@ -80,7 +81,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Serializable>>(var moerEnt
             error = e
             throw e;
         } finally {
-            MongoLogger.logDelete(error,collectionName,query,result);
+            MongoLogger.logDelete(error, collectionName, query, result);
         }
 
         return ret;
