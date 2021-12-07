@@ -8,6 +8,7 @@ import nbcp.db.redis.RedisBaseGroup
 import nbcp.db.sql.table.SqlBaseGroup
 import java.time.Duration
 import nbcp.scope.*
+import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 
@@ -181,8 +182,8 @@ object db {
      * 简单模式
      */
     @JvmStatic
-    fun usingRedisCache(
-        tableClass: KClass<*> = Boolean::class,
+    fun <T> getRedisCacheJson(
+        tableClass: Class<T>,
         /**
          * 缓存表的隔离键, 如:"cityCode"
          */
@@ -195,9 +196,14 @@ object db {
         /**
          * 唯一值
          */
-        sql: String
-    ): FromRedisCacheData {
-        return usingRedisCache(tableClass.java.simpleName, arrayOf(), groupKey, groupValue, sql)
+        sql: String,
+        consumer: Supplier<T>
+    ): T {
+        return usingRedisCache(tableClass.simpleName, arrayOf(), groupKey, groupValue, sql)
+            .getJson(
+                tableClass,
+                consumer
+            )
     }
 
 
