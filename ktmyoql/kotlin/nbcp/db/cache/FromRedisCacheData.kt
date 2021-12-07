@@ -89,11 +89,10 @@ data class FromRedisCacheData @JvmOverloads internal constructor(
             val redisTemplate = SpringUtil.getBean<StringRedisTemplate>();
             val cacheValue = redisTemplate.opsForValue().get(cacheKey).AsString()
             if (cacheValue.HasValue) {
-                converter.apply(cacheValue).apply {
-                    if (this != null) {
-                        logger.Important("!查到Redis缓存数据! cacheKey:${cacheKey},sql:${this.sql}")
-                        return this;
-                    }
+                var ret = converter.apply(cacheValue);
+                if (ret != null) {
+                    logger.Important("!查到Redis缓存数据! cacheKey:${cacheKey},sql:${this.sql}")
+                    return ret;
                 }
             }
         }
