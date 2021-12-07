@@ -2,6 +2,7 @@ package nbcp.scope
 
 import nbcp.comm.GetEnumStringField
 import java.util.*
+import kotlin.reflect.KClass
 
 
 class ScopeStack : Stack<IScopeData>() {
@@ -11,6 +12,10 @@ class ScopeStack : Stack<IScopeData>() {
      */
     inline fun <reified R : IScopeData> getScopeTypes(): Set<R> {
         return getScopeTypes(R::class.java);
+    }
+
+    fun <R : IScopeData, Any> getScopeTypes(retType: KClass<R>): Set<R> {
+        return getScopeTypes(retType.java)
     }
 
     fun <R : IScopeData> getScopeTypes(retType: Class<R>): Set<R> {
@@ -76,6 +81,10 @@ class ScopeStack : Stack<IScopeData>() {
      */
     inline fun <reified R : IScopeData> getLatest(vararg enumValues: R): R? {
         return getLatest(R::class.java, *enumValues);
+    }
+
+    fun <R : IScopeData, Any> getLatest(clazz: KClass<R>, vararg enumValues: R): R? {
+        return getLatest(clazz.java, *enumValues)
     }
 
     fun <R : IScopeData> getLatest(clazz: Class<R>, vararg enumValues: R): R? {

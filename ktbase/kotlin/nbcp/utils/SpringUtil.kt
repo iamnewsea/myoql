@@ -22,6 +22,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
 import java.util.function.Supplier
+import kotlin.reflect.KClass
 
 /**
  * 这样能达到在所有Bean初始化之前执行的目的。
@@ -111,6 +112,11 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
         }
 
         @JvmStatic
+        fun containsBean(clazz: KClass<*>): Boolean {
+            return containsBean(clazz.java)
+        }
+
+        @JvmStatic
         fun containsBean(clazz: Class<*>): Boolean {
             return context.getBeanNamesForType(clazz).any()
         }
@@ -133,6 +139,11 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
             return context.getBean(name, *args);
         }
 
+        //通过class获取Bean.
+        @JvmStatic
+        fun <T:Any> getBean(clazz: KClass<T>): T {
+            return getBean(clazz.java)
+        }
 
         //通过class获取Bean.
         @JvmStatic
@@ -144,6 +155,11 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
         @JvmStatic
         inline fun <reified T> getBean(): T {
             return context.getBean(T::class.java);
+        }
+
+        @JvmStatic
+        fun <T:Any> getBeanWithNull(clazz: KClass<T>): T? {
+            return getBeanWithNull(clazz.java)
         }
 
         @JvmStatic

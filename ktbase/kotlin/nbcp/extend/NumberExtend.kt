@@ -7,6 +7,7 @@ import java.text.DecimalFormat
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import kotlin.reflect.KClass
 
 
 /*分 转化为 可读的金额。单位： 亿，万，元。
@@ -77,6 +78,10 @@ fun Long.ToLocalDateTime(): LocalDateTime {
 
 inline fun <reified T> Int.ToEnum(): T? {
     return this.ToEnum(T::class.java)
+}
+
+fun <T:Any> Int.ToEnum(enumClazz: KClass<T>): T? {
+    return this.ToEnum(enumClazz.java)
 }
 
 //通过 int value 找.

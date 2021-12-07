@@ -5,6 +5,7 @@ import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.time.*
 import java.util.*
+import kotlin.reflect.KClass
 
 
 /**
@@ -422,6 +423,10 @@ object MyUtil {
             }
             targetField.set(target, srcField.get(src))
         }
+    }
+
+    fun <T : Any> getSimpleClassDefaultValue(clazz: KClass<T>): Any? {
+        return getSimpleClassDefaultValue(clazz.java)
     }
 
     //简单类型，请参考 Class.IsSimpleType

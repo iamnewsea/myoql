@@ -264,7 +264,6 @@ fun Class<*>.ForEachField(fieldCallback: (Field) -> Boolean) {
     this.superclass.ForEachField(fieldCallback);
 }
 
-
 /**
  * 向上查找任意满足的类或接口。
  */

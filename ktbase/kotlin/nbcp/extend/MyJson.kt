@@ -5,6 +5,7 @@ package nbcp.comm
 
 import java.lang.RuntimeException
 import nbcp.scope.*
+import kotlin.reflect.KClass
 
 /**
  * Created by udi on 17-5-23.
@@ -73,8 +74,8 @@ fun <T> T.ToJson(style: JsonSceneEnumScope? = null): String {
 
 @JvmOverloads
 fun <T> String.FromJsonWithDefaultValue(
-        collectionClass: Class<T>,
-        style: JsonSceneEnumScope? = null
+    collectionClass: Class<T>,
+    style: JsonSceneEnumScope? = null
 ): T {
     return this.FromJson<T>(collectionClass, style) ?: collectionClass.newInstance()
 }
@@ -98,6 +99,10 @@ fun <T> String.FromListJson(componentClass: Class<T>, style: JsonSceneEnumScope?
 }
 
 
+fun <T : Any> String.FromJson(clazz: KClass<T>, style: JsonSceneEnumScope? = null): T? {
+    return this.FromJson(clazz.java, style)
+}
+
 @JvmOverloads
 fun <T> String.FromJson(clazz: Class<T>, style: JsonSceneEnumScope? = null): T? {
     if (this.isEmpty()) return null
@@ -116,12 +121,22 @@ fun <T> String.FromJson(clazz: Class<T>, style: JsonSceneEnumScope? = null): T? 
     }
 }
 
+
+fun <T:Any> Any.ConvertJson(clazz: KClass<out T>, style: JsonSceneEnumScope? = null): T {
+    return this.ConvertJson(clazz.java,style)
+}
+
 @JvmOverloads
 fun <T> Any.ConvertJson(clazz: Class<out T>, style: JsonSceneEnumScope? = null): T {
     if (clazz.isAssignableFrom(this::class.java)) {
         return this as T;
     }
     return style.getJsonMapper().convertValue(this, clazz)
+}
+
+
+fun <T:Any> Any.ConvertListJson(componentClass: KClass<out T>, style: JsonSceneEnumScope? = null): List<T> {
+    return  this.ConvertListJson(componentClass.java,style)
 }
 
 /**

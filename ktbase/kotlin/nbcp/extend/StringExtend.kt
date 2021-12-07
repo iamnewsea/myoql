@@ -9,6 +9,7 @@ import org.w3c.dom.NodeList
 import java.io.ByteArrayInputStream
 import java.lang.StringBuilder
 import javax.xml.parsers.DocumentBuilderFactory
+import kotlin.reflect.KClass
 
 
 /**
@@ -652,7 +653,9 @@ inline fun <reified T> String.ToEnum(): T? {
     return this.ToEnum(T::class.java)
 }
 
-
+fun <T:Any> String.ToEnum(enumClazz: KClass<T>): T? {
+    return this.ToEnum(enumClazz.java)
+}
 /**
  * 字符串转化为枚举，通过 String name 不区分大小写 查找. 如果找不到,再通过 numeric 找.
  */

@@ -7,6 +7,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
 import java.sql.Types;
+import kotlin.reflect.KClass
 
 /**
  * Created by yuxh on 2018/11/9
@@ -135,6 +136,10 @@ public enum class DbType {
     }
 
     companion object {
+        fun <T : Any> of(clazz: KClass<T>): DbType {
+            return of(clazz.java);
+        }
+
         @JvmStatic
         fun <T> of(clazz: Class<T>): DbType {
 
@@ -143,12 +148,12 @@ public enum class DbType {
             }
 
             DbType.values()
-                    .firstOrNull { it.javaType == clazz || (it.javaRefType != null && it.javaRefType == clazz) }
-                    .apply {
-                        if (this != null) {
-                            return this;
-                        }
+                .firstOrNull { it.javaType == clazz || (it.javaRefType != null && it.javaRefType == clazz) }
+                .apply {
+                    if (this != null) {
+                        return this;
                     }
+                }
 
             if (clazz == Character::class.java || clazz == java.lang.Character::class.java) {
                 return DbType.String
