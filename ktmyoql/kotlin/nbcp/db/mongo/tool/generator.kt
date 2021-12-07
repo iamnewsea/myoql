@@ -409,7 +409,7 @@ ${props.map { const.line_break + it }.joinToString(const.line_break)}
             var varDbScopeVar = "\"\""
 
             if (varTable != null) {
-                varTableParam = "-${'$'}{${varTable.value}}"
+                varTableParam = "${entityVarName}-${'$'}{${varTable.value}}"
                 varTableScopeVar = """scopes.getLatest<VarTable${MyUtil.getBigCamelCase(varTable.value)}Scope>().must().elseThrow { "找不到变量 ${varTable.value}" }.value"""
             }
 
@@ -425,7 +425,7 @@ val ${entityVarName} get() = ${entityTypeName}(${varTableScopeVar}, ${varDbScope
 
 
             ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
-fun ${entityVarName}(${params.map { it + ":String" }.joinToString(", ")}) = ${entityTypeName}("${entityVarName}${varTableParam}","${varDbParam}");""")
+fun ${entityVarName}(${params.map { it + ":String" }.joinToString(", ")}) = ${entityTypeName}("${varTableParam}","${varDbParam}");""")
 
 
         } else {
