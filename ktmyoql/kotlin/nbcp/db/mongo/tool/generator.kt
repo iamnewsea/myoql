@@ -410,12 +410,12 @@ ${props.map { const.line_break + it }.joinToString(const.line_break)}
 
             if (varTable != null) {
                 varTableParam = "-${'$'}{${varTable.value}}"
-                varTableScopeVar = """scopes.getLatest<VarTable${MyUtil.getBigCamelCase(varTable.value)}Scope>().value.AsString()"""
+                varTableScopeVar = """scopes.getLatest<VarTable${MyUtil.getBigCamelCase(varTable.value)}Scope>().must().elseThrow { "找不到变量 ${varTable.value}" }.value"""
             }
 
             if (varDb != null) {
                 varDbParam = "${'$'}{${varDb.value}}"
-                varDbScopeVar = """scopes.getLatest<VarDatabase${MyUtil.getBigCamelCase(varDb.value)}Scope>().value.AsString()"""
+                varDbScopeVar = """scopes.getLatest<VarDatabase${MyUtil.getBigCamelCase(varDb.value)}Scope>().must().elseThrow { "找不到变量 ${varDb.value}" }.value"""
             }
 
             ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
