@@ -61,12 +61,12 @@ class AppCacheTestKotlinService {
     fun code_cache_select(city: Int): MutableList<Document> {
         var sql = "select * from tab where city=:city";
         var map = JsonMap("city" to "010")
-        var list = FromRedisCacheData("tab2", arrayOf(), "city", city.toString(), sql + map.ToJson())
-                .usingRedisCache(Document::class.java) {
+        var list = db.usingRedisCache("tab2", arrayOf(), "city", city.toString(), sql + map.ToJson())
+                .getJson(Document::class.java) {
                     var list = Document(); // jdbcTemplate.queryList(sql,map)
                     list.put("name", "cache-test");
                     list.put("city", city.toString());
-                    return@usingRedisCache list;
+                    return@getJson list;
                 }
 
         return mutableListOf(list)
@@ -79,6 +79,6 @@ class AppCacheTestKotlinService {
 
 
     fun code_cache_broke(city: Int) {
-        BrokeRedisCacheData("tab2", "city", city.toString()).brokeCache();
+        db.brokeRedisCache("tab2", "city", city.toString());
     }
 }

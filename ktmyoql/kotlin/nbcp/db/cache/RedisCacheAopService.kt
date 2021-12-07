@@ -1,6 +1,7 @@
 package nbcp.db.cache
 
 import nbcp.comm.*
+import nbcp.db.db
 import nbcp.utils.SpringUtil
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
@@ -88,10 +89,10 @@ open class RedisCacheAopService {
             }
         }
 
-        val cacheData = FromRedisCacheData.of(cache, ext, variableMap);
+        val cacheData = db.usingRedisCache(cache, ext, variableMap);
 
-        return cacheData.usingRedisCache(signature.returnType, {
-            return@usingRedisCache joinPoint.proceed(args)
+        return cacheData.getJson(signature.returnType, {
+            return@getJson joinPoint.proceed(args)
         });
     }
 
@@ -132,6 +133,6 @@ open class RedisCacheAopService {
                         .mapIndexed { index, it -> it.name to args.get(index) }
         );
 
-        BrokeRedisCacheData.of(cache, variableMap).brokeCache();
+        db.brokeRedisCache(cache, variableMap);
     }
 }

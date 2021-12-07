@@ -1,13 +1,14 @@
 package nbcp.db
 
 import nbcp.comm.*
+import nbcp.db.cache.*
 import nbcp.utils.*
 import nbcp.db.mongo.table.MongoBaseGroup
 import nbcp.db.redis.RedisBaseGroup
 import nbcp.db.sql.table.SqlBaseGroup
 import java.time.Duration
 import nbcp.scope.*
-import java.io.Serializable
+import kotlin.reflect.KClass
 
 
 /**
@@ -28,7 +29,7 @@ object db {
     val es = db_es;
 
     @JvmStatic
-    val redis = db_redis;
+    val redis = DbRedis;
 
 //    private val _beforeExecuteDbData: ThreadLocal<Any?> = ThreadLocal.withInitial { return@withInitial null }
 //
@@ -158,4 +159,116 @@ object db {
     @JvmStatic
     val sql_base
         get() = SqlBaseGroup()
+
+
+//-------------------
+
+    @JvmStatic
+    fun usingRedisCache(cacheForSelect: FromRedisCache, sql: String, variableMap: JsonMap): FromRedisCacheData {
+        val spelExecutor = CacheKeySpelExecutor(variableMap);
+        return FromRedisCacheData(
+            spelExecutor.getVariableValue(cacheForSelect.getTableName()),
+            cacheForSelect.getJoinTableNames(),
+            spelExecutor.getVariableValue(cacheForSelect.groupKey),
+            spelExecutor.getVariableValue(cacheForSelect.groupValue),
+            spelExecutor.getVariableValue(cacheForSelect.sql.AsString(sql)),
+            cacheForSelect.cacheSeconds
+        )
+    }
+
+
+    @JvmStatic
+    fun usingRedisCache(
+        tableClass: KClass<*> = Boolean::class,
+        /**
+         * 缓存表的隔离键, 如:"cityCode"
+         */
+        groupKey: String,
+        /**
+         * 缓存表的隔离值,如: "010"
+         */
+        groupValue: String,
+
+        /**
+         * 唯一值
+         */
+        sql: String,
+        cacheTime: Duration = Duration.ofHours(1)
+    ): FromRedisCacheData {
+        return usingRedisCache(tableClass.java.simpleName, arrayOf(), groupKey, groupValue, sql, cacheTime)
+    }
+
+
+    @JvmStatic
+    fun usingRedisCache(
+        /**
+         * 如果 table 为空，则使用 table = tableClass.name
+         */
+        tableClass: KClass<*> = Boolean::class,
+        /**
+         * 缓存关联表
+         */
+        joinTables: Array<String> = arrayOf(),
+        /**
+         * 缓存表的隔离键, 如:"cityCode"
+         */
+        groupKey: String,
+        /**
+         * 缓存表的隔离值,如: "010"
+         */
+        groupValue: String,
+
+        /**
+         * 唯一值
+         */
+        sql: String,
+        cacheTime: Duration = Duration.ofHours(1),
+    ): FromRedisCacheData {
+        return usingRedisCache(tableClass.java.simpleName, joinTables, groupKey, groupValue, sql, cacheTime)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun usingRedisCache(
+        table: String = "",
+        /**
+         * 缓存关联表
+         */
+        joinTables: Array<String> = arrayOf(),
+        /**
+         * 缓存表的隔离键, 如:"cityCode"
+         */
+        groupKey: String,
+        /**
+         * 缓存表的隔离值,如: "010"
+         */
+        groupValue: String,
+
+        /**
+         * 唯一值
+         */
+        sql: String,
+        cacheTime: Duration = Duration.ofHours(1),
+    ): FromRedisCacheData {
+        return FromRedisCacheData(table, joinTables, groupKey, groupValue, sql, cacheTime.seconds.AsInt());
+    }
+
+
+    @JvmStatic
+    fun brokeRedisCache(table: String, groupKey: String, groupValue: String) {
+        return BrokeRedisCacheData(table, groupKey, groupValue).brokeCache()
+    }
+
+
+    @JvmStatic
+    fun brokeRedisCache(cacheForBroke: BrokeRedisCache, variableMap: JsonMap) {
+        val spelExecutor = CacheKeySpelExecutor(variableMap);
+        var broke = BrokeRedisCacheData(
+            spelExecutor.getVariableValue(cacheForBroke.getTableName()),
+            spelExecutor.getVariableValue(cacheForBroke.groupKey),
+            spelExecutor.getVariableValue(cacheForBroke.groupValue)
+        );
+
+        broke.brokeCache();
+    }
 }

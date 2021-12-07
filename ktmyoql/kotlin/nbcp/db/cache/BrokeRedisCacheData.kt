@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.StringRedisTemplate
 import kotlin.reflect.KClass
 
 
-data class BrokeRedisCacheData @JvmOverloads constructor(
+data class BrokeRedisCacheData @JvmOverloads internal constructor(
     var table: String = "",
     /**
      * 破坏表的隔离键，如: "cityCode"
@@ -19,25 +19,12 @@ data class BrokeRedisCacheData @JvmOverloads constructor(
      * 破坏表的隔离键值，如: "010"
      */
     var groupValue: String,
-    /**
-     * 如果 table 为空，则使用 table = tableClass.name
-     */
-    val tableClass: KClass<*> = Boolean::class
-) {
-    constructor() : this("", "", "") {
-    }
 
-    init {
-        if (this.table.isEmpty() && !this.tableClass.java.IsSimpleType()) {
-            this.table = this.tableClass.java.simpleName
-        }
-    }
+    ) {
 
     fun brokeCache() {
         val cacheBroke = this;
         logger.Important("!执行破坏缓存! ${cacheBroke.ToJson()}")
-
-        val redisTemplate = SpringUtil.getBean<StringRedisTemplate>();
 
         //场景： 对表全量删除
         if (cacheBroke.groupKey.isEmpty() || cacheBroke.groupValue.isEmpty()) {
@@ -106,15 +93,11 @@ data class BrokeRedisCacheData @JvmOverloads constructor(
     companion object {
         val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
-        fun of(cacheForBroke: BrokeRedisCache, variableMap: JsonMap): BrokeRedisCacheData {
-            val spelExecutor = CacheKeySpelExecutor(variableMap);
-            val ret = BrokeRedisCacheData();
-
-            ret.table = spelExecutor.getVariableValue(cacheForBroke.getTableName());
-            ret.groupKey = spelExecutor.getVariableValue(cacheForBroke.groupKey);
-            ret.groupValue = spelExecutor.getVariableValue(cacheForBroke.groupValue);
-            return ret;
+        /**
+         * 缓存数据源，使用系统固定的数据库，不涉及分组及上下文切换。
+         */
+        private val redisTemplate by lazy {
+            return@lazy SpringUtil.getBean<StringRedisTemplate>()
         }
-
     }
 }

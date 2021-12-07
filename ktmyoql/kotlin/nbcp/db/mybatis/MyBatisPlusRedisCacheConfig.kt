@@ -4,23 +4,19 @@ import com.baomidou.mybatisplus.core.conditions.ISqlSegment
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
 import nbcp.comm.*
 import nbcp.db.cache.BrokeRedisCacheData
-import nbcp.db.cache.FromRedisCache
-import nbcp.db.cache.FromRedisCacheData
+import nbcp.db.db
+import nbcp.db.cache.*
 import nbcp.utils.MyUtil
 import org.aopalliance.intercept.MethodInterceptor
 import org.aopalliance.intercept.MethodInvocation
-import org.apache.ibatis.annotations.Mapper
 import org.springframework.aop.Advisor
-import org.springframework.aop.ClassFilter
-import org.springframework.aop.MethodMatcher
-import org.springframework.aop.Pointcut
 import org.springframework.aop.support.DefaultPointcutAdvisor
 import org.springframework.aop.support.annotation.AnnotationMatchingPointcut
-import org.springframework.aop.support.annotation.AnnotationMethodMatcher
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.lang.reflect.Proxy
+import java.time.Duration
 
 
 @ConditionalOnClass(BaseMapper::class)
@@ -46,8 +42,8 @@ class MyBatisRedisCachePointcutAdvisor {
             if (method.name == "selectById") {
                 val cacheValue = selectById(invocation, cache);
                 if (cacheValue != null) {
-                    return cacheValue.usingRedisCache(cache.value.java) {
-                        return@usingRedisCache invocation.proceed()
+                    return cacheValue.getJson(cache.value.java) {
+                        return@getJson invocation.proceed()
                     }
                 }
             }
@@ -55,45 +51,45 @@ class MyBatisRedisCachePointcutAdvisor {
 
             if (method.name.IsIn("selectBatchIds", "selectByMap", "selectList")
             ) {
-                return FromRedisCacheData(
-                        tableName,
-                        arrayOf(),
-                        "",
-                        "",
-                        getMethodFullName(invocation),
-                        cacheSeconds = cache.cacheSeconds
+                return db.usingRedisCache(
+                    tableName,
+                    arrayOf(),
+                    "",
+                    "",
+                    getMethodFullName(invocation),
+                    cacheTime = Duration.ofSeconds(cache.cacheSeconds.toLong())
                 )
-                        .usingRedisCacheForList(cache.value.java) {
-                            return@usingRedisCacheForList invocation.proceed() as List<*>
-                        }
+                    .getList(cache.value.java) {
+                        return@getList invocation.proceed() as List<*>
+                    }
             }
 
             if (method.name == "selectCount") {
-                return FromRedisCacheData(
-                        tableName,
-                        arrayOf(),
-                        "",
-                        "",
-                        getMethodFullName(invocation),
-                        cacheSeconds = cache.cacheSeconds
+                return db.usingRedisCache(
+                    tableName,
+                    arrayOf(),
+                    "",
+                    "",
+                    getMethodFullName(invocation),
+                    cacheTime = Duration.ofSeconds(cache.cacheSeconds.toLong())
                 )
-                        .usingRedisCache(Long::class.java) {
-                            return@usingRedisCache invocation.proceed()
-                        }
+                    .getJson(Long::class.java) {
+                        return@getJson invocation.proceed()
+                    }
             }
 
             if (method.name == "selectOne") {
-                return FromRedisCacheData(
-                        tableName,
-                        arrayOf(),
-                        "",
-                        "",
-                        getMethodFullName(invocation),
-                        cacheSeconds = cache.cacheSeconds
+                return db.usingRedisCache(
+                    tableName,
+                    arrayOf(),
+                    "",
+                    "",
+                    getMethodFullName(invocation),
+                    cacheTime = Duration.ofSeconds(cache.cacheSeconds.toLong())
                 )
-                        .usingRedisCache(cache.value.java) {
-                            return@usingRedisCache invocation.proceed()
-                        }
+                    .getJson(cache.value.java) {
+                        return@getJson invocation.proceed()
+                    }
             }
 
 
@@ -130,18 +126,21 @@ class MyBatisRedisCachePointcutAdvisor {
             return ret;
         }
 
-        private fun selectById(invocation: MethodInvocation, cache: CacheForMyBatisPlusBaseMapper): FromRedisCacheData? {
+        private fun selectById(
+            invocation: MethodInvocation,
+            cache: CacheForMyBatisPlusBaseMapper
+        ): FromRedisCacheData? {
             val tableName = cache.value.simpleName!!;
             val idValue = invocation.arguments[0].AsString();
             if (idValue.isEmpty()) return null;
 
             return FromRedisCacheData(
-                    tableName,
-                    arrayOf(),
-                    "id",
-                    idValue,
-                    getMethodFullName(invocation),
-                    cacheSeconds = cache.cacheSeconds,
+                tableName,
+                arrayOf(),
+                "id",
+                idValue,
+                getMethodFullName(invocation),
+                cacheSeconds = cache.cacheSeconds,
             )
         }
 

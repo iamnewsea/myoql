@@ -66,8 +66,8 @@ public class TestJavaService {
      * @return
      */
     public List<Document> queryByCityOtherCondition(Integer city) {
-        Document d2 = new FromRedisCacheData("tab1", new String[]{}, "city", city.toString(), "code_cache_select" + city)
-                .usingRedisCache(Document.class, () -> {
+        Document d2 = db.usingRedisCache("tab1", new String[]{}, "city", city.toString(), "code_cache_select" + city)
+                .getJson(Document.class, () -> {
 
                     System.out.println("从数据库查询 city: " + city);
                     //随便给个查询
