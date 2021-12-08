@@ -19,7 +19,7 @@ abstract class SqlBaseMetaTable<T : Serializable>(
 
     //    abstract fun getColumns(): SqlColumnNames
     abstract fun getSpreadColumns(): Array<String>
-    abstract fun getConvertValueColumns(): Array<String>
+//    abstract fun getConvertValueColumns(): Array<String>
 
     @Transient
     private var _columns = SqlColumnNames()

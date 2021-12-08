@@ -42,20 +42,3 @@ annotation class SqlFk(val fieldName:String, val refTable: String, val refTableC
 //@Target(AnnotationTarget.FIELD)
 //@Retention(AnnotationRetention.RUNTIME)
 //annotation class SqlSpreadColumn()
-
-/**
- * 插入，或更新某个字段前，进行数据转换。
- * 使用方式，如在实体字段上定义 @ConverterValueToDb(TrimUppercaseConverter::class)
- */
-@Repeatable
-@Target(AnnotationTarget.FIELD)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class ConverterValueToDb(vararg val value: KClass<out IConverter>)
-
-
-interface IConverter {
-    /**
-     * @param field 实体字段
-     */
-    fun convert(field: Field, value: Any?): Any?
-}

@@ -145,21 +145,15 @@ val Class<*>.IsNumberType: Boolean
 fun <T> Class<T>.GetEnumList(values: String = ""): List<T> {
     if (this.isEnum == false) return listOf()
 
+    var list = this.getEnumConstants()
+
     if (values.HasValue) {
-        return values.split(",").filter { it.HasValue }.map { it.ToEnum(this)!! }
+        return values.split(",")
+                .map { v -> list.find { it.toString() == v } }
+                .filterNotNull()
     }
 
-    var valuesField = this.getDeclaredField("\$VALUES");
-    valuesField.isAccessible = true;
-
-    var valuesInEnum = valuesField.get(null)
-    if (valuesInEnum is Array<*>) {
-        return (valuesInEnum as Array<T>).toList();
-    }
-//    else if( valuesInEnum is List<*>){
-//        return valuesInEnum as List<T>;
-//    }
-    throw RuntimeException("Enum.\$VALUES 应该是 Array类型才对")
+    return list.toList()
 }
 
 /**
@@ -171,8 +165,8 @@ fun <T> Class<T>.GetEnumNumberField(): Field? {
 
     var ret_fields = this.declaredFields.filter {
         (it.modifiers and Modifier.PRIVATE) > 0 &&
-            (it.modifiers and Modifier.STATIC == 0) &&
-            it.type.IsNumberType
+                (it.modifiers and Modifier.STATIC == 0) &&
+                it.type.IsNumberType
     }
     if (ret_fields.size == 1) {
         var ret = ret_fields.first();
@@ -191,8 +185,8 @@ fun <T> Class<T>.GetEnumStringField(): Field? {
 
     var ret_fields = this.declaredFields.filter {
         (it.modifiers and Modifier.PRIVATE) > 0 &&
-            it.modifiers and Modifier.STATIC == 0 &&
-            it.type.IsStringType
+                it.modifiers and Modifier.STATIC == 0 &&
+                it.type.IsStringType
     }
 
     if (ret_fields.any()) {

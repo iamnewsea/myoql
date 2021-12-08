@@ -1,7 +1,6 @@
 package nbcp.db.sql
 
-import nbcp.db.Cn
-import nbcp.db.DbKey
+import nbcp.db.*
 import java.io.Serializable
 import java.time.LocalDateTime
 /**
@@ -13,7 +12,6 @@ interface ISqlDbEntity : Serializable {
 
 abstract class AutoNumberSqlDbEntity : Serializable {
     @DbKey
-    @ConverterValueToDb(AutoIdConverter::class)
     var id: Long = 0
 
     @Cn("创建时间")
@@ -22,7 +20,6 @@ abstract class AutoNumberSqlDbEntity : Serializable {
 
 abstract class AutoIdSqlDbEntity : Serializable {
     @DbKey
-    @ConverterValueToDb(AutoIdConverter::class)
     var id: String = ""
 
     @Cn("创建时间")

@@ -384,9 +384,7 @@ ${columnMetaDefines.props.joinToString("\n")}
     override fun getSpreadColumns(): Array<String> { return arrayOf<String>(${
             columnMetaDefines.columns_spread.map { "\"" + it + "\"" }.joinToString(",")
         })}
-    override fun getConvertValueColumns(): Array<String> { return arrayOf<String>(${
-            columnMetaDefines.columns_convertValue.map { "\"" + it + "\"" }.joinToString(",")
-        })}
+
     override fun getAutoIncrementKey(): String { return "${columnMetaDefines.autoIncrementKey}"}
     override fun getUks(): Array<Array<String>>{ return arrayOf(${uks2.joinToString(",")} )}
     override fun getFks(): Array<FkDefine>{ return arrayOf(${fks_exp_string.joinToString(",")})}
@@ -404,7 +402,7 @@ ${idMethods.joinToString("\n")}
             var autoIncrementKey: String = "",
             var uks: MutableSet<String> = mutableSetOf(),
             var pks: MutableSet<String> = mutableSetOf(),
-            var columns_convertValue: MutableSet<String> = mutableSetOf(),
+//            var columns_convertValue: MutableSet<String> = mutableSetOf(),
             var columns: MutableSet<String> = mutableSetOf(),
             var columns_spread: MutableSet<String> = mutableSetOf(),
             var props: MutableSet<String> = mutableSetOf(),
@@ -471,14 +469,14 @@ ${idMethods.joinToString("\n")}
                     }
 
 
-                    var converter = field.getAnnotation(ConverterValueToDb::class.java)
-                    var ann_converter = "";
-                    if (converter != null) {
-                        ret.columns_convertValue.add(db_column_name);
-                        ann_converter =
-                                "@ConverterValueToDb(" + (converter.value.map { it.qualifiedName + "::class" }.joinToString(",")
-                                        ?: "") + ")\n";
-                    }
+//                    var converter = field.getAnnotation(ConverterValueToDb::class.java)
+//                    var ann_converter = "";
+//                    if (converter != null) {
+//                        ret.columns_convertValue.add(db_column_name);
+//                        ann_converter =
+//                                "@ConverterValueToDb(" + (converter.value.map { it.qualifiedName + "::class" }.joinToString(",")
+//                                        ?: "") + ")\n";
+//                    }
 
                     val fieldDbType = DbType.of(field.type)
                     if (fieldDbType == DbType.Other) {
@@ -488,7 +486,7 @@ ${idMethods.joinToString("\n")}
                             ret.columns.add(db_column_name);
 
                             var item =
-                                    """${ann_converter}val ${parentEntityPrefix + field.name} = SqlColumnName(DbType.Json, this.getAliaTableName(),"${db_column_name}")""".ToTab(
+                                    """val ${parentEntityPrefix + field.name} = SqlColumnName(DbType.Json, this.getAliaTableName(),"${db_column_name}")""".ToTab(
                                             1
                                     )
                             ret.props.add(item);
@@ -501,7 +499,7 @@ ${idMethods.joinToString("\n")}
                             var spreadResult = getColumnMetaDefines(groupName, entityName, field.type, parentEntityPrefixs + field.name);
 
                             ret.uks.addAll(spreadResult.uks)
-                            ret.columns_convertValue.addAll(spreadResult.columns_convertValue)
+//                            ret.columns_convertValue.addAll(spreadResult.columns_convertValue)
                             ret.columns.addAll(spreadResult.columns)
                             ret.columns_spread.addAll(spreadResult.columns_spread)
                             ret.props.addAll(spreadResult.props)
@@ -516,7 +514,7 @@ ${idMethods.joinToString("\n")}
                     }
 
                     var item =
-                            """${ann_converter}val ${parentEntityPrefix + field.name} = SqlColumnName(DbType.${fieldDbType.name}, this.getAliaTableName(),"${db_column_name}")""".ToTab(
+                            """val ${parentEntityPrefix + field.name} = SqlColumnName(DbType.${fieldDbType.name}, this.getAliaTableName(),"${db_column_name}")""".ToTab(
                                     1
                             )
                     ret.props.add(item);

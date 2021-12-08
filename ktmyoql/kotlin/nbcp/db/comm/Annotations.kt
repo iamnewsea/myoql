@@ -4,6 +4,7 @@ import org.springframework.core.annotation.AliasFor
 import org.springframework.stereotype.Component
 import java.lang.annotation.Documented
 import java.lang.annotation.Inherited
+import java.lang.reflect.Field
 import kotlin.reflect.KClass
 
 
@@ -72,6 +73,3 @@ annotation class DbEntityFieldRef(
         val refIdField: String = "",
         val refNameField: String = ""
 )
-
-
-
