@@ -92,7 +92,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
 
         val startAt = LocalDateTime.now();
         this.script = this.getQueryScript(criteria);
-        val cursor = mongoTemplate.find(query, Document::class.java, this.collectionName)
+        val cursor = mongoTemplate.find(query, Document::class.java, this.actualTableName)
 
         this.executeTime = LocalDateTime.now() - startAt
 
@@ -166,7 +166,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                 return msgs.joinToString(const.line_break);
             }
 
-            MongoLogger.logFind(error, this.collectionName, ::getMsgs);
+            MongoLogger.logFind(error, actualTableName, ::getMsgs);
         }
 
         return ret
@@ -209,13 +209,13 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         var query = Query.query(criteria);
         try {
             this.script = getQueryScript(criteria)
-            ret = mongoTemplate.count(query, this.collectionName).toInt()
+            ret = mongoTemplate.count(query, actualTableName).toInt()
             this.executeTime = LocalDateTime.now() - startAt
         } catch (e: Exception) {
             error = e;
             throw e;
         } finally {
-            MongoLogger.logFind(error, this.collectionName, query, JsonMap("result" to ret))
+            MongoLogger.logFind(error, actualTableName, query, JsonMap("result" to ret))
 //            logger.InfoError(ret < 0) {
 //                return@InfoError """[count] ${this.collectionName}
 //[query] ${query.queryObject.ToJson()}
@@ -234,14 +234,14 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         var error: Exception? = null;
         try {
             this.script = getQueryScript(criteria)
-            ret = mongoTemplate.exists(query, this.collectionName);
+            ret = mongoTemplate.exists(query, actualTableName);
             this.executeTime = LocalDateTime.now() - startAt;
             this.affectRowCount = 1;
         } catch (e: Exception) {
             error = e
             throw e;
         } finally {
-            MongoLogger.logFind(error, this.collectionName, query, JsonMap("result" to ret))
+            MongoLogger.logFind(error, actualTableName, query, JsonMap("result" to ret))
 //            logger.InfoError(ret == null) {
 //                return@InfoError """[exists] ${this.collectionName}
 //[query] ${query.queryObject.ToJson()}

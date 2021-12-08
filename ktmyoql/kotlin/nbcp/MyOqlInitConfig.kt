@@ -120,6 +120,7 @@ class MyOqlClassPathBeanDefinitionScanner(registry: BeanDefinitionRegistry?, use
         addIncludeFilter(AssignableTypeFilter(IMongoEntityUpdate::class.java))
         addIncludeFilter(AssignableTypeFilter(IMongoEntityDelete::class.java))
         addIncludeFilter(AssignableTypeFilter(IMongoDataSource::class.java))
+        addIncludeFilter(AssignableTypeFilter(IMongoCollectionVarName::class.java))
 
         addIncludeFilter(AssignableTypeFilter(ISqlEntitySelect::class.java))
         addIncludeFilter(AssignableTypeFilter(ISqlEntityInsert::class.java))

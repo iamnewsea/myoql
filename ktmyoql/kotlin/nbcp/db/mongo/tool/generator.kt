@@ -401,44 +401,30 @@ ${props.map { const.line_break + it }.joinToString(const.line_break)}
 
         ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
 val ${entityVarName} get() = ${entityTypeName}();""")
+
+
+        //可能既变表，又变库。可能两个参数。
+        var params = setOf(varDb?.value, varTable?.value).filter { it.HasValue };
+
+        if (params.any()) {
+            ret.add("")
+
+            var varTableParam = "";
+            var varDbParam = "";
+
+            if (varTable != null) {
+                varTableParam = "${entityVarName}-${'$'}{${varTable.value}}"
+            }
+
+            if (varDb != null) {
+                varDbParam = "${'$'}{${varDb.value}}"
+            }
+
+            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
+fun ${entityVarName}(${params.map { it + ":String" }.joinToString(", ")}) = ${entityTypeName}("${varTableParam}","${varDbParam}");""")
+        }
+
         return ret.joinToString(const.line_break);
-
-//        //可能既变表，又变库。可能两个参数。
-//        var params = setOf(varDb?.value, varTable?.value).filter { it.HasValue };
-//
-//        if (params.any()) {
-//            var varTableParam = "";
-//            var varDbParam = "";
-//
-//            var varTableScopeVar = "\"\""
-//            var varDbScopeVar = "\"\""
-//
-//            if (varTable != null) {
-//                varTableParam = "${entityVarName}-${'$'}{${varTable.value}}"
-//                varTableScopeVar = """VarTable${MyUtil.getBigCamelCase(varTable.value)}Scope.getValue()"""
-//            }
-//
-//            if (varDb != null) {
-//                varDbParam = "${'$'}{${varDb.value}}"
-//                varDbScopeVar = """VarDatabase${MyUtil.getBigCamelCase(varDb.value)}Scope.getValue()"""
-//            }
-//
-//            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
-//val ${entityVarName} get() = ${entityTypeName}(${varTableScopeVar}, ${varDbScopeVar});""")
-//
-//
-//
-//
-//            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
-//fun ${entityVarName}(${params.map { it + ":String" }.joinToString(", ")}) = ${entityTypeName}("${varTableParam}","${varDbParam}");""")
-//
-//
-//        } else {
-//            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
-//val ${entityVarName} get() = ${entityTypeName}();""")
-//        }
-//        return ret.joinToString(const.line_break)
-
     }
 
 
@@ -563,8 +549,8 @@ val ${it.name} = ${retValue}""".removeEmpltyLine().ToTab(1)
             varTableCode = """${const.line_break}@VarDatabase("${varDb.value}")"""
         }
         val ent = """${CodeGeneratorHelper.getEntityComment(entType, varTableRemark)}${varTableCode}
-class ${entityTypeName}(collectionName: String = "")
-    : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, collectionName.AsString("${dbName}")) {
+class ${entityTypeName}(collectionName: String = "", databaseId: String = "")
+    : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, collectionName.AsString("${dbName}"), databaseId) {
 ${props.map { const.line_break + it }.joinToString(const.line_break)}
 ${idMethods.joinToString(const.line_break)}
 }

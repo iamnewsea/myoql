@@ -74,7 +74,7 @@ object db_mongo {
         val dbFactory = SimpleMongoClientDatabaseFactory(uri);
 
         val converter =
-                MappingMongoConverter(DefaultDbRefResolver(dbFactory), SpringUtil.getBean<MongoMappingContext>())
+            MappingMongoConverter(DefaultDbRefResolver(dbFactory), SpringUtil.getBean<MongoMappingContext>())
         converter.setTypeMapper(DefaultMongoTypeMapper(null));
         (converter.conversionService as GenericConversionService).addConverter(Date2LocalDateTimeConverter())
 
@@ -93,9 +93,9 @@ object db_mongo {
     }
 
     fun cond(
-            ifExpression: Criteria,
-            trueExpression: MongoExpression,
-            falseExpression: MongoExpression
+        ifExpression: Criteria,
+        trueExpression: MongoExpression,
+        falseExpression: MongoExpression
     ): MongoExpression {
         return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
@@ -109,9 +109,9 @@ object db_mongo {
     }
 
     fun cond(
-            ifExpression: MongoExpression,
-            trueExpression: MongoExpression,
-            falseExpression: MongoExpression
+        ifExpression: MongoExpression,
+        trueExpression: MongoExpression,
+        falseExpression: MongoExpression
     ): MongoExpression {
         return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression, trueExpression, falseExpression))
     }
@@ -410,6 +410,6 @@ db.getCollection("adminRole").aggregate(
 }
 
 class MongoDynamicEntity : JsonMap() {}
-class MongoDynamicMetaEntity(collectionName: String) :
-        MongoBaseMetaCollection<MongoDynamicEntity>(MongoDynamicEntity::class.java, collectionName) {
+class MongoDynamicMetaEntity(collectionName: String, databaseId: String = "") :
+    MongoBaseMetaCollection<MongoDynamicEntity>(MongoDynamicEntity::class.java, collectionName, databaseId) {
 }

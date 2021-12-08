@@ -65,7 +65,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Serializable>>(var moerEnt
         var query = Query.query(criteria)
         try {
             this.script = getDeleteScript(criteria);
-            result = mongoTemplate.remove(query, this.collectionName);
+            result = mongoTemplate.remove(query, actualTableName);
             this.executeTime = LocalDateTime.now() - startAt
             ret = result.deletedCount.toInt()
             this.affectRowCount = ret;
@@ -81,7 +81,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Serializable>>(var moerEnt
             error = e
             throw e;
         } finally {
-            MongoLogger.logDelete(error, this.collectionName, query, result);
+            MongoLogger.logDelete(error, actualTableName, query, result);
         }
 
         return ret;

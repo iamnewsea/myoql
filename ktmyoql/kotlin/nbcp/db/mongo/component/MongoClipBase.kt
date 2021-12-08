@@ -63,9 +63,9 @@ open class MongoClipBase(var collectionName: String) : Serializable {
         }
 
 
-//    val actualTableName by lazy {
-//        db.mongo.mongoEvents.getActualTableName(collectionName);
-//    }
+    val actualTableName by lazy {
+        db.mongo.mongoEvents.getActualTableName(collectionName);
+    }
 
     fun getMongoCriteria(vararg where: Criteria): Criteria {
         if (where.size == 0) return Criteria();

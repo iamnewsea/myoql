@@ -11,8 +11,9 @@ import java.lang.RuntimeException
  */
 abstract class EsBaseMetaEntity<T : Serializable>(
     val entityClass: Class<T>,
-    entityName: String
-) : BaseMetaData(entityName) {
+    entityName: String,
+    databaseId: String = ""
+) : BaseMetaData(entityName,databaseId) {
     //    abstract fun getColumns(): Array<String>;
     companion object {
     }

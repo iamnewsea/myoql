@@ -8,8 +8,9 @@ import java.io.Serializable
 
 abstract class SqlBaseMetaTable<T : Serializable>(
     val tableClass: Class<T>,
-    tableName: String
-) : BaseMetaData(tableName) {
+    tableName: String,
+    databaseId: String = ""
+) : BaseMetaData(tableName, databaseId) {
     abstract fun getUks(): Array<Array<String>>
     abstract fun getFks(): Array<FkDefine>
 
