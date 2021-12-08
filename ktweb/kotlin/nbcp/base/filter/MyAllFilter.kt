@@ -29,8 +29,11 @@ import javax.servlet.http.HttpServletResponse
  * 1. app.filter.allow-origins
  * 2. app.filter.headers
  * 3. 通过 Url参数 log-level 控制 Log级别,可以是数字，也可以是被 ch.qos.logback.classic.Level.toLevel识别的参数，不区分大小写，如：all|trace|debug|info|error|off
+ *
+ * 在 spring.factories 中配置，就不能添加组件类注解(@Component)，否则会引入两次。
+ * @Configuration 会使用全路径做为Bean名称。
+ * @Component 会使用 simpleName 做为Bean名称。
  */
-@Component
 @WebFilter(urlPatterns = ["/*", "/**"])
 //@WebFilter(urlPatterns = arrayOf("/**"), filterName = "MyAllFilter")
 //@ConfigurationProperties(prefix = "nbcp.filter")
