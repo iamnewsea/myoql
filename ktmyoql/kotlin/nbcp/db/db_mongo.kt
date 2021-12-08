@@ -410,6 +410,6 @@ db.getCollection("adminRole").aggregate(
 }
 
 class MongoDynamicEntity : JsonMap() {}
-class MongoDynamicMetaEntity(collectionName: String, databaseId: String = "") :
-        MongoBaseMetaCollection<MongoDynamicEntity>(MongoDynamicEntity::class.java, collectionName, databaseId) {
+class MongoDynamicMetaEntity(collectionName: String) :
+        MongoBaseMetaCollection<MongoDynamicEntity>(MongoDynamicEntity::class.java, collectionName) {
 }

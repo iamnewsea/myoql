@@ -17,9 +17,9 @@ typealias mongoQuery = org.springframework.data.mongodb.core.query.Query
  * mongo 元数据实体的基类
  */
 abstract class MongoBaseMetaCollection<T : Serializable>(
-        val entityClass: Class<T>,
-        entityName: String,
-        databaseId: String = "") : BaseMetaData(entityName, databaseId) {
+    val entityClass: Class<T>,
+    entityName: String
+) : BaseMetaData(entityName) {
     //    abstract fun getColumns(): Array<String>;
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java)
@@ -33,8 +33,8 @@ abstract class MongoBaseMetaCollection<T : Serializable>(
         }
 
         _columns = this::class.java.AllFields.filter { MongoColumnName::class.java.isAssignableFrom(it.type) }
-                .map { it.get(this) as MongoColumnName }
-                .toTypedArray()
+            .map { it.get(this) as MongoColumnName }
+            .toTypedArray()
         return _columns;
     }
 

@@ -398,41 +398,46 @@ ${props.map { const.line_break + it }.joinToString(const.line_break)}
 
         var ret = mutableListOf<String>()
         ret.add("")
-        //可能既变表，又变库。可能两个参数。
-        var params = setOf(varDb?.value, varTable?.value).filter { it.HasValue };
 
-        if (params.any()) {
-            var varTableParam = "";
-            var varDbParam = "";
-
-            var varTableScopeVar = "\"\""
-            var varDbScopeVar = "\"\""
-
-            if (varTable != null) {
-                varTableParam = "${entityVarName}-${'$'}{${varTable.value}}"
-                varTableScopeVar = """scopes.getLatest<VarTable${MyUtil.getBigCamelCase(varTable.value)}Scope>().must().elseThrow { "找不到变量 ${varTable.value}" }.value"""
-            }
-
-            if (varDb != null) {
-                varDbParam = "${'$'}{${varDb.value}}"
-                varDbScopeVar = """scopes.getLatest<VarDatabase${MyUtil.getBigCamelCase(varDb.value)}Scope>().must().elseThrow { "找不到变量 ${varDb.value}" }.value"""
-            }
-
-            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
-val ${entityVarName} get() = ${entityTypeName}(${varTableScopeVar}, ${varDbScopeVar});""")
-
-
-
-
-            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
-fun ${entityVarName}(${params.map { it + ":String" }.joinToString(", ")}) = ${entityTypeName}("${varTableParam}","${varDbParam}");""")
-
-
-        } else {
-            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
+        ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
 val ${entityVarName} get() = ${entityTypeName}();""")
-        }
-        return ret.joinToString(const.line_break)
+        return ret.joinToString(const.line_break);
+
+//        //可能既变表，又变库。可能两个参数。
+//        var params = setOf(varDb?.value, varTable?.value).filter { it.HasValue };
+//
+//        if (params.any()) {
+//            var varTableParam = "";
+//            var varDbParam = "";
+//
+//            var varTableScopeVar = "\"\""
+//            var varDbScopeVar = "\"\""
+//
+//            if (varTable != null) {
+//                varTableParam = "${entityVarName}-${'$'}{${varTable.value}}"
+//                varTableScopeVar = """VarTable${MyUtil.getBigCamelCase(varTable.value)}Scope.getValue()"""
+//            }
+//
+//            if (varDb != null) {
+//                varDbParam = "${'$'}{${varDb.value}}"
+//                varDbScopeVar = """VarDatabase${MyUtil.getBigCamelCase(varDb.value)}Scope.getValue()"""
+//            }
+//
+//            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
+//val ${entityVarName} get() = ${entityTypeName}(${varTableScopeVar}, ${varDbScopeVar});""")
+//
+//
+//
+//
+//            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
+//fun ${entityVarName}(${params.map { it + ":String" }.joinToString(", ")}) = ${entityTypeName}("${varTableParam}","${varDbParam}");""")
+//
+//
+//        } else {
+//            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
+//val ${entityVarName} get() = ${entityTypeName}();""")
+//        }
+//        return ret.joinToString(const.line_break)
 
     }
 

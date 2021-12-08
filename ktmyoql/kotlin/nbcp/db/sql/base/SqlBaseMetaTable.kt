@@ -7,9 +7,9 @@ import java.lang.reflect.Modifier
 import java.io.Serializable
 
 abstract class SqlBaseMetaTable<T : Serializable>(
-        val tableClass: Class<T>,
-        tableName: String,
-        databaseId: String = "") : BaseMetaData(tableName, databaseId) {
+    val tableClass: Class<T>,
+    tableName: String
+) : BaseMetaData(tableName) {
     abstract fun getUks(): Array<Array<String>>
     abstract fun getFks(): Array<FkDefine>
 
@@ -28,9 +28,9 @@ abstract class SqlBaseMetaTable<T : Serializable>(
         }
 
         _columns = SqlColumnNames(*this::class.java.AllFields
-                .filter { it.type == SqlColumnName::class.java }
-                .map { it.get(this) as SqlColumnName }
-                .toTypedArray()
+            .filter { it.type == SqlColumnName::class.java }
+            .map { it.get(this) as SqlColumnName }
+            .toTypedArray()
         )
 
         return _columns;
