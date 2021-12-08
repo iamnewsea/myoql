@@ -145,18 +145,19 @@ open class MyAllFilter : Filter {
         var errorMsg = ""
         try {
             chain?.doFilter(request, response);
-        } catch (e: Exception) {
-            var err = getInnerException(e);
+        } catch (ex: Exception) {
+            //全局异常之外的异常会来这。
+            var err = getInnerException(ex);
             var errorInfo = mutableListOf<String>()
             errorInfo.add(
                 err::class.java.simpleName + ": " + err.Detail.AsString(err.message.AsString()).AsString("(未知错误)")
+                    .substring(0, 256)
             )
 
             errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }
                 .take(24))
 
             errorMsg = errorInfo.joinToString(const.line_break)
-            response.status = 500;
         } finally {
             var callback = "";
 //            if (request.method == "GET") {
@@ -209,9 +210,8 @@ open class MyAllFilter : Filter {
         startAt: LocalDateTime,
         errorMsg: String
     ) {
-        var hasError = errorMsg.HasValue;
         var resStringValue = errorMsg;
-        if (hasError) {
+        if (resStringValue.HasValue) {
             response.contentType = "application/json;charset=UTF-8"
             val content = resStringValue.toByteArray(const.utf8);
 
@@ -225,8 +225,9 @@ open class MyAllFilter : Filter {
         } else if (response.status == 204) {
         } else if (response.IsOctetContent) {
         } else {
+            resStringValue = response.contentAsByteArray.toString(const.utf8);
+
             if (callback.isNotEmpty() && response.contentType.contains("json")) {
-                resStringValue = response.contentAsByteArray.toString(const.utf8);
                 response.contentType = "application/javascript;charset=UTF-8"
                 val content = """${callback}(${resStringValue})""".toByteArray(const.utf8)
 
@@ -243,7 +244,7 @@ open class MyAllFilter : Filter {
         response.copyBodyToResponse()
 
         val endAt = LocalDateTime.now();
-        logger.InfoError(hasError) {
+        logger.InfoError(errorMsg.HasValue || !response.status.Between(200, 399)) {
             var msgs = mutableListOf<String>()
             msgs.add("--> ${request.tokenValue} ${request.ClientIp} [${request.method}] ${request.fullUrl}")
 

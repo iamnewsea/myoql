@@ -4,6 +4,7 @@
 package nbcp.comm
 
 import nbcp.scope.*
+import java.util.*
 import kotlin.RuntimeException
 import kotlin.reflect.KClass
 
@@ -90,7 +91,7 @@ fun <T> String.FromListJson(componentClass: Class<T>, style: JsonSceneEnumScope?
     val mapper = style.getJsonMapper();
 
     try {
-        var t = mapper.getTypeFactory().constructParametricType(List::class.java, componentClass);
+        var t = mapper.getTypeFactory().constructParametricType(ArrayList::class.java, componentClass);
         return mapper.readValue<List<T>>(this, t) ?: listOf<T>()
     } catch (e: Exception) {
         var msg = "Json转换出错！Json数据：${this}\n 类型:${componentClass.name} \n 错误消息:" + e.message;

@@ -311,6 +311,7 @@ fun ParameterizedType.GetActualClass(index: Int, callback: (() -> Class<*>?)? = 
     return ret;
 }
 
+// todo 这个方法之后应该去除。
 fun Class<*>.GetFirstTypeArguments(): Array<Type> {
     if (this.genericSuperclass is ParameterizedType) {
         return (this.genericSuperclass as ParameterizedType).actualTypeArguments
