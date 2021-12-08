@@ -563,8 +563,8 @@ val ${it.name} = ${retValue}""".removeEmpltyLine().ToTab(1)
             varTableCode = """${const.line_break}@VarDatabase("${varDb.value}")"""
         }
         val ent = """${CodeGeneratorHelper.getEntityComment(entType, varTableRemark)}${varTableCode}
-class ${entityTypeName}(collectionName: String = "", databaseId: String = "")
-    : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, collectionName.AsString("${dbName}"), databaseId) {
+class ${entityTypeName}(collectionName: String = "")
+    : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, collectionName.AsString("${dbName}")) {
 ${props.map { const.line_break + it }.joinToString(const.line_break)}
 ${idMethods.joinToString(const.line_break)}
 }
