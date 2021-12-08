@@ -59,7 +59,6 @@ class MyWebBeanImporter : ImportBeanDefinitionRegistrar, ResourceLoaderAware, Be
         val scanner = MyWebClassPathBeanDefinitionScanner(registry, false)
         scanner.resourceLoader = resourceLoader
         scanner.registerFilters()
-        scanner.doScan("nbcp")
     }
 
     override fun setBeanFactory(beanFactory: BeanFactory) {
@@ -94,14 +93,5 @@ class MyWebClassPathBeanDefinitionScanner(registry: BeanDefinitionRegistry?, use
          * TODO addExcludeFilter 同样的满足任意excludeFilters不会被加载
          */
         // addExcludeFilter(new AnnotationTypeFilter(MyService.class));
-    }
-
-    /**
-     * 重写类扫描包路径加载器，调用父类受保护的扫描方法 doScan
-     * @param basePackages
-     * @return
-     */
-    public override fun doScan(vararg basePackages: String): Set<BeanDefinitionHolder> {
-        return super.doScan(*basePackages)
     }
 }
