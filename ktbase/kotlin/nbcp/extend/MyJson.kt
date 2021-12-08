@@ -3,8 +3,8 @@
 
 package nbcp.comm
 
-import java.lang.RuntimeException
 import nbcp.scope.*
+import kotlin.RuntimeException
 import kotlin.reflect.KClass
 
 /**
@@ -122,21 +122,29 @@ fun <T> String.FromJson(clazz: Class<T>, style: JsonSceneEnumScope? = null): T? 
 }
 
 
-fun <T:Any> Any.ConvertJson(clazz: KClass<out T>, style: JsonSceneEnumScope? = null): T {
-    return this.ConvertJson(clazz.java,style)
+fun <T : Any> Any.ConvertJson(clazz: KClass<out T>, style: JsonSceneEnumScope? = null): T {
+    return this.ConvertJson(clazz.java, style)
 }
 
+/**
+ * 从 ConvertType 做为入口。 为避免死循环，禁止从ConvertJson调用 ConvertType。
+ */
 @JvmOverloads
 fun <T> Any.ConvertJson(clazz: Class<out T>, style: JsonSceneEnumScope? = null): T {
     if (clazz.isAssignableFrom(this::class.java)) {
         return this as T;
     }
+
+    //如果是 String，转
+    if (this is String) {
+        return this.FromJson(clazz, style) ?: throw RuntimeException("转换Json出错")
+    }
     return style.getJsonMapper().convertValue(this, clazz)
 }
 
 
-fun <T:Any> Any.ConvertListJson(componentClass: KClass<out T>, style: JsonSceneEnumScope? = null): List<T> {
-    return  this.ConvertListJson(componentClass.java,style)
+fun <T : Any> Any.ConvertListJson(componentClass: KClass<out T>, style: JsonSceneEnumScope? = null): List<T> {
+    return this.ConvertListJson(componentClass.java, style)
 }
 
 /**
