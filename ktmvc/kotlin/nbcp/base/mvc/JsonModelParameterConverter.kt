@@ -12,6 +12,7 @@ import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.web.fullUrl
 import nbcp.web.getPostJson
+import nbcp.web.postBody
 import nbcp.web.queryJson
 import org.slf4j.LoggerFactory
 import org.springframework.web.servlet.HandlerMapping
@@ -199,12 +200,10 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
             val jsonModelValue = parameter.getParameterAnnotation(JsonModel::class.java)
             if (jsonModelValue != null) {
                 //如果用 JsonModel 接收 String 等简单参数？
-                val valueString = webRequest.getPostJson()
-                if (parameter.parameterType.IsSimpleType()) {
-                    return valueString.ConvertType(parameter.parameterType);
+                val postBody = webRequest.postBody?.toString(const.utf8) ?: ""
+                if (postBody.HasValue) {
+                    return postBody.ConvertType(parameter.parameterType);
                 }
-
-                return valueString.ConvertJson(parameter.parameterType);
             }
 
             value = webRequest.getPostJson().get(parameterName)
