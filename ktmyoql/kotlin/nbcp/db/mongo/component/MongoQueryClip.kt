@@ -77,14 +77,14 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Serializable>(var moerE
     /**
      * 获取Array的某几个
      */
-    fun select_array_first(select: (M) -> MongoColumnName, skip: Int, take: Int): MongoQueryClip<M, E> {
+    fun select_array_from_first(select: (M) -> MongoColumnName, skip: Int, take: Int): MongoQueryClip<M, E> {
         return select_array_slice(select(this.moerEntity).toString(), false, skip, take)
     }
 
     /**
      * 从Array最后位置获取。
      */
-    fun select_array_last(select: (M) -> MongoColumnName, skip: Int, take: Int): MongoQueryClip<M, E> {
+    fun select_array_from_last(select: (M) -> MongoColumnName, skip: Int, take: Int): MongoQueryClip<M, E> {
         return select_array_slice(select(this.moerEntity).toString(), true, skip, take)
     }
 
