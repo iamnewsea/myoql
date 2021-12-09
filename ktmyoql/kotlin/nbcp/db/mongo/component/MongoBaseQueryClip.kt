@@ -19,6 +19,10 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
 
     //    private var whereJs: String = "";
     protected var selectColumns = mutableSetOf<String>();
+
+    /**
+     * 更复杂的查询表达式，如  https://docs.mongodb.com/manual/reference/operator/projection/slice/#proj._S_slice
+     */
     protected var selectProjections = JsonMap();
 
     //    private var selectDbObjects = mutableSetOf<String>();

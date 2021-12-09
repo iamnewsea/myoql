@@ -74,6 +74,36 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Serializable>(var moerE
         return this;
     }
 
+    /**
+     * 获取Array的某几个
+     */
+    fun select_array_first(select: (M) -> MongoColumnName, skip: Int, take: Int): MongoQueryClip<M, E> {
+        return select_array_slice(select(this.moerEntity).toString(), false, skip, take)
+    }
+
+    /**
+     * 从Array最后位置获取。
+     */
+    fun select_array_last(select: (M) -> MongoColumnName, skip: Int, take: Int): MongoQueryClip<M, E> {
+        return select_array_slice(select(this.moerEntity).toString(), true, skip, take)
+    }
+
+
+    private fun select_array_slice(select: String, isFromLast: Boolean, skip: Int, take: Int): MongoQueryClip<M, E> {
+        var doc = Document();
+        var offset = 0;
+        if (isFromLast) {
+            offset = -1;
+        }
+
+        var slice = Document();
+        slice.put("\$slice", listOf(skip - offset, take))
+
+        doc.put(select, slice)
+        this.selectProjections.putAll(doc)
+        return this;
+    }
+
     fun whereOr(vararg wheres: (M) -> Criteria): MongoQueryClip<M, E> {
         return whereOr(*wheres.map { it(moerEntity) }.toTypedArray())
     }
