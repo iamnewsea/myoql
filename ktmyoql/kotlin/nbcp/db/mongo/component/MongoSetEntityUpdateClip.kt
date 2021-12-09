@@ -32,6 +32,11 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
         return this;
     }
 
+    fun withColumns(vararg column:String): MongoSetEntityUpdateClip<M> {
+        this.setColumns.addAll(column)
+        return this;
+    }
+
     fun withoutColumn(unsetFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M> {
         this.unsetColumns.add(unsetFunc(this.moerEntity).toString())
         return this;
