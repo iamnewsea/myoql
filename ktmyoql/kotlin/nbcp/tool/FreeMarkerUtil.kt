@@ -32,13 +32,20 @@ object FreemarkerUtil {
     private fun getFreemarkerConfig(): Configuration {
         var ret = Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS)
 
-
         //freemarkerConfig.setDirectoryForTemplateLoading(new File(templatePath, "templates/code-generator"));
         ret.setNumberFormat("#")
         ret.setClassicCompatible(true)
         ret.setDefaultEncoding("UTF-8")
         ret.setLocale(Locale.CHINA)
         ret.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER)
+
+        ret.setClassForTemplateLoading(FreemarkerUtil::class.java, "/")
+        ret.setTemplateLoader(
+                ClassTemplateLoader(
+                        FreemarkerUtil::class.java,
+                        "/"
+                )
+        )
 
         return ret;
     }
@@ -85,13 +92,14 @@ object FreemarkerUtil {
      * 按模板的内容执行
      */
     fun processContent(
-        content: String,
-        params: JsonMap,
-        configCallback: (Configuration) -> Unit
+            content: String,
+            params: JsonMap,
+            configCallback: ((Configuration) -> Unit)? = null
     ): String {
         val config = getFreemarkerConfig();
-        configCallback(config);
-        
+
+        configCallback?.invoke(config);
+
         val template = Template("template", StringReader(content), config, "utf-8")
         usingScope(ContextMapScope(params)) {
             return escapeString(processTemplate(template, params))
@@ -108,12 +116,14 @@ object FreemarkerUtil {
      * @throws TemplateException
      */
     fun process(
-        templateName: String,
-        params: JsonMap,
-        configCallback: (Configuration) -> Unit
+            templateName: String,
+            params: JsonMap,
+            configCallback: ((Configuration) -> Unit)? = null
     ): String {
         val config = getFreemarkerConfig();
-        configCallback(config);
+
+        configCallback?.invoke(config);
+
         val template: Template = config.getTemplate(templateName)
 
         usingScope(ContextMapScope(params)) {

@@ -18,36 +18,36 @@ object UserCodeGenerator {
      * 生成基础的CRUD接口
      */
     fun genMongoMvcCrud(group: String, entity: BaseMetaData): String {
-        return gen(group, entity, "kotlin_mvc_mongo_template_crud.ftl");
+        return gen(group, entity, "/myoql-template/kotlin_mvc_mongo_template_crud.ftl");
     }
 
     fun genMySqlMvcCrud(group: String, entity: BaseMetaData): String {
-        return gen(group, entity, "kotlin_mvc_mysql_template_crud.ftl");
+        return gen(group, entity, "/myoql-template/kotlin_mvc_mysql_template_crud.ftl");
     }
 
     fun genEsMvcCrud(group: String, entity: BaseMetaData): String {
-        return gen(group, entity, "kotlin_mvc_es_template_crud.ftl");
+        return gen(group, entity, "/myoql-template/kotlin_mvc_es_template_crud.ftl");
     }
 
     /**
      * 生成Vue列表页面
      */
     fun genVueList(group: String, entity: BaseMetaData): String {
-        return gen(group, entity, "vue_list_template.ftl");
+        return gen(group, entity, "/myoql-template/vue_list_template.ftl");
     }
 
     /**
      * 生成Vue卡片页面
      */
     fun genVueCard(group: String, entity: BaseMetaData): String {
-        return gen(group, entity, "vue_card_template.ftl");
+        return gen(group, entity, "/myoql-template/vue_card_template.ftl");
     }
 
     /**
      * 生成Vue引用
      */
     fun genVueRef(group: String, entity: BaseMetaData): String {
-        return gen(group, entity, "vue_ref_template.ftl");
+        return gen(group, entity, "/myoql-template/vue_ref_template.ftl");
     }
 
 
@@ -68,13 +68,13 @@ object UserCodeGenerator {
         }
 
         return CodeGeneratorHelper.proc(
-            fileName,
-            CodeGeneratorHelper.CodeTemplateData(
-                group,
-                entityClass,
-                metaEntity.tableName,
-                idKey
-            )
+                fileName,
+                CodeGeneratorHelper.CodeTemplateData(
+                        group,
+                        entityClass,
+                        metaEntity.tableName,
+                        idKey
+                )
         )
     }
 }
