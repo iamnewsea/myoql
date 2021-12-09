@@ -20,7 +20,10 @@ import org.springframework.context.ApplicationContextAware
 import org.springframework.context.annotation.Import
 import org.springframework.context.event.EventListener
 import org.springframework.core.convert.support.GenericConversionService
+import org.springframework.http.converter.AbstractHttpMessageConverter
+import org.springframework.http.converter.FormHttpMessageConverter
 import org.springframework.http.converter.StringHttpMessageConverter
+import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter
 import org.springframework.scheduling.annotation.SchedulingConfiguration
@@ -112,6 +115,10 @@ class MyMvcInitConfig : BeanPostProcessor {
 
         //处理请求的消息体。
         handlerAdapter.messageConverters.forEach { converter ->
+            if( converter is AbstractHttpMessageConverter){
+                converter.defaultCharset = const.utf8
+            }
+
             if (converter is MappingJackson2HttpMessageConverter) {
                 converter.defaultCharset = const.utf8
                 converter.objectMapper = SpringUtil.getBean<WebJsonMapper>()
@@ -123,16 +130,13 @@ class MyMvcInitConfig : BeanPostProcessor {
                 converter.defaultCharset = const.utf8;
             }
 
-            if (converter is AllEncompassingFormHttpMessageConverter) {
+            if (converter is FormHttpMessageConverter) {
                 converter.setCharset(const.utf8)
 
-                (MyUtil.getPrivatePropertyValue(
-                    converter,
-                    "partConverters"
-                ) as Collection<*>).forEach foreach2@{ sub_conveter ->
-
-                    if (sub_conveter is MappingJackson2HttpMessageConverter) {
+                converter.partConverters.forEach foreach2@{ sub_conveter ->
+                    if (sub_conveter is AbstractJackson2HttpMessageConverter) {
                         sub_conveter.defaultCharset = const.utf8
+
                         sub_conveter.objectMapper = SpringUtil.getBean<WebJsonMapper>()
                     }
                     return@foreach2
