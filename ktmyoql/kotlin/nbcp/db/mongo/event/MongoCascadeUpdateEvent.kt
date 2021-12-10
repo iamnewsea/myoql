@@ -29,7 +29,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
     }
 
 
-    override fun beforeUpdate(update: MongoBaseUpdateClip,chain:EventChain): EventResult {
+    override fun beforeUpdate(update: MongoBaseUpdateClip, chain: EventChain): EventResult {
         if (scopes.getLatest(MyOqlOrmScope.IgnoreCascadeUpdate) != null) {
             return EventResult(true, null)
         }
@@ -56,7 +56,6 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
 //        var masterIdFields = refs.map { it.refIdField }.toSet();
 
 
-
         var idValues = mutableMapOf<String, Array<String>>()
 
         refs.forEach { ref ->
@@ -64,7 +63,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
                 return@forEach
             }
 
-            var idValue = getIdValue(idValues, ref,   update)
+            var idValue = getIdValue(idValues, ref, update)
 
             val masterNameValue = updateSetFields.getValue(ref.refNameField);
 
@@ -134,7 +133,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
         return idValue
     }
 
-    override fun update(update: MongoBaseUpdateClip,chain:EventChain, eventData: EventResult) {
+    override fun update(update: MongoBaseUpdateClip, chain: EventChain, eventData: EventResult) {
         if (eventData.extData == null) {
             return;
         }
@@ -149,11 +148,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
                 val targetCollection = MyUtil.getSmallCamelCase(ref.ref.entityClass.simpleName)
 
                 val update2 = MongoBaseUpdateClip(targetCollection)
-                update2.whereData.add(MongoColumnName(ref.ref.idField) match_in ref.masterIdValues.map { updatedId ->
-                    getObjectIdValueTypeIfNeed(
-                        updatedId
-                    )
-                })
+                update2.whereData.add(MongoColumnName(ref.ref.idField) match_in ref.masterIdValues)
                 update2.setValue(ref.ref.nameField, ref.masterNameValue)
                 update2.exec();
 

@@ -28,14 +28,12 @@ import java.util.regex.Pattern
 //    return key.toString();
 //}
 
-fun getObjectIdValueTypeIfNeed(value: Any?): Any? {
-    if (value == null) return null;
-    if (value is String && ObjectId.isValid(value)) {
-        return ObjectId(value);
-    }
+class MongoColumnTranslateResult(
+    var key: MongoColumnName,
+    var value: Any?,
+    var changed: Boolean = false
+)
 
-    return value;
-}
 
 
 infix fun MongoColumnName.match_size(value: Int): Criteria {

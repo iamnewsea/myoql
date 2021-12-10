@@ -176,75 +176,101 @@ db.getCollection("adminRole").aggregate(
         return MongoExpression("$" + PipeLineOperatorEnum.ifNull.toString() to expression)
     }
 
+    /**
+     * 只有列 = id , _id , 以 .id , ._id 结尾时，才可能转化为 ObjectId
+     */
+    fun translateMongoKeyValue(key: MongoColumnName, value: Any?): MongoColumnTranslateResult {
+        var ret = MongoColumnTranslateResult(key, value);
+        if (value == null) return ret;
+
+        var value_type = value::class.java
+        if (value_type.isEnum) {
+            ret.changed = true;
+            ret.value = value.toString();
+            return ret;
+        } else if (value_type == LocalDateTime::class.java || value_type == LocalDate::class.java) {
+            ret.changed = true;
+            ret.value = value.AsLocalDateTime().AsDate()
+            return ret;
+        } else if (value_type.IsStringType) {
+            var keyColumn = key;
+
+            var keyString = key.toString();
+            var keyIsId = false;
+            if (keyString == "id") {
+                keyColumn = MongoColumnName("_id")
+                keyIsId = true;
+            } else if (keyString == "_id") {
+                keyIsId = true;
+            } else if (keyString.endsWith(".id")) {
+                keyColumn = MongoColumnName(keyString.slice(0..keyString.length - 4) + "._id")
+                keyIsId = true;
+            } else if (keyString.endsWith("._id")) {
+                keyIsId = true;
+            }
+            if (keyIsId) {
+                var valueString = value.toString();
+                if (ObjectId.isValid(valueString)) {
+                    ret.changed = true;
+                    ret.key = keyColumn;
+                    ret.value = ObjectId(valueString)
+                    return ret;
+                }
+            }
+        } else if (value_type.isArray) {
+
+            ret.value = (value as Array<*>).map {
+                var ret_sub = translateMongoKeyValue(key, it);
+
+                if (ret_sub.changed) {
+                    ret.changed = true;
+                    ret.key = ret_sub.key;
+                }
+                return@map ret_sub.value;
+            }.toTypedArray()
+
+            return ret;
+        } else if (value_type.IsCollectionType) {
+
+            ret.value = (value as Collection<*>).map {
+                var ret_sub = translateMongoKeyValue(key, it);
+
+                if (ret_sub.changed) {
+                    ret.changed = true;
+                    ret.key = ret_sub.key;
+                }
+                return@map ret_sub.value;
+            }.toList()
+
+            return ret;
+
+        } else if (value_type is Pair<*, *>) {
+            var pair_value = value as Pair<*, *>
+
+            var ret_1 = translateMongoKeyValue(key, pair_value.first);
+            var ret_2 = translateMongoKeyValue(key, pair_value.second);
+
+            if (ret_1.changed == false && ret_2.changed == false) {
+                return ret;
+            }
+
+            ret.changed = true;
+            ret.key = ret_1.key;
+            ret.value = ret_1.value to ret_2.value;
+            return ret;
+        }
+
+
+        return ret;
+    }
 
     fun proc_mongo_key_value(key: MongoColumnName, value: Any?): Pair<String, Any?> {
-        var keyValue = key
-        var keyString = keyValue.toString();
-        var keyIsId = false;
-        if (keyString == "id") {
-            keyValue = MongoColumnName("_id")
-            keyIsId = true;
-        } else if (keyString == "_id") {
-            keyIsId = true;
-        } else if (keyString.endsWith(".id")) {
-            keyValue = MongoColumnName(keyString.slice(0..keyString.length - 4) + "._id")
-            keyIsId = true;
-        } else if (keyString.endsWith("._id")) {
-            keyIsId = true;
+        var ret = translateMongoKeyValue(key, value)
+        if (ret.changed == false) {
+            return ret.key.toString() to ret.value
         }
 
-        if (value == null) {
-            return Pair<String, Any?>(keyValue.toString(), value);
-        }
-
-        var value = value;
-        var type = value::class.java
-
-        if (type.isEnum) {
-            value = value.toString();
-        } else if (type == LocalDateTime::class.java || type == LocalDate::class.java) {
-            value = value.AsLocalDateTime().AsDate()
-        } else if (type.IsStringType) {
-            if (keyIsId) {
-                value = getObjectIdValueTypeIfNeed(value);
-            }
-        } else if (type.isArray) {
-            value = (value as Array<*>).map {
-                if (it != null && it::class.java.isEnum) {
-                    return@map it.toString()
-                }
-                return@map it
-            }.toTypedArray()
-        } else if (value is Collection<*>) {
-            value = value.map {
-                if (it != null && it::class.java.isEnum) {
-                    return@map it.toString()
-                }
-
-                if (keyIsId) {
-                    return@map getObjectIdValueTypeIfNeed(it);
-                }
-                return@map it
-            }.toTypedArray()
-        } else if (value is Pair<*, *>) {
-            var v1 = value.first;
-            if (v1 != null && v1::class.java.isEnum) {
-                v1 = v1.toString()
-            }
-
-            var v2 = value.second;
-            if (v2 != null && v2::class.java.isEnum) {
-                v2 = v2.toString()
-            }
-
-            if (keyIsId) {
-                v2 = getObjectIdValueTypeIfNeed(v2);
-            }
-
-            value = Pair<Any?, Any?>(v1, v2);
-        }
-
-        return Pair<String, Any?>(keyValue.toString(), value);
+        return key.toString() to value;
     }
 
     /**
