@@ -4,6 +4,7 @@ import nbcp.comm.*
 import nbcp.db.mongo.*;
 import nbcp.utils.*
 import nbcp.db.*
+import org.bson.Document
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
@@ -54,8 +55,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
         }
 //        var masterIdFields = refs.map { it.refIdField }.toSet();
 
-        //如果按id更新。
-        var whereMap = update.getMongoCriteria(*update.whereData.toTypedArray()).toDocument();
+
 
         var idValues = mutableMapOf<String, Array<String>>()
 
@@ -64,37 +64,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
                 return@forEach
             }
 
-            var idValue = idValues.getOrPut(ref.refIdField) {
-                val refIdField = whereMap.keys.firstOrNull { key ->
-                    if (key == ref.refIdField) {
-                        return@firstOrNull true
-                    }
-
-                    if (key == "_id" && ref.refIdField == "id") {
-                        return@firstOrNull true
-                    }
-
-                    if (key.endsWith("._id") && ref.refIdField.endsWith(".id") &&
-                        key.Slice(0, -4) == ref.refIdField.Slice(0, -3)
-                    ) {
-                        return@firstOrNull true;
-                    }
-
-                    return@firstOrNull false
-                }
-
-
-                if (refIdField != null) {
-                    return@getOrPut arrayOf(whereMap.getStringValue(refIdField).AsString())
-                }
-
-                //查询数据，把Id查出来。
-                val IdValueQuery = MongoBaseQueryClip(update.collectionName)
-                IdValueQuery.whereData.addAll(update.whereData)
-                IdValueQuery.selectField(ref.refIdField)
-
-                return@getOrPut IdValueQuery.toList(String::class.java).toTypedArray()
-            }
+            var idValue = getIdValue(idValues, ref,   update)
 
             val masterNameValue = updateSetFields.getValue(ref.refNameField);
 
@@ -106,7 +76,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
             val dbNameValues = nameValueQuery.toList(String::class.java).toSet();
 
             if (dbNameValues.size == 1 && dbNameValues.first() == masterNameValue) {
-                return EventResult(true, null)
+                return@forEach
             }
 
             list.add(
@@ -119,6 +89,49 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
         }
 
         return EventResult(true, list)
+    }
+
+    private fun getIdValue(
+        idValues: MutableMap<String, Array<String>>,
+        ref: DbEntityFieldRefData,
+        update: MongoBaseUpdateClip
+    ): Array<String> {
+
+        var idValue = idValues.getOrPut(ref.refIdField) {
+            //如果按id更新。
+            var whereMap = update.getMongoCriteria(*update.whereData.toTypedArray()).toDocument();
+
+            val refIdField = whereMap.keys.firstOrNull { key ->
+                if (key == ref.refIdField) {
+                    return@firstOrNull true
+                }
+
+                if (key == "_id" && ref.refIdField == "id") {
+                    return@firstOrNull true
+                }
+
+                if (key.endsWith("._id") && ref.refIdField.endsWith(".id") &&
+                    key.Slice(0, -4) == ref.refIdField.Slice(0, -3)
+                ) {
+                    return@firstOrNull true;
+                }
+
+                return@firstOrNull false
+            }
+
+
+            if (refIdField != null) {
+                return@getOrPut arrayOf(whereMap.getStringValue(refIdField).AsString())
+            }
+
+            //查询数据，把Id查出来。
+            val IdValueQuery = MongoBaseQueryClip(update.collectionName)
+            IdValueQuery.whereData.addAll(update.whereData)
+            IdValueQuery.selectField(ref.refIdField)
+
+            return@getOrPut IdValueQuery.toList(String::class.java).toTypedArray()
+        }
+        return idValue
     }
 
     override fun update(update: MongoBaseUpdateClip,chain:EventChain, eventData: EventResult) {
