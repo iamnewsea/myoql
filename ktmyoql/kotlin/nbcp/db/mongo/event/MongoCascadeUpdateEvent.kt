@@ -145,7 +145,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
                 update2.exec();
 
                 usingScope(LogLevelScope.info) {
-                    logger.info(
+                    logger.Important(
                         "mongo级联更新${update2.affectRowCount}条记录,${update.collectionName}-->${targetCollection},${
                             ref.masterIdValues.joinToString(
                                 ","
