@@ -266,7 +266,7 @@ db.getCollection("adminRole").aggregate(
 
     fun proc_mongo_key_value(key: MongoColumnName, value: Any?): Pair<String, Any?> {
         var ret = translateMongoKeyValue(key, value)
-        if (ret.changed == false) {
+        if (ret.changed) {
             return ret.key.toString() to ret.value
         }
 
