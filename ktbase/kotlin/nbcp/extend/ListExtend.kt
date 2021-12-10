@@ -358,7 +358,7 @@ fun List<*>.getListObject(): List<Any?> {
     return this as List<Any?>
 }
 
-fun Array<*>.getListObject(): Array<Any?> {
+fun Array<*>.getArrayObject(): Array<Any?> {
     return this as Array<Any?>
 }
 

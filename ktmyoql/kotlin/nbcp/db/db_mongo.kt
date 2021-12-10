@@ -218,7 +218,6 @@ db.getCollection("adminRole").aggregate(
                 }
             }
         } else if (value_type.isArray) {
-
             ret.value = (value as Array<*>).map {
                 var ret_sub = translateMongoKeyValue(key, it);
 

@@ -35,7 +35,6 @@ class MongoColumnTranslateResult(
 )
 
 
-
 infix fun MongoColumnName.match_size(value: Int): Criteria {
     return Criteria.where(this.toString()).size(value);
 }
@@ -88,7 +87,10 @@ infix fun MongoColumnName.match(to: Any?): Criteria {
 infix fun MongoColumnName.match_all(to: Array<*>): Criteria {
     val (key, tos) = db.mongo.proc_mongo_key_value(this, to.toSet())
 
-    return Criteria.where(key).`all`(*(tos as Array<*>));
+    if (tos is Array<*>) {
+        return Criteria.where(key).`all`(*(tos as Array<*>));
+    }
+    return Criteria.where(key).`all`(*(tos as Collection<*>).toTypedArray());
 }
 
 //infix fun <T> String.match_like(to: T): Criteria {
@@ -145,13 +147,18 @@ infix fun MongoColumnName.match_in(to: Collection<*>): Criteria {
 //db.test1.find({"age":{"$in":['值1','值2',.....]}})
 infix fun MongoColumnName.match_in(to: Array<*>): Criteria {
     var (key, tos) = db.mongo.proc_mongo_key_value(this, to.toSet())
-
-    return Criteria.where(key).`in`(*(tos as Array<*>));
+    if (tos is Array<*>) {
+        return Criteria.where(key).`in`(*(tos as Array<*>));
+    }
+    return Criteria.where(key).`in`(*(tos as Collection<*>).toTypedArray());
 }
 
 infix fun MongoColumnName.match_notin(to: Array<*>): Criteria {
     var (key, tos) = db.mongo.proc_mongo_key_value(this, to.toSet())
-    return Criteria.where(key).`nin`(*(tos as Array<*>));
+    if (tos is Array<*>) {
+        return Criteria.where(key).`nin`(*(tos as Array<*>));
+    }
+    return Criteria.where(key).`nin`(*(tos as Collection<*>).toTypedArray());
 }
 
 infix fun MongoColumnName.match_notin(to: Collection<*>): Criteria {
