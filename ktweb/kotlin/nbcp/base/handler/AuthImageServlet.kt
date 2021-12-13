@@ -1,8 +1,8 @@
 package nbcp.base.handler
 
 import com.wf.captcha.ArithmeticCaptcha
+import nbcp.base.service.IUserAuthenticationService
 import nbcp.comm.*
-import nbcp.base.service.UserAuthenticationService
 import nbcp.web.queryJson
 import nbcp.web.tokenValue
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 open class AuthImageServlet {
     @Autowired
-    lateinit var userSystemService: UserAuthenticationService;
+    lateinit var userSystemService: IUserAuthenticationService;
 
     @GetMapping("/open/validate-code-image")
     fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
@@ -37,7 +37,7 @@ open class AuthImageServlet {
         var captcha = ArithmeticCaptcha(width, height);
         var txt = captcha.text()
 
-        userSystemService.validateCodeRedis.set(token, txt);
+        userSystemService.setValidateCode(token, txt);
         response.setHeader("content-type", "image/png")
 
         captcha.out(response.outputStream);

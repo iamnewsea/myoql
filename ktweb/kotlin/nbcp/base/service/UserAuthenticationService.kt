@@ -23,6 +23,10 @@ interface IUserAuthenticationService {
      * 删除tokens
      */
     fun deleteToken(vararg tokens: String)
+
+    fun getValidateCode(token: String): String
+
+    fun setValidateCode(token: String, value: String)
 }
 
 /**
@@ -41,10 +45,18 @@ class DefaultUserAuthenticationService : IUserAuthenticationService {
     /**
      * 用户体系的图片验证码，格式如：validateCode:{id}
      */
-    val validateCodeRedis
+    private val validateCodeRedis
         get() = RedisStringProxy(
-            "validateCode", config.validateCodeCacheSeconds
+                "validateCode", config.validateCodeCacheSeconds
         )
+
+    override fun getValidateCode(token: String): String {
+        return validateCodeRedis.get(token);
+    }
+
+    override fun setValidateCode(token: String, value: String) {
+        validateCodeRedis.set(token, value);
+    }
 
 
     /**
