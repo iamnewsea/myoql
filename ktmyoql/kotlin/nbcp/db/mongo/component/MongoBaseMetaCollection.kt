@@ -17,10 +17,13 @@ typealias mongoQuery = org.springframework.data.mongodb.core.query.Query
  * mongo 元数据实体的基类
  */
 abstract class MongoBaseMetaCollection<T : Serializable> @JvmOverloads constructor(
+    /**
+     * 实体的类型
+     */
     val entityClass: Class<T>,
     entityName: String,
     databaseId: String = ""
-) : BaseMetaData(entityName,databaseId) {
+) : BaseMetaData(entityName, databaseId) {
     //    abstract fun getColumns(): Array<String>;
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java)

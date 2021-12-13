@@ -4,9 +4,9 @@ import com.mongodb.client.result.UpdateResult
 import nbcp.comm.*
 import nbcp.db.MyOqlOrmScope
 import nbcp.db.db
+import org.bson.Document
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.FindAndModifyOptions
-import org.springframework.data.mongodb.core.findAndModify
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.CriteriaDefinition
 import org.springframework.data.mongodb.core.query.Query
@@ -174,7 +174,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
     /**
      * 执行更新并返回更新后的数据（适用于更新一条的情况）
      */
-    fun <T> updateAndReturnNew(clazz: Class<T>): T? {
+    fun <T> updateAndReturnNew(clazz: Class<T>, mapFunc: ((Document) -> Unit)? = null): T? {
         db.affectRowCount = -1;
 
         var settingResult = db.mongo.mongoEvents.onUpdating(this)
@@ -196,22 +196,28 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         var startAt = LocalDateTime.now()
         var error: Exception? = null
         var query = Query.query(criteria)
+        var resultDocument: Document? = null;
         var result: T? = null;
+
         var updateOption = FindAndModifyOptions();
         updateOption.returnNew(true)
         try {
             this.script = getUpdateScript(criteria, update)
-            result = mongoTemplate.findAndModify(
+            resultDocument = mongoTemplate.findAndModify(
                 query,
                 update,
                 updateOption,
-                clazz,
+                Document::class.java,
                 actualTableName
             );
 
             this.executeTime = LocalDateTime.now() - startAt
 
-            if (result != null) {
+            if (resultDocument != null) {
+
+                result = db.mongo.proc_mongo_doc_to_entity(resultDocument, clazz, "", mapFunc)
+
+
                 usingScope(
                     arrayOf(
                         MyOqlOrmScope.IgnoreAffectRow,
@@ -225,7 +231,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
                 }
             }
 
-            if (result != null) {
+            if (resultDocument != null) {
                 ret = 1
             } else {
                 ret = 0;
@@ -235,9 +241,8 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             error = e;
             throw e;
         } finally {
-            MongoLogger.logUpdate(error, actualTableName, query, update,null)
+            MongoLogger.logUpdate(error, actualTableName, query, update, null)
         }
-
 
         return result;
     }

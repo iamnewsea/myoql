@@ -113,9 +113,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         var skipNullCount = 0;
         try {
             cursor.forEach {
-                db.mongo.procResultData_id2Id(it);
-                db.mongo.procResultDocumentJsonData(it);
-
+                MongoDocument2EntityUtil.procDocumentJson(it);
 
                 if (mapFunc != null) {
                     mapFunc(it);

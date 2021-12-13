@@ -54,7 +54,7 @@ class MongoInsertTranslateIdEvent : IMongoEntityInsert {
 
 
             //设置实体内的 _id
-            db.mongo.procSetDocumentData(entity);
+            db.mongo.transformDocumentIdTo_id(entity);
         }
 
         return EventResult(true, null);

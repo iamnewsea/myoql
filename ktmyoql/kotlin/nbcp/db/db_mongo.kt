@@ -4,7 +4,6 @@ package nbcp.db
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.mongo.*
-import nbcp.db.mongo.event.*
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.core.convert.support.GenericConversionService
@@ -176,94 +175,95 @@ db.getCollection("adminRole").aggregate(
         return MongoExpression("$" + PipeLineOperatorEnum.ifNull.toString() to expression)
     }
 
-    /**
-     * 只有列 = id , _id , 以 .id , ._id 结尾时，才可能转化为 ObjectId
-     */
-    fun translateMongoKeyValue(key: MongoColumnName, value: Any?): MongoColumnTranslateResult {
-        var ret = MongoColumnTranslateResult(key, value);
-        if (value == null) return ret;
 
-        var value_type = value::class.java
-        if (value_type.isEnum) {
-            ret.changed = true;
-            ret.value = value.toString();
-            return ret;
-        } else if (value_type == LocalDateTime::class.java || value_type == LocalDate::class.java) {
-            ret.changed = true;
-            ret.value = value.AsLocalDateTime().AsDate()
-            return ret;
-        } else if (value_type.IsStringType) {
-            var keyColumn = key;
+    fun proc_mongo_key_value(key: MongoColumnName, value: Any?): Pair<String, Any?> {
+        /**
+         * 只有列 = id , _id , 以 .id , ._id 结尾时，才可能转化为 ObjectId
+         */
+        fun translateMongoKeyValue(key: MongoColumnName, value: Any?): MongoColumnTranslateResult {
+            var ret = MongoColumnTranslateResult(key, value);
+            if (value == null) return ret;
 
-            var keyString = key.toString();
-            var keyIsId = false;
-            if (keyString == "id") {
-                keyColumn = MongoColumnName("_id")
-                keyIsId = true;
-            } else if (keyString == "_id") {
-                keyIsId = true;
-            } else if (keyString.endsWith(".id")) {
-                keyColumn = MongoColumnName(keyString.slice(0..keyString.length - 4) + "._id")
-                keyIsId = true;
-            } else if (keyString.endsWith("._id")) {
-                keyIsId = true;
-            }
-            if (keyIsId) {
-                var valueString = value.toString();
-                if (ObjectId.isValid(valueString)) {
-                    ret.changed = true;
-                    ret.key = keyColumn;
-                    ret.value = ObjectId(valueString)
+            var value_type = value::class.java
+            if (value_type.isEnum) {
+                ret.changed = true;
+                ret.value = value.toString();
+                return ret;
+            } else if (value_type == LocalDateTime::class.java || value_type == LocalDate::class.java) {
+                ret.changed = true;
+                ret.value = value.AsLocalDateTime().AsDate()
+                return ret;
+            } else if (value_type.IsStringType) {
+                var keyColumn = key;
+
+                var keyString = key.toString();
+                var keyIsId = false;
+                if (keyString == "id") {
+                    keyColumn = MongoColumnName("_id")
+                    keyIsId = true;
+                } else if (keyString == "_id") {
+                    keyIsId = true;
+                } else if (keyString.endsWith(".id")) {
+                    keyColumn = MongoColumnName(keyString.slice(0..keyString.length - 4) + "._id")
+                    keyIsId = true;
+                } else if (keyString.endsWith("._id")) {
+                    keyIsId = true;
+                }
+                if (keyIsId) {
+                    var valueString = value.toString();
+                    if (ObjectId.isValid(valueString)) {
+                        ret.changed = true;
+                        ret.key = keyColumn;
+                        ret.value = ObjectId(valueString)
+                        return ret;
+                    }
+                }
+            } else if (value_type.isArray) {
+                ret.value = (value as Array<*>).map {
+                    var ret_sub = translateMongoKeyValue(key, it);
+
+                    if (ret_sub.changed) {
+                        ret.changed = true;
+                        ret.key = ret_sub.key;
+                    }
+                    return@map ret_sub.value;
+                }.toTypedArray()
+
+                return ret;
+            } else if (value_type.IsCollectionType) {
+
+                ret.value = (value as Collection<*>).map {
+                    var ret_sub = translateMongoKeyValue(key, it);
+
+                    if (ret_sub.changed) {
+                        ret.changed = true;
+                        ret.key = ret_sub.key;
+                    }
+                    return@map ret_sub.value;
+                }.toList()
+
+                return ret;
+
+            } else if (value_type is Pair<*, *>) {
+                var pair_value = value as Pair<*, *>
+
+                var ret_1 = translateMongoKeyValue(key, pair_value.first);
+                var ret_2 = translateMongoKeyValue(key, pair_value.second);
+
+                if (ret_1.changed == false && ret_2.changed == false) {
                     return ret;
                 }
-            }
-        } else if (value_type.isArray) {
-            ret.value = (value as Array<*>).map {
-                var ret_sub = translateMongoKeyValue(key, it);
 
-                if (ret_sub.changed) {
-                    ret.changed = true;
-                    ret.key = ret_sub.key;
-                }
-                return@map ret_sub.value;
-            }.toTypedArray()
-
-            return ret;
-        } else if (value_type.IsCollectionType) {
-
-            ret.value = (value as Collection<*>).map {
-                var ret_sub = translateMongoKeyValue(key, it);
-
-                if (ret_sub.changed) {
-                    ret.changed = true;
-                    ret.key = ret_sub.key;
-                }
-                return@map ret_sub.value;
-            }.toList()
-
-            return ret;
-
-        } else if (value_type is Pair<*, *>) {
-            var pair_value = value as Pair<*, *>
-
-            var ret_1 = translateMongoKeyValue(key, pair_value.first);
-            var ret_2 = translateMongoKeyValue(key, pair_value.second);
-
-            if (ret_1.changed == false && ret_2.changed == false) {
+                ret.changed = true;
+                ret.key = ret_1.key;
+                ret.value = ret_1.value to ret_2.value;
                 return ret;
             }
 
-            ret.changed = true;
-            ret.key = ret_1.key;
-            ret.value = ret_1.value to ret_2.value;
+
             return ret;
         }
 
-
-        return ret;
-    }
-
-    fun proc_mongo_key_value(key: MongoColumnName, value: Any?): Pair<String, Any?> {
         var ret = translateMongoKeyValue(key, value)
         if (ret.changed) {
             return ret.key.toString() to ret.value
@@ -282,8 +282,7 @@ db.getCollection("adminRole").aggregate(
         lastKey: String,
         mapFunc: ((Document) -> Unit)? = null
     ): T? {
-        db.mongo.procResultData_id2Id(it);
-        db.mongo.procResultDocumentJsonData(it);
+        MongoDocument2EntityUtil.procDocumentJson(it);
         var lastKey = lastKey;
 
         if (mapFunc != null) {
@@ -309,84 +308,12 @@ db.getCollection("adminRole").aggregate(
         }
     }
 
-    /**
-     * 把 _id 转换为 id
-     */
-    @JvmOverloads
-    fun procResultData_id2Id(value: Collection<*>, remove_id: Boolean = true) {
-        value.forEach { v ->
-            if (v == null) {
-                return@forEach
-            }
-
-            if (v is MutableMap<*, *>) {
-                db.mongo.procResultData_id2Id(v, remove_id);
-            } else if (v is Collection<*>) {
-                procResultData_id2Id(v, remove_id);
-            } else if (v is Array<*>) {
-                db.mongo.procResultData_id2Id(v, remove_id);
-            }
-        }
-    }
-
-
-    /**
-     * 把 _id 转换为 id
-     */
-    @JvmOverloads
-    fun procResultData_id2Id(value: Array<*>, remove_id: Boolean = true) {
-        value.forEach { v ->
-            if (v == null) {
-                return@forEach
-            }
-
-            if (v is MutableMap<*, *>) {
-                procResultData_id2Id(v, remove_id);
-            } else if (v is Collection<*>) {
-                procResultData_id2Id(v, remove_id);
-            } else if (v is Array<*>) {
-                procResultData_id2Id(v, remove_id);
-            }
-        }
-    }
-
-    @JvmOverloads
-    fun procResultData_id2Id(value: MutableMap<*, *>, remove_id: Boolean = true) {
-        var keys = value.keys.toTypedArray();
-        var needReplace = keys.contains("_id") && !keys.contains("id")
-
-        for (k in keys) {
-            var v = value.get(k);
-            if (needReplace && (k == "_id")) {
-                if (v == null) {
-                    v = "";
-                } else if (v is ObjectId) {
-                    v = v.toString()
-                }
-
-                (value as MutableMap<Any, Any?>).set("id", v);
-                if (remove_id) {
-                    value.remove("_id")
-                }
-                needReplace = false;
-                continue;
-            }
-            if (v == null) {
-                continue;
-            }
-            if (v is MutableMap<*, *>) {
-                procResultData_id2Id(v, remove_id);
-            } else if (v is Collection<*>) {
-                procResultData_id2Id(v, remove_id);
-            }
-        }
-    }
 
 
     /**
      * 把 Document 推送到数据库，需要转换 id
      */
-    fun procSetDocumentData(value: Any): Any {
+    fun transformDocumentIdTo_id(value: Any): Any {
         RecursionUtil.recursionAny(value, { json ->
             if (json is MutableMap<*, *>) {
                 var m_json = (json as MutableMap<String, Any?>);
@@ -410,57 +337,7 @@ db.getCollection("adminRole").aggregate(
     }
 
 
-    /**
-     *value 可能会是： Document{{answerRole=Patriarch}}
-     */
-    fun procResultDocumentJsonData(value: Document) {
-        fun testDocumentString(item: Any?): Boolean {
-            if (item == null) return false;
-            var type = item::class.java;
-            if (type.IsStringType == false) return false;
-            var v_string_value = item.toString()
-            return v_string_value.contains("{{") && v_string_value.endsWith("}}")
-        }
 
-        fun procDocumentString(v_string_value: String): Any {
-            //Document{{answerRole=Patriarch}}
-            //目前只发现一个键值对形式的。
-            val startIndex = v_string_value.indexOf("{{");
-
-            val json = StringMap();
-            v_string_value.Slice(startIndex + 2, -2).split(",").forEach { item ->
-                val sect = item.split("=");
-                json.put(sect[0], sect[1]);
-            }
-            return json;
-        }
-
-        RecursionUtil.recursionAny(value, { json ->
-            json.keys.toTypedArray().forEachIndexed { _, key ->
-                if (key == null) {
-                    return@forEachIndexed
-                }
-                var documentStringValue = json.get(key);
-                if (!testDocumentString(documentStringValue)) {
-                    return@forEachIndexed
-                }
-                (json as MutableMap<Any, Any>).set(key, procDocumentString(documentStringValue.toString()));
-
-                return@forEachIndexed
-            }
-            return@recursionAny true
-        }, { list ->
-            var arrayList = list as MutableList<Any?>
-            arrayList.forEachIndexed { index, it ->
-                if (it == null || !testDocumentString(it)) {
-                    return@forEachIndexed
-                }
-                arrayList[index] = procDocumentString(it.toString());
-            }
-
-            return@recursionAny true
-        })
-    }
 
 
     /**

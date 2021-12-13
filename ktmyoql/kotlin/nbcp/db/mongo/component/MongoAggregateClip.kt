@@ -247,10 +247,9 @@ cursor: {} } """
         this.affectRowCount = list.size;
 
         list.forEach {
-            db.mongo.procResultData_id2Id(it);
             //            db.change_id2Id(it);
             //value 可能会是： Document{{answerRole=Patriarch}}
-            db.mongo.procResultDocumentJsonData(it);
+            MongoDocument2EntityUtil.procDocumentJson(it);
             if (itemFunc != null) {
                 itemFunc(it);
             }

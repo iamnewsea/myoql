@@ -32,18 +32,22 @@ class Test_Mongo_Update : TestBase() {
         test_ent();
     }
 
-    private fun test_ent() {
+    @Test
+    fun test_ent() {
         var annex = SysAnnex()
-        annex.name = "test_ent"
+        annex.name = "wwwfffw"
         annex.id = CodeUtil.getCode();
         annex.creator = IdName(CodeUtil.getCode(), "test")
-        db.mor_base.sysAnnex.updateWithEntity(annex)
-            .where { it.id match "5id41x81h3b4" }
-            .execUpdate()
+        var d = db.mor_base.sysAnnex.updateWithEntity(annex)
+            .where { it.id match "5ffbf52a3ab4096e4c80a129" }
+            .prepareUpdate()
+            .updateAndReturnNew(SysAnnex::class.java)
 
+        println(d.ToJson())
     }
 
-    private fun test_doc() {
+    @Test
+    fun test_doc() {
         var annex = Document()
         annex.put("id", CodeUtil.getCode())
         annex.put("name", "test_doc")

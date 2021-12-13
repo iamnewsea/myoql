@@ -21,7 +21,9 @@ import java.io.Serializable
 class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
     var moerEntity: M,
     var entity: Serializable
-) : MongoBaseUpdateClip(moerEntity.tableName) {
+) : MongoClipBase(moerEntity.tableName) {
+    val whereData = mutableListOf<Criteria>()
+    val setData = LinkedHashMap<String, Any?>()
 
     private var whereColumns = mutableSetOf<String>()
     private var setColumns = mutableSetOf<String>()
@@ -32,7 +34,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
         return this;
     }
 
-    fun withColumns(vararg column:String): MongoSetEntityUpdateClip<M> {
+    fun withColumns(vararg column: String): MongoSetEntityUpdateClip<M> {
         this.setColumns.addAll(column)
         return this;
     }
@@ -63,14 +65,18 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
     }
 
     fun where(where: (M) -> Criteria): MongoSetEntityUpdateClip<M> {
-        this.whereData.add(where(moerEntity));
+        var c = where(moerEntity);
+        this.whereData.add(c);
+
+        if (c.key == "_id") {
+            this.whereColumns.add("id")
+        } else {
+            this.whereColumns.add(c.key);
+        }
         return this;
     }
 
-    /**
-     * 执行更新, == exec ,语义清晰
-     */
-    fun execUpdate(): Int {
+    fun prepareUpdate(): MongoUpdateClip<M> {
         if (whereColumns.any() == false) {
             whereColumns.add("id")
         }
@@ -81,6 +87,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
         var update = MongoUpdateClip(this.moerEntity)
 
         if (this.entity is Map<*, *>) {
+            //map 可能是  _id , 也可能是 id
             val map = this.entity as MutableMap<*, *>
 
             map.keys.map { it.toString() }.forEach {
@@ -88,11 +95,14 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
                 val value = map.get(it);
 
                 if (whereColumns.contains(findKey)) {
+                    if (findKey == "_id") {
+                        findKey = "id"
+                    }
                     whereData2.put(findKey, value)
                     return@forEach
                 }
 
-                if (findKey == "id") {
+                if (findKey == "id" || findKey == "_id") {
                     return@forEach
                 }
 
@@ -133,7 +143,11 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
             }
         }
 
-        var setKeys = this.whereData.map { it.toDocument().keys.toTypedArray() }.Unwind();
+        var setKeys = this.whereData
+            .map { it.toDocument().keys.toTypedArray() }
+            .Unwind()
+            .map { if (it == "_id") return@map "id" else return@map it };
+
         whereData2.forEach { key, value ->
             if (setKeys.contains(key)) {
                 return@forEach
@@ -150,7 +164,15 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
         setData2.forEach { key, value ->
             update.set(key, value);
         }
-        return update.exec();
+
+        return update;
+    }
+
+    /**
+     * 执行更新, == exec ,语义清晰
+     */
+    fun execUpdate(): Int {
+        return this.prepareUpdate().exec();
     }
 
     /**
@@ -178,7 +200,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
     /**
      * 更新，默认按 id 更新
      */
-    override fun exec(): Int {
+    fun exec(): Int {
         return updateOrAdd();
     }
 }
