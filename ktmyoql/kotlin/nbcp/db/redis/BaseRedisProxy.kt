@@ -1,10 +1,9 @@
 package nbcp.db.redis
 
 import nbcp.comm.AsInt
-import nbcp.utils.*
-import nbcp.comm.*
 import nbcp.db.db
 import org.springframework.data.redis.core.StringRedisTemplate
+import java.util.concurrent.TimeUnit
 
 enum class RedisRenewalTypeEnum {
     None, //不续期
@@ -45,7 +44,6 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
     }
 
 
-
     /**
      * 使用 RedisTask.setExpireKey 设置续期时间
      * @param key:不带group
@@ -80,4 +78,10 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
      */
     fun existsKey(key: String): Boolean = stringCommand.hasKey(getFullKey(key));
 
+    /**
+     * 获取ttl，
+     */
+    fun getExpireSeconds(key: String): Int {
+        return stringCommand.getExpire(key, TimeUnit.SECONDS).AsInt()
+    }
 }
