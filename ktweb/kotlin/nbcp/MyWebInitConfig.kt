@@ -4,6 +4,7 @@ import nbcp.base.service.*
 import nbcp.config.MySwaggerConfig
 import nbcp.base.filter.MyAllFilter
 import nbcp.base.filter.MyOqlCrossFilter
+import nbcp.comm.AutoLoadBean
 import nbcp.db.MyOqlBaseActionLogDefine
 import nbcp.db.MyOqlMultipleDataSourceDefine
 import nbcp.db.es.*
@@ -84,11 +85,12 @@ class MyWebClassPathBeanDefinitionScanner(registry: BeanDefinitionRegistry?, use
      * @addExcludeFilter 将带有自定义注解的类 ，不加载到容器中
      */
     fun registerFilters() {
+
         /**
          * TODO addIncludeFilter  满足任意includeFilters会被加载
          */
         addIncludeFilter(AnnotationTypeFilter(RestController::class.java))
-
+        addIncludeFilter(AnnotationTypeFilter(AutoLoadBean::class.java))
         /**
          * TODO addExcludeFilter 同样的满足任意excludeFilters不会被加载
          */

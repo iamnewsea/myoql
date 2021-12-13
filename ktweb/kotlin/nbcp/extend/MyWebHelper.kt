@@ -2,6 +2,7 @@ package nbcp.web
 
 import io.jsonwebtoken.Jwts
 import nbcp.base.mvc.HttpContext
+import nbcp.base.service.IUserAuthenticationService
 import nbcp.comm.*
 import nbcp.data.TokenStorageTypeEnum
 import nbcp.utils.*
@@ -14,7 +15,6 @@ import nbcp.db.sql.SqlSetEntityUpdateClip
 import nbcp.extend.RequestGetLoginUserModelEvent
 import nbcp.extend.RequestSetLoginUserModelEvent
 import nbcp.extend.RequestGetTokenEvent
-import nbcp.base.service.UserAuthenticationService
 import nbcp.db.LoginNamePasswordData
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
@@ -70,7 +70,7 @@ object MyWebHelper {
 }
 
 val HttpServletRequest.userAuthenticationService by lazy {
-    return@lazy SpringUtil.getBean<UserAuthenticationService>();
+    return@lazy SpringUtil.getBean<IUserAuthenticationService>();
 }
 
 
