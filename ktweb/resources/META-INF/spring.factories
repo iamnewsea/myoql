@@ -2,7 +2,6 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=nbcp.MyWebInitCon
 ,nbcp.config.MySwaggerConfig\
 ,nbcp.base.filter.MyOqlCrossFilter\
 ,nbcp.base.filter.MyAllFilter\
-,nbcp.base.service.UserAuthenticationService\
 ,nbcp.base.service.UploadService\
 ,nbcp.base.service.UploadFileForLocalService\
 ,nbcp.base.service.MinioBaseService\

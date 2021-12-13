@@ -10,9 +10,9 @@ import kotlin.reflect.KClass
  * Created by udi on 17-3-30.
  */
 
-@Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class AutoLoadBean()
+//@Target(AnnotationTarget.CLASS)
+//@Retention(AnnotationRetention.RUNTIME)
+//annotation class AutoLoadBean()
 
 /**
  * 必传字段，用于Mvc请求参数的注解，标记了该注解，表示该参数不能为空字符串，不能为空值。

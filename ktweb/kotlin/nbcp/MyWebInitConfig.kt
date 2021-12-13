@@ -1,16 +1,7 @@
 package nbcp
 
 import nbcp.base.service.*
-import nbcp.config.MySwaggerConfig
-import nbcp.base.filter.MyAllFilter
-import nbcp.base.filter.MyOqlCrossFilter
-import nbcp.comm.AutoLoadBean
-import nbcp.db.MyOqlBaseActionLogDefine
-import nbcp.db.MyOqlMultipleDataSourceDefine
-import nbcp.db.es.*
-import nbcp.db.mongo.event.*
-import nbcp.db.sql.event.*
-import nbcp.model.IUploadFileDbService
+import nbcp.utils.SpringUtil
 import org.springframework.beans.factory.BeanFactory
 import org.springframework.beans.factory.BeanFactoryAware
 import org.springframework.beans.factory.config.BeanDefinitionHolder
@@ -26,11 +17,12 @@ import org.springframework.core.io.ResourceLoader
 import org.springframework.core.type.AnnotationMetadata
 import org.springframework.core.type.filter.AnnotationTypeFilter
 import org.springframework.core.type.filter.AssignableTypeFilter
+import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.RestController
 
 
-@Import(MyWebBeanImporter::class)
+@Import(value = [MyWebBeanImporter::class, DefaultUserAuthenticationService::class])
 @Configuration
 class MyWebInitConfig {
 
@@ -90,7 +82,7 @@ class MyWebClassPathBeanDefinitionScanner(registry: BeanDefinitionRegistry?, use
          * TODO addIncludeFilter  满足任意includeFilters会被加载
          */
         addIncludeFilter(AnnotationTypeFilter(RestController::class.java))
-        addIncludeFilter(AnnotationTypeFilter(AutoLoadBean::class.java))
+//        addIncludeFilter(AnnotationTypeFilter(AutoLoadBean::class.java))
         /**
          * TODO addExcludeFilter 同样的满足任意excludeFilters不会被加载
          */

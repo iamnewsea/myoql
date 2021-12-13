@@ -4,7 +4,9 @@ import nbcp.comm.*
 import nbcp.db.LoginUserModel
 import nbcp.db.redis.proxy.RedisStringProxy
 import org.springframework.beans.factory.InitializingBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
 
 interface IUserAuthenticationService {
@@ -33,7 +35,7 @@ interface IUserAuthenticationService {
  * 表示 config.userSystem 配置的用户体系的 redis 项，格式如： {config.userSystem}token:{id}
  */
 @Component
-@ConditionalOnMissingBean(IUserAuthenticationService::class)
+@ConditionalOnClass(StringRedisTemplate::class)
 class DefaultUserAuthenticationService : IUserAuthenticationService {
 
     /**
