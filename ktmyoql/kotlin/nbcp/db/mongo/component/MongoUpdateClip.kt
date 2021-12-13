@@ -12,7 +12,8 @@ import java.io.Serializable
 /**
  * MongoUpdate
  */
-class MongoUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(var moerEntity: M) : MongoBaseUpdateClip(moerEntity.tableName) {
+class MongoUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(var moerEntity: M) :
+    MongoBaseUpdateClip(moerEntity.tableName) {
 
     fun where(whereData: Criteria): MongoUpdateClip<M> {
         this.whereData.add(whereData);

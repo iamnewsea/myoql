@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.CriteriaDefinition
 import org.springframework.data.mongodb.core.query.Query
+import org.springframework.data.mongodb.core.query.Update
 import java.time.LocalDateTime
 
 open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IMongoWhereable {
@@ -56,20 +57,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         return execAll();
     }
 
-
-    /**
-     * 更新条件可以为空。
-     */
-    protected fun execAll(): Int {
-        db.affectRowCount = -1;
-
-        var settingResult = db.mongo.mongoEvents.onUpdating(this)
-        if (settingResult.any { it.result.result == false }) {
-            return 0;
-        }
-
-        var criteria = this.getMongoCriteria(*whereData.toTypedArray());
-
+    private fun getUpdateSetSect(): Update {
         var update = org.springframework.data.mongodb.core.query.Update();
 
         for (kv in setData) {
@@ -111,24 +99,31 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             }
         }
 
+        this.arrayFilters.forEach {
+            update.filterArray(it)
+        }
+        return update;
+    }
+
+    /**
+     * 更新条件可以为空。
+     */
+    protected fun execAll(): Int {
+        db.affectRowCount = -1;
+
+        var settingResult = db.mongo.mongoEvents.onUpdating(this)
+        if (settingResult.any { it.result.result == false }) {
+            return 0;
+        }
+
+        var criteria = this.getMongoCriteria(*whereData.toTypedArray());
+
+        var update = getUpdateSetSect();
+
         //如果没有要更新的列.
         if (update.updateObject.keys.size == 0) {
             logger.warn("没有要更新的列，忽略更新!")
             return 0;
-        }
-
-//        var eventObject: MongoUpdateEventObject? = null;
-//        if (whereCriteriaObject.keys.contains("_id")) {
-//            var _id_value = whereCriteriaObject["_id"].toString();
-//
-//            if (_id_value.HasValue) {
-//                eventObject = MongoUpdateEventObject(collectionClazz, _id_value, update.updateObject)
-//            }
-//        }
-
-
-        this.arrayFilters.forEach {
-            update.filterArray(it)
         }
 
         var ret = -1;
@@ -155,7 +150,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
                     )
                 ) {
                     settingResult.forEach {
-                        it.event.update(this, it.chain,it.result)
+                        it.event.update(this, it.chain, it.result)
                     }
                 }
             }
@@ -167,13 +162,6 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             throw e;
         } finally {
             MongoLogger.logUpdate(error, actualTableName, query, update, result)
-//            logger.InfoError(ret < 0) {
-//                """[update] ${this.collectionName}
-//[where] ${criteria.criteriaObject.ToJson()}
-//[set] ${update.updateObject.ToJson()}
-//[result] ${ret}
-//[耗时] ${db.executeTime}"""
-//            }
         }
 
 
