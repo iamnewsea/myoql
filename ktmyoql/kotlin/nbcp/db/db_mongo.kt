@@ -272,6 +272,43 @@ db.getCollection("adminRole").aggregate(
         return key.toString() to value;
     }
 
+
+    /**
+     * 查询到对象后，转实体。
+     */
+    fun <T> proc_mongo_doc_to_entity(
+        it: Document,
+        clazz: Class<T>,
+        lastKey: String,
+        mapFunc: ((Document) -> Unit)? = null
+    ): T? {
+        db.mongo.procResultData_id2Id(it);
+        db.mongo.procResultDocumentJsonData(it);
+        var lastKey = lastKey;
+
+        if (mapFunc != null) {
+            mapFunc(it);
+        }
+        if (clazz.IsSimpleType()) {
+            if (lastKey.isEmpty()) {
+                lastKey = it.keys.last()
+            }
+
+            val value = MyUtil.getPathValue(it, *lastKey.split(".").toTypedArray());
+            if (value != null) {
+                return value.ConvertType(clazz) as T
+            } else {
+                return null;
+            }
+        } else {
+            if (Document::class.java.isAssignableFrom(clazz)) {
+                return it as T;
+            } else {
+                return it.ConvertJson(clazz) as T;
+            }
+        }
+    }
+
     /**
      * 把 _id 转换为 id
      */

@@ -5,6 +5,8 @@ import nbcp.comm.*
 import nbcp.db.MyOqlOrmScope
 import nbcp.db.db
 import org.slf4j.LoggerFactory
+import org.springframework.data.mongodb.core.FindAndModifyOptions
+import org.springframework.data.mongodb.core.findAndModify
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.CriteriaDefinition
 import org.springframework.data.mongodb.core.query.Query
@@ -167,6 +169,79 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
 
         return ret;
     }
+
+
+    /**
+     * 执行更新并返回更新后的数据（适用于更新一条的情况）
+     */
+    fun <T> updateAndReturnNew(clazz: Class<T>): T? {
+        db.affectRowCount = -1;
+
+        var settingResult = db.mongo.mongoEvents.onUpdating(this)
+        if (settingResult.any { it.result.result == false }) {
+            return null;
+        }
+
+        var criteria = this.getMongoCriteria(*whereData.toTypedArray());
+
+        var update = getUpdateSetSect();
+
+        //如果没有要更新的列.
+        if (update.updateObject.keys.size == 0) {
+            logger.warn("没有要更新的列，忽略更新!")
+            return null;
+        }
+
+        var ret = -1;
+        var startAt = LocalDateTime.now()
+        var error: Exception? = null
+        var query = Query.query(criteria)
+        var result: T? = null;
+        var updateOption = FindAndModifyOptions();
+        updateOption.returnNew(true)
+        try {
+            this.script = getUpdateScript(criteria, update)
+            result = mongoTemplate.findAndModify(
+                query,
+                update,
+                updateOption,
+                clazz,
+                actualTableName
+            );
+
+            this.executeTime = LocalDateTime.now() - startAt
+
+            if (result != null) {
+                usingScope(
+                    arrayOf(
+                        MyOqlOrmScope.IgnoreAffectRow,
+                        MyOqlOrmScope.IgnoreExecuteTime,
+                        MyOqlOrmScope.IgnoreUpdateAt
+                    )
+                ) {
+                    settingResult.forEach {
+                        it.event.update(this, it.chain, it.result)
+                    }
+                }
+            }
+
+            if (result != null) {
+                ret = 1
+            } else {
+                ret = 0;
+            }
+            this.affectRowCount = ret
+        } catch (e: Exception) {
+            error = e;
+            throw e;
+        } finally {
+            MongoLogger.logUpdate(error, actualTableName, query, update,null)
+        }
+
+
+        return result;
+    }
+
 
     private fun getUpdateScript(
         where: Criteria,
