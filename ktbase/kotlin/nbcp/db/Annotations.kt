@@ -24,6 +24,7 @@ annotation class Cn(val value: String)
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class DbKey()
+
 /**
  * 之后移除，使用 DbEntityIndex注解
  */
@@ -39,6 +40,11 @@ annotation class DbUks(vararg val value: String)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class DbEntityGroup(val value: String)
 
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class DbEntityIndexes(vararg val value: DbEntityIndex)
 
-
-
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+@java.lang.annotation.Repeatable(DbEntityIndexes::class)
+annotation class DbEntityIndex(vararg val value: String, val unique: Boolean = false)

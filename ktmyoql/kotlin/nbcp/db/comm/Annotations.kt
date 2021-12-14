@@ -76,20 +76,20 @@ annotation class DbEntityFieldRef(
 )
 
 
-/**
- * 定义数据索引
- */
-@Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.RUNTIME)
-@Repeatable
-@Inherited
-annotation class DbEntityIndexes(vararg val value: DbEntityIndex)
-
-@Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.RUNTIME)
-@Repeatable
-@Inherited
-annotation class DbEntityIndex(val unique: Boolean, vararg val column: String)
+///**
+// * 定义数据索引
+// */
+//@Target(AnnotationTarget.CLASS)
+//@Retention(AnnotationRetention.RUNTIME)
+//@Repeatable
+//@Inherited
+//annotation class DbEntityIndexes(vararg val value: DbEntityIndex)
+//
+//@Target(AnnotationTarget.CLASS)
+//@Retention(AnnotationRetention.RUNTIME)
+//@Repeatable
+//@Inherited
+//annotation class DbEntityIndex(val unique: Boolean, vararg val column: String)
 
 
 //--------------------
