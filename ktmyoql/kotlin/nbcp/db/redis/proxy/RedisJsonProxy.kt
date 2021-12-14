@@ -13,7 +13,7 @@ import java.time.Duration
 /**
  * Created by udi on 17-7-14.
  */
-class RedisJsonProxy<T:Serializable> @JvmOverloads constructor(
+class RedisJsonProxy<T> @JvmOverloads constructor(
         group: String,
         val clazz:Class<T>,
         defaultCacheSeconds: Int = 0) :
