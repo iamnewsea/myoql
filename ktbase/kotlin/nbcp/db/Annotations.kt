@@ -19,12 +19,18 @@ annotation class Cn(val value: String)
 
 
 /**
- * 实体字段上定义主键列，如实体的多个字段定义Key，认为是组合主键。
+ * 之后移除，使用 DbEntityIndex注解
  */
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class DbKey()
-
+/**
+ * 之后移除，使用 DbEntityIndex注解
+ */
+@Repeatable
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class DbUks(vararg val value: String)
 
 /**
  * 实体的组
@@ -34,24 +40,5 @@ annotation class DbKey()
 annotation class DbEntityGroup(val value: String)
 
 
-/**
- * 定义唯一键，每一项表示唯一键，如果唯一键多个用逗号分隔
- */
-@Repeatable
-@Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class DbUks(vararg val value: String)
 
 
-@Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class DbDefines(vararg val value: DbDefine)
-
-/**
- * 字段定义，用于 Es实体 生成 Mapping
- */
-@Repeatable
-@Inherited
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FIELD)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class DbDefine(val fieldName: String, val define: String)

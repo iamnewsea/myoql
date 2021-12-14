@@ -1,4 +1,4 @@
-package nbcp.comm
+package nbcp.es
 
 import nbcp.TestBase
 import nbcp.comm.*

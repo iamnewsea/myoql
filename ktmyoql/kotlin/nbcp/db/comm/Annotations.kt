@@ -90,3 +90,20 @@ annotation class DbEntityIndexes(vararg val value: DbEntityIndex)
 @Repeatable
 @Inherited
 annotation class DbEntityIndex(val unique: Boolean, vararg val column: String)
+
+
+//--------------------
+
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class DbDefines(vararg val value: DbDefine)
+
+/**
+ * 字段定义，用于 Es实体 生成 Mapping
+ */
+@Repeatable
+@Inherited
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class DbDefine(val fieldName: String, val define: String)
+//--------------------
