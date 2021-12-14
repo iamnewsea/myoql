@@ -169,7 +169,7 @@ data class DiffData<T, R> @JvmOverloads constructor(
         inline fun <T, R> load(data: Iterable<T>, other: Collection<R>, equalFunc: (T, R) -> Boolean): DiffData<T, R> {
             var diff = DiffData<T, R>();
 
-            var indexList = data.IntersectIndeies(other, equalFunc);
+            var indexList = data.IntersectIndexes(other, equalFunc);
 
             var keyIndexList = indexList.keys;
             var valueIndexList = indexList.values;

@@ -226,7 +226,7 @@ fun <T> MutableList<T>.InsertAfter(index: Int, item: T) {
 /**
  * 获取相同数据的索引，返回 map ,key 是相同数据的 第一个数据的位置索引，  value 是相同数据的 第二个数据的位置索引。
  */
-inline fun <T, R> Iterable<T>.IntersectIndeies(other: Collection<R>, equalFunc: (T, R) -> Boolean): Map<Int, Int> {
+inline fun <T, R> Iterable<T>.IntersectIndexes(other: Collection<R>, equalFunc: (T, R) -> Boolean): Map<Int, Int> {
     if (this.any() == false) return mapOf();
     if (other.any() == false) return mapOf();
 
@@ -257,7 +257,7 @@ inline fun <T, R> Iterable<T>.Minus(other: Collection<R>, equalFunc: (T, R) -> B
     if (this.any() == false) return this.toList();
     if (other.any() == false) return this.toList();
 
-    var toRemoveIndex = this.IntersectIndeies(other, equalFunc).keys
+    var toRemoveIndex = this.IntersectIndexes(other, equalFunc).keys
 
     return this.filterIndexed { index, _ -> toRemoveIndex.contains(index) == false };
 }
@@ -269,7 +269,7 @@ inline fun <T, R> Iterable<T>.Intersect(other: Collection<R>, equalFunc: (T, R) 
     if (this.any() == false) return this.toList();
     if (other.any() == false) return this.toList();
 
-    var indexList = this.IntersectIndeies(other, equalFunc).keys
+    var indexList = this.IntersectIndexes(other, equalFunc).keys
 
     return this.filterIndexed { index, _ -> indexList.contains(index) };
 }

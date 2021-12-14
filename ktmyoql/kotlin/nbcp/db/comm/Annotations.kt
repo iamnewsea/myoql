@@ -1,5 +1,6 @@
 package nbcp.db
 
+import nbcp.db.mongo.MongoColumnName
 import org.springframework.core.annotation.AliasFor
 import org.springframework.stereotype.Component
 import java.lang.annotation.Documented
@@ -67,9 +68,25 @@ annotation class DbEntityFieldRefs(vararg val value: DbEntityFieldRef)
 @Repeatable
 @Inherited
 annotation class DbEntityFieldRef(
-        val idField: String,
-        val nameField: String,
-        val refEntityClass: KClass<*>,
-        val refIdField: String = "",
-        val refNameField: String = ""
+    val idField: String,
+    val nameField: String,
+    val refEntityClass: KClass<*>,
+    val refIdField: String = "",
+    val refNameField: String = ""
 )
+
+
+/**
+ * 定义数据索引
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+@Repeatable
+@Inherited
+annotation class DbEntityIndexes(vararg val value: DbEntityIndex)
+
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+@Repeatable
+@Inherited
+annotation class DbEntityIndex(val unique: Boolean, vararg val column: String)

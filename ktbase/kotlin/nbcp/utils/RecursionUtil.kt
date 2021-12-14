@@ -107,7 +107,7 @@ object RecursionUtil {
     ): Int {
         if (container.size == 0) return 0
         var counted = 0;
-        var removeIndeies = mutableListOf<Int>();
+        var removeIndexes = mutableListOf<Int>();
 
         for (i in container.indices) {
             val item = container[i]
@@ -119,14 +119,14 @@ object RecursionUtil {
                 continue
             else if (ret == RecursionReturnEnum.Abord) return counted;
             else if (ret == RecursionReturnEnum.Remove) {
-                removeIndeies.add(i);
+                removeIndexes.add(i);
                 continue;
             }
 
             counted += _execute(producer(item), producer, consumer, setT);
         }
 
-        for (i in removeIndeies.reversed()) {
+        for (i in removeIndexes.reversed()) {
             container.removeAt(i);
         }
 

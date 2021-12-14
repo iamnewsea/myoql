@@ -133,7 +133,7 @@ plugin.toolkit.log.grpc.reporter.upstream_timeout=${SW_GRPC_LOG_GRPC_UPSTREAM_TI
     - Skip 
     - ForEachExt
     - InsertAfter
-    - IntersectIndeies
+    - IntersectIndexes
     - Intersect
     - Minus
     - SplitDiffData
