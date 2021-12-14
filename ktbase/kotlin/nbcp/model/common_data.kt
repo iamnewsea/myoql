@@ -158,6 +158,7 @@ open class LoginUserModel @JvmOverloads constructor(
      */
     var isAdmin: Boolean = false,
     id: String = "",
+    var loginField: String = "",
     var loginName: String = "",
     name: String = "",
     var organization: IdName = IdName(),

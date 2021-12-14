@@ -7,7 +7,6 @@
 //@Target(ElementType.TYPE)
 //@Retention(RetentionPolicy.RUNTIME)
 //public @interface DbEntityIndex {
-//    String[] value() default {};
-//
 //    boolean unique() default false;
+//    String[] value() default {};
 //}
