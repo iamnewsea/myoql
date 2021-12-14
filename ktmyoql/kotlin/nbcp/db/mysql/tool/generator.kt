@@ -5,6 +5,7 @@ import nbcp.data.Sys
 import nbcp.utils.*
 import nbcp.db.*
 import nbcp.db.sql.*
+import nbcp.tool.CodeGeneratorHelper
 import java.io.File
 import java.io.FileWriter
 import java.lang.RuntimeException
@@ -401,8 +402,6 @@ ${idMethods.joinToString("\n")}
 //            var entityTypeName: String = "",
             var autoIncrementKey: String = "",
             var uks: MutableSet<String> = mutableSetOf(),
-            var pks: MutableSet<String> = mutableSetOf(),
-//            var columns_convertValue: MutableSet<String> = mutableSetOf(),
             var columns: MutableSet<String> = mutableSetOf(),
             var columns_spread: MutableSet<String> = mutableSetOf(),
             var props: MutableSet<String> = mutableSetOf(),
@@ -464,9 +463,9 @@ ${idMethods.joinToString("\n")}
                         ret.uks.add(db_column_name)
                     }
 
-                    if (field.getAnnotation(DbKey::class.java) != null) {
-                        ret.pks.add(db_column_name);
-                    }
+//                    if (field.getAnnotation(DbKey::class.java) != null) {
+//                        ret.pks.add(db_column_name);
+//                    }
 
 
 //                    var converter = field.getAnnotation(ConverterValueToDb::class.java)
@@ -521,15 +520,7 @@ ${idMethods.joinToString("\n")}
                 }
 
 
-        if (ret.pks.any()) {
-            ret.uks.add(ret.pks.joinToString(","))
-        }
-
-
-        var uks_define = entType.getAnnotation(DbUks::class.java)
-        if (uks_define != null) {
-            ret.uks.addAll(uks_define.value)
-        }
+        ret.uks.addAll(CodeGeneratorHelper.getEntityUniqueIndexesDefine(entType))
 
         return ret;
     }

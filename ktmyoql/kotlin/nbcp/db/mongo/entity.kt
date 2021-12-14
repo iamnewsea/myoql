@@ -15,7 +15,6 @@ import java.io.Serializable
 @DbEntityGroup("MongoBase")
 @RemoveToSysDustbin
 @Cn("用户信息")
-@DbUks("loginName", "mobile", "email")
 open class BasicUser @JvmOverloads constructor(
         @Cn("昵称")
         var name: String = "",      //这里的名称=自定义昵称
@@ -41,7 +40,7 @@ open class BasicUser @JvmOverloads constructor(
 @Document
 @DbEntityGroup("MongoBase")
 @Cn("用户登录信息")
-@DbUks("userId", "loginName", "mobile", "email")
+@DbEntityIndexes(DbEntityIndex("userId", unique = true))
 open class BasicUserLoginInfo @JvmOverloads constructor(
         @Cn("用户唯一Id")
         var userId: String = "",    //用户Id,唯一
@@ -135,8 +134,8 @@ open class SysAnnex @JvmOverloads constructor(
 @Document
 @DbEntityGroup("MongoBase")
 @Cn("城市令牌")
+@DbEntityIndexes(DbEntityIndex("code", unique = true))
 open class SysCity @JvmOverloads constructor(
-        @DbKey
         @Cn("城市编码")
         var code: Int = 0,
         @Cn("城市短名称")

@@ -6,7 +6,6 @@ import nbcp.db.sql.*
 import java.io.Serializable
 
 @DbEntityGroup("SqlBase")
-@DbUks("id")
 open class s_annex @JvmOverloads constructor(
     var name: String = "",          //显示的名字,友好的名称
     var tags: String = "",
@@ -39,12 +38,12 @@ open class s_log @JvmOverloads constructor(
     var response: String = "",
 
     var creatorId: String = ""
-) : AutoNumberSqlDbEntity()
+) : AutoIdSqlDbEntity()
 
 
 @DbEntityGroup("SqlBase")
+@DbEntityIndexes(DbEntityIndex("code", unique = true))
 open class s_city @JvmOverloads constructor(
-    @DbKey
     var code: Int = 0,
     @Cn("城市短名称")
     var shortName: String = "",    // 城市控件使用 simpleName
@@ -73,4 +72,4 @@ open class s_dustbin @JvmOverloads constructor(
 //    @SqlSpreadColumn()
     var creator: IdName = IdName(),
     var data: String = "",  //保存 JSON 数据
-) : AutoNumberSqlDbEntity()
+) : AutoIdSqlDbEntity()

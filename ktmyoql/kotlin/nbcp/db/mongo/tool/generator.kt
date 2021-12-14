@@ -438,16 +438,10 @@ fun ${entityVarName}(${params.map { it + ":String" }.joinToString(", ")}) = ${en
             return "";
         }
 
-        val pks = mutableSetOf<String>()
-
         val props = entType.AllFields
                 .filter { it.name != "Companion" }
                 .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
                 .map {
-
-                    if (it.getAnnotation(DbKey::class.java) != null) {
-                        pks.add(it.name);
-                    }
 
                     var (retValue, retTypeIsBasicType) = getEntityValue1(it, entType)
                     if (retTypeIsBasicType) {
@@ -470,12 +464,10 @@ val ${it.name} = ${retValue}""".removeEmpltyLine().ToTab(1)
 
         //每一项是 用逗号分隔的主键组合
         val uks = mutableSetOf<String>();
-        if (pks.any()) {
-            uks.add(pks.joinToString(","))
-        }
 
 
-        uks.addAll(getUks(entType))
+
+        uks.addAll(CodeGeneratorHelper.getEntityUniqueIndexesDefine(entType))
 
 
         uks.forEach { uk ->
@@ -557,23 +549,5 @@ ${idMethods.joinToString(const.line_break)}
 """
 
         return ent;
-    }
-
-
-    /**
-     * 获取类及父类的注解 DbUks
-     */
-    private fun getUks(entType: Class<*>, procedClasses: MutableSet<String> = mutableSetOf()): Set<String> {
-        procedClasses.add(entType.name)
-
-        val uks = mutableSetOf<String>()
-        val uks_define = entType.getAnnotation(DbUks::class.java)
-        if (uks_define != null) {
-            uks.addAll(uks_define.value)
-        }
-        if (entType.superclass != null && !procedClasses.contains(entType.superclass.name)) {
-            uks.addAll(getUks(entType.superclass, procedClasses))
-        }
-        return uks;
     }
 }

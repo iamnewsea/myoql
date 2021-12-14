@@ -10,16 +10,17 @@ interface ISqlDbEntity : Serializable {
 }
 
 
-abstract class AutoNumberSqlDbEntity : Serializable {
-    @DbKey
-    var id: Long = 0
+//@DbEntityIndexes(DbEntityIndex("id", unique = true))
+//abstract class AutoNumberSqlDbEntity : Serializable {
+//
+//    var id: Long = 0
+//
+//    @Cn("创建时间")
+//    var createAt: LocalDateTime = LocalDateTime.now()
+//}
 
-    @Cn("创建时间")
-    var createAt: LocalDateTime = LocalDateTime.now()
-}
-
+@DbEntityIndexes(DbEntityIndex("id", unique = true))
 abstract class AutoIdSqlDbEntity : Serializable {
-    @DbKey
     var id: String = ""
 
     @Cn("创建时间")

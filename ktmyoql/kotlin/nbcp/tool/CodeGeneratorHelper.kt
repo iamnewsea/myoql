@@ -3,6 +3,7 @@ package nbcp.tool
 import freemarker.cache.ClassTemplateLoader
 import nbcp.comm.*
 import nbcp.db.Cn
+import nbcp.db.DbEntityIndex
 import nbcp.db.IdUrl
 import nbcp.utils.MyUtil
 import java.lang.RuntimeException
@@ -130,5 +131,23 @@ object CodeGeneratorHelper {
         )
 
         return FreemarkerUtil.process(fileName, mapDefine)
+    }
+
+
+    fun getEntityUniqueIndexesDefine(entType: Class<*>, procedClasses: MutableSet<String> = mutableSetOf()): Set<String> {
+        procedClasses.add(entType.name)
+
+        val uks = mutableSetOf<String>()
+
+        entType.getAnnotationsByType(DbEntityIndex::class.java).forEach {
+            if( it.unique) {
+                uks.add(it.value.joinToString(","))
+            }
+        }
+
+        if (entType.superclass != null && !procedClasses.contains(entType.superclass.name)) {
+            uks.addAll(getEntityUniqueIndexesDefine(entType.superclass, procedClasses))
+        }
+        return uks;
     }
 }

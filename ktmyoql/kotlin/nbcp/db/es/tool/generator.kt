@@ -3,6 +3,7 @@ package nbcp.db.es.tool
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.*
+import nbcp.tool.CodeGeneratorHelper
 
 import java.io.File
 import java.io.FileWriter
@@ -387,13 +388,9 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
         if (entTypeName.endsWith("\$Companion")) {
             return "";
         }
-        var pks = mutableListOf<String>()
         var props = entType.AllFields
             .filter { it.name != "Companion" }
             .map {
-                if (it.getAnnotation(DbKey::class.java) != null) {
-                    pks.add(it.name);
-                }
 
                 var (retValue, retTypeIsBasicType) = getEntityValue(it)
                 if (retTypeIsBasicType) {
@@ -402,6 +399,7 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
                     return@map "val ${it.name}=${retValue}".ToTab(1)
                 }
             }
+
 
         var entityTypeName = entTypeName + "Entity"
 //        var entityVarName = getEntityName(entTypeName)
@@ -414,16 +412,8 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
 
         //每一项是 用逗号分隔的主键组合
         var uks = mutableListOf<String>();
-        if (pks.any()) {
-            uks.add(pks.joinToString(","))
-        }
 
-        kotlin.run {
-            var uks_define = entType.getAnnotation(DbUks::class.java)
-            if (uks_define != null) {
-                uks.addAll(uks_define.value)
-            }
-        }
+        uks.addAll(CodeGeneratorHelper.getEntityUniqueIndexesDefine(entType))
 
         uks.forEach { uk ->
             var keys = uk.split(",")

@@ -31,7 +31,7 @@ class SqlDustbinEvent : ISqlEntityDelete {
         if (data == null) return
 
         val dustbin = s_dustbin()
-        dustbin.id = CodeUtil.getNumberValue()
+        dustbin.id = CodeUtil.getCode()
         dustbin.table = delete.mainEntity.tableName
         dustbin.data = data.ToJson()
 
