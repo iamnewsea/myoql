@@ -12,6 +12,21 @@
 ```
 
 
+## mysql or mariadb
+
+### mysql
+```
+driver-class-name: com.mysql.cj.jdbc.Driver
+url: jdbc:mysql://
+```
+
+# mariadb
+```
+driver-class-name: org.mariadb.jdbc.Driver
+url: jdbc:mariadb://
+```
+
+
 ## 通过Json快速生成 Es 实体
 ```js
 var p = {};
