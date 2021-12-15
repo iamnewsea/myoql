@@ -21,7 +21,7 @@ fun <M : MongoBaseMetaCollection<T>, T :Any> M.queryById(id: String): MongoQuery
     this.query().where("id" match id);
 
 
-fun <M : MongoBaseMetaCollection<out Serializable>> M.updateById(id: String): MongoUpdateClip<M> {
+fun <M : MongoBaseMetaCollection<out E>,E:Any> M.updateById(id: String): MongoUpdateClip<M,E> {
     var idValue = id.trim()
     if (idValue.isEmpty()) {
         throw RuntimeException("按id更新mongo数据时，id不能为空！")
@@ -42,13 +42,13 @@ fun <M : MongoBaseMetaCollection<out Any>> M.batchInsert(): MongoInsertClip<M> {
 }
 
 
-fun <M : MongoBaseMetaCollection<out Any>> M.updateById(id: ObjectId): MongoUpdateClip<M> {
+fun <M : MongoBaseMetaCollection<out E>,E:Any> M.updateById(id: ObjectId): MongoUpdateClip<M,E> {
     var ret = this.update();
     ret.where("id" match id);
     return ret;
 }
 
-fun <M : MongoBaseMetaCollection<out Any>> M.update(): MongoUpdateClip<M> {
+fun <M : MongoBaseMetaCollection<out E>,E:Any> M.update(): MongoUpdateClip<M,E> {
     return MongoUpdateClip(this);
 }
 

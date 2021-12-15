@@ -31,20 +31,25 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
                 entity.createAt = LocalDateTime.now();
 
                 if (sortNumber != null) {
-//                    var field = entity::class.java.FindField(sortNumber.field);
-//                    if (field != null) {
-//                        if (field.get(entity).AsFloat() == 0F) {
-//                            field.set(entity, getSortNumber(sortNumber, tableName))
-//                        }
-//                    }
+                    var field = entity::class.java.FindField(sortNumber.field);
+                    if (field != null) {
+                        if (field.get(entity).AsFloat() == 0F) {
+                            field.set(entity, getSortNumber(sortNumber, tableName))
+                        }
+                    }
                 }
             } else if (entity is MutableMap<*, *>) {
-
                 var map = entity as MutableMap<String, Any?>
                 if (map.get("id").AsString().isNullOrEmpty()) {
                     map.set("id", ObjectId().toString())
                 }
                 map.set("createAt", LocalDateTime.now())
+
+                if (sortNumber != null) {
+                    if (map.get(sortNumber.field).AsFloat() == 0F) {
+                        map.put(sortNumber.field, getSortNumber(sortNumber, tableName))
+                    }
+                }
 
             } else {
                 //反射两个属性 id,createAt
@@ -64,6 +69,16 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
                         createAtField.set(entity, LocalDateTime.now())
                     }
                 }
+
+
+                if (sortNumber != null) {
+                    var field = entity::class.java.FindField(sortNumber.field);
+                    if (field != null) {
+                        if (field.get(entity).AsFloat() == 0F) {
+                            field.set(entity, getSortNumber(sortNumber, tableName))
+                        }
+                    }
+                }
             }
 
             //设置实体内的 _id
@@ -74,13 +89,12 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
     }
 
     private fun getSortNumber(sortNumber: SortNumber, tableName: String): Float {
-        var sortNumber = SysLastSortNumber();
-        sortNumber.table = tableName
-        sortNumber.group = sortNumber.group
 
-        db.mor_base.sysLastSortNumber.updateWithEntity(sortNumber)
-            .set { it.value to "\$inc" }
-            .saveAndReturnNew();
+        db.mor_base.sysLastSortNumber.update()
+                .where { it.table match tableName }
+                .where { it.group match sortNumber.groupBy }
+                .inc { it.value op_inc sortNumber.step }
+                .saveAndReturnNew();
         return 0F
     }
 

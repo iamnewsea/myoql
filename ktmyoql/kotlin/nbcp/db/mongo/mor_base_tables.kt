@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2021-12-15 19:50:20
+//generate auto @2021-12-16 01:37:15
 
 
 class IdUrlMeta(private val _pname: String) : MongoColumnName() {
@@ -479,7 +479,7 @@ class MongoBaseGroup : IDataGroup {
             return this.delete().where { it.userId match userId }
         }
 
-        fun updateByUserId(userId: String): MongoUpdateClip<BasicUserLoginInfoEntity> {
+        fun updateByUserId(userId: String): MongoUpdateClip<BasicUserLoginInfoEntity, nbcp.db.mongo.entity.BasicUserLoginInfo> {
             return this.update().where { it.userId match userId }
         }
 
@@ -734,7 +734,7 @@ class MongoBaseGroup : IDataGroup {
             return this.delete().where { it.code match code }
         }
 
-        fun updateByCode(code: Int): MongoUpdateClip<SysCityEntity> {
+        fun updateByCode(code: Int): MongoUpdateClip<SysCityEntity, nbcp.db.mongo.entity.SysCity> {
             return this.update().where { it.code match code }
         }
 

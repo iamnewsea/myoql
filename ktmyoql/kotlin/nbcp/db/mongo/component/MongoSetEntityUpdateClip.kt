@@ -2,33 +2,22 @@ package nbcp.db.mongo
 
 
 import nbcp.comm.*
-import nbcp.db.MyOqlOrmScope
 import nbcp.utils.*
 import nbcp.db.db
-import org.bson.Document
-import org.bson.types.ObjectId
-import org.springframework.data.mongodb.core.FindAndModifyOptions
 import org.springframework.data.mongodb.core.query.Criteria
-import org.springframework.data.mongodb.core.query.Query
-import java.io.Serializable
-import java.time.LocalDateTime
 
 /**
  * Created by udi on 17-4-7.
  */
 
-//根据Id，更新Mongo的一个键。
-
 /**
- * MongoUpdate
+ * 只是简单的更新实体。更多操作要转化为 Update 再操作。 castToUpdate
  * 不会更新 id
  */
-class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E:Any >(
-    var moerEntity: M,
-    var entity: E
+class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
+        var moerEntity: M,
+        var entity: E
 ) : MongoClipBase(moerEntity.tableName) {
-    val whereData = mutableListOf<Criteria>()
-    val setData = LinkedHashMap<String, Any?>()
 
     private var whereColumns = mutableSetOf<String>()
     private var setColumns = mutableSetOf<String>()
@@ -54,34 +43,10 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E:Any >(
         return this;
     }
 
-//    /**
-//     * 不应该依赖客户端，不应该使用这个方法
-//     */
-//    fun withRequestParams(keys: Set<String>): MongoSetEntityUpdateClip<M> {
-//
-//        return this
-//    }
-
-    //额外设置
-    fun set(setItemAction: (M) -> Pair<MongoColumnName, Any?>): MongoSetEntityUpdateClip<M, E> {
-        var setItem = setItemAction(this.moerEntity);
-        this.setData.set(setItem.first.toString(), setItem.second);
-        return this;
-    }
-
-    fun where(where: (M) -> Criteria): MongoSetEntityUpdateClip<M, E> {
-        var c = where(moerEntity);
-        this.whereData.add(c);
-
-        if (c.key == "_id") {
-            this.whereColumns.add("id")
-        } else {
-            this.whereColumns.add(c.key);
-        }
-        return this;
-    }
-
-    fun prepareUpdate(): MongoUpdateClip<M> {
+    /**
+     * 转为 Update子句，执行更多 Update 命令。
+     */
+    fun castToUpdate(): MongoUpdateClip<M,E> {
         if (whereColumns.any() == false) {
             whereColumns.add("id")
         }
@@ -127,6 +92,9 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E:Any >(
 
                 if (whereColumns.contains(findKey)) {
                     var value = MyUtil.getPrivatePropertyValue(this.entity, findKey);
+                    if( value == null){
+                        return@forEach
+                    }
                     whereData2.put(findKey, value)
                     return@forEach
                 }
@@ -144,27 +112,17 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E:Any >(
                 }
 
                 var value = MyUtil.getPrivatePropertyValue(this.entity, findKey);
+
+                if( value == null){
+                    return@forEach
+                }
                 setData2.put(findKey, value)
             }
         }
 
-        var setKeys = this.whereData
-            .map { it.toDocument().keys.toTypedArray() }
-            .Unwind()
-            .map { if (it == "_id") return@map "id" else return@map it };
-
         whereData2.forEach { key, value ->
-            if (setKeys.contains(key)) {
-                return@forEach
-            }
-
             update.where(key match value);
         }
-        this.whereData.forEach {
-            update.where(it)
-        }
-
-        setData2.putAll(this.setData)
 
         setData2.forEach { key, value ->
             update.set(key, value);
@@ -177,7 +135,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E:Any >(
      * 执行更新, == exec ,语义清晰
      */
     fun execUpdate(): Int {
-        return this.prepareUpdate().exec();
+        return this.castToUpdate().exec();
     }
 
     /**
@@ -207,14 +165,6 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E:Any >(
      */
     fun exec(): Int {
         return updateOrAdd();
-    }
-
-
-    /**
-     * 执行更新并返回更新后的数据（适用于更新一条的情况）
-     */
-    fun saveAndReturnNew(mapFunc: ((Document) -> Unit)? = null): E? {
-        return this.prepareUpdate().saveAndReturnNew(this.moerEntity.entityClass, mapFunc)
     }
 }
 

@@ -526,7 +526,7 @@ val ${it.name} = ${retValue}""".removeEmpltyLine().ToTab(1)
                             )!!.type.kotlinTypeName
                         }"
                     }.joinToString(",")
-                }): MongoUpdateClip<${entityTypeName}> {
+                }): MongoUpdateClip<${entityTypeName}, ${entType.name}> {
         return this.update()${keys.map { ".where { it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 """

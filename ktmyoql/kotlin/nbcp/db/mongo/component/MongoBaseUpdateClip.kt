@@ -31,7 +31,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
     val unsetData = mutableListOf<String>()
     val pushData = LinkedHashMap<String, Any>() //加
     val pullData = LinkedHashMap<String, Any>() //删
-    protected val incData = LinkedHashMap<String, Int>() //
+    protected val incData = LinkedHashMap<String, Number>() //
 
 
     //---------------------------------------------
@@ -59,13 +59,13 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         return execAll();
     }
 
-    private fun getUpdateSetSect(): Update {
+    protected fun getUpdateSetSect(): Update {
         var update = org.springframework.data.mongodb.core.query.Update();
 
         for (kv in setData) {
             var value = kv.value;
             if (value != null) {
-                update = update.set(kv.key, value);
+            update = update.set(kv.key, value);
             } else {
                 update = update.unset(kv.key);
             }
@@ -136,20 +136,20 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         try {
             this.script = getUpdateScript(criteria, update)
             result = mongoTemplate.updateMulti(
-                query,
-                update,
-                actualTableName
+                    query,
+                    update,
+                    actualTableName
             );
 
             this.executeTime = LocalDateTime.now() - startAt
 
             if (result.modifiedCount > 0) {
                 usingScope(
-                    arrayOf(
-                        MyOqlOrmScope.IgnoreAffectRow,
-                        MyOqlOrmScope.IgnoreExecuteTime,
-                        MyOqlOrmScope.IgnoreUpdateAt
-                    )
+                        arrayOf(
+                                MyOqlOrmScope.IgnoreAffectRow,
+                                MyOqlOrmScope.IgnoreExecuteTime,
+                                MyOqlOrmScope.IgnoreUpdateAt
+                        )
                 ) {
                     settingResult.forEach {
                         it.event.update(this, it.chain, it.result)
@@ -171,87 +171,9 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
     }
 
 
-    /**
-     * 执行更新并返回更新后的数据（适用于更新一条的情况）
-     */
-    fun <T> saveAndReturnNew(clazz: Class<T>, mapFunc: ((Document) -> Unit)? = null): T? {
-        db.affectRowCount = -1;
-
-        var settingResult = db.mongo.mongoEvents.onUpdating(this)
-        if (settingResult.any { it.result.result == false }) {
-            return null;
-        }
-
-        var criteria = this.getMongoCriteria(*whereData.toTypedArray());
-
-        var update = getUpdateSetSect();
-
-        //如果没有要更新的列.
-        if (update.updateObject.keys.size == 0) {
-            logger.warn("没有要更新的列，忽略更新!")
-            return null;
-        }
-
-        var ret = -1;
-        var startAt = LocalDateTime.now()
-        var error: Exception? = null
-        var query = Query.query(criteria)
-        var resultDocument: Document? = null;
-        var result: T? = null;
-
-        var updateOption = FindAndModifyOptions();
-        updateOption.returnNew(true)
-        updateOption.upsert(true);
-        try {
-            this.script = getUpdateScript(criteria, update)
-            resultDocument = mongoTemplate.findAndModify(
-                query,
-                update,
-                updateOption,
-                Document::class.java,
-                actualTableName
-            );
-
-            this.executeTime = LocalDateTime.now() - startAt
-
-            if (resultDocument != null) {
-
-                result = db.mongo.proc_mongo_doc_to_entity(resultDocument, clazz, "", mapFunc)
-
-
-                usingScope(
-                    arrayOf(
-                        MyOqlOrmScope.IgnoreAffectRow,
-                        MyOqlOrmScope.IgnoreExecuteTime,
-                        MyOqlOrmScope.IgnoreUpdateAt
-                    )
-                ) {
-                    settingResult.forEach {
-                        it.event.update(this, it.chain, it.result)
-                    }
-                }
-            }
-
-            if (resultDocument != null) {
-                ret = 1
-            } else {
-                ret = 0;
-            }
-            this.affectRowCount = ret
-        } catch (e: Exception) {
-            error = e;
-            throw e;
-        } finally {
-            MongoLogger.logUpdate(error, actualTableName, query, update, null)
-        }
-
-        return result;
-    }
-
-
-    private fun getUpdateScript(
-        where: Criteria,
-        update: org.springframework.data.mongodb.core.query.Update
+    protected fun getUpdateScript(
+            where: Criteria,
+            update: org.springframework.data.mongodb.core.query.Update
     ): String {
         var msgs = mutableListOf<String>()
         msgs.add("[update] " + this.actualTableName);

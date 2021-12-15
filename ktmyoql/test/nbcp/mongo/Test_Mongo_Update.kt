@@ -3,12 +3,14 @@ package nbcp.mongo
 import ch.qos.logback.classic.Level
 import nbcp.TestBase
 import nbcp.comm.*
+import nbcp.db.DbIncData
 import nbcp.db.IdName
 import nbcp.db.db
 import nbcp.db.mongo.*
 import nbcp.db.mongo.entity.BasicUser
 import nbcp.db.mongo.entity.SysAnnex
 import nbcp.db.mongo.entity.SysLog
+import nbcp.db.op_inc
 import nbcp.db.sql.doInsert
 import nbcp.db.sql.entity.s_annex
 import nbcp.db.sql.updateWithEntity
@@ -30,6 +32,18 @@ class Test_Mongo_Update : TestBase() {
     fun TestUpdate() {
         test_doc();
         test_ent();
+        test_save()
+    }
+
+    @Test
+    fun test_save() {
+        var d = db.mor_base.sysLastSortNumber.update()
+                .where{ it.table match "abc" }
+                .where{ it.group match "def"}
+                .inc { it.value op_inc 3 }
+                .saveAndReturnNew();
+
+        println(d.ToJson())
     }
 
     @Test
@@ -39,9 +53,7 @@ class Test_Mongo_Update : TestBase() {
         annex.id = CodeUtil.getCode();
         annex.creator = IdName(CodeUtil.getCode(), "test")
         var d = db.mor_base.sysAnnex.updateWithEntity(annex)
-            .where { it.id match "5ffbf52a3ab4096e4c80a129" }
-            .prepareUpdate()
-            .saveAndReturnNew(SysAnnex::class.java)
+                .castToUpdate()
 
         println(d.ToJson())
     }
@@ -52,6 +64,6 @@ class Test_Mongo_Update : TestBase() {
         annex.put("id", CodeUtil.getCode())
         annex.put("name", "test_doc")
         annex.put("creator", JsonMap("id" to CodeUtil.getCode(), "name" to "test"))
-        db.mor_base.sysAnnex.updateWithEntity(annex).where { it.id match "5id41wtk6s5c" }.execUpdate()
+        db.mor_base.sysAnnex.updateWithEntity(annex).execUpdate()
     }
 }

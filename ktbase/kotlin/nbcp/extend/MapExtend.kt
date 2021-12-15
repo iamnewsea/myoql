@@ -7,19 +7,17 @@ import nbcp.utils.JsUtil
 import nbcp.utils.MyUtil
 
 
-/**
- * 先删除,再插入的方式修改,顺序会变
- */
-fun <V> LinkedHashMap<String, V>.RenameKey(oldKey: String, newKey: String) {
-    var index = this.keys.indexOf(oldKey);
-    if (index < 0) {
-        throw RuntimeException("找不到Key")
-    }
 
-    var value = this.get(oldKey)!!;
-    this.remove(oldKey);
-    this.put(newKey, value);
-}
+//fun <V> LinkedHashMap<String, V>.RenameKey(oldKey: String, newKey: String) {
+//    var index = this.keys.indexOf(oldKey);
+//    if (index < 0) {
+//        throw RuntimeException("找不到Key")
+//    }
+//
+//    var value = this.get(oldKey)!!;
+//    this.remove(oldKey);
+//    this.put(newKey, value);
+//}
 
 inline fun <reified K, reified V, reified RK, reified RV> Map<K, V>.ToMap(
         keyAct: ((Map.Entry<K, V>) -> RK),
@@ -155,6 +153,11 @@ fun Map<String, Any?>.getKeyByValue(value: Any): String? {
     return this.entries.firstOrNull { it.value == value }?.key
 }
 
+fun MutableMap<String, Any?>.removeKeys(vararg key:String) {
+    key.forEach {
+        this.remove(it);
+    }
+}
 
 /**
  * 判断数据是否相同， 不区分顺序。只关心内容，对值进行简单比较
