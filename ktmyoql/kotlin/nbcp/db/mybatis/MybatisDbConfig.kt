@@ -2,7 +2,6 @@ package nbcp.db.mybatis
 
 import nbcp.comm.config
 import nbcp.utils.SpringUtil
-import org.apache.ibatis.session.SqlSessionFactory
 import org.mybatis.spring.SqlSessionFactoryBean
 import org.mybatis.spring.SqlSessionTemplate
 import org.mybatis.spring.mapper.MapperScannerConfigurer
@@ -17,7 +16,7 @@ import javax.sql.DataSource
 
 @EnableTransactionManagement
 @Component
-@ConditionalOnClass(value = [SqlSessionFactory::class])
+@ConditionalOnClass(value = [MapperScannerConfigurer::class])
 class MybatisDbConfig {
 
     @EventListener
@@ -40,11 +39,11 @@ class MybatisDbConfig {
         SpringUtil.registerBeanDefinition(mybatisMapperScannerConfigurer())
         SpringUtil.registerBeanDefinition(MyBatisTransactionManagementConfig())
 
-        var sqlSessionFactoryBean = mybatisSessionFactoryBean();
-        if (sqlSessionFactoryBean != null) {
-            SpringUtil.registerBeanDefinition(sqlSessionFactoryBean)
-            SpringUtil.registerBeanDefinition(mybatisSessionTemplate(sqlSessionFactoryBean))
-        }
+//        var sqlSessionFactoryBean = mybatisSessionFactoryBean();
+//        if (sqlSessionFactoryBean != null) {
+//            SpringUtil.registerBeanDefinition(sqlSessionFactoryBean)
+//            SpringUtil.registerBeanDefinition(mybatisSessionTemplate(sqlSessionFactoryBean))
+//        }
     }
 
 
@@ -63,24 +62,24 @@ class MybatisDbConfig {
     }
 
 
-    fun mybatisSessionFactoryBean(): SqlSessionFactory? {
-        val bean = SqlSessionFactoryBean()
-        bean.setDataSource(dataSource)
-
-        var config = org.apache.ibatis.session.Configuration()
-        config.isCacheEnabled = true
-
-//        config.addCache(RedisCacheMyBatis())
-
-//        config.addInterceptor(QueryInterceptor())
-//        config.addInterceptor(UpdateInterceptor())
-        config.addInterceptor(MyBatisInterceptor())
-        bean.setConfiguration(config)
-
-        return bean.`object`
-    }
-
-    fun mybatisSessionTemplate(sqlSessionFactory: SqlSessionFactory): SqlSessionTemplate {
-        return SqlSessionTemplate(sqlSessionFactory)
-    }
+//    fun mybatisSessionFactoryBean(): SqlSessionFactory? {
+//        val bean = SqlSessionFactoryBean()
+//        bean.setDataSource(dataSource)
+//
+//        var config = org.apache.ibatis.session.Configuration()
+//        config.isCacheEnabled = true
+//
+////        config.addCache(RedisCacheMyBatis())
+//
+////        config.addInterceptor(QueryInterceptor())
+////        config.addInterceptor(UpdateInterceptor())
+//        config.addInterceptor(MyBatisInterceptor())
+//        bean.setConfiguration(config)
+//
+//        return bean.`object`
+//    }
+//
+//    fun mybatisSessionTemplate(sqlSessionFactory: SqlSessionFactory): SqlSessionTemplate {
+//        return SqlSessionTemplate(sqlSessionFactory)
+//    }
 }

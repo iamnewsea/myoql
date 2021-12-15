@@ -14,11 +14,10 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-@DbEntityIndexes(
-    DbEntityIndex("a", "dfdf", unique = true),
-    DbEntityIndex(value = ["b"]),
-    DbEntityIndex("c"),
-)
+
+@DbEntityIndex("a", "dfdf", unique = true)
+@DbEntityIndex(value = ["b"])
+@DbEntityIndex("c")
 class AnnotationTest : TestBase() {
 
 
