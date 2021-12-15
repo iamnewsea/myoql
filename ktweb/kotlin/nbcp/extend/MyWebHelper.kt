@@ -220,7 +220,7 @@ val HttpServletRequest.tokenValue: String
     }
 
 
-fun <M : MongoBaseMetaCollection<out Serializable>> MongoSetEntityUpdateClip<M>.withRequestParams(): MongoSetEntityUpdateClip<M> {
+fun <M : MongoBaseMetaCollection<E>,E:Any> MongoSetEntityUpdateClip<M,E>.withRequestParams(): MongoSetEntityUpdateClip<M,E> {
     var keys = HttpContext.request.getPostJson().keys;
     keys.forEach { key ->
         this.withColumn { MongoColumnName(key) }

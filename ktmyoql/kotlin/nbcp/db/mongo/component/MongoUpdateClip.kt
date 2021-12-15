@@ -12,7 +12,7 @@ import java.io.Serializable
 /**
  * MongoUpdate
  */
-class MongoUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(var moerEntity: M) :
+class MongoUpdateClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
     MongoBaseUpdateClip(moerEntity.tableName) {
 
     fun where(whereData: Criteria): MongoUpdateClip<M> {

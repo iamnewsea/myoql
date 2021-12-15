@@ -12,7 +12,7 @@ import java.io.Serializable
 /**
  * MongoInsert
  */
-class MongoInsertClip<M : MongoBaseMetaCollection<out Serializable>>(var moerEntity: M) :
+class MongoInsertClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
     MongoBaseInsertClip(moerEntity.tableName) {
 
     companion object {

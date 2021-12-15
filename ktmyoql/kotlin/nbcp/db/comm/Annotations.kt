@@ -24,6 +24,13 @@ annotation class MetaDataGroup(val value: String)
 annotation class RemoveToSysDustbin()
 
 /**
+ * 排序的步长
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class SortNumber(val field: String, val groupBy: String, val step: Int = 1)
+
+/**
  * 变表
  */
 @Target(AnnotationTarget.CLASS)

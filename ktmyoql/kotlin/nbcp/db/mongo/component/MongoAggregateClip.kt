@@ -16,7 +16,7 @@ import java.io.Serializable
 /**
  * MongoAggregate
  */
-class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Serializable>(var moerEntity: M) :
+class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E:Any>(var moerEntity: M) :
     MongoClipBase(moerEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass);
@@ -192,7 +192,7 @@ cursor: {} } """
         return Md5Util.getBase64Md5(exp);
     }
 
-    fun toList(itemFunc: ((Document) -> Unit)? = null): MutableList<E> {
+    fun toList(itemFunc: ((Document) -> Unit)? = null): MutableList<out E> {
         return toList(this.moerEntity.entityClass, itemFunc);
     }
 
@@ -287,12 +287,12 @@ cursor: {} } """
         return toScalar()?.AsString().HasValue;
     }
 
-    fun toList(): MutableList<E> {
+    fun toList(): MutableList<out E> {
         return toList(moerEntity.entityClass)
     }
 
 
-    fun toListResult(itemFunc: ((Document) -> Unit)? = null): ListResult<E> {
+    fun toListResult(itemFunc: ((Document) -> Unit)? = null): ListResult<out E> {
         return toListResult(moerEntity.entityClass, itemFunc);
     }
 
@@ -320,9 +320,6 @@ cursor: {} } """
         return toList(moerEntity.entityClass).firstOrNull();
     }
 
-    inline fun <reified R : Any> toEntity(): R? {
-        return toEntity(R::class.java);
-    }
 
     @JvmOverloads
     fun <R : Any> toEntity(clazz: Class<R>, itemFunc: ((Document) -> Unit)? = null): R? {
@@ -332,7 +329,7 @@ cursor: {} } """
 }
 
 
-class BeginMatchClip<M : MongoBaseMetaCollection<E>, E : Serializable>(var aggregate: MongoAggregateClip<M, E>) {
+class BeginMatchClip<M : MongoBaseMetaCollection<E>, E : Any>(var aggregate: MongoAggregateClip<M, E>) {
     private var wheres = mutableListOf<Criteria>()
     fun where(where: (M) -> Criteria): BeginMatchClip<M, E> {
         wheres.add(where(this.aggregate.moerEntity))

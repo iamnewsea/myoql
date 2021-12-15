@@ -12,7 +12,7 @@ import java.io.Serializable
 /**
  * MongoQuery
  */
-class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Serializable>(var moerEntity: M) :
+class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M) :
     MongoBaseQueryClip(moerEntity.tableName) {
 
 
@@ -146,7 +146,7 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Serializable>(var moerE
 
 
     @JvmOverloads
-    fun toList(mapFunc: ((Document) -> Unit)? = null): MutableList<E> {
+    fun toList(mapFunc: ((Document) -> Unit)? = null): MutableList<out E> {
         return toList(moerEntity.entityClass, mapFunc)
     }
 

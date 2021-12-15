@@ -174,7 +174,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
     /**
      * 执行更新并返回更新后的数据（适用于更新一条的情况）
      */
-    fun <T> updateAndReturnNew(clazz: Class<T>, mapFunc: ((Document) -> Unit)? = null): T? {
+    fun <T> saveAndReturnNew(clazz: Class<T>, mapFunc: ((Document) -> Unit)? = null): T? {
         db.affectRowCount = -1;
 
         var settingResult = db.mongo.mongoEvents.onUpdating(this)
@@ -201,6 +201,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
 
         var updateOption = FindAndModifyOptions();
         updateOption.returnNew(true)
+        updateOption.upsert(true);
         try {
             this.script = getUpdateScript(criteria, update)
             resultDocument = mongoTemplate.findAndModify(

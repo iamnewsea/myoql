@@ -1,10 +1,9 @@
 package nbcp.db.mongo.event;
 
-import nbcp.comm.AllFields
+import nbcp.comm.*
 import nbcp.db.mongo.*;
-import nbcp.comm.AsString
-import nbcp.comm.IsStringType
 import nbcp.db.*
+import nbcp.db.mongo.entity.SysLastSortNumber
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -13,8 +12,14 @@ import java.time.LocalDateTime
  * 同步处理，插入的实体，添加 createAt 字段。
  */
 @Component
-class MongoInsertTranslateIdEvent : IMongoEntityInsert {
+class MongoDefaultInsertEvent : IMongoEntityInsert {
     override fun beforeInsert(insert: MongoBaseInsertClip): EventResult {
+        var sortNumber: SortNumber? = null;
+        var tableName = insert.actualTableName;
+        if (insert is MongoInsertClip<*>) {
+            sortNumber = insert.moerEntity::class.java.getAnnotation(SortNumber::class.java)
+        }
+
         insert.entities.forEach { entity ->
 //            db.fillCityName(entity);
 
@@ -24,6 +29,15 @@ class MongoInsertTranslateIdEvent : IMongoEntityInsert {
                 }
 
                 entity.createAt = LocalDateTime.now();
+
+                if (sortNumber != null) {
+//                    var field = entity::class.java.FindField(sortNumber.field);
+//                    if (field != null) {
+//                        if (field.get(entity).AsFloat() == 0F) {
+//                            field.set(entity, getSortNumber(sortNumber, tableName))
+//                        }
+//                    }
+                }
             } else if (entity is MutableMap<*, *>) {
 
                 var map = entity as MutableMap<String, Any?>
@@ -52,12 +66,22 @@ class MongoInsertTranslateIdEvent : IMongoEntityInsert {
                 }
             }
 
-
             //设置实体内的 _id
             db.mongo.transformDocumentIdTo_id(entity);
         }
 
         return EventResult(true, null);
+    }
+
+    private fun getSortNumber(sortNumber: SortNumber, tableName: String): Float {
+        var sortNumber = SysLastSortNumber();
+        sortNumber.table = tableName
+        sortNumber.group = sortNumber.group
+
+        db.mor_base.sysLastSortNumber.updateWithEntity(sortNumber)
+            .set { it.value to "\$inc" }
+            .saveAndReturnNew();
+        return 0F
     }
 
     override fun insert(insert: MongoBaseInsertClip, eventData: EventResult) {

@@ -21,40 +21,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName) {
      * 支持两种类型：Serializable,Map。  Document,DbObject 算是Map
      */
     fun addEntity(entity: Any) {
-        //移到拦截器中。
-//        if (entity is BaseEntity) {
-//            if (entity.id.isEmpty()) {
-//                entity.id = ObjectId().toString()
-//            }
-//            entity.createAt = LocalDateTime.now();
-//            this.entities.add(entity);
-//            return;
-//        } else if (entity is MutableMap<*, *>) {
-//            var map = entity as MutableMap<String, Any?>
-//            if (map.get("_id").AsString().isEmpty()) {
-//                map.put("_id", ObjectId().toString())
-//            }
-//
-//            map.put("createAt", LocalDateTime.now());
-//            this.entities.add(entity)
-//            return;
-//        }
-//
-//
-//
-//        if (entity is Serializable) {
-//            this.entities.add(entity);
-//            return;
-//        }
-
-/*        if (entity is Collection<*>) {
-            //不能插入列表，请一条一条的插入
-            throw RuntimeException("不能插入列表!")
-        }*/
-
         this.entities.add(entity);
-
-//        throw RuntimeException("不支持插入类型：${entity.javaClass}")
     }
 
 

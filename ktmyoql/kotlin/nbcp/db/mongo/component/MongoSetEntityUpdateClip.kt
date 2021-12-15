@@ -2,11 +2,16 @@ package nbcp.db.mongo
 
 
 import nbcp.comm.*
+import nbcp.db.MyOqlOrmScope
 import nbcp.utils.*
 import nbcp.db.db
+import org.bson.Document
 import org.bson.types.ObjectId
+import org.springframework.data.mongodb.core.FindAndModifyOptions
 import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.Query
 import java.io.Serializable
+import java.time.LocalDateTime
 
 /**
  * Created by udi on 17-4-7.
@@ -18,9 +23,9 @@ import java.io.Serializable
  * MongoUpdate
  * 不会更新 id
  */
-class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
+class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<E>, E:Any >(
     var moerEntity: M,
-    var entity: Serializable
+    var entity: E
 ) : MongoClipBase(moerEntity.tableName) {
     val whereData = mutableListOf<Criteria>()
     val setData = LinkedHashMap<String, Any?>()
@@ -29,22 +34,22 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
     private var setColumns = mutableSetOf<String>()
     private var unsetColumns = mutableSetOf<String>("createAt")
 
-    fun withColumn(setFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M> {
+    fun withColumn(setFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M, E> {
         this.setColumns.add(setFunc(this.moerEntity).toString())
         return this;
     }
 
-    fun withColumns(vararg column: String): MongoSetEntityUpdateClip<M> {
+    fun withColumns(vararg column: String): MongoSetEntityUpdateClip<M, E> {
         this.setColumns.addAll(column)
         return this;
     }
 
-    fun withoutColumn(unsetFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M> {
+    fun withoutColumn(unsetFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M, E> {
         this.unsetColumns.add(unsetFunc(this.moerEntity).toString())
         return this;
     }
 
-    fun whereColumn(whereFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M> {
+    fun whereColumn(whereFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M, E> {
         this.whereColumns.add(whereFunc(this.moerEntity).toString())
         return this;
     }
@@ -58,13 +63,13 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
 //    }
 
     //额外设置
-    fun set(setItemAction: (M) -> Pair<MongoColumnName, Any?>): MongoSetEntityUpdateClip<M> {
+    fun set(setItemAction: (M) -> Pair<MongoColumnName, Any?>): MongoSetEntityUpdateClip<M, E> {
         var setItem = setItemAction(this.moerEntity);
         this.setData.set(setItem.first.toString(), setItem.second);
         return this;
     }
 
-    fun where(where: (M) -> Criteria): MongoSetEntityUpdateClip<M> {
+    fun where(where: (M) -> Criteria): MongoSetEntityUpdateClip<M, E> {
         var c = where(moerEntity);
         this.whereData.add(c);
 
@@ -202,6 +207,14 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out Serializable>>(
      */
     fun exec(): Int {
         return updateOrAdd();
+    }
+
+
+    /**
+     * 执行更新并返回更新后的数据（适用于更新一条的情况）
+     */
+    fun saveAndReturnNew(mapFunc: ((Document) -> Unit)? = null): E? {
+        return this.prepareUpdate().saveAndReturnNew(this.moerEntity.entityClass, mapFunc)
     }
 }
 

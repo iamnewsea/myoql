@@ -19,7 +19,7 @@ import java.io.Serializable
 /**
  * MongoDelete
  */
-class MongoDeleteClip<M : MongoBaseMetaCollection<out Serializable>>(var moerEntity: M) :
+class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
     MongoClipBase(moerEntity.tableName), IMongoWhereable {
     val whereData = mutableListOf<Criteria>()
 

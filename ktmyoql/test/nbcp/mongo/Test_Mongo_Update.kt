@@ -41,7 +41,7 @@ class Test_Mongo_Update : TestBase() {
         var d = db.mor_base.sysAnnex.updateWithEntity(annex)
             .where { it.id match "5ffbf52a3ab4096e4c80a129" }
             .prepareUpdate()
-            .updateAndReturnNew(SysAnnex::class.java)
+            .saveAndReturnNew(SysAnnex::class.java)
 
         println(d.ToJson())
     }

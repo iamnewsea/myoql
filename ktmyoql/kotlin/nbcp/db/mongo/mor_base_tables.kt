@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2021-12-08 16:34:21
+//generate auto @2021-12-15 19:50:20
 
 
 class IdUrlMeta(private val _pname: String) : MongoColumnName() {
@@ -283,7 +283,7 @@ class BusinessLicenseDataMeta(private val _pname: String) : MongoColumnName() {
 @Component("mongo.MongoBase")
 @MetaDataGroup("MongoBase")
 class MongoBaseGroup : IDataGroup {
-    override fun getEntities(): Set<BaseMetaData> = setOf(basicUser, basicUserLoginInfo, flywayVersion, sysAnnex, sysCity, sysDictionary, sysDustbin, sysLog, sysOrganization)
+    override fun getEntities(): Set<BaseMetaData> = setOf(basicUser, basicUserLoginInfo, flywayVersion, sysAnnex, sysCity, sysDictionary, sysDustbin, sysLastSortNumber, sysLog, sysOrganization)
 
 
     /**
@@ -320,6 +320,11 @@ class MongoBaseGroup : IDataGroup {
      * 数据垃圾箱
      */
     val sysDustbin get() = SysDustbinEntity();
+
+    /**
+     * 排序记录号
+     */
+    val sysLastSortNumber get() = SysLastSortNumberEntity();
 
     /**
      * 系统日志
@@ -394,44 +399,6 @@ class MongoBaseGroup : IDataGroup {
          */
         @Cn("更新时间")
         val updateAt = MongoColumnName("updateAt")
-
-        fun queryByLoginName(loginName: String): MongoQueryClip<BasicUserEntity, nbcp.db.mongo.entity.BasicUser> {
-            return this.query().where { it.loginName match loginName }
-        }
-
-        fun deleteByLoginName(loginName: String): MongoDeleteClip<BasicUserEntity> {
-            return this.delete().where { it.loginName match loginName }
-        }
-
-        fun updateByLoginName(loginName: String): MongoUpdateClip<BasicUserEntity> {
-            return this.update().where { it.loginName match loginName }
-        }
-
-
-        fun queryByMobile(mobile: String): MongoQueryClip<BasicUserEntity, nbcp.db.mongo.entity.BasicUser> {
-            return this.query().where { it.mobile match mobile }
-        }
-
-        fun deleteByMobile(mobile: String): MongoDeleteClip<BasicUserEntity> {
-            return this.delete().where { it.mobile match mobile }
-        }
-
-        fun updateByMobile(mobile: String): MongoUpdateClip<BasicUserEntity> {
-            return this.update().where { it.mobile match mobile }
-        }
-
-
-        fun queryByEmail(email: String): MongoQueryClip<BasicUserEntity, nbcp.db.mongo.entity.BasicUser> {
-            return this.query().where { it.email match email }
-        }
-
-        fun deleteByEmail(email: String): MongoDeleteClip<BasicUserEntity> {
-            return this.delete().where { it.email match email }
-        }
-
-        fun updateByEmail(email: String): MongoUpdateClip<BasicUserEntity> {
-            return this.update().where { it.email match email }
-        }
 
     }
 
@@ -514,45 +481,6 @@ class MongoBaseGroup : IDataGroup {
 
         fun updateByUserId(userId: String): MongoUpdateClip<BasicUserLoginInfoEntity> {
             return this.update().where { it.userId match userId }
-        }
-
-
-        fun queryByLoginName(loginName: String): MongoQueryClip<BasicUserLoginInfoEntity, nbcp.db.mongo.entity.BasicUserLoginInfo> {
-            return this.query().where { it.loginName match loginName }
-        }
-
-        fun deleteByLoginName(loginName: String): MongoDeleteClip<BasicUserLoginInfoEntity> {
-            return this.delete().where { it.loginName match loginName }
-        }
-
-        fun updateByLoginName(loginName: String): MongoUpdateClip<BasicUserLoginInfoEntity> {
-            return this.update().where { it.loginName match loginName }
-        }
-
-
-        fun queryByMobile(mobile: String): MongoQueryClip<BasicUserLoginInfoEntity, nbcp.db.mongo.entity.BasicUserLoginInfo> {
-            return this.query().where { it.mobile match mobile }
-        }
-
-        fun deleteByMobile(mobile: String): MongoDeleteClip<BasicUserLoginInfoEntity> {
-            return this.delete().where { it.mobile match mobile }
-        }
-
-        fun updateByMobile(mobile: String): MongoUpdateClip<BasicUserLoginInfoEntity> {
-            return this.update().where { it.mobile match mobile }
-        }
-
-
-        fun queryByEmail(email: String): MongoQueryClip<BasicUserLoginInfoEntity, nbcp.db.mongo.entity.BasicUserLoginInfo> {
-            return this.query().where { it.email match email }
-        }
-
-        fun deleteByEmail(email: String): MongoDeleteClip<BasicUserLoginInfoEntity> {
-            return this.delete().where { it.email match email }
-        }
-
-        fun updateByEmail(email: String): MongoUpdateClip<BasicUserLoginInfoEntity> {
-            return this.update().where { it.email match email }
         }
 
     }
@@ -816,6 +744,7 @@ class MongoBaseGroup : IDataGroup {
      * 字典
      */
     @Cn("字典")
+    @SortNumber("sort","",10)
     class SysDictionaryEntity(collectionName: String = "", databaseId: String = "")
         : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysDictionary>(nbcp.db.mongo.entity.SysDictionary::class.java, collectionName.AsString("sysDictionary"), databaseId) {
 
@@ -891,6 +820,47 @@ class MongoBaseGroup : IDataGroup {
          */
         @Cn("数据")
         val data = SerializableMeta("data")
+
+        /**
+         * 创建时间
+         */
+        @Cn("创建时间")
+        val createAt = MongoColumnName("createAt")
+
+        /**
+         * 更新时间
+         */
+        @Cn("更新时间")
+        val updateAt = MongoColumnName("updateAt")
+
+    }
+
+    /**
+     * 排序记录号
+     */
+    @Cn("排序记录号")
+    class SysLastSortNumberEntity(collectionName: String = "", databaseId: String = "")
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysLastSortNumber>(nbcp.db.mongo.entity.SysLastSortNumber::class.java, collectionName.AsString("sysLastSortNumber"), databaseId) {
+
+        val id = MongoColumnName("_id")
+
+        /**
+         * 表名
+         */
+        @Cn("表名")
+        val table = MongoColumnName("table")
+
+        /**
+         * 组
+         */
+        @Cn("组")
+        val group = MongoColumnName("group")
+
+        /**
+         * 值
+         */
+        @Cn("值")
+        val value = MongoColumnName("value")
 
         /**
          * 创建时间

@@ -16,7 +16,7 @@ typealias mongoQuery = org.springframework.data.mongodb.core.query.Query
 /**
  * mongo 元数据实体的基类
  */
-abstract class MongoBaseMetaCollection<T : Serializable> @JvmOverloads constructor(
+abstract class MongoBaseMetaCollection<T:Any> @JvmOverloads constructor(
     /**
      * 实体的类型
      */
