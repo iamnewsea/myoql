@@ -146,7 +146,7 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
 
 
     @JvmOverloads
-    fun toList(mapFunc: ((Document) -> Unit)? = null): MutableList<out E> {
+    fun toList(mapFunc: ((Document) -> Unit)? = null): MutableList<E> {
         return toList(moerEntity.entityClass, mapFunc)
     }
 

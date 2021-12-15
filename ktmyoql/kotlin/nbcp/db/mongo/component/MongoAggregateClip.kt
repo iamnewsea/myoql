@@ -192,7 +192,7 @@ cursor: {} } """
         return Md5Util.getBase64Md5(exp);
     }
 
-    fun toList(itemFunc: ((Document) -> Unit)? = null): MutableList<out E> {
+    fun toList(itemFunc: ((Document) -> Unit)? = null): MutableList<E> {
         return toList(this.moerEntity.entityClass, itemFunc);
     }
 
@@ -287,7 +287,7 @@ cursor: {} } """
         return toScalar()?.AsString().HasValue;
     }
 
-    fun toList(): MutableList<out E> {
+    fun toList(): MutableList<E> {
         return toList(moerEntity.entityClass)
     }
 
