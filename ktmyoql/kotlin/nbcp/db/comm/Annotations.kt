@@ -64,9 +64,8 @@ annotation class DbEntityFieldRefs(vararg val value: DbEntityFieldRef)
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-//@java.lang.annotation.Repeatable(DbEntityFieldRefs::class)
 @Repeatable
-@Inherited
+@java.lang.annotation.Repeatable(DbEntityFieldRefs::class)
 annotation class DbEntityFieldRef(
     val idField: String,
     val nameField: String,
@@ -102,8 +101,8 @@ annotation class DbDefines(vararg val value: DbDefine)
  * 字段定义，用于 Es实体 生成 Mapping
  */
 @Repeatable
-@Inherited
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FIELD)
+@java.lang.annotation.Repeatable(DbDefines::class)
+@Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class DbDefine(val fieldName: String, val define: String)
 //--------------------

@@ -19,7 +19,7 @@ interface ISqlDbEntity : Serializable {
 //    var createAt: LocalDateTime = LocalDateTime.now()
 //}
 
-@DbEntityIndexes(DbEntityIndex("id", unique = true))
+@DbEntityIndex("id", unique = true)
 abstract class AutoIdSqlDbEntity : Serializable {
     var id: String = ""
 

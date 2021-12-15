@@ -49,5 +49,4 @@ annotation class DbEntityIndexes(vararg val value: DbEntityIndex)
 @Retention(AnnotationRetention.RUNTIME)
 @java.lang.annotation.Repeatable(DbEntityIndexes::class)
 @Repeatable
-@Inherited
 annotation class DbEntityIndex(vararg val value: String, val unique: Boolean = false)

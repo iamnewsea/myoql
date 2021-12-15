@@ -3,7 +3,6 @@ package nbcp.es;
 
 import nbcp.TestBase;
 import nbcp.db.DbEntityIndex;
-import nbcp.db.DbEntityIndexes;
 import org.junit.jupiter.api.Test;
 
 

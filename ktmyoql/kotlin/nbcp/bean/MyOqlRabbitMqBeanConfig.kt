@@ -1,19 +1,17 @@
 package nbcp.bean
 
-import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
 import org.springframework.amqp.core.AcknowledgeMode
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
-import org.springframework.context.annotation.Import
 import org.springframework.stereotype.Component
 
 @Component
 
 @ConditionalOnClass(RabbitTemplate::class)
-class MyOqlRabbitMqConfig : BeanPostProcessor {
+class MyOqlRabbitMqBeanConfig : BeanPostProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

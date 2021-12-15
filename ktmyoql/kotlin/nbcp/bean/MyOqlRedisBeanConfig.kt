@@ -1,9 +1,6 @@
 package nbcp.bean
 
 
-import nbcp.comm.HasValue
-import nbcp.comm.config
-import nbcp.db.cache.RedisCacheAopService
 import nbcp.db.redis.MyRedisKeySerializerWithProductLine
 import nbcp.db.redis.RedisDataSource
 import nbcp.db.redis.RedisRenewalDynamicService
@@ -16,16 +13,13 @@ import org.springframework.context.annotation.Import
 import org.springframework.context.event.EventListener
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.serializer.RedisSerializer
-import org.springframework.data.redis.serializer.StringRedisSerializer
 import org.springframework.stereotype.Component
-import java.lang.reflect.Field
-import java.lang.reflect.Modifier
 
 @Component
 
 @ConditionalOnClass(StringRedisTemplate::class)
 @Import(value=[RedisDataSource::class])
-class MyOqlRedisConfig : BeanPostProcessor {
+class MyOqlRedisBeanConfig : BeanPostProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

@@ -2,21 +2,14 @@ package nbcp.es
 
 import nbcp.TestBase
 import nbcp.comm.*
-import nbcp.db.DbDefine
-import nbcp.db.DbDefines
 import nbcp.db.DbEntityIndex
 import nbcp.db.DbEntityIndexes
-import nbcp.utils.CookieData
 import org.junit.jupiter.api.Test
-import java.text.SimpleDateFormat
-import java.time.Duration
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
-
-@DbEntityIndex("a", "dfdf", unique = true)
-@DbEntityIndex(value = ["b"])
+@DbEntityIndexes(
+    DbEntityIndex("a", "dfdf", unique = true),
+    DbEntityIndex(value = ["b"]),
+)
 @DbEntityIndex("c")
 class AnnotationTest : TestBase() {
 

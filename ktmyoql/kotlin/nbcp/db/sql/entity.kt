@@ -42,7 +42,7 @@ open class s_log @JvmOverloads constructor(
 
 
 @DbEntityGroup("SqlBase")
-@DbEntityIndexes(DbEntityIndex("code", unique = true))
+@DbEntityIndex("code", unique = true)
 open class s_city @JvmOverloads constructor(
     var code: Int = 0,
     @Cn("城市短名称")

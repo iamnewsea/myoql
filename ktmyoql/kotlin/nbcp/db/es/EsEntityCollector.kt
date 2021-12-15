@@ -106,16 +106,10 @@ class EsEntityCollector : BeanPostProcessor {
 
 
     private fun addRef(entityClass: Class<*>) {
-        var refs = entityClass.getAnnotation(DbEntityFieldRefs::class.java)
-        if (refs != null && refs.value.any()) {
-            refs.value.forEach {
-                refsMap.add(DbEntityFieldRefData(entityClass, it))
-            }
-        }
+        var refs = entityClass.getAnnotationsByType(DbEntityFieldRef::class.java)
 
-        var ref = entityClass.getAnnotation(DbEntityFieldRef::class.java)
-        if (ref != null) {
-            refsMap.add(DbEntityFieldRefData(entityClass, ref))
+        refs.forEach {
+            refsMap.add(DbEntityFieldRefData(entityClass, it))
         }
 
         if (entityClass.superclass != null) {

@@ -40,7 +40,7 @@ open class BasicUser @JvmOverloads constructor(
 @Document
 @DbEntityGroup("MongoBase")
 @Cn("用户登录信息")
-@DbEntityIndexes(DbEntityIndex("userId", unique = true))
+@DbEntityIndex("userId", unique = true)
 open class BasicUserLoginInfo @JvmOverloads constructor(
         @Cn("用户唯一Id")
         var userId: String = "",    //用户Id,唯一
@@ -134,7 +134,7 @@ open class SysAnnex @JvmOverloads constructor(
 @Document
 @DbEntityGroup("MongoBase")
 @Cn("城市令牌")
-@DbEntityIndexes(DbEntityIndex("code", unique = true))
+@DbEntityIndex("code", unique = true)
 open class SysCity @JvmOverloads constructor(
         @Cn("城市编码")
         var code: Int = 0,

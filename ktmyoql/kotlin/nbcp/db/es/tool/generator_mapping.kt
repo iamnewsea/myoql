@@ -139,11 +139,9 @@ class generator_mapping {
     }
 
     fun getDefines(entType: Class<*>): Map<String, String> {
-        var defines = entType.getAnnotation(DbDefines::class.java)
-        if (defines != null) {
-            return defines.value.map { it.fieldName to it.define }.toMap()
-        }
-        return mapOf()
+        var defines = entType.getAnnotationsByType(DbDefine::class.java)
+
+        return defines.map { it.fieldName to it.define }.toMap()
     }
 
     /**

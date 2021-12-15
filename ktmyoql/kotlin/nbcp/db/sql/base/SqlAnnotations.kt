@@ -27,11 +27,6 @@ annotation class SqlAutoIncrementKey()
 @Repeatable
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class SqlFks(vararg val value: SqlFk)//多个逗号隔开
-
-
-@Repeatable
-@Retention(AnnotationRetention.SOURCE)
 annotation class SqlFk(val fieldName:String, val refTable: String, val refTableColumn: String)
 
 

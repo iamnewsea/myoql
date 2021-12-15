@@ -10,19 +10,18 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
 @DbEntityGroup("sys")
-@DbDefines(
-    DbDefine(
-        "key",
-        """{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}"""
-    ),
-    DbDefine(
-        "msg",
-        """{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}"""
-    ),
-    DbDefine(
-        "data.name",
-        """{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}"""
-    )
+
+@DbDefine(
+    "key",
+    """{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}"""
+)
+@DbDefine(
+    "msg",
+    """{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}"""
+)
+@DbDefine(
+    "data.name",
+    """{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}"""
 )
 class e_test(
     var module: String = "", //模块
