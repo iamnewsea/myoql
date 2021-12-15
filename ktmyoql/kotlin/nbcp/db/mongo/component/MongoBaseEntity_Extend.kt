@@ -32,7 +32,7 @@ fun <M : MongoBaseMetaCollection<out Serializable>> M.updateById(id: String): Mo
 /**
  * 按实体单条更新。 默认使用Id更新，不会更新id。
  */
-fun <M : MongoBaseMetaCollection<E>,E:Any> M.updateWithEntity(entity: E): MongoSetEntityUpdateClip<M,E> {
+fun <M : MongoBaseMetaCollection<out E>,E:Any> M.updateWithEntity(entity: E): MongoSetEntityUpdateClip<M,E> {
     return MongoSetEntityUpdateClip(this, entity);
 }
 

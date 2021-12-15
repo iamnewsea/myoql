@@ -23,7 +23,7 @@ import java.time.LocalDateTime
  * MongoUpdate
  * 不会更新 id
  */
-class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<E>, E:Any >(
+class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E:Any >(
     var moerEntity: M,
     var entity: E
 ) : MongoClipBase(moerEntity.tableName) {
