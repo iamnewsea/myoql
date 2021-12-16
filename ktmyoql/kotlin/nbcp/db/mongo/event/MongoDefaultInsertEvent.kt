@@ -43,11 +43,14 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
 
                 sortNumbers.forEach { sortNumber ->
                     if (map.getTypeValue<Float>(sortNumber.field, ignoreCase = false).AsFloat() == 0F) {
-                        map.setDeepValue(
-                            sortNumber.field,
-                            ignoreCase = false,
-                            value = getSortNumber(sortNumber, tableName)
-                        )
+                        var sortNumberValue = getSortNumber(sortNumber, tableName);
+                        if (sortNumberValue != null) {
+                            map.setDeepValue(
+                                sortNumber.field,
+                                ignoreCase = false,
+                                value = sortNumberValue
+                            )
+                        }
                     }
                 }
 
@@ -90,25 +93,29 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
             var value = MyUtil.getPrivatePropertyValue(entity, *sortNumber.field.split(".").toTypedArray());
             if (value != null) {
                 if (value.AsFloat() == 0F) {
-                    MyUtil.setPrivatePropertyValue(
-                        entity,
-                        *sortNumber.field.split(".").toTypedArray(),
-                        ignoreCase = false,
-                        value = getSortNumber(sortNumber, tableName)
-                    )
+                    var sortNumberValue = getSortNumber(sortNumber, tableName);
+                    if (sortNumberValue != null) {
+
+                        MyUtil.setPrivatePropertyValue(
+                            entity,
+                            *sortNumber.field.split(".").toTypedArray(),
+                            ignoreCase = false,
+                            value = sortNumberValue
+                        )
+
+                    }
                 }
             }
         }
     }
 
-    private fun getSortNumber(sortNumber: SortNumber, tableName: String): Float {
-
-        db.mor_base.sysLastSortNumber.update()
+    private fun getSortNumber(sortNumber: SortNumber, tableName: String): Float? {
+        return db.mor_base.sysLastSortNumber.update()
             .where { it.table match tableName }
             .where { it.group match sortNumber.groupBy }
             .inc { it.value op_inc sortNumber.step }
-            .saveAndReturnNew();
-        return 0F
+            .saveAndReturnNew()
+            ?.value
     }
 
     override fun insert(insert: MongoBaseInsertClip, eventData: EventResult) {
