@@ -80,7 +80,7 @@ object MyUtil {
         if (data is Map<*, *>) {
             var v = data.get(key)
             if (v == null) {
-                var vbKeys = data.keys.filter { it.toString() VbSame key };
+                var vbKeys = data.keys.filter { it.toString().compareTo(key, ignoreCase) == 0 };
                 if (vbKeys.size != 1) {
                     return null;
                 }
@@ -143,6 +143,117 @@ object MyUtil {
         }
 
         return getPathValue(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase)
+    }
+
+
+    /**
+     * 多层级设置值
+     */
+    fun setPathValue(data: Any, vararg keys: String, ignoreCase: Boolean = false, value: Any?): Boolean {
+        if (keys.any() == false) return false;
+        var key = keys.first();
+        var left_keys = keys.Slice(1);
+
+        if (key.isEmpty()) {
+            return false;
+        }
+        var keys2 = key.split(".");
+        if (keys2.size > 1) {
+            var v = setPathValue(data, *keys2.toTypedArray(), ignoreCase = ignoreCase, value = value);
+            if (v == false) {
+                return false;
+            }
+
+            if (left_keys.any() == false) {
+                return v;
+            }
+
+            return setPathValue(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value)
+        }
+
+
+        if (key.endsWith("]")) {
+            if (key != "[]" && key.endsWith("[]")) {
+                return setPathValue(data, key.Slice(0, -2), "[]", ignoreCase = ignoreCase, value = value);
+            }
+            var start_index = key.lastIndexOf('[');
+            if (start_index > 0) {
+                return setPathValue(
+                    data,
+                    key.slice(0 until start_index),
+                    key.Slice(start_index),
+                    ignoreCase = ignoreCase,
+                    value = value
+                )
+            }
+        }
+
+        if (data is Map<*, *>) {
+            var v = data.get(key)
+            if (v == null) {
+                var vbKeys = data.keys.filter { it.toString().compareTo(key, ignoreCase) == 0 };
+                if (vbKeys.size != 1) {
+                    return false
+                }
+
+                v = data.get(vbKeys.first())
+
+                if (v == null) {
+                    return false;
+                }
+            }
+            if (left_keys.any() == false) return false;
+
+            return setPathValue(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value)
+        } else if (key == "[]") {
+            var data2: List<*>
+            if (data is Array<*>) {
+                data2 = data.filter { it != null }
+            } else if (data is Collection<*>) {
+                data2 = data.filter { it != null }
+            } else {
+                throw RuntimeException("数据类型不匹配,${keys} 中 ${key} 需要是数组类型")
+            }
+
+            if (left_keys.any() == false) return false;
+
+            return data2
+                .map { setPathValue(it!!, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value) }
+                .any { it }
+
+        } else if (key.startsWith("[") && key.endsWith("]")) {
+            var index = key.substring(1, key.length - 1).AsInt(-1)
+            if (index < 0) {
+                throw RuntimeException("索引值错误:${key}")
+            }
+
+            var data2: Any?
+            if (data is Array<*>) {
+                data2 = data.get(index)
+            } else if (data is Collection<*>) {
+                data2 = data.elementAt(index)
+            } else {
+                throw RuntimeException("数据类型不匹配,${keys} 中 ${key} 需要是数组类型")
+            }
+
+            if (data2 == null) {
+                return false;
+            }
+
+            if (left_keys.any() == false) return false;
+
+            return setPathValue(data2, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value)
+        }
+
+        //如果是对象
+
+        var v = setPrivatePropertyValue(data, key, ignoreCase = ignoreCase, value = value)
+        if (v == false) return false;
+        if (left_keys.any() == false) {
+            return v;
+        }
+
+        return setPathValue(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value)
     }
 
     /**
@@ -376,13 +487,12 @@ object MyUtil {
     /**
      * @param properties 多级属性
      */
-    fun getPrivatePropertyValue(entity: Any?, vararg properties: String): Any? {
+    fun getPrivatePropertyValue(entity: Any?, vararg properties: String, ignoreCase: Boolean = false): Any? {
         if (entity == null) return null;
         if (properties.any() == false) return null;
 
-        var type = entity::class.java.FindField(properties.first());
+        var type = entity::class.java.FindField(properties.first(), ignoreCase);
         if (type != null) {
-
             var ret = type.get(entity);
             if (properties.size == 1) {
                 return ret
@@ -394,12 +504,35 @@ object MyUtil {
         return null;
     }
 
-    fun setPrivatePropertyValue(entity: Any, property: String, value: Any?) {
-        var type = entity::class.java.FindField(property);
-        if (type == null) {
-            return;
+
+    /**
+     * 支持多层级设置属性值
+     */
+    fun setPrivatePropertyValue(
+        entity: Any?,
+        vararg properties: String,
+        ignoreCase: Boolean = false,
+        value: Any?
+    ): Boolean {
+        if (entity == null) return false;
+        if (properties.any() == false) return false;
+
+        var type = entity::class.java.FindField(properties.first(), ignoreCase);
+        if (type != null) {
+            var ret = type.get(entity);
+            if (properties.size == 1) {
+                type.set(entity, value);
+                return true
+            } else {
+                var leftProperties = properties.slice(1 until properties.size).toTypedArray();
+                return setPrivatePropertyValue(ret, *leftProperties, ignoreCase = ignoreCase, value = value)
+            }
         }
-        type.set(entity, value)
+        return false;
+    }
+
+    fun setPrivatePropertyValue(entity: Any, property: String, value: Any?): Boolean {
+        return setPrivatePropertyValue(entity, *arrayOf(property), ignoreCase = false, value = value);
     }
 
 //    fun setPropertyValue(entity: Any, property: String, value: Any?) {

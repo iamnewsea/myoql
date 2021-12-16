@@ -28,6 +28,7 @@ annotation class RemoveToSysDustbin()
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
+@Repeatable
 annotation class SortNumber(val field: String, val groupBy: String, val step: Int = 1)
 
 /**

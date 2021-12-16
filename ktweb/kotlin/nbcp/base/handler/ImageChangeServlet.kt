@@ -42,7 +42,7 @@ open class ImageChangeServlet  {
 
         var table = dbs[0];
         var field = dbs.Skip(1).joinToString(".")
-        var collection = MongoEntityCollector.getCollection(table);
+        var collection = nbcp.db.db.mongo.mongoEvents.getCollection(table);
         if (collection == null) {
             return JsonResult.error("找不到集合")
         }

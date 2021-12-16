@@ -37,18 +37,16 @@ class TreeResultData() : LinkedHashSet<ITreeData<*>>() {
 /**
  * 在数据库中遍历查找树节点。返回所在树中的 根，父，本身。
  */
-fun <M : MongoBaseMetaCollection<T>, T> M.findTreeById(id: String): TreeResultData
-    where T : Serializable,
-          T : ITreeData<*> {
+fun <M : MongoBaseMetaCollection<T>, T:Any> M.findTreeById(id: String): TreeResultData
+    where T : ITreeData<*> {
     return this.findTree { it.id == id };
 }
 
 /**
  * 在数据库中遍历查找树节点。返回所在树中的 根，父，本身。
  */
-fun <M : MongoBaseMetaCollection<T>, T> M.findTree(callback: ((ITreeData<*>) -> Boolean)): TreeResultData
-    where T : Serializable,
-          T : ITreeData<*> {
+fun <M : MongoBaseMetaCollection<T>, T:Any> M.findTree(callback: ((ITreeData<*>) -> Boolean)): TreeResultData
+    where T : ITreeData<*> {
     var reader = BatchReader.init(5, { skip, take ->
         this.query().limit(skip, take).toList()
     });
@@ -74,9 +72,8 @@ fun <M : MongoBaseMetaCollection<T>, T> M.findTree(callback: ((ITreeData<*>) -> 
 /**
  * 删除树节点，可能删除的是根节点，也可能删除的是子级节点
  */
-fun <M : MongoBaseMetaCollection<T>, T> M.deleteTreeNodeById(id: String): ApiResult<String>
-    where T : Serializable,
-          T : ITreeData<*> {
+fun <M : MongoBaseMetaCollection<T>, T:Any> M.deleteTreeNodeById(id: String): ApiResult<String>
+    where    T : ITreeData<*> {
     var result = this.findTreeById(id)
 //    if (result == null) return ApiResult.error("找不到数据")
     var root = result.root;
@@ -102,7 +99,7 @@ fun <M : MongoBaseMetaCollection<T>, T> M.deleteTreeNodeById(id: String): ApiRes
  * 先找 entity的父节点，判断 pid 是否相同。
  * @return 父实体id
  */
-fun <M : MongoBaseMetaCollection<T>, T> M.saveTreeToParent(
+fun <M : MongoBaseMetaCollection<T>, T:Any> M.saveTreeToParent(
     pid: String,
     saveEntity: T
 ): ApiResult<String>

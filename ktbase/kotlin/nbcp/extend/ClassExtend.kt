@@ -149,8 +149,8 @@ fun <T> Class<T>.GetEnumList(values: String = ""): List<T> {
 
     if (values.HasValue) {
         return values.split(",")
-                .map { v -> list.find { it.toString() == v } }
-                .filterNotNull()
+            .map { v -> list.find { it.toString() == v } }
+            .filterNotNull()
     }
 
     return list.toList()
@@ -165,8 +165,8 @@ fun <T> Class<T>.GetEnumNumberField(): Field? {
 
     var ret_fields = this.declaredFields.filter {
         (it.modifiers and Modifier.PRIVATE) > 0 &&
-                (it.modifiers and Modifier.STATIC == 0) &&
-                it.type.IsNumberType
+            (it.modifiers and Modifier.STATIC == 0) &&
+            it.type.IsNumberType
     }
     if (ret_fields.size == 1) {
         var ret = ret_fields.first();
@@ -185,8 +185,8 @@ fun <T> Class<T>.GetEnumStringField(): Field? {
 
     var ret_fields = this.declaredFields.filter {
         (it.modifiers and Modifier.PRIVATE) > 0 &&
-                it.modifiers and Modifier.STATIC == 0 &&
-                it.type.IsStringType
+            it.modifiers and Modifier.STATIC == 0 &&
+            it.type.IsStringType
     }
 
     if (ret_fields.any()) {
@@ -223,9 +223,11 @@ val Class<*>.AllFields: List<Field>
         return ret;
     }
 
-
-fun Class<*>.FindField(fieldName: String): Field? {
-    val ret = this.declaredFields.find { it.name == fieldName };
+/**
+ * 一直向父类查找。
+ */
+fun Class<*>.FindField(fieldName: String, ignoreCase: Boolean = false): Field? {
+    val ret = this.declaredFields.find { it.name.compareTo(fieldName, ignoreCase) == 0 };
     if (ret != null) {
         ret.isAccessible = true;
         return ret;

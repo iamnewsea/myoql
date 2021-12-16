@@ -48,21 +48,20 @@ class MongoEntityCollector : BeanPostProcessor {
 
         @JvmStatic
         val collectionVarNames = mutableListOf<IMongoCollectionVarName>()
+    }
 
-        /**
-         * 根据名称查找定义的集合。
-         */
-        @JvmStatic
-        fun getCollection(collectionName: String): MongoBaseMetaCollection<Serializable>? {
-            var ret: BaseMetaData? = null
-            db_mongo.groups.any { group ->
-                ret = group.getEntities().firstOrNull() { it.tableName == collectionName }
+    /**
+     * 根据名称查找定义的集合。
+     */
+    fun getCollection(collectionName: String): MongoBaseMetaCollection<Any>? {
+        var ret: BaseMetaData? = null
+        db_mongo.groups.any { group ->
+            ret = group.getEntities().firstOrNull() { it.tableName == collectionName }
 
-                return@any ret != null
-            }
-
-            return ret as MongoBaseMetaCollection<Serializable>?
+            return@any ret != null
         }
+
+        return ret as MongoBaseMetaCollection<Any>?
     }
 
     //    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {

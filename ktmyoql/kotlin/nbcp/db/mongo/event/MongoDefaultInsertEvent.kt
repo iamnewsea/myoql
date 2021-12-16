@@ -4,6 +4,7 @@ import nbcp.comm.*
 import nbcp.db.mongo.*;
 import nbcp.db.*
 import nbcp.db.mongo.entity.SysLastSortNumber
+import nbcp.utils.MyUtil
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -14,10 +15,12 @@ import java.time.LocalDateTime
 @Component
 class MongoDefaultInsertEvent : IMongoEntityInsert {
     override fun beforeInsert(insert: MongoBaseInsertClip): EventResult {
-        var sortNumber: SortNumber? = null;
+        var sortNumbers = arrayOf<SortNumber>()
         var tableName = insert.actualTableName;
-        if (insert is MongoInsertClip<*>) {
-            sortNumber = insert.moerEntity::class.java.getAnnotation(SortNumber::class.java)
+
+        var table = db.mongo.mongoEvents.getCollection(insert.collectionName)
+        if (table != null) {
+            sortNumbers = table::class.java.getAnnotationsByType(SortNumber::class.java)
         }
 
         insert.entities.forEach { entity ->
@@ -30,14 +33,7 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
 
                 entity.createAt = LocalDateTime.now();
 
-                if (sortNumber != null) {
-                    var field = entity::class.java.FindField(sortNumber.field);
-                    if (field != null) {
-                        if (field.get(entity).AsFloat() == 0F) {
-                            field.set(entity, getSortNumber(sortNumber, tableName))
-                        }
-                    }
-                }
+                proc_sortNumber(sortNumbers, entity, tableName)
             } else if (entity is MutableMap<*, *>) {
                 var map = entity as MutableMap<String, Any?>
                 if (map.get("id").AsString().isNullOrEmpty()) {
@@ -45,9 +41,13 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
                 }
                 map.set("createAt", LocalDateTime.now())
 
-                if (sortNumber != null) {
-                    if (map.get(sortNumber.field).AsFloat() == 0F) {
-                        map.put(sortNumber.field, getSortNumber(sortNumber, tableName))
+                sortNumbers.forEach { sortNumber ->
+                    if (map.getTypeValue<Float>(sortNumber.field, ignoreCase = false).AsFloat() == 0F) {
+                        map.setDeepValue(
+                            sortNumber.field,
+                            ignoreCase = false,
+                            value = getSortNumber(sortNumber, tableName)
+                        )
                     }
                 }
 
@@ -71,14 +71,7 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
                 }
 
 
-                if (sortNumber != null) {
-                    var field = entity::class.java.FindField(sortNumber.field);
-                    if (field != null) {
-                        if (field.get(entity).AsFloat() == 0F) {
-                            field.set(entity, getSortNumber(sortNumber, tableName))
-                        }
-                    }
-                }
+                proc_sortNumber(sortNumbers, entity, tableName)
             }
 
             //设置实体内的 _id
@@ -88,13 +81,33 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
         return EventResult(true, null);
     }
 
+    private fun proc_sortNumber(
+        sortNumbers: Array<SortNumber>,
+        entity: Any,
+        tableName: String
+    ) {
+        sortNumbers.forEach { sortNumber ->
+            var value = MyUtil.getPrivatePropertyValue(entity, *sortNumber.field.split(".").toTypedArray());
+            if (value != null) {
+                if (value.AsFloat() == 0F) {
+                    MyUtil.setPrivatePropertyValue(
+                        entity,
+                        *sortNumber.field.split(".").toTypedArray(),
+                        ignoreCase = false,
+                        value = getSortNumber(sortNumber, tableName)
+                    )
+                }
+            }
+        }
+    }
+
     private fun getSortNumber(sortNumber: SortNumber, tableName: String): Float {
 
         db.mor_base.sysLastSortNumber.update()
-                .where { it.table match tableName }
-                .where { it.group match sortNumber.groupBy }
-                .inc { it.value op_inc sortNumber.step }
-                .saveAndReturnNew();
+            .where { it.table match tableName }
+            .where { it.group match sortNumber.groupBy }
+            .inc { it.value op_inc sortNumber.step }
+            .saveAndReturnNew();
         return 0F
     }
 

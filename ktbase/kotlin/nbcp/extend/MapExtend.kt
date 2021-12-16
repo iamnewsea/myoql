@@ -7,7 +7,6 @@ import nbcp.utils.JsUtil
 import nbcp.utils.MyUtil
 
 
-
 //fun <V> LinkedHashMap<String, V>.RenameKey(oldKey: String, newKey: String) {
 //    var index = this.keys.indexOf(oldKey);
 //    if (index < 0) {
@@ -20,8 +19,8 @@ import nbcp.utils.MyUtil
 //}
 
 inline fun <reified K, reified V, reified RK, reified RV> Map<K, V>.ToMap(
-        keyAct: ((Map.Entry<K, V>) -> RK),
-        valueAct: ((Map.Entry<K, V>) -> RV)
+    keyAct: ((Map.Entry<K, V>) -> RK),
+    valueAct: ((Map.Entry<K, V>) -> RV)
 ): LinkedHashMap<RK, RV> {
     var map = linkedMapOf<RK, RV>()
     this.forEach {
@@ -31,8 +30,8 @@ inline fun <reified K, reified V, reified RK, reified RV> Map<K, V>.ToMap(
 }
 
 inline fun <reified T, reified RK, reified RV> Collection<T>.ToMap(
-        keyAct: ((T) -> RK),
-        valueAct: ((T) -> RV)
+    keyAct: ((T) -> RK),
+    valueAct: ((T) -> RV)
 ): LinkedHashMap<RK, RV> {
     var map = linkedMapOf<RK, RV>()
     this.forEach {
@@ -48,6 +47,9 @@ fun <V> MutableMap<String, V>.onlyHoldKeys(keys: Set<String>) {
     }
 }
 
+/**
+ * 多层级获取属性值
+ */
 inline fun <reified T> Map<String, *>.getTypeValue(vararg keys: String, ignoreCase: Boolean = false): T? {
     var ret = MyUtil.getPathValue(this, *keys, ignoreCase = ignoreCase);
     if (ret === null) return null;
@@ -55,6 +57,9 @@ inline fun <reified T> Map<String, *>.getTypeValue(vararg keys: String, ignoreCa
     return null;
 }
 
+/**
+ * 多层级获取属性值
+ */
 fun Map<*, *>.getStringValue(vararg keys: String, ignoreCase: Boolean = false): String? {
     var v = MyUtil.getPathValue(this, *keys, ignoreCase = ignoreCase)
     if (v == null) return null;
@@ -67,10 +72,24 @@ fun Map<*, *>.getStringValue(vararg keys: String, ignoreCase: Boolean = false): 
     return v.toString()
 }
 
+/**
+ * 多层级获取属性值
+ */
 fun Map<*, *>.getIntValue(vararg keys: String, ignoreCase: Boolean = false): Int {
     var v = MyUtil.getPathValue(this, *keys, ignoreCase = ignoreCase)
     if (v == null) return 0;
     return v.AsInt()
+}
+
+/**
+ * 多层级设置值
+ */
+fun  Map<String, *>.setDeepValue(
+    vararg keys: String,
+    ignoreCase: Boolean = false,
+    value: Any?
+): Boolean {
+    return MyUtil.setPathValue(this, *keys, ignoreCase = ignoreCase, value = value);
 }
 
 //------------------
@@ -83,26 +102,26 @@ private fun get_array_querys(list: Collection<Any?>): List<String> {
         if (type.IsSimpleType() == false) {
             if (type.isArray) {
                 return@map get_array_querys((value as Array<*>).toList())
-                        .map { "[]=" + it }
-                        .toTypedArray()
-            } else if (value is Collection<*>) {
-                return@map get_array_querys(value)
-                        .map { "[]=" + it }
-                        .toTypedArray()
-            } else if (value is Map<*, *>) {
-                return@map get_map_querys((value as Map<String, *>))
-                        .map { "[]=" + it }
-                        .toTypedArray()
-            }
-            return@map get_map_querys(value.ConvertJson(JsonMap::class.java))
                     .map { "[]=" + it }
                     .toTypedArray()
+            } else if (value is Collection<*>) {
+                return@map get_array_querys(value)
+                    .map { "[]=" + it }
+                    .toTypedArray()
+            } else if (value is Map<*, *>) {
+                return@map get_map_querys((value as Map<String, *>))
+                    .map { "[]=" + it }
+                    .toTypedArray()
+            }
+            return@map get_map_querys(value.ConvertJson(JsonMap::class.java))
+                .map { "[]=" + it }
+                .toTypedArray()
         }
 
         return@map arrayOf(JsUtil.encodeURIComponent(value.toString()))
     }
-            .Unwind()
-            .filter { it.HasValue }
+        .Unwind()
+        .filter { it.HasValue }
 }
 
 private fun get_map_querys(map: Map<String, *>): List<String> {
@@ -118,26 +137,26 @@ private fun get_map_querys(map: Map<String, *>): List<String> {
         if (type.IsSimpleType() == false) {
             if (type.isArray) {
                 return@map get_array_querys((value as Array<*>).toList())
-                        .map { key + it }
-                        .toTypedArray()
+                    .map { key + it }
+                    .toTypedArray()
             } else if (type.IsCollectionType) {
                 return@map get_array_querys((value as Collection<*>))
-                        .map { key + it }
-                        .toTypedArray()
+                    .map { key + it }
+                    .toTypedArray()
             } else if (type.IsMapType) {
                 return@map get_map_querys((value as Map<String, *>))
-                        .map { key + "." + it }
-                        .toTypedArray()
-            }
-            return@map get_map_querys(value.ConvertJson(JsonMap::class.java))
                     .map { key + "." + it }
                     .toTypedArray()
+            }
+            return@map get_map_querys(value.ConvertJson(JsonMap::class.java))
+                .map { key + "." + it }
+                .toTypedArray()
         }
 
         return@map arrayOf(key + "=" + JsUtil.encodeURIComponent(value.toString()))
     }
-            .Unwind()
-            .filter { it.HasValue }
+        .Unwind()
+        .filter { it.HasValue }
 }
 
 
@@ -153,7 +172,7 @@ fun Map<String, Any?>.getKeyByValue(value: Any): String? {
     return this.entries.firstOrNull { it.value == value }?.key
 }
 
-fun MutableMap<String, Any?>.removeKeys(vararg key:String) {
+fun MutableMap<String, Any?>.removeKeys(vararg key: String) {
     key.forEach {
         this.remove(it);
     }
@@ -172,24 +191,24 @@ fun Map<*, *>.EqualMapContent(value: Map<*, *>, compare: ((Any?, Any?) -> Boolea
     if (this.keys.EqualArrayContent(value.keys) == false) return false;
 
     if (this.all {
-                var value1 = it.value;
-                var value2 = value.get(it.key);
+            var value1 = it.value;
+            var value2 = value.get(it.key);
 
-                if (value1 is Array<*> && value2 is Array<*>) {
-                    return@all value1.EqualArrayContent(value2);
-                }
-                if (value1 is Collection<*> && value2 is Collection<*>) {
-                    return@all value1.EqualArrayContent(value2);
-                }
-                if (value1 is Map<*, *> && value2 is Map<*, *>) {
-                    return@all value1.EqualMapContent(value2);
-                }
+            if (value1 is Array<*> && value2 is Array<*>) {
+                return@all value1.EqualArrayContent(value2);
+            }
+            if (value1 is Collection<*> && value2 is Collection<*>) {
+                return@all value1.EqualArrayContent(value2);
+            }
+            if (value1 is Map<*, *> && value2 is Map<*, *>) {
+                return@all value1.EqualMapContent(value2);
+            }
 
-                if (compare != null) {
-                    return@all compare(value1, value2);
-                }
-                return@all it.value == value2;
-            } == false) return false;
+            if (compare != null) {
+                return@all compare(value1, value2);
+            }
+            return@all it.value == value2;
+        } == false) return false;
 
     return true;
 }

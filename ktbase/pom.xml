@@ -23,7 +23,7 @@
     <parent>
         <groupId>cn.dev8</groupId>
         <artifactId>kotlin-boot-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
