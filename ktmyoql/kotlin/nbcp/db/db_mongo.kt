@@ -293,7 +293,7 @@ db.getCollection("adminRole").aggregate(
                 lastKey = it.keys.last()
             }
 
-            val value = MyUtil.getPathValue(it, *lastKey.split(".").toTypedArray());
+            val value = MyUtil.getValueByWbsPath(it, *lastKey.split(".").toTypedArray());
             if (value != null) {
                 return value.ConvertType(clazz) as T
             } else {

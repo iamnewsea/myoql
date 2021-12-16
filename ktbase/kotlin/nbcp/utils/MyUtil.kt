@@ -39,7 +39,7 @@ object MyUtil {
      * 通过 path 获取 value,每级返回的值必须是 Map<String,V> 否则返回 null
      * @param keys: 可以传多个key，也可以使用 . 分隔；如果查询数组，使用 products[],products[0], products.[] 或 products.[0] 或 "products","[]"
      */
-    fun getPathValue(data: Any, vararg keys: String, ignoreCase: Boolean = false): Any? {
+    fun getValueByWbsPath(data: Any, vararg keys: String, ignoreCase: Boolean = false): Any? {
         if (keys.any() == false) return null;
         var key = keys.first();
         var left_keys = keys.Slice(1);
@@ -49,7 +49,7 @@ object MyUtil {
         }
         var keys2 = key.split(".");
         if (keys2.size > 1) {
-            var v = getPathValue(data, *keys2.toTypedArray(), ignoreCase = ignoreCase);
+            var v = getValueByWbsPath(data, *keys2.toTypedArray(), ignoreCase = ignoreCase);
             if (v == null) {
                 return null;
             }
@@ -58,17 +58,17 @@ object MyUtil {
                 return v;
             }
 
-            return getPathValue(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase)
+            return getValueByWbsPath(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase)
         }
 
 
         if (key.endsWith("]")) {
             if (key != "[]" && key.endsWith("[]")) {
-                return getPathValue(data, key.Slice(0, -2), "[]", ignoreCase = ignoreCase);
+                return getValueByWbsPath(data, key.Slice(0, -2), "[]", ignoreCase = ignoreCase);
             }
             var start_index = key.lastIndexOf('[');
             if (start_index > 0) {
-                return getPathValue(
+                return getValueByWbsPath(
                     data,
                     key.slice(0 until start_index),
                     key.Slice(start_index),
@@ -93,7 +93,7 @@ object MyUtil {
             }
             if (left_keys.any() == false) return v;
 
-            return getPathValue(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase)
+            return getValueByWbsPath(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase)
         } else if (key == "[]") {
             var data2: List<*>
             if (data is Array<*>) {
@@ -107,7 +107,7 @@ object MyUtil {
             if (left_keys.any() == false) return data2;
 
             return data2
-                .map { getPathValue(it!!, *left_keys.toTypedArray(), ignoreCase = ignoreCase) }
+                .map { getValueByWbsPath(it!!, *left_keys.toTypedArray(), ignoreCase = ignoreCase) }
                 .filter { it != null }
 
         } else if (key.startsWith("[") && key.endsWith("]")) {
@@ -131,7 +131,7 @@ object MyUtil {
 
             if (left_keys.any() == false) return data2;
 
-            return getPathValue(data2, *left_keys.toTypedArray(), ignoreCase = ignoreCase)
+            return getValueByWbsPath(data2, *left_keys.toTypedArray(), ignoreCase = ignoreCase)
         }
 
         //如果是对象
@@ -142,14 +142,14 @@ object MyUtil {
             return v;
         }
 
-        return getPathValue(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase)
+        return getValueByWbsPath(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase)
     }
 
 
     /**
      * 多层级设置值
      */
-    fun setPathValue(data: Any, vararg keys: String, ignoreCase: Boolean = false, value: Any?): Boolean {
+    fun setValueByWbsPath(data: Any, vararg keys: String, ignoreCase: Boolean = false, value: Any?): Boolean {
         if (keys.any() == false) return false;
         var key = keys.first();
         var left_keys = keys.Slice(1);
@@ -159,7 +159,7 @@ object MyUtil {
         }
         var keys2 = key.split(".");
         if (keys2.size > 1) {
-            var v = setPathValue(data, *keys2.toTypedArray(), ignoreCase = ignoreCase, value = value);
+            var v = setValueByWbsPath(data, *keys2.toTypedArray(), ignoreCase = ignoreCase, value = value);
             if (v == false) {
                 return false;
             }
@@ -168,17 +168,17 @@ object MyUtil {
                 return v;
             }
 
-            return setPathValue(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value)
+            return setValueByWbsPath(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value)
         }
 
 
         if (key.endsWith("]")) {
             if (key != "[]" && key.endsWith("[]")) {
-                return setPathValue(data, key.Slice(0, -2), "[]", ignoreCase = ignoreCase, value = value);
+                return setValueByWbsPath(data, key.Slice(0, -2), "[]", ignoreCase = ignoreCase, value = value);
             }
             var start_index = key.lastIndexOf('[');
             if (start_index > 0) {
-                return setPathValue(
+                return setValueByWbsPath(
                     data,
                     key.slice(0 until start_index),
                     key.Slice(start_index),
@@ -204,7 +204,7 @@ object MyUtil {
             }
             if (left_keys.any() == false) return false;
 
-            return setPathValue(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value)
+            return setValueByWbsPath(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value)
         } else if (key == "[]") {
             var data2: List<*>
             if (data is Array<*>) {
@@ -218,7 +218,7 @@ object MyUtil {
             if (left_keys.any() == false) return false;
 
             return data2
-                .map { setPathValue(it!!, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value) }
+                .map { setValueByWbsPath(it!!, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value) }
                 .any { it }
 
         } else if (key.startsWith("[") && key.endsWith("]")) {
@@ -242,7 +242,7 @@ object MyUtil {
 
             if (left_keys.any() == false) return false;
 
-            return setPathValue(data2, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value)
+            return setValueByWbsPath(data2, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value)
         }
 
         //如果是对象
@@ -253,7 +253,7 @@ object MyUtil {
             return v;
         }
 
-        return setPathValue(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value)
+        return setValueByWbsPath(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value)
     }
 
     /**
@@ -485,9 +485,9 @@ object MyUtil {
     }
 
     /**
-     * @param properties 多级属性
+     * @param properties 多级属性 , 请使用 MyUtil.getValueByWbsPath
      */
-    fun getPrivatePropertyValue(entity: Any?, vararg properties: String, ignoreCase: Boolean = false): Any? {
+    private fun getPrivatePropertyValue(entity: Any?, vararg properties: String, ignoreCase: Boolean = false): Any? {
         if (entity == null) return null;
         if (properties.any() == false) return null;
 

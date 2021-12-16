@@ -51,7 +51,7 @@ fun <V> MutableMap<String, V>.onlyHoldKeys(keys: Set<String>) {
  * 多层级获取属性值
  */
 inline fun <reified T> Map<String, *>.getTypeValue(vararg keys: String, ignoreCase: Boolean = false): T? {
-    var ret = MyUtil.getPathValue(this, *keys, ignoreCase = ignoreCase);
+    var ret = MyUtil.getValueByWbsPath(this, *keys, ignoreCase = ignoreCase);
     if (ret === null) return null;
     if (ret is T) return ret;
     return null;
@@ -61,7 +61,7 @@ inline fun <reified T> Map<String, *>.getTypeValue(vararg keys: String, ignoreCa
  * 多层级获取属性值
  */
 fun Map<*, *>.getStringValue(vararg keys: String, ignoreCase: Boolean = false): String? {
-    var v = MyUtil.getPathValue(this, *keys, ignoreCase = ignoreCase)
+    var v = MyUtil.getValueByWbsPath(this, *keys, ignoreCase = ignoreCase)
     if (v == null) return null;
 //    var v_type = v::class.java;
     if (v is Array<*>) {
@@ -76,7 +76,7 @@ fun Map<*, *>.getStringValue(vararg keys: String, ignoreCase: Boolean = false): 
  * 多层级获取属性值
  */
 fun Map<*, *>.getIntValue(vararg keys: String, ignoreCase: Boolean = false): Int {
-    var v = MyUtil.getPathValue(this, *keys, ignoreCase = ignoreCase)
+    var v = MyUtil.getValueByWbsPath(this, *keys, ignoreCase = ignoreCase)
     if (v == null) return 0;
     return v.AsInt()
 }
@@ -84,14 +84,21 @@ fun Map<*, *>.getIntValue(vararg keys: String, ignoreCase: Boolean = false): Int
 /**
  * 多层级设置值
  */
-fun  Map<String, *>.setDeepValue(
+fun  Map<String, *>.setValueByWbsPath(
     vararg keys: String,
     ignoreCase: Boolean = false,
     value: Any?
 ): Boolean {
-    return MyUtil.setPathValue(this, *keys, ignoreCase = ignoreCase, value = value);
+    return MyUtil.setValueByWbsPath(this, *keys, ignoreCase = ignoreCase, value = value);
 }
 
+
+fun  Map<String, *>.getValueByWbsPath(
+    vararg keys: String,
+    ignoreCase: Boolean = false
+): Any? {
+    return MyUtil.getValueByWbsPath(this, *keys, ignoreCase = ignoreCase );
+}
 //------------------
 
 private fun get_array_querys(list: Collection<Any?>): List<String> {

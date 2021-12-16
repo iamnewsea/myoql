@@ -91,7 +91,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
                 var findKey = it.name;
 
                 if (whereColumns.contains(findKey)) {
-                    var value = MyUtil.getPrivatePropertyValue(this.entity, findKey);
+                    var value = MyUtil.getValueByWbsPath(this.entity, findKey);
                     if( value == null){
                         return@forEach
                     }
@@ -111,7 +111,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
                     return@forEach
                 }
 
-                var value = MyUtil.getPrivatePropertyValue(this.entity, findKey);
+                var value = MyUtil.getValueByWbsPath(this.entity, findKey);
 
                 if( value == null){
                     return@forEach

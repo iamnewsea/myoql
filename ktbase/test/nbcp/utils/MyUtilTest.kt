@@ -43,8 +43,8 @@ TomcatWebServer:8002 -- nacos: saas-dev.nancal.com:8848(yuxh) -- nacos-config:no
     fun testformat2() {
         val json = JsonMap("a" to 1, "b" to JsonMap("c" to 2), "d" to IdName("id1", "name1"))
 
-        println(MyUtil.getPathValue(json, "a"))
-        println(MyUtil.getPathValue(json, "b.c"))
-        println(MyUtil.getPathValue(json, "d.id"))
+        println(MyUtil.getValueByWbsPath(json, "a"))
+        println(MyUtil.getValueByWbsPath(json, "b.c"))
+        println(MyUtil.getValueByWbsPath(json, "d.id"))
     }
 }

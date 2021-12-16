@@ -73,7 +73,7 @@ class Freemarker_Field_Value : TemplateMethodModelEx {
         var paramName = _get_value_item(p0[1]).AsString();
 
 
-        return MyUtil.getPrivatePropertyValue(paramObj, paramName) ?: ""
+        return MyUtil.getValueByWbsPath(paramObj, paramName) ?: ""
     }
 }
 

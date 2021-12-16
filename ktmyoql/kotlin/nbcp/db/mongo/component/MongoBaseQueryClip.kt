@@ -123,7 +123,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                         lastKey = it.keys.last()
                     }
 
-                    val value = MyUtil.getPathValue(it, *lastKey.split(".").toTypedArray());
+                    val value = MyUtil.getValueByWbsPath(it, *lastKey.split(".").toTypedArray());
                     if (value != null) {
                         ret.add(value.ConvertType(clazz) as R);
                     } else {

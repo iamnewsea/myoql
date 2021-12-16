@@ -119,7 +119,7 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEnt
 
 
         whereColumns2.forEach { column ->
-            var value = MyUtil.getPrivatePropertyValue(entity, column.name)
+            var value = MyUtil.getValueByWbsPath(entity, column.name)
 
             where.and(WhereData("${column.fullName} = :${column.paramVarKeyName}", JsonMap(column.paramVarKeyName to value)))
         }
@@ -142,7 +142,7 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEnt
                         && setColumn_names.contains(column.name)
             }
             .forEach { key ->
-                var value = MyUtil.getPrivatePropertyValue(entity, key.name)
+                var value = MyUtil.getValueByWbsPath(entity, key.name)
                 if (value == null) {
                     setValues.put(key, null);
                     return@forEach

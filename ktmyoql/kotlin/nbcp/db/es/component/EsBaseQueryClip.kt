@@ -131,14 +131,14 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
 //                    lastKey = it.keys.last()
 //                }
 //
-//                ret.add(MyUtil.getPathValue(it, *lastKey.split(".").toTypedArray()).AsString() as R)
+//                ret.add(MyUtil.getValueByWbsPath(it, *lastKey.split(".").toTypedArray()).AsString() as R)
 //            } else
             if (clazz.IsSimpleType()) {
                 if (lastKey.isEmpty()) {
                     lastKey = it.keys.last()
                 }
 
-                var value = MyUtil.getPathValue(it, *lastKey.split(".").toTypedArray())
+                var value = MyUtil.getValueByWbsPath(it, *lastKey.split(".").toTypedArray())
                 if (value != null) {
                     ret.add(value.ConvertType(clazz) as R);
                 } else {

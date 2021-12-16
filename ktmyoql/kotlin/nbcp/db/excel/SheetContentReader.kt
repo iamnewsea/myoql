@@ -126,10 +126,10 @@ class SheetContentReader @JvmOverloads constructor(
         var handler = (xmlReader.contentHandler as XSSFSheetXMLHandler)
 
 
-        var formatIndex = MyUtil.getPrivatePropertyValue(handler, "formatIndex").AsInt()
-        var formatString = MyUtil.getPrivatePropertyValue(handler, "formatString").AsString()
-        var nextDataType = MyUtil.getPrivatePropertyValue(handler, "nextDataType").AsString()
-        var value = MyUtil.getPrivatePropertyValue(handler, "value").AsDouble()
+        var formatIndex = MyUtil.getValueByWbsPath(handler, "formatIndex").AsInt()
+        var formatString = MyUtil.getValueByWbsPath(handler, "formatString").AsString()
+        var nextDataType = MyUtil.getValueByWbsPath(handler, "nextDataType").AsString()
+        var value = MyUtil.getValueByWbsPath(handler, "value").AsDouble()
         //[$-F400]h:mm:ss\ AM/PM = 3:20:39 下午
 
         if (value >= 0 && nextDataType == "NUMBER" && org.apache.poi.ss.usermodel.DateUtil.isADateFormat(

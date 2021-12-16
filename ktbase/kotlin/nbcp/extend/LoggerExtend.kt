@@ -3,17 +3,9 @@
 
 package nbcp.comm
 
-import ch.qos.logback.classic.Level
-import nbcp.comm.*
 import nbcp.utils.*
 import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import org.springframework.boot.logging.LogLevel
-import java.time.*
-import java.time.temporal.Temporal
 import java.io.*
-import java.lang.RuntimeException
-import java.util.*
 
 
 /**
@@ -63,10 +55,10 @@ fun ch.qos.logback.classic.Logger.getLoggerFile(configName: String): String {
     if (appenderList.hasNext()) {
         var fileAppender =
             (appenderList.Filter { it.name == configName }.first() as ch.qos.logback.core.rolling.RollingFileAppender)
-        return (MyUtil.getPrivatePropertyValue(fileAppender, "currentlyActiveFile") as File).absolutePath
+        return (MyUtil.getValueByWbsPath(fileAppender, "currentlyActiveFile") as File).absolutePath
     }
 
-    var parent = MyUtil.getPrivatePropertyValue(this, "parent") as ch.qos.logback.classic.Logger?
+    var parent = MyUtil.getValueByWbsPath(this, "parent") as ch.qos.logback.classic.Logger?
     if (parent == null) return "";
     return parent.getLoggerFile(configName);
 }

@@ -21,7 +21,7 @@ fun <T : SqlColumnName> T.and(vararg value: String): T {
     if (value.any() == false) return this;
 
     var con = this.javaClass.getConstructor(String::class.java);
-    return con.newInstance(_join(MyUtil.getPrivatePropertyValue(this, "_pname").toString(), *value)) as T;
+    return con.newInstance(_join(MyUtil.getValueByWbsPath(this, "_pname").toString(), *value)) as T;
 }
 
 /**

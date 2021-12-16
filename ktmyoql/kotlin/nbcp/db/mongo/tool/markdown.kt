@@ -381,10 +381,10 @@ body table thead th{
                     s.add("* ${it.toString()}")
 
                     if (number_remark != null) {
-                        s.add("(" + MyUtil.getPrivatePropertyValue(it, number_remark.name).AsString() + ")");
+                        s.add("(" + MyUtil.getValueByWbsPath(it, number_remark.name).AsString() + ")");
                     }
                     if (string_remark != null) {
-                        s.add(": " + MyUtil.getPrivatePropertyValue(it, string_remark.name).AsString());
+                        s.add(": " + MyUtil.getValueByWbsPath(it, string_remark.name).AsString());
                     }
 
 
