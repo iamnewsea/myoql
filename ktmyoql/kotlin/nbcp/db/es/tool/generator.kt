@@ -74,7 +74,7 @@ ${packages.map { "import" + it }.joinToString(const.line_break)}
             writeToFile(
                 """
 @Component("es.${groupName}")
-@MetaDataGroup("${groupName}")
+@MetaDataGroup(DatabaseEnum.ElasticSearch, "${groupName}")
 class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
     override fun getEntities():Set<BaseMetaData> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
 """

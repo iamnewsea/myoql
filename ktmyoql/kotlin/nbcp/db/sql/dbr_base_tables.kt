@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 
 
 @Component("sql.SqlBase")
-@MetaDataGroup("SqlBase")
+@MetaDataGroup(DatabaseEnum.Sql, "SqlBase")
 class SqlBaseGroup : IDataGroup{
     override fun getEntities():Set<BaseMetaData> = setOf(s_annex,s_city,s_dustbin,s_log)
 

@@ -70,16 +70,20 @@ class MongoEntityCollector : BeanPostProcessor {
 //
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
         if (bean is IDataGroup) {
-            db_mongo.groups.add(bean)
+            var group = bean::class.java.getAnnotation(MetaDataGroup::class.java)
+            if (group.dbType == DatabaseEnum.Mongo) {
+                db_mongo.groups.add(bean)
 
-            bean.getEntities().forEach { moer ->
-                if (moer is MongoBaseMetaCollection<*>) {
-                    var entityClass = moer.entityClass
+                bean.getEntities()
+                    .forEach { moer ->
+                        if (moer is MongoBaseMetaCollection<*>) {
+                            var entityClass = moer.entityClass
 
-                    addDustbin(entityClass)
-                    addRef(entityClass)
-                    addLogHistory(entityClass);
-                }
+                            addDustbin(entityClass)
+                            addRef(entityClass)
+                            addLogHistory(entityClass);
+                        }
+                    }
             }
         }
 

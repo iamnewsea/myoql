@@ -14,7 +14,7 @@ import kotlin.reflect.KClass
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class MetaDataGroup(val value: String)
+annotation class MetaDataGroup(val dbType: DatabaseEnum, val value: String)
 
 /**
  * 标记实体删除之前是否保存到垃圾箱

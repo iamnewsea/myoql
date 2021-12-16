@@ -281,7 +281,7 @@ class BusinessLicenseDataMeta(private val _pname: String) : MongoColumnName() {
 
 
 @Component("mongo.MongoBase")
-@MetaDataGroup("MongoBase")
+@MetaDataGroup(DatabaseEnum.Mongo,"MongoBase")
 class MongoBaseGroup : IDataGroup {
     override fun getEntities(): Set<BaseMetaData> = setOf(basicUser, basicUserLoginInfo, flywayVersion, sysAnnex, sysCity, sysDictionary, sysDustbin, sysLastSortNumber, sysLog, sysOrganization)
 

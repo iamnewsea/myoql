@@ -49,15 +49,18 @@ class SqlEntityCollector : BeanPostProcessor {
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
 
         if (bean is IDataGroup) {
-            db.sql.groups.add(bean)
+            var group = bean::class.java.getAnnotation(MetaDataGroup::class.java)
+            if (group.dbType.isSqlType()) {
+                db.sql.groups.add(bean)
 
-            bean.getEntities().forEach { moer ->
-                if (moer is SqlBaseMetaTable<*>) {
-                    var entityClass = moer.tableClass
+                bean.getEntities().forEach { moer ->
+                    if (moer is SqlBaseMetaTable<*>) {
+                        var entityClass = moer.tableClass
 
-                    addDustbin(entityClass)
-                    addRef(entityClass)
+                        addDustbin(entityClass)
+                        addRef(entityClass)
 
+                    }
                 }
             }
         }

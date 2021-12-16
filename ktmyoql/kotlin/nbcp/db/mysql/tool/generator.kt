@@ -98,7 +98,7 @@ import org.springframework.stereotype.Component
             writeToFile(
                 """
 @Component("sql.${group.key}")
-@MetaDataGroup("${group.key}")
+@MetaDataGroup(DatabaseEnum.Sql, "${group.key}")
 class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
     override fun getEntities():Set<BaseMetaData> = setOf(${
                     groupEntitys.map { genVarName(it).GetSafeKotlinName() }.joinToString(",")

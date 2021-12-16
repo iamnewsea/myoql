@@ -62,15 +62,18 @@ class EsEntityCollector : BeanPostProcessor {
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
 
         if (bean is IDataGroup) {
-            db.es.groups.add(bean)
+            var group = bean::class.java.getAnnotation(MetaDataGroup::class.java)
+            if (group.dbType == DatabaseEnum.ElasticSearch) {
+                db.es.groups.add(bean)
 
-            bean.getEntities().forEach { moer ->
-                if (moer is EsBaseMetaEntity<*>) {
-                    var entityClass = moer.entityClass
+                bean.getEntities().forEach { moer ->
+                    if (moer is EsBaseMetaEntity<*>) {
+                        var entityClass = moer.entityClass
 
-                    addDustbin(entityClass)
-                    addRef(entityClass)
-                    addLogHistory(entityClass);
+                        addDustbin(entityClass)
+                        addRef(entityClass)
+                        addLogHistory(entityClass);
+                    }
                 }
             }
         }
