@@ -8,5 +8,3 @@ interface IDataGroup {
     fun getEntities(): Set<BaseMetaData>
 }
 
-interface IVarTable
-interface IVarDatabase
