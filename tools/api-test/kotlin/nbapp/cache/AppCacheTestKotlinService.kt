@@ -3,9 +3,7 @@ package nbapp.cache
 import nbcp.comm.JsonMap
 import nbcp.comm.ToJson
 import nbcp.db.cache.BrokeRedisCache
-import nbcp.db.cache.BrokeRedisCacheData
 import nbcp.db.cache.FromRedisCache
-import nbcp.db.cache.FromRedisCacheData
 import nbcp.db.db
 import nbcp.db.mongo.PipeLineEnum
 import nbcp.db.mongo.aggregate
@@ -61,13 +59,12 @@ class AppCacheTestKotlinService {
     fun code_cache_select(city: Int): MutableList<Document> {
         var sql = "select * from tab where city=:city";
         var map = JsonMap("city" to "010")
-        var list = db.usingRedisCache("tab2", arrayOf(), "city", city.toString(), sql + map.ToJson())
-            .getJson(Document::class.java) {
-                var list = Document(); // jdbcTemplate.queryList(sql,map)
-                list.put("name", "cache-test");
-                list.put("city", city.toString());
-                return@getJson list;
-            }
+        var list = db.getRedisCacheJson("tab2", Document::class.java, "city", city.toString(), sql + map.ToJson()) {
+            var list = Document(); // jdbcTemplate.queryList(sql,map)
+            list.put("name", "cache-test");
+            list.put("city", city.toString());
+            return@getRedisCacheJson list;
+        }
 
         if (list == null) {
             return mutableListOf()

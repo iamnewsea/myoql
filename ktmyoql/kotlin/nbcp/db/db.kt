@@ -164,23 +164,21 @@ object db {
 
 //-------------------
 
-    @JvmStatic
-    fun usingRedisCache(cacheForSelect: FromRedisCache, sql: String, variableMap: JsonMap): FromRedisCacheData {
-        val spelExecutor = CacheKeySpelExecutor(variableMap);
-        return FromRedisCacheData(
-            spelExecutor.getVariableValue(cacheForSelect.getTableName()),
-            cacheForSelect.getJoinTableNames(),
-            spelExecutor.getVariableValue(cacheForSelect.groupKey),
-            spelExecutor.getVariableValue(cacheForSelect.groupValue),
-            spelExecutor.getVariableValue(cacheForSelect.sql.AsString(sql)),
-            cacheForSelect.cacheSeconds
-        )
-    }
+//    @JvmStatic
+//    fun usingRedisCache(cacheForSelect: FromRedisCache, sql: String, variableMap: JsonMap): FromRedisCache {
+//        val spelExecutor = CacheKeySpelExecutor(variableMap);
+//        return FromRedisCache(
+//            cacheForSelect.tableClass,
+//            cacheForSelect.joinTableClasses,
+//            spelExecutor.getVariableValue(cacheForSelect.groupKey),
+//            spelExecutor.getVariableValue(cacheForSelect.groupValue),
+//            spelExecutor.getVariableValue(cacheForSelect.sql.AsString(sql)),
+//            cacheForSelect.cacheSeconds,
+//            spelExecutor.getVariableValue(cacheForSelect.getTableName()),
+//            cacheForSelect.getJoinTableNames()
+//        )
+//    }
 
-
-    /**
-     * 简单模式
-     */
     @JvmStatic
     fun <T> getRedisCacheJson(
         tableClass: Class<T>,
@@ -199,89 +197,97 @@ object db {
         sql: String,
         consumer: Supplier<T?>
     ): T? {
-        return usingRedisCache(tableClass.simpleName, arrayOf(), groupKey, groupValue, sql)
+        return getRedisCacheJson(tableClass.simpleName, tableClass, groupKey, groupValue, sql, consumer)
+    }
+
+    /**
+     * 简单模式
+     */
+    @JvmStatic
+    fun <T> getRedisCacheJson(
+        table: String,
+        cacheType: Class<T>,
+        /**
+         * 缓存表的隔离键, 如:"cityCode"
+         */
+        groupKey: String,
+        /**
+         * 缓存表的隔离值,如: "010"
+         */
+        groupValue: String,
+
+        /**
+         * 唯一值
+         */
+        sql: String,
+        consumer: Supplier<T?>
+    ): T? {
+        return FromRedisCache(table = table, groupKey = groupKey, groupValue = groupValue, sql = sql)
             .getJson(
-                tableClass,
+                cacheType,
+                consumer
+            )
+    }
+
+    @JvmStatic
+    fun <T> getRedisCacheList(
+        tableClass: Class<T>,
+        /**
+         * 缓存表的隔离键, 如:"cityCode"
+         */
+        groupKey: String,
+        /**
+         * 缓存表的隔离值,如: "010"
+         */
+        groupValue: String,
+
+        /**
+         * 唯一值
+         */
+        sql: String,
+        consumer: Supplier<List<T>>
+    ): List<T> {
+        return getRedisCacheList(tableClass.simpleName, tableClass, groupKey, groupValue, sql, consumer)
+    }
+
+    @JvmStatic
+    fun <T> getRedisCacheList(
+        table: String,
+        cacheType: Class<T>,
+        /**
+         * 缓存表的隔离键, 如:"cityCode"
+         */
+        groupKey: String,
+        /**
+         * 缓存表的隔离值,如: "010"
+         */
+        groupValue: String,
+
+        /**
+         * 唯一值
+         */
+        sql: String,
+        consumer: Supplier<List<T>>
+    ): List<T> {
+        return FromRedisCache(table = table, groupKey = groupKey, groupValue = groupValue, sql = sql)
+            .getList(
+                cacheType,
                 consumer
             )
     }
 
 
     @JvmStatic
-    fun usingRedisCache(
-        /**
-         * 如果 table 为空，则使用 table = tableClass.name
-         */
-        tableClass: KClass<*> = Boolean::class,
-        /**
-         * 缓存关联表
-         */
-        joinTables: Array<String> = arrayOf(),
-        /**
-         * 缓存表的隔离键, 如:"cityCode"
-         */
-        groupKey: String,
-        /**
-         * 缓存表的隔离值,如: "010"
-         */
-        groupValue: String,
-
-        /**
-         * 唯一值
-         */
-        sql: String,
-        cacheTime: Duration = Duration.ofHours(1),
-    ): FromRedisCacheData {
-        return usingRedisCache(tableClass.java.simpleName, joinTables, groupKey, groupValue, sql, cacheTime)
-    }
-
-    @JvmStatic
-    @JvmOverloads
-    fun usingRedisCache(
-        table: String = "",
-        /**
-         * 缓存关联表
-         */
-        joinTables: Array<String> = arrayOf(),
-        /**
-         * 缓存表的隔离键, 如:"cityCode"
-         */
-        groupKey: String,
-        /**
-         * 缓存表的隔离值,如: "010"
-         */
-        groupValue: String,
-
-        /**
-         * 唯一值
-         */
-        sql: String,
-        cacheTime: Duration = Duration.ofHours(1),
-    ): FromRedisCacheData {
-        return FromRedisCacheData(table, joinTables, groupKey, groupValue, sql, cacheTime.seconds.AsInt());
-    }
-
-
-    @JvmStatic
     fun brokeRedisCache(tableClass: KClass<*>, groupKey: String, groupValue: String) {
-        return BrokeRedisCacheData(tableClass.java.simpleName, groupKey, groupValue).brokeCache()
+        return BrokeRedisCache(
+            table = tableClass.java.simpleName,
+            groupKey = groupKey,
+            groupValue = groupValue
+        ).brokeCache()
     }
 
     @JvmStatic
     fun brokeRedisCache(table: String, groupKey: String, groupValue: String) {
-        return BrokeRedisCacheData(table, groupKey, groupValue).brokeCache()
-    }
-
-
-    @JvmStatic
-    fun brokeRedisCache(cacheForBroke: BrokeRedisCache, variableMap: JsonMap) {
-        val spelExecutor = CacheKeySpelExecutor(variableMap);
-        var broke = BrokeRedisCacheData(
-            spelExecutor.getVariableValue(cacheForBroke.getTableName()),
-            spelExecutor.getVariableValue(cacheForBroke.groupKey),
-            spelExecutor.getVariableValue(cacheForBroke.groupValue)
-        );
-
-        broke.brokeCache();
+        return BrokeRedisCache(table = table, groupKey = groupKey, groupValue = groupValue).brokeCache()
     }
 }

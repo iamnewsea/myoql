@@ -57,16 +57,16 @@ open class RedisCacheAopService {
         //如果有 HttpRequest,则添加Url
         var hasHttpRequest = false;
         val variableMap = JsonMap(
-                method.parameters
-                        .filter {
-                            if (it.type.AnySuperClass { it.name.startsWith("javax.servlet.") }) {
-                                hasHttpRequest = true;
-                                return@filter false;
-                            }
+            method.parameters
+                .filter {
+                    if (it.type.AnySuperClass { it.name.startsWith("javax.servlet.") }) {
+                        hasHttpRequest = true;
+                        return@filter false;
+                    }
 
-                            return@filter true;
-                        }
-                        .mapIndexed { index, it -> it.name to args.get(index) }
+                    return@filter true;
+                }
+                .mapIndexed { index, it -> it.name to args.get(index) }
         );
 
         var ext = "";
@@ -89,11 +89,11 @@ open class RedisCacheAopService {
             }
         }
 
-        val cacheData = db.usingRedisCache(cache, ext, variableMap);
-
-        return cacheData.getJson(signature.returnType, {
-            return@getJson joinPoint.proceed(args)
-        });
+        return cache
+            .resolveWithVariable(variableMap, ext)
+            .getJson(signature.returnType, {
+                return@getJson joinPoint.proceed(args)
+            });
     }
 
 
@@ -122,17 +122,17 @@ open class RedisCacheAopService {
 
     private fun brokeCache(method: Method, args: Array<Any>, cache: BrokeRedisCache) {
         val variableMap = JsonMap(
-                method.parameters
-                        .filter {
-                            if (it.type.AnySuperClass { it.name == "javax.servlet.ServletRequest" }) {
-                                return@filter false;
-                            }
+            method.parameters
+                .filter {
+                    if (it.type.AnySuperClass { it.name == "javax.servlet.ServletRequest" }) {
+                        return@filter false;
+                    }
 
-                            return@filter true;
-                        }
-                        .mapIndexed { index, it -> it.name to args.get(index) }
+                    return@filter true;
+                }
+                .mapIndexed { index, it -> it.name to args.get(index) }
         );
 
-        db.brokeRedisCache(cache, variableMap);
+        cache.resolveWithVariable(variableMap).brokeCache();
     }
 }

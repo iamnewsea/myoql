@@ -4,9 +4,7 @@ import org.springframework.stereotype.Service;
 import nbcp.comm.*;
 import nbcp.db.*;
 import nbcp.db.cache.BrokeRedisCache;
-import nbcp.db.cache.BrokeRedisCacheData;
 import nbcp.db.cache.FromRedisCache;
-import nbcp.db.cache.FromRedisCacheData;
 import nbcp.db.mongo.*;
 import nbcp.db.mongo.entity.*;
 import org.bson.Document;
@@ -66,17 +64,17 @@ public class TestJavaService {
      * @return
      */
     public List<Document> queryByCityOtherCondition(Integer city) {
-        Document d2 = db.usingRedisCache("tab1", new String[]{}, "city", city.toString(), "code_cache_select" + city)
-                .getJson(Document.class, () -> {
 
-                    System.out.println("从数据库查询 city: " + city);
-                    //随便给个查询
-                    Document d1 = new Document();
-                    d1.put("name", "cache-方法");
-                    d1.put("city", city.toString());
+        Document d2 = db.getRedisCacheJson("tab1", Document.class, "city", city.toString(), "code_cache_select" + city, () -> {
 
-                    return d1;
-                });
+            System.out.println("从数据库查询 city: " + city);
+            //随便给个查询
+            Document d1 = new Document();
+            d1.put("name", "cache-方法");
+            d1.put("city", city.toString());
+
+            return d1;
+        });
 
         return new LinkedList<Document>() {{
             add(d2);
@@ -101,7 +99,8 @@ public class TestJavaService {
      * @param city
      */
     public void updateAllCity(Integer city) {
-        new BrokeRedisCacheData("tab1", "city", city.toString()).brokeCache();
+        db.brokeRedisCache("tab1", "city", city.toString());
+        ;
     }
 }
 

@@ -3,7 +3,6 @@ package nbcp.db.mybatis
 import com.baomidou.mybatisplus.core.conditions.ISqlSegment
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
 import nbcp.comm.*
-import nbcp.db.cache.BrokeRedisCacheData
 import nbcp.db.db
 import nbcp.db.cache.*
 import nbcp.utils.MyUtil
@@ -48,48 +47,30 @@ class MyBatisRedisCachePointcutAdvisor {
                 }
             }
 
+            var fromRedisCache = FromRedisCache(
+                table = tableName,
+                sql = getMethodFullName(invocation),
+                cacheSeconds = cache.cacheSeconds
+            );
+
 
             if (method.name.IsIn("selectBatchIds", "selectByMap", "selectList")
             ) {
-                return db.usingRedisCache(
-                    tableName,
-                    arrayOf(),
-                    "",
-                    "",
-                    getMethodFullName(invocation),
-                    cacheTime = Duration.ofSeconds(cache.cacheSeconds.toLong())
-                )
-                    .getList(cache.value.java) {
-                        return@getList invocation.proceed() as List<*>
-                    }
+                return fromRedisCache.getList(cache.value.java) {
+                    return@getList invocation.proceed() as List<Any>
+                }
             }
 
             if (method.name == "selectCount") {
-                return db.usingRedisCache(
-                    tableName,
-                    arrayOf(),
-                    "",
-                    "",
-                    getMethodFullName(invocation),
-                    cacheTime = Duration.ofSeconds(cache.cacheSeconds.toLong())
-                )
-                    .getJson(Long::class.java) {
-                        return@getJson invocation.proceed()
-                    }
+                return fromRedisCache.getJson(Long::class.java) {
+                    return@getJson invocation.proceed()
+                }
             }
 
             if (method.name == "selectOne") {
-                return db.usingRedisCache(
-                    tableName,
-                    arrayOf(),
-                    "",
-                    "",
-                    getMethodFullName(invocation),
-                    cacheTime = Duration.ofSeconds(cache.cacheSeconds.toLong())
-                )
-                    .getJson(cache.value.java) {
-                        return@getJson invocation.proceed()
-                    }
+                return fromRedisCache.getJson(cache.value.java) {
+                    return@getJson invocation.proceed()
+                }
             }
 
 
@@ -98,7 +79,7 @@ class MyBatisRedisCachePointcutAdvisor {
 
             //int insert(T entity);
             if (method.name == "insert" || method.name == "delete" || method.name == "update") {
-                BrokeRedisCacheData(tableName, "", "").brokeCache()
+                BrokeRedisCache(table = tableName).brokeCache()
                 return ret;
             }
 
@@ -129,17 +110,16 @@ class MyBatisRedisCachePointcutAdvisor {
         private fun selectById(
             invocation: MethodInvocation,
             cache: CacheForMyBatisPlusBaseMapper
-        ): FromRedisCacheData? {
+        ): FromRedisCache? {
             val tableName = cache.value.simpleName!!;
             val idValue = invocation.arguments[0].AsString();
             if (idValue.isEmpty()) return null;
 
-            return FromRedisCacheData(
-                tableName,
-                arrayOf(),
-                "id",
-                idValue,
-                getMethodFullName(invocation),
+            return FromRedisCache(
+                table = tableName,
+                groupKey = "id",
+                groupValue = idValue,
+                sql = getMethodFullName(invocation),
                 cacheSeconds = cache.cacheSeconds,
             )
         }
@@ -163,7 +143,7 @@ class MyBatisRedisCachePointcutAdvisor {
 
 
             deleteValue.forEach { idValue ->
-                BrokeRedisCacheData(tableName, "id", idValue.toString()).brokeCache()
+                BrokeRedisCache(table = tableName, groupKey = "id", groupValue = idValue.toString()).brokeCache()
             }
         }
 
@@ -176,14 +156,18 @@ class MyBatisRedisCachePointcutAdvisor {
             if (cache.groupKey.HasValue) {
                 val cacheKeyValue = deleteValue.get(cache.groupKey);
                 if (cacheKeyValue != null) {
-                    BrokeRedisCacheData(tableName, cache.groupKey, cacheKeyValue.toString()).brokeCache()
+                    BrokeRedisCache(
+                        table = tableName,
+                        groupKey = cache.groupKey,
+                        groupValue = cacheKeyValue.toString()
+                    ).brokeCache()
                     return;
                 }
             }
 
             val idValue = (deleteValue).get("id");
             if (idValue != null) {
-                BrokeRedisCacheData(tableName, "id", idValue.toString()).brokeCache()
+                BrokeRedisCache(table = tableName, groupKey = "id", groupValue = idValue.toString()).brokeCache()
             }
         }
 
@@ -203,7 +187,7 @@ class MyBatisRedisCachePointcutAdvisor {
 
 
             if (idValue.HasValue) {
-                BrokeRedisCacheData(tableName, "id", idValue).brokeCache()
+                BrokeRedisCache(table = tableName, groupKey = "id", groupValue = idValue).brokeCache()
             }
         }
     }
