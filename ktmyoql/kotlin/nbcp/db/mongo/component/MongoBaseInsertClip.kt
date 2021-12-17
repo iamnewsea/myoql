@@ -25,7 +25,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName) {
     }
 
 
-    fun addEntities(entities: List<out Any>) {
+    fun addEntities(entities: List<Any>) {
         this.entities.addAll(entities)
     }
 
