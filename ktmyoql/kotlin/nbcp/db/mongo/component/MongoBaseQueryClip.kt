@@ -13,9 +13,9 @@ import java.time.LocalDateTime
 
 open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMongoWhereable {
     var whereData = mutableListOf<Criteria>()
-    protected var skip: Int = 0;
-    protected var take: Int = -1;
-    protected var sort: Document = Document()
+    var skip: Int = 0;
+    var take: Int = -1;
+    var sort: Document = Document()
 
     //    private var whereJs: String = "";
     protected var selectColumns = mutableSetOf<String>();

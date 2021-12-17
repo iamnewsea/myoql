@@ -13,7 +13,7 @@ package nbcp.comm
  *
  *         }
  */
-class BatchReader<T>(private val nextFunc: () -> T?) : Iterator<T> {
+class BatchReader<T> private constructor(private val nextFunc: () -> T?) : Iterator<T> {
     companion object {
         @JvmStatic
         fun <T> init(batchSize: Int = 20, producer: (Int, Int) -> List<T>): BatchReader<T> {
