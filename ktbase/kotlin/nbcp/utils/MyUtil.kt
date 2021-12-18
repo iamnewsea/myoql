@@ -215,6 +215,9 @@ object MyUtil {
             .Unwind()
             .map {
                 var index = it.indexOf('[')
+                if (index <= 0) {
+                    return@map arrayOf(it)
+                }
                 return@map arrayOf(it.Slice(0, index), it.Slice(index))
             }
             .Unwind()

@@ -54,9 +54,9 @@ TomcatWebServer:8002 -- nacos: saas-dev.nancal.com:8848(yuxh) -- nacos-config:no
     @Test
     fun setValue() {
         val json = JsonMap()
-        MyUtil.setValueByWbsPath(json, "a[3]", ignoreCase = true, value = 1)
+        MyUtil.setValueByWbsPath(json, "a", ignoreCase = true, value = 1)
         println(json.ToJson())
-        MyUtil.setValueByWbsPath(json, "b[0].c", ignoreCase = true, value = 2)
+        MyUtil.setValueByWbsPath(json, "b[0]", ignoreCase = true, value = 2)
         println(json.ToJson())
         MyUtil.setValueByWbsPath(json, "d.e[3].id", ignoreCase = true, value = 3)
         println(json.ToJson())
