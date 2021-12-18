@@ -7,6 +7,10 @@ import nbcp.db.mongo.Date2LocalDateTimeConverter
 import nbcp.db.mongo.service.UploadFileMongoService
 import nbcp.utils.JsUtil
 import nbcp.utils.SpringUtil
+import org.bson.UuidRepresentation
+import org.bson.codecs.UuidCodecProvider
+import org.bson.codecs.configuration.CodecRegistries
+import org.bson.codecs.configuration.CodecRegistry
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -37,6 +41,7 @@ class MyOqlMongoBeanConfig : BeanPostProcessor {
             converter.typeMapper = DefaultMongoTypeMapper(null)
             (converter.conversionService as GenericConversionService).addConverter(Date2LocalDateTimeConverter())
 
+            bean.db.withCodecRegistry(getCodecRegistr(bean))
         } else if (bean is MongoProperties) {
             //修改默认连接池参数
             if (bean.uri.HasValue) {
@@ -55,16 +60,12 @@ class MyOqlMongoBeanConfig : BeanPostProcessor {
         return ret;
     }
 
-    /**
-     * 系统预热之后，最后执行事件。
-     */
-    @EventListener
-    fun onApplicationReady(event: ApplicationReadyEvent) {
-        if (SpringUtil.containsBean(MongoTemplate::class.java)) {
-            logger.info("mongo groups:" + db.mongo.groups.map { it::class.java.simpleName }
-                .joinToString())
-            logger.info("sql groups:" + db.sql.groups.map { it::class.java.simpleName }
-                .joinToString())
-        }
+    private fun getCodecRegistr(bean: MongoTemplate): CodecRegistry {
+        return CodecRegistries.fromRegistries(
+            // save uuids as UUID, instead of LUUID
+            CodecRegistries.fromProviders(UuidCodecProvider(UuidRepresentation.STANDARD)),
+            bean.db.codecRegistry
+        )
     }
+
 }
