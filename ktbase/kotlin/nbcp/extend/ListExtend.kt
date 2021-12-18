@@ -43,6 +43,9 @@ inline fun <reified T> Collection<Array<T>>.Unwind(): Array<T> {
  * [startIndex,endIndex)
  * @param startIndex 包含startIndex
  * @param endIndex 不包含endIndex
+ *
+ *  [].Slice(0,-1) = 不要最后一个
+ *  [].Slice(-1)   = 只取最后一个
  */
 @JvmOverloads
 fun <T> Array<out T>.Slice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): List<T> {

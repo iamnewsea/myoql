@@ -1,7 +1,6 @@
 package nbcp.utils
 
 import nbcp.comm.*
-import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.time.*
 import java.util.*
@@ -39,32 +38,46 @@ object MyUtil {
      * 通过 path 获取 value,每级返回的值必须是 Map<String,V> 否则返回 null
      * @param keys: 可以传多个key，也可以使用 . 分隔；如果查询数组，使用 products[],products[0], products.[] 或 products.[0] 或 "products","[]"
      */
-    fun getValueByWbsPath(data: Any, vararg keys: String, ignoreCase: Boolean = false): Any? {
+    fun getValueByWbsPath(
+        data: Any,
+        vararg keys: String,
+        ignoreCase: Boolean = false,
+        fillMap: Boolean = false,
+        fillLastArray: Boolean = false
+    ): Any? {
         if (keys.any() == false) return null;
+
+        var unwindKeys = keys.map { it.split('.').toTypedArray() }.Unwind().filter { it.HasValue }.toTypedArray();
+
+        if (unwindKeys.size != keys.size) {
+            return getValueByWbsPath(
+                data,
+                *unwindKeys,
+                ignoreCase = ignoreCase,
+                fillMap = fillMap,
+                fillLastArray = fillLastArray
+            );
+        }
+
         var key = keys.first();
         var left_keys = keys.Slice(1);
 
         if (key.isEmpty()) {
             return null;
         }
-        var keys2 = key.split(".");
-        if (keys2.size > 1) {
-            var v = getValueByWbsPath(data, *keys2.toTypedArray(), ignoreCase = ignoreCase);
-            if (v == null) {
-                return null;
-            }
 
-            if (left_keys.any() == false) {
-                return v;
-            }
-
-            return getValueByWbsPath(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase)
-        }
-
+        var isLastKey = left_keys.any() == false;
 
         if (key.endsWith("]")) {
             if (key != "[]" && key.endsWith("[]")) {
-                return getValueByWbsPath(data, key.Slice(0, -2), "[]", ignoreCase = ignoreCase);
+                return getValueByWbsPath(
+                    data,
+                    key.Slice(0, -2),
+                    "[]",
+                    ignoreCase = ignoreCase,
+                    fillMap = fillMap,
+                    fillLastArray = fillLastArray
+                );
             }
             var start_index = key.lastIndexOf('[');
             if (start_index > 0) {
@@ -72,28 +85,45 @@ object MyUtil {
                     data,
                     key.slice(0 until start_index),
                     key.Slice(start_index),
-                    ignoreCase = ignoreCase
+                    ignoreCase = ignoreCase,
+                    fillMap = fillMap,
+                    fillLastArray = fillLastArray
                 )
             }
         }
 
         if (data is Map<*, *>) {
-            var v = data.get(key)
-            if (v == null) {
-                var vbKeys = data.keys.filter { it.toString().compareTo(key, ignoreCase) == 0 };
-                if (vbKeys.size != 1) {
+            var vbKeys = data.keys.filter { it.toString().compareTo(key, ignoreCase) == 0 }
+
+            if (vbKeys.size > 1) {
+                throw RuntimeException("找到多个 key: ${key}")
+            } else if (vbKeys.size == 0) {
+                if (isLastKey && fillLastArray) {
+                    (data as MutableMap<String, Any?>).put(key, mutableListOf<Any?>());
+                } else if (fillMap) {
+                    if (left_keys.any() && left_keys.first().startsWith("[")) {
+                        (data as MutableMap<String, Any?>).put(key, mutableListOf<Any?>());
+                    } else {
+                        (data as MutableMap<String, Any?>).put(key, JsonMap());
+                    }
+                } else {
                     return null;
                 }
-
-                v = data.get(vbKeys.first())
-
-                if (v == null) {
-                    return null;
-                }
+            } else {
+                key = vbKeys.first().toString();
             }
+
+            var v = data.get(key)!!
+
             if (left_keys.any() == false) return v;
 
-            return getValueByWbsPath(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase)
+            return getValueByWbsPath(
+                v,
+                *left_keys.toTypedArray(),
+                ignoreCase = ignoreCase,
+                fillMap = fillMap,
+                fillLastArray = fillLastArray
+            )
         } else if (key == "[]") {
             var data2: List<*>
             if (data is Array<*>) {
@@ -107,7 +137,15 @@ object MyUtil {
             if (left_keys.any() == false) return data2;
 
             return data2
-                .map { getValueByWbsPath(it!!, *left_keys.toTypedArray(), ignoreCase = ignoreCase) }
+                .map {
+                    getValueByWbsPath(
+                        it!!,
+                        *left_keys.toTypedArray(),
+                        ignoreCase = ignoreCase,
+                        fillMap = fillMap,
+                        fillLastArray = fillLastArray
+                    )
+                }
                 .filter { it != null }
 
         } else if (key.startsWith("[") && key.endsWith("]")) {
@@ -120,9 +158,17 @@ object MyUtil {
             if (data is Array<*>) {
                 data2 = data.get(index)
             } else if (data is Collection<*>) {
+                //数组的数组很麻烦
+
+                if (fillMap) {
+                    for (i in data.size..index) {
+                        (data as MutableList<Any?>).add(JsonMap())
+                    }
+                }
+
                 data2 = data.elementAt(index)
             } else {
-                throw RuntimeException("数据类型不匹配,${keys} 中 ${key} 需要是数组类型")
+                throw RuntimeException("需要数组类型,但是实际类型是${data::class.java.name}, keys:${keys.joinToString(",")},key: ${key}")
             }
 
             if (data2 == null) {
@@ -131,7 +177,13 @@ object MyUtil {
 
             if (left_keys.any() == false) return data2;
 
-            return getValueByWbsPath(data2, *left_keys.toTypedArray(), ignoreCase = ignoreCase)
+            return getValueByWbsPath(
+                data2,
+                *left_keys.toTypedArray(),
+                ignoreCase = ignoreCase,
+                fillMap = fillMap,
+                fillLastArray = fillLastArray
+            )
         }
 
         //如果是对象
@@ -142,7 +194,13 @@ object MyUtil {
             return v;
         }
 
-        return getValueByWbsPath(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase)
+        return getValueByWbsPath(
+            v,
+            *left_keys.toTypedArray(),
+            ignoreCase = ignoreCase,
+            fillMap = fillMap,
+            fillLastArray = fillLastArray
+        )
     }
 
 
@@ -151,109 +209,93 @@ object MyUtil {
      */
     fun setValueByWbsPath(data: Any, vararg keys: String, ignoreCase: Boolean = false, value: Any?): Boolean {
         if (keys.any() == false) return false;
-        var key = keys.first();
-        var left_keys = keys.Slice(1);
 
-        if (key.isEmpty()) {
+        var unwindKeys = keys
+            .map { it.split('.').toTypedArray() }
+            .Unwind()
+            .map {
+                var index = it.indexOf('[')
+                return@map arrayOf(it.Slice(0, index), it.Slice(index))
+            }
+            .Unwind()
+            .filter { it.HasValue }
+            .toTypedArray();
+
+        if (unwindKeys.size != keys.size) {
+            return setValueByWbsPath(data, *unwindKeys, ignoreCase = ignoreCase, value = value);
+        }
+
+        var beforeKeys = keys.Slice(0, -1);
+        var lastKey = keys.last()
+
+        var objValue: Any? = data;
+
+        if (beforeKeys.any()) {
+            var fillLastArray = lastKey.startsWith("[") && lastKey.endsWith("]")
+            objValue = getValueByWbsPath(
+                data,
+                *beforeKeys.toTypedArray(),
+                ignoreCase = ignoreCase,
+                fillMap = true,
+                fillLastArray = fillLastArray
+            );
+        }
+
+        if (objValue == null) {
             return false;
         }
-        var keys2 = key.split(".");
-        if (keys2.size > 1) {
-            var v = setValueByWbsPath(data, *keys2.toTypedArray(), ignoreCase = ignoreCase, value = value);
-            if (v == false) {
-                return false;
+
+        if (objValue is Map<*, *>) {
+            if (objValue is MutableMap<*, *> == false) {
+                throw RuntimeException("不是可修改的map")
             }
 
-            if (left_keys.any() == false) {
-                return v;
+            var vbKeys = objValue.keys.filter { it.toString().compareTo(lastKey, ignoreCase) == 0 }
+
+            if (vbKeys.size > 1) {
+                throw RuntimeException("找到多个 key: ${lastKey}")
+            } else if (vbKeys.any()) {
+                lastKey = vbKeys.first().toString();
             }
 
-            return setValueByWbsPath(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value)
-        }
-
-
-        if (key.endsWith("]")) {
-            if (key != "[]" && key.endsWith("[]")) {
-                return setValueByWbsPath(data, key.Slice(0, -2), "[]", ignoreCase = ignoreCase, value = value);
+            if (value == null) {
+                (objValue as MutableMap<String, Any?>).remove(lastKey);
+            } else {
+                (objValue as MutableMap<String, Any?>).put(lastKey, value);
             }
-            var start_index = key.lastIndexOf('[');
-            if (start_index > 0) {
-                return setValueByWbsPath(
-                    data,
-                    key.slice(0 until start_index),
-                    key.Slice(start_index),
-                    ignoreCase = ignoreCase,
-                    value = value
-                )
-            }
-        }
-
-        if (data is Map<*, *>) {
-            var v = data.get(key)
-            if (v == null) {
-                var vbKeys = data.keys.filter { it.toString().compareTo(key, ignoreCase) == 0 };
-                if (vbKeys.size != 1) {
-                    return false
+            return true;
+        } else if (objValue is Array<*>) {
+            if (lastKey.startsWith("[") && lastKey.endsWith("]")) {
+                var index = lastKey.substring(1, lastKey.length - 1).AsInt(-1)
+                if (index < 0) {
+                    throw RuntimeException("索引值错误:${lastKey},${index}")
                 }
 
-                v = data.get(vbKeys.first())
+                (data as Array<Any?>).set(index, value);
+                return true;
+            }
 
-                if (v == null) {
-                    return false;
+            return false;
+        } else if (objValue is Collection<*>) {
+            if (lastKey.startsWith("[") && lastKey.endsWith("]")) {
+                var index = lastKey.substring(1, lastKey.length - 1).AsInt(-1)
+                if (index < 0) {
+                    throw RuntimeException("索引值错误:${lastKey},${index}")
                 }
-            }
-            if (left_keys.any() == false) return false;
 
-            return setValueByWbsPath(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value)
-        } else if (key == "[]") {
-            var data2: List<*>
-            if (data is Array<*>) {
-                data2 = data.filter { it != null }
-            } else if (data is Collection<*>) {
-                data2 = data.filter { it != null }
-            } else {
-                throw RuntimeException("数据类型不匹配,${keys} 中 ${key} 需要是数组类型")
+                for (i in objValue.size..index) {
+                    (objValue as MutableList<Any?>).add(JsonMap())
+                }
+
+                (objValue as MutableList<Any?>).set(index, value);
+                return true;
             }
 
-            if (left_keys.any() == false) return false;
-
-            return data2
-                .map { setValueByWbsPath(it!!, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value) }
-                .any { it }
-
-        } else if (key.startsWith("[") && key.endsWith("]")) {
-            var index = key.substring(1, key.length - 1).AsInt(-1)
-            if (index < 0) {
-                throw RuntimeException("索引值错误:${key}")
-            }
-
-            var data2: Any?
-            if (data is Array<*>) {
-                data2 = data.get(index)
-            } else if (data is Collection<*>) {
-                data2 = data.elementAt(index)
-            } else {
-                throw RuntimeException("数据类型不匹配,${keys} 中 ${key} 需要是数组类型")
-            }
-
-            if (data2 == null) {
-                return false;
-            }
-
-            if (left_keys.any() == false) return false;
-
-            return setValueByWbsPath(data2, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value)
+            return false;
         }
 
         //如果是对象
-
-        var v = setPrivatePropertyValue(data, key, ignoreCase = ignoreCase, value = value)
-        if (v == false) return false;
-        if (left_keys.any() == false) {
-            return v;
-        }
-
-        return setValueByWbsPath(v, *left_keys.toTypedArray(), ignoreCase = ignoreCase, value = value)
+        return setPrivatePropertyValue(objValue, lastKey, ignoreCase = ignoreCase, value = value)
     }
 
     /**

@@ -3,6 +3,7 @@ package nbcp.utils
 import nbcp.TestBase
 import nbcp.comm.JsonMap
 import nbcp.comm.StringMap
+import nbcp.comm.ToJson
 import nbcp.db.IdName
 import org.junit.jupiter.api.Test
 
@@ -40,11 +41,24 @@ TomcatWebServer:8002 -- nacos: saas-dev.nancal.com:8848(yuxh) -- nacos-config:no
     }
 
     @Test
-    fun testformat2() {
+    fun testGetValue() {
         val json = JsonMap("a" to 1, "b" to JsonMap("c" to 2), "d" to IdName("id1", "name1"))
 
         println(MyUtil.getValueByWbsPath(json, "a"))
         println(MyUtil.getValueByWbsPath(json, "b.c"))
         println(MyUtil.getValueByWbsPath(json, "d.id"))
+        println(MyUtil.getValueByWbsPath(json, "e[0]"))
+        println(json.ToJson())
+    }
+
+    @Test
+    fun setValue() {
+        val json = JsonMap()
+        MyUtil.setValueByWbsPath(json, "a[3]", ignoreCase = true, value = 1)
+        println(json.ToJson())
+        MyUtil.setValueByWbsPath(json, "b[0].c", ignoreCase = true, value = 2)
+        println(json.ToJson())
+        MyUtil.setValueByWbsPath(json, "d.e[3].id", ignoreCase = true, value = 3)
+        println(json.ToJson())
     }
 }
