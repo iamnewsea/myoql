@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.transaction.annotation.Transactional
 import java.lang.RuntimeException
+import java.util.*
 
 class TestKtExt_Mongo : TestBase() {
     @BeforeEach
@@ -25,9 +26,12 @@ class TestKtExt_Mongo : TestBase() {
 
     @Test
     fun test_Transactional() {
-
-//        db.mor_base.basicUser.doInsert(BasicUser("udi"));
-        db.mor_base.sysLog.doInsert(SysLog("test", "user"))
+        var con = db.mongo.getMongoTemplateByUri("mongodb://dev:123@mongo:27017/cms")!!
+        usingScope(MongoTemplateScope(con)) {
+            var doc = JsonMap();
+            doc.put("abc", UUID.randomUUID())
+            db.mor_base.sysLog.doInsert(doc)
+        }
     }
 
     @Test

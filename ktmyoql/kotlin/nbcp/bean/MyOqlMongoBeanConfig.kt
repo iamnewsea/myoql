@@ -1,5 +1,8 @@
 package nbcp.bean
 
+import com.mongodb.ConnectionString
+import com.mongodb.MongoClientSettings
+import com.mongodb.client.MongoClient
 import nbcp.comm.HasValue
 import nbcp.comm.getStringValue
 import nbcp.db.db
@@ -40,18 +43,20 @@ class MyOqlMongoBeanConfig : BeanPostProcessor {
             var converter = bean.converter as MappingMongoConverter;
             converter.typeMapper = DefaultMongoTypeMapper(null)
             (converter.conversionService as GenericConversionService).addConverter(Date2LocalDateTimeConverter())
-
-            bean.db.withCodecRegistry(getCodecRegistr(bean))
+        } else if (bean is MongoClient) {
+        } else if (bean is MongoClientSettings) {
         } else if (bean is MongoProperties) {
             //修改默认连接池参数
             if (bean.uri.HasValue) {
                 var urlJson = JsUtil.parseUrlQueryJson(bean.uri);
                 var maxIdleTimeMS = urlJson.queryJson.getStringValue("maxIdleTimeMS", ignoreCase = true)
+                urlJson.queryJson.put("uuidRepresentation", "STANDARD")
                 if (maxIdleTimeMS.isNullOrEmpty()) {
                     urlJson.queryJson.put("maxIdleTimeMS", "30000")
                     bean.uri = urlJson.toUrl();
                 }
             }
+            bean.uuidRepresentation = UuidRepresentation.STANDARD
         } else if (bean is MongoDatabaseFactory) {
             //系统默认会有一个 MongoTransactionManager。 不必自定义。如果自定义，必须是Primary
             //SpringUtil.registerBeanDefinition("mongoTransactionManager",MongoTransactionManager(bean)){ it.setPrimary(true)}
@@ -59,13 +64,4 @@ class MyOqlMongoBeanConfig : BeanPostProcessor {
 
         return ret;
     }
-
-    private fun getCodecRegistr(bean: MongoTemplate): CodecRegistry {
-        return CodecRegistries.fromRegistries(
-            // save uuids as UUID, instead of LUUID
-            CodecRegistries.fromProviders(UuidCodecProvider(UuidRepresentation.STANDARD)),
-            bean.db.codecRegistry
-        )
-    }
-
 }

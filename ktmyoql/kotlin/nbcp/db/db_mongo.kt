@@ -1,10 +1,15 @@
 package nbcp.db
 
 
+import com.mongodb.client.MongoDatabase
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.mongo.*
 import org.bson.Document
+import org.bson.UuidRepresentation
+import org.bson.codecs.UuidCodecProvider
+import org.bson.codecs.configuration.CodecRegistries
+import org.bson.codecs.configuration.CodecRegistry
 import org.bson.types.ObjectId
 import org.springframework.core.convert.support.GenericConversionService
 import org.springframework.data.mongodb.core.MongoTemplate
@@ -66,14 +71,25 @@ object db_mongo {
     fun getMongoTemplateByUri(uri: String): MongoTemplate? {
         if (uri.isEmpty()) return null;
 
+        /**
+         * https://docs.mongodb.com/manual/reference/connection-string/#std-label-connections-connection-options
+         */
+        var uri = uri;
+        var urlJson = JsUtil.parseUrlQueryJson(uri);
+        var maxIdleTimeMS = urlJson.queryJson.getStringValue("maxIdleTimeMS", ignoreCase = true)
+        urlJson.queryJson.put("uuidRepresentation", "STANDARD")
+        if (maxIdleTimeMS.isNullOrEmpty()) {
+            urlJson.queryJson.put("maxIdleTimeMS", "30000")
+            uri = urlJson.toUrl();
+        }
+
         var ret = mongo_template_map.get(uri);
         if (ret != null) {
             return ret;
         }
         val dbFactory = SimpleMongoClientDatabaseFactory(uri);
-
         val converter =
-            MappingMongoConverter(DefaultDbRefResolver(dbFactory), SpringUtil.getBean<MongoMappingContext>())
+                MappingMongoConverter(DefaultDbRefResolver(dbFactory), SpringUtil.getBean<MongoMappingContext>())
         converter.setTypeMapper(DefaultMongoTypeMapper(null));
         (converter.conversionService as GenericConversionService).addConverter(Date2LocalDateTimeConverter())
 
@@ -81,20 +97,15 @@ object db_mongo {
         mongo_template_map.put(uri, ret);
         return ret;
     }
-    //----------------mongo expression-------------
-
-//    fun times(rawValue: String):PipeLineExpression{
-//        return db.mongo.op(PipeLineOperatorEnum.multiply , arrayOf())
-//    }
-
+ 
     fun cond(ifExpression: Criteria, trueExpression: String, falseExpression: String): MongoExpression {
         return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
 
     fun cond(
-        ifExpression: Criteria,
-        trueExpression: MongoExpression,
-        falseExpression: MongoExpression
+            ifExpression: Criteria,
+            trueExpression: MongoExpression,
+            falseExpression: MongoExpression
     ): MongoExpression {
         return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
@@ -108,9 +119,9 @@ object db_mongo {
     }
 
     fun cond(
-        ifExpression: MongoExpression,
-        trueExpression: MongoExpression,
-        falseExpression: MongoExpression
+            ifExpression: MongoExpression,
+            trueExpression: MongoExpression,
+            falseExpression: MongoExpression
     ): MongoExpression {
         return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression, trueExpression, falseExpression))
     }
@@ -277,10 +288,10 @@ db.getCollection("adminRole").aggregate(
      * 查询到对象后，转实体。
      */
     fun <T> proc_mongo_doc_to_entity(
-        it: Document,
-        clazz: Class<T>,
-        lastKey: String,
-        mapFunc: ((Document) -> Unit)? = null
+            it: Document,
+            clazz: Class<T>,
+            lastKey: String,
+            mapFunc: ((Document) -> Unit)? = null
     ): T? {
         MongoDocument2EntityUtil.procDocumentJson(it);
         var lastKey = lastKey;
@@ -307,7 +318,6 @@ db.getCollection("adminRole").aggregate(
             }
         }
     }
-
 
 
     /**
@@ -337,9 +347,6 @@ db.getCollection("adminRole").aggregate(
     }
 
 
-
-
-
     /**
      * 动态实体
      */
@@ -350,5 +357,5 @@ db.getCollection("adminRole").aggregate(
 
 class MongoDynamicEntity : JsonMap() {}
 class MongoDynamicMetaEntity(collectionName: String, databaseId: String = "") :
-    MongoBaseMetaCollection<MongoDynamicEntity>(MongoDynamicEntity::class.java, collectionName, databaseId) {
+        MongoBaseMetaCollection<MongoDynamicEntity>(MongoDynamicEntity::class.java, collectionName, databaseId) {
 }
