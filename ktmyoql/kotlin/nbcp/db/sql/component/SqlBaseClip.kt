@@ -90,11 +90,11 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
 
             if (dataSourceName.HasValue) {
 
-                var uri = SpringUtil.context.environment.getProperty("app.sql.ds.${dataSourceName}-ds.uri").AsString()
+                var uri = SpringUtil.context.environment.getProperty("app.sql.uris.${dataSourceName}.uri").AsString()
                 var username =
-                    SpringUtil.context.environment.getProperty("app.sql.ds.${dataSourceName}-ds.username").AsString()
+                    SpringUtil.context.environment.getProperty("app.sql.uris.${dataSourceName}.username").AsString()
                 var password =
-                    SpringUtil.context.environment.getProperty("app.sql.ds.${dataSourceName}-ds.password").AsString()
+                    SpringUtil.context.environment.getProperty("app.sql.uris.${dataSourceName}.password").AsString()
 
                 //其它参数按数据源配置参数
                 var ds = db.sql.getDataSource(uri, username, password);

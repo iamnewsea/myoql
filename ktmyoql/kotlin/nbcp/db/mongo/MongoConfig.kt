@@ -64,8 +64,9 @@ import org.springframework.stereotype.Component
  *
  *app:
  *  mongo:
- *    yapi-ds: mongodb://dev:123@mongo:27017/yapi
- *    db:
+ *    uris:
+ *      yapi: mongodb://dev:123@mongo:27017/yapi
+ *    ds:
  *      yapi:
  *          - group
  *          - project
@@ -81,7 +82,17 @@ import org.springframework.stereotype.Component
 class MongoCollectionDataSource : MyOqlMultipleDataSourceDefine() {
 }
 
-
+/**
+ * app:
+ *   mongo:
+ *      log:
+ *          query:
+ *              -a
+ *              -b
+ *          delete:
+ *              -c
+ *              -d
+ */
 @ConfigurationProperties(prefix = "app.mongo.log")
 @Component
 class MongoCollectionLogProperties : MyOqlBaseActionLogDefine("app.mongo.log-default") {

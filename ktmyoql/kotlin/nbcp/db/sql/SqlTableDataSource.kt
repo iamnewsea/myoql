@@ -17,7 +17,8 @@ class SqlTableDataSource : MyOqlMultipleDataSourceDefine() {
     /*
 app:
     sql:
-        ds-yapi: mongodb://dev:123@mongo:27017/yapi
+        uris:
+            yapi: mongodb://dev:123@mongo:27017/yapi
         ds:
             db:
                 yapi:
