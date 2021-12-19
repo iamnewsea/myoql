@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.transaction.annotation.Transactional
 import java.lang.RuntimeException
+import java.time.LocalDateTime
 import java.util.*
 
 class TestKtExt_Mongo : TestBase() {
@@ -25,13 +26,25 @@ class TestKtExt_Mongo : TestBase() {
     }
 
     @Test
-    fun test_Transactional() {
+    fun test_Insert() {
         var con = db.mongo.getMongoTemplateByUri("mongodb://dev:123@mongo:27017/cms")!!
         usingScope(MongoTemplateScope(con)) {
             var doc = JsonMap();
             doc.put("abc", UUID.randomUUID())
             db.mor_base.sysLog.doInsert(doc)
         }
+    }
+
+    @Test
+    fun test_query_datetime() {
+        var start = LocalDateTime.now().minusHours(1)
+        var end = LocalDateTime.now().plusHours(1);
+        db.mor_base.sysLog.query()
+                .where { it.createAt match_between (start to end) }
+                .toList()
+                .forEach {
+                    println(it.ToJson())
+                }
     }
 
     @Test
