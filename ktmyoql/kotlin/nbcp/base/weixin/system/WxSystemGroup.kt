@@ -5,7 +5,6 @@ import nbcp.utils.HttpUtil
 import nbcp.utils.Md5Util
 import nbcp.utils.MyUtil
 import nbcp.base.weixin.wx
-import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.lang.RuntimeException
 import java.security.AlgorithmParameters
 import java.security.Security
@@ -111,7 +110,7 @@ object WxSystemGroup {
             keyByte = temp
         }
         // 初始化
-        Security.addProvider(BouncyCastleProvider())
+//        Security.addProvider(BouncyCastleProvider())
         val cipher = Cipher.getInstance("AES/CBC/PKCS7Padding", "BC")
         val spec = SecretKeySpec(keyByte, "AES")
         val parameters = AlgorithmParameters.getInstance("AES")
