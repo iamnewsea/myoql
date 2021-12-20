@@ -1,15 +1,9 @@
 package nbcp.db
 
-
-import com.mongodb.client.MongoDatabase
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.mongo.*
 import org.bson.Document
-import org.bson.UuidRepresentation
-import org.bson.codecs.UuidCodecProvider
-import org.bson.codecs.configuration.CodecRegistries
-import org.bson.codecs.configuration.CodecRegistry
 import org.bson.types.ObjectId
 import org.springframework.core.convert.support.GenericConversionService
 import org.springframework.data.mongodb.core.MongoTemplate
