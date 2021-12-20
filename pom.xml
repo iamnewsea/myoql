@@ -35,28 +35,28 @@
         <java.version>1.8</java.version>
         <kotlin.version>1.6.0</kotlin.version>
 
-        <poi.version>5.0.0</poi.version>
+        <poi.version>5.1.0</poi.version>
         <maven-plugin.version>3.2.1</maven-plugin.version>
-        <dokka.version>1.5.30</dokka.version>
-        <aspectj.version>1.9.7</aspectj.version>
+        <dokka.version>1.6.0</dokka.version>
+        <aspectj.version>1.9.8.RC3</aspectj.version>
         <cglib.version>3.3.0</cglib.version>
-        <zip4j.version>2.9.0</zip4j.version>
-        <mybatis.version>3.5.7</mybatis.version>
+        <zip4j.version>2.9.1</zip4j.version>
+        <mybatis.version>3.5.8</mybatis.version>
         <mybatis-plus.version>3.4.3.4</mybatis-plus.version>
         <mybatis-spring.version>2.0.6</mybatis-spring.version>
         <elasticsearch.version>7.15.0</elasticsearch.version>
-        <jackson.version>2.12.5</jackson.version>
-        <reflections.version>0.9.12</reflections.version>
+        <jackson.version>2.13.0</jackson.version>
+        <reflections.version>0.10.2</reflections.version>
         <bcprov.version>1.69</bcprov.version>
         <asm.version>9.2</asm.version>
-        <okhttp3.version>4.9.1</okhttp3.version>
-        <xml-apis.version>1.4.01</xml-apis.version>
+        <okhttp3.version>4.9.3</okhttp3.version>
+        <xml-apis.version>2.0.2</xml-apis.version>
         <jjwt.version>0.9.1</jjwt.version>
-        <minio.version>8.3.0</minio.version>
-        <aliyun.oss.version>3.10.2</aliyun.oss.version>
-        <javacv.version>1.5.3</javacv.version>
+        <minio.version>8.3.4</minio.version>
+        <aliyun.oss.version>3.13.2</aliyun.oss.version>
+        <javacv.version>1.5.6</javacv.version>
         <captcha.version>1.6.2</captcha.version>
-        <springfox-swagger.version>2.9.2</springfox-swagger.version>
+        <springfox-swagger.version>3.0.0</springfox-swagger.version>
 
     </properties>
 
@@ -241,11 +241,11 @@
             <!--                <version>${bcprov.version}</version>-->
             <!--            </dependency>-->
 
-            <dependency>
-                <groupId>xml-apis</groupId>
-                <artifactId>xml-apis</artifactId>
-                <version>${xml-apis.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>xml-apis</groupId>-->
+<!--                <artifactId>xml-apis</artifactId>-->
+<!--                <version>${xml-apis.version}</version>-->
+<!--            </dependency>-->
 
 
             <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
@@ -343,12 +343,14 @@
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt</artifactId>
                 <version>${jjwt.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <dependency>
                 <groupId>io.minio</groupId>
                 <artifactId>minio</artifactId>
                 <version>${minio.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <!-- 阿里云OSS-->
@@ -356,6 +358,7 @@
                 <groupId>com.aliyun.oss</groupId>
                 <artifactId>aliyun-sdk-oss</artifactId>
                 <version>${aliyun.oss.version}</version>
+                <scope>provided</scope>
             </dependency>
 
 
