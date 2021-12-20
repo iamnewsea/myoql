@@ -2,9 +2,7 @@ package nbcp.db.mongo
 
 import nbcp.comm.*
 import nbcp.db.MyOqlMultipleDataSourceDefine
-import nbcp.db.MongoCrudEnum
 import nbcp.db.MyOqlBaseActionLogDefine
-import org.springframework.beans.factory.InitializingBean
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.*
@@ -64,27 +62,28 @@ import org.springframework.stereotype.Component
  *
  *app:
  *  mongo:
- *    uris:
- *      yapi: mongodb://dev:123@mongo:27017/yapi
- *    ds:
- *      yapi:
+ *    yapi:
+ *      ds:
+ *          uri: mongodb://dev:123@mongo:27017/yapi
+ *      tables:
  *          - group
  *          - project
  *          - api
  *          - interface_cat
- *    read:
- *      yapi-read:
+ *      read-tables:
  *          - group
  *          - project
  */
-@ConfigurationProperties(prefix = "app.mongo.ds")
+@ConfigurationProperties(prefix = "app.mongo")
 @Component
 class MongoCollectionDataSource : MyOqlMultipleDataSourceDefine() {
+
 }
 
 /**
  * app:
  *   mongo:
+ *      log-default: query
  *      log:
  *          query:
  *              -a

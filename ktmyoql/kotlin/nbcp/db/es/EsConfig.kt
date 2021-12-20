@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component
 /**
  * 定义Es不同的数据源
  */
-@ConfigurationProperties(prefix = "app.es.ds")
+@ConfigurationProperties(prefix = "app.es")
 @Component
 class EsIndexDataSource : MyOqlMultipleDataSourceDefine() {
 }

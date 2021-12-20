@@ -1,10 +1,7 @@
 package nbcp.db.es
 
 
-import nbcp.comm.LogLevelScope
-import nbcp.comm.ReadContentStringFromStream
-import nbcp.comm.scopeInfoLevel
-import nbcp.comm.usingScope
+import nbcp.comm.*
 import nbcp.db.db
 import nbcp.db.es.tool.EsTableLogProperties
 import nbcp.utils.SpringUtil
@@ -20,22 +17,23 @@ object EsLogger {
     }
 
     fun logGet(error: Exception?, esName: String, request: Request, response: String) {
-        log(error,esName,request,response,esLog::getQueryLog)
+        log(error, esName, request, response, esLog::getQueryLog)
     }
 
     fun logDelete(error: Exception?, esName: String, request: Request, response: String) {
-        log(error,esName,request,response,esLog::getDeleteLog)
+        log(error, esName, request, response, esLog::getDeleteLog)
     }
+
     fun logPost(error: Exception?, esName: String, request: Request, response: String) {
-        log(error,esName,request,response,esLog::getInsertLog)
+        log(error, esName, request, response, esLog::getInsertLog)
     }
 
     fun logPut(error: Exception?, esName: String, request: Request, response: String) {
-        log(error,esName,request,response,esLog::getUpdateLog)
+        log(error, esName, request, response, esLog::getUpdateLog)
     }
 
 
-    fun log(error: Exception?, esName: String, request: Request, response: String,op:(String)->Boolean){
+    fun log(error: Exception?, esName: String, request: Request, response: String, op: (String) -> Boolean) {
         val getMsg: () -> String = getMsg@{
             """[${request.method}] ${request.endpoint} 
 [body] ${request.entity.content.ReadContentStringFromStream()} 
@@ -56,9 +54,7 @@ object EsLogger {
 
         //如果指定了输出Sql
         if (op(esName)) {
-            usingScope(LogLevelScope.info) {
-                logger.info(getMsg())
-            }
+            logger.Important(getMsg())
         }
     }
 }

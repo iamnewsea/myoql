@@ -54,9 +54,7 @@ ${if (result.HasValue) ("[result] " + result + "\n") else ""}[耗时] ${db.execu
 
         //如果指定了输出Sql
         if (op(collectionName)) {
-            usingScope(LogLevelScope.info) {
-                logger.info(getMsg())
-            }
+            logger.Important(getMsg())
         }
     }
 
@@ -78,9 +76,7 @@ ${if (result.HasValue) ("[result] " + result + "\n") else ""}[耗时] ${db.execu
 
         //如果指定了输出Sql
         if (op(collectionName)) {
-            usingScope(LogLevelScope.info) {
-                logger.info(getMsg())
-            }
+            logger.Important(getMsg())
         }
     }
 

@@ -3,30 +3,30 @@ package nbcp.db.sql
 import nbcp.comm.*
 import nbcp.db.MyOqlBaseActionLogDefine
 import nbcp.db.MyOqlMultipleDataSourceDefine
-import nbcp.db.SqlCrudEnum
-import org.springframework.beans.factory.InitializingBean
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 
 /**
  * 定义Sql不同的数据源
  */
-@ConfigurationProperties(prefix = "app.sql.ds")
+@ConfigurationProperties(prefix = "app.sql")
 @Component
 class SqlTableDataSource : MyOqlMultipleDataSourceDefine() {
     /*
 app:
     sql:
-        uris:
-            yapi: mongodb://dev:123@mongo:27017/yapi
-        ds:
-            db:
+        yapi:
+            ds:
+                uri: mongodb://dev:123@mongo:27017/yapi
+                username:
+                password:
+            tables:
                 yapi:
                 - group
                 - project
                 - api
                 - interface_cat
-            read:
+            read-tables:
                 yapi-read:
                 - group
                 - project

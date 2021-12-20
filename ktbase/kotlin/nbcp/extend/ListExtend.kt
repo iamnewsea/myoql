@@ -376,3 +376,8 @@ fun List<Any?>.resetListItemType(clazz: Class<*>) {
         list.set(i, itemValue.ConvertType(clazz))
     }
 }
+
+
+fun List<out String>.findWithIgnoreCase(item: String): String? {
+    return this.firstOrNull { it VbSame item }
+}

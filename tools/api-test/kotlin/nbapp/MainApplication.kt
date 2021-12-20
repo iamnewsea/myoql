@@ -23,14 +23,14 @@ import java.util.*
 
 
 @SpringBootApplication(
-        exclude = arrayOf(
-                MyOqlCrossFilter::class,
+    exclude = arrayOf(
+        MyOqlCrossFilter::class,
 //        DataSourceAutoConfiguration::class,
 //        RedisAutoConfiguration::class,
 //        MongoAutoConfiguration::class,
-                RabbitAutoConfiguration::class,
-                ElasticsearchDataAutoConfiguration::class
-        )
+        RabbitAutoConfiguration::class,
+        ElasticsearchDataAutoConfiguration::class
+    )
 )
 //@EnableMyOqlRedisCache
 @EnableScheduling
@@ -68,19 +68,17 @@ fun main(args: Array<String>) {
 
 //    var appMap = SpringUtil.binder.bindOrCreate("app", JsonMap::class.java)
 
-    usingScope(LogLevelScope.info) {
-        MainApplication.logger.info(
-                MyUtil.getCenterEachLine(
-                        """
+    MainApplication.logger.Important(
+        MyUtil.getCenterEachLine(
+            """
 ================================================
 ${context.debugServerInfo}
 ================================================
 """.split("\n")
-                )
-                        .map { ' '.NewString(6) + it }
-                        .joinToString("\n")
         )
-    }
+            .map { ' '.NewString(6) + it }
+            .joinToString("\n")
+    )
 
 
     Thread.sleep(30000)

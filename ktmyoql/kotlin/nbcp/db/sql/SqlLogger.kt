@@ -52,9 +52,7 @@ object SqlLogger {
 
         //如果指定了输出Sql
         if (sqlLog.getQueryLog(tableDbName)) {
-            usingScope(LogLevelScope.info) {
-                logger.info(getMsg())
-            }
+                logger.Important(getMsg())
         }
     }
 
@@ -88,9 +86,7 @@ object SqlLogger {
             sqlLog.getUpdateLog(tableDbName) ||
             sqlLog.getDeleteLog(tableDbName)
         ) {
-            usingScope(LogLevelScope.info) {
-                logger.info(getMsg())
-            }
+            logger.Important(getMsg())
         }
     }
 
@@ -98,7 +94,7 @@ object SqlLogger {
         var getMsg: () -> String = getMsg@{
             var msg_log = mutableListOf(
                 "" +
-                        "[delete] ${executeParameterData.expression}",
+                "[delete] ${executeParameterData.expression}",
                 "[参数] ${executeParameterData.values.ToJson()}",
                 "[result] ${n}",
                 "[耗时] ${db.executeTime}"
@@ -123,13 +119,11 @@ object SqlLogger {
         //如果指定了输出Sql
         if (sqlLog.getDeleteLog(tableDbName)
         ) {
-            usingScope(LogLevelScope.info) {
-                logger.info(getMsg())
-            }
+                logger.Important(getMsg())
         }
     }
 
-    fun logInsert(error: Exception?, tableDbName: String,getMsg:()->String){
+    fun logInsert(error: Exception?, tableDbName: String, getMsg: () -> String) {
         if (error != null) {
             logger.error(getMsg())
             logger.error(error.message, error);
@@ -145,9 +139,7 @@ object SqlLogger {
         //如果指定了输出Sql
         if (sqlLog.getInsertLog(tableDbName)
         ) {
-            usingScope(LogLevelScope.info) {
-                logger.info(getMsg())
-            }
+                logger.Important(getMsg())
         }
     }
 
@@ -203,9 +195,7 @@ object SqlLogger {
         //如果指定了输出Sql
         if (sqlLog.getUpdateLog(tableName)
         ) {
-            usingScope(LogLevelScope.info) {
-                logger.info(getMsg())
-            }
+                logger.Important(getMsg())
         }
 
     }

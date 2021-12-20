@@ -152,15 +152,13 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
                 update2.setValue(ref.ref.nameField, ref.masterNameValue)
                 update2.exec();
 
-                usingScope(LogLevelScope.info) {
-                    logger.Important(
-                        "mongo级联更新${update2.affectRowCount}条记录,${update.collectionName}-->${targetCollection},${
-                            ref.masterIdValues.joinToString(
-                                ","
-                            )
-                        }-->(${ref.ref.idField},${ref.ref.nameField})"
-                    )
-                }
+                logger.Important(
+                    "mongo级联更新${update2.affectRowCount}条记录,${update.collectionName}-->${targetCollection},${
+                        ref.masterIdValues.joinToString(
+                            ","
+                        )
+                    }-->(${ref.ref.idField},${ref.ref.nameField})"
+                )
             }
     }
 

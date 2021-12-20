@@ -3,13 +3,22 @@ package nbcp.db
 import org.springframework.beans.factory.InitializingBean
 
 
-abstract class MyOqlMultipleDataSourceDefine : InitializingBean {
-    /**
-     * key 数据库的bean名称。value 是表名
-     */
-    var db: Map<String, List<String>> = mapOf()
-    var read: Map<String, List<String>> = mapOf()
-    var write: Map<String, List<String>> = mapOf()
+data class DataSourceConnectionProperties(
+    var uri: String = "",
+    var username: String = "",
+    var password: String = "",
+    var port: Int = 0
+)
+
+data class DataSourceReadWriteProperties(
+    var ds: DataSourceConnectionProperties = DataSourceConnectionProperties(),
+    var tables: List<String> = listOf(),
+    var readTables: List<String> = listOf()
+)
+
+abstract class MyOqlMultipleDataSourceDefine() : InitializingBean {
+    private var map = mutableMapOf<String, DataSourceReadWriteProperties>()
+
 
     private var dbReadDataSource: MutableMap<String, String> = mutableMapOf()
     private var dbWriteDataSource: MutableMap<String, String> = mutableMapOf()
@@ -30,23 +39,11 @@ abstract class MyOqlMultipleDataSourceDefine : InitializingBean {
         this.dbReadDataSource = mutableMapOf()
         this.dbWriteDataSource = mutableMapOf()
 
-        db.forEach {
+        map.forEach {
             var key = it.key
             var collections = it.value;
-            this.dbReadDataSource.putAll(collections.map { it to key })
-            this.dbWriteDataSource.putAll(collections.map { it to key })
-        }
-
-        read.forEach {
-            var key = it.key
-            var collections = it.value;
-            this.dbReadDataSource.putAll(collections.map { it to key })
-        }
-
-        write.forEach {
-            var key = it.key
-            var collections = it.value;
-            this.dbWriteDataSource.putAll(collections.map { it to key })
+            this.dbReadDataSource.putAll(collections.readTables.map { it to key })
+            this.dbWriteDataSource.putAll(collections.tables.map { it to key })
         }
     }
 }
