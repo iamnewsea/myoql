@@ -157,9 +157,8 @@ import org.springframework.stereotype.Component
 /**
  * 定义Redis不同的数据源
  */
-@ConfigurationProperties(prefix = "app.redis")
 @Component
-class RedisDataSource : MyOqlMultipleDataSourceDefine() {
+class RedisDataSource : MyOqlMultipleDataSourceDefine("app.redis") {
 }
 
 //

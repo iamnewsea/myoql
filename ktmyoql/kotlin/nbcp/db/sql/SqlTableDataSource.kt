@@ -9,9 +9,8 @@ import org.springframework.stereotype.Component
 /**
  * 定义Sql不同的数据源
  */
-@ConfigurationProperties(prefix = "app.sql")
 @Component
-class SqlTableDataSource : MyOqlMultipleDataSourceDefine() {
+class SqlTableDataSource : MyOqlMultipleDataSourceDefine("app.sql") {
     /*
 app:
     sql:

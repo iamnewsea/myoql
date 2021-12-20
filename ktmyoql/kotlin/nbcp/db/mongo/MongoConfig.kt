@@ -74,9 +74,8 @@ import org.springframework.stereotype.Component
  *          - group
  *          - project
  */
-@ConfigurationProperties(prefix = "app.mongo")
 @Component
-class MongoCollectionDataSource : MyOqlMultipleDataSourceDefine() {
+class MongoCollectionDataSource : MyOqlMultipleDataSourceDefine("app.mongo") {
 
 }
 

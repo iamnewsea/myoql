@@ -13,6 +13,16 @@ app:
 
   mybatis:
     package: db.mapper
+  mongo:
+    yapi:
+      ds:
+        uri: mongodb://dev:123@mongo:27017/yapi
+      tables:
+        - group
+        - project
+        - interface
+        - interface_cat
+
 spring:
   application:
     name: admin-api

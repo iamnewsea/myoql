@@ -1,5 +1,8 @@
 package nbcp.db
 
+import nbcp.comm.ConvertJson
+import nbcp.comm.JsonMap
+import nbcp.utils.SpringUtil
 import org.springframework.beans.factory.InitializingBean
 
 
@@ -16,10 +19,8 @@ data class DataSourceReadWriteProperties(
     var readTables: List<String> = listOf()
 )
 
-abstract class MyOqlMultipleDataSourceDefine() : InitializingBean {
+abstract class MyOqlMultipleDataSourceDefine(val baseConfigPrefix: String) : InitializingBean {
     private var map = mutableMapOf<String, DataSourceReadWriteProperties>()
-
-
     private var dbReadDataSource: MutableMap<String, String> = mutableMapOf()
     private var dbWriteDataSource: MutableMap<String, String> = mutableMapOf()
 
@@ -39,11 +40,33 @@ abstract class MyOqlMultipleDataSourceDefine() : InitializingBean {
         this.dbReadDataSource = mutableMapOf()
         this.dbWriteDataSource = mutableMapOf()
 
+        var map2 = org.springframework.boot.context.properties.bind.Binder.get(SpringUtil.context.environment)
+            .bindOrCreate(baseConfigPrefix, JsonMap::class.java)
+        map2.forEach {
+            var v = (it.value as MutableMap<String, Any?>)
+            if (v.containsKey("tables")) {
+                v.put("tables", getList(v.get("tables")))
+            }
+            if (v.containsKey("read-tables")) {
+                v.put("read-tables", getList(v.get("read-tables")))
+            }
+            this.map.put(it.key, it.value!!.ConvertJson(DataSourceReadWriteProperties::class.java))
+        }
+
         map.forEach {
             var key = it.key
             var collections = it.value;
             this.dbReadDataSource.putAll(collections.readTables.map { it to key })
             this.dbWriteDataSource.putAll(collections.tables.map { it to key })
         }
+    }
+
+    private fun getList(v: Any?): List<Any?> {
+        if (v == null) return listOf();
+        if (v is Map<*, Any?>) {
+            return v.values.toList();
+        }
+        if (v is List<Any?>) return v;
+        throw RuntimeException("不识别的类型:${v::class.java.simpleName}")
     }
 }
