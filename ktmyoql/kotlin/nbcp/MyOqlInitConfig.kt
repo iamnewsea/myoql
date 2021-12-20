@@ -60,7 +60,7 @@ class MyOqlInitConfig {
 
         val flyways = SpringUtil.getBeanWithNull(FlywayInitCollector::class.java)
         if (flyways != null) {
-            flyways.syncVersionWork();
+            flyways.playFlyVersion();
         }
     }
 }

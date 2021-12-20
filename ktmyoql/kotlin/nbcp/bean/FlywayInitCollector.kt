@@ -4,7 +4,6 @@ import nbcp.comm.Important
 import nbcp.db.*
 import nbcp.db.mongo.*
 import nbcp.db.mongo.entity.FlywayVersion
-import nbcp.db.mongo.event.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -34,7 +33,7 @@ class FlywayInitCollector : BeanPostProcessor {
     /**
      * 同步版本
      */
-    fun syncVersionWork() {
+    fun playFlyVersion() {
         var dbMaxVersion = db.mor_base.flywayVersion.query()
             .where { it.isSuccess match true }
             .orderByDesc { it.version }
