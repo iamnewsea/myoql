@@ -34,7 +34,7 @@ open class MongoClipBase(var collectionName: String) : Serializable {
             SpringUtil.getBean<MongoCollectionDataSource>().getDataSourceName(this.collectionName, isRead)
                     .apply {
                         if (this.HasValue) {
-                            var uri = SpringUtil.context.environment.getProperty("app.mongo.uris.${this}")
+                            var uri = SpringUtil.context.environment.getProperty("app.mongo.${this}.ds.uri")
                             if (uri.isNullOrEmpty()) {
                                 throw RuntimeException("Mongo数据源配置项为空:app.mongo.uris.${this}");
                             }

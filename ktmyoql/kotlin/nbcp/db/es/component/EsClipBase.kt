@@ -29,9 +29,9 @@ open class EsClipBase(var collectionName: String) : Serializable {
             var config = SpringUtil.getBean<EsIndexDataSource>();
             var dataSourceName = config.getDataSourceName(this.collectionName, isRead)
             if (dataSourceName.HasValue) {
-                var uri = SpringUtil.context.environment.getProperty("app.es.ds.${dataSourceName}-ds.uri").AsString()
-                var prefix = SpringUtil.context.environment.getProperty("app.es.ds.${dataSourceName}-ds.prefix").AsString()
-                var timeout = SpringUtil.context.environment.getProperty("app.es.ds.${dataSourceName}-ds.timeout").AsInt()
+                var uri = SpringUtil.context.environment.getProperty("app.es.${dataSourceName}.ds.uri").AsString()
+                var prefix = SpringUtil.context.environment.getProperty("app.es.${dataSourceName}.ds.prefix").AsString()
+                var timeout = SpringUtil.context.environment.getProperty("app.es.${dataSourceName}.ds.timeout").AsInt()
 
                 return db.es.getRestClient(uri, prefix, timeout);
             }
