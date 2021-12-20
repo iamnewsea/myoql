@@ -43,6 +43,10 @@ abstract class MyOqlMultipleDataSourceDefine(val baseConfigPrefix: String) : Ini
         var map2 = org.springframework.boot.context.properties.bind.Binder.get(SpringUtil.context.environment)
             .bindOrCreate(baseConfigPrefix, JsonMap::class.java)
         map2.forEach {
+            if (it.value is Map<*, *> == false) {
+                return@forEach
+            }
+
             var v = (it.value as MutableMap<String, Any?>)
             if (v.containsKey("tables")) {
                 v.put("tables", getList(v.get("tables")))
