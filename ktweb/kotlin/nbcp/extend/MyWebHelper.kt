@@ -93,7 +93,7 @@ var HttpServletRequest.LoginUser: LoginUserModel
 
         var token = this.tokenValue;
 
-        ret = userAuthenticationService.getLoginInfoFromToken(token)
+        ret = userAuthenticationService.getLoginInfoFromToken(this)
         if (ret == null) {
             ret = LoginUserModel(token);
         }
@@ -113,7 +113,7 @@ var HttpServletRequest.LoginUser: LoginUserModel
 //            return;
 //        }
 
-        this.userAuthenticationService.saveLoginUserInfo(value);
+        this.userAuthenticationService.saveLoginUserInfo(this, value);
     }
 
 

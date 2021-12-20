@@ -3,6 +3,7 @@ package nbcp.base.service
 import nbcp.comm.*
 import nbcp.db.LoginUserModel
 import nbcp.db.redis.proxy.RedisStringProxy
+import nbcp.web.tokenValue
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -10,23 +11,24 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
+import javax.servlet.http.HttpServletRequest
 
 interface IUserAuthenticationService {
 
     /**
      * 获取登录token
      */
-    fun getLoginInfoFromToken(token: String, renewal: Boolean = false): LoginUserModel?
+    fun getLoginInfoFromToken(request: HttpServletRequest, renewal: Boolean = false): LoginUserModel?
 
     /**
      * 设置登录token,格式：{config.userSystem}token:{id}
      */
-    fun saveLoginUserInfo(userInfo: LoginUserModel)
+    fun saveLoginUserInfo(request: HttpServletRequest, userInfo: LoginUserModel)
 
     /**
      * 删除tokens
      */
-    fun deleteToken(vararg token: String)
+    fun deleteToken(request: HttpServletRequest)
 
     fun getValidateCode(token: String): String
 
@@ -53,7 +55,7 @@ class DefaultUserAuthenticationService {
          */
         private val validateCodeRedis
             get() = RedisStringProxy(
-                    "validateCode", config.validateCodeCacheSeconds
+                "validateCode", config.validateCodeCacheSeconds
             )
 
         override fun getValidateCode(token: String): String {
@@ -68,7 +70,10 @@ class DefaultUserAuthenticationService {
         /**
          * 获取登录token
          */
-        override fun getLoginInfoFromToken(token: String, renewal: Boolean): LoginUserModel? {
+        override fun getLoginInfoFromToken(request: HttpServletRequest, renewal: Boolean): LoginUserModel? {
+            var token = request.tokenValue;
+            if (token.isEmpty()) return null;
+
             if (renewal) {
                 userSystemRedis.renewalKey(token);
             }
@@ -78,7 +83,7 @@ class DefaultUserAuthenticationService {
         /**
          * 设置登录token,格式：{config.userSystem}token:{id}
          */
-        override fun saveLoginUserInfo(userInfo: LoginUserModel) {
+        override fun saveLoginUserInfo(request: HttpServletRequest, userInfo: LoginUserModel) {
             if (userInfo.id.HasValue && userInfo.token.HasValue) {
                 userSystemRedis.set(userInfo.token, userInfo.ToJson())
             }
@@ -87,8 +92,10 @@ class DefaultUserAuthenticationService {
         /**
          * 删除tokens
          */
-        override fun deleteToken(vararg tokens: String) {
-            userSystemRedis.deleteKeys(*tokens)
+        override fun deleteToken(request: HttpServletRequest) {
+            var token = request.tokenValue;
+            if (token.isEmpty()) return;
+            userSystemRedis.deleteKeys(token)
         }
     }
 
