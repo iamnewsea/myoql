@@ -58,7 +58,7 @@ class MyOqlInitConfig {
     fun prepared(ev: ApplicationPreparedEvent) {
         val msg = "myoql"
 
-        val flyways = SpringUtil.getBeanWithNull(FlywayInitCollector::class.java)
+        val flyways = SpringUtil.getBeanWithNull(FlywayBeanProcessor::class.java)
         if (flyways != null) {
             flyways.playFlyVersion();
         }

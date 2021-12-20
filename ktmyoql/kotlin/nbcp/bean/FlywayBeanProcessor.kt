@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 
 @Component
 @ConditionalOnClass(MongoTemplate::class)
-class FlywayInitCollector : BeanPostProcessor {
+class FlywayBeanProcessor : BeanPostProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
