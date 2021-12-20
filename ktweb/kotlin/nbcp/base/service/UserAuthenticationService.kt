@@ -26,7 +26,7 @@ interface IUserAuthenticationService {
     /**
      * 删除tokens
      */
-    fun deleteToken(vararg tokens: String)
+    fun deleteToken(vararg token: String)
 
     fun getValidateCode(token: String): String
 
