@@ -1,6 +1,7 @@
 package nbcp.db
 
 import nbcp.comm.ConvertJson
+import nbcp.comm.HasValue
 import nbcp.comm.JsonMap
 import nbcp.utils.SpringUtil
 import org.springframework.beans.factory.InitializingBean
@@ -30,7 +31,12 @@ abstract class MyOqlMultipleDataSourceDefine(val baseConfigPrefix: String) : Ini
      */
     fun getDataSourceName(name: String, isRead: Boolean? = null): String {
         if (isRead != null && isRead) {
-            return dbReadDataSource.getOrDefault(name, "")
+            dbReadDataSource.getOrDefault(name, "")
+                .apply {
+                    if (this.HasValue) {
+                        return this;
+                    }
+                }
         }
 
         return dbWriteDataSource.getOrDefault(name, "")
