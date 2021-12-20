@@ -4,7 +4,6 @@ import io.jsonwebtoken.Jwts
 import nbcp.base.mvc.HttpContext
 import nbcp.base.service.IUserAuthenticationService
 import nbcp.comm.*
-import nbcp.data.TokenStorageTypeEnum
 import nbcp.utils.*
 import nbcp.db.LoginUserModel
 import nbcp.db.mongo.MongoBaseMetaCollection
@@ -12,8 +11,6 @@ import nbcp.db.mongo.MongoColumnName
 import nbcp.db.mongo.MongoSetEntityUpdateClip
 import nbcp.db.sql.SqlBaseMetaTable
 import nbcp.db.sql.SqlSetEntityUpdateClip
-import nbcp.extend.RequestGetLoginUserModelEvent
-import nbcp.extend.RequestSetLoginUserModelEvent
 import nbcp.extend.RequestGetTokenEvent
 import nbcp.db.LoginNamePasswordData
 import org.slf4j.LoggerFactory
@@ -87,17 +84,14 @@ var HttpServletRequest.LoginUser: LoginUserModel
             return ret;
         }
 
-        var event = RequestGetLoginUserModelEvent(this);
-        SpringUtil.context.publishEvent(event);
-        if (event.loginUser != null) {
-            this.LoginUser = event.loginUser!!
-            return event.loginUser!!;
-        }
+//        var event = RequestGetLoginUserModelEvent(this);
+//        SpringUtil.context.publishEvent(event);
+//        if (event.loginUser != null) {
+//            this.LoginUser = event.loginUser!!
+//            return event.loginUser!!;
+//        }
 
         var token = this.tokenValue;
-        if (config.tokenStorage == TokenStorageTypeEnum.Memory) {
-            return this.session.getAttribute("[LoginUser]") as LoginUserModel? ?: LoginUserModel(token);
-        }
 
         ret = userAuthenticationService.getLoginInfoFromToken(token)
         if (ret == null) {
@@ -110,14 +104,14 @@ var HttpServletRequest.LoginUser: LoginUserModel
     set(value) {
         this.setAttribute("[LoginUser]", value)
 
-        var event = RequestSetLoginUserModelEvent(this);
-        SpringUtil.context.publishEvent(event);
-        if (event.proced) return;
-
-        if (config.tokenStorage == TokenStorageTypeEnum.Memory) {
-            this.session.setAttribute("[LoginUser]", value);
-            return;
-        }
+//        var event = RequestSetLoginUserModelEvent(this, value);
+//        SpringUtil.context.publishEvent(event);
+//        if (event.proced) return;
+//
+//        if (config.tokenStorage == TokenStorageTypeEnum.Memory) {
+//            this.session.setAttribute("[LoginUser]", value);
+//            return;
+//        }
 
         this.userAuthenticationService.saveLoginUserInfo(value);
     }
@@ -220,7 +214,7 @@ val HttpServletRequest.tokenValue: String
     }
 
 
-fun <M : MongoBaseMetaCollection<out E>,E:Any> MongoSetEntityUpdateClip<M,E>.withRequestParams(): MongoSetEntityUpdateClip<M,E> {
+fun <M : MongoBaseMetaCollection<out E>, E : Any> MongoSetEntityUpdateClip<M, E>.withRequestParams(): MongoSetEntityUpdateClip<M, E> {
     var keys = HttpContext.request.getPostJson().keys;
     keys.forEach { key ->
         this.withColumn { MongoColumnName(key) }

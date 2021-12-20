@@ -3,7 +3,6 @@
 
 package nbcp.comm
 
-import nbcp.data.TokenStorageTypeEnum
 import nbcp.utils.SpringUtil
 import org.springframework.util.unit.DataSize
 
@@ -140,21 +139,21 @@ object config {
      * 如果没有指定，且没有配置 RedisAutoConfiguration，使用 Nemory。
      * 否则使用 Redis
      */
-    @JvmStatic
-    val tokenStorage: TokenStorageTypeEnum by lazy {
-        val configValue = getConfig("app.token-storage").AsStringWithNull()?.ToEnum<TokenStorageTypeEnum>();
-        if (configValue != null) {
-            return@lazy configValue
-        }
-
-        if (redisHost.HasValue &&
-                SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration")
-        ) {
-            return@lazy TokenStorageTypeEnum.Redis
-        }
-
-        return@lazy TokenStorageTypeEnum.Memory
-    }
+//    @JvmStatic
+//    val tokenStorage: TokenStorageTypeEnum by lazy {
+//        val configValue = getConfig("app.token-storage").AsStringWithNull()?.ToEnum<TokenStorageTypeEnum>();
+//        if (configValue != null) {
+//            return@lazy configValue
+//        }
+//
+//        if (redisHost.HasValue &&
+//                SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration")
+//        ) {
+//            return@lazy TokenStorageTypeEnum.Redis
+//        }
+//
+//        return@lazy TokenStorageTypeEnum.Memory
+//    }
 
     /**
      * token 缓存时间，默认四个小时
