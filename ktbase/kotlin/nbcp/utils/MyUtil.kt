@@ -47,7 +47,11 @@ object MyUtil {
     ): Any? {
         if (keys.any() == false) return null;
 
-        var unwindKeys = keys.map { it.split('.').toTypedArray() }.Unwind().filter { it.HasValue }.toTypedArray();
+        var unwindKeys = keys
+            .map { it.split('.') }
+            .Unwind()
+            .filter { it.HasValue }
+            .toTypedArray();
 
         if (unwindKeys.size != keys.size) {
             return getValueByWbsPath(
@@ -211,14 +215,14 @@ object MyUtil {
         if (keys.any() == false) return false;
 
         var unwindKeys = keys
-            .map { it.split('.').toTypedArray() }
+            .map { it.split('.') }
             .Unwind()
             .map {
                 var index = it.indexOf('[')
                 if (index <= 0) {
-                    return@map arrayOf(it)
+                    return@map listOf(it)
                 }
-                return@map arrayOf(it.Slice(0, index), it.Slice(index))
+                return@map listOf(it.Slice(0, index), it.Slice(index))
             }
             .Unwind()
             .filter { it.HasValue }
@@ -691,11 +695,11 @@ object MyUtil {
     fun splitWordParts(value: String): List<String> {
         var ret = value.split(Regex("""[\W_]+""")).map {
             if (allCharIsSameCase(it)) {
-                return@map arrayOf(it);
+                return@map listOf(it);
             } else {
                 //连续大写，按一部分处理
                 var list = it.split(Regex("(?=[A-Z])")).toMutableList();
-                if (list.any() == false) return listOf()
+                if (list.any() == false) return@map listOf()
                 //合并连续大写
                 var prevItem = list[0];
                 for (i in 1 until list.size) {
@@ -708,9 +712,11 @@ object MyUtil {
                     }
                 }
 
-                return@map list.filter { it.HasValue }.toTypedArray()
+                return@map list.filter { it.HasValue }
             }
-        }.Unwind().filter { it.HasValue }
+        }
+            .Unwind()
+            .filter { it.HasValue }
 
         return ret;
     }

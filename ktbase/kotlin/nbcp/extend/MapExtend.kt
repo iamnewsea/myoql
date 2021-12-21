@@ -103,29 +103,25 @@ fun  Map<String, *>.getValueByWbsPath(
 
 private fun get_array_querys(list: Collection<Any?>): List<String> {
     return list.map { value ->
-        if (value == null) return@map arrayOf<String>();
+        if (value == null) return@map listOf<String>();
 
         var type = value::class.java;
         if (type.IsSimpleType() == false) {
             if (type.isArray) {
                 return@map get_array_querys((value as Array<*>).toList())
                     .map { "[]=" + it }
-                    .toTypedArray()
             } else if (value is Collection<*>) {
                 return@map get_array_querys(value)
                     .map { "[]=" + it }
-                    .toTypedArray()
             } else if (value is Map<*, *>) {
                 return@map get_map_querys((value as Map<String, *>))
                     .map { "[]=" + it }
-                    .toTypedArray()
             }
             return@map get_map_querys(value.ConvertJson(JsonMap::class.java))
                 .map { "[]=" + it }
-                .toTypedArray()
         }
 
-        return@map arrayOf(JsUtil.encodeURIComponent(value.toString()))
+        return@map listOf(JsUtil.encodeURIComponent(value.toString()))
     }
         .Unwind()
         .filter { it.HasValue }
@@ -136,7 +132,7 @@ private fun get_map_querys(map: Map<String, *>): List<String> {
         var key = it.key;
         var value = it.value;
         if (value == null) {
-            return@map arrayOf<String>();
+            return@map listOf<String>();
         }
 
         var type = value::class.java;
@@ -145,22 +141,18 @@ private fun get_map_querys(map: Map<String, *>): List<String> {
             if (type.isArray) {
                 return@map get_array_querys((value as Array<*>).toList())
                     .map { key + it }
-                    .toTypedArray()
             } else if (type.IsCollectionType) {
                 return@map get_array_querys((value as Collection<*>))
                     .map { key + it }
-                    .toTypedArray()
             } else if (type.IsMapType) {
                 return@map get_map_querys((value as Map<String, *>))
                     .map { key + "." + it }
-                    .toTypedArray()
             }
             return@map get_map_querys(value.ConvertJson(JsonMap::class.java))
                 .map { key + "." + it }
-                .toTypedArray()
         }
 
-        return@map arrayOf(key + "=" + JsUtil.encodeURIComponent(value.toString()))
+        return@map listOf(key + "=" + JsUtil.encodeURIComponent(value.toString()))
     }
         .Unwind()
         .filter { it.HasValue }

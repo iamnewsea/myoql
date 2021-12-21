@@ -28,16 +28,26 @@ fun <T> MutableList<T>.Swap(index1: Int, index2: Int) {
 
 
 //把最里面的数据收集起来。
-inline fun <reified T> Collection<Array<T>>.Unwind(): Array<T> {
+//inline fun <reified T> Collection<Array<T>>.Unwind(): Array<T> {
+//    var list = mutableListOf<T>()
+//    this.forEach {
+//        it.forEach {
+//            list.add(it)
+//        }
+//    }
+//    return list.toTypedArray()
+//}
+
+//把最里面的数据收集起来。
+inline fun <reified T> Collection<Collection<T>>.Unwind(): List<T> {
     var list = mutableListOf<T>()
     this.forEach {
         it.forEach {
             list.add(it)
         }
     }
-    return list.toTypedArray()
+    return list
 }
-
 
 /**
  * [startIndex,endIndex)
