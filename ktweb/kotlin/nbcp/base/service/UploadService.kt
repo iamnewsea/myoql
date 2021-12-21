@@ -129,6 +129,19 @@ open class UploadService {
         return@lazy SpringUtil.getBeanWithNull(AliOssBaseService::class.java)
     }
 
+
+    val defaultUploadType: UploadStorageTypeEnum? by lazy {
+        if (aliOssUploader?.check() == true) {
+            return@lazy UploadStorageTypeEnum.AliOss
+        } else if (minioUploader?.check() == true) {
+            return@lazy UploadStorageTypeEnum.Minio
+        } else if (localUploader.check()) {
+            return@lazy UploadStorageTypeEnum.Local
+        }
+
+        return@lazy null;
+    }
+
     /**
      * 把文件转移到相应的文件夹下.
      * 1. 第一级目录,按 年-月 归档.
@@ -144,17 +157,8 @@ open class UploadService {
         fileData: UploadFileNameData,
         storageType: UploadStorageTypeEnum?
     ): String {
-        var storageTypeValue = storageType;
+        var storageTypeValue = storageType ?: defaultUploadType;
 
-        if (storageTypeValue == null) {
-            if (aliOssUploader?.check() == true) {
-                storageTypeValue = UploadStorageTypeEnum.AliOss
-            } else if (minioUploader?.check() == true) {
-                storageTypeValue = UploadStorageTypeEnum.Minio
-            } else if (localUploader.check()) {
-                storageTypeValue = UploadStorageTypeEnum.Local
-            }
-        }
 
         if (storageTypeValue == UploadStorageTypeEnum.AliOss) {
             return aliOssUploader!!.upload(fileStream, group, fileData)

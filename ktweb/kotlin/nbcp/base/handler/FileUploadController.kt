@@ -7,7 +7,9 @@ import nbcp.comm.*
 import nbcp.db.*
 import nbcp.scope.JsonSceneEnumScope
 import nbcp.base.service.UploadService
+import nbcp.base.service.UploadStorageTypeEnum
 import nbcp.web.*
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -22,10 +24,12 @@ import javax.servlet.http.HttpServletResponse
  *  1. 如果需要上传，客户端调用 /sys/upload 方法，返回文件Id
  *  2. 客户端调用 业务方法，把文件Id和业务关联。
  */
+@ConditionalOnProperty("app.upload.enabled")
 @RestController
 class FileUploadServlet {
     @Autowired
     lateinit var uploadService: UploadService;
+
 
     /**
      * 文件上传流程：
@@ -34,6 +38,10 @@ class FileUploadServlet {
      */
     @PostMapping("/sys/upload")
     fun fileUpload(request: HttpServletRequest, response: HttpServletResponse) {
+        if (uploadService.defaultUploadType == null) {
+            response.status = 404;
+            return;
+        }
         if (request is StandardMultipartHttpServletRequest == false) {
             throw RuntimeException("request非StandardMultipartHttpServletRequest类型")
         }
