@@ -23,7 +23,9 @@ import javax.servlet.http.HttpServletResponse
  * 客户端上传流程：
  *  1. 如果需要上传，客户端调用 /sys/upload 方法，返回文件Id
  *  2. 客户端调用 业务方法，把文件Id和业务关联。
+ *  默认 enabled = true
  */
+@ConditionalOnProperty("app.upload.enabled", havingValue = "true", matchIfMissing = true)
 @RestController
 class FileUploadServlet {
     @Autowired
