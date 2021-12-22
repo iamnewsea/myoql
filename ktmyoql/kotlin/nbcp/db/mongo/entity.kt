@@ -82,7 +82,7 @@ open class SysOrganization @JvmOverloads constructor(
     @Cn("徽标")
     var logo: IdUrl = IdUrl(),
     @Cn("是否已锁定")
-    var isLocked: Boolean = true,
+    var isLocked: Boolean = false,
     @Cn("锁定详情")
     var lockedRemark: String = ""
 ) : BaseEntity()
