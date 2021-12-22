@@ -277,18 +277,20 @@ fun Any?.AsDate(): Date? {
         return this
     } else if (this is LocalDate) {
         if (this.year < 0) return null
-        var c = Calendar.getInstance(TimeZone.getTimeZone("GMT+:08:00"))
-        c.set(this.year, this.monthValue - 1, this.dayOfMonth, 0, 0, 0)
-        c.set(Calendar.MILLISECOND, 0)
-        return c.time
+        return Date.from(this.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())
+//        var c = Calendar.getInstance(TimeZone.getTimeZone("GMT+:08:00"))
+//        c.set(this.year, this.monthValue - 1, this.dayOfMonth, 0, 0, 0)
+//        c.set(Calendar.MILLISECOND, 0)
+//        return c.time
 
     } else if (this is LocalDateTime) {
         if (this.year < 0) return null
 
-        var c = Calendar.getInstance(TimeZone.getTimeZone("GMT+:08:00"))
-        c.set(this.year, this.monthValue - 1, this.dayOfMonth, this.hour, this.minute, this.second)
-        c.set(Calendar.MILLISECOND, this.nano * 1000000)
-        return c.time
+        return Date.from(this.atZone(ZoneId.systemDefault()).toInstant());
+//        var c = Calendar.getInstance(TimeZone.getTimeZone("GMT+:08:00"))
+//        c.set(this.year, this.monthValue - 1, this.dayOfMonth, this.hour, this.minute, this.second)
+//        c.set(Calendar.MILLISECOND, this.nano * 1000000)
+//        return c.time
     } else {
         var value = this;
 
