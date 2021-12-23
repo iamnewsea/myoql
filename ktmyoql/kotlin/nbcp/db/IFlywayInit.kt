@@ -1,6 +1,9 @@
 package nbcp.db
 
+import nbcp.comm.FromJson
+import nbcp.comm.JsonMap
 import nbcp.comm.const
+import nbcp.db.mongo.batchInsert
 import org.springframework.core.io.ClassPathResource
 
 abstract class FlywayVersionBaseService(val version: Int) {
@@ -23,5 +26,18 @@ abstract class FlywayVersionBaseService(val version: Int) {
                 var tableName = fileName.replace("\\", "/").split("/").last().split(".").first()
                 return@all itemFunc.invoke(tableName, fileName, it.readLines(const.utf8))
             }
+    }
+
+
+    /**
+     * 初始化数据,目录：flyway-v${version}, 文件后缀 .dat
+     */
+    fun addResourceData() {
+        loadResource("flyway-v${version}", ".dat") { tableName, fileName, lines ->
+            var insert = db.mongo.mongoEvents.getCollection(tableName)!!.batchInsert()
+            insert.addEntities(lines.map { it.FromJson<JsonMap>()!! })
+            insert.exec();
+            return@loadResource true;
+        }
     }
 }
