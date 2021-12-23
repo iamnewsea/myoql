@@ -1,6 +1,7 @@
 package nbcp.model
 
 import nbcp.TestBase
+import nbcp.comm.PadStepEnViewWidth
 import org.junit.jupiter.api.Test
 
 
@@ -13,4 +14,5 @@ class MasterAlternateMapTest : TestBase() {
 
         Thread.sleep(3000)
     }
+
 }

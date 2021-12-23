@@ -348,7 +348,7 @@ data class moer_map(val _pname: String) {
                 var v1 = getMetaValue(it, entType, entTypeName, 1)
 
                 return@map """${CodeGeneratorHelper.getFieldComment(it)}
-val ${it.name} = ${v1}""".removeEmpltyLine().ToTab(1)
+val ${it.name} = ${v1}""".removeEmptyLine().ToTab(1)
             }
 
         var entityTypeName = entTypeName;
@@ -451,10 +451,10 @@ fun ${entityVarName}(${
                 var (retValue, retTypeIsBasicType) = getEntityValue1(it, entType)
                 if (retTypeIsBasicType) {
                     return@map """${CodeGeneratorHelper.getFieldComment(it)}
-val ${it.name} = MongoColumnName(${retValue})""".removeEmpltyLine().ToTab(1)
+val ${it.name} = MongoColumnName(${retValue})""".removeEmptyLine().ToTab(1)
                 } else {
                     return@map """${CodeGeneratorHelper.getFieldComment(it)}
-val ${it.name} = ${retValue}""".removeEmpltyLine().ToTab(1)
+val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
                 }
             }.toSet()
 

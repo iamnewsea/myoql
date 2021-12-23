@@ -48,6 +48,16 @@ select * from[pub space].tab where`id`  like'% 1 %'
 
 
     @Test
+    fun abc2() {
+        var d = "";
+        d = "12345678".PadStepEnViewWidth(4, '*')
+        println(d + ":")
+
+        d = "1234567890123".PadStepEnViewWidth(4, '*')
+        println(d + ":")
+    }
+
+    @Test
     fun test_3des() {
         var key1 = CipherUtil.getDesKey();
         println("key:" + key1)
