@@ -16,6 +16,9 @@ object Md5Util {
         return getBase64Md5(value.toByteArray())
     }
 
+
+
+
     /**
      * 带有校验和, 返回 base64 格式的 md5
      */
@@ -29,9 +32,7 @@ object Md5Util {
         result.add((checksum ushr 8).toByte())
         result.add((checksum % 255).toByte())
 
-        return MyUtil.getBase64(result.toByteArray())
-                .replace('+', '!')
-                .replace('/', '_')
+        return Base64Util.getUrlSafeValue( MyUtil.getBase64(result.toByteArray()) )
     }
 
     /**
@@ -103,8 +104,6 @@ object Md5Util {
         result.add((checksum ushr 8).toByte())
         result.add((checksum % 255).toByte())
 
-        return MyUtil.getBase64(result.toByteArray())
-                .replace('+', '!')
-                .replace('/', '_')
+        return  Base64Util.getUrlSafeValue( MyUtil.getBase64(result.toByteArray()))
     }
 }

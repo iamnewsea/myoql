@@ -490,6 +490,9 @@ object MyUtil {
     fun getStringContentFromBase64(base64: String): String {
         return String(getFromBase64(base64), const.utf8)
     }
+
+
+
 //
 //    /**
 //     * @param days: 从1开始的天数。（mongo dayOfYear 返回的天数）
