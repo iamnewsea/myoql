@@ -36,6 +36,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import java.util.function.Consumer
 
 @Component
+@Import(value = [SpringUtil::class])
 class MyMvcInitConfig : BeanPostProcessor {
     companion object {
         private var inited = false;
@@ -113,15 +114,16 @@ class MyMvcInitConfig : BeanPostProcessor {
             genericConversionService.addConverter(StringToLocalDateTimeConverter())
         }
 
+        var webJsonMapper = SpringUtil.getBean<WebJsonMapper>();
         //处理请求的消息体。
         handlerAdapter.messageConverters.forEach { converter ->
-            if( converter is AbstractHttpMessageConverter){
+            if (converter is AbstractHttpMessageConverter) {
                 converter.defaultCharset = const.utf8
             }
 
             if (converter is MappingJackson2HttpMessageConverter) {
                 converter.defaultCharset = const.utf8
-                converter.objectMapper = SpringUtil.getBean<WebJsonMapper>()
+                converter.objectMapper = webJsonMapper
                 return@forEach
             }
 
@@ -137,7 +139,8 @@ class MyMvcInitConfig : BeanPostProcessor {
                     if (sub_conveter is AbstractJackson2HttpMessageConverter) {
                         sub_conveter.defaultCharset = const.utf8
 
-                        sub_conveter.objectMapper = SpringUtil.getBean<WebJsonMapper>()
+                        //不能设置，因为不同的子类，需要不同的 Factory
+//                        sub_conveter.objectMapper = webJsonMapper
                     }
                     return@foreach2
                 }
