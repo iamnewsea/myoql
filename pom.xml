@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cn.dev8</groupId>
@@ -45,6 +47,7 @@
         <mybatis-plus.version>3.4.3.4</mybatis-plus.version>
         <mybatis-spring.version>2.0.6</mybatis-spring.version>
         <elasticsearch.version>7.15.0</elasticsearch.version>
+        <!-- jackson.version 设置为 2.13.0 会有错误 -->
         <jackson.version>2.12.5</jackson.version>
         <reflections.version>0.10.2</reflections.version>
         <bcprov.version>1.69</bcprov.version>
@@ -97,7 +100,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
         </dependency>
-
 
 
         <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
@@ -239,11 +241,11 @@
             <!--                <version>${bcprov.version}</version>-->
             <!--            </dependency>-->
 
-<!--            <dependency>-->
-<!--                <groupId>xml-apis</groupId>-->
-<!--                <artifactId>xml-apis</artifactId>-->
-<!--                <version>${xml-apis.version}</version>-->
-<!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>xml-apis</groupId>-->
+            <!--                <artifactId>xml-apis</artifactId>-->
+            <!--                <version>${xml-apis.version}</version>-->
+            <!--            </dependency>-->
 
 
             <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
@@ -287,7 +289,6 @@
                 <artifactId>kotlin-stdlib-jdk8</artifactId>
                 <version>${kotlin.version}</version>
             </dependency>
-
 
 
             <!-- https://mvnrepository.com/artifact/net.lingala.zip4j/zip4j -->
