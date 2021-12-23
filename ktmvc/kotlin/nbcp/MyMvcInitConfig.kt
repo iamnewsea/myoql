@@ -121,6 +121,7 @@ class MyMvcInitConfig : BeanPostProcessor {
                 converter.defaultCharset = const.utf8
             }
 
+            //解决绝大多数Json转换问题
             if (converter is MappingJackson2HttpMessageConverter) {
                 converter.defaultCharset = const.utf8
                 converter.objectMapper = webJsonMapper
