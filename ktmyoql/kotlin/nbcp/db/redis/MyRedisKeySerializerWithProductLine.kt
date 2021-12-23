@@ -30,14 +30,15 @@ class MyRedisKeySerializerWithProductLine : StringRedisSerializer() {
     }
 
     private fun getProductLineCodePrefix(): String {
+        if (config.redisProductLineCodePrefixEnable) {
+            return config.productLineCode;
+        }
+
         var productLineCodeScope = scopes.getLatest(RedisProductLineScope::class.java)
         if (productLineCodeScope != null) {
             return productLineCodeScope.productLineCode;
         }
 
-        if (config.redisProductLineCodePrefixEnable) {
-            return config.productLineCode;
-        }
         return "";
     }
 }

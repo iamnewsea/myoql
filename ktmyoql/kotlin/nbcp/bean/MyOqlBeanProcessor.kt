@@ -51,8 +51,14 @@ class MyOqlMongoJsonSerializerConfig : BeanPostProcessor {
     private fun init_app() {
         clazzesIsSimpleDefine.add(ObjectId::class.java)
 
-        BaseJsonMapper.addSerializer(ObjectId::class.java, ObjectIdJsonSerializer(), ObjectIdJsonDeserializer())
-        DbJsonMapper.addSerializer(Document::class.java, DocumentJsonSerializer(), DocumentJsonDeserializer())
+        SpringUtil.context.getBeansOfType(BaseJsonMapper::class.java).values.forEach { mapper ->
+
+            mapper.addTypeModule(ObjectId::class.java, ObjectIdJsonSerializer(), ObjectIdJsonDeserializer())
+
+            if (mapper is DbJsonMapper) {
+                mapper.addTypeModule(Document::class.java, DocumentJsonSerializer(), DocumentJsonDeserializer())
+            }
+        }
     }
 
 

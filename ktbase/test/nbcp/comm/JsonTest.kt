@@ -2,11 +2,10 @@ package nbcp.comm
 
 import nbcp.TestBase
 import nbcp.db.IdName
-import nbcp.db.IdUrl
 import nbcp.scope.JsonSceneEnumScope
 import org.junit.jupiter.api.Test
 import java.io.Serializable
-import java.time.Duration
+import java.time.LocalDateTime
 
 class JsonTest : TestBase() {
 
@@ -19,16 +18,18 @@ class JsonTest : TestBase() {
         var r: MyRawString = MyRawString();
     }
 
-    class ddd : Serializable {
+    class TestObj : Serializable {
         var n = ""
 
         @Transient
         var d = ""
+
+        var creatAt = LocalDateTime.now();
     }
 
     @Test
     fun test_get_json() {
-        var d = ddd();
+        var d = TestObj();
         d.n = "OK";
         d.d = "ee"
 
@@ -38,11 +39,11 @@ class JsonTest : TestBase() {
 
     @Test
     fun test_list_json() {
-        var d = listOf(ddd())
+        var d = listOf(TestObj())
         d[0].n = "OK";
         d[0].d = "ee"
 
-        println(d.ToJson().FromListJson(ddd::class.java).ToJson())
+        println(d.ToJson().FromListJson(TestObj::class.java).ToJson())
     }
 
 

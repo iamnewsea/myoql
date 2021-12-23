@@ -262,18 +262,6 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
      * 在所有Bean初始化之前执行
      */
     private fun init_app() {
-        DbJsonMapper.addSerializer(MyRawString::class.java, MyRawStringSerializer(), MyRawStringDeserializer())
-
-        BaseJsonMapper.addSerializer(MyString::class.java, MyStringSerializer(), MyStringDeserializer())
-        BaseJsonMapper.addSerializer(Date::class.java, DateJsonSerializer(), DateJsonDeserializer())
-        BaseJsonMapper.addSerializer(LocalDate::class.java, LocalDateJsonSerializer(), LocalDateJsonDeserializer())
-        BaseJsonMapper.addSerializer(LocalTime::class.java, LocalTimeJsonSerializer(), LocalTimeJsonDeserializer())
-        BaseJsonMapper.addSerializer(
-            LocalDateTime::class.java,
-            LocalDateTimeJsonSerializer(),
-            LocalDateTimeJsonDeserializer()
-        )
-        BaseJsonMapper.addSerializer(Timestamp::class.java, TimestampJsonSerializer(), TimestampJsonDeserializer())
     }
 }
 

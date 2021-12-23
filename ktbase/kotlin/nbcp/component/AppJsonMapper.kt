@@ -18,23 +18,6 @@ import java.util.*
 @Primary
 @Component()
 class AppJsonMapper : BaseJsonMapper(), InitializingBean {
-    companion object {
-        private val sers: MutableList<SimpleModule> = mutableListOf()
-        private val desers: MutableList<SimpleModule> = mutableListOf()
-
-        fun <T> addSerializer(type: Class<T>, ser: JsonSerializer<T>, deser: JsonDeserializer<T>) {
-            if (sers.any { it.moduleName == type.name } == false) {
-                var item = SimpleModule(type.name)
-                item.addSerializer(type, ser)
-                sers.add(item);
-            }
-            if (desers.any { it.moduleName == type.name } == false) {
-                var item = SimpleModule(type.name)
-                item.addDeserializer(type, deser)
-                desers.add(item)
-            }
-        }
-    }
 
     override fun afterPropertiesSet() {
         this.init();
@@ -43,22 +26,5 @@ class AppJsonMapper : BaseJsonMapper(), InitializingBean {
         this.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
         this.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE);
         this.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-
-        BaseJsonMapper.sers.forEach {
-            this.registerModule(it);
-        }
-
-        BaseJsonMapper.desers.forEach {
-            this.registerModule(it);
-        }
-
-        sers.forEach {
-            this.registerModule(it);
-        }
-
-        desers.forEach {
-            this.registerModule(it);
-        }
     }
-
 }

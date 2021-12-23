@@ -32,8 +32,8 @@ object config {
     val isInWebEnv by lazy {
         try {
             arrayOf(
-                    "javax.servlet.Servlet",
-                    "org.springframework.web.context.ConfigurableWebApplicationContext"
+                "javax.servlet.Servlet",
+                "org.springframework.web.context.ConfigurableWebApplicationContext"
             ).forEach {
                 Class.forName(it)
             }
@@ -53,7 +53,7 @@ object config {
 
     @JvmStatic
     val redisProductLineCodePrefixEnable by lazy {
-        return@lazy getConfig("app.product-line.redis-prefix-enable").AsBooleanWithNull() ?: true
+        return@lazy getConfig("app.product-line.redis-prefix-enable").AsBoolean()
     }
 
     @JvmStatic
@@ -174,8 +174,8 @@ object config {
     @JvmStatic
     val maxHttpPostSize: DataSize by lazy {
         return@lazy DataSize.parse(
-                getConfig("server.servlet.max-http-post-size")
-                        .AsString(getConfig("server.tomcat.max-http-post-size", "")).AsString("2MB")
+            getConfig("server.servlet.max-http-post-size")
+                .AsString(getConfig("server.tomcat.max-http-post-size", "")).AsString("2MB")
         )
     }
 
@@ -188,21 +188,21 @@ object config {
     @JvmStatic
     val wxAppId: String by lazy {
         return@lazy getConfig("app.wx.appId")
-                .must { it.HasValue }
-                .elseThrow { "必须指定 app.wx.appId" }
+            .must { it.HasValue }
+            .elseThrow { "必须指定 app.wx.appId" }
     }
 
     @JvmStatic
     val wxMchId: String by lazy {
         return@lazy getConfig("app.wx.mchId")
-                .must { it.HasValue }
-                .elseThrow { "必须指定 app.wx.mchId" }
+            .must { it.HasValue }
+            .elseThrow { "必须指定 app.wx.mchId" }
     }
 
     @JvmStatic
     val applicationName: String by lazy {
         return@lazy getConfig("spring.application.name")
-                .must { it.HasValue }
-                .elseThrow { "必须指定 spring.application.name" }
+            .must { it.HasValue }
+            .elseThrow { "必须指定 spring.application.name" }
     }
 }
