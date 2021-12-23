@@ -4,9 +4,11 @@ import nbcp.comm.Important
 import nbcp.db.*
 import nbcp.db.mongo.*
 import nbcp.db.mongo.entity.FlywayVersion
+import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.context.ApplicationEvent
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -75,5 +77,13 @@ class FlywayBeanProcessor : BeanPostProcessor {
 
                 return@all true;
             }
+
+
+        SpringUtil.context.publishEvent(FlywayCompleteEvent(this))
     }
+}
+
+
+public class FlywayCompleteEvent(source: Any) : ApplicationEvent(source) {
+
 }
