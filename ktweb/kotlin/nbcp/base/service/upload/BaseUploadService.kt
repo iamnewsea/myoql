@@ -125,7 +125,7 @@ abstract class BaseUploadService {
     lateinit var dbService: IUploadFileDbService
 
 
-    protected open fun upload(request: HttpServletRequest, group: String, response: HttpServletResponse) {
+    protected open fun upload(request: HttpServletRequest, response: HttpServletResponse, group: String) {
 
         if (request is StandardMultipartHttpServletRequest == false) {
             throw RuntimeException("request非StandardMultipartHttpServletRequest类型")
