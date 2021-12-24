@@ -1,33 +1,21 @@
-package nbcp.base.service
+package nbcp.base.service.upload
 
-import com.aliyun.oss.OSS
 import com.aliyun.oss.OSSClientBuilder
 import com.aliyun.oss.internal.OSSHeaders
-import com.aliyun.oss.model.*
-import io.minio.MinioClient
-import nbcp.comm.FullName
+import com.aliyun.oss.model.ObjectMetadata
+import com.aliyun.oss.model.StorageClass
 import nbcp.comm.HasValue
-import nbcp.comm.const.size1m
+import nbcp.comm.JsonResult
 import nbcp.utils.MyUtil
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.stereotype.Service
-import org.springframework.util.MimeTypeUtils
-import org.springframework.web.multipart.MultipartFile
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
 import java.io.InputStream
-import java.lang.Exception
-import java.net.URL
-import java.util.*
-import java.util.concurrent.*
 
 @Service
 @ConditionalOnClass(OSSClientBuilder::class)
-class AliOssBaseService {
+class AliOssBaseService : ISaveFileService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -45,11 +33,11 @@ class AliOssBaseService {
         return@lazy OSSClientBuilder().build(ALI_HOST, ALI_ACCESSKEY, ALI_SECRETKEY)
     }
 
-    fun check(): Boolean {
+      fun check(): Boolean {
         return ALI_HOST.HasValue && ALI_ACCESSKEY.HasValue && ALI_SECRETKEY.HasValue
     }
 
-    fun upload(fileStream: InputStream, group: String, fileData: UploadFileNameData): String {
+    override fun save(fileStream: InputStream, group: String, fileData: UploadFileNameData): String {
 
         if (check() == false) {
             return "";
@@ -77,4 +65,7 @@ class AliOssBaseService {
         return "https://${group}.${endpoint}${fileName}"
     }
 
+    override fun delete(url: String): JsonResult {
+        throw NotImplementedError("未实现!")
+    }
 }

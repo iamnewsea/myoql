@@ -1,8 +1,8 @@
-package nbcp.base.service
+package nbcp.base.service.upload
 
 import nbcp.comm.FullName
 import nbcp.comm.HasValue
-import org.springframework.beans.factory.InitializingBean
+import nbcp.comm.JsonResult
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.io.File
@@ -10,7 +10,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 
 @Service
-class UploadFileForLocalService :InitializingBean{
+class LocalUploadBaseService : ISaveFileService {
     /**
      * 上传到本地时使用该配置,最后不带 "/"
      */
@@ -23,11 +23,11 @@ class UploadFileForLocalService :InitializingBean{
     @Value("\${app.upload.local.path:}")
     var UPLOAD_LOCAL_PATH: String = ""
 
-    fun check(): Boolean {
+      fun check(): Boolean {
         return UPLOAD_LOCAL_HOST.HasValue && UPLOAD_LOCAL_PATH.HasValue
     }
 
-    fun upload(fileStream: InputStream, group: String, fileData: UploadFileNameData): String {
+    override fun save(fileStream: InputStream, group: String, fileData: UploadFileNameData): String {
         if (check() == false) {
             return "";
         }
@@ -50,7 +50,7 @@ class UploadFileForLocalService :InitializingBean{
         return targetFileName;
     }
 
-    override fun afterPropertiesSet() {
-
+    override fun delete(url: String): JsonResult {
+        throw NotImplementedError("未实现!")
     }
 }

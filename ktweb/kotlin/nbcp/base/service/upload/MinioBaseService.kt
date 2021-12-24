@@ -1,23 +1,21 @@
-package nbcp.base.service
+package nbcp.base.service.upload
 
-import io.minio.*
-import nbcp.comm.FullName
+import io.minio.MinioClient
+import io.minio.PutObjectArgs
+import io.minio.RemoveObjectArgs
 import nbcp.comm.HasValue
 import nbcp.comm.JsonResult
 import nbcp.comm.Skip
 import nbcp.utils.MyUtil
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.stereotype.Service
-import java.io.File
-import java.io.FileOutputStream
 import java.io.InputStream
 
 @Service
 @ConditionalOnClass(MinioClient::class)
-class MinioBaseService : InitializingBean {
+class MinioBaseService : ISaveFileService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -42,7 +40,7 @@ class MinioBaseService : InitializingBean {
         return@lazy MinioClient.builder().endpoint(MINIO_ENDPOINT).credentials(MINIO_ACCESSKEY, MINIO_SECRETKEY).build()
     }
 
-    fun upload(fileStream: InputStream, group: String, fileData: UploadFileNameData): String {
+    override fun save(fileStream: InputStream, group: String, fileData: UploadFileNameData): String {
         if (check() == false) {
             throw java.lang.RuntimeException("minIO缺少配置项！")
         }
@@ -114,7 +112,7 @@ class MinioBaseService : InitializingBean {
     }
 
 
-    fun delete(url: String): JsonResult {
+    override fun delete(url: String): JsonResult {
         var path = url;
         if (path.startsWith("http://", true) || path.startsWith("https://", true)) {
             if (path.startsWith(MINIO_ENDPOINT, true) == false) {
@@ -142,9 +140,5 @@ class MinioBaseService : InitializingBean {
         )
 
         return JsonResult();
-    }
-
-    override fun afterPropertiesSet() {
-
     }
 }

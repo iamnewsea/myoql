@@ -1,50 +1,39 @@
-package nbcp.base.service
+package nbcp.base.service.upload
 
+import nbcp.base.util.VideoUtil
 import nbcp.comm.*
 import nbcp.db.IdName
 import nbcp.db.mongo.entity.SysAnnex
 import nbcp.model.IUploadFileDbService
-import nbcp.base.util.VideoUtil
+import nbcp.scope.JsonSceneEnumScope
 import nbcp.utils.CodeUtil
-import nbcp.utils.SpringUtil
-import nbcp.web.findParameterStringValue
+import nbcp.web.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
 import java.io.InputStream
 import java.lang.RuntimeException
 import javax.imageio.ImageIO
 import javax.servlet.http.HttpServletRequest
-
+import javax.servlet.http.HttpServletResponse
 
 /**
  * 参数传递过程中,都没有 uploadPath 部分.
  */
-@Service
-open class UploadService {
+abstract class BaseUploadService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
 
-    @Value("\${app.upload.group-corp:true}")
-    private var UPLOAD_GROUPCORP = false
-
-//    @Value("\${app.upload.group:}")
-//    private var UPLOAD_GROUP = ""
-
-
     /**
      * @param vTempFile , 相对于 uploadPath 的相对路径.
      */
-    private fun doUpload(
-        group: String,
+    fun uploadRequestFile(
         file: MultipartFile,
+        group: String,
         fileName: String,
-        storageType: UploadStorageTypeEnum?,
         user: IdName,
         corpId: String
     ): ApiResult<SysAnnex> {
@@ -59,7 +48,6 @@ open class UploadService {
         fileData.fileName = extInfo.getFileName()
         fileData.extName = extInfo.extName
         fileData.extType = extInfo.extType
-        fileData.groupCorp = UPLOAD_GROUPCORP;
         fileData.corpId = corpId;
 
 
@@ -89,10 +77,9 @@ open class UploadService {
                     logoFile.corpId = fileData.corpId;
                     logoFile.extName = "png";
                     logoFile.extType = FileExtensionTypeEnum.Image;
-                    logoFile.groupCorp = fileData.groupCorp;
                     logoFile.fileName = CodeUtil.getCode() + ".png";
 
-                    var logoUrl = saveFile(this.logoStream, annexInfo.group, logoFile, storageType);
+                    var logoUrl = saveFile(logoStream, annexInfo.group, logoFile);
                     annexInfo.videoLogoUrl = logoUrl
                 }
             }
@@ -101,10 +88,10 @@ open class UploadService {
 
 //        fileData.imgWidth = annexInfo.imgWidth;
 //        fileData.imgHeight = annexInfo.imgHeight;
-
-        annexInfo.url = saveFile(fileStream, annexInfo.group, fileData, storageType).replace("\\", "/")
-
         annexInfo.corpId = corpId
+
+        annexInfo.url = saveFile(fileStream, annexInfo.group, fileData).replace("\\", "/")
+
 
         if (dbService.insert(annexInfo) == 0) {
             return ApiResult.error("记录到数据出错")
@@ -118,30 +105,6 @@ open class UploadService {
 //    }
 
 
-    @Autowired
-    lateinit var localUploader: UploadFileForLocalService
-
-    val minioUploader: MinioBaseService? by lazy {
-        return@lazy SpringUtil.getBeanWithNull(MinioBaseService::class.java)
-    }
-
-    val aliOssUploader: AliOssBaseService? by lazy {
-        return@lazy SpringUtil.getBeanWithNull(AliOssBaseService::class.java)
-    }
-
-
-    val defaultUploadType: UploadStorageTypeEnum? by lazy {
-        if (aliOssUploader?.check() == true) {
-            return@lazy UploadStorageTypeEnum.AliOss
-        } else if (minioUploader?.check() == true) {
-            return@lazy UploadStorageTypeEnum.Minio
-        } else if (localUploader.check()) {
-            return@lazy UploadStorageTypeEnum.Local
-        }
-
-        return@lazy null;
-    }
-
     /**
      * 把文件转移到相应的文件夹下.
      * 1. 第一级目录,按 年-月 归档.
@@ -151,51 +114,69 @@ open class UploadService {
      * 3. 第三级目录,是 后缀名
      * 4. 如果是图片，第四级目录是原图片的像素数/万 ，如 800*600 = 480000,则文件夹名为 48 。 忽略小数部分。这样对大部分图片大体归类。
      */
-    fun saveFile(
+    abstract fun saveFile(
         fileStream: InputStream,
         group: String,
         fileData: UploadFileNameData,
-        storageType: UploadStorageTypeEnum?
-    ): String {
-        var storageTypeValue = storageType ?: defaultUploadType;
+    ): String
 
 
-        if (storageTypeValue == UploadStorageTypeEnum.AliOss) {
-            return aliOssUploader!!.upload(fileStream, group, fileData)
+    @Autowired
+    lateinit var dbService: IUploadFileDbService
+
+
+    protected open fun upload(request: HttpServletRequest, group: String, response: HttpServletResponse) {
+
+        if (request is StandardMultipartHttpServletRequest == false) {
+            throw RuntimeException("request非StandardMultipartHttpServletRequest类型")
         }
 
-        if (storageTypeValue == UploadStorageTypeEnum.Minio) {
-            return minioUploader!!.upload(fileStream, group, fileData)
+        var groupValue = group;
+        if (groupValue.isEmpty()) {
+            groupValue = request.findParameterStringValue("group")
         }
 
-        if (storageTypeValue == UploadStorageTypeEnum.Local) {
-            return localUploader.upload(fileStream, group, fileData)
+        val ret = uploadRequest(
+            request,
+            groupValue,
+            IdName(request.UserId, request.UserName),
+            request.LoginUser.organization.id
+        );
+
+        if (ret.msg.HasValue) {
+            response.WriteJsonRawValue(JsonResult.error(ret.msg).ToJson())
+            return;
         }
 
+        val ids = ret.data;
 
-        throw java.lang.RuntimeException("请配置上传方式，MinIO方式：app.upload.minio.endpoint,app.upload.minio.accessKey; 本地文件方式：app.upload.local.host,app.upload.local.path")
-    }
-
-
-    private val dbService by lazy {
-        return@lazy SpringUtil.getBean<IUploadFileDbService>()
+        response.contentType = "application/json;charset=UTF-8"
+        usingScope(JsonSceneEnumScope.Web) {
+            if (ids.size == 0) {
+                response.outputStream.write(JsonResult.error("上传失败").ToJson().toByteArray(const.utf8));
+            } else if (ids.size == 1) {
+                response.outputStream.write(ApiResult.of(ids[0]).ToJson().toByteArray(const.utf8));
+            } else {
+                response.outputStream.write(ListResult.of(ids).ToJson().toByteArray(const.utf8));
+            }
+        }
+        return
     }
 
     /**
      * 文件上传
      */
-    fun upload(
-        request: HttpServletRequest,
+    private fun uploadRequest(
+        request: StandardMultipartHttpServletRequest,
+        group: String,
         user: IdName,
         corpId: String,
     ): ListResult<SysAnnex> {
         var list = mutableListOf<SysAnnex>()
 
         var msg = ""
-        var group = request.findParameterStringValue("group")
-        var storageType = request.findParameterStringValue("storage-type").ToEnum<UploadStorageTypeEnum>()
 
-        (request as StandardMultipartHttpServletRequest)
+        request
             .multiFileMap
             .toList()
             .ForEachExt { it, _ ->
@@ -204,7 +185,7 @@ open class UploadService {
 
                 files.ForEachExt for2@{ file, _ ->
                     fileName = getBestFileName(fileName, file.originalFilename)
-                    var ret1 = doUpload(group, file, fileName, storageType, user, corpId);
+                    var ret1 = uploadRequestFile(file, group, fileName, user, corpId);
                     if (ret1.msg.HasValue) {
                         msg = ret1.msg;
                         return@ForEachExt false
@@ -227,7 +208,7 @@ open class UploadService {
     /**
      * 找到最合适的文件名
      */
-    private fun getBestFileName(fileName: String?, originalFilename: String?): String {
+    fun getBestFileName(fileName: String?, originalFilename: String?): String {
         if (fileName == null && originalFilename == null) {
             throw RuntimeException("找不到文件名")
         }

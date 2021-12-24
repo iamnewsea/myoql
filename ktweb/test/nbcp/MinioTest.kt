@@ -1,6 +1,6 @@
 package nbcp
 
-import nbcp.base.service.MinioBaseService
+import nbcp.base.service.upload.MinioBaseService
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 

@@ -1,4 +1,4 @@
-package nbcp.base.service
+package nbcp.base.service.upload
 
 import nbcp.comm.FileExtensionTypeEnum
 import nbcp.comm.Format
@@ -13,7 +13,6 @@ class UploadFileNameData @JvmOverloads constructor(var msg: String = "") {
 
     //        var imgWidth: Int = 0
 //        var imgHeight: Int = 0
-    var groupCorp: Boolean = true
     var corpId: String = ""
 
     /*
@@ -47,7 +46,7 @@ class UploadFileNameData @JvmOverloads constructor(var msg: String = "") {
     fun getTargetFileName(separator: Char): String {
         val targetFileName = mutableListOf<String>()
 
-        if (groupCorp && corpId.HasValue) {
+        if (corpId.HasValue) {
             targetFileName.add(corpId);
         }
         targetFileName.addAll(getTargetPaths())
