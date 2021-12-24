@@ -54,7 +54,6 @@ class MyMvcInitConfig : BeanPostProcessor {
          * 默认情况下， maxFileSize = 1Mb ,maxRequestSize = 10Mb
          *
          */
-        //如果小于2Mb，直接设置为100Mb
         if (bean is MultipartProperties) {
             if (bean.maxFileSize.toMegabytes() <= 1) {
                 bean.maxFileSize = DataSize.of(100, DataUnit.MEGABYTES)
