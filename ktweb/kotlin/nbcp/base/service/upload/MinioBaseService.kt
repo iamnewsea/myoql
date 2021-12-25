@@ -3,6 +3,7 @@ package nbcp.base.service.upload
 import io.minio.MinioClient
 import io.minio.PutObjectArgs
 import io.minio.RemoveObjectArgs
+import nbcp.comm.AsString
 import nbcp.comm.HasValue
 import nbcp.comm.JsonResult
 import nbcp.comm.Skip
@@ -20,8 +21,17 @@ class MinioBaseService : ISaveFileService {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    @Value("\${app.upload.minio.endpoint:}")
-    var MINIO_ENDPOINT: String = ""
+    /**
+     * 内部存储使用，一般是 http://ip:9000
+     */
+    @Value("\${app.upload.minio.api-host:}")
+    var API_HOST: String = ""
+
+    /**
+     * 外部访问使用，一般是 https://域名:9000
+     */
+    @Value("\${app.upload.minio.web-host:}")
+    var WEB_HOST: String = ""
 
     @Value("\${app.upload.minio.key:}")
     var MINIO_ACCESSKEY: String = ""
@@ -33,11 +43,11 @@ class MinioBaseService : ISaveFileService {
     var MINIO_REGION: String = ""
 
     fun check(): Boolean {
-        return MINIO_ENDPOINT.HasValue && MINIO_ACCESSKEY.HasValue && MINIO_SECRETKEY.HasValue
+        return API_HOST.HasValue && MINIO_ACCESSKEY.HasValue && MINIO_SECRETKEY.HasValue
     }
 
     private val minioClient by lazy {
-        return@lazy MinioClient.builder().endpoint(MINIO_ENDPOINT).credentials(MINIO_ACCESSKEY, MINIO_SECRETKEY).build()
+        return@lazy MinioClient.builder().endpoint(API_HOST).credentials(MINIO_ACCESSKEY, MINIO_SECRETKEY).build()
     }
 
     override fun save(fileStream: InputStream, group: String, fileData: UploadFileNameData): String {
@@ -105,7 +115,7 @@ class MinioBaseService : ISaveFileService {
                     .build()
             )
 
-            return@use listOf(MINIO_ENDPOINT, response.bucket(), response.`object`())
+            return@use listOf(WEB_HOST.AsString(API_HOST), response.bucket(), response.`object`())
                 .map { it.trim('/') }
                 .joinToString("/")
         }
@@ -115,11 +125,13 @@ class MinioBaseService : ISaveFileService {
     override fun delete(url: String): JsonResult {
         var path = url;
         if (path.startsWith("http://", true) || path.startsWith("https://", true)) {
-            if (path.startsWith(MINIO_ENDPOINT, true) == false) {
+            if (path.startsWith(API_HOST, true)) {
+                path = path.substring(API_HOST.length);
+            } else if (path.startsWith(WEB_HOST, true)) {
+                path = path.substring(WEB_HOST.length);
+            } else {
                 return JsonResult.error("不识别Minio地址")
             }
-
-            path = path.substring(MINIO_ENDPOINT.length);
         }
 
         var sects = path.split('/').filter { it.HasValue };

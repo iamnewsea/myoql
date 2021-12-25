@@ -162,13 +162,13 @@ open class LoginUserModel @JvmOverloads constructor(
     var isAdmin: Boolean = false,
     name: String = "",
     var organization: IdName = IdName(),
-    var freshToken: String = "",
-    var apps: List<String> = listOf(),
-    var roles: List<String> = listOf(), //角色
-    var groups: List<String> = listOf(),
-    var depts: List<String> = listOf()
+    var freshToken: String = ""//角色
 ) : IdName(id, name) {
 
+    var depts: List<String> = listOf()
+    var groups: List<String> = listOf()
+    var apps: List<String> = listOf()
+    var roles: List<String> = listOf()
 
 //    fun isAdmin(isAdmin: Boolean): LoginUserModel {
 //        this.isAdmin = isAdmin;
