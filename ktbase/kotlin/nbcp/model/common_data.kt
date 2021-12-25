@@ -163,6 +163,7 @@ open class LoginUserModel @JvmOverloads constructor(
     name: String = "",
     var organization: IdName = IdName(),
     var freshToken: String = "",
+    var apps: List<String> = listOf(),
     var roles: List<String> = listOf(), //角色
     var groups: List<String> = listOf(),
     var depts: List<String> = listOf()
