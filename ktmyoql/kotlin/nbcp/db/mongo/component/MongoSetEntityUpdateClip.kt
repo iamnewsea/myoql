@@ -2,9 +2,7 @@ package nbcp.db.mongo
 
 
 import nbcp.comm.*
-import nbcp.utils.*
 import nbcp.db.db
-import org.springframework.data.mongodb.core.query.Criteria
 
 /**
  * Created by udi on 17-4-7.
@@ -15,13 +13,26 @@ import org.springframework.data.mongodb.core.query.Criteria
  * 不会更新 id
  */
 class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
-        var moerEntity: M,
-        var entity: E
+    var moerEntity: M,
+    var entity: E
 ) : MongoClipBase(moerEntity.tableName) {
 
+    private var requestJson: Map<String, Any?> = mapOf()
+
+    /*
+    以 duty 列为例 ：
+    如果duty 指定为 where 列：
+        如果duty没有指定set，忽略，不set
+        如果duty指定了 set， set
+    else = 如果 duty 没有指定在where 列
+        直接 set
+
+        ==》
+     如果duty指定了 set，则 set
+     如果duty没有指定set，则：    如果duty在where列，则不set，否则set
+     */
     private var whereColumns = mutableSetOf<String>()
     private var setColumns = mutableSetOf<String>()
-    private var unsetColumns = mutableSetOf<String>("createAt")
 
     fun withColumn(setFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M, E> {
         this.setColumns.add(setFunc(this.moerEntity).toString())
@@ -33,20 +44,41 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
         return this;
     }
 
-    fun withoutColumn(unsetFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M, E> {
-        this.unsetColumns.add(unsetFunc(this.moerEntity).toString())
-        return this;
-    }
-
     fun whereColumn(whereFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M, E> {
         this.whereColumns.add(whereFunc(this.moerEntity).toString())
         return this;
     }
 
+    fun withRequestJson(json: Map<String, Any?>): MongoSetEntityUpdateClip<M, E> {
+        this.requestJson = json;
+        return this;
+    }
+
+
+    fun joinWbsPath(a: String, b: String): String {
+        if (a.isEmpty()) return b;
+        return a + "." + b;
+    }
+
+    fun recursionJson(map: Map<String, Any?>, pWbs: String, callback: (Map<String, Any?>, String) -> Unit) {
+        callback(map, pWbs);
+
+        map.forEach { kv ->
+            val subValue = kv.value;
+            if (subValue is Map<*, *>) {
+                recursionJson(
+                    subValue as Map<String, Any?>,
+                    joinWbsPath(pWbs, kv.key),
+                    callback
+                );
+            }
+        }
+    }
+
     /**
      * 转为 Update子句，执行更多 Update 命令。
      */
-    fun castToUpdate(): MongoUpdateClip<M,E> {
+    fun castToUpdate(): MongoUpdateClip<M, E> {
         if (whereColumns.any() == false) {
             whereColumns.add("id")
         }
@@ -56,67 +88,58 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
 
         var update = MongoUpdateClip(this.moerEntity)
 
-        if (this.entity is Map<*, *>) {
-            //map 可能是  _id , 也可能是 id
-            val map = this.entity as MutableMap<*, *>
+        //统一按map处理
+//        var map = this.entity.ToJson().FromJson<JsonMap>()!!
 
-            map.keys.map { it.toString() }.forEach {
-                var findKey = it;
-                val value = map.get(it);
+        //去除空值，仅key有用；大部分情况下，可以按这个对象更新；涉及到object,array，则需要从实体entity中获取！
+//        this.withRequestBody = this.withRequestBody.ToJson().FromJson<JsonMap>()!!
 
-                if (whereColumns.contains(findKey)) {
-                    if (findKey == "_id") {
-                        findKey = "id"
+        //如果是数组，则直接设置
+
+        var ori_entity_map = this.entity.ToJson().FromJson<JsonMap>()!!
+
+        var withRequestJson = this.requestJson.keys.any();
+
+        recursionJson(if (withRequestJson) this.requestJson else ori_entity_map, "") { map, pWbs ->
+
+            map.keys.forEach { key ->
+                var wbs = joinWbsPath(pWbs, key);
+                var value = map.get(key) ?: return@recursionJson;  //过滤 null 值
+
+                val value_type = value::class.java;
+                if (value_type.IsSimpleType() == false) {
+                    return@recursionJson;
+                }
+
+                var keyInWhere = false;
+                if (whereColumns.contains(wbs)) {
+                    keyInWhere = true;
+                    if (key == "_id") {
+                        whereData2.put(joinWbsPath(pWbs, "id"), value)
+                    } else {
+                        whereData2.put(wbs, value)
                     }
-                    whereData2.put(findKey, value)
-                    return@forEach
                 }
 
-                if (findKey == "id" || findKey == "_id") {
-                    return@forEach
-                }
+                if (setColumns.contains(wbs) || !keyInWhere) {
+                    if (key == "_id") {
+                        setData2.put(joinWbsPath(pWbs, "id"), value)
+                    } else {
 
-                if (setColumns.any() && (setColumns.contains(findKey) == false)) {
-                    return@forEach;
-                }
-
-                if (unsetColumns.contains(findKey)) {
-                    return@forEach
-                }
-
-                setData2.put(findKey, value)
-            }
-        } else {
-            this.entity::class.java.AllFields.forEach {
-                var findKey = it.name;
-
-                if (whereColumns.contains(findKey)) {
-                    var value = MyUtil.getValueByWbsPath(this.entity, findKey);
-                    if( value == null){
-                        return@forEach
+                        if (value_type.IsSimpleType()) {
+                            setData2.put(wbs, value)
+                        } else if (value_type.isArray || value_type.IsCollectionType) {
+                            var ent_wbs_value: Any? = value;
+                            if (withRequestJson) {
+                                ent_wbs_value = ori_entity_map.getValueByWbsPath(wbs);
+                            }
+                            
+                            if (ent_wbs_value != null) {
+                                setData2.put(wbs, ent_wbs_value)
+                            }
+                        }
                     }
-                    whereData2.put(findKey, value)
-                    return@forEach
                 }
-
-                if (findKey == "id") {
-                    return@forEach
-                }
-
-                if (setColumns.any() && (setColumns.contains(findKey) == false)) {
-                    return@forEach;
-                }
-
-                if (unsetColumns.contains(findKey)) {
-                    return@forEach
-                }
-
-                var value = MyUtil.getValueByWbsPath(this.entity, findKey);
-
-                if( value == null){
-                    return@forEach
-                }
-                setData2.put(findKey, value)
             }
         }
 

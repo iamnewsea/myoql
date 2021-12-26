@@ -38,10 +38,10 @@ class Test_Mongo_Update : TestBase() {
     @Test
     fun test_save() {
         var d = db.mor_base.sysLastSortNumber.update()
-                .where{ it.table match "abc" }
-                .where{ it.group match "def"}
-                .inc { it.value op_inc 3 }
-                .saveAndReturnNew();
+            .where { it.table match "abc" }
+            .where { it.group match "def" }
+            .inc { it.value op_inc 3 }
+            .saveAndReturnNew();
 
         println(d.ToJson())
     }
@@ -53,7 +53,7 @@ class Test_Mongo_Update : TestBase() {
         annex.id = CodeUtil.getCode();
         annex.creator = IdName(CodeUtil.getCode(), "test")
         var d = db.mor_base.sysAnnex.updateWithEntity(annex)
-                .castToUpdate()
+            .castToUpdate()
 
         println(d.ToJson())
     }
@@ -63,7 +63,16 @@ class Test_Mongo_Update : TestBase() {
         var annex = Document()
         annex.put("id", CodeUtil.getCode())
         annex.put("name", "test_doc")
+        annex.put("name2", listOf("a", "b"))
         annex.put("creator", JsonMap("id" to CodeUtil.getCode(), "name" to "test"))
-        db.mor_base.sysAnnex.updateWithEntity(annex).execUpdate()
+
+        var annex2 = Document()
+        annex2.put("id", CodeUtil.getCode())
+        annex2.put("name", "test_doc")
+        annex2.put("creator", JsonMap("id" to CodeUtil.getCode(), "name" to "test"))
+        var update = db.mor_base.sysAnnex.updateWithEntity(annex).withRequestJson(annex2).castToUpdate();
+
+        println(db.mongo.getMergedMongoCriteria(*update.whereData.toTypedArray()).toDocument().toJson())
+        println(update.setData.ToJson())
     }
 }

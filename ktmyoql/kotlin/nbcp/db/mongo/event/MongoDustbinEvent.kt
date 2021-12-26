@@ -27,7 +27,7 @@ class MongoDustbinEvent : IMongoEntityDelete {
         }
 
         //找出数据
-        var where = delete.getMongoCriteria(*delete.whereData.toTypedArray());
+        var where = db.mongo.getMergedMongoCriteria(*delete.whereData.toTypedArray());
         var query = MongoBaseQueryClip(delete.collectionName);
         query.whereData.add(where);
         var list = query.toList(Document::class.java)

@@ -7,7 +7,6 @@ import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.LoginUserModel
 import nbcp.db.mongo.MongoBaseMetaCollection
-import nbcp.db.mongo.MongoColumnName
 import nbcp.db.mongo.MongoSetEntityUpdateClip
 import nbcp.db.sql.SqlBaseMetaTable
 import nbcp.db.sql.SqlSetEntityUpdateClip
@@ -215,11 +214,7 @@ val HttpServletRequest.tokenValue: String
 
 
 fun <M : MongoBaseMetaCollection<out E>, E : Any> MongoSetEntityUpdateClip<M, E>.withRequestParams(): MongoSetEntityUpdateClip<M, E> {
-    var keys = HttpContext.request.getPostJson().keys;
-    keys.forEach { key ->
-        this.withColumn { MongoColumnName(key) }
-    }
-    return this;
+    return this.withRequestJson(HttpContext.request.getPostJson())
 }
 
 fun <M : SqlBaseMetaTable<out Serializable>> SqlSetEntityUpdateClip<M>.withRequestParams(): SqlSetEntityUpdateClip<M> {

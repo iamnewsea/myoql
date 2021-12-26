@@ -53,6 +53,12 @@ object db_mongo {
 //        return getMongoTemplateByUri(uri)
 //    }
 
+    fun getMergedMongoCriteria(vararg where: Criteria): Criteria {
+        if (where.size == 0) return Criteria();
+        if (where.size == 1) return where[0];
+        return Criteria().andOperator(*where);
+    }
+
     /**
      * MongoTemplate不释放，所以要缓存。
      */
@@ -83,7 +89,7 @@ object db_mongo {
         }
         val dbFactory = SimpleMongoClientDatabaseFactory(uri);
         val converter =
-                MappingMongoConverter(DefaultDbRefResolver(dbFactory), SpringUtil.getBean<MongoMappingContext>())
+            MappingMongoConverter(DefaultDbRefResolver(dbFactory), SpringUtil.getBean<MongoMappingContext>())
         converter.setTypeMapper(DefaultMongoTypeMapper(null));
         (converter.conversionService as GenericConversionService).addConverter(Date2LocalDateTimeConverter())
 
@@ -91,15 +97,15 @@ object db_mongo {
         mongo_template_map.put(uri, ret);
         return ret;
     }
- 
+
     fun cond(ifExpression: Criteria, trueExpression: String, falseExpression: String): MongoExpression {
         return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
 
     fun cond(
-            ifExpression: Criteria,
-            trueExpression: MongoExpression,
-            falseExpression: MongoExpression
+        ifExpression: Criteria,
+        trueExpression: MongoExpression,
+        falseExpression: MongoExpression
     ): MongoExpression {
         return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
@@ -113,9 +119,9 @@ object db_mongo {
     }
 
     fun cond(
-            ifExpression: MongoExpression,
-            trueExpression: MongoExpression,
-            falseExpression: MongoExpression
+        ifExpression: MongoExpression,
+        trueExpression: MongoExpression,
+        falseExpression: MongoExpression
     ): MongoExpression {
         return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression, trueExpression, falseExpression))
     }
@@ -282,10 +288,10 @@ db.getCollection("adminRole").aggregate(
      * 查询到对象后，转实体。
      */
     fun <T> proc_mongo_doc_to_entity(
-            it: Document,
-            clazz: Class<T>,
-            lastKey: String,
-            mapFunc: ((Document) -> Unit)? = null
+        it: Document,
+        clazz: Class<T>,
+        lastKey: String,
+        mapFunc: ((Document) -> Unit)? = null
     ): T? {
         MongoDocument2EntityUtil.procDocumentJson(it);
         var lastKey = lastKey;
@@ -351,5 +357,5 @@ db.getCollection("adminRole").aggregate(
 
 class MongoDynamicEntity : JsonMap() {}
 class MongoDynamicMetaEntity(collectionName: String, databaseId: String = "") :
-        MongoBaseMetaCollection<MongoDynamicEntity>(MongoDynamicEntity::class.java, collectionName, databaseId) {
+    MongoBaseMetaCollection<MongoDynamicEntity>(MongoDynamicEntity::class.java, collectionName, databaseId) {
 }

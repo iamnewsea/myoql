@@ -98,7 +98,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
 
         var idValue = idValues.getOrPut(ref.refIdField) {
             //如果按id更新。
-            var whereMap = update.getMongoCriteria(*update.whereData.toTypedArray()).toDocument();
+            var whereMap = db.mongo.getMergedMongoCriteria(*update.whereData.toTypedArray()).toDocument();
 
             val refIdField = whereMap.keys.firstOrNull { key ->
                 if (key == ref.refIdField) {

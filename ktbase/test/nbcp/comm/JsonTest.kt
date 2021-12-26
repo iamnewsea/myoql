@@ -3,6 +3,7 @@ package nbcp.comm
 import nbcp.TestBase
 import nbcp.db.IdName
 import nbcp.scope.JsonSceneEnumScope
+import nbcp.utils.RecursionUtil
 import org.junit.jupiter.api.Test
 import java.io.Serializable
 import java.time.LocalDateTime
@@ -29,11 +30,29 @@ class JsonTest : TestBase() {
 
     @Test
     fun test_get_json() {
-        var d = TestObj();
-        d.n = "OK";
-        d.d = "ee"
+        var map = JsonMap();
+        map.put("ok", 12)
+        map.put("ok22", JsonMap("ff" to 1));
 
-        println(d.CloneObject().ToJson())
+        println("""{"id":1,"name":null}""".FromJson<JsonMap>()!!.keys)
+        println(map.keys)
+
+        var _r :((Map<String,Any?>)->Unit)? = null ;
+        var r :((Map<String,Any?>)->Unit) = {
+            println("m:" + it.ToJson())
+
+            it.values.filter { it is Map<*,*> }.map { it as Map<String,Any?> }.forEach {
+                _r!!(it);
+            }
+        }
+        _r = r;
+
+        r(map);
+
+        RecursionUtil.recursionJson(map,{
+            println("rm:" + it.ToJson())
+            return@recursionJson true;
+        })
     }
 
 

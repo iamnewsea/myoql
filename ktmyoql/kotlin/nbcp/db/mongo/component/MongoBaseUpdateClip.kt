@@ -4,9 +4,7 @@ import com.mongodb.client.result.UpdateResult
 import nbcp.comm.*
 import nbcp.db.MyOqlOrmScope
 import nbcp.db.db
-import org.bson.Document
 import org.slf4j.LoggerFactory
-import org.springframework.data.mongodb.core.FindAndModifyOptions
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.CriteriaDefinition
 import org.springframework.data.mongodb.core.query.Query
@@ -28,7 +26,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
     protected val arrayFilters: MutableList<CriteriaDefinition> = mutableListOf()
 
     val setData = LinkedHashMap<String, Any?>()
-    val unsetData = mutableListOf<String>()
+    val unsetColumns = mutableListOf<String>("createAt")
     val pushData = LinkedHashMap<String, Any>() //加
     val pullData = LinkedHashMap<String, Any>() //删
     protected val incData = LinkedHashMap<String, Number>() //
@@ -43,7 +41,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
     fun getChangedFieldData(): Map<String, Any?> {
         var ret = mutableMapOf<String, Any?>()
         ret.putAll(this.setData);
-        ret.putAll(this.unsetData.map { it to null })
+        ret.putAll(this.unsetColumns.map { it to null })
         return ret;
     }
 
@@ -71,7 +69,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             }
         }
 
-        for (it in unsetData) {
+        for (it in unsetColumns) {
             update = update.unset(it);
         }
 
@@ -118,7 +116,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             return 0;
         }
 
-        var criteria = this.getMongoCriteria(*whereData.toTypedArray());
+        var criteria = db.mongo.getMergedMongoCriteria(*whereData.toTypedArray());
 
         var update = getUpdateSetSect();
 

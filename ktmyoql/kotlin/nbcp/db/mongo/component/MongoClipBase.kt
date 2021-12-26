@@ -67,11 +67,7 @@ open class MongoClipBase(var collectionName: String) : Serializable {
         db.mongo.mongoEvents.getActualTableName(collectionName);
     }
 
-    fun getMongoCriteria(vararg where: Criteria): Criteria {
-        if (where.size == 0) return Criteria();
-        if (where.size == 1) return where[0];
-        return Criteria().andOperator(*where);
-    }
+
 
     /**
      * 执行的语句

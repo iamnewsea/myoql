@@ -51,7 +51,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
 
     fun exec(): Int {
         db.affectRowCount = -1;
-        var criteria = this.moerEntity.getMongoCriteria(*whereData.toTypedArray());
+        var criteria = db.mongo.getMergedMongoCriteria(*whereData.toTypedArray());
 
         var settingResult = db.mongo.mongoEvents.onDeleting(this)
         if (settingResult.any { it.result.result == false }) {

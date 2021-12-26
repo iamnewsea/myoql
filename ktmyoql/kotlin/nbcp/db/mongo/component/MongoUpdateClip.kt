@@ -99,12 +99,12 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
     }
 
     fun unset(key: String): MongoUpdateClip<M, E> {
-        this.unsetData.add(key);
+        this.unsetColumns.add(key);
         return this;
     }
 
     fun unset(keyFunc: (M) -> MongoColumnName): MongoUpdateClip<M, E> {
-        this.unsetData.add(keyFunc(this.moerEntity).toString());
+        this.unsetColumns.add(keyFunc(this.moerEntity).toString());
         return this;
     }
 
@@ -185,7 +185,7 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
             return null;
         }
 
-        var criteria = this.getMongoCriteria(*whereData.toTypedArray());
+        var criteria = db.mongo.getMergedMongoCriteria(*whereData.toTypedArray());
 
         var update = getUpdateSetSect();
 

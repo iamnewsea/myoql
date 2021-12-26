@@ -60,7 +60,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E:Any>(var moerEntity: 
 
     fun wheres(vararg whereDatas: Criteria): MongoAggregateClip<M, E> {
         if (whereDatas.any() == false) return this;
-        pipeLines.add("\$match" to this.moerEntity.getMongoCriteria(*whereDatas))
+        pipeLines.add("\$match" to db.mongo.getMergedMongoCriteria(*whereDatas))
         return this;
     }
 

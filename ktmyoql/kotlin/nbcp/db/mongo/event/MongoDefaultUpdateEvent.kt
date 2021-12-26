@@ -33,7 +33,7 @@ class MongoDefaultUpdateEvent : IMongoEntityUpdate {
                 value = db.mongo.transformDocumentIdTo_id(kv.value!!)
                 update.setData.set(kv.key, value);
             } else {
-                update.unsetData.add(kv.key);
+                update.unsetColumns.add(kv.key);
             }
         }
 

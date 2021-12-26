@@ -66,7 +66,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             return mutableListOf();
         }
 
-        val criteria = this.getMongoCriteria(*whereData.toTypedArray());
+        val criteria = db.mongo.getMergedMongoCriteria(*whereData.toTypedArray());
         val projection = Document();
         selectColumns.forEach {
             projection.put(it, 1)
@@ -207,7 +207,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         var startAt = LocalDateTime.now();
         var ret = -1;
         var error: Exception? = null
-        val criteria = this.getMongoCriteria(*whereData.toTypedArray())
+        val criteria = db.mongo.getMergedMongoCriteria(*whereData.toTypedArray())
         var query = Query.query(criteria);
         try {
             this.script = getQueryScript(criteria)
@@ -231,7 +231,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     fun exists(): Boolean {
         var startAt = LocalDateTime.now();
         var ret: Boolean? = null;
-        val criteria = this.getMongoCriteria(*whereData.toTypedArray());
+        val criteria = db.mongo.getMergedMongoCriteria(*whereData.toTypedArray());
         var query = Query.query(criteria);
         var error: Exception? = null;
         try {
