@@ -11,7 +11,7 @@ import org.bson.Document
 import org.springframework.core.io.ClassPathResource
 
 abstract class FlywayVersionBaseService(val version: Int) {
-    abstract fun initData();
+    abstract fun exec();
 
     /**
      * @param itemFunc: 参数：实体名，文件名全路径，所有行数据。返回false停止。

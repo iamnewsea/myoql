@@ -58,7 +58,7 @@ class FlywayBeanProcessor : BeanPostProcessor {
                 ent.startAt = LocalDateTime.now()
 
                 try {
-                    it.initData();
+                    it.exec();
                     ent.isSuccess = true;
                     ent.finishAt = LocalDateTime.now();
                     db.mor_base.flywayVersion.doInsert(ent);
