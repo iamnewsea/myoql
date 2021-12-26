@@ -1,9 +1,13 @@
 package nbcp.db
 
+import com.mongodb.client.model.IndexOptions
+import nbcp.comm.AsString
 import nbcp.comm.FromJson
 import nbcp.comm.JsonMap
 import nbcp.comm.const
+import nbcp.db.mongo.MongoBaseMetaCollection
 import nbcp.db.mongo.batchInsert
+import org.bson.Document
 import org.springframework.core.io.ClassPathResource
 
 abstract class FlywayVersionBaseService(val version: Int) {
@@ -38,6 +42,57 @@ abstract class FlywayVersionBaseService(val version: Int) {
             insert.addEntities(lines.map { it.FromJson<JsonMap>()!! })
             insert.exec();
             return@loadResource true;
+        }
+    }
+
+
+    private fun DbEntityIndex.indexName(): String {
+        return "i_" + this.value.sortedBy { it.length.toString().padStart(3, '0') + it }.joinToString("_")
+    }
+
+    private fun DbEntityIndex.toDocument(): Document {
+        return Document(JsonMap(this.value.map { it to 1 }))
+    }
+
+
+    fun <M : MongoBaseMetaCollection<Any>> M.createTable() {
+        var mongoTemplate = this.getMongoTemplate()
+        var db = mongoTemplate.db;
+        if (mongoTemplate.collectionExists(this.tableName) == false) {
+            db.createCollection(this.tableName);
+        }
+    }
+
+    fun <M : MongoBaseMetaCollection<Any>> M.createIndex(dbEntityIndex: DbEntityIndex) {
+        var mongoTemplate = this.getMongoTemplate()
+        var db = mongoTemplate.db;
+        var collection = db.getCollection(this.tableName)
+
+
+        if (collection.listIndexes()
+                .toList()
+                .map { it.get("name").AsString() }
+                .contains(dbEntityIndex.indexName()) == false
+        ) {
+            collection.createIndex(
+                dbEntityIndex.toDocument(),
+                IndexOptions().name(dbEntityIndex.indexName()).unique(dbEntityIndex.unique)
+            )
+        }
+    }
+
+    fun initMongoIndex() {
+        db.mongo.groups.forEach {
+            it.getEntities().forEach { ent ->
+                (ent as MongoBaseMetaCollection<Any>)
+                    .apply {
+                        this.createTable()
+
+                        this.entityClass.getAnnotationsByType(DbEntityIndex::class.java).forEach { index ->
+                            this.createIndex(index);
+                        }
+                    }
+            }
         }
     }
 }
