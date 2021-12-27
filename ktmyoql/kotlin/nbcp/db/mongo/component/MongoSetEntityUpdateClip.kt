@@ -33,6 +33,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
      */
     private var whereColumns = mutableSetOf<String>()
     private var setColumns = mutableSetOf<String>()
+    private var unsetColumns = mutableSetOf<String>()
 
     fun withColumn(setFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M, E> {
         this.setColumns.add(setFunc(this.moerEntity).toString())
@@ -41,6 +42,17 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
 
     fun withColumns(vararg column: String): MongoSetEntityUpdateClip<M, E> {
         this.setColumns.addAll(column)
+        return this;
+    }
+
+
+    fun withoutColumn(setFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M, E> {
+        this.unsetColumns.add(setFunc(this.moerEntity).toString())
+        return this;
+    }
+
+    fun withoutColumns(vararg column: String): MongoSetEntityUpdateClip<M, E> {
+        this.unsetColumns.addAll(column)
         return this;
     }
 
@@ -60,17 +72,28 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
         return a + "." + b;
     }
 
-    fun recursionJson(map: Map<String, Any?>, pWbs: String, callback: (Map<String, Any?>, String) -> Unit) {
-        callback(map, pWbs);
-
+    /**
+     * @param callback ,返回 false 表示停止递归子对象
+     */
+    fun recursionJson(
+        map: Map<String, Any?>,
+        pWbs: String,
+        callback: (Map<String, Any?>, String, Any, String) -> Unit
+    ) {
         map.forEach { kv ->
             val subValue = kv.value;
+            if (subValue == null) {
+                return@forEach
+            }
+
+            callback(map, kv.key, subValue, pWbs)
+
             if (subValue is Map<*, *>) {
                 recursionJson(
                     subValue as Map<String, Any?>,
                     joinWbsPath(pWbs, kv.key),
                     callback
-                );
+                )
             }
         }
     }
@@ -100,47 +123,48 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
 
         var withRequestJson = this.requestJson.keys.any();
 
-        recursionJson(if (withRequestJson) this.requestJson else ori_entity_map, "") { map, pWbs ->
+        recursionJson(if (withRequestJson) this.requestJson else ori_entity_map, "") { map, key, value, pWbs ->
 
-            map.keys.forEach { key ->
-                var wbs = joinWbsPath(pWbs, key);
-                var value = map.get(key) ?: return@recursionJson;  //过滤 null 值
+            var wbs = joinWbsPath(pWbs, key);
 
-                val value_type = value::class.java;
-                if (value_type.IsSimpleType() == false) {
-                    return@recursionJson;
+            var keyInWhere = false;
+            if (whereColumns.contains(wbs)) {
+                keyInWhere = true;
+                if (key == "_id") {
+                    whereData2.put(joinWbsPath(pWbs, "id"), value)
+                } else {
+                    whereData2.put(wbs, value)
                 }
+            }
 
-                var keyInWhere = false;
-                if (whereColumns.contains(wbs)) {
-                    keyInWhere = true;
-                    if (key == "_id") {
-                        whereData2.put(joinWbsPath(pWbs, "id"), value)
-                    } else {
-                        whereData2.put(wbs, value)
-                    }
-                }
 
-                if (setColumns.contains(wbs) || !keyInWhere) {
-                    if (key == "_id") {
-                        setData2.put(joinWbsPath(pWbs, "id"), value)
-                    } else {
+            if (unsetColumns.any { it == wbs || wbs.startsWith(it + ".") }) {
+                return@recursionJson;
+            }
 
-                        if (value_type.IsSimpleType()) {
-                            setData2.put(wbs, value)
-                        } else if (value_type.isArray || value_type.IsCollectionType) {
-                            var ent_wbs_value: Any? = value;
-                            if (withRequestJson) {
-                                ent_wbs_value = ori_entity_map.getValueByWbsPath(wbs);
-                            }
-                            
-                            if (ent_wbs_value != null) {
-                                setData2.put(wbs, ent_wbs_value)
-                            }
+            if (setColumns.contains(wbs) || !keyInWhere) {
+                if (key == "_id") {
+                    setData2.put(joinWbsPath(pWbs, "id"), value)
+                } else {
+                    val value_type = value::class.java;
+
+                    if (value_type.IsSimpleType()) {
+                        setData2.put(wbs, value)
+                    } else if (value_type.isArray || value_type.IsCollectionType) {
+                        var ent_wbs_value: Any? = value;
+                        if (withRequestJson) {
+                            ent_wbs_value = ori_entity_map.getValueByWbsPath(wbs);
+                        }
+
+                        if (ent_wbs_value != null) {
+                            setData2.put(wbs, ent_wbs_value)
                         }
                     }
                 }
             }
+
+
+            return@recursionJson;
         }
 
         whereData2.forEach { key, value ->
