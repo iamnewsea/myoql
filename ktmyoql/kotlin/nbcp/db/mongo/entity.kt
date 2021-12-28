@@ -264,6 +264,7 @@ open class FlywayVersion @JvmOverloads constructor(
 data class SysDictionary(
     @Cn("所有者")
     var owner: String = "",
+    var group: String = "",
     @Cn("值")
     var key: String = "",
     @Cn("值")
