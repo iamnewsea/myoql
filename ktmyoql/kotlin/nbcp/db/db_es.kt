@@ -4,6 +4,7 @@ import nbcp.scope.*
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.es.*
+import nbcp.db.mongo.MongoBaseMetaCollection
 import org.apache.http.HttpHost
 import org.elasticsearch.client.*
 import org.slf4j.LoggerFactory
@@ -162,4 +163,17 @@ object db_es {
             );
         }
     }
+
+
+    /**
+     * 动态实体
+     */
+    fun dynamicEntity(collectionName: String): ElasticSearchDynamicMetaEntity {
+        return ElasticSearchDynamicMetaEntity(collectionName);
+    }
+}
+
+class ElasticSearchDynamicEntity : JsonMap() {}
+class ElasticSearchDynamicMetaEntity(collectionName: String, databaseId: String = "") :
+    EsBaseMetaEntity<ElasticSearchDynamicEntity>(ElasticSearchDynamicEntity::class.java, collectionName, databaseId) {
 }
