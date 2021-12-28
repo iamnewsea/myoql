@@ -170,6 +170,8 @@ open class LoginUserModel @JvmOverloads constructor(
     var apps: List<String> = listOf()
     var roles: List<String> = listOf()
 
+    var ext: String = ""
+
 //    fun isAdmin(isAdmin: Boolean): LoginUserModel {
 //        this.isAdmin = isAdmin;
 //        return this;
