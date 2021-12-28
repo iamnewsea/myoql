@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2021-12-16 01:37:15
+//generate auto @2021-12-28 10:23:20
 
 
 class IdUrlMeta(private val _pname: String) : MongoColumnName() {
@@ -281,35 +281,10 @@ class BusinessLicenseDataMeta(private val _pname: String) : MongoColumnName() {
 
 
 @Component("mongo.MongoBase")
-@MetaDataGroup(DatabaseEnum.Mongo,"MongoBase")
+@MetaDataGroup(DatabaseEnum.Mongo, "MongoBase")
 class MongoBaseGroup : IDataGroup {
-    override fun getEntities(): Set<BaseMetaData> = setOf(basicUser, basicUserLoginInfo, flywayVersion, sysAnnex, sysCity, sysDictionary, sysDustbin, sysLastSortNumber, sysLog, sysOrganization)
+    override fun getEntities(): Set<BaseMetaData> = setOf(sysDictionary, basicUser, flywayVersion, sysDustbin, sysCity, sysLog, sysAnnex, basicUserLoginInfo, sysLastSortNumber, sysOrganization)
 
-
-    /**
-     * 用户信息
-     */
-    val basicUser get() = BasicUserEntity();
-
-    /**
-     * 用户登录信息
-     */
-    val basicUserLoginInfo get() = BasicUserLoginInfoEntity();
-
-    /**
-     * 数据版本
-     */
-    val flywayVersion get() = FlywayVersionEntity();
-
-    /**
-     * 系统附件
-     */
-    val sysAnnex get() = SysAnnexEntity();
-
-    /**
-     * 城市令牌
-     */
-    val sysCity get() = SysCityEntity();
 
     /**
      * 字典
@@ -317,14 +292,24 @@ class MongoBaseGroup : IDataGroup {
     val sysDictionary get() = SysDictionaryEntity();
 
     /**
+     * 用户信息
+     */
+    val basicUser get() = BasicUserEntity();
+
+    /**
+     * 数据版本
+     */
+    val flywayVersion get() = FlywayVersionEntity();
+
+    /**
      * 数据垃圾箱
      */
     val sysDustbin get() = SysDustbinEntity();
 
     /**
-     * 排序记录号
+     * 城市令牌
      */
-    val sysLastSortNumber get() = SysLastSortNumberEntity();
+    val sysCity get() = SysCityEntity();
 
     /**
      * 系统日志
@@ -332,10 +317,75 @@ class MongoBaseGroup : IDataGroup {
     val sysLog get() = SysLogEntity();
 
     /**
+     * 系统附件
+     */
+    val sysAnnex get() = SysAnnexEntity();
+
+    /**
+     * 用户登录信息
+     */
+    val basicUserLoginInfo get() = BasicUserLoginInfoEntity();
+
+    /**
+     * 排序记录号
+     */
+    val sysLastSortNumber get() = SysLastSortNumberEntity();
+
+    /**
      * 组织信息
      */
     val sysOrganization get() = SysOrganizationEntity();
 
+
+    /**
+     * 字典
+     */
+    @Cn("字典")
+    @SortNumber("sort","",10)
+    class SysDictionaryEntity(collectionName: String = "", databaseId: String = "")
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysDictionary>(nbcp.db.mongo.entity.SysDictionary::class.java, collectionName.AsString("sysDictionary"), databaseId) {
+
+        val id = MongoColumnName("_id")
+
+        /**
+         * 所有者
+         */
+        @Cn("所有者")
+        val owner = MongoColumnName("owner")
+
+        val group = MongoColumnName("group")
+
+        /**
+         * 值
+         */
+        @Cn("值")
+        val key = MongoColumnName("key")
+
+        /**
+         * 值
+         */
+        @Cn("值")
+        val label = MongoColumnName("label")
+
+        /**
+         * 排序
+         */
+        @Cn("排序")
+        val sort = MongoColumnName("sort")
+
+        /**
+         * 创建时间
+         */
+        @Cn("创建时间")
+        val createAt = MongoColumnName("createAt")
+
+        /**
+         * 更新时间
+         */
+        @Cn("更新时间")
+        val updateAt = MongoColumnName("updateAt")
+
+    }
 
     /**
      * 用户信息
@@ -403,89 +453,6 @@ class MongoBaseGroup : IDataGroup {
     }
 
     /**
-     * 用户登录信息
-     */
-    @Cn("用户登录信息")
-    class BasicUserLoginInfoEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.BasicUserLoginInfo>(nbcp.db.mongo.entity.BasicUserLoginInfo::class.java, collectionName.AsString("basicUserLoginInfo"), databaseId) {
-
-        val id = MongoColumnName("_id")
-
-        /**
-         * 用户唯一Id
-         */
-        @Cn("用户唯一Id")
-        val userId = MongoColumnName("userId")
-
-        /**
-         * 登录名
-         */
-        @Cn("登录名")
-        val loginName = MongoColumnName("loginName")
-
-        /**
-         * 登录手机
-         */
-        @Cn("登录手机")
-        val mobile = MongoColumnName("mobile")
-
-        /**
-         * 登录邮箱
-         */
-        @Cn("登录邮箱")
-        val email = MongoColumnName("email")
-
-        /**
-         * 密码
-         */
-        @Cn("密码")
-        val password = MongoColumnName("password")
-
-        /**
-         * 最后登录时间
-         */
-        @Cn("最后登录时间")
-        val lastLoginAt = MongoColumnName("lastLoginAt")
-
-        /**
-         * 是否已锁定
-         */
-        @Cn("是否已锁定")
-        val isLocked = MongoColumnName("isLocked")
-
-        /**
-         * 锁定详情
-         */
-        @Cn("锁定详情")
-        val lockedRemark = MongoColumnName("lockedRemark")
-
-        /**
-         * 创建时间
-         */
-        @Cn("创建时间")
-        val createAt = MongoColumnName("createAt")
-
-        /**
-         * 更新时间
-         */
-        @Cn("更新时间")
-        val updateAt = MongoColumnName("updateAt")
-
-        fun queryByUserId(userId: String): MongoQueryClip<BasicUserLoginInfoEntity, nbcp.db.mongo.entity.BasicUserLoginInfo> {
-            return this.query().where { it.userId match userId }
-        }
-
-        fun deleteByUserId(userId: String): MongoDeleteClip<BasicUserLoginInfoEntity> {
-            return this.delete().where { it.userId match userId }
-        }
-
-        fun updateByUserId(userId: String): MongoUpdateClip<BasicUserLoginInfoEntity, nbcp.db.mongo.entity.BasicUserLoginInfo> {
-            return this.update().where { it.userId match userId }
-        }
-
-    }
-
-    /**
      * 数据版本
      */
     @Cn("数据版本")
@@ -545,67 +512,25 @@ class MongoBaseGroup : IDataGroup {
     }
 
     /**
-     * 系统附件
+     * 数据垃圾箱
      */
-    @Cn("系统附件")
-    class SysAnnexEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysAnnex>(nbcp.db.mongo.entity.SysAnnex::class.java, collectionName.AsString("sysAnnex"), databaseId) {
+    @Cn("数据垃圾箱")
+    class SysDustbinEntity(collectionName: String = "", databaseId: String = "")
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysDustbin>(nbcp.db.mongo.entity.SysDustbin::class.java, collectionName.AsString("sysDustbin"), databaseId) {
 
         val id = MongoColumnName("_id")
 
         /**
-         * 文件名
+         * 表名
          */
-        @Cn("文件名")
-        val name = MongoColumnName("name")
+        @Cn("表名")
+        val table = MongoColumnName("table")
 
         /**
-         * 标签
+         * 备注
          */
-        @Cn("标签")
-        val tags = MongoColumnName("tags")
-
-        /**
-         * 扩展名
-         */
-        @Cn("扩展名")
-        val ext = MongoColumnName("ext")
-
-        /**
-         * 大小
-         */
-        @Cn("大小")
-        val size = MongoColumnName("size")
-
-        /**
-         * 图像宽度
-         */
-        @Cn("图像宽度")
-        val imgWidth = MongoColumnName("imgWidth")
-
-        /**
-         * 图像高度
-         */
-        @Cn("图像高度")
-        val imgHeight = MongoColumnName("imgHeight")
-
-        /**
-         * 时长
-         */
-        @Cn("时长")
-        val videoTime = MongoColumnName("videoTime")
-
-        /**
-         * 视频封面地址
-         */
-        @Cn("视频封面地址")
-        val videoLogoUrl = MongoColumnName("videoLogoUrl")
-
-        /**
-         * 网络路径
-         */
-        @Cn("网络路径")
-        val url = MongoColumnName("url")
+        @Cn("备注")
+        val remark = MongoColumnName("remark")
 
         /**
          * 创建者
@@ -614,22 +539,10 @@ class MongoBaseGroup : IDataGroup {
         val creator = IdNameMeta("creator")
 
         /**
-         * 组
+         * 数据
          */
-        @Cn("组")
-        val group = MongoColumnName("group")
-
-        /**
-         * 所属企业
-         */
-        @Cn("所属企业")
-        val corpId = MongoColumnName("corpId")
-
-        /**
-         * 错误消息
-         */
-        @Cn("错误消息")
-        val errorMsg = MongoColumnName("errorMsg")
+        @Cn("数据")
+        val data = SerializableMeta("data")
 
         /**
          * 创建时间
@@ -741,142 +654,6 @@ class MongoBaseGroup : IDataGroup {
     }
 
     /**
-     * 字典
-     */
-    @Cn("字典")
-    @SortNumber("sort","",10)
-    class SysDictionaryEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysDictionary>(nbcp.db.mongo.entity.SysDictionary::class.java, collectionName.AsString("sysDictionary"), databaseId) {
-
-        val id = MongoColumnName("_id")
-
-        /**
-         * 所有者
-         */
-        @Cn("所有者")
-        val owner = MongoColumnName("owner")
-
-        /**
-         * 值
-         */
-        @Cn("值")
-        val key = MongoColumnName("key")
-
-        /**
-         * 值
-         */
-        @Cn("值")
-        val label = MongoColumnName("label")
-
-        /**
-         * 排序
-         */
-        @Cn("排序")
-        val sort = MongoColumnName("sort")
-
-        /**
-         * 创建时间
-         */
-        @Cn("创建时间")
-        val createAt = MongoColumnName("createAt")
-
-        /**
-         * 更新时间
-         */
-        @Cn("更新时间")
-        val updateAt = MongoColumnName("updateAt")
-
-    }
-
-    /**
-     * 数据垃圾箱
-     */
-    @Cn("数据垃圾箱")
-    class SysDustbinEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysDustbin>(nbcp.db.mongo.entity.SysDustbin::class.java, collectionName.AsString("sysDustbin"), databaseId) {
-
-        val id = MongoColumnName("_id")
-
-        /**
-         * 表名
-         */
-        @Cn("表名")
-        val table = MongoColumnName("table")
-
-        /**
-         * 备注
-         */
-        @Cn("备注")
-        val remark = MongoColumnName("remark")
-
-        /**
-         * 创建者
-         */
-        @Cn("创建者")
-        val creator = IdNameMeta("creator")
-
-        /**
-         * 数据
-         */
-        @Cn("数据")
-        val data = SerializableMeta("data")
-
-        /**
-         * 创建时间
-         */
-        @Cn("创建时间")
-        val createAt = MongoColumnName("createAt")
-
-        /**
-         * 更新时间
-         */
-        @Cn("更新时间")
-        val updateAt = MongoColumnName("updateAt")
-
-    }
-
-    /**
-     * 排序记录号
-     */
-    @Cn("排序记录号")
-    class SysLastSortNumberEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysLastSortNumber>(nbcp.db.mongo.entity.SysLastSortNumber::class.java, collectionName.AsString("sysLastSortNumber"), databaseId) {
-
-        val id = MongoColumnName("_id")
-
-        /**
-         * 表名
-         */
-        @Cn("表名")
-        val table = MongoColumnName("table")
-
-        /**
-         * 组
-         */
-        @Cn("组")
-        val group = MongoColumnName("group")
-
-        /**
-         * 值
-         */
-        @Cn("值")
-        val value = MongoColumnName("value")
-
-        /**
-         * 创建时间
-         */
-        @Cn("创建时间")
-        val createAt = MongoColumnName("createAt")
-
-        /**
-         * 更新时间
-         */
-        @Cn("更新时间")
-        val updateAt = MongoColumnName("updateAt")
-
-    }
-
-    /**
      * 系统日志
      */
     @Cn("系统日志")
@@ -938,6 +715,231 @@ class MongoBaseGroup : IDataGroup {
          */
         @Cn("创建时间")
         val createAt = MongoColumnName("createAt")
+
+    }
+
+    /**
+     * 系统附件
+     */
+    @Cn("系统附件")
+    class SysAnnexEntity(collectionName: String = "", databaseId: String = "")
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysAnnex>(nbcp.db.mongo.entity.SysAnnex::class.java, collectionName.AsString("sysAnnex"), databaseId) {
+
+        val id = MongoColumnName("_id")
+
+        /**
+         * 文件名
+         */
+        @Cn("文件名")
+        val name = MongoColumnName("name")
+
+        /**
+         * 标签
+         */
+        @Cn("标签")
+        val tags = MongoColumnName("tags")
+
+        /**
+         * 扩展名
+         */
+        @Cn("扩展名")
+        val ext = MongoColumnName("ext")
+
+        /**
+         * 大小
+         */
+        @Cn("大小")
+        val size = MongoColumnName("size")
+
+        /**
+         * 图像宽度
+         */
+        @Cn("图像宽度")
+        val imgWidth = MongoColumnName("imgWidth")
+
+        /**
+         * 图像高度
+         */
+        @Cn("图像高度")
+        val imgHeight = MongoColumnName("imgHeight")
+
+        /**
+         * 时长
+         */
+        @Cn("时长")
+        val videoTime = MongoColumnName("videoTime")
+
+        /**
+         * 视频封面地址
+         */
+        @Cn("视频封面地址")
+        val videoLogoUrl = MongoColumnName("videoLogoUrl")
+
+        /**
+         * 网络路径
+         */
+        @Cn("网络路径")
+        val url = MongoColumnName("url")
+
+        /**
+         * 创建者
+         */
+        @Cn("创建者")
+        val creator = IdNameMeta("creator")
+
+        /**
+         * 组
+         */
+        @Cn("组")
+        val group = MongoColumnName("group")
+
+        /**
+         * 所属企业
+         */
+        @Cn("所属企业")
+        val corpId = MongoColumnName("corpId")
+
+        /**
+         * 错误消息
+         */
+        @Cn("错误消息")
+        val errorMsg = MongoColumnName("errorMsg")
+
+        /**
+         * 创建时间
+         */
+        @Cn("创建时间")
+        val createAt = MongoColumnName("createAt")
+
+        /**
+         * 更新时间
+         */
+        @Cn("更新时间")
+        val updateAt = MongoColumnName("updateAt")
+
+    }
+
+    /**
+     * 用户登录信息
+     */
+    @Cn("用户登录信息")
+    class BasicUserLoginInfoEntity(collectionName: String = "", databaseId: String = "")
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.BasicUserLoginInfo>(nbcp.db.mongo.entity.BasicUserLoginInfo::class.java, collectionName.AsString("basicUserLoginInfo"), databaseId) {
+
+        val id = MongoColumnName("_id")
+
+        /**
+         * 用户唯一Id
+         */
+        @Cn("用户唯一Id")
+        val userId = MongoColumnName("userId")
+
+        /**
+         * 登录名
+         */
+        @Cn("登录名")
+        val loginName = MongoColumnName("loginName")
+
+        /**
+         * 登录手机
+         */
+        @Cn("登录手机")
+        val mobile = MongoColumnName("mobile")
+
+        /**
+         * 登录邮箱
+         */
+        @Cn("登录邮箱")
+        val email = MongoColumnName("email")
+
+        /**
+         * 密码
+         */
+        @Cn("密码")
+        val password = MongoColumnName("password")
+
+        /**
+         * 最后登录时间
+         */
+        @Cn("最后登录时间")
+        val lastLoginAt = MongoColumnName("lastLoginAt")
+
+        /**
+         * 是否已锁定
+         */
+        @Cn("是否已锁定")
+        val isLocked = MongoColumnName("isLocked")
+
+        /**
+         * 锁定详情
+         */
+        @Cn("锁定详情")
+        val lockedRemark = MongoColumnName("lockedRemark")
+
+        /**
+         * 创建时间
+         */
+        @Cn("创建时间")
+        val createAt = MongoColumnName("createAt")
+
+        /**
+         * 更新时间
+         */
+        @Cn("更新时间")
+        val updateAt = MongoColumnName("updateAt")
+
+        fun queryByUserId(userId: String): MongoQueryClip<BasicUserLoginInfoEntity, nbcp.db.mongo.entity.BasicUserLoginInfo> {
+            return this.query().where { it.userId match userId }
+        }
+
+        fun deleteByUserId(userId: String): MongoDeleteClip<BasicUserLoginInfoEntity> {
+            return this.delete().where { it.userId match userId }
+        }
+
+        fun updateByUserId(userId: String): MongoUpdateClip<BasicUserLoginInfoEntity, nbcp.db.mongo.entity.BasicUserLoginInfo> {
+            return this.update().where { it.userId match userId }
+        }
+
+    }
+
+    /**
+     * 排序记录号
+     */
+    @Cn("排序记录号")
+    class SysLastSortNumberEntity(collectionName: String = "", databaseId: String = "")
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysLastSortNumber>(nbcp.db.mongo.entity.SysLastSortNumber::class.java, collectionName.AsString("sysLastSortNumber"), databaseId) {
+
+        val id = MongoColumnName("_id")
+
+        /**
+         * 表名
+         */
+        @Cn("表名")
+        val table = MongoColumnName("table")
+
+        /**
+         * 组
+         */
+        @Cn("组")
+        val group = MongoColumnName("group")
+
+        /**
+         * 值
+         */
+        @Cn("值")
+        val value = MongoColumnName("value")
+
+        /**
+         * 创建时间
+         */
+        @Cn("创建时间")
+        val createAt = MongoColumnName("createAt")
+
+        /**
+         * 更新时间
+         */
+        @Cn("更新时间")
+        val updateAt = MongoColumnName("updateAt")
 
     }
 
