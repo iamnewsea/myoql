@@ -4,7 +4,6 @@ import nbcp.comm.StringMap
 import nbcp.db.*
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
-import nbcp.db.mongo.*
 import java.io.Serializable
 
 //--------------------------------------------------------
@@ -241,7 +240,7 @@ open class SysDustbin @JvmOverloads constructor(
 @Document
 @DbEntityGroup("MongoBase")
 @Cn("数据版本")
-open class FlywayVersion @JvmOverloads constructor(
+open class SysFlywayVersion @JvmOverloads constructor(
     @Cn("版本")
     var version: Int = 0,
     @Cn("备注")

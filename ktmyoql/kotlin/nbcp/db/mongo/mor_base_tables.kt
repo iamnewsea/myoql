@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2021-12-28 10:29:28
+//generate auto @2021-12-28 13:38:55
 
 
 class IdUrlMeta(private val _pname: String) : MongoColumnName() {
@@ -283,7 +283,7 @@ class BusinessLicenseDataMeta(private val _pname: String) : MongoColumnName() {
 @Component("mongo.MongoBase")
 @MetaDataGroup(DatabaseEnum.Mongo, "MongoBase")
 class MongoBaseGroup : IDataGroup {
-    override fun getEntities(): Set<BaseMetaData> = setOf(sysDictionary, basicUser, flywayVersion, sysDustbin, sysCity, sysLog, sysAnnex, basicUserLoginInfo, sysLastSortNumber, sysOrganization)
+    override fun getEntities(): Set<BaseMetaData> = setOf(sysDictionary, basicUser, sysDustbin, sysCity, sysFlywayVersion, sysLog, sysAnnex, basicUserLoginInfo, sysLastSortNumber, sysOrganization)
 
 
     /**
@@ -297,11 +297,6 @@ class MongoBaseGroup : IDataGroup {
     val basicUser get() = BasicUserEntity();
 
     /**
-     * 数据版本
-     */
-    val flywayVersion get() = FlywayVersionEntity();
-
-    /**
      * 数据垃圾箱
      */
     val sysDustbin get() = SysDustbinEntity();
@@ -310,6 +305,11 @@ class MongoBaseGroup : IDataGroup {
      * 城市令牌
      */
     val sysCity get() = SysCityEntity();
+
+    /**
+     * 数据版本
+     */
+    val sysFlywayVersion get() = SysFlywayVersionEntity();
 
     /**
      * 系统日志
@@ -447,65 +447,6 @@ class MongoBaseGroup : IDataGroup {
          */
         @Cn("身份证")
         val identityCard = IdentityCardDataMeta("identityCard")
-
-        /**
-         * 创建时间
-         */
-        @Cn("创建时间")
-        val createAt = MongoColumnName("createAt")
-
-        /**
-         * 更新时间
-         */
-        @Cn("更新时间")
-        val updateAt = MongoColumnName("updateAt")
-
-    }
-
-    /**
-     * 数据版本
-     */
-    @Cn("数据版本")
-    class FlywayVersionEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.FlywayVersion>(nbcp.db.mongo.entity.FlywayVersion::class.java, collectionName.AsString("flywayVersion"), databaseId) {
-
-        val id = MongoColumnName("_id")
-
-        /**
-         * 版本
-         */
-        @Cn("版本")
-        val version = MongoColumnName("version")
-
-        /**
-         * 备注
-         */
-        @Cn("备注")
-        val remark = MongoColumnName("remark")
-
-        /**
-         * 执行的类
-         */
-        @Cn("执行的类")
-        val execClass = MongoColumnName("execClass")
-
-        /**
-         * 执行开始时间
-         */
-        @Cn("执行开始时间")
-        val startAt = MongoColumnName("startAt")
-
-        /**
-         * 执行结束时间
-         */
-        @Cn("执行结束时间")
-        val finishAt = MongoColumnName("finishAt")
-
-        /**
-         * 是否成功
-         */
-        @Cn("是否成功")
-        val isSuccess = MongoColumnName("isSuccess")
 
         /**
          * 创建时间
@@ -660,6 +601,65 @@ class MongoBaseGroup : IDataGroup {
         fun updateByCode(code: Int): MongoUpdateClip<SysCityEntity, nbcp.db.mongo.entity.SysCity> {
             return this.update().where { it.code match code }
         }
+
+    }
+
+    /**
+     * 数据版本
+     */
+    @Cn("数据版本")
+    class SysFlywayVersionEntity(collectionName: String = "", databaseId: String = "")
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysFlywayVersion>(nbcp.db.mongo.entity.SysFlywayVersion::class.java, collectionName.AsString("sysFlywayVersion"), databaseId) {
+
+        val id = MongoColumnName("_id")
+
+        /**
+         * 版本
+         */
+        @Cn("版本")
+        val version = MongoColumnName("version")
+
+        /**
+         * 备注
+         */
+        @Cn("备注")
+        val remark = MongoColumnName("remark")
+
+        /**
+         * 执行的类
+         */
+        @Cn("执行的类")
+        val execClass = MongoColumnName("execClass")
+
+        /**
+         * 执行开始时间
+         */
+        @Cn("执行开始时间")
+        val startAt = MongoColumnName("startAt")
+
+        /**
+         * 执行结束时间
+         */
+        @Cn("执行结束时间")
+        val finishAt = MongoColumnName("finishAt")
+
+        /**
+         * 是否成功
+         */
+        @Cn("是否成功")
+        val isSuccess = MongoColumnName("isSuccess")
+
+        /**
+         * 创建时间
+         */
+        @Cn("创建时间")
+        val createAt = MongoColumnName("createAt")
+
+        /**
+         * 更新时间
+         */
+        @Cn("更新时间")
+        val updateAt = MongoColumnName("updateAt")
 
     }
 

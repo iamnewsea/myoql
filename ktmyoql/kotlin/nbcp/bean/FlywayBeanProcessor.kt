@@ -3,7 +3,7 @@ package nbcp.bean
 import nbcp.comm.Important
 import nbcp.db.*
 import nbcp.db.mongo.*
-import nbcp.db.mongo.entity.FlywayVersion
+import nbcp.db.mongo.entity.SysFlywayVersion
 import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
@@ -36,7 +36,7 @@ class FlywayBeanProcessor : BeanPostProcessor {
      * 同步版本
      */
     fun playFlyVersion() {
-        var dbMaxVersion = db.mor_base.flywayVersion.query()
+        var dbMaxVersion = db.mor_base.sysFlywayVersion.query()
             .where { it.isSuccess match true }
             .orderByDesc { it.version }
             .toEntity()
@@ -52,7 +52,7 @@ class FlywayBeanProcessor : BeanPostProcessor {
             .sortedBy { it.version }
             .all {
                 var err_msg = "";
-                val ent = FlywayVersion();
+                val ent = SysFlywayVersion();
                 ent.version = it.version
                 ent.execClass = it::class.java.name
                 ent.startAt = LocalDateTime.now()
@@ -61,10 +61,10 @@ class FlywayBeanProcessor : BeanPostProcessor {
                     it.exec();
                     ent.isSuccess = true;
                     ent.finishAt = LocalDateTime.now();
-                    db.mor_base.flywayVersion.doInsert(ent);
+                    db.mor_base.sysFlywayVersion.doInsert(ent);
                 } catch (e: Exception) {
                     ent.isSuccess = false;
-                    db.mor_base.flywayVersion.doInsert(ent);
+                    db.mor_base.sysFlywayVersion.doInsert(ent);
                     err_msg = e.message ?: "异常!";
                     throw e;
                 } finally {
