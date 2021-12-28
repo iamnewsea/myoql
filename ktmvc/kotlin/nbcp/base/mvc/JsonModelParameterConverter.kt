@@ -15,6 +15,8 @@ import nbcp.web.getPostJson
 import nbcp.web.postBody
 import nbcp.web.queryJson
 import org.slf4j.LoggerFactory
+import org.springframework.core.io.InputStreamSource
+import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.HandlerMapping
 import java.lang.reflect.Method
 import java.lang.reflect.ParameterizedType
@@ -22,6 +24,7 @@ import javax.servlet.ServletRequest
 import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpSession
+import kotlin.reflect.full.isSuperclassOf
 
 
 /**
@@ -40,6 +43,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         if (ServletRequest::class.java.isAssignableFrom(parameter.parameterType)) return false
         if (ServletResponse::class.java.isAssignableFrom(parameter.parameterType)) return false
         if (HttpSession::class.java.isAssignableFrom(parameter.parameterType)) return false
+        if (InputStreamSource::class.isSuperclassOf(parameter.parameterType.kotlin)) return false
 
         if (parameter.hasParameterAnnotation(PathVariable::class.java)) return false;
         if (parameter.hasParameterAnnotation(CookieValue::class.java)) return false;
