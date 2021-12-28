@@ -31,9 +31,9 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
      如果duty指定了 set，则 set
      如果duty没有指定set，则：    如果duty在where列，则不set，否则set
      */
-    private var whereColumns = mutableSetOf<String>()
+    private var whereColumns = mutableSetOf<String>("id")
     private var setColumns = mutableSetOf<String>()
-    private var unsetColumns = mutableSetOf<String>()
+    private var unsetColumns = mutableSetOf<String>("id")
 
     fun withColumn(setFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M, E> {
         this.setColumns.add(setFunc(this.moerEntity).toString())
