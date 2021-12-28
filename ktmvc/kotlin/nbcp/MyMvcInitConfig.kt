@@ -1,6 +1,7 @@
 package nbcp
 
 import nbcp.base.mvc.*
+import nbcp.comm.AsInt
 import nbcp.comm.Important
 import nbcp.comm.clazzesIsSimpleDefine
 import nbcp.comm.const
@@ -33,6 +34,9 @@ import org.springframework.util.unit.DataUnit
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
+import java.time.Duration
+import java.time.temporal.Temporal
+import java.time.temporal.TemporalUnit
 import java.util.function.Consumer
 
 @Component
@@ -63,6 +67,22 @@ class MyMvcInitConfig : BeanPostProcessor {
                 bean.maxRequestSize = DataSize.of(120, DataUnit.MEGABYTES)
             }
         }
+//        else {
+//            var beanType = bean::class.java
+//            if (beanType.name == "org.springframework.cloud.gateway.config.HttpClientProperties") {
+//                var connectTimeout = beanType.getDeclaredField("connectTimeout")
+//
+//                if (MyUtil.getPrivatePropertyValue(bean, connectTimeout).AsInt() < 1000) {
+//                    MyUtil.setPrivatePropertyValue(bean, connectTimeout, 3000)
+//                }
+//
+//                var responseTimeout = beanType.getDeclaredField("responseTimeout")
+//                var responseTimeout_value = MyUtil.getPrivatePropertyValue(bean, responseTimeout) as Duration
+//                if (responseTimeout_value.toMinutes() < 1) {
+//                    MyUtil.setPrivatePropertyValue(bean, responseTimeout, Duration.ofMinutes(3))
+//                }
+//            }
+//        }
 
         return super.postProcessBeforeInitialization(bean, beanName)
     }

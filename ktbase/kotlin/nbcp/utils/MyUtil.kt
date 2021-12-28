@@ -537,6 +537,11 @@ object MyUtil {
         return type.get(entity);
     }
 
+    fun setPrivatePropertyValue(entity: Any, type: Field,value:Any?) {
+        type.isAccessible = true;
+        type.set(entity,value);
+    }
+
     /**
      * @param properties 多级属性 , 请使用 MyUtil.getValueByWbsPath
      */
@@ -561,7 +566,7 @@ object MyUtil {
     /**
      * 支持多层级设置属性值
      */
-    fun setPrivatePropertyValue(
+    private fun setPrivatePropertyValue(
         entity: Any?,
         vararg properties: String,
         ignoreCase: Boolean = false,
