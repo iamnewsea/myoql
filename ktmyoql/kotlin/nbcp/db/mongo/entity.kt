@@ -264,10 +264,13 @@ open class FlywayVersion @JvmOverloads constructor(
 data class SysDictionary(
     @Cn("所有者")
     var owner: String = "",
+    @Cn("组")
     var group: String = "",
-    @Cn("值")
+    @Cn("键")
     var key: String = "",
     @Cn("值")
+    var value: String = "",
+    @Cn("中文")
     var label: String = "",
     @Cn("排序")
     var sort: Float = 0F,

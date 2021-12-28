@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2021-12-28 10:23:20
+//generate auto @2021-12-28 10:29:28
 
 
 class IdUrlMeta(private val _pname: String) : MongoColumnName() {
@@ -353,18 +353,28 @@ class MongoBaseGroup : IDataGroup {
         @Cn("所有者")
         val owner = MongoColumnName("owner")
 
+        /**
+         * 组
+         */
+        @Cn("组")
         val group = MongoColumnName("group")
 
         /**
-         * 值
+         * 键
          */
-        @Cn("值")
+        @Cn("键")
         val key = MongoColumnName("key")
 
         /**
          * 值
          */
         @Cn("值")
+        val value = MongoColumnName("value")
+
+        /**
+         * 中文
+         */
+        @Cn("中文")
         val label = MongoColumnName("label")
 
         /**
