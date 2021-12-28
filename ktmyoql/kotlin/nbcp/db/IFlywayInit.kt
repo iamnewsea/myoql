@@ -45,7 +45,7 @@ abstract class FlywayVersionBaseService(val version: Int) {
 
     private fun DbEntityIndex.indexName(): String {
         return "i." + this.value
-            .sortedBy { it.length.toString().padStart(3, '0') + it }
+//            .sortedBy { it.length.toString().padStart(3, '0') + it }
             .map { it.replace(".", "_") }
             .joinToString(".")
     }
