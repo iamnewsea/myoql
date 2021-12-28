@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 
 @Component
-@ConditionalOnClass(org.mariadb.jdbc.Driver::class)
+@ConditionalOnClass(RestClientBuilder::class)
 class MyOqlEsBeanConfig : BeanPostProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

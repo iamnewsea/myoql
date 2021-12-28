@@ -1,8 +1,6 @@
 package nbcp.db.mongo
 
-import nbcp.comm.IsStringType
-import nbcp.comm.Slice
-import nbcp.comm.StringMap
+import nbcp.comm.*
 import nbcp.utils.RecursionUtil
 import org.bson.Document
 import org.bson.types.ObjectId
@@ -53,7 +51,11 @@ object MongoDocument2EntityUtil {
     @JvmOverloads
     fun procResultData_id2Id(value: MutableMap<*, *>, remove_id: Boolean = true) {
         var keys = value.keys.toTypedArray();
-        var needReplace = keys.contains("_id") && !keys.contains("id")
+        var needReplace = keys.contains("_id")
+
+        if (needReplace && value.get("id").AsString().HasValue) {
+            needReplace = false;
+        }
 
         for (k in keys) {
             var v = value.get(k);
