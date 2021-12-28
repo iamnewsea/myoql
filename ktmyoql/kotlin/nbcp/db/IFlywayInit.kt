@@ -1,10 +1,7 @@
 package nbcp.db
 
 import com.mongodb.client.model.IndexOptions
-import nbcp.comm.AsString
-import nbcp.comm.FromJson
-import nbcp.comm.JsonMap
-import nbcp.comm.const
+import nbcp.comm.*
 import nbcp.db.mongo.MongoBaseMetaCollection
 import nbcp.db.mongo.batchInsert
 import org.bson.Document
@@ -47,11 +44,20 @@ abstract class FlywayVersionBaseService(val version: Int) {
 
 
     private fun DbEntityIndex.indexName(): String {
-        return "i_" + this.value.sortedBy { it.length.toString().padStart(3, '0') + it }.joinToString("_")
+        return "i_" + this.value
+            .sortedBy { it.length.toString().padStart(3, '0') + it }
+            .joinToString("_")
     }
 
     private fun DbEntityIndex.toDocument(): Document {
-        return Document(JsonMap(this.value.map { it to 1 }))
+        return Document(JsonMap(this.value
+            .map {
+                if (it == "id") return@map "_id";
+                if (it.endsWith("._id")) return@map it.Slice(0, -4) + ".id"
+                return@map it;
+            }
+            .map { it to 1 })
+        )
     }
 
 
