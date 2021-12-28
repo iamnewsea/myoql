@@ -2,7 +2,9 @@ package nbcp.utils
 
 import nbcp.comm.*
 import java.lang.reflect.Field
+import java.nio.charset.StandardCharsets
 import java.time.*
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.reflect.KClass
 
@@ -23,7 +25,7 @@ object MyUtil {
         ZoneId.systemDefault().rules.getStandardOffset(Date().toInstant()).totalSeconds  //系统时区相差的秒数
 
     @JvmStatic
-    private val random = Random();
+    private val random = Random(LocalTime.now().nano.toLong());
 
     //    /**
 //     * 北京时间的今天凌晨。
@@ -461,14 +463,14 @@ object MyUtil {
      * 生成指定长度的随机数
      */
     fun getRandomWithLength(length: Int): String {
-        var ret = Math.abs(random.nextInt()).toString();
+        var ret = "";
         while (true) {
+            ret += Math.abs(random.nextInt()).toString(36);
             if (ret.length >= length) {
                 break;
             }
-            ret += Math.abs(random.nextInt()).toString();
         }
-        ret = ret.slice(0..length - 1);
+        ret = ret.slice(0 until length);
         return ret;
     }
 
@@ -490,7 +492,6 @@ object MyUtil {
     fun getStringContentFromBase64(base64: String): String {
         return String(getFromBase64(base64), const.utf8)
     }
-
 
 
 //
@@ -872,6 +873,66 @@ object MyUtil {
 
                 return@formatWithJson result!!
             });
+    }
+
+
+    /**
+     * 用公钥加密
+     *
+     * @param targetId
+     * @param publicSecret
+     * @return
+     */
+    fun encryptWithPublicSecret(targetId: String, publicSecret: String?): String? {
+        val dt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
+        val text = """
+             $targetId
+             $dt
+             ${MyUtil.getRandomWithLength(6)}
+             """.trimIndent()
+        val secretByte = Base64.getDecoder().decode(publicSecret)
+        val encrypt = RSARawUtil.encryptByPublicKey(text.toByteArray(StandardCharsets.UTF_8), secretByte)
+
+        // + / = 替换为： - * ~
+        return Base64.getEncoder()
+            .encodeToString(encrypt)
+            .replace("+", "-")
+            .replace("/", "*")
+            .replace("=", "~") + "." + dt
+    }
+
+
+    /**
+     * 用私钥解密
+     *
+     * @param encryptWithPublicSecretValue
+     * @param privateSecret
+     * @return
+     */
+    fun decryptWithPrivateSecret(encryptWithPublicSecretValue: String, privateSecret: String?): String? {
+        val dotIndex = encryptWithPublicSecretValue.indexOf(".")
+        if (dotIndex <= 0) throw RuntimeException("非法值")
+        val oriValue = Base64.getDecoder().decode(
+            encryptWithPublicSecretValue.substring(0, dotIndex)
+                .replace("-", "+")
+                .replace("*", "/")
+                .replace("~", "=")
+        )
+        val dtStringValue = encryptWithPublicSecretValue.substring(dotIndex + 1)
+        val secretByte = Base64.getDecoder().decode(privateSecret)
+        val oriStrings =
+            String(RSARawUtil.decryptByPrivateKey(oriValue, secretByte), StandardCharsets.UTF_8).split("\n")
+                .toTypedArray()
+        if (oriStrings.size < 3) throw RuntimeException("非法值")
+        if (dtStringValue != oriStrings[1]) {
+            throw RuntimeException("非法值")
+        }
+        val dt = LocalDateTime.parse(dtStringValue, DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
+        val dd = Duration.between(dt, LocalDateTime.now()).abs()
+        if (dd.seconds > 60) {
+            throw RuntimeException("已过期")
+        }
+        return oriStrings[0]
     }
 }
 

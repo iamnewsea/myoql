@@ -41,6 +41,11 @@ TomcatWebServer:8002 -- nacos: saas-dev.nancal.com:8848(yuxh) -- nacos-config:no
     }
 
     @Test
+    fun random() {
+        println(MyUtil.getRandomWithLength(6))
+    }
+
+    @Test
     fun testGetValue() {
         val json = JsonMap("a" to 1, "b" to JsonMap("c" to 2), "d" to IdName("id1", "name1"))
 

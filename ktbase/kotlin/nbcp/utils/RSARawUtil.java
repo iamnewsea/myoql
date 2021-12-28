@@ -10,7 +10,7 @@ import java.security.spec.X509EncodedKeySpec;
 /**
  * https://juejin.cn/post/6844904116628488205
  */
-public class RSAUtil {
+public class RSARawUtil {
     public static String RSA_ALGORITHM = "RSA";
 
     /**
@@ -19,7 +19,7 @@ public class RSAUtil {
      */
     private static final int KEY_SIZE = 1024;
 
-    private RSAUtil() {
+    private RSARawUtil() {
     }
 
     /**
@@ -28,7 +28,7 @@ public class RSAUtil {
      * @return 密钥对对象
      * @throws NoSuchAlgorithmException
      */
-    public static RSAUtil create() {
+    public static RSARawUtil create() {
         //KeyPairGenerator用于生成公钥和私钥对。密钥对生成器是使用 getInstance 工厂方法
         KeyPairGenerator keyPairGenerator = null;
         try {
@@ -39,7 +39,7 @@ public class RSAUtil {
         keyPairGenerator.initialize(KEY_SIZE);
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
 
-        RSAUtil rsa = new RSAUtil();
+        RSARawUtil rsa = new RSARawUtil();
         rsa.privateKey = (RSAPrivateKey) keyPair.getPrivate();
         rsa.publicKey = (RSAPublicKey) keyPair.getPublic();
         return rsa;
