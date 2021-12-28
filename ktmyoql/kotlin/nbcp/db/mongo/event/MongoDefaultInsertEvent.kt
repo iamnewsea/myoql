@@ -97,7 +97,7 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
                     var sortNumberValue = getSortNumber(tableName, groupBy, sortNumber.step);
                     if (sortNumberValue != null) {
 
-                        MyUtil.setPrivatePropertyValue(
+                        MyUtil.setValueByWbsPath(
                             entity,
                             *sortNumber.field.split(".").toTypedArray(),
                             ignoreCase = false,
