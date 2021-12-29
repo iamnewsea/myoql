@@ -33,7 +33,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
      */
     private var whereColumns = mutableSetOf<String>("id")
     private var setColumns = mutableSetOf<String>()
-    private var unsetColumns = mutableSetOf<String>("id")
+    private var unsetColumns = mutableSetOf<String>("id","createAt")
 
     fun withColumn(setFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M, E> {
         this.setColumns.add(setFunc(this.moerEntity).toString())

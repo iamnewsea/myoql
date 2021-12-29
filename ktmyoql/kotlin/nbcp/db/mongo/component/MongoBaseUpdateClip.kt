@@ -26,7 +26,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
     protected val arrayFilters: MutableList<CriteriaDefinition> = mutableListOf()
 
     val setData = LinkedHashMap<String, Any?>()
-    val unsetColumns = mutableListOf<String>("createAt")
+    val unsetColumns = mutableListOf<String>()
     val pushData = LinkedHashMap<String, Any>() //加
     val pullData = LinkedHashMap<String, Any>() //删
     protected val incData = LinkedHashMap<String, Number>() //
