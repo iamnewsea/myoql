@@ -79,11 +79,5 @@ class FlywayBeanProcessor : BeanPostProcessor {
             }
 
 
-        SpringUtil.context.publishEvent(FlywayCompleteEvent(this))
     }
-}
-
-
-public class FlywayCompleteEvent(source: Any) : ApplicationEvent(source) {
-
 }

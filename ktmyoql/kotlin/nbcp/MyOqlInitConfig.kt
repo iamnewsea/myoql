@@ -19,6 +19,7 @@ import org.springframework.beans.factory.BeanFactoryAware
 import org.springframework.beans.factory.config.BeanDefinitionHolder
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.boot.context.event.ApplicationPreparedEvent
+import org.springframework.context.ApplicationEvent
 import org.springframework.context.ResourceLoaderAware
 import org.springframework.context.annotation.*
 import org.springframework.context.event.EventListener
@@ -62,7 +63,13 @@ class MyOqlInitConfig {
         if (flyways != null) {
             flyways.playFlyVersion();
         }
+
+
+        SpringUtil.context.publishEvent(FlywayCompleteEvent(this))
     }
+}
+
+public class FlywayCompleteEvent(source: Any) : ApplicationEvent(source) {
 }
 
 @Component
