@@ -13,6 +13,10 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
+public class FlywayCompleteEvent(source: Any) : ApplicationEvent(source) {
+}
+
+
 @Component
 @ConditionalOnClass(MongoTemplate::class)
 class FlywayBeanProcessor : BeanPostProcessor {

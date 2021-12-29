@@ -69,8 +69,6 @@ class MyOqlInitConfig {
     }
 }
 
-public class FlywayCompleteEvent(source: Any) : ApplicationEvent(source) {
-}
 
 @Component
 class MyOqlBeanImporter : ImportBeanDefinitionRegistrar, ResourceLoaderAware, BeanFactoryAware {
