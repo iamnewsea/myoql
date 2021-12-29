@@ -20,8 +20,8 @@ class MongoDefaultUpdateEvent : IMongoEntityUpdate {
     }
 
     private fun setUpdateAt(update: MongoBaseUpdateClip) {
+        update.setData.remove("createAt")
         if (scopes.getLatest(MyOqlOrmScope.IgnoreUpdateAt) == null) {
-            update.setData.remove("createAt")
             update.setValue("updateAt", LocalDateTime.now())
         }
     }
