@@ -44,26 +44,17 @@ private fun _getClientIp(request: HttpServletRequest): String {
         .filter { it.HasValue && !it.VbSame("unknown") && !MyUtil.isLocalIp(it) }
         .toList();
 
-
-    if (MyUtil.isLocalIp(realIp)) {
-        realIp = "";
-    }
-
-    //如果都没有设置，直接返回 remoteAddr.
-    if (!forwardIps.any() || realIp.isEmpty()) {
-        return remoteAddr
-    }
-
-    // 如果设置了 X-Real-IP
-    // 必须 = realIp
-    if (realIp.HasValue) {
-        return realIp;
-    }
-
     //如果设置了 X-Forwarded-For
     if (forwardIps.any()) {
         return forwardIps[0];
     }
+    
+    // 如果设置了 X-Real-IP
+    // 必须 = realIp
+    if (MyUtil.isLocalIp(realIp) == false) {
+        return realIp;
+    }
+
     return remoteAddr
 }
 
