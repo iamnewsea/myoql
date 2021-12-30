@@ -11,7 +11,7 @@ import nbcp.base.mvc.HttpContext
  * "服务器错误" lang "server error"
  */
 infix fun String.lang(englishMessage: String): String {
-    var lang = HttpContext.request.getAttribute("lang")?.toString() ?: "cn"
+    var lang = HttpContext.request.getAttribute("[Lang]")?.toString() ?: "cn"
     if (lang == "en") return englishMessage;
     return this;
 }

@@ -69,7 +69,7 @@ private fun _getClientIp(request: HttpServletRequest): String {
  */
 val HttpServletRequest.ClientIp: String
     get() {
-        var clientIp = this.getAttribute("ClientIp").AsString()
+        var clientIp = this.getAttribute("[ClientIp]").AsString()
         if (clientIp.HasValue) {
             return clientIp
         }
@@ -81,7 +81,7 @@ val HttpServletRequest.ClientIp: String
             clientIp = "127.0.0.1"
         }
 
-        this.setAttribute("ClientIp", clientIp);
+        this.setAttribute("[ClientIp]", clientIp);
         return clientIp;
     }
 

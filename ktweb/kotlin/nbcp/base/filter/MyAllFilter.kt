@@ -199,9 +199,9 @@ open class MyAllFilter : Filter {
         }
 
         if (lang == "en") {
-            request.setAttribute("lang", "en");
+            request.setAttribute("[Lang]", "en");
         } else {
-            request.setAttribute("lang", "cn");
+            request.setAttribute("[Lang]", "cn");
         }
     }
 
