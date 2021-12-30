@@ -1,21 +1,9 @@
-package nbcp
+package nbcp.extend
 
-import ch.qos.logback.classic.Level
+import nbcp.TestBase
 import nbcp.comm.*
 import nbcp.utils.*
-import nbcp.comm.*
-import nbcp.utils.*
-import nbcp.db.IdName
-import nbcp.db.IdUrl
 import org.junit.jupiter.api.Test
-import org.springframework.stereotype.Service
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 class TestKtExt_String : TestBase() {
 
