@@ -53,9 +53,11 @@ class Test_Mongo_Update : TestBase() {
         annex.id = CodeUtil.getCode();
         annex.creator = IdName(CodeUtil.getCode(), "test")
         var d = db.mor_base.sysAnnex.updateWithEntity(annex)
+            .whereColumn { it.name }
             .castToUpdate()
 
-        println(d.ToJson())
+
+        println(d)
     }
 
     @Test
