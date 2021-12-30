@@ -181,6 +181,10 @@ open class MyAllFilter : Filter {
                 return getInnerException(err.rootCause)
             }
         }
+
+        if (err.cause != null) {
+            return getInnerException(err.cause!!)
+        }
         return err;
     }
 
