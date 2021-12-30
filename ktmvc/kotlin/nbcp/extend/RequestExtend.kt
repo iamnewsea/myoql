@@ -150,15 +150,17 @@ private fun setValue(jm: JsonMap, prop: String, arykey: String, value: String) {
     setValue(jm[key] as JsonMap, key, arykey.substring(keyLastIndex + 1), value);
 }
 
-fun HttpServletRequest.getPostJson(): JsonMap {
-    var contentType = this.contentType;
+
+private fun getPostJsonFromRequest(request: HttpServletRequest): JsonMap {
+
+    var contentType = request.contentType;
 
     if (contentType.isNullOrEmpty()) {
         contentType = MediaType.APPLICATION_JSON_VALUE
     }
 
     if (contentType.startsWith(MediaType.APPLICATION_JSON_VALUE)) {
-        val bodyString = (this.postBody ?: byteArrayOf()).toString(const.utf8).trim()
+        val bodyString = (request.postBody ?: byteArrayOf()).toString(const.utf8).trim()
 
         if (bodyString.isEmpty()) {
             return JsonMap();
@@ -175,9 +177,9 @@ fun HttpServletRequest.getPostJson(): JsonMap {
         //会分成两组 ret["corp"] = json1 , ret["role"] = json2;
         //目前只支持两级。不支持  corp[role][id]
         val ret = JsonMap();
-        if (this.parameterNames.hasMoreElements()) {
-            for (key in this.parameterNames) {
-                val value = this.getParameter(key);
+        if (request.parameterNames.hasMoreElements()) {
+            for (key in request.parameterNames) {
+                val value = request.getParameter(key);
                 val keyLastIndex = key.indexOf('[');
                 if (keyLastIndex >= 0) {
                     val mk = key.slice(0..keyLastIndex - 1);
@@ -190,13 +192,26 @@ fun HttpServletRequest.getPostJson(): JsonMap {
 
             return ret;
         } else {
-            val bodyString = (this.postBody ?: byteArrayOf()).toString(const.utf8).trim()
+            val bodyString = (request.postBody ?: byteArrayOf()).toString(const.utf8).trim()
             return JsonMap.loadFromUrl(bodyString)
         }
     }
 
 //    throw RuntimeException("不识别 content-type:${contentType}")
     return JsonMap();
+}
+
+fun HttpServletRequest.getPostJson(): JsonMap {
+    val PostJson_key = "[Request.PostJson]"
+    var postJsonValue = this.getAttribute(PostJson_key);
+    if (postJsonValue != null) {
+        return postJsonValue as JsonMap
+    }
+
+    var ret = getPostJsonFromRequest(this);
+
+    this.setAttribute(PostJson_key, ret);
+    return ret;
 }
 
 
@@ -280,8 +295,8 @@ fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>, headers: L
     if (requestOrigin.isEmpty()) return retMap;
 
     var allow = allowOrigins.any { requestOrigin.contains(it) } ||
-        requestOrigin.contains("localhost") ||
-        requestOrigin.contains("127.0.0");
+            requestOrigin.contains("localhost") ||
+            requestOrigin.contains("127.0.0");
 
     if (allow == false) {
         logger.warn("系统忽略未允许的跨域请求源:${requestOrigin_Ori}")
