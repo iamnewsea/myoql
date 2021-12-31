@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
 import java.time.LocalDateTime
 import nbcp.scope.*
-import java.io.Serializable
+
 /** https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline/ */
 
 /**
@@ -42,6 +42,11 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E:Any>(var moerEntity: 
         return this;
     }
 
+
+    fun addGraphLookup(){
+
+    }
+
     fun skip(skip: Int): MongoAggregateClip<M, E> {
         this.skip = skip;
         this.pipeLines.add("\$skip" to skip);
@@ -70,8 +75,8 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E:Any>(var moerEntity: 
 
     /**开始收集where条件
      */
-    fun beginMatch(): BeginMatchClip<M, E> {
-        return BeginMatchClip<M, E>(this)
+    fun beginMatch(): MongoAggregateBeginMatch<M, E> {
+        return MongoAggregateBeginMatch<M, E>(this)
     }
 
     fun select(vararg columns: String): MongoAggregateClip<M, E> {
@@ -329,14 +334,3 @@ cursor: {} } """
 }
 
 
-class BeginMatchClip<M : MongoBaseMetaCollection<E>, E : Any>(var aggregate: MongoAggregateClip<M, E>) {
-    private var wheres = mutableListOf<Criteria>()
-    fun where(where: (M) -> Criteria): BeginMatchClip<M, E> {
-        wheres.add(where(this.aggregate.moerEntity))
-        return this;
-    }
-
-    fun endMatch(): MongoAggregateClip<M, E> {
-        return this.aggregate.wheres(*this.wheres.toTypedArray())
-    }
-}
