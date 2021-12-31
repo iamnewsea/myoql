@@ -16,27 +16,27 @@ abstract class FlywayVersionBaseService(val version: Int) {
      * @param itemFunc: 参数：实体名，文件名全路径，所有行数据。返回false停止。
      */
     fun loadResource(
-            resourcePath: String,
-            fileName: String,
-            fileExt: String,
-            itemFunc: (String, String, List<String>) -> Boolean
+        resourcePath: String,
+        fileName: String,
+        fileExt: String,
+        itemFunc: (String, String, List<String>) -> Boolean
     ): Boolean {
         return ClassPathResource(resourcePath)
-                .file
-                .listFiles()
-                .filter { it.isFile && it.name.endsWith(fileExt, true) }
-                .filter {
-                    if (fileName.isEmpty()) {
-                        return@filter true;
-                    }
+            .file
+            .listFiles()
+            .filter { it.isFile && it.name.endsWith(fileExt, true) }
+            .filter {
+                if (fileName.isEmpty()) {
+                    return@filter true;
+                }
 
-                    return@filter it.name == fileName + fileExt
-                }
-                .all {
-                    var fileName = it.path
-                    var tableName = fileName.replace("\\", "/").split("/").last().split(".").first()
-                    return@all itemFunc.invoke(tableName, fileName, it.readLines(const.utf8))
-                }
+                return@filter it.name == fileName + fileExt
+            }
+            .all {
+                var fileName = it.path
+                var tableName = fileName.replace("\\", "/").split("/").last().split(".").first()
+                return@all itemFunc.invoke(tableName, fileName, it.readLines(const.utf8))
+            }
     }
 
 
@@ -62,19 +62,19 @@ abstract class FlywayVersionBaseService(val version: Int) {
     private fun DbEntityIndex.indexName(): String {
         return "i." + this.value
 //            .sortedBy { it.length.toString().padStart(3, '0') + it }
-                .map { it.replace(".", "_") }
-                .joinToString(".")
+            .map { it.replace(".", "_") }
+            .joinToString(".")
     }
 
     private fun DbEntityIndex.toDocument(): Document {
         return Document(JsonMap(this.value
-                .map {
-                    if (it == "id") return@map "_id";
-                    if (it.endsWith(".id")) return@map it.Slice(0, -3) + "._id"
-                    return@map it;
-                }
-                .map { it to 1 })
-        )
+            .map {
+                if (it == "id") return@map "_id";
+                if (it.endsWith(".id")) return@map it.Slice(0, -3) + "._id"
+                return@map it;
+            }
+            .map { it to 1 }
+        ))
     }
 
 
@@ -92,14 +92,14 @@ abstract class FlywayVersionBaseService(val version: Int) {
         var collection = db.getCollection(this.tableName)
 
         var indexes = this.entityClass.getAnnotationsByType(DbEntityIndex::class.java)
-                .map { it.indexName() }
+            .map { it.indexName() }
 
         collection.listIndexes().toList()
-                .map { it.get("name").AsString() }
-                .intersect(indexes)
-                .forEach {
-                    collection.dropIndex(it);
-                }
+            .map { it.get("name").AsString() }
+            .intersect(indexes)
+            .forEach {
+                collection.dropIndex(it);
+            }
     }
 
     fun <M : MongoBaseMetaCollection<Any>> M.createIndex(dbEntityIndex: DbEntityIndex) {
@@ -110,13 +110,13 @@ abstract class FlywayVersionBaseService(val version: Int) {
         var indexName = dbEntityIndex.indexName();
 
         if (collection.listIndexes()
-                        .toList()
-                        .map { it.get("name").AsString() }
-                        .contains(indexName) == false
+                .toList()
+                .map { it.get("name").AsString() }
+                .contains(indexName) == false
         ) {
             collection.createIndex(
-                    dbEntityIndex.toDocument(),
-                    IndexOptions().name(indexName).unique(dbEntityIndex.unique)
+                dbEntityIndex.toDocument(),
+                IndexOptions().name(indexName).unique(dbEntityIndex.unique)
             )
         }
     }
@@ -125,17 +125,17 @@ abstract class FlywayVersionBaseService(val version: Int) {
         db.mongo.groups.forEach {
             it.getEntities().forEach { ent ->
                 (ent as MongoBaseMetaCollection<Any>)
-                        .apply {
-                            this.createTable()
+                    .apply {
+                        this.createTable()
 
-                            if (rebuild) {
-                                this.dropDefineIndexes();
-                            }
-
-                            this.entityClass.getAnnotationsByType(DbEntityIndex::class.java).forEach { index ->
-                                createIndex(index);
-                            }
+                        if (rebuild) {
+                            this.dropDefineIndexes();
                         }
+
+                        this.entityClass.getAnnotationsByType(DbEntityIndex::class.java).forEach { index ->
+                            createIndex(index);
+                        }
+                    }
             }
         }
     }
