@@ -70,7 +70,7 @@ abstract class FlywayVersionBaseService(val version: Int) {
         return Document(JsonMap(this.value
                 .map {
                     if (it == "id") return@map "_id";
-                    if (it.endsWith("._id")) return@map it.Slice(0, -4) + ".id"
+                    if (it.endsWith(".id")) return@map it.Slice(0, -3) + "._id"
                     return@map it;
                 }
                 .map { it to 1 })
