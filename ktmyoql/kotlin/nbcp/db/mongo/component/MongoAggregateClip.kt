@@ -43,8 +43,19 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E:Any>(var moerEntity: 
     }
 
 
-    fun addGraphLookup(){
+    /**
+     * 递归返回 wbs
+     */
+    fun addGraphLookup(connectFromField:String,connectToField:String,alias:String = "wbs"): MongoAggregateClip<M, E>{
+        var jsonMap = JsonMap();
+        jsonMap.put("from",this.moerEntity.tableName)
+        jsonMap.put("startWith","$" + connectFromField)
+        jsonMap.put("connectFromField", connectFromField)
+        jsonMap.put("connectToField", connectToField)
+        jsonMap.put("as", alias)
 
+        this.pipeLines.add("\$${PipeLineEnum.graphLookup}" to jsonMap);
+        return this;
     }
 
     fun skip(skip: Int): MongoAggregateClip<M, E> {
