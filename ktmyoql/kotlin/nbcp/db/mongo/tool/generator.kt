@@ -422,10 +422,11 @@ val ${entityVarName} get() = ${entityTypeName}();"""
                 varDbParam = "${'$'}{${varDb.value}}"
             }
 
-            ret.add("""${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
+            ret.add(
+                """${CodeGeneratorHelper.getEntityCommentOnly(entType, tailRemark)}
 fun ${entityVarName}(${
-                params.map { it + ":String" }.joinToString(", ")
-            }) = ${entityTypeName}("${varTableParam}","${varDbParam}");"""
+                    params.map { it + ":String" }.joinToString(", ")
+                }) = ${entityTypeName}("${varTableParam}","${varDbParam}");"""
             )
         }
 
@@ -552,8 +553,14 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
             sortNumber =
                 """${const.line_break}@SortNumber("${sortNumberAnnotation.field}","${sortNumberAnnotation.groupBy}",${sortNumberAnnotation.step})"""
         }
+        var treeTable = "";
+        var treeTableAnnotation = entType.getAnnotation(TreeTable::class.java)
+        if (treeTableAnnotation != null) {
+            treeTable = """${const.line_break}@TreeTable("${treeTableAnnotation.parentField}")"""
+        }
 
-        val ent = """${CodeGeneratorHelper.getEntityComment(entType, varTableRemark)}${varTableCode}${sortNumber}
+        val ent =
+            """${CodeGeneratorHelper.getEntityComment(entType, varTableRemark)}${varTableCode}${sortNumber}${treeTable}
 class ${entityTypeName}(collectionName: String = "", databaseId: String = "")
     : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, collectionName.AsString("${dbName}"), databaseId) {
 ${props.map { const.line_break + it }.joinToString(const.line_break)}
