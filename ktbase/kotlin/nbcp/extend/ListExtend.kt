@@ -112,43 +112,6 @@ inline fun <T> Iterator<T>.Filter(predicate: (T) -> Boolean): MutableList<T> {
     return list;
 }
 
-/*
-比较两个数组的内容是否相同, 去除相同数据进行比较 .如:
-[1,1,2] .equalArrayContent( [1,2,2] )  == true
- */
-@JvmOverloads
-fun Array<*>.EqualArrayContent(other: Array<*>, withIndex: Boolean = false): Boolean {
-    return this.toList().EqualArrayContent(other.toList(), withIndex);
-}
-
-
-/*
-比较两个数组的内容是否相同, 去除相同数据进行比较 .如:
-[1,1,2] .equalArrayContent( [1,2,2] )  == true
- */
-@JvmOverloads
-fun Collection<*>.EqualArrayContent(other: Collection<*>, withIndex: Boolean = false): Boolean {
-    if (this.size == 0 && other.size == 0) return true;
-    else if (this.size == 0) return false;
-    else if (other.size == 0) return false;
-
-    if (withIndex) {
-        this.forEachIndexed { index, item ->
-            var otherItem = other.elementAt(index);
-            if (item != otherItem) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    var one = this.distinct();
-    var two = other.distinct();
-
-
-    if (one.size != two.size) return false;
-    return one.intersect(two).size == this.size;
-}
 
 inline fun <T> Iterable<T>.Skip(skipNumber: Int): List<T> {
     var ret = mutableListOf<T>();
@@ -389,5 +352,5 @@ fun List<Any?>.resetListItemType(clazz: Class<*>) {
 
 
 fun List<out String>.findWithIgnoreCase(item: String): String? {
-    return this.firstOrNull { it VbSame item }
+    return this.firstOrNull { it basicSame item }
 }

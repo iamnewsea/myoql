@@ -93,7 +93,7 @@ fun Temporal.BetweenSeconds(nextTime: Temporal): Int {
 
 fun Temporal.BetweenDays(nextTime: Temporal): Int {
     return (Duration.between(this.AsLocalDateTime(), nextTime.AsLocalDateTime())
-            .getSeconds() / MyUtil.OneDaySeconds).AsInt();
+        .getSeconds() / MyUtil.OneDaySeconds).AsInt();
 }
 
 
@@ -133,3 +133,105 @@ fun ByteArray.ToHexLowerString(): String {
 //    if (this == conditionValue) return retValue
 //    return conditionValue
 //}
+
+
+/*
+比较两个数组的内容是否相同, 去除相同数据进行比较 .如:
+[1,1,2] .equalArrayContent( [1,2,2] )  == true
+ */
+//fun Array<*>.EqualArrayContent(other: Array<*>, withIndex: Boolean = false): Boolean {
+//    return this.toList().EqualArrayContent(other.toList(), withIndex);
+//}
+
+/*
+比较两个数组的内容是否相同, 去除相同数据进行比较 .如:
+[1,1,2] .equalArrayContent( [1,2,2] )  == true
+ */
+fun Collection<*>.EqualArrayContent(other: Collection<*>, withIndex: Boolean = false): Boolean {
+    if (this.size == 0 && other.size == 0) return true;
+    else if (this.size == 0) return false;
+    else if (other.size == 0) return false;
+
+    if (withIndex) {
+        this.forEachIndexed { index, item ->
+            var otherItem = other.elementAt(index);
+            if (item basicSame otherItem == false) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    var one = this.distinct();
+    var two = other.distinct();
+
+
+    if (one.size != two.size) return false;
+    return one.intersect(two).size == this.size;
+}
+
+
+/**
+ * 基本相等，不区分大小写格式的比较，listOf() basicSame null 。
+ * "abc" basicSame "aBc" is true
+ */
+infix fun Any?.basicSame(other: Any?): Boolean {
+    if (this == other) {
+        return true;
+    }
+
+    if (this == null) {
+        if (other == null) {
+            return true;
+        }
+
+        if (other is Collection<*>) {
+            if (other.size == 0) {
+                return true;
+            }
+        } else if (other is Array<*>) {
+            if (other.size == 0) {
+                return true;
+            }
+        } else if (other is Map<*, *>) {
+            if (other.size == 0) {
+                return true;
+            }
+        }
+
+    } else if (this is Collection<*>) {
+        if (this.size == 0 && other == null) {
+            return true;
+        }
+
+        if (other is Collection<*>) {
+            return this.EqualArrayContent(other)
+        } else if (other is Array<*>) {
+            return this.EqualArrayContent(other.toList())
+        }
+    } else if (this is Array<*>) {
+        if (this.size == 0 && other == null) {
+            return true;
+        }
+
+        if (other is Collection<*>) {
+            return this.toList().EqualArrayContent(other)
+        } else if (other is Array<*>) {
+            return this.toList().EqualArrayContent(other.toList())
+        }
+    } else if (this is Map<*, *>) {
+        if (this.size == 0 && other == null) {
+            return true;
+        }
+
+        if (other is Map<*, *>) {
+            return this.EqualMapContent(other)
+        }
+    } else {
+        if (this.AsString().compareTo(other.AsString(), true) == 0) {
+            return true;
+        }
+    }
+
+    return false;
+}

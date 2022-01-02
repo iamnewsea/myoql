@@ -194,7 +194,7 @@ fun Map<*, *>.EqualMapContent(value: Map<*, *>, compare: ((Any?, Any?) -> Boolea
             var value2 = value.get(it.key);
 
             if (value1 is Array<*> && value2 is Array<*>) {
-                return@all value1.EqualArrayContent(value2);
+                return@all value1.toList().EqualArrayContent(value2.toList());
             }
             if (value1 is Collection<*> && value2 is Collection<*>) {
                 return@all value1.EqualArrayContent(value2);

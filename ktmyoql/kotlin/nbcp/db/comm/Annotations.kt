@@ -50,9 +50,9 @@ annotation class VarDatabase(val value: String)
 /**
  * 树状表
  */
-@Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class TreeTable(val parentField: String)
+//@Target(AnnotationTarget.CLASS)
+//@Retention(AnnotationRetention.RUNTIME)
+//annotation class TreeTable(val parentField: String)
 
 /**
  * 记录当更新某些字段时,记录到日志表

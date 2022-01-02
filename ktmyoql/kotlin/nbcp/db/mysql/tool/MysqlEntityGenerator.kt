@@ -200,42 +200,42 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                                     var dbType = DbType.String
                                     var remark = "";
 
-                                    if (dataType VbSame "varchar"
-                                            || dataType VbSame "char"
-                                            || dataType VbSame "nvarchar"
-                                            || dataType VbSame "nchar"
+                                    if (dataType basicSame "varchar"
+                                            || dataType basicSame "char"
+                                            || dataType basicSame "nvarchar"
+                                            || dataType basicSame "nchar"
                                     ) {
                                         dbType = DbType.String
-                                    } else if (dataType VbSame "text"
-                                            || dataType VbSame "mediumtext"
-                                            || dataType VbSame "longtext"
+                                    } else if (dataType basicSame "text"
+                                            || dataType basicSame "mediumtext"
+                                            || dataType basicSame "longtext"
                                     ) {
                                         dbType = DbType.Text
-                                    } else if (dataType VbSame "enum") {
+                                    } else if (dataType basicSame "enum") {
                                         dbType = DbType.Enum
-                                    } else if (dataType VbSame "json") {
+                                    } else if (dataType basicSame "json") {
                                         dbType = DbType.Json
-                                    } else if (dataType VbSame "int") {
+                                    } else if (dataType basicSame "int") {
                                         dbType = DbType.Int
-                                    } else if (dataType VbSame "bit") {
+                                    } else if (dataType basicSame "bit") {
                                         dbType = DbType.Boolean
-                                    } else if (dataType VbSame "datetime" ||
-                                            dataType VbSame "timestamp"
+                                    } else if (dataType basicSame "datetime" ||
+                                            dataType basicSame "timestamp"
                                     ) {
                                         dbType = DbType.DateTime
-                                    } else if (dataType VbSame "date") {
+                                    } else if (dataType basicSame "date") {
                                         dbType = DbType.Date
-                                    } else if (dataType VbSame "float") {
+                                    } else if (dataType basicSame "float") {
                                         dbType = DbType.Float
-                                    } else if (dataType VbSame "double") {
+                                    } else if (dataType basicSame "double") {
                                         dbType = DbType.Double
-                                    } else if (dataType VbSame "long") {
+                                    } else if (dataType basicSame "long") {
                                         dbType = DbType.Long
-                                    } else if (dataType VbSame "tinyint") {
+                                    } else if (dataType basicSame "tinyint") {
                                         dbType = DbType.Byte
-                                    } else if (dataType VbSame "bigint") {
+                                    } else if (dataType basicSame "bigint") {
                                         dbType = DbType.Long
-                                    } else if (dataType VbSame "decimal") {
+                                    } else if (dataType basicSame "decimal") {
                                         remark = "warning sql data type: ${dataType}";
                                         dbType = DbType.Double
                                     }
@@ -298,9 +298,9 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
 
         entity.AllFields
                 .sortedBy {
-                    if (it.name VbSame "id") return@sortedBy -9;
-                    if (it.name VbSame "name") return@sortedBy -8;
-                    if (it.name VbSame "code") return@sortedBy -7;
+                    if (it.name basicSame "id") return@sortedBy -9;
+                    if (it.name basicSame "name") return@sortedBy -8;
+                    if (it.name basicSame "code") return@sortedBy -7;
                     return@sortedBy it.name.length;
                 }
                 .forEach { property ->

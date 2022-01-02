@@ -553,14 +553,14 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
             sortNumber =
                 """${const.line_break}@SortNumber("${sortNumberAnnotation.field}","${sortNumberAnnotation.groupBy}",${sortNumberAnnotation.step})"""
         }
-        var treeTable = "";
-        var treeTableAnnotation = entType.getAnnotation(TreeTable::class.java)
-        if (treeTableAnnotation != null) {
-            treeTable = """${const.line_break}@TreeTable("${treeTableAnnotation.parentField}")"""
-        }
+//        var treeTable = "";
+//        var treeTableAnnotation = entType.getAnnotation(TreeTable::class.java)
+//        if (treeTableAnnotation != null) {
+//            treeTable = """${const.line_break}@TreeTable("${treeTableAnnotation.parentField}")"""
+//        }
 
         val ent =
-            """${CodeGeneratorHelper.getEntityComment(entType, varTableRemark)}${varTableCode}${sortNumber}${treeTable}
+            """${CodeGeneratorHelper.getEntityComment(entType, varTableRemark)}${varTableCode}${sortNumber}
 class ${entityTypeName}(collectionName: String = "", databaseId: String = "")
     : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, collectionName.AsString("${dbName}"), databaseId) {
 ${props.map { const.line_break + it }.joinToString(const.line_break)}

@@ -102,6 +102,6 @@ fun <M : SqlBaseMetaTable<T>, T : Serializable> SqlQueryClip<M, T>.queryTree(
     pidValue: Serializable,
     idColumnName: String,
     pidColumn: ((M) -> SqlColumnName)
-): MyOqlTreeData<M, T> {
-    return MyOqlTreeData(this, pidValue, idColumnName, pidColumn(this.mainEntity));
+): MyOqlSqlTreeData<M, T> {
+    return MyOqlSqlTreeData(this, pidValue, idColumnName, pidColumn(this.mainEntity));
 }

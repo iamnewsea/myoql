@@ -36,7 +36,7 @@ object MyWebHelper {
             var headerArray = arrayOf("accept", "content-type")
             var requestHeaderNames = request.headerNames.toList()
             headerArray.forEach { headerName ->
-                var requestHeaderName = requestHeaderNames.firstOrNull { headerName VbSame it }
+                var requestHeaderName = requestHeaderNames.firstOrNull { headerName basicSame it }
                 if (requestHeaderName != null) {
                     request.getHeader(requestHeaderName).apply {
                         http.request.headers.put(requestHeaderName, this)
@@ -53,7 +53,7 @@ object MyWebHelper {
             var headerArray = arrayOf("content-type")
             var responseHeaderNames = http.response.headers.keys.toList()
             headerArray.forEach { headerName ->
-                var responseHeaderName = responseHeaderNames.firstOrNull { headerName VbSame it }
+                var responseHeaderName = responseHeaderNames.firstOrNull { headerName basicSame it }
                 if (responseHeaderName != null) {
                     response.setHeader(responseHeaderName, http.response.headers.get(responseHeaderName))
                 }
@@ -143,7 +143,7 @@ fun getJwtUserId(value: String): String {
         .getBody();
 
 
-    var userIdKey = claims.keys.firstOrNull { it VbSame "userId" } ?: claims.keys.first { it VbSame "user-id" }
+    var userIdKey = claims.keys.firstOrNull { it basicSame "userId" } ?: claims.keys.first { it basicSame "user-id" }
 
     if (userIdKey.HasValue) {
         return claims.getStringValue(userIdKey!!) ?: "";

@@ -189,7 +189,7 @@ open class LoginUserModel @JvmOverloads constructor(
 /**
  * 树型数据
  */
-interface ITreeData<T> {
-    var id: String;
-    fun children(): MutableList<T>;
-}
+//interface ITreeData<T> {
+//    var id: String;
+//    fun children(): MutableList<T>;
+//}

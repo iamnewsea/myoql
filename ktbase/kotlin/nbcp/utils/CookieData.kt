@@ -64,9 +64,9 @@ class CookieData {
                 var c = CookieData();
 
                 it.split(";").map { it.trim() }.forEach {
-                    if (it VbSame "httpOnly") {
+                    if (it basicSame "httpOnly") {
                         c.httpOnly = true;
-                    } else if (it VbSame "secure") {
+                    } else if (it basicSame "secure") {
                         c.secure = true;
                     } else if (it.contains("=")) {
                         var sects = it.split("=").map { it.trim() };
@@ -76,15 +76,15 @@ class CookieData {
                             itemValue = sects[1]
                         }
 
-                        if (key VbSame "path") {
+                        if (key basicSame "path") {
                             c.path = itemValue;
-                        } else if (key VbSame "Expires") {
+                        } else if (key basicSame "Expires") {
                             c.expires = itemValue.AsLocalDateTime()
-                        } else if (key VbSame "max-age") {
+                        } else if (key basicSame "max-age") {
                             c.maxAge = itemValue.AsInt();
-                        } else if (key VbSame "version") {
+                        } else if (key basicSame "version") {
 
-                        } else if (key VbSame "Comment") {
+                        } else if (key basicSame "Comment") {
 
                         } else {
                             c.name = key;

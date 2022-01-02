@@ -13,14 +13,6 @@ import javax.xml.transform.TransformerFactory
 import kotlin.reflect.KClass
 
 
-/**
- * 不区分大小写格式的比较。
- * "abc" VbSame "aBc" is true
- */
-infix inline fun String.VbSame(other: String?): Boolean {
-    if (other == null) return false;
-    return this.compareTo(other, true) == 0;
-}
 
 /**
  * 判断是否有内容：非空且有长度
@@ -610,7 +602,7 @@ fun <T> String.ToEnum(enumClazz: Class<T>): T? {
     var strValue = this.trim();
     if (strValue.isEmpty()) return null;
 
-    var finded = enumClazz.declaredFields.firstOrNull { it.name VbSame strValue }
+    var finded = enumClazz.declaredFields.firstOrNull { it.name basicSame strValue }
     if (finded == null) {
         if (this.IsNumberic()) {
             return this.AsInt().ToEnum(enumClazz)

@@ -2,7 +2,7 @@ package nbcp.utils
 
 import nbcp.comm.AsString
 import nbcp.comm.StringMap
-import nbcp.comm.VbSame
+import nbcp.comm.basicSame
 import java.io.DataInputStream
 
 class HttpResponseData {
@@ -42,7 +42,7 @@ class HttpResponseData {
         get() {
             var char_parts = this.contentType.AsString().split(";").last().split("=");
             if (char_parts.size == 2) {
-                if (char_parts[0].trim().VbSame("charset")) {
+                if (char_parts[0].trim() basicSame "charset") {
                     return char_parts[1];
                 }
             }

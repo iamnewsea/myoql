@@ -1,16 +1,20 @@
-package nbcp.db.sql
+package nbcp.db.mongo
 
 import nbcp.comm.*
+import org.bson.Document
 import java.io.Serializable
 
-class MyOqlTreeData<M : SqlBaseMetaTable<T>, T : Serializable>(
-    var baseQuery: SqlQueryClip<M, T>,
+/**
+ * 每个级别会查询一次。
+ */
+class MyOqlMongoTreeData<M : MongoBaseMetaCollection<T>, T : Serializable>(
+    var baseQuery: MongoQueryClip<M,T>,
     var pidValue: Serializable,
     var idColumnName: String,
-    var pidColumn: SqlColumnName
+    var pidColumn: MongoColumnName
 ) {
 
-    var list = mutableListOf<JsonMap>();
+    var list = mutableListOf<Document>();
 
     init {
         var pids = listOf(pidValue)
@@ -27,18 +31,18 @@ class MyOqlTreeData<M : SqlBaseMetaTable<T>, T : Serializable>(
     }
 
     fun toList(): List<T> {
-        var clazz = baseQuery.mainEntity.tableClass;
+        var clazz = baseQuery.moerEntity.entityClass;
         return list.map { it.ConvertType(clazz) as T }
     }
 
     fun toTreeJson(
         childrenFieldName: String = "children"
-    ): List<JsonMap> {
+    ): List<Document> {
         return getChildren(pidValue, childrenFieldName);
     }
 
-    private fun getChildren(pidValue: Serializable, childrenFieldName: String = "children"): List<JsonMap> {
-        var level0s = list.filter { it.get(pidColumn.getAliasName()) == pidValue }
+    private fun getChildren(pidValue: Serializable, childrenFieldName: String = "children"): List<Document> {
+        var level0s = list.filter { it.get(pidColumn.toString()) == pidValue }
 
         level0s.forEach {
             it.set(childrenFieldName, getChildren(it.get(idColumnName) as Serializable))
@@ -46,7 +50,7 @@ class MyOqlTreeData<M : SqlBaseMetaTable<T>, T : Serializable>(
         return level0s;
     }
 
-    private fun loadSubsFromDb(pidValue: List<Serializable>): MutableList<JsonMap> {
+    private fun loadSubsFromDb(pidValue: List<Serializable>): List<Document> {
         var ret = baseQuery.CloneObject()
         ret.where { pidColumn match_in pidValue.toTypedArray() }
         return ret.toMapList()

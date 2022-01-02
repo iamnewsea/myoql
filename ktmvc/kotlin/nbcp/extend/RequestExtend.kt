@@ -41,7 +41,7 @@ private fun _getClientIp(request: HttpServletRequest): String {
     var forwardIps = (request.getHeader("X-Forwarded-For") ?: "")
         .split(",")
         .map { it.trim() }
-        .filter { it.HasValue && !it.VbSame("unknown") && !MyUtil.isLocalIp(it) }
+        .filter { it.HasValue && !it.basicSame("unknown") && !MyUtil.isLocalIp(it) }
         .toList();
 
     //如果设置了 X-Forwarded-For

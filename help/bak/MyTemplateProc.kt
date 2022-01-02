@@ -184,26 +184,26 @@ object MyTemplateProc {
      */
     private fun decideIfExp(entityFields: List<Field>, field: Field?, ifKey: String): Boolean {
         if (ifKey.startsWith("@")) {
-            return field!!.type.simpleName VbSame ifKey.substring(1);
+            return field!!.type.simpleName basicSame ifKey.substring(1);
         } else if (ifKey.startsWith("#")) {
             var name = ifKey.substring(1);
-            if (name VbSame "Res") {
+            if (name basicSame "Res") {
                 return field!!.type.isEnum ||
                         field.type == Boolean::class.java
             }
 
-            if (name VbSame "enum1") {
+            if (name basicSame "enum1") {
                 return field!!.type.isEnum;
             }
-            if (name VbSame "enumList") {
+            if (name basicSame "enumList") {
                 return CodeGeneratorHelper.IsListEnum(field!!);
             }
 
-            if (name VbSame "enum") {
+            if (name basicSame "enum") {
                 return field!!.type.isEnum || CodeGeneratorHelper.IsListEnum(field);
             }
 
-            if (name VbSame "IdUrlList") {
+            if (name basicSame "IdUrlList") {
                 return CodeGeneratorHelper.IsListType(field!!,"IdUrl");
             }
         }
