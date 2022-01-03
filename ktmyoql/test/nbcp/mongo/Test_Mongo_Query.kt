@@ -21,17 +21,25 @@ import java.util.*
 
 class Test_Mongo_Query : TestBase() {
 
-
+    @Test
+    fun clone() {
+        var d = MongoColumnName("ok")
+        var d2 = d.CloneObject();
+        println(d2.toString())
+    }
     @Test
     fun test_query_datetime() {
         var start = LocalDateTime.now().minusHours(1)
         var end = LocalDateTime.now().plusHours(1);
-        db.mor_base.sysLog.query()
+        var query = db.mor_base.sysLog.query()
             .where { it.createAt match_between (start to end) }
-            .toList()
-            .forEach {
-                println(it.ToJson())
-            }
+            .where { it.level match 8 }
+            .whereOr({ it.msg match_like "df" }, { it.tags match "df" })
+
+        var d = db.mongo.getMergedMongoCriteria(*query.whereData.toTypedArray())
+        var e = db.mongo.getCriteriaFromDocument(d.toDocument());
+        println(d.toDocument().toJson())
+        println(e.criteriaObject.toJson())
     }
 
     @Test

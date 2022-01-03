@@ -13,8 +13,11 @@ import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext
 import org.springframework.data.mongodb.core.query.Criteria
+import java.lang.Exception
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.LinkedHashMap
+
 
 /**
  * 请使用 db.mongo
@@ -52,6 +55,29 @@ object db_mongo {
 //
 //        return getMongoTemplateByUri(uri)
 //    }
+
+
+    fun getCriteriaFromDocument(document: Map<String, Any?>): Criteria {
+        val c = Criteria()
+
+        val _criteria = c.javaClass.getDeclaredField("criteria")
+        _criteria.isAccessible = true
+        var v = _criteria.get(c) as MutableMap<String, Any?>
+        for ((key, value) in document) {
+            v[key] = value
+        }
+
+        val _criteriaChain = c.javaClass.getDeclaredField("criteriaChain")
+        _criteriaChain.isAccessible = true
+        var v2 = _criteriaChain.get(c) as MutableList<Criteria>
+        v2.add(c)
+
+        return c;
+    }
+
+    fun getMergedMongoCriteria(vararg where: MutableMap<String, Any?>): Criteria {
+        return getMergedMongoCriteria(*where.map { getCriteriaFromDocument(it) }.toTypedArray())
+    }
 
     fun getMergedMongoCriteria(vararg where: Criteria): Criteria {
         if (where.size == 0) return Criteria();
@@ -281,6 +307,13 @@ db.getCollection("adminRole").aggregate(
         }
 
         return key.toString() to value;
+    }
+
+
+    fun getEntityColumnName(key: String): String {
+        if (key == "_id") return "id"
+        if (key.endsWith("._id")) return key.Slice(0, -4) + ".id"
+        return key;
     }
 
 

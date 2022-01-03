@@ -21,19 +21,19 @@ import java.io.Serializable
  */
 class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
     MongoClipBase(moerEntity.tableName), IMongoWhereable {
-    val whereData = mutableListOf<Criteria>()
+    var whereData = mutableListOf<MutableMap<String,Any?>>()
 
     companion object {
         private var logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
     fun where(whereData: Criteria): MongoDeleteClip<M> {
-        this.whereData.add(whereData);
+        this.whereData.add(whereData.criteriaObject);
         return this;
     }
 
     fun where(where: (M) -> Criteria): MongoDeleteClip<M> {
-        this.whereData.add(where(moerEntity));
+        this.whereData.add(where(moerEntity).criteriaObject);
         return this;
     }
 
@@ -45,7 +45,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
         if (wheres.any() == false) return this;
         var where = Criteria();
         where.orOperator(*wheres)
-        this.whereData.add(where);
+        this.whereData.add(where.criteriaObject);
         return this;
     }
 

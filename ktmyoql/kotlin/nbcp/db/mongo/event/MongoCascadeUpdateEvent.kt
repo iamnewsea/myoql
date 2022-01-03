@@ -148,7 +148,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
                 val targetCollection = MyUtil.getSmallCamelCase(ref.ref.entityClass.simpleName)
 
                 val update2 = MongoBaseUpdateClip(targetCollection)
-                update2.whereData.add(MongoColumnName(ref.ref.idField) match_in ref.masterIdValues)
+                update2.whereData.add((MongoColumnName(ref.ref.idField) match_in ref.masterIdValues).criteriaObject)
                 update2.setValue(ref.ref.nameField, ref.masterNameValue)
                 update2.exec();
 

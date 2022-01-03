@@ -42,7 +42,7 @@ class DevYapiDataTypeServlet {
             var where = (MongoColumnName("req_body_other") match_like "title\":\":") match_or
                     (MongoColumnName("res_body") match_like "title\":\":")
 
-            query.whereData.add(where)
+            query.whereData.add(where.criteriaObject)
             var list = query.toMapList();
 
             list.forEach {
@@ -69,7 +69,7 @@ class DevYapiDataTypeServlet {
 
 
                 var update = MongoBaseUpdateClip("interface")
-                update.whereData.add(MongoColumnName("_id") match id)
+                update.whereData.add((MongoColumnName("_id") match id).criteriaObject)
                 update.setValue("req_body_other", req_body_other)
                 update.setValue("res_body", res_body)
                 update.exec();

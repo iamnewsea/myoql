@@ -1,6 +1,9 @@
 package nbcp.db.mongo
 
 import nbcp.comm.*
+import nbcp.db.db
+import nbcp.db.sql.MyOqlSqlTreeData
+import nbcp.db.sql.SqlColumnName
 import org.bson.Document
 import org.springframework.data.mongodb.core.query.Criteria
 //import nbcp.comm.*
@@ -49,7 +52,7 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
     }
 
     fun where(whereData: Criteria): MongoQueryClip<M, E> {
-        this.whereData.add(whereData);
+        this.whereData.add(whereData.criteriaObject);
         return this;
     }
 
@@ -59,7 +62,7 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
 //    }
 
     fun where(where: (M) -> Criteria): MongoQueryClip<M, E> {
-        this.whereData.add(where(moerEntity));
+        this.whereData.add(where(moerEntity).criteriaObject);
         return this;
     }
 
@@ -112,14 +115,14 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
         if (wheres.any() == false) return this;
         val where = Criteria();
         where.orOperator(*wheres)
-        this.whereData.add(where);
+        this.whereData.add(where.criteriaObject);
         return this;
     }
 
     fun whereIf(whereIf: Boolean, whereData: ((M) -> Criteria)): MongoQueryClip<M, E> {
         if (whereIf == false) return this;
 
-        this.whereData.add(whereData(moerEntity));
+        this.whereData.add(whereData(moerEntity).criteriaObject);
         return this;
     }
 
@@ -159,6 +162,19 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
 //    inline fun <reified R> toEntity(): R? {
 //        return toEntity(R::class.java);
 //    }
+
+    fun queryTree(
+        pidValue: Serializable,
+        idColumn: ((M) -> MongoColumnName),
+        pidColumn: ((M) -> MongoColumnName)
+    ): MyOqlMongoTreeData<M, E> {
+        return MyOqlMongoTreeData(
+            this,
+            pidValue,
+            db.mongo.getEntityColumnName(idColumn(this.moerEntity).toString()),
+            pidColumn(this.moerEntity)
+        );
+    }
 
     @JvmOverloads
     fun <R> toEntity(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): R? {

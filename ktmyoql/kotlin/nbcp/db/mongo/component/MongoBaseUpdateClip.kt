@@ -16,7 +16,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    val whereData = mutableListOf<Criteria>()
+    val whereData = mutableListOf<MutableMap<String,Any?>>()
 //        private set
 
 

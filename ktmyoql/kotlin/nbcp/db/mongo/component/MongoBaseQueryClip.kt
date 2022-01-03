@@ -8,14 +8,17 @@ import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.BasicQuery
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
+import java.io.*
 import java.lang.Exception
 import java.time.LocalDateTime
 
 open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMongoWhereable {
-    var whereData = mutableListOf<Criteria>()
+    var whereData = mutableListOf<MutableMap<String,Any?>>()
+
     var skip: Int = 0;
     var take: Int = -1;
     var sort: Document = Document()
+
 
     //    private var whereJs: String = "";
     protected var selectColumns = mutableSetOf<String>();
@@ -42,7 +45,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     private fun getCacheKey(): String {
         var unKeys = mutableListOf<String>()
 
-        unKeys.add(whereData.map { it.criteriaObject.ToJson() }.joinToString("&"))
+        unKeys.add(whereData.map { it.ToJson() }.joinToString("&"))
         unKeys.add(skip.toString())
         unKeys.add(take.toString())
         unKeys.add(sort.ToJson())
@@ -285,4 +288,13 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     fun toMapListResult(): ListResult<Document> {
         return toListResult(Document::class.java);
     }
+
+//    override fun writeExternal(out: ObjectOutput) {
+//        out.writeObject(this.whereData.map { it.toDocument() }.ToJson())
+//    }
+//
+//    override fun readExternal(inStream: ObjectInput) {
+//        this.whereData = inStream.readObject().AsString().FromListJson(JsonMap::class.java)
+//            .map { db.mongo.getCriteriaFromDocument(it) }.toMutableList()
+//    }
 }

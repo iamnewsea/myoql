@@ -1,15 +1,16 @@
 package nbcp.db.mongo
 
 import nbcp.comm.*
+import nbcp.db.db
 import org.bson.Document
 import java.io.Serializable
 
 /**
  * 每个级别会查询一次。
  */
-class MyOqlMongoTreeData<M : MongoBaseMetaCollection<T>, T : Serializable>(
-    var baseQuery: MongoQueryClip<M,T>,
-    var pidValue: Serializable,
+class MyOqlMongoTreeData<M : MongoBaseMetaCollection<T>, T : Any>(
+    var baseQuery: MongoQueryClip<M, T>,
+    var pidValue: Any,
     var idColumnName: String,
     var pidColumn: MongoColumnName
 ) {
@@ -25,7 +26,7 @@ class MyOqlMongoTreeData<M : MongoBaseMetaCollection<T>, T : Serializable>(
                 break;
             }
 
-            pids = entitys.map { it.get(idColumnName) as Serializable }
+            pids = entitys.map { it.getValueByWbsPath(idColumnName) as Serializable }
             list.addAll(entitys);
         }
     }
@@ -41,16 +42,16 @@ class MyOqlMongoTreeData<M : MongoBaseMetaCollection<T>, T : Serializable>(
         return getChildren(pidValue, childrenFieldName);
     }
 
-    private fun getChildren(pidValue: Serializable, childrenFieldName: String = "children"): List<Document> {
-        var level0s = list.filter { it.get(pidColumn.toString()) == pidValue }
+    private fun getChildren(pidValue: Any, childrenFieldName: String = "children"): List<Document> {
+        var level0s = list.filter { it.getValueByWbsPath(db.mongo.getEntityColumnName(pidColumn.toString())) == pidValue }
 
         level0s.forEach {
-            it.set(childrenFieldName, getChildren(it.get(idColumnName) as Serializable))
+            it.set(childrenFieldName, getChildren(it.getValue(idColumnName) as Any))
         }
         return level0s;
     }
 
-    private fun loadSubsFromDb(pidValue: List<Serializable>): List<Document> {
+    private fun loadSubsFromDb(pidValue: List<Any>): List<Document> {
         var ret = baseQuery.CloneObject()
         ret.where { pidColumn match_in pidValue.toTypedArray() }
         return ret.toMapList()

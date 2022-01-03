@@ -132,23 +132,24 @@ fun <T : Any> Document.ReadAs(value: T): T {
 
 
 fun Criteria.toDocument(): Document {
-    var ret = Document();
-
-    this.criteriaObject.keys.forEach {
-        var value = this.criteriaObject.get(it)
-
-        if (value == null) {
-            ret[it] = null
-        } else if (value is Criteria) {
-            ret[it] = value.toDocument();
-        } else {
-            ret[it] = value;
-        }
-
-        ret[it] = value;
-    }
-
-    return ret;
+    return this.criteriaObject;
+//    var ret = Document();
+//
+//    this.criteriaObject.keys.forEach {
+//        var value = this.criteriaObject.get(it)
+//
+//        if (value == null) {
+//            ret[it] = null
+//        } else if (value is Criteria) {
+//            ret[it] = value.toDocument();
+//        } else {
+//            ret[it] = value;
+//        }
+//
+//        ret[it] = value;
+//    }
+//
+//    return ret;
 }
 
 

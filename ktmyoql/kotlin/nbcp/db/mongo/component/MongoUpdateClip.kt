@@ -30,7 +30,7 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
     }
 
     fun where(whereData: Criteria): MongoUpdateClip<M, E> {
-        this.whereData.add(whereData);
+        this.whereData.add(whereData.criteriaObject);
         return this;
     }
 
@@ -50,7 +50,7 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
     }
 
     fun where(where: (M) -> Criteria): MongoUpdateClip<M, E> {
-        this.whereData.add(where(moerEntity));
+        this.whereData.add(where(moerEntity).criteriaObject);
         return this;
     }
 
@@ -62,7 +62,7 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
         if (wheres.any() == false) return this;
         var where = Criteria();
         where.orOperator(*wheres)
-        this.whereData.add(where);
+        this.whereData.add(where.criteriaObject);
         return this;
     }
 
@@ -72,7 +72,7 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
     fun whereIf(whereIf: Boolean, where: ((M) -> Criteria)): MongoUpdateClip<M, E> {
         if (whereIf == false) return this;
 
-        this.whereData.add(where(moerEntity));
+        this.whereData.add(where(moerEntity).criteriaObject);
         return this;
     }
 
