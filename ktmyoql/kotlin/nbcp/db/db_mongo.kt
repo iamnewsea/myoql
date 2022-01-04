@@ -241,7 +241,7 @@ db.getCollection("adminRole").aggregate(
                 } else if (keyString == "_id") {
                     keyIsId = true;
                 } else if (keyString.endsWith(".id")) {
-                    keyColumn = MongoColumnName(keyString.slice(0..keyString.length - 4) + "._id")
+                    keyColumn = MongoColumnName(keyString.Slice(0, -3) + "._id")
                     keyIsId = true;
                 } else if (keyString.endsWith("._id")) {
                     keyIsId = true;
@@ -316,6 +316,12 @@ db.getCollection("adminRole").aggregate(
         return key;
     }
 
+
+    fun getMongoColumnName(key: String): String {
+        if (key == "id") return "_id"
+        if (key.endsWith(".id")) return key.Slice(0, -3) + "._id"
+        return key;
+    }
 
     /**
      * 查询到对象后，转实体。

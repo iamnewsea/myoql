@@ -47,18 +47,18 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
      * 递归返回 wbs
      */
     fun addGraphLookup(
-        connectFromField: String,
-        connectToField: String,
+        connectFromField: (M) -> MongoColumnName,
+        connectToField: (M) -> MongoColumnName,
         alias: String = "wbs"
     ): MongoAggregateClip<M, E> {
         var jsonMap = JsonMap();
 
-        var connectFromField2 = db.mongo.getEntityColumnName(connectFromField);
+        var connectFromField2 = db.mongo.getMongoColumnName(connectFromField(this.moerEntity).toString());
 
         jsonMap.put("from", this.moerEntity.tableName)
         jsonMap.put("startWith", "$" + connectFromField2)
         jsonMap.put("connectFromField", connectFromField2)
-        jsonMap.put("connectToField", db.mongo.getEntityColumnName(connectToField))
+        jsonMap.put("connectToField", db.mongo.getMongoColumnName(connectToField(this.moerEntity).toString()))
         jsonMap.put("as", alias)
 
         this.pipeLines.add("\$${PipeLineEnum.graphLookup}" to jsonMap);
@@ -150,12 +150,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
      */
     fun orderBy(vararg sortFuncs: Pair<String, Boolean>): MongoAggregateClip<M, E> {
         var sorts = sortFuncs.map {
-            var sortName = it.first
-            if (sortName == "id") {
-                sortName = "_id"
-            } else if (sortName.endsWith(".id")) {
-                sortName = sortName.slice(0..sortName.length - 3) + "._id";
-            }
+            var sortName = db.mongo.getMongoColumnName(it.first)
 
             return@map sortName to (if (it.second) 1 else -1)
         }

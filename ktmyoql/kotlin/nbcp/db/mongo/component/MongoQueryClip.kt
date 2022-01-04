@@ -40,12 +40,7 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
     }
 
     fun orderBy(asc: Boolean, field: String): MongoQueryClip<M, E> {
-        var sortName = field
-        if (sortName == "id") {
-            sortName = "_id"
-        } else if (sortName.endsWith(".id")) {
-            sortName = sortName.slice(0..sortName.length - 3) + "._id";
-        }
+        var sortName = db.mongo.getMongoColumnName(field)
 
         this.sort.put(sortName, if (asc) 1 else -1)
         return this;

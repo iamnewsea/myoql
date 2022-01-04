@@ -106,11 +106,8 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         val ret = mutableListOf<R>();
         var lastKey = selectColumns.lastOrNull() ?: selectProjections.map { it.key }.lastOrNull() ?: ""
 
-        if (lastKey == "_id") {
-            lastKey = "id"
-        } else if (lastKey.endsWith("._id")) {
-            lastKey = lastKey.Slice(0, -3) + "id";
-        }
+        lastKey = db.mongo.getEntityColumnName(lastKey)
+
 
         var error: Exception? = null;
         var skipNullCount = 0;

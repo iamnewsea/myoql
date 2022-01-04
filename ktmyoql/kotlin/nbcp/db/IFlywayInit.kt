@@ -69,9 +69,7 @@ abstract class FlywayVersionBaseService(val version: Int) {
     private fun DbEntityIndex.toDocument(): Document {
         return Document(JsonMap(this.value
             .map {
-                if (it == "id") return@map "_id";
-                if (it.endsWith(".id")) return@map it.Slice(0, -3) + "._id"
-                return@map it;
+                return@map db.mongo.getMongoColumnName(it);
             }
             .map { it to 1 }
         ))

@@ -37,11 +37,8 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
     fun removeWhereColumn(where: (M) -> MongoColumnName): MongoUpdateClip<M, E> {
         var item = where(moerEntity).toString()
         var items = mutableListOf(item);
-        if (item == "id") {
-            items.add("_id")
-        } else if (item.endsWith(".id")) {
-            items.add(item.Slice(0, -3) + "._id")
-        }
+
+        item = db.mongo.getMongoColumnName(item)
 
         items.forEach { key->
             this.setData.remove(key);
