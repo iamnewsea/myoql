@@ -16,7 +16,7 @@ import nbcp.scope.*
 /**
  * MongoAggregate
  */
-class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E:Any>(var moerEntity: M) :
+class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M) :
     MongoClipBase(moerEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass);
@@ -29,7 +29,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E:Any>(var moerEntity: 
     /**
      * 通用函数
      */
-    fun addPipeLine(key: PipeLineEnum, json: Map<String,Any?>): MongoAggregateClip<M, E> {
+    fun addPipeLine(key: PipeLineEnum, json: Map<String, Any?>): MongoAggregateClip<M, E> {
         this.pipeLines.add("\$${key}" to json);
         return this;
     }
@@ -46,12 +46,19 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E:Any>(var moerEntity: 
     /**
      * 递归返回 wbs
      */
-    fun addGraphLookup(connectFromField:String,connectToField:String,alias:String = "wbs"): MongoAggregateClip<M, E>{
+    fun addGraphLookup(
+        connectFromField: String,
+        connectToField: String,
+        alias: String = "wbs"
+    ): MongoAggregateClip<M, E> {
         var jsonMap = JsonMap();
-        jsonMap.put("from",this.moerEntity.tableName)
-        jsonMap.put("startWith","$" + connectFromField)
-        jsonMap.put("connectFromField", connectFromField)
-        jsonMap.put("connectToField", connectToField)
+
+        var connectFromField2 = db.mongo.getEntityColumnName(connectFromField);
+
+        jsonMap.put("from", this.moerEntity.tableName)
+        jsonMap.put("startWith", "$" + connectFromField2)
+        jsonMap.put("connectFromField", connectFromField2)
+        jsonMap.put("connectToField", db.mongo.getEntityColumnName(connectToField))
         jsonMap.put("as", alias)
 
         this.pipeLines.add("\$${PipeLineEnum.graphLookup}" to jsonMap);
@@ -227,7 +234,7 @@ cursor: {} } """
         var queryJson = toExpression();
         var result: Document? = null
         var startAt = LocalDateTime.now();
-        var error:Exception? = null ;
+        var error: Exception? = null;
         try {
             this.script = queryJson;
             result = mongoTemplate.executeCommand(queryJson)
@@ -236,7 +243,7 @@ cursor: {} } """
             error = e;
             throw e;
         } finally {
-            MongoLogger.logFind(error,actualTableName,queryJson,result);
+            MongoLogger.logFind(error, actualTableName, queryJson, result);
 //            logger.InfoError(result == null) {
 //                """[aggregate] ${this.moerEntity.tableName}
 //[语句] ${queryJson}
