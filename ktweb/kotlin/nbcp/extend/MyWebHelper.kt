@@ -76,7 +76,7 @@ val HttpServletRequest.userAuthenticationService by lazy {
  * 设置 getLoginUserFunc 在需要用户信息的时候获取。示例代码：
  * 获取用户 token 使用 db.rer_base.getLoginInfoFromToken
  */
-var HttpServletRequest.LoginUser: LoginUserModel
+val HttpServletRequest.LoginUser: LoginUserModel
     get() {
         var ret = this.getAttribute("[LoginUser]") as LoginUserModel?;
         if (ret != null) {
@@ -100,20 +100,20 @@ var HttpServletRequest.LoginUser: LoginUserModel
         this.setAttribute("[LoginUser]", ret)
         return ret;
     }
-    set(value) {
-        this.setAttribute("[LoginUser]", value)
-
-//        var event = RequestSetLoginUserModelEvent(this, value);
-//        SpringUtil.context.publishEvent(event);
-//        if (event.proced) return;
+//    set(value) {
+//        this.setAttribute("[LoginUser]", value)
 //
-//        if (config.tokenStorage == TokenStorageTypeEnum.Memory) {
-//            this.session.setAttribute("[LoginUser]", value);
-//            return;
-//        }
-
-        this.userAuthenticationService.saveLoginUserInfo(this, value);
-    }
+////        var event = RequestSetLoginUserModelEvent(this, value);
+////        SpringUtil.context.publishEvent(event);
+////        if (event.proced) return;
+////
+////        if (config.tokenStorage == TokenStorageTypeEnum.Memory) {
+////            this.session.setAttribute("[LoginUser]", value);
+////            return;
+////        }
+//
+//        this.userAuthenticationService.saveLoginUserInfo(this, value);
+//    }
 
 
 val HttpServletRequest.UserId: String
