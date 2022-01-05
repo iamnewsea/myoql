@@ -267,15 +267,16 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                         var columnName = columns_index_map.get(columnIndex)
 
                         var dbValue = dbRowData.get(columnName)
+                        if (dbValue == null) {
+                            continue;
+                        }
+
                         var cell = excelRow.getCell(columnIndex)
                         if (cell == null) {
                             cell = excelRow.createCell(columnIndex)
                         }
 
-
-                        if (dbValue == null) {
-                            cell.cellType = CellType.BLANK
-                        } else if (dbValue is String) {
+                        if (dbValue is String) {
                             cell.setCellValue(dbValue.AsString())
                         } else if (dbValue is Number) {
                             cell.setCellValue(dbValue.AsDouble())
