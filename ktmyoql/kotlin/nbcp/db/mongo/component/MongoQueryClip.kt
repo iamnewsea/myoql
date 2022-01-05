@@ -158,17 +158,19 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
 //        return toEntity(R::class.java);
 //    }
 
-    fun queryTree(
-        pidValue: Serializable,
+    fun toTreeJson(
         idColumn: ((M) -> MongoColumnName),
-        pidColumn: ((M) -> MongoColumnName)
-    ): MyOqlMongoTreeData<M, E> {
+        pidColumn: ((M) -> MongoColumnName),
+        pidValue: Serializable,
+        childrenFieldName: String = "children"
+    ): List<Document> {
         return MyOqlMongoTreeData(
             this,
-            pidValue,
             db.mongo.getEntityColumnName(idColumn(this.moerEntity).toString()),
-            pidColumn(this.moerEntity)
-        );
+            pidColumn(this.moerEntity),
+            pidValue,
+            childrenFieldName
+        ).toTreeJson();
     }
 
     @JvmOverloads

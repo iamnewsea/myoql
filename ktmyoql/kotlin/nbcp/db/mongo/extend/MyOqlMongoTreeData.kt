@@ -10,14 +10,20 @@ import java.io.Serializable
  */
 class MyOqlMongoTreeData<M : MongoBaseMetaCollection<T>, T : Any>(
     var baseQuery: MongoQueryClip<M, T>,
-    var pidValue: Any,
     var idColumnName: String,
-    var pidColumn: MongoColumnName
+    var pidColumn: MongoColumnName,
+    var pidValue: Any,
+    var childrenFieldName: String = "children"
 ) {
-
     var list = mutableListOf<Document>();
 
-    init {
+
+//    fun toList(): List<T> {
+//        var clazz = baseQuery.moerEntity.entityClass;
+//        return list.map { it.ConvertType(clazz) as T }
+//    }
+
+    fun toTreeJson(): List<Document> {
         var pids = listOf(pidValue)
 
         while (true) {
@@ -29,21 +35,13 @@ class MyOqlMongoTreeData<M : MongoBaseMetaCollection<T>, T : Any>(
             pids = entitys.map { it.getValueByWbsPath(idColumnName) as Serializable }
             list.addAll(entitys);
         }
-    }
 
-    fun toList(): List<T> {
-        var clazz = baseQuery.moerEntity.entityClass;
-        return list.map { it.ConvertType(clazz) as T }
-    }
-
-    fun toTreeJson(
-        childrenFieldName: String = "children"
-    ): List<Document> {
         return getChildren(pidValue, childrenFieldName);
     }
 
     private fun getChildren(pidValue: Any, childrenFieldName: String = "children"): List<Document> {
-        var level0s = list.filter { it.getValueByWbsPath(db.mongo.getEntityColumnName(pidColumn.toString())) == pidValue }
+        var level0s =
+            list.filter { it.getValueByWbsPath(db.mongo.getEntityColumnName(pidColumn.toString())) == pidValue }
 
         level0s.forEach {
             it.set(childrenFieldName, getChildren(it.getValue(idColumnName) as Any))
