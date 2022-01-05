@@ -14,6 +14,7 @@ import org.apache.poi.xssf.eventusermodel.ReadOnlySharedStringsTable
 import org.apache.poi.xssf.eventusermodel.XSSFReader
 import org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.xml.sax.InputSource
 import java.io.*
 import kotlin.collections.LinkedHashMap
@@ -41,6 +42,7 @@ fun Cell?.getStringValue(evaluator: FormulaEvaluator): String {
 
 /**
  * Excel 导入导出。
+ * 如果是小文件，可以是内存流；如果是大文件，最好是物理磁盘文件流
  */
 class ExcelComponent(val excelStream: () -> InputStream) {
     val sheetNames: Array<String>
@@ -79,7 +81,7 @@ class ExcelComponent(val excelStream: () -> InputStream) {
 
 
     fun select(sheetName: String): ExcelSheetComponent {
-        return ExcelSheetComponent(sheetName, excelStream);
+        return ExcelSheetComponent(sheetName.AsString(sheetNames.first()), excelStream);
     }
 
 
@@ -228,17 +230,19 @@ class ExcelComponent(val excelStream: () -> InputStream) {
         /**回写数据 按 data.tableName == sheetName
          * @param getRowData: 返回 null 停止。
          */
-        fun writeData(outputStream: OutputStream, offset_column: Int = 0, getRowData: (Int) -> JsonMap?) {
-            SXSSFWorkbook(1000).use { book ->
+        fun writeData(outputStream: OutputStream, getRowData: (Int) -> JsonMap?) {
+            OPCPackage.open(excelStream()).use { xlsxPackage ->
+                var book = SXSSFWorkbook(XSSFWorkbook(xlsxPackage), 1000)
+
+                //公式执行器
+                var evaluator = book.creationHelper.createFormulaEvaluator()
 
                 //生成一个sheet1
-                val sheet = book.createSheet(sheetName);
-                var header_row = sheet.createRow(rowOffset);
+                val sheet = book.xssfWorkbook.getSheet(sheetName);
+                var header_row = sheet.getRow(rowOffset)
+                // key: excel 中的 列的索引 , value = column_name
+                var columns_index_map = getHeaderColumnsIndexMap(header_row, columns, evaluator);
 
-                columns.forEachIndexed { index, columnName ->
-                    val cell = header_row.createCell(index + offset_column)
-                    cell.setCellValue(columnName);
-                }
 
                 var dataRowIndex = -1;
                 while (true) {
@@ -248,18 +252,25 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                     if (dbRowData == null) {
                         break;
                     }
-
-                    var excelRowIndex = dataRowIndex + 1 + rowOffset
-                    var excelRow = sheet.createRow(excelRowIndex)
                     if (dbRowData.any() == false) {
-                        continue;
+                        break;
                     }
 
-                    for (columnIndex in offset_column..(offset_column + columns.size - 1)) {
-                        var columnName = columns.get(columnIndex)
+                    var excelRowIndex = dataRowIndex + 1 + rowOffset
+                    var excelRow = sheet.getRow(excelRowIndex)
+                    if (excelRow == null) {
+                        excelRow = sheet.createRow(excelRowIndex)
+                    }
+
+
+                    for (columnIndex in columns_index_map.keys) {
+                        var columnName = columns_index_map.get(columnIndex)
 
                         var dbValue = dbRowData.get(columnName)
-                        var cell = excelRow.createCell(columnIndex)
+                        var cell = excelRow.getCell(columnIndex)
+                        if (cell == null) {
+                            cell = excelRow.createCell(columnIndex)
+                        }
 
 
                         if (dbValue == null) {
@@ -281,18 +292,17 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                     }
                 }
 
-
-
-                book.write(outputStream)
+                sheet.workbook.write(outputStream)
             }
         }
 
 
-        fun <T : Any> writeData(outputStream: OutputStream, column_offset: Int = 0, table: DataTable<T>) {
-            writeData(outputStream, column_offset) { rowIndex ->
+        fun <T : Any> writeData(outputStream: OutputStream, table: DataTable<T>) {
+            writeData(outputStream) { rowIndex ->
                 return@writeData table.rows.getOrNull(rowIndex)?.ConvertType(JsonMap::class.java) as JsonMap?
             }
         }
+
 
         private fun readOle2ExcelData(
             filter: (JsonMap, Map<Int, String>) -> Boolean
@@ -314,6 +324,9 @@ class ExcelComponent(val excelStream: () -> InputStream) {
 
                 //公式执行器
                 var evaluator = book.creationHelper.createFormulaEvaluator()
+                var header_row = sheet.getRow(rowOffset)
+                // key: excel 中的 列的索引 , value = column_name
+                var columns_index_map = getHeaderColumnsIndexMap(header_row, columns, evaluator);
 
                 for (rowIndex in (rowOffset + 1)..sheet.lastRowNum) {
                     var row = sheet.getRow(rowIndex)
@@ -359,9 +372,6 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                         oriData.set(columnIndex, cell.getStringValue(evaluator).AsString().trim())
                     }
 
-                    var header_row = sheet.getRow(rowOffset)
-                    // key: excel 中的 列的索引 , value = column_name
-                    var columns_index_map = getHeaderColumnsIndexMap(header_row, columns, evaluator);
 
 //                if (columns_index_map.size != columns.size) {
 //                    var ext_columns = columns.minus(columns_index_map.values);
@@ -389,37 +399,12 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                 var xssfReader = XSSFReader(xlsxPackage)
                 var iter: XSSFReader.SheetIterator
 
-                var sheetCount = 0;
-
                 iter = xssfReader.sheetsData as XSSFReader.SheetIterator
                 while (iter.hasNext()) {
                     iter.next().use { stream ->
-                        if (sheetName.isEmpty()) {
+                        if (iter.sheetName == sheetName) {
                             getSheetData(xlsxPackage, xssfReader, stream, filter)
                             return;
-                        }
-
-
-                        sheetCount++;
-                    }
-
-                    if (sheetCount > 1) {
-                        break;
-                    }
-                }
-
-
-                iter = xssfReader.sheetsData as XSSFReader.SheetIterator
-                while (iter.hasNext()) {
-                    iter.next().use { stream ->
-                        if (sheetCount == 1) {
-                            getSheetData(xlsxPackage, xssfReader, stream, filter)
-                            return;
-                        } else {
-                            if (iter.sheetName == sheetName) {
-                                getSheetData(xlsxPackage, xssfReader, stream, filter)
-                                return;
-                            }
                         }
                     }
                 }

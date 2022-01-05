@@ -49,13 +49,15 @@ class ExcelTest : TestBase() {
 
 
         t.rows.forEach {
-            it.put("姓名", LocalDateTime.now().AsString())
+            it.put("备注", LocalDateTime.now().AsString())
+        }
+        t.rows.add(JsonMap("账户名" to "aafa"))
+
+
+        FileOutputStream("""/home/udi/Desktop/a1.xlsx""").use {
+            sheet.writeData(it, t)
         }
 
-        sheet.setColumns("a", "b", "c")
-
-
-        sheet.writeData(FileOutputStream("""/home/udi/Desktop/用户模板2.xlsx"""), 0, t)
 
     }
 }
