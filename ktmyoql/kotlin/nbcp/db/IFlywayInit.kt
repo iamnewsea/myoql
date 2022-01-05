@@ -19,23 +19,21 @@ abstract class FlywayVersionBaseService(val version: Int) {
         resourcePath: String,
         fileName: String,
         fileExt: String,
-        itemFunc: (String, String, List<String>) -> Boolean
+        itemFunc: (String, List<String>) -> Boolean
     ): Boolean {
-        return ClassPathResource(resourcePath)
-            .file
-            .listFiles()
-            .filter { it.isFile && it.name.endsWith(fileExt, true) }
+        return ClassPathResource(resourcePath).inputStream.ReadContentStringFromStream().split("\n")
+            .filter { it.endsWith(fileExt, true) }
             .filter {
                 if (fileName.isEmpty()) {
                     return@filter true;
                 }
 
-                return@filter it.name == fileName + fileExt
+                return@filter it == fileName + fileExt
             }
             .all {
-                var fileName = it.path
-                var tableName = fileName.replace("\\", "/").split("/").last().split(".").first()
-                return@all itemFunc.invoke(tableName, fileName, it.readLines(const.utf8))
+                var tableName = it.split(".").first()
+                var content = ClassPathResource(resourcePath + "/" + it).inputStream.ReadContentStringFromStream()
+                return@all itemFunc.invoke(tableName, content.split("\n").filter { it.HasValue })
             }
     }
 
@@ -44,7 +42,7 @@ abstract class FlywayVersionBaseService(val version: Int) {
      * 初始化数据,目录：flyway-v${version}, 文件后缀 .dat
      */
     fun addResourceData(tableName: String = "", autoSave: Boolean = false) {
-        loadResource("flyway-v${version}", tableName, ".dat") { tableName, fileName, lines ->
+        loadResource("flyway-v${version}", tableName, ".dat") { tableName, lines ->
             if (autoSave) {
                 lines.map { it.FromJson<JsonMap>()!! }.forEach {
                     db.mongo.mongoEvents.getCollection(tableName)!!.updateWithEntity(it).exec();
