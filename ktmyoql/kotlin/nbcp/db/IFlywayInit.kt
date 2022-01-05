@@ -45,10 +45,10 @@ abstract class FlywayVersionBaseService(val version: Int) {
         loadResource("flyway-v${version}", tableName, ".dat") { tableName, lines ->
             if (autoSave) {
                 lines.map { it.FromJson<JsonMap>()!! }.forEach {
-                    db.mongo.mongoEvents.getCollection(tableName)!!.updateWithEntity(it).exec();
+                    db.mongo.dynamicEntity( tableName).updateWithEntity(it).exec();
                 }
             } else {
-                var insert = db.mongo.mongoEvents.getCollection(tableName)!!.batchInsert()
+                var insert = db.mongo.dynamicEntity(tableName).batchInsert()
                 insert.addEntities(lines.map { it.FromJson<JsonMap>()!! })
                 insert.exec();
             }

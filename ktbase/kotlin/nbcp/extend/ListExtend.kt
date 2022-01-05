@@ -113,7 +113,7 @@ inline fun <T> Iterator<T>.Filter(predicate: (T) -> Boolean): MutableList<T> {
 }
 
 
-inline fun <T> Iterable<T>.Skip(skipNumber: Int): List<T> {
+fun <T> Iterable<T>.Skip(skipNumber: Int): List<out T> {
     var ret = mutableListOf<T>();
     if (this.any() == false) return ret;
 
