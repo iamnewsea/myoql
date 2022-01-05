@@ -41,17 +41,18 @@ fun Cell?.getStringValue(evaluator: FormulaEvaluator): String {
 
 /**
  * Excel 导入导出。
+ * @param excelStream: 必须是可重复读的流!
  */
-class ExcelComponent(val excelStream: () -> InputStream) {
+class ExcelComponent(val excelStream: InputStream) {
     val sheetNames: Array<String>
         get() {
             var ret = mutableListOf<String>()
 
-            FileMagic.prepareToCheckMagic(excelStream()).use { file ->
+            FileMagic.prepareToCheckMagic(excelStream).use { file ->
                 val fm = FileMagic.valueOf(file)
                 when (fm) {
                     FileMagic.OOXML -> {
-                        WorkbookFactory.create(excelStream()).use { book ->
+                        WorkbookFactory.create(excelStream).use { book ->
                             for (i in 0..(book.numberOfSheets - 1)) {
                                 ret.add(book.getSheetAt(i).sheetName)
                             }
@@ -59,7 +60,7 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                     }
 
                     FileMagic.OLE2 -> {
-                        OPCPackage.open(excelStream()).use { xlsxPackage ->
+                        OPCPackage.open(excelStream).use { xlsxPackage ->
                             var xssfReader = XSSFReader(xlsxPackage)
                             var iter = xssfReader.sheetsData as XSSFReader.SheetIterator
                             while (iter.hasNext()) {
@@ -83,7 +84,7 @@ class ExcelComponent(val excelStream: () -> InputStream) {
     }
 
 
-    class ExcelSheetComponent(val sheetName: String, val excelStream: () -> InputStream) {
+    class ExcelSheetComponent(val sheetName: String, val excelStream: InputStream) {
         private var columns: Array<out String> = arrayOf()
         private var rowOffset: Int = 0;
         private var pks: Array<out String> = arrayOf()
@@ -110,9 +111,9 @@ class ExcelComponent(val excelStream: () -> InputStream) {
         }
 
         private fun getHeaderColumnsIndexMap(
-                headerRow: Row,
-                columns: Array<out String>,
-                evaluator: FormulaEvaluator
+            headerRow: Row,
+            columns: Array<out String>,
+            evaluator: FormulaEvaluator
         ): LinkedHashMap<Int, String> {
 
             var columnDataIndexs = linkedMapOf<Int, String>()
@@ -136,8 +137,8 @@ class ExcelComponent(val excelStream: () -> InputStream) {
          */
         @JvmOverloads
         fun <T : Any> getDataTable(
-                clazz: Class<T>,
-                filter: ((JsonMap, Map<Int, String>) -> Boolean)? = null
+            clazz: Class<T>,
+            filter: ((JsonMap, Map<Int, String>) -> Boolean)? = null
         ): DataTable<T> {
             var dt = DataTable<T>(clazz)
 
@@ -186,7 +187,7 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                     throw RuntimeException("${sheetName}多余的主键定义:${ext_pks.joinToString(",")}");
                 }
             }
-            FileMagic.prepareToCheckMagic(excelStream()).use { file ->
+            FileMagic.prepareToCheckMagic(excelStream).use { file ->
 
                 val fm = FileMagic.valueOf(file)
                 var lined = 0;
@@ -206,9 +207,9 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                         var pk_empty_map = pk_map.filter { it.value.AsString().isEmpty() }
                         if (pk_empty_map.any()) {
                             throw RuntimeException(
-                                    "发现主键空值，行：${lined}, 列: ${
-                                        pk_empty_map.map { it.key }.joinToString(",")
-                                    }"
+                                "发现主键空值，行：${lined}, 列: ${
+                                    pk_empty_map.map { it.key }.joinToString(",")
+                                }"
                             )
                         }
                     }
@@ -271,8 +272,8 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                         } else if (dbValue is Boolean) {
                             cell.setCellValue(dbValue.AsBoolean())
                         } else if (dbValue is LocalDateTime ||
-                                dbValue is LocalDate ||
-                                dbValue is Date
+                            dbValue is LocalDate ||
+                            dbValue is Date
                         ) {
                             cell.setCellValue(dbValue.AsDate())
                         } else {
@@ -288,6 +289,10 @@ class ExcelComponent(val excelStream: () -> InputStream) {
         }
 
 
+        /**
+         * 回写数据
+         * @param outputStream: Excel模板的文件流
+         */
         fun <T : Any> writeData(outputStream: OutputStream, column_offset: Int = 0, table: DataTable<T>) {
             writeData(outputStream, column_offset) { rowIndex ->
                 return@writeData table.rows.getOrNull(rowIndex)?.ConvertType(JsonMap::class.java) as JsonMap?
@@ -295,9 +300,9 @@ class ExcelComponent(val excelStream: () -> InputStream) {
         }
 
         private fun readOle2ExcelData(
-                filter: (JsonMap, Map<Int, String>) -> Boolean
+            filter: (JsonMap, Map<Int, String>) -> Boolean
         ) {
-            WorkbookFactory.create(excelStream()).use { book ->
+            WorkbookFactory.create(excelStream).use { book ->
 
                 var sheet: Sheet;
 
@@ -337,9 +342,9 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                             }
 
                             if (cell.cellStyle.dataFormatString.indexOf("yy") >= 0 &&
-                                    cell.cellStyle.dataFormatString.indexOf("m") >= 0 &&
-                                    cell.cellStyle.dataFormatString.indexOf("d") >= 0 &&
-                                    cell.cellStyle.dataFormatString.indexOf("h:mm:ss") >= 0
+                                cell.cellStyle.dataFormatString.indexOf("m") >= 0 &&
+                                cell.cellStyle.dataFormatString.indexOf("d") >= 0 &&
+                                cell.cellStyle.dataFormatString.indexOf("h:mm:ss") >= 0
                             ) {
 
                                 oriData.set(columnIndex, cell.dateCellValue.AsLocalDateTime().AsString());
@@ -348,8 +353,8 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                                 oriData.set(columnIndex, cell.dateCellValue.AsLocalTime().AsString());
                                 continue;
                             } else if (cell.cellStyle.dataFormatString.indexOf("yy") >= 0 &&
-                                    cell.cellStyle.dataFormatString.indexOf("m") >= 0 &&
-                                    cell.cellStyle.dataFormatString.indexOf("d") >= 0
+                                cell.cellStyle.dataFormatString.indexOf("m") >= 0 &&
+                                cell.cellStyle.dataFormatString.indexOf("d") >= 0
                             ) {
                                 oriData.set(columnIndex, cell.dateCellValue.AsLocalDate().AsString());
                                 continue;
@@ -384,7 +389,7 @@ class ExcelComponent(val excelStream: () -> InputStream) {
 
 
         private fun readOpenXmlExcelData(filter: (JsonMap, Map<Int, String>) -> Boolean) {
-            OPCPackage.open(excelStream()).use { xlsxPackage ->
+            OPCPackage.open(excelStream).use { xlsxPackage ->
 
                 var xssfReader = XSSFReader(xlsxPackage)
                 var iter: XSSFReader.SheetIterator
@@ -424,17 +429,18 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                     }
                 }
 
+                println("找不到Excel文件的Sheet ${sheetName} ！")
                 throw java.lang.Exception("找不到Excel文件的Sheet ${sheetName} ！")
             }
         }
 
 
         private fun getSheetData(
-                xlsxPackage: OPCPackage,
-                xssfReader: XSSFReader,
-                sheetInputStream: InputStream,
+            xlsxPackage: OPCPackage,
+            xssfReader: XSSFReader,
+            sheetInputStream: InputStream,
 
-                filter: ((JsonMap, Map<Int, String>) -> Boolean)
+            filter: ((JsonMap, Map<Int, String>) -> Boolean)
         ) {
 
             var strings = ReadOnlySharedStringsTable(xlsxPackage);
@@ -445,12 +451,12 @@ class ExcelComponent(val excelStream: () -> InputStream) {
 
             try {
                 sheetParser.contentHandler = XSSFSheetXMLHandler(
-                        styles,
-                        null,
-                        strings,
-                        SheetContentReader(sheetParser, columns, filter, this.rowOffset, this.strictMode),
-                        formatter,
-                        false
+                    styles,
+                    null,
+                    strings,
+                    SheetContentReader(sheetParser, columns, filter, this.rowOffset, this.strictMode),
+                    formatter,
+                    false
                 );
                 sheetParser.parse(sheetSource)
             } catch (e: Exception) {

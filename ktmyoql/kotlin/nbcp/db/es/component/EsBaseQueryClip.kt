@@ -60,7 +60,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
             }
 
             responseData = response.entity.content
-                .ReadContentStringFromStream()
+                .readContentString()
                 .FromJson<Map<String, Any?>>() ?: mapOf();
             return responseData;
         } catch (e: Exception) {

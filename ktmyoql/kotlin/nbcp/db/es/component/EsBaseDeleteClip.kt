@@ -117,7 +117,7 @@ open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhere
             error = e;
             throw e;
         } finally {
-//            response.entity.content.ReadContentStringFromStream()
+//            response.entity.content.readContentString()
             EsLogger.logDelete(
                 error, collectionName, request,
                 response?.statusLine?.statusCode.AsString() + "," + ids.size

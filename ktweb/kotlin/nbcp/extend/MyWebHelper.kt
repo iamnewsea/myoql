@@ -29,7 +29,7 @@ object MyWebHelper {
         var http = HttpUtil(targetUrl)
         http.request.requestMethod = request.method
         if (request.method == "POST" || request.method == "PUT") {
-            http.setPostBody(request.inputStream.ReadContentStringFromStream())
+            http.setPostBody(request.inputStream.readContentString())
         }
 
         run {

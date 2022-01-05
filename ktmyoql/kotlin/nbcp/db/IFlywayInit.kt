@@ -21,7 +21,7 @@ abstract class FlywayVersionBaseService(val version: Int) {
         fileExt: String,
         itemFunc: (String, List<String>) -> Boolean
     ): Boolean {
-        return ClassPathResource(resourcePath).inputStream.ReadContentStringFromStream().split("\n")
+        return ClassPathResource(resourcePath).inputStream.readContentString().split("\n")
             .filter { it.endsWith(fileExt, true) }
             .filter {
                 if (fileName.isEmpty()) {
@@ -32,7 +32,7 @@ abstract class FlywayVersionBaseService(val version: Int) {
             }
             .all {
                 var tableName = it.split(".").first()
-                var content = ClassPathResource(resourcePath + "/" + it).inputStream.ReadContentStringFromStream()
+                var content = ClassPathResource(resourcePath + "/" + it).inputStream.readContentString()
                 return@all itemFunc.invoke(tableName, content.split("\n").filter { it.HasValue })
             }
     }
