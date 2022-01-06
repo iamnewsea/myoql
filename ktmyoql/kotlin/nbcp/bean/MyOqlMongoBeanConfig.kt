@@ -33,15 +33,26 @@ class MyOqlMongoBeanConfig : BeanPostProcessor {
             (converter.conversionService as GenericConversionService).addConverter(Date2LocalDateTimeConverter())
         } else if (bean is MongoClientSettings) {
         } else if (bean is MongoProperties) {
-            //修改默认连接池参数
+
+            /**修改默认连接池参数
+             * https://docs.mongodb.com/manual/reference/connection-string/
+             */
+
             if (bean.uri.HasValue) {
                 var urlJson = JsUtil.parseUrlQueryJson(bean.uri);
-                var maxIdleTimeMS = urlJson.queryJson.getStringValue("maxIdleTimeMS", ignoreCase = true)
                 urlJson.queryJson.put("uuidRepresentation", "STANDARD")
+
+                var maxIdleTimeMS = urlJson.queryJson.getStringValue("maxIdleTimeMS", ignoreCase = true)
                 if (maxIdleTimeMS.isNullOrEmpty()) {
                     urlJson.queryJson.put("maxIdleTimeMS", "30000")
-                    bean.uri = urlJson.toUrl();
                 }
+
+                var connectTimeoutMS = urlJson.queryJson.getStringValue("connectTimeoutMS", ignoreCase = true)
+                if (connectTimeoutMS.isNullOrEmpty()) {
+                    urlJson.queryJson.put("connectTimeoutMS", "3000")
+                }
+
+                bean.uri = urlJson.toUrl();
             }
             bean.uuidRepresentation = UuidRepresentation.STANDARD
         } else if (bean is MongoDatabaseFactory) {
