@@ -22,8 +22,9 @@ interface IUserAuthenticationService {
 
     /**
      * 设置登录token,格式：{config.userSystem}token:{id}
+     * @return 返回缓存秒数
      */
-    fun saveLoginUserInfo(request: HttpServletRequest, userInfo: LoginUserModel)
+    fun saveLoginUserInfo(request: HttpServletRequest, userInfo: LoginUserModel): Int
 
     /**
      * 删除tokens
@@ -83,10 +84,12 @@ class DefaultUserAuthenticationService {
         /**
          * 设置登录token,格式：{config.userSystem}token:{id}
          */
-        override fun saveLoginUserInfo(request: HttpServletRequest, userInfo: LoginUserModel) {
+        override fun saveLoginUserInfo(request: HttpServletRequest, userInfo: LoginUserModel): Int {
             if (userInfo.id.HasValue && userInfo.token.HasValue) {
                 userSystemRedis.set(userInfo.token, userInfo.ToJson())
+                return userSystemRedis.defaultCacheSeconds;
             }
+            return 0
         }
 
         /**
