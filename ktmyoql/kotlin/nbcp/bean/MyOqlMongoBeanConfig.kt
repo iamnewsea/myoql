@@ -49,7 +49,7 @@ class MyOqlMongoBeanConfig : BeanPostProcessor {
 
                 var connectTimeoutMS = urlJson.queryJson.getStringValue("connectTimeoutMS", ignoreCase = true)
                 if (connectTimeoutMS.isNullOrEmpty()) {
-                    urlJson.queryJson.put("connectTimeoutMS", "3000")
+                    urlJson.queryJson.put("connectTimeoutMS", "10000")
                 }
 
                 bean.uri = urlJson.toUrl();
