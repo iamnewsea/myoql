@@ -56,7 +56,18 @@ infix fun MongoColumnName.match_pattern(pattern: String): Criteria {
 }
 
 infix fun MongoColumnName.match_like(like: String): Criteria {
-    return this match_pattern "${like}"
+    return this match_pattern "${getSafeRegText(like)}"
+}
+
+private fun getSafeRegText(value: String): String {
+    //https://www.cnblogs.com/ysk123/p/9858387.html
+
+    var v = value;
+
+    """${'$'}()*+.[]?\^{}|""".forEach {
+        v = v.replace(it.toString(), "\\${it}")
+    }
+    return v;
 }
 
 infix fun MongoColumnName.match_not_equal(value: Any?): Criteria {
