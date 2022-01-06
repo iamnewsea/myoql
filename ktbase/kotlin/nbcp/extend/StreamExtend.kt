@@ -3,10 +3,7 @@
 
 package nbcp.comm
 
-import java.io.BufferedInputStream
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
+import java.io.*
 
 
 /**
@@ -25,3 +22,13 @@ fun InputStream.prepareToMarkSupportedInputStream() :InputStream{
     if( this.markSupported()) return this;
     return BufferedInputStream(this);
 }
+
+/**
+ * 把流全部读入内存，实现可重复读，内存压力会大
+ */
+fun InputStream.readToMemoryStream() :ByteArrayInputStream{
+    this.use {
+        return ByteArrayInputStream(this.readBytes());
+    }
+}
+
