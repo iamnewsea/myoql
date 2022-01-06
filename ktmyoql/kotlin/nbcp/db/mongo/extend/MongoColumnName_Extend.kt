@@ -50,11 +50,15 @@ infix fun MongoColumnName.match_size(value: Int): Criteria {
  *
  * mor.code.qrCodeInfo.product.name match_pattern "国际$"
  * 即：内容以 "国际" 结尾。
+ * @param pattern: 不会转义
  */
 infix fun MongoColumnName.match_pattern(pattern: String): Criteria {
     return Criteria.where(this.toString()).regex(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE))
 }
 
+/**
+ * @param like: 会对查询内容中的特殊字符转义，避免与正则表达式冲突
+ */
 infix fun MongoColumnName.match_like(like: String): Criteria {
     return this match_pattern "${getSafeRegText(like)}"
 }
