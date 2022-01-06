@@ -20,10 +20,10 @@ interface IUserAuthenticationService {
      */
     fun getLoginInfoFromToken(request: HttpServletRequest, renewal: Boolean = false): LoginUserModel?
 
-//    /**
-//     * 设置登录token,格式：{config.userSystem}token:{id}
-//     */
-//    fun saveLoginUserInfo(request: HttpServletRequest, userInfo: LoginUserModel)
+    /**
+     * 设置登录token,格式：{config.userSystem}token:{id}
+     */
+    fun saveLoginUserInfo(request: HttpServletRequest, userInfo: LoginUserModel)
 
     /**
      * 删除tokens
@@ -83,11 +83,11 @@ class DefaultUserAuthenticationService {
         /**
          * 设置登录token,格式：{config.userSystem}token:{id}
          */
-//        override fun saveLoginUserInfo(request: HttpServletRequest, userInfo: LoginUserModel) {
-//            if (userInfo.id.HasValue && userInfo.token.HasValue) {
-//                userSystemRedis.set(userInfo.token, userInfo.ToJson())
-//            }
-//        }
+        override fun saveLoginUserInfo(request: HttpServletRequest, userInfo: LoginUserModel) {
+            if (userInfo.id.HasValue && userInfo.token.HasValue) {
+                userSystemRedis.set(userInfo.token, userInfo.ToJson())
+            }
+        }
 
         /**
          * 删除tokens
