@@ -68,6 +68,7 @@ private fun getSafeRegText(value: String): String {
 
     var v = value;
 
+    // 第一个必须是 反斜线！
     """\/|()[]{}*+.?^${'$'}""".forEach {
         v = v.replace(it.toString(), "\\${it}")
     }
