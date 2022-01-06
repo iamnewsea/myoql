@@ -68,7 +68,7 @@ private fun getSafeRegText(value: String): String {
 
     var v = value;
 
-    """${'$'}()*+.[]?\^{}|""".forEach {
+    """\/|()[]{}*+.?^${'$'}""".forEach {
         v = v.replace(it.toString(), "\\${it}")
     }
     return v;
