@@ -21,6 +21,10 @@ class MongoEntityCollector : BeanPostProcessor {
         @JvmStatic
         val dustbinEntities = mutableSetOf<Class<*>>()  //mongo entity class
 
+//        //逻辑删
+//        @JvmStatic
+//        val logicalDeleteEntities = mutableSetOf<Class<*>>()
+
         @JvmStatic
         val logHistoryMap = linkedMapOf<Class<*>, Array<String>>()
 
@@ -77,8 +81,13 @@ class MongoEntityCollector : BeanPostProcessor {
                 bean.getEntities()
                     .forEach { moer ->
                         if (moer is MongoBaseMetaCollection<*>) {
+                            /**
+                             * 这里使用了实体的类．
+                             */
+                            //TODO 使用元数据类，会更好一些．但需要把实体注解，全部转移到元数据类上．
                             var entityClass = moer.entityClass
 
+                            addLogicalDelete(entityClass)
                             addDustbin(entityClass)
                             addRef(entityClass)
                             addLogHistory(entityClass);
@@ -134,7 +143,19 @@ class MongoEntityCollector : BeanPostProcessor {
         }
     }
 
+    private fun addLogicalDelete(entityClass: Class<out Any>) {
+//        var logicalDelete = entityClass.getAnnotation(LogicalDelete::class.java)
+//        if (logicalDelete != null) {
+//            logicalDeleteEntities.add(entityClass);
+//        }
+    }
+
     private fun addDustbin(entityClass: Class<out Any>) {
+        var logicalDelete = entityClass.getAnnotation(LogicalDelete::class.java)
+        if (logicalDelete != null) {
+            return;
+        }
+
         var dustbin = entityClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dustbin != null) {
             dustbinEntities.add(entityClass)

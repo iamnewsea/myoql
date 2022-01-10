@@ -24,6 +24,14 @@ annotation class MetaDataGroup(val dbType: DatabaseEnum, val value: String)
 annotation class RemoveToSysDustbin()
 
 /**
+ * 逻辑删除
+ * @param value: 表示逻辑删除的字段．
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class LogicalDelete(val value: String = "isDeleted")
+
+/**
  * 排序的步长
  */
 @Target(AnnotationTarget.CLASS)

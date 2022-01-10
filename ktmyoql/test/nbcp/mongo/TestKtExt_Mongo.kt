@@ -27,12 +27,7 @@ class TestKtExt_Mongo : TestBase() {
 
     @Test
     fun test_Insert() {
-        var con = db.mongo.getMongoTemplateByUri("mongodb://dev:123@mongo:27017/cms")!!
-        usingScope(MongoTemplateScope(con)) {
-            var doc = JsonMap();
-            doc.put("abc", UUID.randomUUID())
-            db.mor_base.sysLog.doInsert(doc)
-        }
+        Proxy.getInvocationHandler (it)
     }
 
 

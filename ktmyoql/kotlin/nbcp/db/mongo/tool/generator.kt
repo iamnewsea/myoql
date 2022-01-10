@@ -535,32 +535,42 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
         }
 
         var varTable = entType.getAnnotation(VarTable::class.java);
-        var varTableCode = "";
+
         var varTableRemark = "";
         if (varTable != null) {
             varTableRemark = " (变表)"
-            varTableCode = """${const.line_break}@VarTable("${varTable.value}")"""
+//            varTableCode = """${const.line_break}@VarTable("${varTable.value}")"""
         }
         var varDb = entType.getAnnotation(VarDatabase::class.java)
         if (varDb != null) {
             varTableRemark += " (动态库)"
-            varTableCode = """${const.line_break}@VarDatabase("${varDb.value}")"""
+//            varTableCode = """${const.line_break}@VarDatabase("${varDb.value}")"""
         }
 
-        var sortNumber = "";
-        var sortNumberAnnotation = entType.getAnnotation(SortNumber::class.java)
-        if (sortNumberAnnotation != null) {
-            sortNumber =
-                """${const.line_break}@SortNumber("${sortNumberAnnotation.field}","${sortNumberAnnotation.groupBy}",${sortNumberAnnotation.step})"""
-        }
-//        var treeTable = "";
-//        var treeTableAnnotation = entType.getAnnotation(TreeTable::class.java)
-//        if (treeTableAnnotation != null) {
-//            treeTable = """${const.line_break}@TreeTable("${treeTableAnnotation.parentField}")"""
+
+//        var sortNumberAnnotation = entType.getAnnotation(SortNumber::class.java)
+//        if (sortNumberAnnotation != null) {
+//            sortNumber =
+//                """${const.line_break}@SortNumber("${sortNumberAnnotation.field}","${sortNumberAnnotation.groupBy}",${sortNumberAnnotation.step})"""
+//        }
+//        var logicalDelete = "";
+//        var LogicalDeleteAnnotation = entType.getAnnotation(LogicalDelete::class.java)
+//        if (LogicalDeleteAnnotation != null) {
+//            logicalDelete = """${const.line_break}@LogicalDelete("${LogicalDeleteAnnotation.value}")"""
 //        }
 
+        val anns = mutableListOf<String>()
+        entType.annotations.forEach { an ->
+
+        }
+
         val ent =
-            """${CodeGeneratorHelper.getEntityComment(entType, varTableRemark)}${varTableCode}${sortNumber}
+            """${
+                CodeGeneratorHelper.getEntityComment(
+                    entType,
+                    varTableRemark
+                )
+            }${anns.map { const.line_break + it }.joinToString("")}
 class ${entityTypeName}(collectionName: String = "", databaseId: String = "")
     : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, collectionName.AsString("${dbName}"), databaseId) {
 ${props.map { const.line_break + it }.joinToString(const.line_break)}

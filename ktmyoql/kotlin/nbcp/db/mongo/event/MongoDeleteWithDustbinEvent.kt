@@ -1,7 +1,6 @@
 package nbcp.db.mongo;
 
 import nbcp.comm.AsString
-import nbcp.db.mongo.*;
 import nbcp.db.*
 import nbcp.db.mongo.entity.*
 import nbcp.db.mongo.event.*
@@ -15,7 +14,7 @@ import java.io.Serializable
  * 同步处理，删除的数据转移到垃圾箱
  */
 @Component
-class MongoDustbinEvent : IMongoEntityDelete {
+class MongoDeleteWithDustbinEvent : IMongoEntityDelete {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
