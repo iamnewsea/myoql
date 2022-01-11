@@ -19,14 +19,14 @@ class MongoEntityCollector : BeanPostProcessor {
     companion object {
         //需要删 除后放入垃圾箱的实体
         @JvmStatic
-        val dustbinEntities = mutableSetOf<Class<*>>()  //mongo entity class
+        val dustbinEntities = mutableSetOf<MongoBaseMetaCollection<*>>()  //mongo entity class
 
 //        //逻辑删
 //        @JvmStatic
 //        val logicalDeleteEntities = mutableSetOf<Class<*>>()
 
         @JvmStatic
-        val logHistoryMap = linkedMapOf<Class<*>, Array<String>>()
+        val logHistoryMap = linkedMapOf<MongoBaseMetaCollection<*>, Array<String>>()
 
         // 冗余字段的引用。如 user.corp.name 引用的是  corp.name
         @JvmStatic
@@ -87,10 +87,10 @@ class MongoEntityCollector : BeanPostProcessor {
                             //TODO 使用元数据类，会更好一些．但需要把实体注解，全部转移到元数据类上．
                             var entityClass = moer.entityClass
 
-                            addLogicalDelete(entityClass)
-                            addDustbin(entityClass)
+//                            addLogicalDelete(moer)
+                            addDustbin(moer)
                             addRef(entityClass)
-                            addLogHistory(entityClass);
+                            addLogHistory(moer);
                         }
                     }
             }
@@ -122,10 +122,11 @@ class MongoEntityCollector : BeanPostProcessor {
         return super.postProcessAfterInitialization(bean, beanName)
     }
 
-    private fun addLogHistory(entityClass: Class<out Any>) {
-        var logHistory = entityClass.getAnnotation(DbEntityLogHistory::class.java)
+    private fun addLogHistory(moer: MongoBaseMetaCollection<*>) {
+        var moerClass = moer::class.java
+        var logHistory = moerClass.getAnnotation(DbEntityLogHistory::class.java)
         if (logHistory != null) {
-            logHistoryMap.put(entityClass, logHistory.value.map { it }.toTypedArray());
+            logHistoryMap.put(moer, logHistory.value.map { it }.toTypedArray());
         }
     }
 
@@ -150,15 +151,16 @@ class MongoEntityCollector : BeanPostProcessor {
 //        }
     }
 
-    private fun addDustbin(entityClass: Class<out Any>) {
-        var logicalDelete = entityClass.getAnnotation(LogicalDelete::class.java)
+    private fun addDustbin(moer: MongoBaseMetaCollection<*>) {
+        var moerClass = moer::class.java;
+        var logicalDelete = moerClass.getAnnotation(LogicalDelete::class.java)
         if (logicalDelete != null) {
             return;
         }
 
-        var dustbin = entityClass.getAnnotation(RemoveToSysDustbin::class.java)
+        var dustbin = moerClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dustbin != null) {
-            dustbinEntities.add(entityClass)
+            dustbinEntities.add(moer)
         }
     }
 

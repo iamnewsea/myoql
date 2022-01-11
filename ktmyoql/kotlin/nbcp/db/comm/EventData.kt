@@ -6,6 +6,7 @@ import nbcp.comm.AsString
 /**
  * 保存收集 DbEntityFieldRef 的 Bean。
  * 冗余字段的引用。如 user.corp.name 引用的是  corp.name
+ * entityClass,refEntityClass 是实体类，不是元数据类！
  * 更新规则：
  * 如更新了引用实体，corp.id = 1 ,corp.name = 'a'
  * 则：
@@ -15,26 +16,30 @@ import nbcp.comm.AsString
  *  .exec()
  */
 data class DbEntityFieldRefData(
-    //实体，entity 如 SysUser
-    var entityClass: Class<*>,
-    //实体的引用Id， 如 "corp._id"
-    var idField: String,
-    //实体的冗余字段, 如： "corp.name"
-    var nameField: String,
-    // 引用的实体
-    var refEntityClass: Class<*>,
-    //引用实体的Id字段， corp 表的 , "id"
-    var refIdField: String,
-    //冗余字段对应的引用实体字段， corp表的 , "name"
-    var refNameField: String
+        /**
+         * 实体类，主类
+         */
+        var entityClass: Class<*>,
+        //实体的引用Id， 如 "corp._id"
+        var idField: String,
+        //实体的冗余字段, 如： "corp.name"
+        var nameField: String,
+        /**
+         * 实体类，引用类
+         */
+        var refEntityClass: Class<*>,
+        //引用实体的Id字段， corp 表的 , "id"
+        var refIdField: String,
+        //冗余字段对应的引用实体字段， corp表的 , "name"
+        var refNameField: String
 ) {
     constructor(entityClass: Class<*>, annRef: DbEntityFieldRef) : this(
-        entityClass, //moer class
-        "",
-        "",
-        annRef.refEntityClass.java,
-        "",
-        ""
+            entityClass, //moer class
+            "",
+            "",
+            annRef.refEntityClass.java,
+            "",
+            ""
     ) {
 
 //        var idFields = annRef.idFieldMap.split(":").toMutableList();

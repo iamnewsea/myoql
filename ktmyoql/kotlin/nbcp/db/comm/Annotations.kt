@@ -64,6 +64,7 @@ annotation class VarDatabase(val value: String)
 
 /**
  * 记录当更新某些字段时,记录到日志表
+ * @param value: 要记录的字段名
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
@@ -91,11 +92,11 @@ annotation class DbEntityFieldRefs(vararg val value: DbEntityFieldRef)
 @Repeatable
 @java.lang.annotation.Repeatable(DbEntityFieldRefs::class)
 annotation class DbEntityFieldRef(
-    val idField: String,
-    val nameField: String,
-    val refEntityClass: KClass<*>,
-    val refIdField: String = "",
-    val refNameField: String = ""
+        val idField: String,
+        val nameField: String,
+        val refEntityClass: KClass<*>,
+        val refIdField: String = "",
+        val refNameField: String = ""
 )
 
 

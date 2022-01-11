@@ -347,7 +347,7 @@ data class moer_map(val _pname: String) {
                 .map {
                     var v1 = getMetaValue(it, entType, entTypeName, 1)
 
-                    return@map """${CodeGeneratorHelper.getFieldComment(it)}
+                    return@map """${CodeGeneratorHelper.getFieldComment(it)}${CodeGeneratorHelper.getAnnotations(it.annotations)}
 val ${it.name} = ${v1}""".removeEmptyLine().ToTab(1)
                 }
 
@@ -355,7 +355,7 @@ val ${it.name} = ${v1}""".removeEmptyLine().ToTab(1)
 
 
         var ent =
-                """${CodeGeneratorHelper.getEntityComment(entType)}
+                """${CodeGeneratorHelper.getEntityComment(entType)}${CodeGeneratorHelper.getAnnotations(entType.annotations)}
 class ${entityTypeName}Meta(private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
 ${props.map { const.line_break + it }.joinToString(const.line_break)}
