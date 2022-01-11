@@ -49,31 +49,33 @@ class ExcelComponent(val excelStream: () -> InputStream) {
         get() {
             var ret = mutableListOf<String>()
 
-            FileMagic.prepareToCheckMagic(excelStream()).use { file ->
-                val fm = FileMagic.valueOf(file)
-                when (fm) {
-                    FileMagic.OOXML -> {
-                        WorkbookFactory.create(excelStream()).use { book ->
-                            for (i in 0..(book.numberOfSheets - 1)) {
-                                ret.add(book.getSheetAt(i).sheetName)
-                            }
+            val fm = FileMagic.prepareToCheckMagic(excelStream()).use { file ->
+                return@use FileMagic.valueOf(file)
+            }
+
+
+            when (fm) {
+                FileMagic.OOXML -> {
+                    WorkbookFactory.create(excelStream()).use { book ->
+                        for (i in 0..(book.numberOfSheets - 1)) {
+                            ret.add(book.getSheetAt(i).sheetName)
                         }
                     }
-
-                    FileMagic.OLE2 -> {
-                        OPCPackage.open(excelStream()).use { xlsxPackage ->
-                            var xssfReader = XSSFReader(xlsxPackage)
-                            var iter = xssfReader.sheetsData as XSSFReader.SheetIterator
-                            while (iter.hasNext()) {
-                                iter.next().use { _ ->
-                                    ret.add(iter.sheetName);
-                                }
-                            }
-                        }
-                    }
-
-                    else -> throw RuntimeException("不识别的类型：${fm}")
                 }
+
+                FileMagic.OLE2 -> {
+                    OPCPackage.open(excelStream()).use { xlsxPackage ->
+                        var xssfReader = XSSFReader(xlsxPackage)
+                        var iter = xssfReader.sheetsData as XSSFReader.SheetIterator
+                        while (iter.hasNext()) {
+                            iter.next().use { _ ->
+                                ret.add(iter.sheetName);
+                            }
+                        }
+                    }
+                }
+
+                else -> throw RuntimeException("不识别的类型：${fm}")
             }
 
             return ret.toTypedArray()
@@ -188,42 +190,44 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                     throw RuntimeException("${sheetName}多余的主键定义:${ext_pks.joinToString(",")}");
                 }
             }
-            FileMagic.prepareToCheckMagic(excelStream()).use { file ->
 
-                val fm = FileMagic.valueOf(file)
-                var lined = 0;
-                var filter2: (JsonMap, Map<Int, String>) -> Boolean = f2@{ row, oriData ->
-                    lined++;
-                    if (row.any() == false) {
-                        return@f2 false;
-                    }
-
-                    if (pks.any()) {
-                        var pk_map = row.filterKeys { pks.contains(it) }
-
-                        if (pk_map.any() == false) {
-                            throw RuntimeException("找不到主键的值!，行：${lined}}")
-                        }
-
-                        var pk_empty_map = pk_map.filter { it.value.AsString().isEmpty() }
-                        if (pk_empty_map.any()) {
-                            throw RuntimeException(
-                                "发现主键空值，行：${lined}, 列: ${
-                                    pk_empty_map.map { it.key }.joinToString(",")
-                                }"
-                            )
-                        }
-                    }
-
-                    return@f2 filter(row, oriData);
-                }
-
-                when (fm) {
-                    FileMagic.OOXML -> readOpenXmlExcelData(filter2);
-                    FileMagic.OLE2 -> readOle2ExcelData(filter2)
-                    else -> throw RuntimeException("不识别的类型：${fm}")
-                }
+            val fm = FileMagic.prepareToCheckMagic(excelStream()).use { file ->
+                return@use FileMagic.valueOf(file)
             }
+
+            var lined = 0;
+            var filter2: (JsonMap, Map<Int, String>) -> Boolean = f2@{ row, oriData ->
+                lined++;
+                if (row.any() == false) {
+                    return@f2 false;
+                }
+
+                if (pks.any()) {
+                    var pk_map = row.filterKeys { pks.contains(it) }
+
+                    if (pk_map.any() == false) {
+                        throw RuntimeException("找不到主键的值!，行：${lined}}")
+                    }
+
+                    var pk_empty_map = pk_map.filter { it.value.AsString().isEmpty() }
+                    if (pk_empty_map.any()) {
+                        throw RuntimeException(
+                            "发现主键空值，行：${lined}, 列: ${
+                                pk_empty_map.map { it.key }.joinToString(",")
+                            }"
+                        )
+                    }
+                }
+
+                return@f2 filter(row, oriData);
+            }
+
+            when (fm) {
+                FileMagic.OOXML -> readOpenXmlExcelData(filter2);
+                FileMagic.OLE2 -> readOle2ExcelData(filter2)
+                else -> throw RuntimeException("不识别的类型：${fm}")
+            }
+
         }
 
 
@@ -396,7 +400,6 @@ class ExcelComponent(val excelStream: () -> InputStream) {
 
         private fun readOpenXmlExcelData(filter: (JsonMap, Map<Int, String>) -> Boolean) {
             OPCPackage.open(excelStream()).use { xlsxPackage ->
-
                 var xssfReader = XSSFReader(xlsxPackage)
                 var iter: XSSFReader.SheetIterator
 
