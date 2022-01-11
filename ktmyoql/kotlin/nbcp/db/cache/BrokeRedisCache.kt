@@ -27,7 +27,7 @@ annotation class BrokeRedisCache(
      */
     val groupKey: String = "",
     /**
-     * 破坏表的隔离键值，如: "010"
+     * 破坏表的隔离键值，如: "010",如果使用参数变量,使用 # 开头
      */
     val groupValue: String = "",
     /**

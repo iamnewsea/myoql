@@ -32,7 +32,7 @@ annotation class FromRedisCache(
      */
     val groupKey: String = "",
     /**
-     * 缓存表的隔离值,如: "010"
+     * 缓存表的隔离值,如: "010",如果使用参数变量,使用 # 开头
      */
     val groupValue: String = "",
 
