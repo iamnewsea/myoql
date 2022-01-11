@@ -18,10 +18,22 @@ class MongoDefaultQueryEvent : IMongoEntityQuery {
             return EventResult(true, null)
         }
 
-//        var logicalDelete = query. .entityClass.getAnnotation(LogicalDelete::class.java)
-//        if (logicalDelete == null) {
-//            return EventResult(true);
-//        }
+        var moer = db.mongo.mongoEvents.getCollection(query.collectionName);
+        if (moer == null) {
+            return EventResult(true, null)
+        }
+
+        var logicalDelete = moer::class.java.getAnnotation(LogicalDelete::class.java)
+
+        if (logicalDelete == null) {
+            return EventResult(true);
+        }
+        if (logicalDelete.value.isEmpty()) {
+            return EventResult(true);
+        }
+
+        query.whereData.add((MongoColumnName(logicalDelete.value) match true).criteriaObject)
+
         return EventResult(true);
     }
 

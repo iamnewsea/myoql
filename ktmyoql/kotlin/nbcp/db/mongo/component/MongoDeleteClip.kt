@@ -3,6 +3,8 @@ package nbcp.db.mongo
 
 import com.mongodb.client.result.DeleteResult
 import nbcp.comm.*
+import nbcp.db.EventResult
+import nbcp.db.LogicalDelete
 import nbcp.db.MyOqlOrmScope
 import nbcp.db.db
 import org.springframework.data.mongodb.core.query.Criteria
@@ -21,7 +23,7 @@ import java.io.Serializable
  */
 class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
     MongoClipBase(moerEntity.tableName), IMongoWhereable {
-    var whereData = mutableListOf<MutableMap<String,Any?>>()
+    var whereData = mutableListOf<MutableMap<String, Any?>>()
 
     companion object {
         private var logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -51,6 +53,21 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
 
     fun exec(): Int {
         db.affectRowCount = -1;
+
+        var logicalDelete = this.moerEntity.entityClass.getAnnotation(LogicalDelete::class.java)
+        if (logicalDelete != null) {
+            var where = JsonMap();
+            this.whereData.forEach {
+                where.putAll(it);
+            }
+            logger.Important("逻辑删除强制执行更新,${this.collectionName},${where.ToJson()}")
+
+            var update = MongoBaseUpdateClip(this.collectionName)
+            update.whereData.addAll(this.whereData)
+            update.setData.put(logicalDelete.value, true);
+            return update.exec();
+        }
+
         var criteria = db.mongo.getMergedMongoCriteria(*whereData.toTypedArray());
 
         var settingResult = db.mongo.mongoEvents.onDeleting(this)
