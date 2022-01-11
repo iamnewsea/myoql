@@ -172,19 +172,12 @@ object CodeGeneratorHelper {
 
         ret += an.annotationClass.qualifiedName
 
-        var m = members.filter {
-            var v = it.value;
-            if ((v is String) && v.isEmpty()) {
-                return@filter false;
-            }
-            return@filter true;
+
+        if (members.any() == false) {
+            return ret;
         }
 
-        if (m.any() == false) {
-            return ret + "()";
-        }
-
-        var list = m.map { kv ->
+        var list = members.map { kv ->
             var key = kv.key
             var v = kv.value!!;
 
@@ -196,7 +189,7 @@ object CodeGeneratorHelper {
 
     private fun getValueString(value: Any): String {
         if (value is Class<*>) {
-            return """${(value as Class<*>).name}::class"""
+            return """${value.name}::class"""
         } else if (value is Annotation) {
             return getAnnotation(value, false)
         }

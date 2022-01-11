@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.transaction.annotation.Transactional
 import java.lang.RuntimeException
+import java.lang.reflect.Proxy
 import java.time.LocalDateTime
 import java.util.*
 
@@ -27,7 +28,6 @@ class TestKtExt_Mongo : TestBase() {
 
     @Test
     fun test_Insert() {
-        Proxy.getInvocationHandler (it)
     }
 
 
