@@ -67,7 +67,10 @@ class SheetContentReader @JvmOverloads constructor(
 
         var row = JsonMap();
         columns.forEach { column ->
-            var columnIndex = columns_index_map.filterValues { it == column }.map { it.key }.first()
+            var columnIndex = columns_index_map.filterValues { it == column }.map { it.key }.firstOrNull()
+            if (columnIndex == null) {
+                return@forEach
+            }
             var value = currentDataRow.getOrDefault(columnIndex, "")
             row.set(column, value);
         }
