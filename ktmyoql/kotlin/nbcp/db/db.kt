@@ -245,8 +245,8 @@ object db {
          * 唯一值
          */
         sql: String,
-        consumer: Supplier<List<T>>
-    ): List<T> {
+        consumer: Supplier<List<T>?>
+    ): List<T>? {
         return getRedisCacheList(tableClass.simpleName, tableClass, groupKey, groupValue, sql, consumer)
     }
 
@@ -267,8 +267,8 @@ object db {
          * 唯一值
          */
         sql: String,
-        consumer: Supplier<List<T>>
-    ): List<T> {
+        consumer: Supplier<List<T>?>
+    ): List<T>? {
         return FromRedisCache(table = table, groupKey = groupKey, groupValue = groupValue, sql = sql)
             .getList(
                 cacheType,
