@@ -13,5 +13,5 @@ annotation class RedisCacheDefine(
     /**
      * 分组的字段
      */
-    vararg val value: String = arrayOf()
+    vararg val value: String
 )

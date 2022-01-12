@@ -70,6 +70,9 @@ fun BrokeRedisCache.resolveWithVariable(variableMap: JsonMap): BrokeRedisCache {
     );
 }
 
+/**
+ * 执行破坏缓存操作！
+ */
 fun BrokeRedisCache.brokeCache() {
     val cacheBroke = this;
     BrokeRedisCache.logger.Important("!执行破坏缓存! ${cacheBroke.ToJson()}")
