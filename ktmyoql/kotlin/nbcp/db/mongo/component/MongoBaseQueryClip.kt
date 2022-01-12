@@ -3,6 +3,10 @@ package nbcp.db.mongo
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.*
+import nbcp.db.cache.FromRedisCache
+import nbcp.db.cache.getList
+import nbcp.db.cache.onlyGetFromCache
+import nbcp.db.cache.onlySetToCache
 import org.bson.Document
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.BasicQuery
@@ -98,7 +102,16 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
 
         val startAt = LocalDateTime.now();
         this.script = this.getQueryScript(criteria);
-        val cursor = mongoTemplate.find(query, Document::class.java, this.actualTableName)
+
+        var cursor: List<Document>? = null;
+        val idValue = getMatchDefaultCacheIdValue();
+        if (idValue.HasValue) {
+            cursor = getFromDefaultCache()
+        }
+
+        if (cursor == null) {
+            cursor = mongoTemplate.find(query, Document::class.java, this.actualTableName)
+        }
 
         this.executeTime = LocalDateTime.now() - startAt
 
@@ -111,18 +124,19 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         var error: Exception? = null;
         var skipNullCount = 0;
         try {
-            cursor.forEach {
-                MongoDocument2EntityUtil.procDocumentJson(it);
+
+            cursor!!.forEach { row ->
+                MongoDocument2EntityUtil.procDocumentJson(row);
 
                 if (mapFunc != null) {
-                    mapFunc(it);
+                    mapFunc(row);
                 }
                 if (clazz.IsSimpleType()) {
                     if (lastKey.isEmpty()) {
-                        lastKey = it.keys.last()
+                        lastKey = row.keys.last()
                     }
 
-                    val value = MyUtil.getValueByWbsPath(it, *lastKey.split(".").toTypedArray());
+                    val value = MyUtil.getValueByWbsPath(row, *lastKey.split(".").toTypedArray());
                     if (value != null) {
                         ret.add(value.ConvertType(clazz) as R);
                     } else {
@@ -130,12 +144,21 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                     }
                 } else {
                     if (Document::class.java.isAssignableFrom(clazz)) {
-                        ret.add(it as R);
+                        ret.add(row as R);
                     } else {
-                        val ent = it.ConvertJson(clazz)
+                        val ent = row.ConvertJson(clazz)
                         ret.add(ent);
                     }
                 }
+            }
+
+            if (idValue.HasValue) {
+                FromRedisCache(
+                    table = this.actualTableName,
+                    groupKey = "id",
+                    groupValue = idValue.toString(),
+                    sql = "def"
+                ).onlySetToCache(cursor)
             }
 
             this.affectRowCount = cursor.size;
@@ -157,7 +180,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                 if (config.debug) {
                     msgs.add("[result] ${cursor.ToJson()}")
                 } else {
-                    msgs.add("[result.size] " + cursor.size.toString())
+                    msgs.add("[result.size] " + cursor!!.size.toString())
                 }
                 if (skipNullCount > 0) {
                     msgs.add("[skipNullRows] ${skipNullCount}")
@@ -171,6 +194,29 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         }
 
         return ret
+    }
+
+    private fun getMatchDefaultCacheIdValue(): String? {
+        if (MongoEntityCollector.sysRedisCacheDefines.any { it.key == this.collectionName } == false) {
+            return null;
+        }
+
+        if (this.selectProjections.any()) return null;
+        if (this.skip > 0) return null;
+        if (this.take > 1) return null;
+
+        return this.whereData.getStringValue("id")
+    }
+
+    /**
+     * 从缓存中获取数据
+     */
+    private fun getFromDefaultCache(): List<Document>? {
+        var idValue = getMatchDefaultCacheIdValue();
+        if (idValue.isNullOrEmpty()) return null;
+
+        return FromRedisCache(table = this.actualTableName, groupKey = "id", groupValue = idValue, sql = "def")
+            .onlyGetFromCache({ it.FromListJson(Document::class.java) })
     }
 
     private fun getQueryScript(criteria: Criteria): String {

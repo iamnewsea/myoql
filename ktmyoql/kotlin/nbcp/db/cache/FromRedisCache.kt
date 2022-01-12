@@ -137,15 +137,11 @@ fun <T> FromRedisCache.getJson(cacheType: Class<out T>, consumer: Supplier<out T
     return usingRedisCache({ it.FromJson(cacheType) }, consumer);
 }
 
-fun <T> FromRedisCache.getList(cacheType: Class<out T>, consumer: Supplier<List<T>>): List<T> {
-    return usingRedisCache({ it.FromListJson(cacheType) }, consumer) ?: listOf();
+fun <T> FromRedisCache.getList(cacheType: Class<out T>, consumer: Supplier<List<T>?>): List<T>? {
+    return usingRedisCache({ it.FromListJson(cacheType) }, consumer)
 }
 
-private fun <T> FromRedisCache.usingRedisCache(
-    converter: java.util.function.Function<String, T?>,
-    consumer: Supplier<out T?>
-): T? {
-
+fun <T> FromRedisCache.onlyGetFromCache(converter: java.util.function.Function<String, T?>): T? {
     val cacheKey = this.getCacheKey()
 
     if (this.cacheSeconds >= 0 && cacheKey.HasValue) {
@@ -159,12 +155,12 @@ private fun <T> FromRedisCache.usingRedisCache(
             }
         }
     }
+    return null;
+}
 
-    val ret = consumer.get();
-    if (ret == null) {
-        return null;
-    }
-
+fun FromRedisCache.onlySetToCache(ret: Any) {
+    val cacheKey = this.getCacheKey()
+    
     if (cacheSeconds >= 0 && cacheKey.HasValue) {
         var cacheSeconds = this.cacheSeconds
         //默认3分钟
@@ -177,6 +173,22 @@ private fun <T> FromRedisCache.usingRedisCache(
                 .set(cacheKey, ret.ToJson(), Duration.ofSeconds(cacheSeconds.toLong()));
         }
     }
+}
+
+private fun <T> FromRedisCache.usingRedisCache(
+    converter: java.util.function.Function<String, T?>,
+    consumer: Supplier<out T?>
+): T? {
+    onlyGetFromCache(converter).apply {
+        if (this != null) {
+            return this;
+        }
+    }
+
+    val ret = consumer.get();
+    if (ret == null) return null;
+
+    onlySetToCache(ret)
     return ret;
 }
 

@@ -6,6 +6,7 @@ import nbcp.comm.scopes
 import org.springframework.data.mongodb.core.MongoTemplate
 import nbcp.utils.*
 import nbcp.db.db
+import org.springframework.data.mongodb.core.query.Criteria
 import java.io.Serializable
 import java.lang.RuntimeException
 import java.time.Duration
