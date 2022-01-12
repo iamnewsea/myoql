@@ -32,7 +32,7 @@ class MongoDefaultQueryEvent : IMongoEntityQuery {
             return EventResult(true);
         }
 
-        query.whereData.add((MongoColumnName(logicalDelete.value) match true).criteriaObject)
+        query.whereData.add((MongoColumnName(logicalDelete.value) match_in arrayOf(false, null)).criteriaObject)
 
         return EventResult(true);
     }

@@ -25,7 +25,7 @@ annotation class RemoveToSysDustbin()
 
 /**
  * 逻辑删除
- * @param value: 表示逻辑删除的字段．
+ * @param value: 表示逻辑删除的字段． true表示逻辑删除！
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
@@ -92,11 +92,11 @@ annotation class DbEntityFieldRefs(vararg val value: DbEntityFieldRef)
 @Repeatable
 @java.lang.annotation.Repeatable(DbEntityFieldRefs::class)
 annotation class DbEntityFieldRef(
-        val idField: String,
-        val nameField: String,
-        val refEntityClass: KClass<*>,
-        val refIdField: String = "",
-        val refNameField: String = ""
+    val idField: String,
+    val nameField: String,
+    val refEntityClass: KClass<*>,
+    val refIdField: String = "",
+    val refNameField: String = ""
 )
 
 
