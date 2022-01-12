@@ -37,11 +37,11 @@ class JsonTest : TestBase() {
         println("""{"id":1,"name":null}""".FromJson<JsonMap>()!!.keys)
         println(map.keys)
 
-        var _r :((Map<String,Any?>)->Unit)? = null ;
-        var r :((Map<String,Any?>)->Unit) = {
+        var _r: ((Map<String, Any?>) -> Unit)? = null;
+        var r: ((Map<String, Any?>) -> Unit) = {
             println("m:" + it.ToJson())
 
-            it.values.filter { it is Map<*,*> }.map { it as Map<String,Any?> }.forEach {
+            it.values.filter { it is Map<*, *> }.map { it as Map<String, Any?> }.forEach {
                 _r!!(it);
             }
         }
@@ -49,7 +49,7 @@ class JsonTest : TestBase() {
 
         r(map);
 
-        RecursionUtil.recursionJson(map,{
+        RecursionUtil.recursionJson(map, {
             println("rm:" + it.ToJson())
             return@recursionJson true;
         })
@@ -65,6 +65,10 @@ class JsonTest : TestBase() {
         println(d.ToJson().FromListJson(TestObj::class.java).ToJson())
     }
 
+    @Test
+    fun ffff() {
+        println(Void::class.java.simpleName)
+    }
 
     class ResultVO(var users: List<IdName>)
 

@@ -16,11 +16,11 @@ import kotlin.reflect.KClass
 @Inherited
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class FromRedisCache(
+annotation class FromRedisCache constructor(
     /**
      * 如果 table 为空，则使用 table = tableClass.name
      */
-    val tableClass: KClass<*> = Boolean::class,
+    val tableClass: KClass<*> = Void::class,
 
     /**
      * 缓存关联表
@@ -52,29 +52,28 @@ annotation class FromRedisCache(
     val joinTables: Array<String> = arrayOf(),
 ) {
     companion object {
-
         internal val logger = LoggerFactory.getLogger(FromRedisCache::class.java)
-
     }
 }
 
 
 fun FromRedisCache.getTableName(): String {
-    var tableName = this.table
+    if (this.table.HasValue) return this.table;
 
-    if (tableName.isEmpty() && !this.tableClass.java.IsSimpleType()) {
-        tableName = this.tableClass.java.simpleName;
+    if (this.tableClass == Void::class) {
+        throw RuntimeException("需要指定 主表!")
     }
-    return tableName;
+
+    return this.tableClass.java.simpleName;
 }
 
 fun FromRedisCache.getJoinTableNames(): Array<String> {
     var joinTables = this.joinTables;
-
-    if (joinTables.isEmpty() && !this.joinTableClasses.any()) {
-        joinTables = this.joinTableClasses.map { it.simpleName!! }.toTypedArray()
+    if (joinTables.any()) {
+        return joinTables;
     }
-    return joinTables;
+
+    return this.joinTableClasses.map { it.simpleName!! }.toTypedArray()
 }
 
 /**
@@ -83,7 +82,7 @@ fun FromRedisCache.getJoinTableNames(): Array<String> {
 fun FromRedisCache.resolveWithVariable(variableMap: JsonMap, sql: String = ""): FromRedisCache {
     val spelExecutor = CacheKeySpelExecutor(variableMap);
     return FromRedisCache(
-        Boolean::class,
+        Void::class,
         arrayOf(),
         spelExecutor.getVariableValue(this.groupKey),
         spelExecutor.getVariableValue(this.groupValue),

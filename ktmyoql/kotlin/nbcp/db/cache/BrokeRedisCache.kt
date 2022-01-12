@@ -1,9 +1,6 @@
 package nbcp.db.cache
 
-import nbcp.comm.Important
-import nbcp.comm.IsSimpleType
-import nbcp.comm.JsonMap
-import nbcp.comm.ToJson
+import nbcp.comm.*
 import nbcp.db.redis.scanKeys
 import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
@@ -21,7 +18,7 @@ annotation class BrokeRedisCache(
     /**
      * 如果 table 为空，则使用 table = tableClass.name
      */
-    val tableClass: KClass<*> = Boolean::class,
+    val tableClass: KClass<*> = Void::class,
     /**
      * 破坏表的隔离键，如: "cityCode"
      */
@@ -51,12 +48,13 @@ annotation class BrokeRedisCache(
 }
 
 fun BrokeRedisCache.getTableName(): String {
-    var tableName = this.table
+    if (this.table.HasValue) return this.table;
 
-    if (tableName.isEmpty() && !this.tableClass.java.IsSimpleType()) {
-        tableName = this.tableClass.java.simpleName;
+
+    if (this.tableClass == Void::class) {
+        throw RuntimeException("需要指定 主表!")
     }
-    return tableName;
+    return this.tableClass.java.simpleName!!;
 }
 
 private val redisTemplate by lazy {
