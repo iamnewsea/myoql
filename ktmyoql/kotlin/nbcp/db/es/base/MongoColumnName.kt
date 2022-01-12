@@ -5,7 +5,7 @@ import nbcp.comm.MyString
 /**
  * es 列
  */
-open class EsColumnName @JvmOverloads constructor(value: String = "") : MyString(value) {
+open class EsColumnName @JvmOverloads constructor(_es_value: String = "") : MyString(_es_value) {
 
 //    val asc: EsOrderBy
 //        get() = EsOrderBy(true, this)

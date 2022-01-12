@@ -11,26 +11,26 @@ import java.io.Serializable
 /**
  * 自定义字符串
  */
-open class MyString @JvmOverloads constructor(private var value: String = "") : Comparable<String>, CharSequence,
-    Serializable {
-    override val length: Int = this.value.length
+open class MyString @JvmOverloads constructor(private var _str_value: String = "") : Comparable<String>, CharSequence,
+        Serializable {
+    override val length: Int = this._str_value.length
 
-    override fun get(index: Int): Char = this.value.get(index)
+    override fun get(index: Int): Char = this._str_value.get(index)
 
     override fun subSequence(startIndex: Int, endIndex: Int): CharSequence =
-        this.value.subSequence(startIndex, endIndex)
+            this._str_value.subSequence(startIndex, endIndex)
 
-    override fun compareTo(other: String): Int = this.value.compareTo(other)
+    override fun compareTo(other: String): Int = this._str_value.compareTo(other)
 
-    override fun toString(): String = this.value;
+    override fun toString(): String = this._str_value;
 
 
     private fun writeObject(out: ObjectOutputStream) {
-        out.writeBytes(this.value)
+        out.writeBytes(this._str_value)
     }
 
     private fun readObject(oin: ObjectInputStream) {
-        this.value = oin.readBytes().toString(const.utf8)
+        this._str_value = oin.readBytes().toString(const.utf8)
     }
 }
 
@@ -38,4 +38,4 @@ open class MyString @JvmOverloads constructor(private var value: String = "") : 
 /**
  * 不解析字符串
  */
-class MyRawString @JvmOverloads constructor(value: String = "") : MyString(value) {}
+class MyRawString @JvmOverloads constructor(_raw_value: String = "") : MyString(_raw_value) {}

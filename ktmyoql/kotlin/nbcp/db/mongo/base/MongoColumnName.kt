@@ -5,7 +5,7 @@ import nbcp.comm.MyString
 /**
  * Mongo列
  */
-open class MongoColumnName @JvmOverloads constructor(value: String = "") : MyString(value) {
+open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") : MyString(_mongo_value) {
 
 //    val asc: MongoOrderBy
 //        get() = MongoOrderBy(true, this)
