@@ -17,6 +17,7 @@ import nbcp.utils.CodeUtil
 import org.bson.BsonJavaScript
 import org.bson.Document
 import org.bson.RawBsonDocument
+import org.bson.types.ObjectId
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.transaction.annotation.Transactional
@@ -43,15 +44,11 @@ class Test_Mongo_Insert : TestBase() {
 
     }
 
-    private fun test_doc() {
-//        var raw = BsonJavaScript ()
-        var raw = RawBsonDocument("""getNextSequenceValue('productid')""".toByteArray());
+    @Test
+    fun test_doc() {
         var annex = Document()
-        annex.put("_id", CodeUtil.getCode())
         annex.put("name", "test_doc")
-        annex.put("abc", raw)
-
-        annex.put("creator", JsonMap("id" to CodeUtil.getCode(), "name" to "test"))
+        annex.put("creator", JsonMap("id" to ObjectId().toString(), "name" to "test"))
         db.mor_base.sysAnnex.doInsert(annex);
     }
 }

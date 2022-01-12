@@ -49,36 +49,12 @@ class ExcelComponent(val excelStream: () -> InputStream) {
         get() {
             var ret = mutableListOf<String>()
 
-            val fm = FileMagic.prepareToCheckMagic(excelStream()).use { file ->
-                return@use FileMagic.valueOf(file)
-            }
-
-
-            when (fm) {
-                FileMagic.OOXML -> {
-                    WorkbookFactory.create(excelStream()).use { book ->
-                        for (i in 0..(book.numberOfSheets - 1)) {
-                            ret.add(book.getSheetAt(i).sheetName)
-                        }
-                    }
+            WorkbookFactory.create(excelStream()).use { book ->
+                for (i in 0..(book.numberOfSheets - 1)) {
+                    ret.add(book.getSheetAt(i).sheetName)
                 }
-
-                FileMagic.OLE2 -> {
-                    OPCPackage.open(excelStream()).use { xlsxPackage ->
-                        var xssfReader = XSSFReader(xlsxPackage)
-                        var iter = xssfReader.sheetsData as XSSFReader.SheetIterator
-                        while (iter.hasNext()) {
-                            iter.next().use { _ ->
-                                ret.add(iter.sheetName);
-                            }
-                        }
-                    }
-                }
-
-                else -> throw RuntimeException("不识别的类型：${fm}")
             }
-
-            return ret.toTypedArray()
+            return ret.toTypedArray();
         }
 
 
@@ -222,6 +198,13 @@ class ExcelComponent(val excelStream: () -> InputStream) {
                 return@f2 filter(row, oriData);
             }
 
+
+            /*
+POI提供了HSSF、XSSF以及SXSSF三种方式操作Excel。
+HSSF：Excel97-2003版本，扩展名为.xls。一个sheet最大行数65536，最大列数256。
+XSSF：Excel2007版本开始，扩展名为.xlsx。一个sheet最大行数1048576，最大列数16384。
+SXSSF：是在XSSF基础上，POI3.8版本开始提供的支持低内存占用的操作方式，扩展名为.xlsx。
+ */
             when (fm) {
                 FileMagic.OOXML -> readOpenXmlExcelData(filter2);
                 FileMagic.OLE2 -> readOle2ExcelData(filter2)
@@ -401,9 +384,8 @@ class ExcelComponent(val excelStream: () -> InputStream) {
         private fun readOpenXmlExcelData(filter: (JsonMap, Map<Int, String>) -> Boolean) {
             OPCPackage.open(excelStream()).use { xlsxPackage ->
                 var xssfReader = XSSFReader(xlsxPackage)
-                var iter: XSSFReader.SheetIterator
 
-                iter = xssfReader.sheetsData as XSSFReader.SheetIterator
+                var iter = xssfReader.sheetsData as XSSFReader.SheetIterator
                 while (iter.hasNext()) {
                     iter.next().use { stream ->
                         if (iter.sheetName == sheetName) {
