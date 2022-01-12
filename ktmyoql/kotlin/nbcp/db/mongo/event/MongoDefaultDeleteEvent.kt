@@ -28,26 +28,28 @@ class MongoDefaultDeleteEvent : IMongoEntityDelete {
         //清缓存
         var clearAll = false;
         val groupKeys = MongoEntityCollector.sysRedisCacheDefines.get(delete.collectionName) ?: arrayOf()
-        groupKeys.forEach { groupKey ->
-            if (clearAll) return@forEach
+        groupKeys.union(listOf("id"))
+                .toSet()
+                .forEach { groupKey ->
+                    if (clearAll) return@forEach
 
-            val groupValue = delete.whereData.get(groupKey)
-            if (groupValue != null) {
-                db.brokeRedisCache(
-                    table = delete.actualTableName,
-                    groupKey = groupKey,
-                    groupValue = groupValue.toString()
-                )
-            } else {
-                clearAll = true;
-            }
-        }
+                    val groupValue = delete.whereData.get(groupKey)
+                    if (groupValue != null) {
+                        db.brokeRedisCache(
+                                table = delete.actualTableName,
+                                groupKey = groupKey,
+                                groupValue = groupValue.toString()
+                        )
+                    } else {
+                        clearAll = true;
+                    }
+                }
 
         if (clearAll) {
             db.brokeRedisCache(
-                table = delete.actualTableName,
-                groupKey = "",
-                groupValue = ""
+                    table = delete.actualTableName,
+                    groupKey = "",
+                    groupValue = ""
             )
         }
     }

@@ -46,9 +46,9 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
                         var sortNumberValue = getSortNumber(tableName, groupBy, sortNumber.step);
                         if (sortNumberValue != null) {
                             map.setValueByWbsPath(
-                                sortNumber.field,
-                                ignoreCase = false,
-                                value = sortNumberValue
+                                    sortNumber.field,
+                                    ignoreCase = false,
+                                    value = sortNumberValue
                             )
                         }
                     }
@@ -85,9 +85,9 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
     }
 
     private fun proc_sortNumber(
-        sortNumbers: Array<SortNumber>,
-        entity: Any,
-        tableName: String
+            sortNumbers: Array<SortNumber>,
+            entity: Any,
+            tableName: String
     ) {
         sortNumbers.forEach { sortNumber ->
             var value = MyUtil.getValueByWbsPath(entity, *sortNumber.field.split(".").toTypedArray());
@@ -98,10 +98,10 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
                     if (sortNumberValue != null) {
 
                         MyUtil.setValueByWbsPath(
-                            entity,
-                            *sortNumber.field.split(".").toTypedArray(),
-                            ignoreCase = false,
-                            value = sortNumberValue
+                                entity,
+                                *sortNumber.field.split(".").toTypedArray(),
+                                ignoreCase = false,
+                                value = sortNumberValue
                         )
 
                     }
@@ -112,39 +112,41 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
 
     private fun getSortNumber(tableName: String, groupBy: String, step: Number): Float? {
         return db.mor_base.sysLastSortNumber.update()
-            .where { it.table match tableName }
-            .where { it.group match groupBy }
-            .inc { it.value op_inc step }
-            .saveAndReturnNew()
-            ?.value
+                .where { it.table match tableName }
+                .where { it.group match groupBy }
+                .inc { it.value op_inc step }
+                .saveAndReturnNew()
+                ?.value
     }
 
     override fun insert(insert: MongoBaseInsertClip, eventData: EventResult) {
         //清缓存
         var clearAll = false;
         val groupKeys = MongoEntityCollector.sysRedisCacheDefines.get(insert.collectionName) ?: arrayOf()
-        groupKeys.forEach { groupKey ->
-            insert.entities.forEach { ent ->
-                if (clearAll) return@forEach
+        groupKeys.union(listOf("id"))
+                .toSet()
+                .forEach { groupKey ->
+                    insert.entities.forEach { ent ->
+                        if (clearAll) return@forEach
 
-                val groupValue = MyUtil.getValueByWbsPath(ent, groupKey);
-                if (groupValue != null) {
-                    db.brokeRedisCache(
-                        table = insert.actualTableName,
-                        groupKey = groupKey,
-                        groupValue = groupValue.toString()
-                    )
-                } else {
-                    clearAll = true;
+                        val groupValue = MyUtil.getValueByWbsPath(ent, groupKey);
+                        if (groupValue != null) {
+                            db.brokeRedisCache(
+                                    table = insert.actualTableName,
+                                    groupKey = groupKey,
+                                    groupValue = groupValue.toString()
+                            )
+                        } else {
+                            clearAll = true;
+                        }
+                    }
                 }
-            }
-        }
 
         if (clearAll) {
             db.brokeRedisCache(
-                table = insert.actualTableName,
-                groupKey = "",
-                groupValue = ""
+                    table = insert.actualTableName,
+                    groupKey = "",
+                    groupValue = ""
             )
         }
     }
