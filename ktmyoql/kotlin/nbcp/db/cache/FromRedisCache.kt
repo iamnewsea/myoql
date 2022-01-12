@@ -103,7 +103,7 @@ private val redisTemplate by lazy {
 
 /**
  * sc=sqlcache
- * sc:查询主表/连接表/排序/?查询主表隔离键=查询主表隔离键值@md5
+ * sc:查询主表/连接表1/连接表2/连接表3/?查询主表隔离键=查询主表隔离键值@md5
  */
 fun FromRedisCache.getCacheKey(): String {
     val cache = this;

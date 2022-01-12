@@ -90,23 +90,25 @@ fun BrokeRedisCache.brokeCache() {
         return;
     }
 
-    //场景，有隔离键
+    //破坏连接表
     brokeJoinTable(redisTemplate, cacheBroke.table);
 
-    //破坏没有隔离键的（如全量查询）,没有隔离键分两种情况：
-    //A 有连接表
+    //破坏没有隔离键的（如全量查询）,没有隔离键,分两种情况：
+    //A 有连接表,没有隔离键的
     var pattern = "sc:${cacheBroke.table}/*/@*"
     redisTemplate.scanKeys(pattern) { key ->
         redisTemplate.delete(key)
         return@scanKeys true;
     }
 
-    //B 没有连接表
+    //B 没有连接表,没有隔离键的
     pattern = "sc:${cacheBroke.table}/@*"
     redisTemplate.scanKeys(pattern) { key ->
         redisTemplate.delete(key)
         return@scanKeys true;
     }
+
+    //剩下的，都是有隔离键的了！
 
     //破坏其它维度的隔离键
     val notMatchGroup = cacheBroke.groupKey.map { "[^${it}]" }.joinToString("")
