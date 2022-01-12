@@ -44,5 +44,31 @@ class MongoDefaultUpdateEvent : IMongoEntityUpdate {
     }
 
     override fun update(update: MongoBaseUpdateClip, chain: EventChain, eventData: EventResult) {
+        //清缓存
+        var clearAll = false;
+        val groupKeys = MongoEntityCollector.sysRedisCacheDefines.get(update.collectionName) ?: arrayOf()
+        groupKeys.forEach { groupKey ->
+            if (clearAll) return@forEach
+
+            val groupValue = update.whereData.get(groupKey)
+            if (groupValue != null) {
+                db.brokeRedisCache(
+                    table = update.actualTableName,
+                    groupKey = groupKey,
+                    groupValue = groupValue.toString()
+                )
+            }
+            else {
+                clearAll = true;
+            }
+        }
+
+        if (clearAll) {
+            db.brokeRedisCache(
+                table = update.actualTableName,
+                groupKey = "",
+                groupValue = ""
+            )
+        }
     }
 }

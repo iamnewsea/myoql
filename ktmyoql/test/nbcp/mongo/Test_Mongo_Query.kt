@@ -6,16 +6,7 @@ import nbcp.comm.*
 import nbcp.db.IdName
 import nbcp.db.db
 import nbcp.db.mongo.*
-import nbcp.db.mongo.entity.BasicUser
-import nbcp.db.mongo.entity.SysLog
-import nbcp.db.sql.doInsert
-import nbcp.db.sql.entity.s_annex
-import nbcp.db.sql.updateWithEntity
-import nbcp.tool.UserCodeGenerator
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.BeforeEach
-import org.springframework.transaction.annotation.Transactional
-import java.lang.RuntimeException
 import java.time.LocalDateTime
 import java.util.*
 
@@ -36,7 +27,7 @@ class Test_Mongo_Query : TestBase() {
             .where { it.level match 8 }
             .whereOr({ it.msg match_like "df" }, { it.tags match "df" })
 
-        var d = db.mongo.getMergedMongoCriteria(*query.whereData.toTypedArray())
+        var d = db.mongo.getMergedMongoCriteria(query.whereData)
         var e = db.mongo.getCriteriaFromDocument(d.toDocument());
         println(d.toDocument().toJson())
         println(e.criteriaObject.toJson())

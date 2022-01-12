@@ -33,7 +33,7 @@ class MongoLogHistoryUpdateEvent : IMongoEntityUpdate {
 
         //查询数据，把Id查出来。
         var query = MongoBaseQueryClip(update.collectionName)
-        query.whereData.addAll(update.whereData)
+        query.whereData.putAll(update.whereData)
         query.selectField("_id");
 
         setData.keys.forEach {

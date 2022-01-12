@@ -120,7 +120,33 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
     }
 
     override fun insert(insert: MongoBaseInsertClip, eventData: EventResult) {
+        //清缓存
+        var clearAll = false;
+        val groupKeys = MongoEntityCollector.sysRedisCacheDefines.get(insert.collectionName) ?: arrayOf()
+        groupKeys.forEach { groupKey ->
+            insert.entities.forEach { ent ->
+                if (clearAll) return@forEach
 
+                val groupValue = MyUtil.getValueByWbsPath(ent, groupKey);
+                if (groupValue != null) {
+                    db.brokeRedisCache(
+                        table = insert.actualTableName,
+                        groupKey = groupKey,
+                        groupValue = groupValue.toString()
+                    )
+                } else {
+                    clearAll = true;
+                }
+            }
+        }
+
+        if (clearAll) {
+            db.brokeRedisCache(
+                table = insert.actualTableName,
+                groupKey = "",
+                groupValue = ""
+            )
+        }
     }
 
 }

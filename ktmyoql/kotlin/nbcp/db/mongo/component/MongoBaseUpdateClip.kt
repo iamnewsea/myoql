@@ -11,12 +11,12 @@ import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 import java.time.LocalDateTime
 
-open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IMongoWhereable {
+open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IMongoWhere {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    val whereData = mutableListOf<MutableMap<String,Any?>>()
+    override val whereData = mutableMapOf<String, Any?>()
 //        private set
 
 
@@ -63,7 +63,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         for (kv in setData) {
             var value = kv.value;
             if (value != null) {
-            update = update.set(kv.key, value);
+                update = update.set(kv.key, value);
             } else {
                 update = update.unset(kv.key);
             }
@@ -116,7 +116,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             return 0;
         }
 
-        var criteria = db.mongo.getMergedMongoCriteria(*whereData.toTypedArray());
+        var criteria = db.mongo.getMergedMongoCriteria(whereData);
 
         var update = getUpdateSetSect();
 
@@ -134,20 +134,20 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         try {
             this.script = getUpdateScript(criteria, update)
             result = mongoTemplate.updateMulti(
-                    query,
-                    update,
-                    actualTableName
+                query,
+                update,
+                actualTableName
             );
 
             this.executeTime = LocalDateTime.now() - startAt
 
             if (result.modifiedCount > 0) {
                 usingScope(
-                        arrayOf(
-                                MyOqlOrmScope.IgnoreAffectRow,
-                                MyOqlOrmScope.IgnoreExecuteTime,
-                                MyOqlOrmScope.IgnoreUpdateAt
-                        )
+                    arrayOf(
+                        MyOqlOrmScope.IgnoreAffectRow,
+                        MyOqlOrmScope.IgnoreExecuteTime,
+                        MyOqlOrmScope.IgnoreUpdateAt
+                    )
                 ) {
                     settingResult.forEach {
                         it.event.update(this, it.chain, it.result)
@@ -170,8 +170,8 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
 
 
     protected fun getUpdateScript(
-            where: Criteria,
-            update: org.springframework.data.mongodb.core.query.Update
+        where: Criteria,
+        update: org.springframework.data.mongodb.core.query.Update
     ): String {
         var msgs = mutableListOf<String>()
         msgs.add("[update] " + this.actualTableName);

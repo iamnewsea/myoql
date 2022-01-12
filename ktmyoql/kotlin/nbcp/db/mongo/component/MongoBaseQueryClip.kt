@@ -8,12 +8,11 @@ import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.BasicQuery
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
-import java.io.*
 import java.lang.Exception
 import java.time.LocalDateTime
 
-open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMongoWhereable {
-    var whereData = mutableListOf<MutableMap<String,Any?>>()
+open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMongoWhere {
+    override val whereData = mutableMapOf<String, Any?>()
 
     var skip: Int = 0;
     var take: Int = -1;
@@ -69,7 +68,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             return mutableListOf();
         }
 
-        val criteria = db.mongo.getMergedMongoCriteria(*whereData.toTypedArray());
+        val criteria = db.mongo.getMergedMongoCriteria(whereData);
         val projection = Document();
         selectColumns.forEach {
             projection.put(it, 1)
@@ -207,7 +206,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         var startAt = LocalDateTime.now();
         var ret = -1;
         var error: Exception? = null
-        val criteria = db.mongo.getMergedMongoCriteria(*whereData.toTypedArray())
+        val criteria = db.mongo.getMergedMongoCriteria(whereData)
         var query = Query.query(criteria);
         try {
             this.script = getQueryScript(criteria)
@@ -231,7 +230,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     fun exists(): Boolean {
         var startAt = LocalDateTime.now();
         var ret: Boolean? = null;
-        val criteria = db.mongo.getMergedMongoCriteria(*whereData.toTypedArray());
+        val criteria = db.mongo.getMergedMongoCriteria(whereData);
         var query = Query.query(criteria);
         var error: Exception? = null;
         try {

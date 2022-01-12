@@ -74,7 +74,7 @@ class Test_Mongo_Update : TestBase() {
         annex2.put("creator", JsonMap("id" to CodeUtil.getCode(), "name" to "test"))
         var update = db.mor_base.sysAnnex.updateWithEntity(annex).withRequestJson(annex2).castToUpdate();
 
-        println(db.mongo.getMergedMongoCriteria(*update.whereData.toTypedArray()).toDocument().toJson())
+        println(db.mongo.getMergedMongoCriteria(update.whereData).toDocument().toJson())
         println(update.setData.ToJson())
     }
 }

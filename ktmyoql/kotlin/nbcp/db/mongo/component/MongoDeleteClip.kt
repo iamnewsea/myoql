@@ -3,7 +3,6 @@ package nbcp.db.mongo
 
 import com.mongodb.client.result.DeleteResult
 import nbcp.comm.*
-import nbcp.db.EventResult
 import nbcp.db.LogicalDelete
 import nbcp.db.MyOqlOrmScope
 import nbcp.db.db
@@ -12,7 +11,6 @@ import org.springframework.data.mongodb.core.query.Query
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.time.LocalDateTime
-import java.io.Serializable
 
 /**
  * Created by udi on 17-4-17.
@@ -22,20 +20,21 @@ import java.io.Serializable
  * MongoDelete
  */
 class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
-    MongoClipBase(moerEntity.tableName), IMongoWhereable {
-    var whereData = mutableListOf<MutableMap<String, Any?>>()
+    MongoClipBase(moerEntity.tableName), IMongoWhere {
+
+    override val whereData = mutableMapOf<String, Any?>()
 
     companion object {
         private var logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
     fun where(whereData: Criteria): MongoDeleteClip<M> {
-        this.whereData.add(whereData.criteriaObject);
+        this.whereData.putAll(whereData.criteriaObject);
         return this;
     }
 
     fun where(where: (M) -> Criteria): MongoDeleteClip<M> {
-        this.whereData.add(where(moerEntity).criteriaObject);
+        this.whereData.putAll(where(moerEntity).criteriaObject);
         return this;
     }
 
@@ -47,7 +46,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
         if (wheres.any() == false) return this;
         var where = Criteria();
         where.orOperator(*wheres)
-        this.whereData.add(where.criteriaObject);
+        this.whereData.putAll(where.criteriaObject);
         return this;
     }
 
@@ -56,19 +55,16 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
 
         var logicalDelete = this.moerEntity.entityClass.getAnnotation(LogicalDelete::class.java)
         if (logicalDelete != null) {
-            var where = JsonMap();
-            this.whereData.forEach {
-                where.putAll(it);
-            }
-            logger.Important("逻辑删除强制执行更新,${this.collectionName},${where.ToJson()}")
+
+            logger.Important("逻辑删除强制执行更新,${this.collectionName},${this.whereData.ToJson()}")
 
             var update = MongoBaseUpdateClip(this.collectionName)
-            update.whereData.addAll(this.whereData)
+            update.whereData.putAll(this.whereData)
             update.setData.put(logicalDelete.value, true);
             return update.exec();
         }
 
-        var criteria = db.mongo.getMergedMongoCriteria(*whereData.toTypedArray());
+        var criteria = db.mongo.getMergedMongoCriteria(whereData);
 
         var settingResult = db.mongo.mongoEvents.onDeleting(this)
         if (settingResult.any { it.result.result == false }) {

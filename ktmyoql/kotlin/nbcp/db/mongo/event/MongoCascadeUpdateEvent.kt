@@ -69,7 +69,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
 
             //判断新值，旧值是否相等
             val nameValueQuery = MongoBaseQueryClip(update.collectionName)
-            nameValueQuery.whereData.addAll(update.whereData)
+            nameValueQuery.whereData.putAll(update.whereData)
             nameValueQuery.selectField(ref.refNameField)
 
             val dbNameValues = nameValueQuery.toList(String::class.java).toSet();
@@ -98,7 +98,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
 
         var idValue = idValues.getOrPut(ref.refIdField) {
             //如果按id更新。
-            var whereMap = db.mongo.getMergedMongoCriteria(*update.whereData.toTypedArray()).toDocument();
+            var whereMap = db.mongo.getMergedMongoCriteria(update.whereData).toDocument();
 
             val refIdField = whereMap.keys.firstOrNull { key ->
                 if (key == ref.refIdField) {
@@ -125,7 +125,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
 
             //查询数据，把Id查出来。
             val IdValueQuery = MongoBaseQueryClip(update.collectionName)
-            IdValueQuery.whereData.addAll(update.whereData)
+            IdValueQuery.whereData.putAll(update.whereData)
             IdValueQuery.selectField(ref.refIdField)
 
             return@getOrPut IdValueQuery.toList(String::class.java).toTypedArray()
@@ -148,7 +148,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
                 val targetCollection = MyUtil.getSmallCamelCase(ref.ref.entityClass.simpleName)
 
                 val update2 = MongoBaseUpdateClip(targetCollection)
-                update2.whereData.add((MongoColumnName(ref.ref.idField) match_in ref.masterIdValues).criteriaObject)
+                update2.whereData.putAll((MongoColumnName(ref.ref.idField) match_in ref.masterIdValues).criteriaObject)
                 update2.setValue(ref.ref.nameField, ref.masterNameValue)
                 update2.exec();
 

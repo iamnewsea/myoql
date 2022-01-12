@@ -32,6 +32,8 @@ object db_mongo {
         return@lazy SpringUtil.getBean<MongoEntityCollector>();
     }
 
+    val sysRedisCacheDefines = mutableSetOf<MongoBaseMetaCollection<*>>()
+
 //    private var dynamicMongoMap = StringMap();
 //    private var dynamicMongoTemplate = StringTypedMap<MongoTemplate>();
 
@@ -75,8 +77,8 @@ object db_mongo {
         return c;
     }
 
-    fun getMergedMongoCriteria(vararg where: MutableMap<String, Any?>): Criteria {
-        return getMergedMongoCriteria(*where.map { getCriteriaFromDocument(it) }.toTypedArray())
+    fun getMergedMongoCriteria(  where: MutableMap<String, Any?>): Criteria {
+        return getMergedMongoCriteria( getCriteriaFromDocument(where) )
     }
 
     fun getMergedMongoCriteria(vararg where: Criteria): Criteria {

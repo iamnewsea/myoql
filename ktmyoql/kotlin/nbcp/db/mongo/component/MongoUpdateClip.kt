@@ -24,13 +24,13 @@ import java.time.LocalDateTime
  * MongoUpdate
  */
 class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntity: M) :
-        MongoBaseUpdateClip(moerEntity.tableName) {
+    MongoBaseUpdateClip(moerEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
     fun where(whereData: Criteria): MongoUpdateClip<M, E> {
-        this.whereData.add(whereData.criteriaObject);
+        this.whereData.putAll(whereData.criteriaObject);
         return this;
     }
 
@@ -40,14 +40,14 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
 
         item = db.mongo.getMongoColumnName(item)
 
-        items.forEach { key->
+        items.forEach { key ->
             this.setData.remove(key);
         }
         return this;
     }
 
     fun where(where: (M) -> Criteria): MongoUpdateClip<M, E> {
-        this.whereData.add(where(moerEntity).criteriaObject);
+        this.whereData.putAll(where(moerEntity).criteriaObject);
         return this;
     }
 
@@ -59,7 +59,7 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
         if (wheres.any() == false) return this;
         var where = Criteria();
         where.orOperator(*wheres)
-        this.whereData.add(where.criteriaObject);
+        this.whereData.putAll(where.criteriaObject);
         return this;
     }
 
@@ -69,7 +69,7 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
     fun whereIf(whereIf: Boolean, where: ((M) -> Criteria)): MongoUpdateClip<M, E> {
         if (whereIf == false) return this;
 
-        this.whereData.add(where(moerEntity).criteriaObject);
+        this.whereData.putAll(where(moerEntity).criteriaObject);
         return this;
     }
 
@@ -182,7 +182,7 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
             return null;
         }
 
-        var criteria = db.mongo.getMergedMongoCriteria(*whereData.toTypedArray());
+        var criteria = db.mongo.getMergedMongoCriteria(whereData);
 
         var update = getUpdateSetSect();
 
@@ -205,11 +205,11 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
         try {
             this.script = getUpdateScript(criteria, update)
             resultDocument = mongoTemplate.findAndModify(
-                    query,
-                    update,
-                    updateOption,
-                    Document::class.java,
-                    actualTableName
+                query,
+                update,
+                updateOption,
+                Document::class.java,
+                actualTableName
             );
 
             this.executeTime = LocalDateTime.now() - startAt
@@ -220,11 +220,11 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
 
 
                 usingScope(
-                        arrayOf(
-                                MyOqlOrmScope.IgnoreAffectRow,
-                                MyOqlOrmScope.IgnoreExecuteTime,
-                                MyOqlOrmScope.IgnoreUpdateAt
-                        )
+                    arrayOf(
+                        MyOqlOrmScope.IgnoreAffectRow,
+                        MyOqlOrmScope.IgnoreExecuteTime,
+                        MyOqlOrmScope.IgnoreUpdateAt
+                    )
                 ) {
                     settingResult.forEach {
                         it.event.update(this, it.chain, it.result)

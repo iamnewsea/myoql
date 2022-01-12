@@ -5,6 +5,7 @@ import nbcp.comm.HasValue
 import nbcp.scope.*
 import nbcp.comm.usingScope
 import nbcp.db.*
+import nbcp.db.cache.RedisCacheDefine
 import nbcp.db.mongo.event.*
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -20,10 +21,6 @@ class MongoEntityCollector : BeanPostProcessor {
         //需要删 除后放入垃圾箱的实体
         @JvmStatic
         val dustbinEntities = mutableSetOf<MongoBaseMetaCollection<*>>()  //mongo entity class
-
-//        //逻辑删
-//        @JvmStatic
-//        val logicalDeleteEntities = mutableSetOf<Class<*>>()
 
         @JvmStatic
         val logHistoryMap = linkedMapOf<MongoBaseMetaCollection<*>, Array<String>>()
@@ -52,6 +49,9 @@ class MongoEntityCollector : BeanPostProcessor {
 
         @JvmStatic
         val collectionVarNames = mutableListOf<IMongoCollectionVarName>()
+
+        @JvmStatic
+        val sysRedisCacheDefines = mutableMapOf<String, Array<out String>>()
     }
 
     /**
@@ -85,12 +85,12 @@ class MongoEntityCollector : BeanPostProcessor {
                              * 这里使用了实体的类．
                              */
                             //TODO 使用元数据类，会更好一些．但需要把实体注解，全部转移到元数据类上．
-                            var entityClass = moer.entityClass
 
-//                            addLogicalDelete(moer)
                             addDustbin(moer)
-                            addRef(entityClass)
                             addLogHistory(moer);
+                            addRedisCache(moer);
+
+                            addRef(moer.entityClass)
                         }
                     }
             }
@@ -120,6 +120,14 @@ class MongoEntityCollector : BeanPostProcessor {
         }
 
         return super.postProcessAfterInitialization(bean, beanName)
+    }
+
+    private fun addRedisCache(moer: MongoBaseMetaCollection<*>) {
+        var moerClass = moer::class.java
+        var redisCacheDefine = moerClass.getAnnotation(RedisCacheDefine::class.java)
+        if (redisCacheDefine != null) {
+            sysRedisCacheDefines.put(moer.tableName, redisCacheDefine.value)
+        }
     }
 
     private fun addLogHistory(moer: MongoBaseMetaCollection<*>) {
@@ -198,7 +206,7 @@ class MongoEntityCollector : BeanPostProcessor {
 
     fun onUpdating(update: MongoBaseUpdateClip): List<UpdateEventResult> {
         var query = MongoBaseQueryClip(update.collectionName);
-        query.whereData.addAll(update.whereData)
+        query.whereData.putAll(update.whereData)
         var chain = EventChain(query)
 
         //先判断是否进行了类拦截.
@@ -218,7 +226,7 @@ class MongoEntityCollector : BeanPostProcessor {
     fun onDeleting(delete: MongoDeleteClip<*>): List<DeleteEventResult> {
 
         var query = MongoBaseQueryClip(delete.collectionName);
-        query.whereData.addAll(delete.whereData)
+        query.whereData.putAll(delete.whereData)
         var chain = EventChain(query)
 
         //先判断是否进行了类拦截.

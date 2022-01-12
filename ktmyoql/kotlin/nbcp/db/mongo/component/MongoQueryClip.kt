@@ -47,7 +47,7 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
     }
 
     fun where(whereData: Criteria): MongoQueryClip<M, E> {
-        this.whereData.add(whereData.criteriaObject);
+        this.whereData.putAll(whereData.criteriaObject);
         return this;
     }
 
@@ -57,7 +57,7 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
 //    }
 
     fun where(where: (M) -> Criteria): MongoQueryClip<M, E> {
-        this.whereData.add(where(moerEntity).criteriaObject);
+        this.whereData.putAll(where(moerEntity).criteriaObject);
         return this;
     }
 
@@ -110,14 +110,14 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
         if (wheres.any() == false) return this;
         val where = Criteria();
         where.orOperator(*wheres)
-        this.whereData.add(where.criteriaObject);
+        this.whereData.putAll(where.criteriaObject);
         return this;
     }
 
     fun whereIf(whereIf: Boolean, whereData: ((M) -> Criteria)): MongoQueryClip<M, E> {
         if (whereIf == false) return this;
 
-        this.whereData.add(whereData(moerEntity).criteriaObject);
+        this.whereData.putAll(whereData(moerEntity).criteriaObject);
         return this;
     }
 
