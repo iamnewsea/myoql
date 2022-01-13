@@ -15,7 +15,8 @@ class WhereData : Serializable {
 
     val values: JsonMap = JsonMap()
 
-    @JvmOverloads constructor(expression: String = "", values: JsonMap = JsonMap()) {
+    @JvmOverloads
+    constructor(expression: String = "", values: JsonMap = JsonMap()) {
         this.expression = expression
         this.values.putAll(values)
     }
@@ -89,7 +90,7 @@ class WhereData : Serializable {
         return this;
     }
 
-    fun load(other:WhereData){
+    fun load(other: WhereData) {
         this.expression = other.expression;
         this.child = other.child;
         this.next = other.next;
@@ -121,5 +122,31 @@ class WhereData : Serializable {
         //更改 this
         this.load(wrap);
         return this;
+    }
+
+    fun hasOrClip(): Boolean {
+        if (this.linker basicSame "or") {
+            return true;
+        }
+
+        if (this.linker.HasValue && this.next != null) {
+            return next!!.hasOrClip()
+        }
+
+        return false;
+    }
+
+    fun findRootWhere(column: String): String? {
+        var index = this.expression.indexOf(column + " = ")
+        if (index >= 0) {
+            var v = this.expression.substring(column.length + 3).trim();
+            if (v.startsWith(":")) {
+                return values.get(v.substring(1)).AsString()
+            }
+        } else if (this.linker.HasValue && this.next != null) {
+            return this.next!!.findRootWhere(column);
+        }
+
+        return null;
     }
 }

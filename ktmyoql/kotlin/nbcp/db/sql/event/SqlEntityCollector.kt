@@ -3,6 +3,7 @@ package nbcp.db.sql
 import nbcp.db.sql.*;
 import nbcp.comm.ForEachExt
 import nbcp.db.*
+import nbcp.db.mongo.MongoEntityCollector
 import nbcp.db.sql.event.*
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -20,7 +21,7 @@ class SqlEntityCollector : BeanPostProcessor {
     companion object {
         //需要删 除后放入垃圾箱的实体
         @JvmStatic
-        val dustbinEntities = mutableSetOf<Class<*>>()  //mongo meta class
+        val dustbinEntities = mutableSetOf<SqlBaseMetaTable<*>>()  //mongo meta class
 
         // 冗余字段的引用。如 user.corp.name 引用的是  corp.name
         @JvmStatic
@@ -44,6 +45,9 @@ class SqlEntityCollector : BeanPostProcessor {
 
         @JvmStatic
         val dataSources = mutableListOf<ISqlDataSource>()
+
+        @JvmStatic
+        val sysRedisCacheDefines = mutableMapOf<String, Array<out String>>()
     }
 
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
@@ -57,9 +61,10 @@ class SqlEntityCollector : BeanPostProcessor {
                     if (moer is SqlBaseMetaTable<*>) {
                         var entityClass = moer.tableClass
 
-                        addDustbin(entityClass)
-                        addRef(entityClass)
+                        addDustbin(moer)
+                        addRedisCache(moer);
 
+                        addRef(entityClass)
                     }
                 }
             }
@@ -127,16 +132,31 @@ class SqlEntityCollector : BeanPostProcessor {
         }
     }
 
-    private fun addDustbin(entityClass: Class<out Serializable>) {
-        var dustbin = entityClass.getAnnotation(RemoveToSysDustbin::class.java)
+    private fun addDustbin(moer: SqlBaseMetaTable<*>) {
+        var moerClass = moer::class.java;
+        var logicalDelete = moerClass.getAnnotation(LogicalDelete::class.java)
+        if (logicalDelete != null) {
+            return;
+        }
+
+        var dustbin = moerClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dustbin != null) {
-            dustbinEntities.add(entityClass)
+            dustbinEntities.add(moer)
         }
     }
 
-    fun onSelecting(select: SqlBaseQueryClip): Array<Pair<ISqlEntitySelect, EventResult?>> {
+    private fun addRedisCache(moer: SqlBaseMetaTable<*>) {
+        var moerClass = moer::class.java
+        moerClass.getAnnotationsByType(DbEntityIndex::class.java)
+            .filter { it.cacheable }
+            .forEach {
+                MongoEntityCollector.sysRedisCacheDefines.put(moer.tableName, it.value)
+            }
+    }
+
+    fun onSelecting(select: SqlBaseQueryClip): Array<Pair<ISqlEntitySelect, EventResult>> {
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<ISqlEntitySelect, EventResult?>>()
+        var list = mutableListOf<Pair<ISqlEntitySelect, EventResult>>()
         selectEvents.ForEachExt { it, _ ->
             var ret = it.beforeSelect(select);
             if (ret != null && ret.result == false) {
@@ -149,12 +169,12 @@ class SqlEntityCollector : BeanPostProcessor {
     }
 
 
-    fun onInserting(insert: SqlInsertClip<*, *>): Array<Pair<ISqlEntityInsert, EventResult?>> {
+    fun onInserting(insert: SqlInsertClip<*, *>): Array<Pair<ISqlEntityInsert, EventResult>> {
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<ISqlEntityInsert, EventResult?>>()
+        var list = mutableListOf<Pair<ISqlEntityInsert, EventResult>>()
         insertEvents.ForEachExt { it, _ ->
             var ret = it.beforeInsert(insert);
-            if (ret != null && ret.result == false) {
+            if (ret.result == false) {
                 return@ForEachExt false;
             }
             list.add(it to ret)
@@ -164,12 +184,12 @@ class SqlEntityCollector : BeanPostProcessor {
     }
 
 
-    fun onUpdating(update: SqlUpdateClip<*>): Array<Pair<ISqlEntityUpdate, EventResult?>> {
+    fun onUpdating(update: SqlUpdateClip<*>): Array<Pair<ISqlEntityUpdate, EventResult>> {
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<ISqlEntityUpdate, EventResult?>>()
+        var list = mutableListOf<Pair<ISqlEntityUpdate, EventResult>>()
         updateEvents.ForEachExt { it, _ ->
             var ret = it.beforeUpdate(update);
-            if (ret != null && ret.result == false) {
+            if (ret.result == false) {
                 return@ForEachExt false;
             }
             list.add(it to ret)
@@ -178,13 +198,13 @@ class SqlEntityCollector : BeanPostProcessor {
         return list.toTypedArray()
     }
 
-    fun onDeleting(delete: SqlDeleteClip<*>): Array<Pair<ISqlEntityDelete, EventResult?>> {
+    fun onDeleting(delete: SqlDeleteClip<*>): Array<Pair<ISqlEntityDelete, EventResult>> {
 
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<ISqlEntityDelete, EventResult?>>()
+        var list = mutableListOf<Pair<ISqlEntityDelete, EventResult>>()
         deleteEvents.ForEachExt { it, _ ->
             var ret = it.beforeDelete(delete);
-            if (ret != null && ret.result == false) {
+            if (ret.result == false) {
                 return@ForEachExt false;
             }
             list.add(it to ret)

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
  */
 @Component
 class SqlSpreadColumnEventForInsert : ISqlEntityInsert {
-    override fun beforeInsert(insert: SqlInsertClip<*, *>): EventResult? {
+    override fun beforeInsert(insert: SqlInsertClip<*, *>): EventResult {
 
 //        var annotations = mutableListOf<Field>()
 //        insert.mainEntity.tableClass.AllFields.forEach {
@@ -37,7 +37,7 @@ class SqlSpreadColumnEventForInsert : ISqlEntityInsert {
         return EventResult(true)
     }
 
-    override fun insert(insert: SqlInsertClip<*, *>, eventData: EventResult?) {
+    override fun insert(insert: SqlInsertClip<*, *>, eventData: EventResult) {
 
     }
 }

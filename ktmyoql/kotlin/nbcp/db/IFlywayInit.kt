@@ -45,7 +45,7 @@ abstract class FlywayVersionBaseService(val version: Int) {
         loadResource("flyway-v${version}", tableName, ".dat") { tableName, lines ->
             if (autoSave) {
                 lines.map { it.FromJson<JsonMap>()!! }.forEach {
-                    db.mongo.dynamicEntity( tableName).updateWithEntity(it).exec();
+                    db.mongo.dynamicEntity(tableName).updateWithEntity(it).exec();
                 }
             } else {
                 var insert = db.mongo.dynamicEntity(tableName).batchInsert()
@@ -88,6 +88,8 @@ abstract class FlywayVersionBaseService(val version: Int) {
         var collection = db.getCollection(this.tableName)
 
         var indexes = this.entityClass.getAnnotationsByType(DbEntityIndex::class.java)
+            .filter { it.value.any() }
+            .filter { it.value.size == 1 && it.value.first() != "id" }
             .map { it.indexName() }
 
         collection.listIndexes().toList()
@@ -99,6 +101,15 @@ abstract class FlywayVersionBaseService(val version: Int) {
     }
 
     fun <M : MongoBaseMetaCollection<Any>> M.createIndex(dbEntityIndex: DbEntityIndex) {
+        //忽略id！
+        if (dbEntityIndex.value.any() == false) {
+            return;
+        }
+
+        if (dbEntityIndex.value.size == 1 && dbEntityIndex.value.first() == "id") {
+            return;
+        }
+
         var mongoTemplate = this.getMongoTemplate()
         var db = mongoTemplate.db;
         var collection = db.getCollection(this.tableName)

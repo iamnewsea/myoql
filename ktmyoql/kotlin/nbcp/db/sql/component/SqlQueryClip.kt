@@ -4,6 +4,10 @@ import org.slf4j.LoggerFactory
 import nbcp.comm.*
 import nbcp.scope.*
 import nbcp.db.*
+import nbcp.db.cache.FromRedisCache
+import nbcp.db.cache.onlyGetFromCache
+import nbcp.db.mongo.MongoEntityCollector
+import org.bson.Document
 import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 import java.io.Serializable
@@ -371,6 +375,55 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
         }.toMutableList()
 
         return ret
+    }
+
+
+    override fun doQuery(sqlParameter: SqlParameterData): List<MutableMap<String, Any?>> {
+        var kv = getMatchDefaultCacheIdValue()
+        if (kv != null) {
+            return getFromDefaultCache(kv)!!;
+        }
+        return super.doQuery(sqlParameter)
+    }
+
+    /**
+     * 从缓存中获取数据
+     */
+    private fun getFromDefaultCache(kv: StringMap): List<MutableMap<String, Any?>>? {
+        return FromRedisCache(
+            table = this.tableName,
+            groupKey = kv.keys.joinToString(","),
+            groupValue = kv.values.joinToString(","),
+            sql = "def"
+        )
+            .onlyGetFromCache({ it.FromListJson(MutableMap::class.java) }) as List<MutableMap<String, Any?>>?
+    }
+
+
+    private fun getMatchDefaultCacheIdValue(): StringMap? {
+        var def = MongoEntityCollector.sysRedisCacheDefines.get(this.tableName)
+        if (def == null) {
+            return null;
+        }
+
+        if (this.columns.any()) return null;
+        if (this.skip > 0) return null;
+        if (this.take > 1) return null;
+        if (this.joins.any()) return null;
+
+        if (this.whereDatas.hasOrClip()) return null;
+
+
+        var kv = StringMap();
+
+        def.forEach {
+            var v = this.whereDatas.findRootWhere(this.tableName + "." + it)
+            if (v.isNullOrEmpty()) return@forEach
+            kv.put(it, v)
+        }
+
+        if (kv.keys.size != def.size) return null;
+        return kv;
     }
 
     @JvmOverloads

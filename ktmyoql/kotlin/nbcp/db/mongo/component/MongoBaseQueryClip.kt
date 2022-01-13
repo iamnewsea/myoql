@@ -104,9 +104,9 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         this.script = this.getQueryScript(criteria);
 
         var cursor: List<Document>? = null;
-        val idValue = getMatchDefaultCacheIdValue();
-        if (idValue.HasValue) {
-            cursor = getFromDefaultCache()
+        val kv = getMatchDefaultCacheIdValue();
+        if (kv != null) {
+            cursor = getFromDefaultCache(kv)
         }
 
         if (cursor == null) {
@@ -152,11 +152,11 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                 }
             }
 
-            if (idValue.HasValue) {
+            if (kv != null) {
                 FromRedisCache(
                     table = this.actualTableName,
-                    groupKey = "id",
-                    groupValue = idValue.toString(),
+                    groupKey = kv.keys.joinToString(","),
+                    groupValue = kv.values.joinToString(","),
                     sql = "def"
                 ).onlySetToCache(cursor)
             }
@@ -196,26 +196,39 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         return ret
     }
 
-    private fun getMatchDefaultCacheIdValue(): String? {
-        if (MongoEntityCollector.sysRedisCacheDefines.any { it.key == this.collectionName } == false) {
+    private fun getMatchDefaultCacheIdValue(): StringMap? {
+        var def = MongoEntityCollector.sysRedisCacheDefines.get(this.collectionName)
+        if (def == null) {
             return null;
         }
 
         if (this.selectProjections.any()) return null;
         if (this.skip > 0) return null;
         if (this.take > 1) return null;
+        if (db.mongo.hasOrClip(this.whereData)) return null;
 
-        return this.whereData.getStringValue("id")
+        var kv = StringMap();
+
+        def.forEach {
+            var v = this.whereData.getStringValue(it)
+            if (v.isNullOrEmpty()) return@forEach
+            kv.put(it, v)
+        }
+
+        if (kv.keys.size != def.size) return null;
+        return kv;
     }
 
     /**
      * 从缓存中获取数据
      */
-    private fun getFromDefaultCache(): List<Document>? {
-        var idValue = getMatchDefaultCacheIdValue();
-        if (idValue.isNullOrEmpty()) return null;
-
-        return FromRedisCache(table = this.actualTableName, groupKey = "id", groupValue = idValue, sql = "def")
+    private fun getFromDefaultCache(kv: StringMap): List<Document>? {
+        return FromRedisCache(
+            table = this.actualTableName,
+            groupKey = kv.keys.joinToString(","),
+            groupValue = kv.values.joinToString(","),
+            sql = "def"
+        )
             .onlyGetFromCache({ it.FromListJson(Document::class.java) })
     }
 

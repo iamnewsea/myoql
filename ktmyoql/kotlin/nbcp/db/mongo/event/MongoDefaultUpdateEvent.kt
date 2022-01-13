@@ -1,5 +1,7 @@
 package nbcp.db.mongo.event;
 
+import nbcp.comm.AsString
+import nbcp.comm.HasValue
 import nbcp.comm.scopes
 import nbcp.db.mongo.*;
 import nbcp.db.*
@@ -45,31 +47,39 @@ class MongoDefaultUpdateEvent : IMongoEntityUpdate {
 
     override fun update(update: MongoBaseUpdateClip, chain: EventChain, eventData: EventResult) {
         //清缓存
-        var clearAll = false;
-        val groupKeys = MongoEntityCollector.sysRedisCacheDefines.get(update.collectionName) ?: arrayOf()
-        groupKeys.union(listOf("id"))
-                .toSet()
-                .forEach { groupKey ->
-                    if (clearAll) return@forEach
+        val groupKeys = MongoEntityCollector.sysRedisCacheDefines.get(update.collectionName)
 
-                    val groupValue = update.whereData.get(groupKey)
-                    if (groupValue != null) {
-                        db.brokeRedisCache(
-                                table = update.actualTableName,
-                                groupKey = groupKey,
-                                groupValue = groupValue.toString()
-                        )
-                    } else {
-                        clearAll = true;
-                    }
-                }
-
-        if (clearAll) {
-            db.brokeRedisCache(
-                    table = update.actualTableName,
-                    groupKey = "",
-                    groupValue = ""
-            )
+        if (groupKeys == null) {
+            return;
         }
+
+        if (db.mongo.hasOrClip(update.whereData)) {
+            clearAllCache(update.actualTableName);
+            return;
+        }
+
+        val groupValue = groupKeys.map {
+            return@map it to update.whereData.get(it).AsString()
+        }.filter { it.second.HasValue }
+            .toMap();
+
+        if (groupValue.keys.size != groupKeys.size) {
+            clearAllCache(update.actualTableName);
+            return;
+        }
+
+        db.brokeRedisCache(
+            table = update.actualTableName,
+            groupKey = groupValue.keys.joinToString(","),
+            groupValue = groupValue.values.joinToString(",")
+        )
+    }
+
+    private fun clearAllCache(actualTableName: String) {
+        db.brokeRedisCache(
+            table = actualTableName,
+            groupKey = "",
+            groupValue = ""
+        )
     }
 }

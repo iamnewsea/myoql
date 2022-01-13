@@ -32,7 +32,9 @@ object db_mongo {
         return@lazy SpringUtil.getBean<MongoEntityCollector>();
     }
 
-    val sysRedisCacheDefines = mutableSetOf<MongoBaseMetaCollection<*>>()
+    fun hasOrClip(where: Map<String, Any?>): Boolean {
+        return where.any { it.key == "\$or" }
+    }
 
 //    private var dynamicMongoMap = StringMap();
 //    private var dynamicMongoTemplate = StringTypedMap<MongoTemplate>();
@@ -77,8 +79,8 @@ object db_mongo {
         return c;
     }
 
-    fun getMergedMongoCriteria(  where: MutableMap<String, Any?>): Criteria {
-        return getMergedMongoCriteria( getCriteriaFromDocument(where) )
+    fun getMergedMongoCriteria(where: MutableMap<String, Any?>): Criteria {
+        return getMergedMongoCriteria(getCriteriaFromDocument(where))
     }
 
     fun getMergedMongoCriteria(vararg where: Criteria): Criteria {

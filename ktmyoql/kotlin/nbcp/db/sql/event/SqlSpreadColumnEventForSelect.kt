@@ -10,7 +10,7 @@ import java.io.Serializable
  */
 @Component
 class SqlSpreadColumnEventForSelect : ISqlEntitySelect {
-    override fun beforeSelect(select: SqlBaseQueryClip): EventResult? {
+    override fun beforeSelect(select: SqlBaseQueryClip): EventResult {
 //        var select  = select as SqlQueryClip< SqlBaseMetaTable<out Serializable>, Serializable>
 //        var spreads = select.mainEntity.getSpreadColumns();
 //        if( spreads.any()) {
@@ -22,7 +22,7 @@ class SqlSpreadColumnEventForSelect : ISqlEntitySelect {
         return EventResult(true)
     }
 
-    override fun select(select: SqlBaseQueryClip, eventData: EventResult?, result: List<MutableMap<String, Any?>>) {
+    override fun select(select: SqlBaseQueryClip, eventData: EventResult, result: List<MutableMap<String, Any?>>) {
         if (select is SqlQueryClip<*, *> == false) {
             return
         }

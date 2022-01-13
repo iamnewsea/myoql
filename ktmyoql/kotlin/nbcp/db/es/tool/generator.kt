@@ -472,7 +472,13 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
             )
         }
 
-        val ent = """class ${entityTypeName}(collectionName:String="")
+        val ent = """${
+            CodeGeneratorHelper.getEntityComment(
+                entType,
+                ""
+            )
+        }${CodeGeneratorHelper.getAnnotations(entType.annotations)}
+class ${entityTypeName}(collectionName:String="")
     :EsBaseMetaEntity<${entType.name}>(${entType.name}::class.java,collectionName.AsString("${dbName}")) {
 ${props.joinToString("\n")}
 ${idMethods.joinToString("\n")}

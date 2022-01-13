@@ -160,7 +160,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
 //        }
 
         var settings = db.sql.sqlEvents.onInserting(this)
-        if (settings.any { it.second != null && it.second!!.result == false }) {
+        if (settings.any { it.second.result == false }) {
             return 0;
         }
 

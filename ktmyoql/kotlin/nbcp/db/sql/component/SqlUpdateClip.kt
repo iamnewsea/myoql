@@ -168,7 +168,7 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity:
         db.affectRowCount = -1;
 
         var settings = db.sql.sqlEvents.onUpdating(this);
-        if (settings.any { it.second != null && it.second!!.result == false }) {
+        if (settings.any { it.second.result == false }) {
             return 0;
         }
 

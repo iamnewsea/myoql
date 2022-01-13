@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component
  * 处理删除数据后转移到垃圾箱功能
  */
 @Component
-class SqlDustbinEvent : ISqlEntityDelete {
+class SqlDefaultSysDustbinEvent : ISqlEntityDelete {
 
-    override fun beforeDelete(delete: SqlDeleteClip<*>): EventResult? {
+    override fun beforeDelete(delete: SqlDeleteClip<*>): EventResult {
         var dust = delete.mainEntity.tableClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dust != null) {
             //找出数据
@@ -23,11 +23,11 @@ class SqlDustbinEvent : ISqlEntityDelete {
             return EventResult(true, cursor)
         }
 
-        return null;
+        return EventResult(true);
     }
 
-    override fun delete(delete: SqlDeleteClip<*>, eventData: EventResult?) {
-        val data = eventData?.extData
+    override fun delete(delete: SqlDeleteClip<*>, eventData: EventResult) {
+        val data = eventData.extData
         if (data == null) return
 
         val dustbin = s_dustbin()

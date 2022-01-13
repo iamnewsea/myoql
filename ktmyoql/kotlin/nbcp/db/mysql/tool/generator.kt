@@ -377,7 +377,12 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 
 
         val ret = EntityResult();
-        ret.body = """
+        ret.body = """${
+            CodeGeneratorHelper.getEntityComment(
+                entType,
+                ""
+            )
+        }${CodeGeneratorHelper.getAnnotations(entType.annotations)}
 class ${entityTableMetaName}(datasource:String="")
     :SqlBaseMetaTable<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java,"${dbName}") {
 ${columnMetaDefines.props.joinToString("\n")}
