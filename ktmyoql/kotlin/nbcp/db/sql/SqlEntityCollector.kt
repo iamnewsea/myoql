@@ -3,8 +3,8 @@ package nbcp.db.sql
 import nbcp.db.sql.*;
 import nbcp.comm.ForEachExt
 import nbcp.db.*
+import nbcp.db.cache.RedisCacheColumns
 import nbcp.db.cache.RedisCacheDefine
-import nbcp.db.mongo.MongoEntityCollector
 import nbcp.db.sql.event.*
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -48,7 +48,7 @@ class SqlEntityCollector : BeanPostProcessor {
         val dataSources = mutableListOf<ISqlDataSource>()
 
         @JvmStatic
-        val sysRedisCacheDefines = mutableMapOf<String, Array<out String>>()
+        val sysRedisCacheDefines = mutableMapOf<String, Array<out RedisCacheColumns>>()
     }
 
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
@@ -147,17 +147,23 @@ class SqlEntityCollector : BeanPostProcessor {
     }
 
     private fun addRedisCache(moer: SqlBaseMetaTable<*>) {
+        var list = mutableListOf<RedisCacheColumns>()
+
         var moerClass = moer::class.java
         moerClass.getAnnotationsByType(DbEntityIndex::class.java)
             .filter { it.cacheable }
             .forEach {
-                MongoEntityCollector.sysRedisCacheDefines.put(moer.tableName, it.value)
+                list.add(RedisCacheColumns(it.value))
             }
 
         var redisCacheDefine = moerClass.getAnnotation(RedisCacheDefine::class.java);
-        if( redisCacheDefine!=null){
-            MongoEntityCollector.sysRedisCacheDefines.put(moer.tableName, redisCacheDefine.value)
+        if (redisCacheDefine != null) {
+            list.add(RedisCacheColumns(redisCacheDefine.value))
         }
+
+        if (list.isEmpty()) return;
+
+        sysRedisCacheDefines.put(moer.tableName, list.toTypedArray())
     }
 
     fun onSelecting(select: SqlBaseQueryClip): Array<Pair<ISqlEntitySelect, EventResult>> {

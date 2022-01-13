@@ -77,10 +77,8 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
             retJsons = doQuery(sqlParameter)
             db.executeTime = LocalDateTime.now() - startAt
 
-//            if (retJsons.size > 0) {
-//                //setCache
-//                cacheService.setCacheJson(cacheKey, retJsons.ToJson())
-//            }
+
+            afterQuery(retJsons);
         } catch (e: Exception) {
             error = e;
             throw e;
@@ -106,6 +104,10 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
         }
 
         return retJsons.map { JsonMap(it) }.toMutableList()
+    }
+
+    protected  open fun afterQuery(retJsons: List<MutableMap<String, Any?>>){
+
     }
 
     protected open fun doQuery(

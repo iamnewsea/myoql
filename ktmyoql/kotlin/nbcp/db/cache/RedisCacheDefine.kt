@@ -2,6 +2,7 @@ package nbcp.db.cache
 
 import nbcp.comm.*
 import java.lang.annotation.Inherited
+import java.util.*
 
 /**
  * 使用注解在指定单表上启用 RedisCache
@@ -18,3 +19,9 @@ annotation class RedisCacheDefine(
      */
     vararg val value: String
 )
+
+class RedisCacheColumns(): LinkedList<String>() {
+    constructor(ary:Array<out String>):this(){
+        this.addAll(ary)
+    }
+}

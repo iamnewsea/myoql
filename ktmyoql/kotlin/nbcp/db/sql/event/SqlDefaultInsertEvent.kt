@@ -22,28 +22,30 @@ class SqlDefaultInsertEvent : ISqlEntityInsert {
     }
 
     override fun insert(insert: SqlInsertClip<*, *>, eventData: EventResult) {
-        val groupKeys = MongoEntityCollector.sysRedisCacheDefines.get(insert.tableName)
-        if (groupKeys == null) {
+        val cacheGroups = MongoEntityCollector.sysRedisCacheDefines.get(insert.tableName)
+        if (cacheGroups == null) {
             return;
         }
 
-        insert.entities.forEach { ent ->
-            val groupValue = groupKeys.map {
-                return@map it to MyUtil.getValueByWbsPath(ent, it).AsString()
-            }.filter { it.second.HasValue }
-                .toMap();
+        cacheGroups.forEach { groupKeys ->
+            insert.entities.forEach { ent ->
+                val groupValue = groupKeys.map {
+                    return@map it to MyUtil.getValueByWbsPath(ent, it).AsString()
+                }.filter { it.second.HasValue }
+                    .toMap();
 
-            if (groupValue.keys.size != groupKeys.size) {
-                clearAllCache(insert.tableName);
-                return;
+                if (groupValue.keys.size != groupKeys.size) {
+                    clearAllCache(insert.tableName);
+                    return;
+                }
+
+
+                db.brokeRedisCache(
+                    table = insert.tableName,
+                    groupKey = groupValue.keys.joinToString(","),
+                    groupValue = groupValue.values.joinToString(",")
+                )
             }
-
-
-            db.brokeRedisCache(
-                table = insert.tableName,
-                groupKey = groupValue.keys.joinToString(","),
-                groupValue = groupValue.values.joinToString(",")
-            )
         }
     }
 

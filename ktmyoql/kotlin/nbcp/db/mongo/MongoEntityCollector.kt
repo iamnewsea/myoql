@@ -5,6 +5,7 @@ import nbcp.comm.HasValue
 import nbcp.scope.*
 import nbcp.comm.usingScope
 import nbcp.db.*
+import nbcp.db.cache.RedisCacheColumns
 import nbcp.db.cache.RedisCacheDefine
 import nbcp.db.mongo.event.*
 import org.springframework.beans.factory.config.BeanPostProcessor
@@ -51,7 +52,7 @@ class MongoEntityCollector : BeanPostProcessor {
         val collectionVarNames = mutableListOf<IMongoCollectionVarName>()
 
         @JvmStatic
-        val sysRedisCacheDefines = mutableMapOf<String, Array<out String>>()
+        val sysRedisCacheDefines = mutableMapOf<String, Array<out RedisCacheColumns>>()
     }
 
     /**
@@ -123,17 +124,22 @@ class MongoEntityCollector : BeanPostProcessor {
     }
 
     private fun addRedisCache(moer: MongoBaseMetaCollection<*>) {
+        var list = mutableListOf<RedisCacheColumns>()
         var moerClass = moer::class.java
         moerClass.getAnnotationsByType(DbEntityIndex::class.java)
             .filter { it.cacheable }
             .forEach {
-                sysRedisCacheDefines.put(moer.tableName, it.value)
+                list.add(RedisCacheColumns(it.value))
             }
 
         var redisCacheDefine = moerClass.getAnnotation(RedisCacheDefine::class.java);
-        if( redisCacheDefine!=null){
-            sysRedisCacheDefines.put(moer.tableName, redisCacheDefine.value)
+        if (redisCacheDefine != null) {
+            list.add(RedisCacheColumns(redisCacheDefine.value))
         }
+
+        if (list.isEmpty()) return;
+
+        sysRedisCacheDefines.put(moer.tableName, list.toTypedArray())
     }
 
     private fun addLogHistory(moer: MongoBaseMetaCollection<*>) {

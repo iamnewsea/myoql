@@ -121,28 +121,32 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
 
     override fun insert(insert: MongoBaseInsertClip, eventData: EventResult) {
         //清缓存
-        val groupKeys = MongoEntityCollector.sysRedisCacheDefines.get(insert.collectionName)
-        if (groupKeys == null) {
+        val cacheGroups = MongoEntityCollector.sysRedisCacheDefines.get(insert.collectionName)
+        if (cacheGroups == null) {
             return;
         }
 
         insert.entities.forEach { ent ->
-            val groupValue = groupKeys.map {
-                return@map it to MyUtil.getValueByWbsPath(ent, it).AsString()
-            }.filter { it.second.HasValue }
-                .toMap();
 
-            if (groupValue.keys.size != groupKeys.size) {
-                clearAllCache(insert.actualTableName);
-                return;
+            cacheGroups.forEach { groupKeys ->
+
+
+                val groupValue = groupKeys.map {
+                    return@map it to MyUtil.getValueByWbsPath(ent, it).AsString()
+                }.filter { it.second.HasValue }
+                    .toMap();
+
+                if (groupValue.keys.size != groupKeys.size) {
+                    clearAllCache(insert.actualTableName);
+                    return;
+                }
+
+                db.brokeRedisCache(
+                    table = insert.actualTableName,
+                    groupKey = groupValue.keys.joinToString(","),
+                    groupValue = groupValue.values.joinToString(",")
+                )
             }
-
-
-            db.brokeRedisCache(
-                table = insert.actualTableName,
-                groupKey = groupValue.keys.joinToString(","),
-                groupValue = groupValue.values.joinToString(",")
-            )
         }
     }
 

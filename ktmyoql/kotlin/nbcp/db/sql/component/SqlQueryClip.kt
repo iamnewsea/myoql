@@ -6,6 +6,7 @@ import nbcp.scope.*
 import nbcp.db.*
 import nbcp.db.cache.FromRedisCache
 import nbcp.db.cache.onlyGetFromCache
+import nbcp.db.cache.onlySetToCache
 import nbcp.db.mongo.MongoEntityCollector
 import org.bson.Document
 import java.time.LocalDateTime
@@ -378,12 +379,29 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
     }
 
 
+
+    var kvs = listOf<StringMap>()
     override fun doQuery(sqlParameter: SqlParameterData): List<MutableMap<String, Any?>> {
-        var kv = getMatchDefaultCacheIdValue()
-        if (kv != null) {
-            return getFromDefaultCache(kv)!!;
+        kvs =  getMatchDefaultCacheIdValue()
+        for (kv in kvs) {
+            var v = getFromDefaultCache(kv);
+            if (v != null) return v;
         }
+
         return super.doQuery(sqlParameter)
+    }
+
+    override fun afterQuery(retJsons: List<MutableMap<String, Any?>>) {
+        kvs.forEach { kv ->
+            FromRedisCache(
+                table = this.tableName,
+                groupKey = kv.keys.joinToString(","),
+                groupValue = kv.values.joinToString(","),
+                sql = "def"
+            ).onlySetToCache(retJsons)
+        }
+
+        super.afterQuery(retJsons)
     }
 
     /**
@@ -400,30 +418,34 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
     }
 
 
-    private fun getMatchDefaultCacheIdValue(): StringMap? {
+    private fun getMatchDefaultCacheIdValue(): List<StringMap> {
         var def = MongoEntityCollector.sysRedisCacheDefines.get(this.tableName)
         if (def == null) {
-            return null;
+            return listOf();
         }
 
-        if (this.columns.any()) return null;
-        if (this.skip > 0) return null;
-        if (this.take > 1) return null;
-        if (this.joins.any()) return null;
+        if (this.columns.any()) return listOf();
+        if (this.skip > 0) return listOf();
+        if (this.take > 1) return listOf();
+        if (this.joins.any()) return listOf();
 
-        if (this.whereDatas.hasOrClip()) return null;
+        if (this.whereDatas.hasOrClip()) return listOf();
 
 
-        var kv = StringMap();
+        var list = mutableListOf<StringMap>();
 
-        def.forEach {
-            var v = this.whereDatas.findRootWhere(this.tableName + "." + it)
-            if (v.isNullOrEmpty()) return@forEach
-            kv.put(it, v)
+        def.forEach { cacheColumnGroup ->
+            var kv = StringMap();
+            cacheColumnGroup.forEach {
+                var v = this.whereDatas.findRootWhere(this.tableName + "." + it)
+                if (v.isNullOrEmpty()) return@forEach
+                kv.put(it, v)
+            }
+            if (kv.keys.size != def.size) return@forEach;
+            list.add(kv);
         }
 
-        if (kv.keys.size != def.size) return null;
-        return kv;
+        return list;
     }
 
     @JvmOverloads

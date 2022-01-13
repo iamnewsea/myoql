@@ -22,9 +22,8 @@ class SqlDefaultDeleteEvent : ISqlEntityDelete {
 
     override fun delete(delete: SqlDeleteClip<*>, eventData: EventResult) {
         //破坏缓存
-        var clearAll = false;
-        val groupKeys = MongoEntityCollector.sysRedisCacheDefines.get(delete.tableName)
-        if (groupKeys == null) {
+        val cacheGroups = MongoEntityCollector.sysRedisCacheDefines.get(delete.tableName)
+        if (cacheGroups == null) {
             return;
         }
 
@@ -33,22 +32,24 @@ class SqlDefaultDeleteEvent : ISqlEntityDelete {
         }
 
 
-        val groupValue = groupKeys.map {
-            return@map it to delete.whereDatas.findRootWhere(it).AsString()
-        }.filter { it.second.HasValue }
-            .toMap();
+        cacheGroups.forEach { groupKeys ->
+            val groupValue = groupKeys.map {
+                return@map it to delete.whereDatas.findRootWhere(it).AsString()
+            }.filter { it.second.HasValue }
+                .toMap();
 
-        if (groupValue.keys.size != groupKeys.size) {
-            clearAllCache(delete.tableName);
-            return;
+            if (groupValue.keys.size != groupKeys.size) {
+                clearAllCache(delete.tableName);
+                return;
+            }
+
+
+            db.brokeRedisCache(
+                table = delete.tableName,
+                groupKey = groupValue.keys.joinToString(","),
+                groupValue = groupValue.values.joinToString(",")
+            )
         }
-
-
-        db.brokeRedisCache(
-            table = delete.tableName,
-            groupKey = groupValue.keys.joinToString(","),
-            groupValue = groupValue.values.joinToString(",")
-        )
     }
 
     private fun clearAllCache(tableName: String) {

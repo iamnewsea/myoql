@@ -104,9 +104,10 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         this.script = this.getQueryScript(criteria);
 
         var cursor: List<Document>? = null;
-        val kv = getMatchDefaultCacheIdValue();
-        if (kv != null) {
-            cursor = getFromDefaultCache(kv)
+        val kvs = getMatchDefaultCacheIdValue();
+        for (kv in kvs) {
+            cursor = getFromDefaultCache(kv);
+            if (cursor != null) break;
         }
 
         if (cursor == null) {
@@ -152,7 +153,8 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                 }
             }
 
-            if (kv != null) {
+
+            kvs.forEach { kv ->
                 FromRedisCache(
                     table = this.actualTableName,
                     groupKey = kv.keys.joinToString(","),
@@ -196,27 +198,31 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         return ret
     }
 
-    private fun getMatchDefaultCacheIdValue(): StringMap? {
+    private fun getMatchDefaultCacheIdValue(): List<StringMap> {
         var def = MongoEntityCollector.sysRedisCacheDefines.get(this.collectionName)
         if (def == null) {
-            return null;
+            return listOf();
         }
 
-        if (this.selectProjections.any()) return null;
-        if (this.skip > 0) return null;
-        if (this.take > 1) return null;
-        if (db.mongo.hasOrClip(this.whereData)) return null;
+        if (this.selectProjections.any()) return listOf();
+        if (this.skip > 0) return listOf();
+        if (this.take > 1) return listOf();
+        if (db.mongo.hasOrClip(this.whereData)) return listOf();
 
-        var kv = StringMap();
+        var list = mutableListOf<StringMap>();
 
-        def.forEach {
-            var v = this.whereData.getStringValue(it)
-            if (v.isNullOrEmpty()) return@forEach
-            kv.put(it, v)
+        def.forEach { cacheColumnGroup ->
+            var kv = StringMap();
+            cacheColumnGroup.forEach {
+                var v = this.whereData.getStringValue(it)
+                if (v.isNullOrEmpty()) return@forEach
+                kv.put(it, v)
+            }
+            if (kv.keys.size != def.size) return@forEach;
+            list.add(kv);
         }
 
-        if (kv.keys.size != def.size) return null;
-        return kv;
+        return list;
     }
 
     /**

@@ -21,9 +21,8 @@ class SqlDefaultUpdateEvent : ISqlEntityUpdate {
     }
 
     override fun update(update: SqlUpdateClip<*>, eventData: EventResult) {
-        val groupKeys = MongoEntityCollector.sysRedisCacheDefines.get(update.tableName)
-
-        if (groupKeys == null) {
+        val cacheGroups = MongoEntityCollector.sysRedisCacheDefines.get(update.tableName)
+        if (cacheGroups == null) {
             return;
         }
 
@@ -32,21 +31,23 @@ class SqlDefaultUpdateEvent : ISqlEntityUpdate {
             return;
         }
 
-        val groupValue = groupKeys.map {
-            return@map it to update.whereDatas.findRootWhere(it).AsString()
-        }.filter { it.second.HasValue }
-            .toMap();
+        cacheGroups.forEach { groupKeys ->
+            val groupValue = groupKeys.map {
+                return@map it to update.whereDatas.findRootWhere(it).AsString()
+            }.filter { it.second.HasValue }
+                .toMap();
 
-        if (groupValue.keys.size != groupKeys.size) {
-            clearAllCache(update.tableName);
-            return;
+            if (groupValue.keys.size != groupKeys.size) {
+                clearAllCache(update.tableName);
+                return;
+            }
+
+            db.brokeRedisCache(
+                table = update.tableName,
+                groupKey = groupValue.keys.joinToString(","),
+                groupValue = groupValue.values.joinToString(",")
+            )
         }
-
-        db.brokeRedisCache(
-            table = update.tableName,
-            groupKey = groupValue.keys.joinToString(","),
-            groupValue = groupValue.values.joinToString(",")
-        )
     }
 
     private fun clearAllCache(tableName: String) {

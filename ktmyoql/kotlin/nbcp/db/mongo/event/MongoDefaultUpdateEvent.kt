@@ -47,9 +47,8 @@ class MongoDefaultUpdateEvent : IMongoEntityUpdate {
 
     override fun update(update: MongoBaseUpdateClip, chain: EventChain, eventData: EventResult) {
         //清缓存
-        val groupKeys = MongoEntityCollector.sysRedisCacheDefines.get(update.collectionName)
-
-        if (groupKeys == null) {
+        val cacheGroups = MongoEntityCollector.sysRedisCacheDefines.get(update.collectionName)
+        if (cacheGroups == null) {
             return;
         }
 
@@ -57,22 +56,23 @@ class MongoDefaultUpdateEvent : IMongoEntityUpdate {
             clearAllCache(update.actualTableName);
             return;
         }
+        cacheGroups.forEach { groupKeys ->
+            val groupValue = groupKeys.map {
+                return@map it to update.whereData.get(it).AsString()
+            }.filter { it.second.HasValue }
+                .toMap();
 
-        val groupValue = groupKeys.map {
-            return@map it to update.whereData.get(it).AsString()
-        }.filter { it.second.HasValue }
-            .toMap();
+            if (groupValue.keys.size != groupKeys.size) {
+                clearAllCache(update.actualTableName);
+                return;
+            }
 
-        if (groupValue.keys.size != groupKeys.size) {
-            clearAllCache(update.actualTableName);
-            return;
+            db.brokeRedisCache(
+                table = update.actualTableName,
+                groupKey = groupValue.keys.joinToString(","),
+                groupValue = groupValue.values.joinToString(",")
+            )
         }
-
-        db.brokeRedisCache(
-            table = update.actualTableName,
-            groupKey = groupValue.keys.joinToString(","),
-            groupValue = groupValue.values.joinToString(",")
-        )
     }
 
     private fun clearAllCache(actualTableName: String) {
