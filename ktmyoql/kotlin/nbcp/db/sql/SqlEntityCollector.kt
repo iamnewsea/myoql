@@ -3,6 +3,7 @@ package nbcp.db.sql
 import nbcp.db.sql.*;
 import nbcp.comm.ForEachExt
 import nbcp.db.*
+import nbcp.db.cache.RedisCacheDefine
 import nbcp.db.mongo.MongoEntityCollector
 import nbcp.db.sql.event.*
 import org.springframework.beans.factory.config.BeanPostProcessor
@@ -152,6 +153,11 @@ class SqlEntityCollector : BeanPostProcessor {
             .forEach {
                 MongoEntityCollector.sysRedisCacheDefines.put(moer.tableName, it.value)
             }
+
+        var redisCacheDefine = moerClass.getAnnotation(RedisCacheDefine::class.java);
+        if( redisCacheDefine!=null){
+            MongoEntityCollector.sysRedisCacheDefines.put(moer.tableName, redisCacheDefine.value)
+        }
     }
 
     fun onSelecting(select: SqlBaseQueryClip): Array<Pair<ISqlEntitySelect, EventResult>> {

@@ -5,6 +5,7 @@ import nbcp.comm.HasValue
 import nbcp.scope.*
 import nbcp.comm.usingScope
 import nbcp.db.*
+import nbcp.db.cache.RedisCacheDefine
 import nbcp.db.mongo.event.*
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -128,6 +129,11 @@ class MongoEntityCollector : BeanPostProcessor {
             .forEach {
                 sysRedisCacheDefines.put(moer.tableName, it.value)
             }
+
+        var redisCacheDefine = moerClass.getAnnotation(RedisCacheDefine::class.java);
+        if( redisCacheDefine!=null){
+            sysRedisCacheDefines.put(moer.tableName, redisCacheDefine.value)
+        }
     }
 
     private fun addLogHistory(moer: MongoBaseMetaCollection<*>) {
