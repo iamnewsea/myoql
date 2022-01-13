@@ -4,7 +4,10 @@ import nbcp.comm.*
 import java.lang.annotation.Inherited
 
 /**
- * 使用注解在指定单表上启用 RedisCache, id是默认分组字段
+ * 使用注解在指定单表上启用 RedisCache
+ * 用于补充 DbEntityIndex 之外的缓存项，如id
+ *
+ * @see nbcp.db.DbEntityIndex
  */
 @Inherited
 @Target(AnnotationTarget.CLASS)
