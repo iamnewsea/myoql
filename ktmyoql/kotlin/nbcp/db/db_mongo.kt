@@ -398,8 +398,8 @@ db.getCollection("adminRole").aggregate(
                             m_json.remove(key)
                             return@forEach;
                         } else {
-                            m_json.put("_id", idValue)
-                            m_json.remove("id")
+                            m_json.put(_idKey, idValue)
+                            m_json.remove(key)
                         }
                     }
                 }
