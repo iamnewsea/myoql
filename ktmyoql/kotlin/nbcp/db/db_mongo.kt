@@ -368,10 +368,11 @@ db.getCollection("adminRole").aggregate(
      */
     fun transformDocumentIdTo_id(value: Any): Any {
         RecursionUtil.recursionAny(value, { json ->
+
             if (json is MutableMap<*, *>) {
                 var m_json = (json as MutableMap<String, Any?>);
-                if (json.containsKey("id") && !json.containsKey("_id")) {
-                    var idValue = json.get("id");
+                if (m_json.containsKey("id") && m_json.get("_id").AsString().isEmpty()) {
+                    var idValue = m_json.get("id");
 
                     if (idValue is String && ObjectId.isValid(idValue)) {
                         m_json.put("_id", ObjectId(idValue));
@@ -381,6 +382,26 @@ db.getCollection("adminRole").aggregate(
 
                     m_json.put("_id", idValue)
                     m_json.remove("id")
+                }
+
+                /**
+                 * Json可能是多个展开式，如：  tenant.id
+                 */
+                m_json.keys.toTypedArray().forEach { key ->
+                    if (key.endsWith(".id")) {
+                        var _idKey = key.Slice(0, -3) + "._id"
+                        if (m_json.get(_idKey).AsString().HasValue) return@forEach
+
+                        var idValue = m_json.get(key);
+                        if (idValue is String && ObjectId.isValid(idValue)) {
+                            m_json.put(_idKey, ObjectId(idValue));
+                            m_json.remove(key)
+                            return@forEach;
+                        } else {
+                            m_json.put("_id", idValue)
+                            m_json.remove("id")
+                        }
+                    }
                 }
             }
             return@recursionAny true;

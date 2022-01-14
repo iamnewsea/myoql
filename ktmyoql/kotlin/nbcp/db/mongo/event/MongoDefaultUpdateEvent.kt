@@ -29,19 +29,16 @@ class MongoDefaultUpdateEvent : IMongoEntityUpdate {
     }
 
     private fun setId2_id(update: MongoBaseUpdateClip) {
+
+        db.mongo.transformDocumentIdTo_id(update.setData)
+        db.mongo.transformDocumentIdTo_id(update.pushData)
+
         for (kv in update.setData) {
             var value = kv.value;
-            if (value != null) {
-                value = db.mongo.transformDocumentIdTo_id(kv.value!!)
-                update.setData.set(kv.key, value);
-            } else {
+            if (value == null) {
+                update.setData.remove(kv.key);
                 update.unsetColumns.add(kv.key);
             }
-        }
-
-        for (kv in update.pushData) {
-            var value = db.mongo.transformDocumentIdTo_id(kv.value)
-            update.pushData.put(kv.key, value);
         }
     }
 
