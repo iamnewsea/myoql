@@ -35,6 +35,7 @@ fun getTextTypeFromContentType(contentType: String): Boolean {
     return contentType.contains("json", true) ||
         contentType.contains("htm", true) ||
         contentType.contains("text", true) ||
+        contentType.contains("xml", true) ||
         contentType.contains("urlencoded", true)
 }
 
