@@ -49,7 +49,8 @@ import org.springframework.stereotype.Component
         MyBatisRedisCachePointcutAdvisor::class,
         RedisCacheAopService::class,
 
-        MyOqlBeanImporter::class
+        MyOqlBeanImporter::class,
+        FlywayBeanProcessor::class
     ]
 )
 //@ComponentScan("nbcp.db.mongo.event")
