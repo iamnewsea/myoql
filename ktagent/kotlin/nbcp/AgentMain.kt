@@ -5,8 +5,7 @@ import java.lang.instrument.Instrumentation
 object AgentMain {
 
     @JvmStatic
-    fun premain(agentArgs: String, inst: Instrumentation) {
-
+    fun premain(agentArgs: String?, inst: Instrumentation) {
 
         work(inst);
     }
@@ -16,8 +15,6 @@ object AgentMain {
 
         inst.allLoadedClasses.map {
             return@map it.name
-        }.apply {
-            println(this.joinToString(", "))
         }
     }
 }
