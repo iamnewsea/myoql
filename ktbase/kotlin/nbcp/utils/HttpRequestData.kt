@@ -50,6 +50,6 @@ data class HttpRequestData @JvmOverloads constructor(
      */
     val postIsText: Boolean
         get() {
-            return getTextTypeFromContentType(this.contentType)
+            return HttpUtil.getTextTypeFromContentType(this.contentType)
         }
 }

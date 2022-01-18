@@ -23,7 +23,7 @@ class HttpResponseData {
      */
     val resultIsText: Boolean
         get() {
-            return getTextTypeFromContentType(this.contentType)
+            return HttpUtil.getTextTypeFromContentType(this.contentType)
         }
 
     var contentType: String = ""

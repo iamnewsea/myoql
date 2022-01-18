@@ -28,16 +28,6 @@ data class FileMessage @JvmOverloads constructor(
     var msg: String = ""
 );
 
-/**
- * http://tools.jb51.net/table/http_content_type/
- */
-fun getTextTypeFromContentType(contentType: String): Boolean {
-    return contentType.contains("json", true) ||
-        contentType.contains("htm", true) ||
-        contentType.contains("text", true) ||
-        contentType.contains("xml", true) ||
-        contentType.contains("urlencoded", true)
-}
 
 //@Configuration
 //class RestTemplateConfig {
@@ -62,6 +52,18 @@ fun getTextTypeFromContentType(contentType: String): Boolean {
 class HttpUtil @JvmOverloads constructor(var url: String = "") {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+
+        /**
+         * http://tools.jb51.net/table/http_content_type/
+         */
+        fun getTextTypeFromContentType(contentType: String): Boolean {
+            return contentType.contains("json", true) ||
+                    contentType.contains("htm", true) ||
+                    contentType.contains("text", true) ||
+                    contentType.contains("xml", true) ||
+                    contentType.contains("urlencoded", true)
+        }
+
 
         @JvmStatic
         val localIpAddresses by lazy {
