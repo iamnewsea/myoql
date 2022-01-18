@@ -64,9 +64,6 @@ class MyOqlInitConfig {
         if (flyways != null) {
             flyways.playFlyVersion();
         }
-
-
-        SpringUtil.context.publishEvent(FlywayCompleteEvent(this))
     }
 }
 
