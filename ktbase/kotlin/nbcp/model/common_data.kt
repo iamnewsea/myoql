@@ -161,6 +161,13 @@ open class LoginUserModel @JvmOverloads constructor(
      */
     var isAdmin: Boolean = false,
     name: String = "",
+    /**
+     * 应用
+     */
+    var appCode: String = "",
+    /**
+     * 所属组织
+     */
     var organization: IdName = IdName(),
     var freshToken: String = ""//角色
 ) : IdName(id, name) {
