@@ -11,7 +11,7 @@ object AgentMain {
     }
 
     private fun work(inst: Instrumentation) {
-        inst.addTransformer(MyTransform())
+        inst.addTransformer(MyTransform(), true)
 
         inst.allLoadedClasses.map {
             return@map it.name
