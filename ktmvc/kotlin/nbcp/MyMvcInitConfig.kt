@@ -13,6 +13,7 @@ import nbcp.utils.SpringUtil
 import nbcp.web.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters
 import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.boot.context.event.ApplicationStartingEvent
@@ -20,6 +21,7 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.context.annotation.Import
 import org.springframework.context.event.EventListener
+import org.springframework.core.convert.ConversionService
 import org.springframework.core.convert.support.GenericConversionService
 import org.springframework.http.converter.AbstractHttpMessageConverter
 import org.springframework.http.converter.FormHttpMessageConverter
@@ -88,10 +90,52 @@ class MyMvcInitConfig : BeanPostProcessor {
     }
 
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
-        var ret = super.postProcessAfterInitialization(bean, beanName)
+        if (bean is HttpMessageConverters) {
+            var webJsonMapper = SpringUtil.getBean<WebJsonMapper>();
+            bean.converters.forEach { converter ->
+                if (converter is AbstractHttpMessageConverter) {
+                    converter.defaultCharset = const.utf8
+                }
 
+                //解决绝大多数Json转换问题
+                if (converter is MappingJackson2HttpMessageConverter) {
+                    converter.defaultCharset = const.utf8
+                    converter.objectMapper = webJsonMapper
+                    return@forEach
+                }
 
-        return ret;
+                if (converter is StringHttpMessageConverter) {
+                    converter.setWriteAcceptCharset(false);
+                    converter.defaultCharset = const.utf8;
+                }
+
+                if (converter is FormHttpMessageConverter) {
+                    converter.setCharset(const.utf8)
+
+                    converter.partConverters.forEach foreach2@{ sub_conveter ->
+                        if (sub_conveter is AbstractJackson2HttpMessageConverter) {
+                            sub_conveter.defaultCharset = const.utf8
+                        }
+                        return@foreach2
+                    }
+                }
+                return@forEach
+            }
+        } else if (bean is GenericConversionService) {
+            bean.addConverter(StringToDateConverter())
+            bean.addConverter(StringToLocalDateConverter())
+            bean.addConverter(StringToLocalTimeConverter())
+            bean.addConverter(StringToLocalDateTimeConverter())
+        } else if (bean is RequestMappingHandlerAdapter) {
+            var handlerAdapter = bean;
+
+            var listResolvers = mutableListOf<HandlerMethodArgumentResolver>()
+            listResolvers.add(JsonModelParameterConverter());
+            listResolvers.addAll(handlerAdapter.argumentResolvers ?: listOf())
+            handlerAdapter.argumentResolvers = listResolvers;
+        }
+
+        return super.postProcessAfterInitialization(bean, beanName);
     }
 
 
@@ -107,70 +151,6 @@ class MyMvcInitConfig : BeanPostProcessor {
      */
     @EventListener
     fun onApplicationReady(event: ApplicationReadyEvent) {
-        initMvcRequest()
-    }
-
-
-    val handlerAdapter: RequestMappingHandlerAdapter by lazy {
-        return@lazy SpringUtil.getBean<RequestMappingHandlerAdapter>();
-    }
-
-    private fun initMvcRequest() {
-        var listResolvers = mutableListOf<HandlerMethodArgumentResolver>()
-        listResolvers.add(JsonModelParameterConverter());
-        listResolvers.addAll(handlerAdapter.argumentResolvers ?: listOf())
-
-        handlerAdapter.argumentResolvers = listResolvers;
-
-//        var listReturnHandlers = mutableListOf<HandlerMethodReturnValueHandler>()
-//        listReturnHandlers.add(JsonReturnModelHandler())
-//        listReturnHandlers.addAll(handlerAdapter.returnValueHandlers ?: listOf())
-//
-//        handlerAdapter.returnValueHandlers = listReturnHandlers
-
-        val initializer = handlerAdapter.webBindingInitializer as ConfigurableWebBindingInitializer
-        if (initializer.conversionService != null) {
-            val genericConversionService = initializer.conversionService as GenericConversionService
-            genericConversionService.addConverter(StringToDateConverter())
-            genericConversionService.addConverter(StringToLocalDateConverter())
-            genericConversionService.addConverter(StringToLocalTimeConverter())
-            genericConversionService.addConverter(StringToLocalDateTimeConverter())
-        }
-
-        var webJsonMapper = SpringUtil.getBean<WebJsonMapper>();
-        //处理请求的消息体。
-        handlerAdapter.messageConverters.forEach { converter ->
-            if (converter is AbstractHttpMessageConverter) {
-                converter.defaultCharset = const.utf8
-            }
-
-            //解决绝大多数Json转换问题
-            if (converter is MappingJackson2HttpMessageConverter) {
-                converter.defaultCharset = const.utf8
-                converter.objectMapper = webJsonMapper
-                return@forEach
-            }
-
-            if (converter is StringHttpMessageConverter) {
-                converter.setWriteAcceptCharset(false);
-                converter.defaultCharset = const.utf8;
-            }
-
-            if (converter is FormHttpMessageConverter) {
-                converter.setCharset(const.utf8)
-
-                converter.partConverters.forEach foreach2@{ sub_conveter ->
-                    if (sub_conveter is AbstractJackson2HttpMessageConverter) {
-                        sub_conveter.defaultCharset = const.utf8
-
-                        //不能设置，因为不同的子类，需要不同的 Factory
-//                        sub_conveter.objectMapper = webJsonMapper
-                    }
-                    return@foreach2
-                }
-            }
-            return@forEach
-        }
     }
 
 }

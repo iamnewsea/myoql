@@ -39,9 +39,8 @@ class MyOqlMongoJsonSerializerConfig : BeanPostProcessor {
     }
 
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
-        var ret = super.postProcessAfterInitialization(bean, beanName)
-
-        return ret;
+        
+        return super.postProcessAfterInitialization(bean, beanName)
     }
 
 
