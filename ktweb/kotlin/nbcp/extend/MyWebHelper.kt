@@ -75,8 +75,9 @@ val HttpServletRequest.userAuthenticationService by lazy {
  * 另外，由于跨域 SameSite 的限制，需要避免使用 Cookie 的方式。
  * 设置 getLoginUserFunc 在需要用户信息的时候获取。示例代码：
  * 获取用户 token 使用 db.rer_base.getLoginInfoFromToken
+ * @see userAuthenticationService.saveLoginUserInfo
  */
-var HttpServletRequest.LoginUser: LoginUserModel
+val HttpServletRequest.LoginUser: LoginUserModel
     get() {
         var ret = this.getAttribute("[LoginUser]") as LoginUserModel?;
         if (ret != null) {
@@ -92,10 +93,6 @@ var HttpServletRequest.LoginUser: LoginUserModel
 
         this.setAttribute("[LoginUser]", ret)
         return ret;
-    }
-    set(value) {
-        this.setAttribute("[LoginUser]", value)
-        this.userAuthenticationService.saveLoginUserInfo(this, value);
     }
 
 

@@ -1,7 +1,5 @@
 package nbapp
 
-import nbcp.comm.JsonMap
-import nbcp.utils.SpringUtil
 import org.springframework.beans.factory.BeanFactory
 import org.springframework.beans.factory.BeanFactoryAware
 import org.springframework.beans.factory.BeanNameAware

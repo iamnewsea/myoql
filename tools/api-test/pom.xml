@@ -10,7 +10,7 @@
     <parent>
         <groupId>cn.dev8</groupId>
         <artifactId>shop_starter</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.3-SNAPSHOT</version>
         <relativePath>pom_starter.xml</relativePath>
     </parent>
     <!-- 设定主仓库，按设定顺序进行查找。 -->

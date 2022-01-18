@@ -3,6 +3,7 @@ package nbcp.base.service
 import nbcp.comm.*
 import nbcp.db.LoginUserModel
 import nbcp.db.redis.proxy.RedisStringProxy
+import nbcp.web.LoginUser
 import nbcp.web.tokenValue
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -85,6 +86,7 @@ class DefaultUserAuthenticationService {
          * 设置登录token,格式：{config.userSystem}token:{id}
          */
         override fun saveLoginUserInfo(request: HttpServletRequest, userInfo: LoginUserModel): Int {
+            request.setAttribute("[LoginUser]", userInfo)
             if (userInfo.id.HasValue && userInfo.token.HasValue) {
                 userSystemRedis.set(userInfo.token, userInfo.ToJson())
                 return userSystemRedis.defaultCacheSeconds;
