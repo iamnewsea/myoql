@@ -61,6 +61,7 @@
         <dependency>
             <groupId>cn.dev8</groupId>
             <artifactId>ktbase</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
     </dependencies>
