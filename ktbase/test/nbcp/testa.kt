@@ -69,11 +69,7 @@ class testa : TestBase() {
 
     @Test
     fun rou() {
-        var line = execCmd("cmd", "/c", " dirw d:")
 
-        line.data.forEach {
-            println(it)
-        }
     }
 
     fun execCmd(vararg cmds: String): ListResult<String> {
