@@ -11,6 +11,10 @@ object AgentMain {
     }
 
     private fun work(inst: Instrumentation) {
-        inst.addTransformer(MyTransform(), true)
+//        inst.addTransformer(MyTransform())
+        inst.addTransformer { loader, className, classBeingRedefined, protectionDomain, classfileBuffer ->
+            println("正在加载: ${className}")
+            return@addTransformer classfileBuffer
+        }
     }
 }
