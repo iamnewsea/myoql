@@ -182,7 +182,7 @@
                 <configuration>
                     <appendAssemblyId>true</appendAssemblyId>
                     <finalName>${project.artifactId}-${project.version}</finalName>
-                    <descriptors>../javadoc.xml</descriptors>
+                    <descriptors>../../javadoc.xml</descriptors>
                 </configuration>
             </plugin>
 
