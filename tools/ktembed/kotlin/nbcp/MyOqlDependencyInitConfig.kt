@@ -63,6 +63,11 @@ class MyOqlDependencyInitConfig : BeanPostProcessor {
     }
 
 
+    @EventListener
+    fun prepared(ev: ApplicationReadyEvent) {
+
+    }
+
     /**
      * 保存
      */
