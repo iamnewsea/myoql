@@ -133,12 +133,12 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
     }
 
     @JvmOverloads
-    fun group(_id: JsonMap?, eachItems: JsonMap? = null): MongoAggregateClip<M, E> {
+    fun group(_id: JsonMap?, vararg eachItems: JsonMap ): MongoAggregateClip<M, E> {
         var raw = JsonMap();
         raw.put("_id", _id)
 
-        if (eachItems != null) {
-            raw.putAll(eachItems)
+        eachItems.forEach {
+            raw.putAll(it)
         }
 
         pipeLines.add("\$group" to raw)
