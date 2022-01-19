@@ -15,10 +15,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters
 import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties
-import org.springframework.boot.context.event.ApplicationReadyEvent
-import org.springframework.boot.context.event.ApplicationStartingEvent
-import org.springframework.context.ApplicationContext
-import org.springframework.context.ApplicationContextAware
+import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.annotation.Import
 import org.springframework.context.event.EventListener
 import org.springframework.core.convert.ConversionService
@@ -150,7 +147,7 @@ class MyMvcInitConfig : BeanPostProcessor {
      * 系统预热之后，最后执行事件。
      */
     @EventListener
-    fun onApplicationReady(event: ApplicationReadyEvent) {
+    fun onApplicationReady(event: ApplicationStartedEvent) {
     }
 
 }

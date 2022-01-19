@@ -1,7 +1,9 @@
 package nbcp
 
 import nbcp.bean.*
-import nbcp.db.mongo.MongoEntityCollector
+import nbcp.comm.Important
+import nbcp.component.BaseJsonMapper
+import nbcp.component.DbJsonMapper
 import nbcp.db.mongo.event.*
 import nbcp.db.mybatis.MyBatisRedisCachePointcutAdvisor
 import nbcp.db.mybatis.MybatisDbConfig
@@ -9,16 +11,23 @@ import nbcp.db.mysql.MySqlDataSourceConfig
 import nbcp.db.MyOqlBaseActionLogDefine
 import nbcp.db.MyOqlMultipleDataSourceDefine
 import nbcp.db.cache.RedisCacheAopService
+import nbcp.db.db
 import nbcp.db.es.*
+import nbcp.db.mongo.*
 import nbcp.db.sql.*
 import nbcp.db.sql.event.*
 import nbcp.model.IUploadFileDbService
 import nbcp.utils.SpringUtil
+import org.bson.Document
+import org.bson.types.ObjectId
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.BeanFactory
 import org.springframework.beans.factory.BeanFactoryAware
 import org.springframework.beans.factory.config.BeanDefinitionHolder
+import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.boot.context.event.ApplicationPreparedEvent
+import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.ResourceLoaderAware
 import org.springframework.context.annotation.*
@@ -35,8 +44,6 @@ import org.springframework.stereotype.Component
         MongoEntityCollector::class,
         EsEntityCollector::class,
 
-
-        MyOqlMongoJsonSerializerConfig::class,
         MyOqlMongoBeanConfig::class,
         MyOqlJdbcBeanConfig::class,
         MyOqlRabbitMqBeanConfig::class,
@@ -54,109 +61,53 @@ import org.springframework.stereotype.Component
     ]
 )
 //@ComponentScan("nbcp.db.mongo.event")
-class MyOqlInitConfig {
+class MyOqlInitConfig : BeanPostProcessor {
+    companion object {
+        private var inited = false;
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    }
+
+    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
+        if (inited == false) {
+            inited = true;
+
+            init_app();
+        }
+
+        return super.postProcessBeforeInitialization(bean, beanName)
+    }
+
+    /**
+     * 在所有Bean初始化之前执行
+     */
+    private fun init_app() {
+        SpringUtil.context.getBeansOfType(BaseJsonMapper::class.java).values.forEach { mapper ->
+            mapper.addTypeModule(ObjectId::class.java, ObjectIdJsonSerializer(), ObjectIdJsonDeserializer())
+            if (mapper is DbJsonMapper) {
+                mapper.addTypeModule(Document::class.java, DocumentJsonSerializer(), DocumentJsonDeserializer())
+            }
+        }
+    }
+
 
     @EventListener
-    fun prepared(ev: ApplicationPreparedEvent) {
-        val msg = "myoql"
+    fun prepared(ev: ApplicationStartedEvent) {
 
         val flyways = SpringUtil.getBeanWithNull(FlywayBeanProcessor::class.java)
         if (flyways != null) {
             flyways.playFlyVersion();
         }
-    }
-}
 
+        db.mongo.groups.map { it::class.java.simpleName }.apply {
+            if( this.any()){
+                logger.Important("mongo groups:" + this                        .joinToString())
+            }
+        }
 
-@Component
-class MyOqlBeanImporter : ImportBeanDefinitionRegistrar, ResourceLoaderAware, BeanFactoryAware {
-    private lateinit var resourceLoader: ResourceLoader
-    private lateinit var beanFactory: BeanFactory;
-
-
-    /**
-     * 动态置顶扫描包路径下特殊的类加载到Bean中
-     * @param importingClassMetadata
-     * @param registry
-     */
-    override fun registerBeanDefinitions(
-        importingClassMetadata: AnnotationMetadata?,
-        registry: BeanDefinitionRegistry?
-    ) {
-        // 当前MyClassPathBeanDefinitionScanner已被修改为扫描带有指定注解的类
-        val scanner = MyOqlClassPathBeanDefinitionScanner(registry, false)
-        scanner.resourceLoader = resourceLoader
-        scanner.registerFilters()
-        scanner.doScan("nbcp")
-    }
-
-    override fun setBeanFactory(beanFactory: BeanFactory) {
-        this.beanFactory = beanFactory;
-    }
-
-    override fun setResourceLoader(resourceLoader: ResourceLoader) {
-        this.resourceLoader = resourceLoader
-    }
-}
-
-
-/**
- * 类 名: MyClassPathBeanDefinitionScanner
- * 描 述: 定义一个扫描器，指定需要扫描的标识
- *
- * @author: jiaYao
- */
-class MyOqlClassPathBeanDefinitionScanner(registry: BeanDefinitionRegistry?, useDefaultFilters: Boolean) :
-    ClassPathBeanDefinitionScanner(registry, useDefaultFilters) {
-    /**
-     * @addIncludeFilter 将自定义的注解添加到扫描任务中
-     * @addExcludeFilter 将带有自定义注解的类 ，不加载到容器中
-     */
-    fun registerFilters() {
-        /**
-         * TODO addIncludeFilter  满足任意includeFilters会被加载
-         */
-
-        addIncludeFilter(AssignableTypeFilter(IMongoEntityQuery::class.java))
-        addIncludeFilter(AssignableTypeFilter(IMongoEntityInsert::class.java))
-        addIncludeFilter(AssignableTypeFilter(IMongoEntityUpdate::class.java))
-        addIncludeFilter(AssignableTypeFilter(IMongoEntityDelete::class.java))
-        addIncludeFilter(AssignableTypeFilter(IMongoDataSource::class.java))
-        addIncludeFilter(AssignableTypeFilter(IMongoCollectionVarName::class.java))
-
-        addIncludeFilter(AssignableTypeFilter(ISqlEntitySelect::class.java))
-        addIncludeFilter(AssignableTypeFilter(ISqlEntityInsert::class.java))
-        addIncludeFilter(AssignableTypeFilter(ISqlEntityUpdate::class.java))
-        addIncludeFilter(AssignableTypeFilter(ISqlEntityDelete::class.java))
-        addIncludeFilter(AssignableTypeFilter(ISqlDataSource::class.java))
-
-
-        addIncludeFilter(AssignableTypeFilter(IEsEntityQuery::class.java))
-        addIncludeFilter(AssignableTypeFilter(IEsEntityInsert::class.java))
-        addIncludeFilter(AssignableTypeFilter(IEsEntityUpdate::class.java))
-        addIncludeFilter(AssignableTypeFilter(IEsEntityDelete::class.java))
-        addIncludeFilter(AssignableTypeFilter(IEsDataSource::class.java))
-
-
-        addIncludeFilter(AssignableTypeFilter(IUploadFileDbService::class.java))
-
-
-        addIncludeFilter(AssignableTypeFilter(MyOqlMultipleDataSourceDefine::class.java))
-        addIncludeFilter(AssignableTypeFilter(MyOqlBaseActionLogDefine::class.java))
-
-
-        /**
-         * TODO addExcludeFilter 同样的满足任意excludeFilters不会被加载
-         */
-        // addExcludeFilter(new AnnotationTypeFilter(MyService.class));
-    }
-
-    /**
-     * 重写类扫描包路径加载器，调用父类受保护的扫描方法 doScan
-     * @param basePackages
-     * @return
-     */
-    public override fun doScan(vararg basePackages: String): Set<BeanDefinitionHolder> {
-        return super.doScan(*basePackages)
+        db.sql.groups.map { it::class.java.simpleName }.apply {
+            if( this.any()){
+                logger.Important("sql groups:" + this                        .joinToString())
+            }
+        }
     }
 }

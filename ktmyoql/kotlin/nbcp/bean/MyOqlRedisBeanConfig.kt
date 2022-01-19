@@ -8,7 +8,7 @@ import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
-import org.springframework.boot.context.event.ApplicationReadyEvent
+import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.annotation.Import
 import org.springframework.context.event.EventListener
 import org.springframework.data.redis.core.StringRedisTemplate
@@ -59,7 +59,7 @@ class MyOqlRedisBeanConfig : BeanPostProcessor {
     }
 
     @EventListener
-    fun onApplicationReady(event: ApplicationReadyEvent) {
+    fun onApplicationReady(event: ApplicationStartedEvent) {
 //        //如果存在 Redis环境，但是没有 RedisCacheDbDynamicService，就构造一个，保证在Redis环境下至少一个。
 //        if (SpringUtil.containsBean(StringRedisTemplate::class.java) &&
 //            !SpringUtil.containsBean(RedisCacheDbDynamicService::class.java)

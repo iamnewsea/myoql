@@ -2,10 +2,12 @@ package nbcp.bean
 
 import com.mongodb.MongoClientSettings
 import nbcp.comm.HasValue
+import nbcp.comm.clazzesIsSimpleDefine
 import nbcp.comm.getStringValue
 import nbcp.db.mongo.Date2LocalDateTimeConverter
 import nbcp.utils.JsUtil
 import org.bson.UuidRepresentation
+import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -28,6 +30,8 @@ class MyOqlMongoBeanConfig : BeanPostProcessor {
         var ret = super.postProcessAfterInitialization(bean, beanName)
 
         if (bean is MongoTemplate) {
+            clazzesIsSimpleDefine.add(ObjectId::class.java)
+
             var converter = bean.converter as MappingMongoConverter;
             converter.typeMapper = DefaultMongoTypeMapper(null)
             (converter.conversionService as GenericConversionService).addConverter(Date2LocalDateTimeConverter())
