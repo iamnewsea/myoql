@@ -1,0 +1,145 @@
+logging:
+  config: classpath:logback-spring.xml
+  file:
+    path: logs
+  level:
+    root: WARN
+    nbcp:
+      web:
+        open:
+          Heartbeat: ERROR
+
+app:
+  filter:
+    allowOrigins: dev8.cn
+    ignore-log-urls: /open/log,/log,/favicon.ico,/index.html,/webjars/,/swagger-resources/,/v2/api-docs,/swagger-ui.html
+  upload:
+    uploadPath: /opt/upload
+  order:
+    cancelTime: 15
+    receiveTime: 21600
+  wx:
+    appId: wxd5f2957442fc2d0b
+    appSecret:
+    mchId: 1575431351
+    mchSecret:
+
+management:
+  security:
+    enabled: false
+
+server:
+  undertow:
+    # 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接, 默认设置每个CPU核心一个线程
+    io-threads: 128
+    # 阻塞任务线程池, 当执行类似servlet请求阻塞IO操作, undertow会从这个线程池中取得线程
+    # 它的值设置取决于系统线程执行任务的阻塞系数，默认值是IO线程数*8
+    worker-threads: 512
+    # 每块buffer的空间大小,越小的空间被利用越充分
+    buffer-size: 512
+    # 是否分配的直接内存(NIO直接分配的堆外内存)
+    direct-buffers: true
+  http2:
+    enabled: true
+#  ssl:
+#      key-store: classpath:keystore.jks
+#      key-store-password: 123456
+#      key-password: 123456
+#      protocol: TLSv1.2
+  use-forward-headers: true
+  servlet:
+    session:
+      cookie:
+        http-only: false
+        max-age: P3D  #3天
+
+
+spring:
+  aop:
+    auto: true
+
+  data:
+    mongodb:
+      uri: mongodb://dev:123@mongo:27017/cms
+#      host: mongo
+#      database: cms
+#      username: dev
+#      password: 123
+  redis:
+    timeout: 3000
+    database: 0
+    host: redis
+    password: 1@#4
+    port: 6379
+  elasticsearch:
+    rest:
+      uris: http://es:9200
+
+  rabbitmq:
+    host:
+    port:
+    addresses: ${spring.rabbitmq.host:127.0.0.1}:${spring.rabbitmq.port:5672}
+    password: dev
+    username:
+    virtual-host: /
+#  datasource:
+#    driver-class-name: org.mariadb.jdbc.Driver
+#    dbcp2:
+#      driver-class-name: org.mariadb.jdbc.Driver
+#      password: 123
+#      url: jdbc:mysql://127.0.0.1:3306/nbcp?serverTimezone=GMT%2B8&characterEncoding=utf8&useUnicode=true&useSSL=false
+#      username: app
+#      max-total: 1024
+  http:
+    encoding:
+      charset: UTF-8
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+  profiles:
+    active: win
+
+
+  application:
+    name: admin-api
+
+  security:
+    user:
+      name: admin
+      password: admin
+
+  datasource:
+    url: jdbc:mysql://genghuaimin:3306/zhks?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: mysql
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari2:
+      maximum-pool-size: 30
+
+security:
+  oauth2:
+    client:
+      client-id:
+      client-secret: clientSecret
+      scope: scope1, scope2, scope3, scope4
+      registered-redirect-uri: http://www.baidu.com
+  cloud:
+    consul:
+      host: ${server.dbIp}
+      port: 8500
+      discovery:
+        instance-id: ${spring.application.name}
+
+
+#    pay:
+#      app:
+#        id: wxd5f2957442fc2d0b
+#        secret: 778c9a9c19a8da17506f95e24749ea2c
+#      corp:
+#        id: 1395923102
+#        key: a6be8a33b7c987f4ffb76d9c9805c7eb
+#eureka:
+#  instance:
+#    lease-renewal-interval-in-seconds: 5
+#    lease-expiration-duration-in-seconds: 5
