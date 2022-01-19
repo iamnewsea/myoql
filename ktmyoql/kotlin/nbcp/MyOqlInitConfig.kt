@@ -81,12 +81,6 @@ class MyOqlInitConfig : BeanPostProcessor {
      * 在所有Bean初始化之前执行
      */
     private fun init_app() {
-        SpringUtil.context.getBeansOfType(BaseJsonMapper::class.java).values.forEach { mapper ->
-            mapper.addTypeModule(ObjectId::class.java, ObjectIdJsonSerializer(), ObjectIdJsonDeserializer())
-            if (mapper is DbJsonMapper) {
-                mapper.addTypeModule(Document::class.java, DocumentJsonSerializer(), DocumentJsonDeserializer())
-            }
-        }
     }
 
 

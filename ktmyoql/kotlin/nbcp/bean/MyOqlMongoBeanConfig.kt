@@ -1,11 +1,16 @@
 package nbcp.bean
 
 import com.mongodb.MongoClientSettings
+import nbcp.MyOqlInitConfig
 import nbcp.comm.HasValue
 import nbcp.comm.clazzesIsSimpleDefine
 import nbcp.comm.getStringValue
-import nbcp.db.mongo.Date2LocalDateTimeConverter
+import nbcp.component.BaseJsonMapper
+import nbcp.component.DbJsonMapper
+import nbcp.db.mongo.*
 import nbcp.utils.JsUtil
+import nbcp.utils.SpringUtil
+import org.bson.Document
 import org.bson.UuidRepresentation
 import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
@@ -23,6 +28,8 @@ import org.springframework.stereotype.Component
 @ConditionalOnClass(MongoTemplate::class)
 class MyOqlMongoBeanConfig : BeanPostProcessor {
     companion object {
+
+        private var inited = false;
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
@@ -30,7 +37,6 @@ class MyOqlMongoBeanConfig : BeanPostProcessor {
         var ret = super.postProcessAfterInitialization(bean, beanName)
 
         if (bean is MongoTemplate) {
-            clazzesIsSimpleDefine.add(ObjectId::class.java)
 
             var converter = bean.converter as MappingMongoConverter;
             converter.typeMapper = DefaultMongoTypeMapper(null)
@@ -65,5 +71,27 @@ class MyOqlMongoBeanConfig : BeanPostProcessor {
         }
 
         return ret;
+    }
+
+
+    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
+        if (inited == false) {
+            inited = true;
+
+            init_app();
+        }
+
+        return super.postProcessBeforeInitialization(bean, beanName)
+    }
+
+    private fun init_app(){
+        clazzesIsSimpleDefine.add(ObjectId::class.java)
+
+        SpringUtil.context.getBeansOfType(BaseJsonMapper::class.java).values.forEach { mapper ->
+            mapper.addTypeModule(ObjectId::class.java, ObjectIdJsonSerializer(), ObjectIdJsonDeserializer())
+            if (mapper is DbJsonMapper) {
+                mapper.addTypeModule(Document::class.java, DocumentJsonSerializer(), DocumentJsonDeserializer())
+            }
+        }
     }
 }
