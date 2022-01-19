@@ -1,6 +1,9 @@
 package nbcp.utils
 
-import nbcp.comm.*
+import nbcp.comm.AsLocalDateTime
+import nbcp.comm.FullName
+import nbcp.comm.HasValue
+import nbcp.comm.Slice
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
 import org.reflections.scanners.TypeAnnotationsScanner
@@ -8,7 +11,6 @@ import org.reflections.util.ClasspathHelper
 import org.reflections.util.ConfigurationBuilder
 import org.springframework.util.ClassUtils
 import java.io.File
-import java.lang.RuntimeException
 import java.net.JarURLConnection
 import java.net.URL
 import java.time.LocalDateTime
@@ -21,6 +23,15 @@ import java.util.*
  * Jar包里依赖的Jar包是: jar:file:/D:/nancal/yun/lowcode-api/portal/admin/target/lowcode-admin-api-1.0.1.jar!/BOOT-INF/lib/shop-entity-1.0.1.jar!/  , protocol=jar
  */
 object ClassUtil {
+
+    fun exists(className: String): Boolean {
+        try {
+            getDefaultClassLoader()!!.loadClass(className);
+            return true;
+        } catch (e: ClassNotFoundException) {
+            return false;
+        }
+    }
 
     /**
      * 获取 AppClassLoader 。
