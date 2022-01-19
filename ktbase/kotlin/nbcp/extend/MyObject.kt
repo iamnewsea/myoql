@@ -30,6 +30,18 @@ fun <T> T?.must(trueCondition: ((T?) -> Boolean)? = null): CheckMustExpresstion<
     return CheckMustExpresstion(if (trueCondition == null) this != null else trueCondition(this), this)
 }
 
+@JvmOverloads
+fun <T> Boolean.ifTrue(trueAction: (() -> T)): T? {
+    if (!this) return null;
+    return trueAction();
+}
+
+@JvmOverloads
+fun <T> Boolean.ifFalse(falseAction: (() -> T)): T? {
+    if (this) return null;
+    return falseAction();
+}
+
 fun <T> T.IsIn(vararg values: T): Boolean {
     return this.IsIn(null, *values);
 }
