@@ -14,7 +14,7 @@
         <module>ktmvc</module>
         <module>ktweb</module>
         <module>tools/api-test</module>
-        <module>tools/ktdependency</module>
+        <module>tools/ktembed</module>
     </modules>
 
     <licenses>
