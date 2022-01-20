@@ -23,6 +23,7 @@ class WebJsonMapper : BaseJsonMapper(), InitializingBean {
     override fun afterPropertiesSet() {
         this.init();
 
+        this.setSerializationInclusion(JsonInclude.Include.USE_DEFAULTS)
         this.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.DEFAULT);
         this.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.DEFAULT);
         this.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.DEFAULT);
