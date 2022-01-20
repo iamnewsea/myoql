@@ -36,6 +36,10 @@ class SheetContentReader @JvmOverloads constructor(
     override fun endRow(rowNum: Int) {
         if (row_can_reading == false) return;
         if (header_inited == false) {
+            if (sheetColumnsCallback(columns_index_map) == false) {
+                throw ReturnException();
+            }
+
             //校验列头.
             if (columns.any() && columns_index_map.size != columns.size) {
                 var diff = DiffData.load(columns.toList(), columns_index_map.values.toList(), { a, b -> a == b })
@@ -54,11 +58,6 @@ class SheetContentReader @JvmOverloads constructor(
                         }
                     }
                 }
-            }
-
-
-            if (sheetColumnsCallback(columns_index_map) == false) {
-                throw ReturnException();
             }
 
             header_inited = true;
