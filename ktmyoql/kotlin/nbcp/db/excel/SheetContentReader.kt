@@ -114,18 +114,6 @@ class SheetContentReader @JvmOverloads constructor(
                 return;
             }
 
-            if (columns.any()) {
-                //读取Header
-                var colIndex = columns.indexOf(text);
-                if (colIndex < 0) {
-                    if (strictMode) {
-                        throw RuntimeException();
-                    } else {
-                        logger.warn("发现多余列: " + text)
-                    }
-                }
-            }
-
             columns_index_map.set(columnIndex, text);
             return;
         }
