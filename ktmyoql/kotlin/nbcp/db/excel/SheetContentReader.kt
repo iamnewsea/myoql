@@ -12,6 +12,7 @@ class SheetContentReader @JvmOverloads constructor(
     var xmlReader: XMLReader,
     var columns: Array<out String>,
     var filter: ((JsonMap, Map<Int, String>) -> Boolean),
+    var sheetColumnsCallback: ((Map<Int, String>) -> Boolean),
     var rowOffset: Int = 0,
     var strictMode: Boolean = true
 ) : XSSFSheetXMLHandler.SheetContentsHandler {
@@ -36,7 +37,7 @@ class SheetContentReader @JvmOverloads constructor(
         if (row_can_reading == false) return;
         if (header_inited == false) {
             //校验列头.
-            if (columns_index_map.size != columns.size) {
+            if (columns.any() && columns_index_map.size != columns.size) {
                 var diff = DiffData.load(columns.toList(), columns_index_map.values.toList(), { a, b -> a == b })
                 if (diff.isSame() == false) {
                     if (diff.more1.any()) {
@@ -55,6 +56,11 @@ class SheetContentReader @JvmOverloads constructor(
                 }
             }
 
+
+            if (sheetColumnsCallback(columns_index_map) == false) {
+                throw ReturnException();
+            }
+
             header_inited = true;
             return;
         }
@@ -66,6 +72,7 @@ class SheetContentReader @JvmOverloads constructor(
 //            container.rows.add(values.toTypedArray());
 
         var row = JsonMap();
+
         columns.forEach { column ->
             var columnIndex = columns_index_map.filterValues { it == column }.map { it.key }.firstOrNull()
             if (columnIndex == null) {
@@ -108,13 +115,15 @@ class SheetContentReader @JvmOverloads constructor(
                 return;
             }
 
-            //读取Header
-            var colIndex = columns.indexOf(text);
-            if (colIndex < 0) {
-                if (strictMode) {
-                    throw RuntimeException();
-                } else {
-                    logger.warn("发现多余列: " + text)
+            if (columns.any()) {
+                //读取Header
+                var colIndex = columns.indexOf(text);
+                if (colIndex < 0) {
+                    if (strictMode) {
+                        throw RuntimeException();
+                    } else {
+                        logger.warn("发现多余列: " + text)
+                    }
                 }
             }
 

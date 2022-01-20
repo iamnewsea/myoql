@@ -112,6 +112,37 @@ class ExcelComponent(val excelStream: () -> InputStream) {
         }
 
         /**
+         * 从Sheet中读出列
+         */
+        fun readSheetColumns(): List<String> {
+            val fm = FileMagic.prepareToCheckMagic(excelStream()).use { file ->
+                return@use FileMagic.valueOf(file)
+            }
+
+            var list = listOf<String>()
+
+            var filter2: (Map<Int, String>) -> Boolean = f2@{ oriData ->
+                list = oriData.values.toList();
+                return@f2 false
+            }
+
+
+            /*
+POI提供了HSSF、XSSF以及SXSSF三种方式操作Excel。
+HSSF：Excel97-2003版本，扩展名为.xls。一个sheet最大行数65536，最大列数256。
+XSSF：Excel2007版本开始，扩展名为.xlsx。一个sheet最大行数1048576，最大列数16384。
+SXSSF：是在XSSF基础上，POI3.8版本开始提供的支持低内存占用的操作方式，扩展名为.xlsx。
+ */
+            when (fm) {
+                FileMagic.OOXML -> readOpenXmlExcelData({ _, _ -> false }, filter2);
+                FileMagic.OLE2 -> readOle2ExcelData({ _, _ -> false }, filter2)
+                else -> throw RuntimeException("不识别的类型：${fm}")
+            }
+
+            return list;
+        }
+
+        /**
          * 读取数据
          */
         @JvmOverloads
@@ -206,8 +237,8 @@ XSSF：Excel2007版本开始，扩展名为.xlsx。一个sheet最大行数104857
 SXSSF：是在XSSF基础上，POI3.8版本开始提供的支持低内存占用的操作方式，扩展名为.xlsx。
  */
             when (fm) {
-                FileMagic.OOXML -> readOpenXmlExcelData(filter2);
-                FileMagic.OLE2 -> readOle2ExcelData(filter2)
+                FileMagic.OOXML -> readOpenXmlExcelData(filter2, { true });
+                FileMagic.OLE2 -> readOle2ExcelData(filter2, { true })
                 else -> throw RuntimeException("不识别的类型：${fm}")
             }
 
@@ -293,7 +324,8 @@ SXSSF：是在XSSF基础上，POI3.8版本开始提供的支持低内存占用�
 
 
         private fun readOle2ExcelData(
-            filter: (JsonMap, Map<Int, String>) -> Boolean
+            filter: (JsonMap, Map<Int, String>) -> Boolean,
+            sheetColumnsCallback: (Map<Int, String>) -> Boolean
         ) {
             WorkbookFactory.create(excelStream()).use { book ->
 
@@ -315,6 +347,10 @@ SXSSF：是在XSSF基础上，POI3.8版本开始提供的支持低内存占用�
                 var header_row = sheet.getRow(rowOffset)
                 // key: excel 中的 列的索引 , value = column_name
                 var columns_index_map = getHeaderColumnsIndexMap(header_row, columns, evaluator);
+
+                if (sheetColumnsCallback(columns_index_map) == false) {
+                    return;
+                }
 
                 for (rowIndex in (rowOffset + 1)..sheet.lastRowNum) {
                     var row = sheet.getRow(rowIndex)
@@ -381,7 +417,10 @@ SXSSF：是在XSSF基础上，POI3.8版本开始提供的支持低内存占用�
         }
 
 
-        private fun readOpenXmlExcelData(filter: (JsonMap, Map<Int, String>) -> Boolean) {
+        private fun readOpenXmlExcelData(
+            filter: (JsonMap, Map<Int, String>) -> Boolean,
+            sheetColumnsCallback: (Map<Int, String>) -> Boolean
+        ) {
             OPCPackage.open(excelStream()).use { xlsxPackage ->
                 var xssfReader = XSSFReader(xlsxPackage)
 
@@ -389,7 +428,7 @@ SXSSF：是在XSSF基础上，POI3.8版本开始提供的支持低内存占用�
                 while (iter.hasNext()) {
                     iter.next().use { stream ->
                         if (iter.sheetName == sheetName) {
-                            getSheetData(xlsxPackage, xssfReader, stream, filter)
+                            getSheetData(xlsxPackage, xssfReader, stream, filter, sheetColumnsCallback)
                             return;
                         }
                     }
@@ -404,8 +443,8 @@ SXSSF：是在XSSF基础上，POI3.8版本开始提供的支持低内存占用�
             xlsxPackage: OPCPackage,
             xssfReader: XSSFReader,
             sheetInputStream: InputStream,
-
-            filter: ((JsonMap, Map<Int, String>) -> Boolean)
+            filter: ((JsonMap, Map<Int, String>) -> Boolean),
+            sheetColumnsCallback: ((Map<Int, String>) -> Boolean)
         ) {
 
             var strings = ReadOnlySharedStringsTable(xlsxPackage);
@@ -419,7 +458,14 @@ SXSSF：是在XSSF基础上，POI3.8版本开始提供的支持低内存占用�
                     styles,
                     null,
                     strings,
-                    SheetContentReader(sheetParser, columns, filter, this.rowOffset, this.strictMode),
+                    SheetContentReader(
+                        sheetParser,
+                        columns,
+                        filter,
+                        sheetColumnsCallback,
+                        this.rowOffset,
+                        this.strictMode
+                    ),
                     formatter,
                     false
                 );
