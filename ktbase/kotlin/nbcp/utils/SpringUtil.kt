@@ -221,7 +221,7 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
         /**
          * 从 resource 读取内容
          */
-        fun getResourceContent(path: String): String {
+        fun readResourceContent(path: String): String {
             return ClassPathResource(path).inputStream.readContentString();
         }
     }
