@@ -8,6 +8,7 @@ import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.ApplicationEvent
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
@@ -16,6 +17,7 @@ import java.time.LocalDateTime
 
 @Component
 @ConditionalOnClass(MongoTemplate::class)
+@ConditionalOnProperty("spring.data.mongodb.uri")
 class FlywayBeanProcessor : BeanPostProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

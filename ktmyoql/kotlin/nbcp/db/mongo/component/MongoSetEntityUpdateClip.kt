@@ -18,6 +18,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
 ) : MongoClipBase(moerEntity.tableName) {
 
     private var requestJson: Map<String, Any?> = mapOf()
+    private var setMaxPath = setOf<String>()
 
     /*
     以 duty 列为例 ：
@@ -33,7 +34,12 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
      */
     private var whereColumns = mutableSetOf<String>()
     private var setColumns = mutableSetOf<String>()
-    private var unsetColumns = mutableSetOf<String>("id","createAt")
+    private var unsetColumns = mutableSetOf<String>("id", "createAt")
+
+    fun setMaxPath(maxPath: String): MongoSetEntityUpdateClip<M, E> {
+        this.setMaxPath(maxPath);
+        return this;
+    }
 
     fun withColumn(setFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M, E> {
         this.setColumns.add(setFunc(this.moerEntity).toString())
@@ -143,6 +149,12 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
             }
 
             if (setColumns.contains(wbs) || !keyInWhere) {
+
+                //如果明确要求某些列不能深度。
+                if (setMaxPath.any { it != wbs && wbs.startsWith(it) }) {
+                    return@recursionJson
+                }
+
                 if (key == "_id") {
                     setData2.put(joinWbsPath(pWbs, "id"), value)
                 } else {
