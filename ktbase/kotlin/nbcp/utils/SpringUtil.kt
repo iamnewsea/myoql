@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Primary
 import org.springframework.core.PriorityOrdered
 import org.springframework.core.annotation.Order
+import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Component
 import java.sql.Timestamp
 import java.time.LocalDate
@@ -81,9 +82,9 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
         @JvmStatic
         @JvmOverloads
         fun registerBeanDefinition(
-            name: String,
-            instance: Any,
-            callback: ((BeanDefinitionBuilder) -> Unit) = {}
+                name: String,
+                instance: Any,
+                callback: ((BeanDefinitionBuilder) -> Unit) = {}
         ) {
             registry.registerBeanDefinition(name, getGenericBeanDefinition(instance, callback));
         }
@@ -141,7 +142,7 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
 
         //通过class获取Bean.
         @JvmStatic
-        fun <T:Any> getBean(clazz: KClass<T>): T {
+        fun <T : Any> getBean(clazz: KClass<T>): T {
             return getBean(clazz.java)
         }
 
@@ -158,7 +159,7 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
         }
 
         @JvmStatic
-        fun <T:Any> getBeanWithNull(clazz: KClass<T>): T? {
+        fun <T : Any> getBeanWithNull(clazz: KClass<T>): T? {
             return getBeanWithNull(clazz.java)
         }
 
@@ -198,8 +199,8 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
          * 动态创建Bean
          */
         fun getGenericBeanDefinition(
-            instance: Any,
-            callback: ((BeanDefinitionBuilder) -> Unit) = {}
+                instance: Any,
+                callback: ((BeanDefinitionBuilder) -> Unit) = {}
         ): GenericBeanDefinition {
             var type = instance::class.java
             val builder = BeanDefinitionBuilder.genericBeanDefinition(type);
@@ -242,6 +243,9 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
         }
     }
 
+    fun getResourceContent(path: String): String {
+        return ClassPathResource(path).inputStream.readContentString();
+    }
 
     /**
      * 3. 该方法只执行一次，而且时机很早。
