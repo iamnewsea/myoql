@@ -6,6 +6,7 @@ package nbcp.comm
 import java.lang.RuntimeException
 import java.lang.reflect.*
 import java.io.IOException
+import java.util.*
 
 
 val clazzesIsSimpleDefine = mutableSetOf<Class<*>>()
@@ -19,6 +20,7 @@ val clazzesIsSimpleDefine = mutableSetOf<Class<*>>()
  * 布尔
  * 数字
  * LocalDate,LocalTime,LocalDateTime,Date.
+ * UUID,ObjectId
  * clazzesIsSimpleDefine 中的类型
  */
 fun Class<*>.IsSimpleType(): Boolean {
@@ -39,10 +41,12 @@ fun Class<*>.IsSimpleType(): Boolean {
     if (this == java.time.LocalDate::class.java) return true;
     if (this == java.time.LocalTime::class.java) return true;
     if (this == java.time.LocalDateTime::class.java) return true;
-    if (this == java.util.Date::class.java) return true;
-//    if (this.name == "org.bson.types.ObjectId") {
-//        return true;
-//    }
+    if (this == UUID::class.java) return true;
+    if (Date::class.java.isAssignableFrom(this)) return true;
+
+    if (this.name == "org.bson.types.ObjectId") {
+        return true;
+    }
     if (clazzesIsSimpleDefine.any { it.isAssignableFrom(this) }) {
         return true;
     }
@@ -165,8 +169,8 @@ fun <T> Class<T>.GetEnumNumberField(): Field? {
 
     var ret_fields = this.declaredFields.filter {
         (it.modifiers and Modifier.PRIVATE) > 0 &&
-            (it.modifiers and Modifier.STATIC == 0) &&
-            it.type.IsNumberType
+                (it.modifiers and Modifier.STATIC == 0) &&
+                it.type.IsNumberType
     }
     if (ret_fields.size == 1) {
         var ret = ret_fields.first();
@@ -185,8 +189,8 @@ fun <T> Class<T>.GetEnumStringField(): Field? {
 
     var ret_fields = this.declaredFields.filter {
         (it.modifiers and Modifier.PRIVATE) > 0 &&
-            it.modifiers and Modifier.STATIC == 0 &&
-            it.type.IsStringType
+                it.modifiers and Modifier.STATIC == 0 &&
+                it.type.IsStringType
     }
 
     if (ret_fields.any()) {
