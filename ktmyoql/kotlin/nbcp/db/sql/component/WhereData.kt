@@ -136,7 +136,7 @@ class WhereData : Serializable {
         return false;
     }
 
-    fun findRootWhere(column: String): String? {
+    fun findValueFromRootLevel(column: String): String? {
         var index = this.expression.indexOf(column + " = ")
         if (index >= 0) {
             var v = this.expression.substring(column.length + 3).trim();
@@ -144,7 +144,7 @@ class WhereData : Serializable {
                 return values.get(v.substring(1)).AsString()
             }
         } else if (this.linker.HasValue && this.next != null) {
-            return this.next!!.findRootWhere(column);
+            return this.next!!.findValueFromRootLevel(column);
         }
 
         return null;

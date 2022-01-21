@@ -22,7 +22,7 @@ import java.time.LocalDateTime
 class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
     MongoClipBase(moerEntity.tableName), IMongoWhere {
 
-    override val whereData = mutableMapOf<String, Any?>()
+    override val whereData = MongoWhereClip()
 
     companion object {
         private var logger = LoggerFactory.getLogger(this::class.java.declaringClass)

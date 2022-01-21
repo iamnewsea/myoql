@@ -3,11 +3,8 @@ package nbcp.db.sql.event;
 import nbcp.comm.AsString
 import nbcp.comm.HasValue
 import nbcp.db.sql.*;
-import nbcp.comm.ToJson
-import nbcp.utils.*
 import nbcp.db.*
 import nbcp.db.mongo.MongoEntityCollector
-import nbcp.db.sql.entity.s_dustbin
 import org.springframework.stereotype.Component
 
 /**
@@ -33,7 +30,7 @@ class SqlDefaultUpdateEvent : ISqlEntityUpdate {
 
         cacheGroups.forEach { groupKeys ->
             val groupValue = groupKeys.map {
-                return@map it to update.whereDatas.findRootWhere(it).AsString()
+                return@map it to update.whereDatas.findValueFromRootLevel(it).AsString()
             }.filter { it.second.HasValue }
                 .toMap();
 

@@ -27,7 +27,15 @@ class TestKtExt_Mongo : TestBase() {
     }
 
     @Test
-    fun test_Insert() {
+    fun test_Where() {
+
+        var query = db.mor_base.basicUserLoginInfo.query()
+            .where { it.loginName match "abc" }
+            .where { it.email match_in arrayOf("ff", "ww") }
+            .whereOr({ it.mobile match "dd" }, { it.isLocked match false })
+
+        var where = query.whereData;
+        println(where.ToJson())
     }
 
 

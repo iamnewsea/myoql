@@ -99,5 +99,5 @@ open class MongoClipBase(var collectionName: String) : Serializable {
 }
 
 interface IMongoWhere {
-    val  whereData: MutableMap<String, Any?>
+    val  whereData: MongoWhereClip
 }

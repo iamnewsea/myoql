@@ -2,13 +2,11 @@ package nbcp.db.sql
 
 import org.slf4j.LoggerFactory
 import nbcp.comm.*
-import nbcp.scope.*
 import nbcp.db.*
 import nbcp.db.cache.FromRedisCache
 import nbcp.db.cache.onlyGetFromCache
 import nbcp.db.cache.onlySetToCache
 import nbcp.db.mongo.MongoEntityCollector
-import org.bson.Document
 import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 import java.io.Serializable
@@ -437,7 +435,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
         def.forEach { cacheColumnGroup ->
             var kv = StringMap();
             cacheColumnGroup.forEach {
-                var v = this.whereDatas.findRootWhere(this.tableName + "." + it)
+                var v = this.whereDatas.findValueFromRootLevel(this.tableName + "." + it)
                 if (v.isNullOrEmpty()) return@forEach
                 kv.put(it, v)
             }

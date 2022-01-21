@@ -16,7 +16,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    override val whereData = mutableMapOf<String, Any?>()
+    override val whereData = MongoWhereClip()
 //        private set
 
 

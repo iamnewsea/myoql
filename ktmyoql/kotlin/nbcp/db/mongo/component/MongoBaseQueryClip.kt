@@ -16,7 +16,7 @@ import java.lang.Exception
 import java.time.LocalDateTime
 
 open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMongoWhere {
-    override val whereData = mutableMapOf<String, Any?>()
+    override val whereData = MongoWhereClip()
 
     var skip: Int = 0;
     var take: Int = -1;
