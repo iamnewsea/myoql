@@ -150,8 +150,13 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
 
             if (setColumns.contains(wbs) || !keyInWhere) {
 
-                //如果明确要求某些列不能深度。
+                //如果明确要求某些列不再深度展开。
                 if (setMaxPath.any { it != wbs && wbs.startsWith(it) }) {
+                    return@recursionJson
+                }
+
+                if (setMaxPath.any { it == wbs }) {
+                    setData2.put(wbs, value);
                     return@recursionJson
                 }
 
@@ -163,14 +168,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
                     if (value_type.IsSimpleType()) {
                         setData2.put(wbs, value)
                     } else if (value_type.isArray || value_type.IsCollectionType) {
-                        var ent_wbs_value: Any? = value;
-                        if (withRequestJson) {
-                            ent_wbs_value = ori_entity_map.getValueByWbsPath(wbs);
-                        }
-
-                        if (ent_wbs_value != null) {
-                            setData2.put(wbs, ent_wbs_value)
-                        }
+                        setData2.put(wbs, value);
                     }
                 }
             }
