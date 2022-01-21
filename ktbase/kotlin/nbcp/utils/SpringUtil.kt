@@ -216,6 +216,14 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
             callback(builder);
             return definition;
         }
+
+
+        /**
+         * 从 resource 读取内容
+         */
+        fun getResourceContent(path: String): String {
+            return ClassPathResource(path).inputStream.readContentString();
+        }
     }
 
 //    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
@@ -241,10 +249,6 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
             logger.Important("============ SpringUtil初始化! ============")
             //发送初始化事件是没用的，因为需要先注册事件，再发出事件。 要保证注册事件在该方法之前
         }
-    }
-
-    fun getResourceContent(path: String): String {
-        return ClassPathResource(path).inputStream.readContentString();
     }
 
     /**
