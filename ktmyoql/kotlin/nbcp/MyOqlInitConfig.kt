@@ -85,7 +85,7 @@ class MyOqlInitConfig : BeanPostProcessor {
 
 
     @EventListener
-    fun prepared(ev: ApplicationStartedEvent) {
+    fun app_started(ev: ApplicationStartedEvent) {
 
         val flyways = SpringUtil.getBeanWithNull(FlywayBeanProcessor::class.java)
         if (flyways != null) {

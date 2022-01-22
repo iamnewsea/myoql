@@ -59,7 +59,7 @@ class MyOqlRedisBeanConfig : BeanPostProcessor {
     }
 
     @EventListener
-    fun onApplicationReady(event: ApplicationStartedEvent) {
+    fun app_started(event: ApplicationStartedEvent) {
 //        //如果存在 Redis环境，但是没有 RedisCacheDbDynamicService，就构造一个，保证在Redis环境下至少一个。
 //        if (SpringUtil.containsBean(StringRedisTemplate::class.java) &&
 //            !SpringUtil.containsBean(RedisCacheDbDynamicService::class.java)
