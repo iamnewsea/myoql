@@ -130,6 +130,21 @@ fun String.ConvertToLocalDateTime(dateTimeFormatter: DateTimeFormatter? = null):
         return LocalDateTime.parse(strValue, dateTimeFormatter)
     }
 
+
+    //如果是全数字.
+    if (this.any { it.isDigit() == false } == false) {
+        if (this.length == 8) {
+            return LocalDate.parse(strValue, DateTimeFormatter.ofPattern("yyyyMMdd")).atStartOfDay()
+        } else if (this.length == 14) {
+            return LocalDateTime.parse(strValue, DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
+        } else if (this.length == 17) {
+            return LocalDateTime.parse(
+                strValue.Slice(0, -3) + "." + strValue.Slice(-3),
+                DateTimeFormatter.ofPattern("yyyyMMddHHmmss[.SSS]")
+            )
+        }
+    }
+
     // Fri, 04 Dec 2020 03:11:42 GMT
     // DateTimeFormatter.RFC_1123_DATE_TIME
     if (this.endsWith("GMT") && this.contains(",")) {
@@ -198,6 +213,10 @@ fun String.ConvertToLocalDateTime(dateTimeFormatter: DateTimeFormatter? = null):
     }
 
     return datePartString.ConvertToLocalDate()?.atTime(timePartString.ConvertToLocalTime())?.plusSeconds(zoneSecond)
+}
+
+fun LocalDateTime.toNumberString(): String {
+    return this.Format("yyyyMMddHHmmssSSS")
 }
 
 

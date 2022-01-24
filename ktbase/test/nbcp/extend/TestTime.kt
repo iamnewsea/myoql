@@ -19,4 +19,11 @@ class TestTime : TestBase() {
         )
         println(t.toSummary())
     }
+
+    @Test
+    fun TestNumberString() {
+        println(LocalDateTime.now().toNumberString())
+
+        println("20220124151902926".ConvertToLocalDateTime())
+    }
 }
