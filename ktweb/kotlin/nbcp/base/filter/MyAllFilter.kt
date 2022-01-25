@@ -253,7 +253,7 @@ open class MyAllFilter : Filter {
         val endAt = LocalDateTime.now();
         logger.InfoError(errorMsg.HasValue || !response.status.Between(200, 399)) {
             var msgs = mutableListOf<String>()
-            msgs.add("--> ${request.tokenValue} ${request.ClientIp} [${request.method}] ${request.fullUrl}")
+            msgs.add("--> ${request.fullUrl}")
 
             for (h in request.headerNames) {
                 msgs.add("\t${h}: ${request.getHeader(h)}")
