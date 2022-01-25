@@ -23,6 +23,12 @@ class testa : TestBase() {
     }
 
     @Test
+    fun Scan() {
+        var d = db.redis.scanKeys("mp:*");
+        println(d)
+    }
+
+    @Test
     fun testSetNx() {
         var d = db.rer_base.taskLock.setIfAbsent("abc", "ffff")
         println(d)
