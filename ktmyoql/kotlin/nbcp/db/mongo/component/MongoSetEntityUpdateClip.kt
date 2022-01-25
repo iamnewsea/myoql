@@ -134,13 +134,9 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
             var wbs = joinWbsPath(pWbs, key);
 
             var keyInWhere = false;
-            if (whereColumns.contains(wbs)) {
+            if (whereColumnsContains(wbs)) {
                 keyInWhere = true;
-                if (key == "_id") {
-                    whereData2.put(joinWbsPath(pWbs, "id"), value)
-                } else {
-                    whereData2.put(wbs, value)
-                }
+                whereData2.put(wbs, value)
             }
 
 
@@ -160,16 +156,13 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
                     return@recursionJson
                 }
 
-                if (key == "_id") {
-                    setData2.put(joinWbsPath(pWbs, "id"), value)
-                } else {
-                    val value_type = value::class.java;
+                
+                val value_type = value::class.java;
 
-                    if (value_type.IsSimpleType()) {
-                        setData2.put(wbs, value)
-                    } else if (value_type.isArray || value_type.IsCollectionType) {
-                        setData2.put(wbs, value);
-                    }
+                if (value_type.IsSimpleType()) {
+                    setData2.put(wbs, value)
+                } else if (value_type.isArray || value_type.IsCollectionType) {
+                    setData2.put(wbs, value);
                 }
             }
 
@@ -186,6 +179,24 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
         }
 
         return update;
+    }
+
+    private fun whereColumnsContains(wbs: String): Boolean {
+        if (this.whereColumns.contains(wbs)) return true;
+
+        if (wbs == "id") {
+            return this.whereColumns.any { it == "_id" }
+        } else if (wbs == "_id") {
+            return this.whereColumns.any { it == "id" }
+        } else if (wbs.endsWith(".id")) {
+            var find = wbs.Slice(0, -3) + "._id"
+            return this.whereColumns.any { it == find }
+        } else if (wbs.endsWith("._id")) {
+            var find = wbs.Slice(0, -4) + ".id"
+            return this.whereColumns.any { it == find }
+        }
+
+        return false;
     }
 
     /**

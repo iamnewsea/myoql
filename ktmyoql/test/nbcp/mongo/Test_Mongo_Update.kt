@@ -68,13 +68,10 @@ class Test_Mongo_Update : TestBase() {
         annex.put("name2", listOf("a", "b"))
         annex.put("creator", JsonMap("id" to CodeUtil.getCode(), "name" to "test"))
 
-        var annex2 = Document()
-        annex2.put("id", CodeUtil.getCode())
-        annex2.put("name", "test_doc")
-        annex2.put("creator", JsonMap("id" to CodeUtil.getCode(), "name" to "test"))
-        var update = db.mor_base.sysAnnex.updateWithEntity(annex).withRequestJson(annex2).castToUpdate();
+        var update = db.mor_base.sysAnnex.updateWithEntity(annex)
+            .whereColumn { it.id }
+            .castToUpdate();
 
-        println(db.mongo.getMergedMongoCriteria(update.whereData).toDocument().toJson())
-        println(update.setData.ToJson())
+        update.exec();
     }
 }
