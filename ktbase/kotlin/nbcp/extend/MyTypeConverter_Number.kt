@@ -24,9 +24,14 @@ fun Any?.AsInt(defaultValue: Int = 0): Int {
 
 
     try {
-        if (this is Int) ret = this;
-        else if (this is Number) ret = this.toInt();
-        else if (this is Boolean) {
+        if (this is Int) {
+            if (this == 0) return defaultValue;
+            return this;
+        } else if (this is Number) {
+            var d = this.toInt()
+            if (d == 0) return defaultValue;
+            return d
+        } else if (this is Boolean) {
             if (this == true) return 1;
             return 0;
         } else {
@@ -51,8 +56,12 @@ fun Any?.AsInt(defaultValue: Int = 0): Int {
                 } else {
                     ret = strValue.toBigDecimal().toInt()
                 }
+
+                return ret;
             }
         }
+
+        if (ret == 0) return defaultValue;
         return ret;
     } catch (e: java.lang.Exception) {
         return defaultValue;
@@ -65,9 +74,14 @@ fun Any?.AsLong(defaultValue: Long = 0L): Long {
 
     try {
         var ret = defaultValue;
-        if (this is Long) ret = this;
-        else if (this is Number) ret = this.toLong()
-        else {
+        if (this is Long) {
+            if (this == 0L) return defaultValue;
+            return this;
+        } else if (this is Number) {
+            var l = this.toLong();
+            if (l == 0L) return defaultValue;
+            return l;
+        } else {
             var value = this;
 
             if (value is CharSequence) {
@@ -86,6 +100,8 @@ fun Any?.AsLong(defaultValue: Long = 0L): Long {
                 return ret;
             }
         }
+
+        if (ret == 0L) return defaultValue;
         return ret;
     } catch (e: Exception) {
         return defaultValue;
@@ -98,9 +114,14 @@ fun Any?.AsDouble(defaultValue: Double = 0.0): Double {
     var ret = defaultValue;
 
     try {
-        if (this is Double) ret = this;
-        else if (this is Number) ret = this.toDouble()
-        else {
+        if (this is Double) {
+            if (this == 0.0) return defaultValue;
+            return this;
+        } else if (this is Number) {
+            var d = this.toDouble();
+            if (d == 0.0) return defaultValue;
+            return d;
+        } else {
             var value = this;
 
             if (value is CharSequence) {
@@ -111,9 +132,12 @@ fun Any?.AsDouble(defaultValue: Double = 0.0): Double {
                 if (strValue.isEmpty()) return defaultValue
 
                 ret = strValue.toDoubleOrNull() ?: defaultValue
+                return ret;
             }
         }
-        return ret;
+
+        if (ret == 0.0) return defaultValue;
+        return ret
     } catch (e: Exception) {
         return defaultValue;
     }
@@ -125,9 +149,14 @@ fun Any?.AsFloat(defaultValue: Float = 0F): Float {
     var ret = defaultValue;
 
     try {
-        if (this is Float) ret = this;
-        else if (this is Number) ret = this.toFloat()
-        else {
+        if (this is Float) {
+            if (this == 0F) return defaultValue;
+            return this;
+        } else if (this is Number) {
+            var f = this.toFloat();
+            if (f == 0F) return defaultValue;
+            return f;
+        } else {
             var value = this;
             if (value is CharSequence) {
                 value = value.toString()
@@ -137,8 +166,11 @@ fun Any?.AsFloat(defaultValue: Float = 0F): Float {
                 var strValue = value.trim();
                 if (strValue.isEmpty()) return defaultValue
                 ret = strValue.toFloatOrNull() ?: defaultValue
+                return ret;
             }
         }
+
+        if (ret == 0F) return defaultValue;
         return ret;
     } catch (e: Exception) {
         return defaultValue;

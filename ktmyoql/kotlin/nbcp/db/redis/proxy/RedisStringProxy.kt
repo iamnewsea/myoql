@@ -28,10 +28,13 @@ class RedisStringProxy @JvmOverloads constructor(
 
 //    fun setKey(value: String, cacheSecond: Int = defaultCacheSeconds) = setKey("", value, cacheSecond);
 
+    /**
+     * @param cacheSecond: 0=默认值 , -1为不设置缓存时间
+     */
     fun set(key: String, value: String, cacheSecond: Int = defaultCacheSeconds) {
         var cacheKey = getFullKey(key)
 
-        if (cacheSecond <= 0) {
+        if (cacheSecond < 0) {
             stringCommand.opsForValue().set(cacheKey, value)
         } else {
             stringCommand.opsForValue().set(cacheKey, value, Duration.ofSeconds(cacheSecond.AsLong()))
@@ -39,13 +42,17 @@ class RedisStringProxy @JvmOverloads constructor(
     }
 
 
+    /**
+     * @param cacheSecond: 0=默认值 , -1为不设置缓存时间
+     */
     fun setIfAbsent(key: String, value: String, cacheSecond: Int = defaultCacheSeconds): Boolean {
         var cacheKey = getFullKey(key)
 
-        if (cacheSecond <= 0) {
+        if (cacheSecond < 0) {
             return stringCommand.opsForValue().setIfAbsent(cacheKey, value)
         } else {
-            return stringCommand.opsForValue().setIfAbsent(cacheKey, value, Duration.ofSeconds(cacheSecond.AsLong()))
+            return stringCommand.opsForValue()
+                .setIfAbsent(cacheKey, value, Duration.ofSeconds(cacheSecond.AsLong(defaultCacheSeconds.AsLong())))
         }
     }
 
@@ -71,6 +78,9 @@ class RedisNumberProxy(
 
 //    fun set(value: Long, cacheSecond: Int = defaultCacheSeconds) = setKey("",value,cacheSecond)
 
+    /**
+     * @param cacheSecond: 0=默认值 , -1为不设置缓存时间
+     */
     fun set(key: String, value: Long, cacheSecond: Int = defaultCacheSeconds) {
         var cacheKey = getFullKey(key)
         if (cacheSecond <= 0) {

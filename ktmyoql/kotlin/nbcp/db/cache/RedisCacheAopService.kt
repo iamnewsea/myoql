@@ -144,10 +144,17 @@ open class RedisCacheAopService {
         var method = signature.method
         val key = signature.declaringType.name + "." + method.name
 
+        var cacheTime = 0;
         var scheduled = method.getAnnotationsByType(Scheduled::class.java).first()
-        var cornExp = CronExpression.parse(scheduled.cron)
-        var timeSpan = cornExp.next(now)!! - now;
-        var cacheTime = timeSpan.seconds.AsInt();
+        if (scheduled.cron.HasValue) {
+            var cornExp = CronExpression.parse(scheduled.cron)
+            var timeSpan = cornExp.next(now)!! - now;
+            cacheTime = timeSpan.seconds.AsInt();
+        } else if (scheduled.fixedDelay > 0) {
+            cacheTime = (scheduled.fixedDelay / 1000).AsInt();
+        } else if (scheduled.fixedRate > 0) {
+            cacheTime = (scheduled.fixedRate / 1000).AsInt();
+        }
 
         if (cacheTime > 3) {
             cacheTime--;
