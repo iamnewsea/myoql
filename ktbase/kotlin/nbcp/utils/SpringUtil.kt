@@ -217,13 +217,6 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
             return definition;
         }
 
-
-        /**
-         * 从 resource 读取内容
-         */
-        fun readResourceContent(path: String): String {
-            return ClassPathResource(path).inputStream.readContentString();
-        }
     }
 
 //    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {

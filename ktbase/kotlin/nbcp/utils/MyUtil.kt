@@ -1,6 +1,7 @@
 package nbcp.utils
 
 import nbcp.comm.*
+import org.springframework.core.io.ClassPathResource
 import java.lang.reflect.Field
 import java.nio.charset.StandardCharsets
 import java.time.*
@@ -493,6 +494,14 @@ object MyUtil {
         return String(getFromBase64(base64), const.utf8)
     }
 
+
+
+    /**
+     * 从 resource 读取内容
+     */
+    fun readResourceContent(path: String): String {
+        return ClassPathResource(path).inputStream.readContentString();
+    }
 
 //
 //    /**
