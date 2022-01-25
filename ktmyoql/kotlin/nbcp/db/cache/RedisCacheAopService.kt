@@ -2,15 +2,16 @@ package nbcp.db.cache
 
 import nbcp.comm.*
 import nbcp.db.db
-import nbcp.utils.SpringUtil
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.reflect.MethodSignature
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.InitializingBean
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.scheduling.support.CronExpression
 import org.springframework.stereotype.Component
 import java.lang.reflect.Method
+import java.time.LocalDateTime
 
 /**
  * #数字表示参数名，如: #0 == userName
@@ -72,7 +73,7 @@ open class RedisCacheAopService {
         var ext = "";
 
         if (cache.sql.isEmpty()) {
-            ext = signature.declaringType.name;
+            ext = signature.declaringType.name + "." + method.name;
 
             try {
                 if (hasHttpRequest) {
@@ -135,4 +136,32 @@ open class RedisCacheAopService {
 
         cache.resolveWithVariable(variableMap).brokeCache();
     }
+
+    @Around("@annotation(org.springframework.scheduling.annotation.Scheduled)")
+    fun oneTask(joinPoint: ProceedingJoinPoint): Any? {
+        val now = LocalDateTime.now();
+        val signature = joinPoint.signature as MethodSignature;
+        var method = signature.method
+        val key = signature.declaringType.name + "." + method.name
+
+        var scheduled = method.getAnnotationsByType(Scheduled::class.java).first()
+        var cornExp = CronExpression.parse(scheduled.cron)
+        var timeSpan = cornExp.next(now)!! - now;
+        var cacheTime = timeSpan.seconds.AsInt();
+
+        if (cacheTime > 3) {
+            cacheTime--;
+        }
+
+        var setted =
+            db.rer_base.taskLock.setIfAbsent(key, LocalDateTime.now().toNumberString(), cacheTime);
+
+        if (setted == false) {
+            return null;
+        }
+
+        val ret = joinPoint.proceed(joinPoint.args)
+        return ret;
+    }
+
 }

@@ -3,10 +3,6 @@ package nbcp.db.redis
 import nbcp.comm.*
 import nbcp.db.db
 import nbcp.db.redis.proxy.*
-import nbcp.utils.CodeUtil
-import nbcp.utils.SpringUtil
-import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.data.redis.core.StringRedisTemplate
 
 /**
  * 缓存
@@ -22,11 +18,12 @@ class RedisBaseGroup {
 //    }
 
 
-
     //城市数据，缓存两个小时
     val cityCodeName get() = RedisStringProxy("city-code-name", 7200)
 
     val nacosInstance get() = RedisHashProxy("nacos-ins")
+
+    val taskLock get() = RedisStringProxy("lock", defaultCacheSeconds = 60)
 
     /**
      * 获取城市

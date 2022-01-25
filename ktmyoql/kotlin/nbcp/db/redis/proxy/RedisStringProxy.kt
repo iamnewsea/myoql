@@ -13,9 +13,10 @@ import java.time.Duration
  * Created by udi on 17-7-14.
  */
 class RedisStringProxy @JvmOverloads constructor(
-        group: String,
-        defaultCacheSeconds: Int = 0) :
-        BaseRedisProxy(group, defaultCacheSeconds) {
+    group: String,
+    defaultCacheSeconds: Int = 0
+) :
+    BaseRedisProxy(group, defaultCacheSeconds) {
 
 
     fun get(key: String = ""): String {
@@ -37,6 +38,17 @@ class RedisStringProxy @JvmOverloads constructor(
         }
     }
 
+
+    fun setIfAbsent(key: String, value: String, cacheSecond: Int = defaultCacheSeconds): Boolean {
+        var cacheKey = getFullKey(key)
+
+        if (cacheSecond <= 0) {
+            return stringCommand.opsForValue().setIfAbsent(cacheKey, value)
+        } else {
+            return stringCommand.opsForValue().setIfAbsent(cacheKey, value, Duration.ofSeconds(cacheSecond.AsLong()))
+        }
+    }
+
 //    fun append(key:String,value:String){
 //        var cacheKey = getFullKey(key)
 //
@@ -46,9 +58,10 @@ class RedisStringProxy @JvmOverloads constructor(
 
 
 class RedisNumberProxy(
-        group: String,
-        defaultCacheSeconds: Int = 0) :
-        BaseRedisProxy(group, defaultCacheSeconds) {
+    group: String,
+    defaultCacheSeconds: Int = 0
+) :
+    BaseRedisProxy(group, defaultCacheSeconds) {
 
     fun get(key: String = ""): Long {
         var cacheKey = getFullKey(key)
@@ -79,7 +92,7 @@ class RedisNumberProxy(
         var cacheKey = getFullKey(key)
         if (cacheKey.isEmpty()) return -1L
 
-        return  stringCommand.opsForValue().decrement(cacheKey, value.AsLong())
+        return stringCommand.opsForValue().decrement(cacheKey, value.AsLong())
     }
 }
 
