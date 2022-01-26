@@ -1,14 +1,12 @@
 package nbcp.utils
 
-import nbcp.comm.AsLocalDateTime
-import nbcp.comm.FullName
-import nbcp.comm.HasValue
-import nbcp.comm.Slice
+import nbcp.comm.*
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
 import org.reflections.scanners.TypeAnnotationsScanner
 import org.reflections.util.ClasspathHelper
 import org.reflections.util.ConfigurationBuilder
+import org.springframework.core.io.ClassPathResource
 import org.springframework.util.ClassUtils
 import java.io.File
 import java.net.JarURLConnection
@@ -227,6 +225,51 @@ object ClassUtil {
                 ret.addAll(getClassesFromFile(url.path, basePack, jarPath, filter))
             }
         }
+
+        return ret;
+    }
+
+    fun findClasses_new(basePack: String, oneClass: Class<*>, filter: ((Class<*>) -> Boolean)? = null): List<Class<*>> {
+
+        var basePackPath = basePack.replace(".", "/")
+        var ret = mutableListOf<Class<*>>();
+
+        //通过当前线程得到类加载器从而得到URL的枚举
+        var classLeader = Thread.currentThread().contextClassLoader
+        val urlEnumeration = classLeader.getResources(basePackPath)
+        var jarPath = File(
+            classLeader.getResource(oneClass.name.replace('.', '/') + ".class").path.Slice(
+                0,
+                -oneClass.name.length - ".class".length
+            )
+        ).path;
+
+        while (urlEnumeration.hasMoreElements()) {
+            val url =
+                urlEnumeration.nextElement()//得到的结果大概是：jar:file:/C:/Users/ibm/.m2/repository/junit/junit/4.12/junit-4.12.jar!/org/junit
+            val protocol = url.protocol//大概是jar
+            if ("jar".equals(protocol, ignoreCase = true)) {
+                ret.addAll(getClassesFromJar(url, basePack, filter))
+            } else if ("file".equals(protocol, ignoreCase = true)) {
+                ret.addAll(getClassesFromFile(url.path, basePack, jarPath, filter))
+            }
+        }
+
+        return ret;
+    }
+
+    fun findResources(basePath: String, filter: ((String) -> Boolean)? = null): List<String> {
+        var ret = mutableListOf<Class<*>>();
+        var url = ClassPathResource(basePath).url;
+
+
+          //大概是jar
+            if ("jar" basicSame  url.protocol ) {
+                ret.addAll(getClassesFromJar(url, basePath, "", filter))
+            } else if ("file" basicSame  url.protocol ) {
+                ret.addAll(getClassesFromFile(url.path, basePack, jarPath, filter))
+            }
+
 
         return ret;
     }
