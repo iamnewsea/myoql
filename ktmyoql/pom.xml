@@ -181,6 +181,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>${maven-assembly.version}</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -193,6 +194,17 @@
                     <appendAssemblyId>true</appendAssemblyId>
                     <finalName>${project.artifactId}-${project.version}</finalName>
                     <descriptors>../javadoc.xml</descriptors>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven-jar.version}</version>
+                <configuration>
+                    <archive>
+                        <manifestFile>resources/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
                 </configuration>
             </plugin>
 
