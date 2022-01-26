@@ -7,9 +7,14 @@ import nbcp.db.mongo.MongoSetEntityUpdateClip
 import nbcp.db.mongo.batchInsert
 import nbcp.db.mongo.updateWithEntity
 import org.bson.Document
+import org.slf4j.LoggerFactory
 import org.springframework.core.io.ClassPathResource
 
 abstract class FlywayVersionBaseService(val version: Int) {
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    }
+
     abstract fun exec();
 
     /**
@@ -43,14 +48,19 @@ abstract class FlywayVersionBaseService(val version: Int) {
      */
     fun addResourceData(tableName: String = "", autoSave: Boolean = false) {
         loadResource("flyway-v${version}", tableName, ".dat") { tableName, lines ->
+            var count = 0;
             if (autoSave) {
-                lines.map { it.FromJson<JsonMap>()!! }.forEach {
-                    db.mongo.dynamicEntity(tableName).updateWithEntity(it).exec();
-                }
+                lines.map { it.FromJson<JsonMap>()!! }
+                    .forEach {
+                        count += db.mongo.dynamicEntity(tableName).updateWithEntity(it).exec();
+                    }
+
+                logger.Important("同步:${tableName},${count}条数据")
             } else {
                 var insert = db.mongo.dynamicEntity(tableName).batchInsert()
                 insert.addEntities(lines.map { it.FromJson<JsonMap>()!! })
                 insert.exec();
+                logger.Important("添加:${tableName},${count}条数据")
             }
             return@loadResource true;
         }
