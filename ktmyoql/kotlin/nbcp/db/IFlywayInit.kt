@@ -133,13 +133,20 @@ abstract class FlywayVersionBaseService(val version: Int) {
             it.getEntities().forEach { ent ->
                 (ent as MongoBaseMetaCollection<Any>)
                     .apply {
+                        var indexes = this.entityClass.getAnnotationsByType(DbEntityIndex::class.java);
+
+                        if (indexes.any() == false) {
+                            return@apply
+                        }
+
                         this.createTable()
 
                         if (rebuild) {
                             this.dropDefineIndexes();
                         }
 
-                        this.entityClass.getAnnotationsByType(DbEntityIndex::class.java).forEach { index ->
+
+                        indexes.forEach { index ->
                             createIndex(index);
                         }
                     }
