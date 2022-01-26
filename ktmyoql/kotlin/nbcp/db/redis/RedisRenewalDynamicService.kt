@@ -44,8 +44,7 @@ class RedisRenewalDynamicService : InitializingBean {
             }
 
             redisTemplate.expire(key, cacheSecond.AsLong(), TimeUnit.SECONDS)
-        };
-
+        }
     }
 
 

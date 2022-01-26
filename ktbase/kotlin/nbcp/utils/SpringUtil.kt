@@ -41,6 +41,11 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
         private var contextField: ApplicationContext? = null
 
         @JvmStatic
+        val runningInTest :Boolean by lazy{
+            return@lazy Thread.currentThread().stackTrace.last().className == "com.intellij.rt.junit.JUnitStarter"
+        }
+
+        @JvmStatic
         val binder: Binder by lazy {
             return@lazy Binder.get(context.environment)
         }

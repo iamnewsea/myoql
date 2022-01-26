@@ -39,6 +39,11 @@ class FlywayBeanProcessor : BeanPostProcessor {
      * 同步版本
      */
     fun playFlyVersion() {
+        if (SpringUtil.runningInTest) {
+            logger.Important("单元测试环境下,跳过Flyway处理!")
+            return;
+        }
+
         var dbMaxVersion = db.mor_base.sysFlywayVersion.query()
             .where { it.isSuccess match true }
             .orderByDesc { it.version }
