@@ -23,7 +23,6 @@ class generator {
     fun work(
         targetFileName: String,  //目标文件
         basePackage: String,   //实体的包名
-        anyEntityClass: Class<*>,  //任意实体的类名
         packages: Array<String> = arrayOf(),   //import 包名
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf("EsBase")  //忽略的包名
@@ -42,7 +41,7 @@ class generator {
 
         moer_File = FileWriter(moer_Path, true);
 
-        var groups = getGroups(basePackage, anyEntityClass).filter { ignoreGroups.contains(it.key) == false };
+        var groups = getGroups(basePackage).filter { ignoreGroups.contains(it.key) == false };
         var embClasses = getEmbClasses(groups);
 
         println("开始生成 esr...")
@@ -141,11 +140,11 @@ data class moer_map(val _pname:String)
         return nameValue[0].lowercase() + nameValue.substring(1);
     }
 
-    fun getGroups(basePackage: String, anyEntityClass: Class<*>): HashMap<String, MutableList<Class<*>>> {
+    fun getGroups(basePackage: String): HashMap<String, MutableList<Class<*>>> {
         var ret = HashMap<String, MutableList<Class<*>>>();
 
 
-        ClassUtil.findClasses(basePackage, anyEntityClass)
+        ClassUtil.findClasses(basePackage)
             .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
             .forEach {
 

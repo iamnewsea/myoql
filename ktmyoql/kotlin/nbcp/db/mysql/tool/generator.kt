@@ -48,7 +48,6 @@ class generator {
     fun work(
         targetFileName: String, //目标文件
         basePackage: String,    //实体的包名
-        anyEntityClass: Class<*>, //任意实体的类名
         entityFilter: ((Class<*>) -> Boolean) = { true },
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
@@ -64,7 +63,7 @@ class generator {
         File(moer_Path).createNewFile()
 
         moer_File = FileWriter(moer_Path, true);
-        var groups = getGroups(basePackage, anyEntityClass).filter { ignoreGroups.contains(it.key) == false };
+        var groups = getGroups(basePackage).filter { ignoreGroups.contains(it.key) == false };
 
 
         println("---------------生成 dbr---------------")
@@ -147,11 +146,11 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
         return nameValue[0].lowercase() + nameValue.substring(1);
     }
 
-    fun getGroups(basePackage: String, anyEntityClass: Class<*>): HashMap<String, MutableList<Class<*>>> {
+    fun getGroups(basePackage: String): HashMap<String, MutableList<Class<*>>> {
         var ret = HashMap<String, MutableList<Class<*>>>();
 
 
-        ClassUtil.findClasses(basePackage, anyEntityClass)
+        ClassUtil.findClasses(basePackage)
             .filter { it.isAnnotationPresent(DbEntityGroup::class.java) }
             .forEach {
                 var groupName = it.getAnnotation(DbEntityGroup::class.java).value;
