@@ -23,7 +23,7 @@ object MyUtil {
 //    val OneDayMilliseconds: Int = 86400000;
     val OneDaySeconds: Int = 86400;
     val SystemTimeZoneOffsetTotalSeconds =
-        ZoneId.systemDefault().rules.getStandardOffset(Date().toInstant()).totalSeconds  //系统时区相差的秒数
+            ZoneId.systemDefault().rules.getStandardOffset(Date().toInstant()).totalSeconds  //系统时区相差的秒数
 
     @JvmStatic
     private val random = Random(LocalTime.now().nano.toLong());
@@ -42,27 +42,27 @@ object MyUtil {
      * @param keys: 可以传多个key，也可以使用 . 分隔；如果查询数组，使用 products[],products[0], products.[] 或 products.[0] 或 "products","[]"
      */
     fun getValueByWbsPath(
-        data: Any,
-        vararg keys: String,
-        ignoreCase: Boolean = false,
-        fillMap: Boolean = false,
-        fillLastArray: Boolean = false
+            data: Any,
+            vararg keys: String,
+            ignoreCase: Boolean = false,
+            fillMap: Boolean = false,
+            fillLastArray: Boolean = false
     ): Any? {
         if (keys.any() == false) return null;
 
         var unwindKeys = keys
-            .map { it.split('.') }
-            .Unwind()
-            .filter { it.HasValue }
-            .toTypedArray();
+                .map { it.split('.') }
+                .Unwind()
+                .filter { it.HasValue }
+                .toTypedArray();
 
         if (unwindKeys.size != keys.size) {
             return getValueByWbsPath(
-                data,
-                *unwindKeys,
-                ignoreCase = ignoreCase,
-                fillMap = fillMap,
-                fillLastArray = fillLastArray
+                    data,
+                    *unwindKeys,
+                    ignoreCase = ignoreCase,
+                    fillMap = fillMap,
+                    fillLastArray = fillLastArray
             );
         }
 
@@ -78,23 +78,23 @@ object MyUtil {
         if (key.endsWith("]")) {
             if (key != "[]" && key.endsWith("[]")) {
                 return getValueByWbsPath(
-                    data,
-                    key.Slice(0, -2),
-                    "[]",
-                    ignoreCase = ignoreCase,
-                    fillMap = fillMap,
-                    fillLastArray = fillLastArray
+                        data,
+                        key.Slice(0, -2),
+                        "[]",
+                        ignoreCase = ignoreCase,
+                        fillMap = fillMap,
+                        fillLastArray = fillLastArray
                 );
             }
             var start_index = key.lastIndexOf('[');
             if (start_index > 0) {
                 return getValueByWbsPath(
-                    data,
-                    key.slice(0 until start_index),
-                    key.Slice(start_index),
-                    ignoreCase = ignoreCase,
-                    fillMap = fillMap,
-                    fillLastArray = fillLastArray
+                        data,
+                        key.slice(0 until start_index),
+                        key.Slice(start_index),
+                        ignoreCase = ignoreCase,
+                        fillMap = fillMap,
+                        fillLastArray = fillLastArray
                 )
             }
         }
@@ -125,11 +125,11 @@ object MyUtil {
             if (left_keys.any() == false) return v;
 
             return getValueByWbsPath(
-                v,
-                *left_keys.toTypedArray(),
-                ignoreCase = ignoreCase,
-                fillMap = fillMap,
-                fillLastArray = fillLastArray
+                    v,
+                    *left_keys.toTypedArray(),
+                    ignoreCase = ignoreCase,
+                    fillMap = fillMap,
+                    fillLastArray = fillLastArray
             )
         } else if (key == "[]") {
             var data2: List<*>
@@ -144,16 +144,16 @@ object MyUtil {
             if (left_keys.any() == false) return data2;
 
             return data2
-                .map {
-                    getValueByWbsPath(
-                        it!!,
-                        *left_keys.toTypedArray(),
-                        ignoreCase = ignoreCase,
-                        fillMap = fillMap,
-                        fillLastArray = fillLastArray
-                    )
-                }
-                .filter { it != null }
+                    .map {
+                        getValueByWbsPath(
+                                it!!,
+                                *left_keys.toTypedArray(),
+                                ignoreCase = ignoreCase,
+                                fillMap = fillMap,
+                                fillLastArray = fillLastArray
+                        )
+                    }
+                    .filter { it != null }
 
         } else if (key.startsWith("[") && key.endsWith("]")) {
             var index = key.substring(1, key.length - 1).AsInt(-1)
@@ -185,11 +185,11 @@ object MyUtil {
             if (left_keys.any() == false) return data2;
 
             return getValueByWbsPath(
-                data2,
-                *left_keys.toTypedArray(),
-                ignoreCase = ignoreCase,
-                fillMap = fillMap,
-                fillLastArray = fillLastArray
+                    data2,
+                    *left_keys.toTypedArray(),
+                    ignoreCase = ignoreCase,
+                    fillMap = fillMap,
+                    fillLastArray = fillLastArray
             )
         }
 
@@ -202,11 +202,11 @@ object MyUtil {
         }
 
         return getValueByWbsPath(
-            v,
-            *left_keys.toTypedArray(),
-            ignoreCase = ignoreCase,
-            fillMap = fillMap,
-            fillLastArray = fillLastArray
+                v,
+                *left_keys.toTypedArray(),
+                ignoreCase = ignoreCase,
+                fillMap = fillMap,
+                fillLastArray = fillLastArray
         )
     }
 
@@ -218,18 +218,18 @@ object MyUtil {
         if (keys.any() == false) return false;
 
         var unwindKeys = keys
-            .map { it.split('.') }
-            .Unwind()
-            .map {
-                var index = it.indexOf('[')
-                if (index <= 0) {
-                    return@map listOf(it)
+                .map { it.split('.') }
+                .Unwind()
+                .map {
+                    var index = it.indexOf('[')
+                    if (index <= 0) {
+                        return@map listOf(it)
+                    }
+                    return@map listOf(it.Slice(0, index), it.Slice(index))
                 }
-                return@map listOf(it.Slice(0, index), it.Slice(index))
-            }
-            .Unwind()
-            .filter { it.HasValue }
-            .toTypedArray();
+                .Unwind()
+                .filter { it.HasValue }
+                .toTypedArray();
 
         if (unwindKeys.size != keys.size) {
             return setValueByWbsPath(data, *unwindKeys, ignoreCase = ignoreCase, value = value);
@@ -243,11 +243,11 @@ object MyUtil {
         if (beforeKeys.any()) {
             var fillLastArray = lastKey.startsWith("[") && lastKey.endsWith("]")
             objValue = getValueByWbsPath(
-                data,
-                *beforeKeys.toTypedArray(),
-                ignoreCase = ignoreCase,
-                fillMap = true,
-                fillLastArray = fillLastArray
+                    data,
+                    *beforeKeys.toTypedArray(),
+                    ignoreCase = ignoreCase,
+                    fillMap = true,
+                    fillLastArray = fillLastArray
             );
         }
 
@@ -362,34 +362,34 @@ object MyUtil {
      * https://www.w3school.com.cn/media/media_mimeref.asp
      */
     private val mimeLists = StringMap(
-        "css" to "text/css",
-        "htm" to "text/html",
-        "html" to "text/html",
-        "js" to "application/javascript",
-        "xml" to "text/xml",
-        "gif" to "image/gif",
-        "jpg" to "image/jpeg",
-        "jpeg" to "image/jpeg",
-        "png" to "image/jpeg",
-        "tiff" to "image/tiff",
-        "json" to "application/json",
-        "txt" to "text/plain",
-        "mp3" to "audio/mpeg",
-        "avi" to "video/x-msvideo",
-        "mp4" to "video/mpeg4",
-        "doc" to "application/msword",
-        "docx" to "application/msword",
-        "pdf" to "application/pdf",
-        "xls" to "application/vnd.ms-excel",
-        "xlsx" to "application/vnd.ms-excel",
-        "ppt" to "application/vnd.ms-powerpoint",
-        "exe" to "application/octet-stream",
-        "zip" to "application/zip",
-        "m3u" to "audio/x-mpegurl",
-        "svg" to "image/svg+xml",
-        "h" to "text/plain",
-        "c" to "text/plain",
-        "dll" to "application/x-msdownload"
+            "css" to "text/css",
+            "htm" to "text/html",
+            "html" to "text/html",
+            "js" to "application/javascript",
+            "xml" to "text/xml",
+            "gif" to "image/gif",
+            "jpg" to "image/jpeg",
+            "jpeg" to "image/jpeg",
+            "png" to "image/jpeg",
+            "tiff" to "image/tiff",
+            "json" to "application/json",
+            "txt" to "text/plain",
+            "mp3" to "audio/mpeg",
+            "avi" to "video/x-msvideo",
+            "mp4" to "video/mpeg4",
+            "doc" to "application/msword",
+            "docx" to "application/msword",
+            "pdf" to "application/pdf",
+            "xls" to "application/vnd.ms-excel",
+            "xlsx" to "application/vnd.ms-excel",
+            "ppt" to "application/vnd.ms-powerpoint",
+            "exe" to "application/octet-stream",
+            "zip" to "application/zip",
+            "m3u" to "audio/x-mpegurl",
+            "svg" to "image/svg+xml",
+            "h" to "text/plain",
+            "c" to "text/plain",
+            "dll" to "application/x-msdownload"
     )
 
     fun getMimeType(extName: String): String {
@@ -411,37 +411,37 @@ object MyUtil {
 
         var value = byteArray8.ToHexLowerString()
         var map = mapOf(
-            "4D546864" to "mid",
-            "FFD8FF" to "jpg",
-            "89504E47" to "png",
-            "47494638" to "gif",
-            "49492A00" to "tif",
-            "424D" to "bmp",
-            "41433130" to "dwg",
-            "38425053" to "psd",
-            "7B5C727466" to "rtf",
-            "3C3F786D6C" to "xml",
-            "68746D6C3E" to "html",
+                "4D546864" to "mid",
+                "FFD8FF" to "jpg",
+                "89504E47" to "png",
+                "47494638" to "gif",
+                "49492A00" to "tif",
+                "424D" to "bmp",
+                "41433130" to "dwg",
+                "38425053" to "psd",
+                "7B5C727466" to "rtf",
+                "3C3F786D6C" to "xml",
+                "68746D6C3E" to "html",
 //                "44656C69766572792D646174653A" to "eml",
 //                "CFAD12FEC5FD746F" to "dbx",
 //                "2142444E" to "pst",
-            "D0CF11E0" to "doc",
+                "D0CF11E0" to "doc",
 //                "5374616E64617264204A" to "mdb",
-            "FF575043" to "wpd",
+                "FF575043" to "wpd",
 //                "252150532D41646F6265" to "ps",
-            "255044462D312E" to "pdf",
-            "AC9EBD8F" to "qdf",
-            "E3828596" to "pwl",
-            "504B0304" to "zip",
-            "52617221" to "rar",
-            "57415645" to "wav",
-            "41564920" to "avi",
-            "2E7261FD" to "ram",
-            "2E524D46" to "rm",
-            "000001BA" to "mpg",
-            "000001B3" to "mpg",
-            "6D6F6F76" to "mov",
-            "3026B2758E66CF11" to "asf"
+                "255044462D312E" to "pdf",
+                "AC9EBD8F" to "qdf",
+                "E3828596" to "pwl",
+                "504B0304" to "zip",
+                "52617221" to "rar",
+                "57415645" to "wav",
+                "41564920" to "avi",
+                "2E7261FD" to "ram",
+                "2E524D46" to "rm",
+                "000001BA" to "mpg",
+                "000001B3" to "mpg",
+                "6D6F6F76" to "mov",
+                "3026B2758E66CF11" to "asf"
         );
 
         return map.filterKeys { value.startsWith(it) }.values.firstOrNull() ?: ""
@@ -449,15 +449,16 @@ object MyUtil {
 
     fun isLocalIp(Ip: String): Boolean {
         return Ip.isEmpty() || Ip.startsWith("192.168.") || Ip.startsWith("10.") || Ip.startsWith("172.") || Ip.startsWith(
-            "127."
+                "127."
         ) || Ip.startsWith("0.") || Ip.startsWith("0:")
     }
 
     /**
      * 生成大于等于0，小于指定最大值的随机数,即 [0,max)
      */
-    fun getRandomWithMaxValue(max: Int): Int {
-        return Math.abs(random.nextInt() % max);
+    fun getRandomNumber(min: Int, max: Int): Int {
+        var base = Math.abs(max - min);
+        return (random.nextInt() % base) + min
     }
 
     /**
@@ -493,7 +494,6 @@ object MyUtil {
     fun getStringContentFromBase64(base64: String): String {
         return String(getFromBase64(base64), const.utf8)
     }
-
 
 
     /**
@@ -546,9 +546,9 @@ object MyUtil {
         return type.get(entity);
     }
 
-    fun setPrivatePropertyValue(entity: Any, type: Field,value:Any?) {
+    fun setPrivatePropertyValue(entity: Any, type: Field, value: Any?) {
         type.isAccessible = true;
-        type.set(entity,value);
+        type.set(entity, value);
     }
 
     /**
@@ -576,10 +576,10 @@ object MyUtil {
      * 支持多层级设置属性值
      */
     private fun setPrivatePropertyValue(
-        entity: Any?,
-        vararg properties: String,
-        ignoreCase: Boolean = false,
-        value: Any?
+            entity: Any?,
+            vararg properties: String,
+            ignoreCase: Boolean = false,
+            value: Any?
     ): Boolean {
         if (entity == null) return false;
         if (properties.any() == false) return false;
@@ -733,8 +733,8 @@ object MyUtil {
                 return@map list.filter { it.HasValue }
             }
         }
-            .Unwind()
-            .filter { it.HasValue }
+                .Unwind()
+                .filter { it.HasValue }
 
         return ret;
     }
@@ -787,22 +787,22 @@ object MyUtil {
      * 格式化模板
      */
     fun formatTemplateJson(
-        /**
-         * 如 dbr.${group|w}
-         */
-        text: String,
-        /**
-         * 如: {group:"abc"}
-         */
-        json: StringMap,
-        /**
-         * 不是默认函数的时候,调用 funcCallback 自定义处理.
-         * 第一个参数是key, 第二个是value, 第三个参数是函数名,第四个参数是函数参数 , 返回新值
-         * 如果模板使用了函数,而没有传递,抛出异常.
-         * 如: ${id|type} ,type(id) 不是默认定义,需要通过 funcCallback 传
-         */
-        funcCallback: ((String, String?, String, String) -> String?)? = null,
-        style: String = "\${}"
+            /**
+             * 如 dbr.${group|w}
+             */
+            text: String,
+            /**
+             * 如: {group:"abc"}
+             */
+            json: StringMap,
+            /**
+             * 不是默认函数的时候,调用 funcCallback 自定义处理.
+             * 第一个参数是key, 第二个是value, 第三个参数是函数名,第四个参数是函数参数 , 返回新值
+             * 如果模板使用了函数,而没有传递,抛出异常.
+             * 如: ${id|type} ,type(id) 不是默认定义,需要通过 funcCallback 传
+             */
+            funcCallback: ((String, String?, String, String) -> String?)? = null,
+            style: String = "\${}"
     ): String {
 
         var map: StringKeyMap<((String) -> String)> = StringKeyMap()
@@ -817,76 +817,76 @@ object MyUtil {
 
 
         return text.formatWithJson(
-            json, style,
-            { key ->
-                key.split("|").first()
-            },
-            { fullKey, value ->
-                // fullKey 即 ${fullKey} == group|w
-                // 如果 json中定义了值,使用json的.如: json == {"group|w": "大写第二个字母值"}
-                // value是group的原始值 == "wx"
-                var sects = fullKey.split("|")
-                if (sects.size <= 1) {
-                    return@formatWithJson value;
-                }
-
-                // key == group
-                var key = sects.first();
-                var result: String? = value
-                sects.Skip(1).forEach { funcString ->
-                    //如：   substring:2,3
-                    var funcContent = funcString.split(":")
-                    var funcName = funcContent.first();
-                    var params = listOf<String>()
-                    if (funcContent.size > 2) {
-                        throw RuntimeException("表达式中多个冒号非法：${funcString}")
-                    } else if (funcContent.size == 2) {
-                        // 如：   substring:2,3 中的 2,2 参数部分
-                        params = funcContent[1].split(",")
+                json, style,
+                { key ->
+                    key.split("|").first()
+                },
+                { fullKey, value ->
+                    // fullKey 即 ${fullKey} == group|w
+                    // 如果 json中定义了值,使用json的.如: json == {"group|w": "大写第二个字母值"}
+                    // value是group的原始值 == "wx"
+                    var sects = fullKey.split("|")
+                    if (sects.size <= 1) {
+                        return@formatWithJson value;
                     }
 
-
-                    if (params.size == 1) {
-                        var param = params[0];
-                        var paramValue = param;
-                        if (param.startsWith("'") && param.endsWith("'")) {
-                            paramValue = param.substring(1, param.length - 1);
-                        } else if (param.IsNumberic()) {
-                            paramValue = param;
-                        } else {
-                            paramValue = json.get(param).AsString()
+                    // key == group
+                    var key = sects.first();
+                    var result: String? = value
+                    sects.Skip(1).forEach { funcString ->
+                        //如：   substring:2,3
+                        var funcContent = funcString.split(":")
+                        var funcName = funcContent.first();
+                        var params = listOf<String>()
+                        if (funcContent.size > 2) {
+                            throw RuntimeException("表达式中多个冒号非法：${funcString}")
+                        } else if (funcContent.size == 2) {
+                            // 如：   substring:2,3 中的 2,2 参数部分
+                            params = funcContent[1].split(",")
                         }
 
-                        //如果定义了默认的funcName
-                        if (value != null && map2.containsKey(funcName)) {
-                            var funcBody = map2.get(funcName)!!
-                            result = funcBody.invoke(value, paramValue)
-                        } else if (funcCallback != null) {
-                            result = funcCallback.invoke(key, value, funcName, paramValue)
-                        } else {
-                            throw RuntimeException("找不到 ${funcName}")
-                        }
-                    } else if (params.size == 0) {
-                        if (value != null && map.containsKey(funcName)) {
-                            val funcBody = map.get(funcName)!!
-                            result = funcBody.invoke(value)
-                        } else if (funcCallback != null) {
-                            result = funcCallback.invoke(key, value, funcName, "")
-                        } else {
-                            throw RuntimeException("找不到 ${funcName}")
+
+                        if (params.size == 1) {
+                            var param = params[0];
+                            var paramValue = param;
+                            if (param.startsWith("'") && param.endsWith("'")) {
+                                paramValue = param.substring(1, param.length - 1);
+                            } else if (param.IsNumberic()) {
+                                paramValue = param;
+                            } else {
+                                paramValue = json.get(param).AsString()
+                            }
+
+                            //如果定义了默认的funcName
+                            if (value != null && map2.containsKey(funcName)) {
+                                var funcBody = map2.get(funcName)!!
+                                result = funcBody.invoke(value, paramValue)
+                            } else if (funcCallback != null) {
+                                result = funcCallback.invoke(key, value, funcName, paramValue)
+                            } else {
+                                throw RuntimeException("找不到 ${funcName}")
+                            }
+                        } else if (params.size == 0) {
+                            if (value != null && map.containsKey(funcName)) {
+                                val funcBody = map.get(funcName)!!
+                                result = funcBody.invoke(value)
+                            } else if (funcCallback != null) {
+                                result = funcCallback.invoke(key, value, funcName, "")
+                            } else {
+                                throw RuntimeException("找不到 ${funcName}")
+                            }
+
                         }
 
+                        return@forEach
                     }
 
-                    return@forEach
-                }
+                    if (result == null) {
+                        throw RuntimeException("无法处理 ${fullKey}")
+                    }
 
-                if (result == null) {
-                    throw RuntimeException("无法处理 ${fullKey}")
-                }
-
-                return@formatWithJson result!!
-            });
+                    return@formatWithJson result!!
+                });
     }
 
 
@@ -909,10 +909,10 @@ object MyUtil {
 
         // + / = 替换为： - * ~
         return Base64.getEncoder()
-            .encodeToString(encrypt)
-            .replace("+", "-")
-            .replace("/", "*")
-            .replace("=", "~") + "." + dt
+                .encodeToString(encrypt)
+                .replace("+", "-")
+                .replace("/", "*")
+                .replace("=", "~") + "." + dt
     }
 
 
@@ -927,16 +927,16 @@ object MyUtil {
         val dotIndex = encryptWithPublicSecretValue.indexOf(".")
         if (dotIndex <= 0) throw RuntimeException("非法值")
         val oriValue = Base64.getDecoder().decode(
-            encryptWithPublicSecretValue.substring(0, dotIndex)
-                .replace("-", "+")
-                .replace("*", "/")
-                .replace("~", "=")
+                encryptWithPublicSecretValue.substring(0, dotIndex)
+                        .replace("-", "+")
+                        .replace("*", "/")
+                        .replace("~", "=")
         )
         val dtStringValue = encryptWithPublicSecretValue.substring(dotIndex + 1)
         val secretByte = Base64.getDecoder().decode(privateSecret)
         val oriStrings =
-            String(RSARawUtil.decryptByPrivateKey(oriValue, secretByte), StandardCharsets.UTF_8).split("\n")
-                .toTypedArray()
+                String(RSARawUtil.decryptByPrivateKey(oriValue, secretByte), StandardCharsets.UTF_8).split("\n")
+                        .toTypedArray()
         if (oriStrings.size < 3) throw RuntimeException("非法值")
         if (dtStringValue != oriStrings[1]) {
             throw RuntimeException("非法值")

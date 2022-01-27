@@ -37,32 +37,32 @@ open class SnowFlakeRedisService {
      */
     @JvmOverloads
     fun getSnowFlakeMachineId(
-        namespaceId: String,
-        serviceName: String,
-        ip: String,
-        port: Int = 80,
-        group: String = "DEFAULT_GROUP"
+            namespaceId: String,
+            serviceName: String,
+            ip: String,
+            port: Int = 80,
+            group: String = "DEFAULT_GROUP"
     ): Int {
 
         val nacosInstancesIpPort =
-            nacosService.getNacosInstances("", namespaceId, serviceName, group)
-                .map { "${it.ip}:${it.port}" }
-                .toMutableList()
+                nacosService.getNacosInstances("", namespaceId, serviceName, group)
+                        .map { "${it.ip}:${it.port}" }
+                        .toMutableList()
 
         var localUsedIpPort = "${ip}:${port}"
 
         if (ip.isEmpty()) {
             localUsedIpPort = nacosInstancesIpPort
-                .intersect(HttpUtil.localIpAddresses.map { "${it}:${port}" })
-                .apply {
-                    //随机一个 500-1000之间的id
-                    if (this.size != 1) {
-                        val machineId = 500 + MyUtil.getRandomWithMaxValue(500);
-                        SpringUtil.getBean<SnowFlake>().machineId = machineId;
-                        return machineId
+                    .intersect(HttpUtil.localIpAddresses.map { "${it}:${port}" })
+                    .apply {
+                        //随机一个 500-1000之间的id
+                        if (this.size != 1) {
+                            val machineId = MyUtil.getRandomNumber(500, 1000);
+                            SpringUtil.getBean<SnowFlake>().machineId = machineId;
+                            return machineId
+                        }
                     }
-                }
-                .first();
+                    .first();
         }
 
         if (nacosInstancesIpPort.contains(localUsedIpPort) == false) {
@@ -73,8 +73,8 @@ open class SnowFlakeRedisService {
         val appName = namespaceId + "-" + serviceName;
         //第一次初始化应用。
         val redisInstances = db.rer_base.nacosInstance.getMap(appName)
-            .mapValues { it.value.AsInt() }
-            .toMutableMap()
+                .mapValues { it.value.AsInt() }
+                .toMutableMap()
 
 
         if (redisInstances.isEmpty() || !redisInstances.containsKey(localUsedIpPort)) {
@@ -85,7 +85,7 @@ open class SnowFlakeRedisService {
         var machineId = redisInstances.get(localUsedIpPort).AsInt();
         //先设置到自己。
         if (machineId == 0) {
-            machineId = 500 + MyUtil.getRandomWithMaxValue(500);
+            machineId = MyUtil.getRandomNumber(500, 1000);
         }
 
         SpringUtil.getBean<SnowFlake>().machineId = machineId;
@@ -104,7 +104,7 @@ open class SnowFlakeRedisService {
         redisNacosInstanceNewData.filter { it.value == 0 }.keys.forEach { ipPort ->
             var randomId = 0;
             (1..3).forEach {
-                randomId = 100 + MyUtil.getRandomWithMaxValue(400);
+                randomId = MyUtil.getRandomNumber(100, 500);
                 if (usedId.contains(randomId) == false) {
                     return@forEach
                 }

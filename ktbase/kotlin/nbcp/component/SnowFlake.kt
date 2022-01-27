@@ -57,7 +57,7 @@ class SnowFlake : InitializingBean {
     /**
      * 机器标识Id, 默认为1 ， 范围：1 - 1023
      */
-    var machineId: Int = 100 + MyUtil.getRandomWithMaxValue(900);
+    var machineId: Int = MyUtil.getRandomNumber(100, 1000);
 
     private var sequence = 0L //序列号
     private var lastStmp = -1L //上一次时间戳
@@ -93,7 +93,7 @@ class SnowFlake : InitializingBean {
         lastStmp = currStmp
 
         return (currStmp - START_STMP) shl TIMESTMP_LEFT or
-            (machineId shl MACHINE_LEFT).toLong() or
-            sequence
+                (machineId shl MACHINE_LEFT).toLong() or
+                sequence
     }
 }

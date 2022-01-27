@@ -15,7 +15,7 @@ class TestTime : TestBase() {
     @Test
     fun TestSummary() {
         var t = Duration.ofNanos(
-            MyUtil.getRandomWithMaxValue(999999).AsLong() * MyUtil.getRandomWithMaxValue(999999).AsLong()
+            MyUtil.getRandomNumber(0,999999).AsLong() * MyUtil.getRandomNumber(0,999999).AsLong()
         )
         println(t.toSummary())
     }
