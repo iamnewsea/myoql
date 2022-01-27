@@ -14,9 +14,8 @@ class tool : TestBase() {
         var path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0];
 
         nbcp.db.mysql.tool.generator().work(
-            File(path).parentFile.path + "/ktmyoql/kotlin/nbcp/db/sql/dbr_base_tables.kt",
-            "nbcp.db.sql.entity.",
-            s_city::class.java
+                File(path).parentFile.path + "/ktmyoql/kotlin/nbcp/db/sql/dbr_base_tables.kt",
+                "nbcp.db.sql.entity."
         )
     }
 
@@ -25,11 +24,8 @@ class tool : TestBase() {
         val path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0]
 
         nbcp.db.mongo.tool.generator().work(
-            File(path).parentFile.path + "/ktmyoql/kotlin/nbcp/db/mongo/mor_base_tables.kt",
-            "nbcp.db.mongo.entity.",
-            s_city::class.java,
-            arrayOf(),
-            StringMap(), listOf()
+                File(path).parentFile.path + "/ktmyoql/kotlin/nbcp/db/mongo/mor_base_tables.kt",
+                "nbcp.db.mongo.entity."
         )
     }
 

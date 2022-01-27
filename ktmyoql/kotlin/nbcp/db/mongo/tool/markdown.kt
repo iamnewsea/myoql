@@ -17,14 +17,14 @@ class markdown {
 
     private lateinit var moer_File: FileWriter
 
-    fun work(targetFileName: String,basePackage:String,nameMapping:StringMap) {
+    fun work(targetFileName: String, basePackage: String, nameMapping: StringMap) {
         this.nameMapping = nameMapping;
 
         var p = File.separator;
 
 //        var path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0]
 //        var moer_Path = File(path).parentFile.path + "/shop-orm/kotlin/nbcp/db/mongo/mor_tables.kt".replace("/", p);
-        var moer_Path = targetFileName.replace("/", p).replace("\\",p);
+        var moer_Path = targetFileName.replace("/", p).replace("\\", p);
 
 
         File(moer_Path).delete();
@@ -35,7 +35,7 @@ class markdown {
         var groups = getGroups(basePackage);
         var embClasses = getEmbClasses(groups);
         var enums = getEnums(groups);
-        enums.addAll(getEnums(hashMapOf("" to embClasses)));
+        enums.addAll(getEnums(mutableMapOf("" to embClasses)));
 
         println("---------------生成 markdown---------------")
         writeToFile("""
@@ -168,16 +168,16 @@ body table thead th{
 
     fun getEntityName(name: String): String {
         var nameValue = name;
-        nameMapping.forEach{
-            nameValue = nameValue.replace(it.key,it.value)
+        nameMapping.forEach {
+            nameValue = nameValue.replace(it.key, it.value)
         }
         return nameValue[0].lowercase() + nameValue.substring(1);
     }
 
-    fun getGroups(basePackage:String): HashMap<String, MutableList<Class<*>>> {
-        var ret = HashMap<String, MutableList<Class<*>>>();
+    fun getGroups(basePackage: String): MutableMap<String, MutableList<Class<*>>> {
+        var ret = mutableMapOf<String, MutableList<Class<*>>>();
 
-        ClassUtil.getClassesWithAnnotationType(basePackage, DbEntityGroup::class.java )
+        ClassUtil.getClassesWithAnnotationType(basePackage, DbEntityGroup::class.java)
                 .forEach {
                     var groupName = it.getAnnotation(DbEntityGroup::class.java).value;
 
@@ -187,8 +187,6 @@ body table thead th{
 
                     ret[groupName]!!.add(it)
                 }
-
-
         return ret
     }
 
@@ -254,26 +252,17 @@ body table thead th{
         return ret.distinctBy { it.name }
     }
 
-    fun getEmbClasses(groups: HashMap<String, MutableList<Class<*>>>): MutableList<Class<*>> {
-        var list = mutableListOf<Class<*>>()
-
-        groups.values.forEach {
-            it.forEach {
-                findEmbClasses(it).forEach {
-
-                    if (list.map { it.name }.contains(it.name) == false) {
-                        list.add(it);
-                    }
-
+    fun getEmbClasses(groups: MutableMap<String, out List<Class<*>>>): List<Class<*>> {
+        return groups.values.Unwind()
+                .map {
+                    return@map findEmbClasses(it)
                 }
-            }
-
-        }
-
-        return list;
+                .Unwind()
+                .distinctBy { it.name }
+                .sortedBy { it.name }
     }
 
-    fun getEnums(groups: HashMap<String, MutableList<Class<*>>>): MutableList<Class<*>> {
+    fun getEnums(groups: MutableMap<String, out List<Class<*>>>): MutableList<Class<*>> {
         var list = mutableListOf<Class<*>>()
 
         groups.values.forEach {
@@ -455,7 +444,7 @@ ${props.joinToString("\n")}
 //        var entityVarName = getEntityName(entTypeName)
         var dbName = entType.getAnnotation(DbName::class.java)?.value ?: ""
 
-        if( dbName.isEmpty()) {
+        if (dbName.isEmpty()) {
             dbName = MyUtil.getSmallCamelCase(entType.simpleName)
         }
 

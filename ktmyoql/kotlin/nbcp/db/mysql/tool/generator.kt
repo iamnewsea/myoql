@@ -211,23 +211,14 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
         return ret.distinctBy { it.name }
     }
 
-    fun getEmbClasses(groups: HashMap<String, MutableList<Class<*>>>): MutableList<Class<*>> {
-        var list = mutableListOf<Class<*>>()
-
-        groups.values.forEach {
-            it.forEach {
-                findEmbClasses(it).forEach {
-
-                    if (list.map { it.name }.contains(it.name) == false) {
-                        list.add(it);
-                    }
-
+    fun getEmbClasses(groups: HashMap<String, MutableList<Class<*>>>): List<Class<*>> {
+        return groups.values.Unwind()
+                .map {
+                    return@map findEmbClasses(it)
                 }
-            }
-
-        }
-
-        return list;
+                .Unwind()
+                .distinctBy { it.name }
+                .sortedBy { it.name }
     }
 
     fun getEntityClassName(entTypeName: String): String {
