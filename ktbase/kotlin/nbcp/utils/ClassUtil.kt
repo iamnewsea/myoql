@@ -8,6 +8,7 @@ import org.reflections.util.ClasspathHelper
 import org.reflections.util.ConfigurationBuilder
 import org.springframework.core.io.ClassPathResource
 import org.springframework.util.ClassUtils
+import sun.net.www.protocol.file.FileURLConnection
 import java.io.File
 import java.net.JarURLConnection
 import java.net.URL
@@ -202,36 +203,40 @@ object ClassUtil {
      */
     fun findClasses(basePack: String, filter: ((String) -> Boolean)? = null): List<Class<*>> {
 
-        var basePackPath = basePack.replace(".", "/")
+        var basePackPath = basePack.replace(".", "/").trim('/');
         var ret = mutableListOf<Class<*>>();
         var url = ClassPathResource(basePackPath).url; //得到的结果大概是：jar:file:/C:/Users/ibm/.m2/repository/junit/junit/4.12/junit-4.12.jar!/org/junit
 
-        getResourcesFromJar(url, basePack, { jarEntryName ->
+        findResources(url, basePack, { jarEntryName ->
             //这里我们需要过滤不是class文件和不在basePack包名下的类
             if (!jarEntryName.endsWith(".class")) {
-                return@getResourcesFromJar false
+                return@findResources false
             }
-            val className = jarEntryName.Slice(0, -".class".length).replace('/', '.', false);
+            val className = jarEntryName.Slice(0, -".class".length)
+                    .replace('/', '.')
 
             if (basePack.HasValue && className.startsWith(basePack) == false) {
-                return@getResourcesFromJar false
+                return@findResources false
             }
 
             if (filter != null && !filter.invoke(className)) {
-                return@getResourcesFromJar false;
+                return@findResources false;
             }
 
             val cls = Class.forName(className)
             ret.add(cls);
-            return@getResourcesFromJar true
+            return@findResources true
         })
         return ret;
     }
 
 
+    /**
+     * @param basePath: 前后不带/
+     */
     fun findResources(basePath: String, filter: ((String) -> Boolean)? = null): List<String> {
         var url = ClassPathResource(basePath).url;
-        return getResourcesFromJar(url, basePath, filter)
+        return findResources(url, basePath.trim('/'), filter)
     }
 
     private fun getClassName(fullPath: String, basePack: String, jarPath: String): String {
@@ -288,33 +293,100 @@ object ClassUtil {
 //        return list;
 //    }
 
-    private fun getResourcesFromJar(url: URL, basePack: String, filter: ((String) -> Boolean)? = null): List<String> {
+    fun findResources(url: URL, basePath: String, filter: ((String) -> Boolean)? = null): List<String> {
         //转换为JarURLConnection
-        val connection = url.openConnection() as JarURLConnection?
+        val connection = url.openConnection()
         if (connection == null) {
             return listOf();
         }
 
-        val jarFile = connection.jarFile
-        if (jarFile == null) {
-            return listOf();
-        }
-
-
-        var list = mutableListOf<String>()
-        //得到该jar文件下面的类实体
-        val jarEntryEnumeration = jarFile.entries()
-        while (jarEntryEnumeration.hasMoreElements()) {
-            val entry = jarEntryEnumeration.nextElement()
-            val jarEntryName = entry.getName()
-
-
-            if (filter?.invoke(jarEntryName) ?: true) {
-                list.add(jarEntryName);
+        if (connection is JarURLConnection) {
+            val jarFile = connection.jarFile
+            if (jarFile == null) {
+                return listOf();
             }
+
+            var list = mutableListOf<String>()
+            //得到该jar文件下面的类实体
+            val jarEntryEnumeration = jarFile.entries()
+            while (jarEntryEnumeration.hasMoreElements()) {
+                val entry = jarEntryEnumeration.nextElement()
+                val jarEntryName = entry.getName()
+
+                if (jarEntryName.startsWith(basePath) == false) {
+                    continue
+                }
+
+
+                if (filter?.invoke(jarEntryName) ?: true) {
+                    list.add(jarEntryName);
+                }
+            }
+            return list;
+        } else if (connection is FileURLConnection) {
+            var list = mutableListOf<String>()
+            var base = url.file.split("/target/classes/")[1].replace("/", ".")
+
+            url.openConnection().inputStream.readContentString()
+                    .split("\n")
+                    .filter { it.HasValue }
+                    .forEach { it ->
+                        var jarClassName = base + "/" + it;
+
+                        if (filter?.invoke(jarClassName) ?: true) {
+                            list.add(jarClassName);
+                        }
+                    }
+            return list;
         }
 
-        return list;
+        throw java.lang.RuntimeException("不识别的类型:${connection::class.java.name}!")
     }
 
+
+//    private fun getClassesFromFile(
+//            fullPath: String,
+//            basePack: String,
+//            filter: ((Class<*>) -> Boolean)? = null
+//    ): List<Class<*>> {
+//
+//        //通过当前线程得到类加载器从而得到URL的枚举
+//        var classLeader = Thread.currentThread().contextClassLoader
+//        var jarPath = File(
+//                classLeader.getResource(basePack.replace('.', '/') + ".class").path.Slice(
+//                        0,
+//                        -basePack.length - ".class".length
+//                )
+//        ).path;
+//
+//
+//        var list = mutableListOf<Class<*>>()
+//        var className = ""
+//        var file = File(fullPath)
+//        if (file.isFile) {
+//            className = getClassName(file.name, basePack, jarPath);
+//            if (className.HasValue) {
+//                var cls = Class.forName(className)
+//                if (filter?.invoke(cls) ?: true) {
+//                    list.add(cls);
+//                }
+//            }
+//            return list;
+//        } else {
+//            file.listFiles().forEach {
+//                if (it.isFile) {
+//                    className = getClassName(it.path, basePack, jarPath);
+//                    if (className.HasValue) {
+//                        var cls = Class.forName(className);
+//                        if (filter?.invoke(cls) ?: true) {
+//                            list.add(cls);
+//                        }
+//                    }
+//                } else {
+//                    list.addAll(getClassesFromFile(it.path, basePack, jarPath, filter))
+//                }
+//            }
+//        }
+//        return list;
+//    }
 }
