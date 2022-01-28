@@ -203,21 +203,20 @@ object ClassUtil {
      */
     fun findClasses(basePack: String, filter: ((String) -> Boolean)? = null): List<Class<*>> {
 
-        var basePackPath = basePack.replace(".", "/").trim('/');
+        var baseResourcePath = basePack.replace(".", "/").trim('/');
         var ret = mutableListOf<Class<*>>();
-        var url = ClassPathResource(basePackPath).url; //得到的结果大概是：jar:file:/C:/Users/ibm/.m2/repository/junit/junit/4.12/junit-4.12.jar!/org/junit
+        var url = ClassPathResource(baseResourcePath).url; //得到的结果大概是：jar:file:/C:/Users/ibm/.m2/repository/junit/junit/4.12/junit-4.12.jar!/org/junit
 
-        findResources(url, basePack, { jarEntryName ->
-            //这里我们需要过滤不是class文件和不在basePack包名下的类
+        findResources(url, baseResourcePath, { jarEntryName ->
             if (!jarEntryName.endsWith(".class")) {
+                //如果是包名
+                ret.addAll(findClasses(jarEntryName, filter))
+
                 return@findResources false
             }
+
             val className = jarEntryName.Slice(0, -".class".length)
                     .replace('/', '.')
-
-            if (basePack.HasValue && className.startsWith(basePack) == false) {
-                return@findResources false
-            }
 
             if (filter != null && !filter.invoke(className)) {
                 return@findResources false;
@@ -325,7 +324,7 @@ object ClassUtil {
             return list;
         } else if (connection is FileURLConnection) {
             var list = mutableListOf<String>()
-            var base = url.file.split("/target/classes/")[1].replace("/", ".")
+            var base = url.file.split("/target/classes/")[1]
 
             url.openConnection().inputStream.readContentString()
                     .split("\n")

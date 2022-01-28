@@ -9,7 +9,7 @@
 
 
     > 设置版本： mvn versions:set -DnewVersion=1.0.6-SNAPSHOT
-    > 发布到私服：mvn clean deploy -Dmaven.test.skip=true -e -U -am -P nancal-dev -pl ktweb 
+    > 发布到私服：mvn clean deploy -Dmaven.test.skip=true -e           -U -am -P nancal-dev -pl ktweb 
     > 发布到私服：mvn clean deploy -Dmaven.test.skip=true -e -U -am -P nancal-snapshots -pl ktweb 
 
     > mvn clean package -Dmaven.test.skip=true  -P release
