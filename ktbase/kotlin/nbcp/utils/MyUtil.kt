@@ -1,6 +1,7 @@
 package nbcp.utils
 
 import nbcp.comm.*
+import org.slf4j.LoggerFactory
 import org.springframework.core.io.ClassPathResource
 import java.lang.reflect.Field
 import java.nio.charset.StandardCharsets
@@ -19,6 +20,8 @@ import kotlin.reflect.KClass
  */
 
 object MyUtil {
+    internal val logger = LoggerFactory.getLogger(this::class.java)
+
     //    val OneHourSeconds: Int = 3600000;
 //    val OneDayMilliseconds: Int = 86400000;
     val OneDaySeconds: Int = 86400;

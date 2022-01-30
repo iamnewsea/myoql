@@ -8,8 +8,6 @@ import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-private val logger = LoggerFactory.getLogger("ktbase.MyObject.DateTimeConverter")
-
 fun Any?.AsLocalDate(): LocalDate? {
     return this.AsLocalDateTime()?.toLocalDate();
 }
@@ -107,7 +105,7 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
     try {
         return strValue.ConvertToLocalDateTime();
     } catch (e: Exception) {
-        logger.error("${strValue} 转换为日期时间时出错，返回 null", e);
+        LoggerFactory.getLogger("ktbase.AsLocalDateTime").error("${strValue} 转换为日期时间时出错，返回 null", e);
         return null
     }
 }

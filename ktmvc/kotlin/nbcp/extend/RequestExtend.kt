@@ -11,8 +11,6 @@ import org.springframework.web.servlet.HandlerMapping
 import java.lang.RuntimeException
 import javax.servlet.http.HttpServletRequest
 
-internal val logger = LoggerFactory.getLogger("nbcp.web.MyMvcHelper")
-
 
 /**
  * 判断是否是八进制类型：
@@ -290,7 +288,7 @@ fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>, headers: L
             requestOrigin.contains("127.0.0");
 
     if (allow == false) {
-        logger.warn("系统忽略未允许的跨域请求源:${requestOrigin_Ori}")
+        LoggerFactory.getLogger("ktmvc.getCorsResponseMap").warn("系统忽略未允许的跨域请求源:${requestOrigin_Ori}")
         return retMap;
     }
 
