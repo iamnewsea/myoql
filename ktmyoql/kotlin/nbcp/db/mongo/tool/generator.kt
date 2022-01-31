@@ -34,6 +34,7 @@ class generator {
     fun work(
             targetFileName: String,  //目标文件
             basePackage: String,   //实体的包名
+            packageName:String = "nbcp.db.mongo.table",
             packages: Array<String> = arrayOf(),   //import 包名
             nameMapping: StringMap = StringMap(), // 名称转换
             ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
@@ -58,7 +59,7 @@ class generator {
         println("开始生成 mor...")
 
         writeToFile(
-                """package nbcp.db.mongo.table
+                """package ${packageName}
 
 import nbcp.db.*
 import nbcp.db.mongo.*

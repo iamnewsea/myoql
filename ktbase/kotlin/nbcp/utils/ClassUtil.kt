@@ -208,6 +208,11 @@ object ClassUtil {
         var url = ClassPathResource(baseResourcePath).url; //得到的结果大概是：jar:file:/C:/Users/ibm/.m2/repository/junit/junit/4.12/junit-4.12.jar!/org/junit
 
         findResources(url, baseResourcePath, { jarEntryName ->
+            //如果是死循环,则停止
+            if (jarEntryName == basePack || jarEntryName == baseResourcePath) {
+                return@findResources false
+            }
+
             if (!jarEntryName.endsWith(".class")) {
                 //如果是包名
                 ret.addAll(findClasses(jarEntryName, filter))
