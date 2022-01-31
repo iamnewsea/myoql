@@ -1,4 +1,4 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=nbcp.MyWebInitConfig\
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=nbcp.KotlinWebExtendConfig\
 ,nbcp.config.MySwaggerConfig\
 ,nbcp.base.filter.MyOqlCrossFilter\
 ,nbcp.base.filter.MyAllFilter

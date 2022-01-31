@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component
 @Component
 
 @ConditionalOnClass(StringRedisTemplate::class)
-@Import(value=[RedisDataSource::class])
+//@Import(value=[RedisDataSource::class])
 class MyOqlRedisBeanConfig : BeanPostProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

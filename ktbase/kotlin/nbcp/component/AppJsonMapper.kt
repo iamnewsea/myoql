@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Primary
-@Component()
+@Component
 class AppJsonMapper : BaseJsonMapper(), InitializingBean {
 
     override fun afterPropertiesSet() {

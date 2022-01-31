@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component
 import javax.sql.DataSource
 
 @Component
-@Import(JsonMapRowMapper::class)
+//@Import(JsonMapRowMapper::class)
 @ConditionalOnClass(value = arrayOf(JdbcTemplate::class))
 class MySqlDataSourceConfig {
     companion object {

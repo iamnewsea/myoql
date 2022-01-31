@@ -38,29 +38,6 @@ import org.springframework.core.type.filter.AssignableTypeFilter
 import org.springframework.stereotype.Component
 
 @Configuration
-@Import(
-    value = [
-        SqlEntityCollector::class,
-        MongoEntityCollector::class,
-        EsEntityCollector::class,
-
-        MyOqlMongoBeanConfig::class,
-        MyOqlJdbcBeanConfig::class,
-        MyOqlRabbitMqBeanConfig::class,
-        MyOqlRedisBeanConfig::class,
-
-        //下面是数据库配置
-        MySqlDataSourceConfig::class,
-        MybatisDbConfig::class,
-
-        MyBatisRedisCachePointcutAdvisor::class,
-        RedisCacheAopService::class,
-
-        MyOqlBeanImporter::class,
-        FlywayBeanProcessor::class
-    ]
-)
-//@ComponentScan("nbcp.db.mongo.event")
 class MyOqlInitConfig : BeanPostProcessor {
     companion object {
         private var inited = false;

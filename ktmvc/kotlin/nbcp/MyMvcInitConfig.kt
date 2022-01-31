@@ -39,7 +39,7 @@ import java.time.temporal.TemporalUnit
 import java.util.function.Consumer
 
 @Component
-@Import(value = [SpringUtil::class])
+//@Import(value = [SpringUtil::class])
 class MyMvcInitConfig : BeanPostProcessor {
     companion object {
         private var inited = false;

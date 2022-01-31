@@ -1,19 +1,17 @@
 package nbcp
 
-import nbcp.comm.GroupLogAopService
-import nbcp.comm.LogLevelAopService
-import nbcp.component.NacosService
-import nbcp.config.TaskConfig
-import nbcp.utils.SpringUtil
+import nbcp.db.mongo.event.*
+import nbcp.db.MyOqlBaseActionLogDefine
+import nbcp.db.MyOqlMultipleDataSourceDefine
+import nbcp.db.es.*
+import nbcp.db.sql.event.*
+import nbcp.model.IUploadFileDbService
+import org.springframework.beans.factory.BeanFactory
+import org.springframework.beans.factory.BeanFactoryAware
 import org.springframework.beans.factory.config.BeanDefinitionHolder
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
-import org.springframework.boot.context.event.ApplicationPreparedEvent
 import org.springframework.context.ResourceLoaderAware
-import org.springframework.context.annotation.ClassPathBeanDefinitionScanner
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Import
-import org.springframework.context.annotation.ImportBeanDefinitionRegistrar
-import org.springframework.context.event.EventListener
+import org.springframework.context.annotation.*
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.type.AnnotationMetadata
 import org.springframework.core.type.filter.AnnotationTypeFilter
@@ -22,9 +20,10 @@ import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 
 
-@Configuration
-class KotlinExtendInitConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAware {
+@Component
+class KotlinMyOqlExtendConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAware {
     private lateinit var resourceLoader: ResourceLoader
+
 
 
     /**
@@ -43,9 +42,41 @@ class KotlinExtendInitConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAwar
             /**
              * TODO addIncludeFilter  满足任意includeFilters会被加载
              */
+
+            addIncludeFilter(AssignableTypeFilter(IMongoEntityQuery::class.java))
+            addIncludeFilter(AssignableTypeFilter(IMongoEntityInsert::class.java))
+            addIncludeFilter(AssignableTypeFilter(IMongoEntityUpdate::class.java))
+            addIncludeFilter(AssignableTypeFilter(IMongoEntityDelete::class.java))
+            addIncludeFilter(AssignableTypeFilter(IMongoDataSource::class.java))
+            addIncludeFilter(AssignableTypeFilter(IMongoCollectionVarName::class.java))
+
+            addIncludeFilter(AssignableTypeFilter(ISqlEntitySelect::class.java))
+            addIncludeFilter(AssignableTypeFilter(ISqlEntityInsert::class.java))
+            addIncludeFilter(AssignableTypeFilter(ISqlEntityUpdate::class.java))
+            addIncludeFilter(AssignableTypeFilter(ISqlEntityDelete::class.java))
+            addIncludeFilter(AssignableTypeFilter(ISqlDataSource::class.java))
+
+
+            addIncludeFilter(AssignableTypeFilter(IEsEntityQuery::class.java))
+            addIncludeFilter(AssignableTypeFilter(IEsEntityInsert::class.java))
+            addIncludeFilter(AssignableTypeFilter(IEsEntityUpdate::class.java))
+            addIncludeFilter(AssignableTypeFilter(IEsEntityDelete::class.java))
+            addIncludeFilter(AssignableTypeFilter(IEsDataSource::class.java))
+
+
+            addIncludeFilter(AssignableTypeFilter(IUploadFileDbService::class.java))
+
+
+            addIncludeFilter(AssignableTypeFilter(MyOqlMultipleDataSourceDefine::class.java))
+            addIncludeFilter(AssignableTypeFilter(MyOqlBaseActionLogDefine::class.java))
+
             addIncludeFilter(AnnotationTypeFilter(Service::class.java))
             addIncludeFilter(AnnotationTypeFilter(Component::class.java))
             addIncludeFilter(AnnotationTypeFilter(Configuration::class.java))
+            /**
+             * TODO addExcludeFilter 同样的满足任意 excludeFilters 不会被加载
+             */
+            // addExcludeFilter(new AnnotationTypeFilter(MyService.class));
         }
 
         /**
@@ -78,3 +109,4 @@ class KotlinExtendInitConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAwar
         this.resourceLoader = resourceLoader
     }
 }
+
