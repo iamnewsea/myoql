@@ -36,6 +36,7 @@ class generator {
             basePackage: String,   //实体的包名
             packageName:String = "nbcp.db.mongo.table",
             packages: Array<String> = arrayOf(),   //import 包名
+            entityFilter: ((Class<*>) -> Boolean) = { true },
             nameMapping: StringMap = StringMap(), // 名称转换
             ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
     ) {
@@ -65,7 +66,6 @@ import nbcp.db.*
 import nbcp.db.mongo.*
 import nbcp.utils.*
 import nbcp.comm.*
-import nbcp.db.mongo.entity.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 ${packages.map { "import " + it }.joinToString(const.line_break)}
@@ -80,7 +80,8 @@ ${packages.map { "import " + it }.joinToString(const.line_break)}
         var count = 0;
         groups.forEach { group ->
             var groupName = group.key
-            var groupEntities = group.value
+            var groupEntities = group.value.filter(entityFilter);
+
 
             writeToFile(
                     """

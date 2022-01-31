@@ -48,6 +48,8 @@ class generator {
     fun work(
         targetFileName: String, //目标文件
         basePackage: String,    //实体的包名
+        packageName:String = "nbcp.db.sql.table",
+        packages: Array<String> = arrayOf(),   //import 包名
         entityFilter: ((Class<*>) -> Boolean) = { true },
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
@@ -69,16 +71,16 @@ class generator {
         println("---------------生成 dbr---------------")
 
         writeToFile(
-            """package nbcp.db.sql.table
+            """package ${packageName}
 
 import nbcp.db.*
 import nbcp.db.sql.*
 import nbcp.db.sql.entity.*
 import nbcp.db.mysql.*
-import nbcp.db.mysql.entity.*
 import nbcp.comm.*
 import nbcp.utils.*
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.*
+${packages.map { "import " + it }.joinToString(const.line_break)}
 
 //generate auto @${LocalDateTime.now().AsString()}
 """
@@ -88,10 +90,7 @@ import org.springframework.stereotype.Component
         var exts = mutableListOf<String>();
 
         groups.forEach { group ->
-            var groupEntitys = group.value.filter(entityFilter);
-            if (groupEntitys.any() == false) {
-                return@forEach
-            }
+            var groupEntities = group.value.filter(entityFilter);
 
 
             writeToFile(
@@ -100,12 +99,12 @@ import org.springframework.stereotype.Component
 @MetaDataGroup(DatabaseEnum.Sql, "${group.key}")
 class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
     override fun getEntities():Set<BaseMetaData> = setOf(${
-                    groupEntitys.map { genVarName(it).GetSafeKotlinName() }.joinToString(",")
+                    groupEntities.map { genVarName(it).GetSafeKotlinName() }.joinToString(",")
                 })
 """
             )
             println("${group.key}:")
-            groupEntitys
+            groupEntities
                 .forEach { entityType ->
                     count++;
                     println("${count.toString().padStart(2, ' ')} 生成实体：${group.key}.${entityType.simpleName}".ToTab(1))
@@ -114,7 +113,7 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 
             writeToFile("\n")
 
-            groupEntitys
+            groupEntities
                 .forEach { entityType ->
                     var item = genEntity(MyUtil.getSmallCamelCase(group.key), entityType)
 
