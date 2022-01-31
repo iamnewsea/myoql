@@ -68,7 +68,7 @@ import nbcp.comm.*
 import nbcp.db.mongo.entity.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-${packages.map { "import" + it }.joinToString(const.line_break)}
+${packages.map { "import " + it }.joinToString(const.line_break)}
 
 //generate auto @${LocalDateTime.now().AsString()}
 """
