@@ -70,9 +70,9 @@ class KotlinMyOqlExtendConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAwa
             addIncludeFilter(AssignableTypeFilter(MyOqlMultipleDataSourceDefine::class.java))
             addIncludeFilter(AssignableTypeFilter(MyOqlBaseActionLogDefine::class.java))
 
-            addIncludeFilter(AnnotationTypeFilter(Service::class.java))
-            addIncludeFilter(AnnotationTypeFilter(Component::class.java))
-            addIncludeFilter(AnnotationTypeFilter(Configuration::class.java))
+//            addIncludeFilter(AnnotationTypeFilter(Service::class.java))
+//            addIncludeFilter(AnnotationTypeFilter(Component::class.java))
+//            addIncludeFilter(AnnotationTypeFilter(Configuration::class.java))
             /**
              * TODO addExcludeFilter 同样的满足任意 excludeFilters 不会被加载
              */
