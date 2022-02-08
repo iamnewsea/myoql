@@ -23,7 +23,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass);
     }
 
-    private var pipeLines = mutableListOf<Pair<String, Any>>();
+    val pipeLines = mutableListOf<Pair<String, Any>>();
     private var skip: Int = 0;
     private var take: Int = -1;
 
