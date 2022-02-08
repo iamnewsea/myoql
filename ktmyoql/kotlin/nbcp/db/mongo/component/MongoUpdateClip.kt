@@ -1,5 +1,6 @@
 package nbcp.db.mongo
 
+import nbcp.comm.HasValue
 import nbcp.comm.Slice
 import nbcp.comm.minus
 import nbcp.comm.usingScope
@@ -204,7 +205,7 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
         updateOption.upsert(true);
         try {
             this.script = getUpdateScript(criteria, update)
-            resultDocument = mongoTemplate.findAndModify(
+            resultDocument = getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).findAndModify(
                 query,
                 update,
                 updateOption,

@@ -26,47 +26,42 @@ open class MongoClipBase(var collectionName: String) : Serializable {
      * 3. 当前作用域
      * 4. 使用默认
      */
-    val mongoTemplate: MongoTemplate
-        get() {
-            var isRead = this is MongoBaseQueryClip || this is MongoAggregateClip<*, *>;
+    fun getMongoTemplate(dataSource: String?): MongoTemplate {
+        var isRead = this is MongoBaseQueryClip || this is MongoAggregateClip<*, *>;
 
-            //配置是定海神针。
-            SpringUtil.getBean<MongoCollectionDataSource>().getDataSourceName(this.collectionName, isRead)
-                    .apply {
-                        if (this.HasValue) {
-                            var uri = SpringUtil.context.environment.getProperty("app.mongo.${this}.ds.uri")
-                            if (uri.isNullOrEmpty()) {
-                                throw RuntimeException("Mongo数据源配置项为空:app.mongo.uris.${this}");
-                            }
-                            return db.mongo.getMongoTemplateByUri(uri) ?: throw RuntimeException("创建Mongo连接失败");
-                        }
+        //配置是定海神针。
+        SpringUtil.getBean<MongoCollectionDataSource>().getDataSourceName(this.collectionName, isRead)
+            .apply {
+                if (this.HasValue) {
+                    var uri = SpringUtil.context.environment.getProperty("app.mongo.${this}.ds.uri")
+                    if (uri.isNullOrEmpty()) {
+                        throw RuntimeException("Mongo数据源配置项为空:app.mongo.uris.${this}");
                     }
+                    return db.mongo.getMongoTemplateByUri(uri) ?: throw RuntimeException("创建Mongo连接失败");
+                }
+            }
 
-            //定义动态数据源
-            db.mongo.mongoEvents.getDataSource(this.collectionName, isRead)
-                    .apply {
-                        if (this != null) {
-                            return this;
-                        }
-                    }
-
-
-            scopes.getLatest<MongoTemplateScope>()?.value
-                    .apply {
-                        if (this != null) {
-                            return this;
-                        }
-                    }
-
-            //最后不分读写
-            return SpringUtil.getBean<MongoTemplate>()
+        //定义动态数据源
+        if (dataSource.HasValue) {
+            return db.mongo.getMongoTemplateByUri(dataSource!!)!!
         }
+
+
+        scopes.getLatest<MongoTemplateScope>()?.value
+            .apply {
+                if (this != null) {
+                    return this;
+                }
+            }
+
+        //最后不分读写
+        return SpringUtil.getBean<MongoTemplate>()
+    }
 
 
     val actualTableName by lazy {
         db.mongo.mongoEvents.getActualTableName(collectionName);
     }
-
 
 
     /**
@@ -99,5 +94,5 @@ open class MongoClipBase(var collectionName: String) : Serializable {
 }
 
 interface IMongoWhere {
-    val  whereData: MongoWhereClip
+    val whereData: MongoWhereClip
 }

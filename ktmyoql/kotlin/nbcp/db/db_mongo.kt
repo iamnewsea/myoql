@@ -217,6 +217,9 @@ db.getCollection("adminRole").aggregate(
     }
 
 
+    /**
+     * 处理 ObjectId列，同时把列改为 _id 或 ._id
+     */
     fun proc_mongo_key_value(key: MongoColumnName, value: Any?): Pair<String, Any?> {
         /**
          * 只有列 = id , _id , 以 .id , ._id 结尾时，才可能转化为 ObjectId

@@ -107,7 +107,7 @@ open class ListResult<T>(
 ) : JsonResult() {
 
     var total: Int = -1
-    var data: List<T> = listOf()
+    var data: List<out T> = listOf()
     var value: Any? = null
 
     companion object {

@@ -33,19 +33,19 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName) {
         db.affectRowCount = -1;
 
         var settingResult = db.mongo.mongoEvents.onInserting(this)
-        if (settingResult.any { it.second.result == false }) {
+        if (settingResult.any { it.result.result == false }) {
             return 0;
         }
 
         var startAt = LocalDateTime.now()
         var error: Exception? = null;
         try {
-            mongoTemplate.insert(entities, this.actualTableName)
+            getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).insert(entities, this.actualTableName)
             this.executeTime = LocalDateTime.now() - startAt
 
             usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
                 settingResult.forEach {
-                    it.first.insert(this, it.second)
+                    it.event.insert(this, it.result)
                 }
             }
 

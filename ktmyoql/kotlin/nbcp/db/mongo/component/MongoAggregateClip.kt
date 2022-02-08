@@ -1,6 +1,7 @@
 package nbcp.db.mongo
 
 import nbcp.comm.*
+import nbcp.db.MyOqlOrmScope
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
@@ -227,13 +228,25 @@ cursor: {} } """
     fun toMapList(itemFunc: ((Document) -> Unit)? = null): MutableList<Document> {
         db.affectRowCount = -1;
         var queryJson = toExpression();
+
+        val settingResult = db.mongo.mongoEvents.onAggregate(this)
+        if (settingResult.any { it.result.result == false }) {
+            return mutableListOf();
+        }
+
         var result: Document? = null
         var startAt = LocalDateTime.now();
         var error: Exception? = null;
         try {
             this.script = queryJson;
-            result = mongoTemplate.executeCommand(queryJson)
+            result = getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).executeCommand(queryJson)
             this.executeTime = LocalDateTime.now() - startAt
+
+            usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
+                settingResult.forEach {
+                    it.event.aggregate(this, it.result)
+                }
+            }
         } catch (e: Exception) {
             error = e;
             throw e;

@@ -47,7 +47,8 @@ class KotlinMyOqlExtendConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAwa
             addIncludeFilter(AssignableTypeFilter(IMongoEntityInsert::class.java))
             addIncludeFilter(AssignableTypeFilter(IMongoEntityUpdate::class.java))
             addIncludeFilter(AssignableTypeFilter(IMongoEntityDelete::class.java))
-            addIncludeFilter(AssignableTypeFilter(IMongoDataSource::class.java))
+            addIncludeFilter(AssignableTypeFilter(IMongoEntityAggregate::class.java))
+//            addIncludeFilter(AssignableTypeFilter(IMongoDataSource::class.java))
             addIncludeFilter(AssignableTypeFilter(IMongoCollectionVarName::class.java))
 
             addIncludeFilter(AssignableTypeFilter(ISqlEntitySelect::class.java))

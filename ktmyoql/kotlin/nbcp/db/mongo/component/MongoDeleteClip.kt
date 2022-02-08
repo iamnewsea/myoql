@@ -78,7 +78,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
         var query = Query.query(criteria)
         try {
             this.script = getDeleteScript(criteria);
-            result = mongoTemplate.remove(query, actualTableName);
+            result = getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).remove(query, actualTableName);
             this.executeTime = LocalDateTime.now() - startAt
             ret = result.deletedCount.toInt()
             this.affectRowCount = ret;

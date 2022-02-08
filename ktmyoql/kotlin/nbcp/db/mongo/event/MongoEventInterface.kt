@@ -38,12 +38,18 @@ interface IMongoEntityDelete {
     fun delete(delete: MongoDeleteClip<*>, chain: EventChain, eventData: EventResult)
 }
 
-/**
- * 动态库使用
- */
-interface IMongoDataSource {
-    fun run(collection: String, isRead: Boolean): MongoTemplate?
+
+interface IMongoEntityAggregate {
+    fun beforeAggregate(query: MongoAggregateClip<*,out Any>): EventResult
+
+    fun aggregate(query: MongoAggregateClip<*,out Any>, eventData: EventResult)
 }
+///**
+// * 动态库使用
+// */
+//interface IMongoDataSource {
+//    fun run(collection: String, isRead: Boolean): MongoTemplate?
+//}
 
 /**
  * 变表使用

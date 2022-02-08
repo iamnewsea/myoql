@@ -30,9 +30,11 @@ class MongoEntityCollector : BeanPostProcessor {
         @JvmStatic
         val refsMap = mutableListOf<DbEntityFieldRefData>()
 
-        //注册的 Update Bean
         @JvmStatic
         val queryEvents = mutableListOf<IMongoEntityQuery>()
+
+        @JvmStatic
+        val aggregateEvents = mutableListOf<IMongoEntityAggregate>()
 
         @JvmStatic
         val insertEvents = mutableListOf<IMongoEntityInsert>()
@@ -45,8 +47,8 @@ class MongoEntityCollector : BeanPostProcessor {
         @JvmStatic
         val deleteEvents = mutableListOf<IMongoEntityDelete>()
 
-        @JvmStatic
-        val dataSources = mutableListOf<IMongoDataSource>()
+//        @JvmStatic
+//        val dataSources = mutableListOf<IMongoDataSource>()
 
         @JvmStatic
         val collectionVarNames = mutableListOf<IMongoCollectionVarName>()
@@ -113,9 +115,9 @@ class MongoEntityCollector : BeanPostProcessor {
             deleteEvents.add(bean)
         }
 
-        if (bean is IMongoDataSource) {
-            dataSources.add(bean);
-        }
+//        if (bean is IMongoDataSource) {
+//            dataSources.add(bean);
+//        }
         if (bean is IMongoCollectionVarName) {
             collectionVarNames.add(bean);
         }
@@ -184,36 +186,52 @@ class MongoEntityCollector : BeanPostProcessor {
         }
     }
 
-    fun onQuering(query: MongoBaseQueryClip): Array<Pair<IMongoEntityQuery, EventResult>> {
+    fun onQuering(query: MongoBaseQueryClip): List<QueryEventResult> {
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<IMongoEntityQuery, EventResult>>()
+        var list = mutableListOf<QueryEventResult>()
         usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
             queryEvents.ForEachExt { it, _ ->
                 var ret = it.beforeQuery(query);
                 if (!ret.result) {
                     return@ForEachExt false;
                 }
-                list.add(it to ret)
+                list.add(QueryEventResult(it, ret))
                 return@ForEachExt true
             }
         }
-        return list.toTypedArray()
+        return list
     }
 
-    fun onInserting(insert: MongoBaseInsertClip): Array<Pair<IMongoEntityInsert, EventResult>> {
+
+    fun onAggregate(query: MongoAggregateClip<*,out Any>): List<AggregateEventResult> {
         //先判断是否进行了类拦截.
-        var list = mutableListOf<Pair<IMongoEntityInsert, EventResult>>()
+        var list = mutableListOf<AggregateEventResult>()
+        usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
+            aggregateEvents.ForEachExt { it, _ ->
+                var ret = it.beforeAggregate(query);
+                if (!ret.result) {
+                    return@ForEachExt false;
+                }
+                list.add(AggregateEventResult(it, ret))
+                return@ForEachExt true
+            }
+        }
+        return list
+    }
+    fun onInserting(insert: MongoBaseInsertClip): List<InsertEventResult> {
+        //先判断是否进行了类拦截.
+        var list = mutableListOf<InsertEventResult>()
         usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
             insertEvents.ForEachExt { it, _ ->
                 var ret = it.beforeInsert(insert);
                 if (!ret.result) {
                     return@ForEachExt false;
                 }
-                list.add(it to ret)
+                list.add(InsertEventResult(it, ret))
                 return@ForEachExt true
             }
         }
-        return list.toTypedArray()
+        return list
     }
 
     fun onUpdating(update: MongoBaseUpdateClip): List<UpdateEventResult> {
@@ -256,23 +274,23 @@ class MongoEntityCollector : BeanPostProcessor {
     }
 
 
-    /**
-     * 在拦截器中获取数据源。
-     */
-    fun getDataSource(collectionName: String, isRead: Boolean): MongoTemplate? {
-        var ret: MongoTemplate? = null;
-
-        dataSources.firstOrNull { mongoDataSource ->
-            ret = mongoDataSource.run(collectionName, isRead)
-            if (ret == null) {
-                return@firstOrNull false;
-            }
-
-            return@firstOrNull true;
-        }
-
-        return ret;
-    }
+//    /**
+//     * 在拦截器中获取数据源。
+//     */
+//    fun getDataSource(collectionName: String, isRead: Boolean): MongoTemplate? {
+//        var ret: MongoTemplate? = null;
+//
+//        dataSources.firstOrNull { mongoDataSource ->
+//            ret = mongoDataSource.run(collectionName, isRead)
+//            if (ret == null) {
+//                return@firstOrNull false;
+//            }
+//
+//            return@firstOrNull true;
+//        }
+//
+//        return ret;
+//    }
 
 
     fun getActualTableName(collectionName: String): String {

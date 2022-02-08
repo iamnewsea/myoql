@@ -7,6 +7,7 @@ class MongoWhereClip : JsonMap() {
 
     /**
      * 从根级查找指定条件的值。
+     * @param column , 可能是  _id , user._id
      * @return 可能是简单类型，也可能是List类型
      */
     fun findValueFromRootLevel(column: String): Any? {

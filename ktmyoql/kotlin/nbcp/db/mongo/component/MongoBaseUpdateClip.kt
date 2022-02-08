@@ -133,7 +133,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         var result: UpdateResult? = null;
         try {
             this.script = getUpdateScript(criteria, update)
-            result = mongoTemplate.updateMulti(
+            result = getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).updateMulti(
                 query,
                 update,
                 actualTableName

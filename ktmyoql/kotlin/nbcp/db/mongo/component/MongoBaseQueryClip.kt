@@ -68,7 +68,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         db.affectRowCount = -1;
 
         val settingResult = db.mongo.mongoEvents.onQuering(this)
-        if (settingResult.any { it.second.result == false }) {
+        if (settingResult.any { it.result.result == false }) {
             return mutableListOf();
         }
 
@@ -111,7 +111,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         }
 
         if (cursor == null) {
-            cursor = mongoTemplate.find(query, Document::class.java, this.actualTableName)
+            cursor = getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).find(query, Document::class.java, this.actualTableName)
         }
 
         this.executeTime = LocalDateTime.now() - startAt
@@ -167,7 +167,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
 
             usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
                 settingResult.forEach {
-                    it.first.query(this, it.second)
+                    it.event.query(this, it.result)
                 }
             }
 
@@ -269,14 +269,26 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
      */
     fun count(): Int {
         var startAt = LocalDateTime.now();
+
         var ret = -1;
+        val settingResult = db.mongo.mongoEvents.onQuering(this)
+        if (settingResult.any { it.result.result == false }) {
+            return -1;
+        }
+
         var error: Exception? = null
         val criteria = db.mongo.getMergedMongoCriteria(whereData)
         var query = Query.query(criteria);
         try {
             this.script = getQueryScript(criteria)
-            ret = mongoTemplate.count(query, actualTableName).toInt()
+            ret = getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).count(query, actualTableName).toInt()
             this.executeTime = LocalDateTime.now() - startAt
+
+            usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
+                settingResult.forEach {
+                    it.event.query(this, it.result)
+                }
+            }
         } catch (e: Exception) {
             error = e;
             throw e;
@@ -295,13 +307,25 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     fun exists(): Boolean {
         var startAt = LocalDateTime.now();
         var ret: Boolean? = null;
+        val settingResult = db.mongo.mongoEvents.onQuering(this)
+        if (settingResult.any { it.result.result == false }) {
+            return false;
+        }
+
         val criteria = db.mongo.getMergedMongoCriteria(whereData);
         var query = Query.query(criteria);
         var error: Exception? = null;
         try {
             this.script = getQueryScript(criteria)
-            ret = mongoTemplate.exists(query, actualTableName);
+            ret = getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).exists(query, actualTableName);
             this.executeTime = LocalDateTime.now() - startAt;
+
+            usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
+                settingResult.forEach {
+                    it.event.query(this, it.result)
+                }
+            }
+
             this.affectRowCount = 1;
         } catch (e: Exception) {
             error = e

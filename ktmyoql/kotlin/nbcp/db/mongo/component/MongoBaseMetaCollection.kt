@@ -4,6 +4,7 @@ package nbcp.db.mongo
 import nbcp.comm.AllFields
 import nbcp.comm.AsString
 import nbcp.comm.FindField
+import nbcp.comm.HasValue
 import org.springframework.data.mongodb.core.query.Criteria
 import org.slf4j.LoggerFactory
 import nbcp.db.*;
@@ -16,7 +17,7 @@ typealias mongoQuery = org.springframework.data.mongodb.core.query.Query
 /**
  * mongo 元数据实体的基类
  */
-abstract class MongoBaseMetaCollection<T:Any> @JvmOverloads constructor(
+abstract class MongoBaseMetaCollection<T : Any> @JvmOverloads constructor(
     /**
      * 实体的类型
      */
@@ -43,7 +44,9 @@ abstract class MongoBaseMetaCollection<T:Any> @JvmOverloads constructor(
     }
 
     fun getMongoTemplate(): MongoTemplate {
-        return this.query().mongoTemplate;
+        val query =  this.query();
+        val settingResult = db.mongo.mongoEvents.onQuering(query);
+        return query.getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource)
     }
 
 
