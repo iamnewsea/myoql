@@ -3,7 +3,11 @@ package nbcp.db.mongo
 import nbcp.comm.*
 import org.apache.commons.collections4.map.LinkedMap
 
-class MongoWhereClip : JsonMap() {
+class MongoWhereClip() : JsonMap() {
+
+    constructor(map: Map<String, Any?>) : this() {
+        this.putAll(map)
+    }
 
     /**
      * 从根级查找指定条件的值。
