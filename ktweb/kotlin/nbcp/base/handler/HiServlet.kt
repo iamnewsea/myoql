@@ -73,7 +73,7 @@ div>span:first-child::after{content:":";display:inline-block;margin-right:6px;}
 h1{margin:0}
 hr{margin-top: 0;height: 1px;border: none;border-top: 1px dashed gray;}
 </style>""" +
-                "<h1>" + SpringUtil.context.environment.getProperty("spring.application.name") + "</h1><hr>" +
+                "<h1>" + SpringUtil.context.environment.getProperty("spring.application.name") + "</h1><hr />" +
                 json.filter { it.value.HasValue }
                     .map { "<div><span>${it.key}</span><span>${it.value}</span></div>" }
                     .joinToString(""));
