@@ -67,11 +67,12 @@ open class HiServlet {
 
         response.WriteHtmlBodyValue("""<style>
 body{padding:16px;} 
+div{margin-top:10px;} 
 div>span:first-child{font-size:14px;color:gray} 
 div>span:last-child{font-size:16px;} 
 div>span:first-child::after{content:":";display:inline-block;margin-right:6px;}
 h1{margin:0}
-hr{margin-top: 0;height: 1px;border: none;border-top: 1px dashed gray;}
+hr{height: 1px;border: none;border-top: 1px dashed gray;}
 </style>""" +
                 "<h1>" + SpringUtil.context.environment.getProperty("spring.application.name") + "</h1><hr />" +
                 json.filter { it.value.HasValue }
