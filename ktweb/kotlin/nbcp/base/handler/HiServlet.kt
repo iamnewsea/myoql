@@ -32,34 +32,27 @@ open class HiServlet {
     }
 
     private fun proc(request: HttpServletRequest, response: HttpServletResponse) {
-        val json = JsonMap();
+        val json = StringMap();
 
         val jarFile = ClassUtil.getStartingJarFile();
         json["应用名称"] = SpringUtil.context.environment.getProperty("app.cn_name");
-        json["spring.application.name"] = SpringUtil.context.environment.getProperty("spring.application.name");
         json["当前配置"] = SpringUtil.context.environment.getProperty("spring.profiles.active");
         json["产品线"] =
-                SpringUtil.context.environment.getProperty("app.product-line.name") + " : " +
-                        SpringUtil.context.environment.getProperty("app.product-line.code");
+            SpringUtil.context.environment.getProperty("app.product-line.name") + "(" +
+                    SpringUtil.context.environment.getProperty("app.product-line.code") + ")";
 
-        json["启动文件名"] = jarFile.name;
-        json["启动文件生成时间"] = Date(jarFile.lastModified()).AsString();
-        json["登录用户Id"] = request.UserId;
-        json["登录用户名称"] = request.UserName;
+        json["启动文件"] = jarFile.name;
+        json["启动文件时间"] = Date(jarFile.lastModified()).AsString();
+//        json["登录用户Id"] = request.UserId;
+//        json["登录用户名称"] = request.UserName;
         json["JAVA_VERSION"] = System.getenv("JAVA_VERSION");
         json["JAVA_OPTS"] = System.getenv("JAVA_OPTS");
         json["POD名称"] = System.getenv("HOSTNAME");
 
         json["镜像版本号"] = System.getenv("DOCKER_IMAGE_VERSION").AsString();
+        json["Git提交Id"] = System.getenv("GIT_COMMIT_ID").AsString();
+        json["Git提交时间"] = System.getenv("GIT_COMMIT_TIME").AsString();
 
-        val gitCommitId = System.getenv("GIT_COMMIT_ID").AsString();
-        if (gitCommitId.HasValue) {
-            json["Git提交Id"] = gitCommitId;
-        }
-        val gitCommitTime = System.getenv("GIT_COMMIT_TIME").AsString();
-        if (gitCommitTime.HasValue) {
-            json["Git提交时间"] = gitCommitTime;
-        }
 
 //        val sleep = (request.findParameterValue("sleep").AsFloat() * 1000).toLong();
 //        if (sleep > 0 && sleep <= 3600_000) {
@@ -72,10 +65,18 @@ open class HiServlet {
         }
 
 
-        response.WriteHtmlBodyValue("""<style>div{margin:10px;} span{margin:5px;font-size:16px;display:inline-block}</style>""" +
-                "<div>" + json
-                .map { "<span>" + it.key + " : " + it.value.AsString() + "</span>" }
-                .joinToString("<br />") + "</div>");
+        response.WriteHtmlBodyValue("""<style>
+body{padding:16px;} 
+div>span:first-child{font-size:14px;color:gray} 
+div>span:last-child{font-size:16px;} 
+div>span:first-child::after{content:":",display:inline-block;margin-right:6px;}
+h1{margin:0}
+hr{margin-top: 0;height: 1px;border: none;border-top: 1px dashed gray;}
+</style>""" +
+                "<h1>" + SpringUtil.context.environment.getProperty("spring.application.name") + "</h1><hr>" +
+                json.filter { it.value.HasValue }
+                    .map { "<div><span>${it.key}</span><span>${it.value}</span></div>" }
+                    .joinToString(""));
     }
 }
 
