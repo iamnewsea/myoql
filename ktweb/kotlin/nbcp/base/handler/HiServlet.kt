@@ -69,7 +69,7 @@ open class HiServlet {
 body{padding:16px;} 
 div>span:first-child{font-size:14px;color:gray} 
 div>span:last-child{font-size:16px;} 
-div>span:first-child::after{content:":",display:inline-block;margin-right:6px;}
+div>span:first-child::after{content:":";display:inline-block;margin-right:6px;}
 h1{margin:0}
 hr{margin-top: 0;height: 1px;border: none;border-top: 1px dashed gray;}
 </style>""" +
