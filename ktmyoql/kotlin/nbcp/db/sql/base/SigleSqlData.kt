@@ -32,7 +32,7 @@ open class SqlParameterData constructor() : BaseAliasSqlSect() {
     var values: JsonMap = JsonMap();
 
     constructor(
-            // 使用 :变量名 表示 变量
+            // 使用 冒号+变量名  :变量名 表示 变量
             expression: String,
 
             // JsonMap 的 key = corp_id

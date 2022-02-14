@@ -8,6 +8,7 @@ import nbcp.db.db
 import nbcp.db.mongo.MongoEntityCollector
 import nbcp.db.sql.component.JsonMapRowMapper
 import nbcp.utils.Md5Util
+import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 
@@ -106,8 +107,13 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
         return retJsons.map { JsonMap(it) }.toMutableList()
     }
 
-    protected  open fun afterQuery(retJsons: List<MutableMap<String, Any?>>){
+    protected open fun afterQuery(retJsons: List<MutableMap<String, Any?>>) {
 
+    }
+
+
+    val rowMapper: JsonMapRowMapper by lazy {
+        return@lazy SpringUtil.getBean()
     }
 
     protected open fun doQuery(
@@ -117,7 +123,7 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
         return jdbcTemplate.query(
             sqlParameter.expression,
             sqlParameter.values,
-            JsonMapRowMapper()
+            rowMapper
         ) as List<MutableMap<String, Any?>>
     }
 
