@@ -56,12 +56,17 @@ class MyOqlMongoBeanConfig : BeanPostProcessor {
                 urlJson.queryJson.put("uuidRepresentation", "STANDARD")
 
                 if (bean.uri.startsWith("mongodb://") && bean.uri.contains('@')) {
-                    var userName = bean.uri.split('@')
-                        .first()
-                        .split("mongodb://")
-                        .last()
-                        .split(':')
-                        .first()
+                    var userName = "";
+
+                    try {
+                        userName = bean.uri.split('@')
+                            .first()
+                            .split("mongodb://")
+                            .last()
+                            .split(':')
+                            .first()
+                    } finally {
+                    }
 
                     if (userName == "root" && !urlJson.queryJson.containsKey("authSource")) {
                         urlJson.queryJson.put("authSource", "admin")
