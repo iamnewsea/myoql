@@ -18,7 +18,8 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
 ) : MongoClipBase(moerEntity.tableName) {
 
     private var requestJson: Map<String, Any?> = mapOf()
-    private var setMaxPath = setOf<String>()
+    private var setMaxPathField = mutableSetOf<String>()
+    private var setWholeFieldType = mutableSetOf<Class<*>>()
 
     /*
     以 duty 列为例 ：
@@ -37,7 +38,12 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
     private var unsetColumns = mutableSetOf<String>("id", "createAt")
 
     fun setMaxPath(maxPath: String): MongoSetEntityUpdateClip<M, E> {
-        this.setMaxPath(maxPath);
+        this.setMaxPathField.add(maxPath);
+        return this;
+    }
+
+    fun setWholeField(clazz: Class<*>): MongoSetEntityUpdateClip<M, E> {
+        this.setWholeFieldType.add(clazz);
         return this;
     }
 
@@ -84,7 +90,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
     fun recursionJson(
         map: Map<String, Any?>,
         pWbs: String,
-        callback: (Map<String, Any?>, String, Any, String) -> Unit
+        callback: (Map<String, Any?>, String, Any, String) -> Boolean
     ) {
         map.forEach { kv ->
             val subValue = kv.value;
@@ -92,7 +98,9 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
                 return@forEach
             }
 
-            callback(map, kv.key, subValue, pWbs)
+            if (callback(map, kv.key, subValue, pWbs) == false) {
+                return@forEach
+            }
 
             if (subValue is Map<*, *>) {
                 recursionJson(
@@ -141,33 +149,26 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
 
 
             if (unsetColumns.any { it == wbs || wbs.startsWith(it + ".") }) {
-                return@recursionJson;
+                return@recursionJson false;
             }
 
             if (setColumns.contains(wbs) || !keyInWhere) {
-
-                //如果明确要求某些列不再深度展开。
-                if (setMaxPath.any { it != wbs && wbs.startsWith(it) }) {
-                    return@recursionJson
-                }
-
-                if (setMaxPath.any { it == wbs }) {
-                    setData2.put(wbs, value);
-                    return@recursionJson
-                }
-
-                
                 val value_type = value::class.java;
 
                 if (value_type.IsSimpleType()) {
                     setData2.put(wbs, value)
                 } else if (value_type.isArray || value_type.IsCollectionType) {
                     setData2.put(wbs, value);
+                } else if (setMaxPathField.any { it == wbs }) {
+                    setData2.put(wbs, value);
+                    return@recursionJson false
+                } else if (setWholeFieldType.any { it == value_type }) {
+                    setData2.put(wbs, value);
+                    return@recursionJson false
                 }
             }
 
-
-            return@recursionJson;
+            return@recursionJson true;
         }
 
         whereData2.forEach { key, value ->
