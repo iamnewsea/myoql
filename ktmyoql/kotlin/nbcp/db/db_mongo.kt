@@ -254,10 +254,12 @@ db.getCollection("adminRole").aggregate(
                     keyIsId = true;
                 }
                 if (keyIsId) {
+                    ret.changed = true;
+                    ret.key = keyColumn;
+                    ret.value = value;
+
                     var valueString = value.toString();
-                    if (ObjectId.isValid(valueString)) {
-                        ret.changed = true;
-                        ret.key = keyColumn;
+                    if (value is String && ObjectId.isValid(value )) {
                         ret.value = ObjectId(valueString)
                         return ret;
                     }
@@ -374,35 +376,50 @@ db.getCollection("adminRole").aggregate(
 
             if (json is MutableMap<*, *>) {
                 var m_json = (json as MutableMap<String, Any?>);
-                if (m_json.containsKey("id") && m_json.get("_id").AsString().isEmpty()) {
-                    var idValue = m_json.get("id");
 
+                //如果同时存在 id , _id ,则： 仅保留 _id
+
+                if (m_json.containsKey("_id")) {
+                    m_json.remove("id")
+
+                    var _idValue = m_json.get("_id")
+
+                    if (_idValue is String && ObjectId.isValid(_idValue)) {
+                        m_json.put("_id", ObjectId(_idValue));
+                    }
+                } else if (m_json.containsKey("id")) {
+                    var idValue = m_json.get("id")
+
+                    m_json.remove("id")
                     if (idValue is String && ObjectId.isValid(idValue)) {
                         m_json.put("_id", ObjectId(idValue));
-                        m_json.remove("id")
-                        return@recursionAny true;
+                    } else {
+                        m_json.put("_id", idValue);
                     }
-
-                    m_json.put("_id", idValue)
-                    m_json.remove("id")
                 }
 
                 /**
                  * Json可能是多个展开式，如：  tenant.id
                  */
                 m_json.keys.toTypedArray().forEach { key ->
-                    if (key.endsWith(".id")) {
+                    if (key.endsWith("._id")) {
+                        var idKey = key.Slice(0, -4) + ".id"
+                        m_json.remove(idKey);
+
+                        var _idValue = m_json.get(key);
+                        if (_idValue is String && ObjectId.isValid(_idValue)) {
+                            m_json.put(key, ObjectId(_idValue));
+                        }
+                    } else if (key.endsWith(".id")) {
                         var _idKey = key.Slice(0, -3) + "._id"
-                        if (m_json.get(_idKey).AsString().HasValue) return@forEach
 
                         var idValue = m_json.get(key);
+                        m_json.remove(key)
+
                         if (idValue is String && ObjectId.isValid(idValue)) {
                             m_json.put(_idKey, ObjectId(idValue));
-                            m_json.remove(key)
-                            return@forEach;
                         } else {
                             m_json.put(_idKey, idValue)
-                            m_json.remove(key)
                         }
                     }
                 }

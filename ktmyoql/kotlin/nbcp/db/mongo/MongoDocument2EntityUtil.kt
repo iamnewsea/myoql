@@ -53,9 +53,9 @@ object MongoDocument2EntityUtil {
         var keys = value.keys.toTypedArray();
         var needReplace = keys.contains("_id")
 
-        if (needReplace && value.get("id").AsString().HasValue) {
-            needReplace = false;
-        }
+//        if (needReplace && value.get("id").AsString().HasValue) {
+//            needReplace = false;
+//        }
 
         for (k in keys) {
             var v = value.get(k);
