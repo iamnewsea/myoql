@@ -46,11 +46,27 @@ class MyOqlMongoBeanConfig : BeanPostProcessor {
 
             /**修改默认连接池参数
              * https://docs.mongodb.com/manual/reference/connection-string/
+             *
+             * 如果使用 root 用户连接，连接字符串须要额外添加  ?authSource=admin
+             * mongodb://root:1234.5678@192.168.5.211:26757/cms?authSource=admin
              */
 
             if (bean.uri.HasValue) {
                 var urlJson = JsUtil.parseUrlQueryJson(bean.uri);
                 urlJson.queryJson.put("uuidRepresentation", "STANDARD")
+
+                if (bean.uri.startsWith("mongodb://") && bean.uri.contains('@')) {
+                    var userName = bean.uri.split('@')
+                        .first()
+                        .split("mongodb://")
+                        .last()
+                        .split(':')
+                        .first()
+
+                    if (userName == "root" && !urlJson.queryJson.containsKey("authSource")) {
+                        urlJson.queryJson.put("authSource", "admin")
+                    }
+                }
 
                 var maxIdleTimeMS = urlJson.queryJson.getStringValue("maxIdleTimeMS", ignoreCase = true)
                 if (maxIdleTimeMS.isNullOrEmpty()) {
@@ -84,7 +100,7 @@ class MyOqlMongoBeanConfig : BeanPostProcessor {
         return super.postProcessBeforeInitialization(bean, beanName)
     }
 
-    private fun init_app(){
+    private fun init_app() {
         clazzesIsSimpleDefine.add(ObjectId::class.java)
 
         SpringUtil.context.getBeansOfType(BaseJsonMapper::class.java).values.forEach { mapper ->
