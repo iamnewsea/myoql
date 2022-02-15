@@ -13,7 +13,6 @@ import javax.xml.transform.TransformerFactory
 import kotlin.reflect.KClass
 
 
-
 /**
  * 判断是否有内容：非空且有长度
  */
@@ -100,7 +99,7 @@ fun String.remove(vararg removeChars: Char, ignoreCase: Boolean = false): String
 /**
  * 去除空行
  */
-fun String.removeEmptyLine(withTrim: Boolean = false): String {
+fun String.removeEmptyLine(withTrim: Boolean = true): String {
     return this.lineSequence().filter {
         if (withTrim) {
             return@filter it.trim().any()
@@ -506,7 +505,6 @@ fun String.PadStepEnViewWidth(stepWidth: Int, padChar: Char = ' '): String {
 //    }
 //    return false;
 //}
-
 
 
 //fun String.toUtf8CharArray(): CharArray {
