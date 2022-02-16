@@ -138,11 +138,14 @@ abstract class FlywayVersionBaseService(val version: Int) {
         }
     }
 
-    fun initMongoIndex(rebuild: Boolean = true) {
+    fun initMongoIndex(callback: ((MongoBaseMetaCollection<Any>) -> Boolean)? = null, rebuild: Boolean = true) {
         db.mongo.groups.forEach {
             it.getEntities().forEach { ent ->
                 (ent as MongoBaseMetaCollection<Any>)
                     .apply {
+                        if (callback != null && callback(this) == false) {
+                            return@forEach
+                        }
                         var indexes = this.entityClass.getAnnotationsByType(DbEntityIndex::class.java);
 
                         if (indexes.any() == false) {
