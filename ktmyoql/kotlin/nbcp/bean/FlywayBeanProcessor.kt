@@ -56,36 +56,49 @@ class FlywayBeanProcessor : BeanPostProcessor {
                 return@run this.version;
             }
 
-        flyways.filter { it.version > dbMaxVersion }
-            .sortedBy { it.version }
+        //对负数版本，倒序执行！
+        flyways.filter { it.version <= 0 }
+            .sortedByDescending { it.version }
             .all {
-                var err_msg = "";
-                val ent = SysFlywayVersion();
-                ent.version = it.version
-                ent.execClass = it::class.java.name
-                ent.startAt = LocalDateTime.now()
-
-                try {
-                    it.exec();
-                    ent.isSuccess = true;
-                    ent.finishAt = LocalDateTime.now();
-                    db.mor_base.sysFlywayVersion.doInsert(ent);
-                } catch (e: Exception) {
-                    ent.isSuccess = false;
-                    db.mor_base.sysFlywayVersion.doInsert(ent);
-                    err_msg = e.message ?: "异常!";
-                    throw e;
-                } finally {
-                    if (err_msg.isEmpty()) {
-                        logger.Important("执行FlywayInit成功! version: ${it.version}, ${it::class.java.name}")
-                    } else {
-                        logger.Important("执行FlywayInit失败！version: ${it.version}, ${it::class.java.name}, ${err_msg}")
-                    }
-                }
+                playFlyway(it)
 
                 return@all true;
             }
 
 
+        //对正数版本，总是执行！
+        flyways.filter { it.version > dbMaxVersion }
+            .sortedBy { it.version }
+            .all {
+                playFlyway(it)
+
+                return@all true;
+            }
+    }
+
+    private fun playFlyway(it: FlywayVersionBaseService) {
+        var err_msg = "";
+        val ent = SysFlywayVersion();
+        ent.version = it.version
+        ent.execClass = it::class.java.name
+        ent.startAt = LocalDateTime.now()
+
+        try {
+            it.exec();
+            ent.isSuccess = true;
+            ent.finishAt = LocalDateTime.now();
+            db.mor_base.sysFlywayVersion.doInsert(ent);
+        } catch (e: Exception) {
+            ent.isSuccess = false;
+            db.mor_base.sysFlywayVersion.doInsert(ent);
+            err_msg = e.message ?: "异常!";
+            throw e;
+        } finally {
+            if (err_msg.isEmpty()) {
+                logger.Important("执行FlywayInit成功! version: ${it.version}, ${it::class.java.name}")
+            } else {
+                logger.Important("执行FlywayInit失败！version: ${it.version}, ${it::class.java.name}, ${err_msg}")
+            }
+        }
     }
 }
