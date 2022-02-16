@@ -464,17 +464,19 @@ object MyUtil {
      * 生成大于等于0，小于指定最大值的随机数,即 [0,max)
      */
     fun getRandomNumber(min: Int, max: Int): Int {
-        var base = Math.abs(max - min);
-        return (random.nextInt() % base) + min
+        var start = Math.min(min, max);
+        var end = Math.max(min, max);
+        var base = end - start;
+        return (Math.abs(random.nextInt()) % base) + start
     }
 
     /**
      * 生成指定长度的随机数
      */
-    fun getRandomWithLength(length: Int): String {
+    fun getRandomWithLength(length: Int, vararg withoutChars: Char): String {
         var ret = "";
         while (true) {
-            ret += Math.abs(random.nextInt()).toString(36);
+            ret += Math.abs(random.nextInt()).toString(36).remove(*withoutChars);
             if (ret.length >= length) {
                 break;
             }
