@@ -636,7 +636,7 @@ fun String.formatWithJson(
     } else if (styleValue == "@") {
         regexp = "@(\\w+)"
     } else if (styleValue == "@@") {
-        regexp = "@([\\w\\-]+)@"
+        regexp = "@([^@]+)@"
     }else {
         throw java.lang.RuntimeException("不识别的样式 " + styleValue)
     }
