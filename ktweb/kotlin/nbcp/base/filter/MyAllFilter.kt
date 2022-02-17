@@ -154,7 +154,7 @@ open class MyAllFilter : Filter {
             var errorInfo = mutableListOf<String>()
             errorInfo.add(
                 err::class.java.simpleName + ": " + err.Detail.AsString(err.message.AsString()).AsString("(未知错误)")
-                    .substring(0, 256)
+                    .Slice(0, 256)
             )
 
             errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }

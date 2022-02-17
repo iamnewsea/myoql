@@ -612,10 +612,11 @@ fun <T> String.ToEnum(enumClazz: Class<T>): T? {
 
 /**
  * 使用Json格式化
+ * @param style: {}格式:{id},{name} 也是默认格式; ${}格式: ${id}, ${name};  @格式:  @id , @name ; @@格式: @id@ , @name@ ;
  */
 @JvmOverloads
 fun String.formatWithJson(
-    json: Map<String, String>,
+    json: Map<String, Any?>,
     style: String = "",
     keyCallback: ((String) -> String)? = null,  //参数：原始key , 返回: 取map值的key
     valueCallback: ((String, String?) -> String?)? = null  //参数： 原始key,value , 返回value
@@ -634,7 +635,9 @@ fun String.formatWithJson(
         regexp = "\\$\\{([^{}]+)}"
     } else if (styleValue == "@") {
         regexp = "@(\\w+)"
-    } else {
+    } else if (styleValue == "@@") {
+        regexp = "@([\\w\\-]+)@"
+    }else {
         throw java.lang.RuntimeException("不识别的样式 " + styleValue)
     }
 

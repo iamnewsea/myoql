@@ -84,10 +84,14 @@ object MyUtil {
 
         if (key.endsWith("]")) {
             if (key != "[]" && key.endsWith("[]")) {
+                var keys2 = mutableListOf<String>()
+                keys2.add(key.Slice(0, -2))
+                keys2.add("[]")
+                keys2.addAll(left_keys);
+
                 return getValueByWbsPath(
                     data,
-                    key.Slice(0, -2),
-                    "[]",
+                    keys = *keys2.toTypedArray(),
                     ignoreCase = ignoreCase,
                     fillMap = fillMap,
                     fillLastArray = fillLastArray
@@ -95,10 +99,13 @@ object MyUtil {
             }
             var start_index = key.lastIndexOf('[');
             if (start_index > 0) {
+                var keys2 = mutableListOf<String>()
+                keys2.add(key.slice(0 until start_index))
+                keys2.add(key.Slice(start_index))
+                keys2.addAll(left_keys);
                 return getValueByWbsPath(
                     data,
-                    key.slice(0 until start_index),
-                    key.Slice(start_index),
+                    keys = *keys2.toTypedArray(),
                     ignoreCase = ignoreCase,
                     fillMap = fillMap,
                     fillLastArray = fillLastArray

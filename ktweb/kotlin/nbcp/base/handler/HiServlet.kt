@@ -33,25 +33,26 @@ open class HiServlet {
 
     private fun proc(request: HttpServletRequest, response: HttpServletResponse) {
         val json = StringMap();
+        val env = SpringUtil.context.environment;
 
         val jarFile = ClassUtil.getStartingJarFile();
-        json["应用名称"] = SpringUtil.context.environment.getProperty("app.cn_name");
-        json["当前配置"] = SpringUtil.context.environment.getProperty("spring.profiles.active");
+        json["应用名称"] = env.getProperty("app.cn_name");
+        json["当前配置"] = env.getProperty("spring.profiles.active");
         json["产品线"] =
-            SpringUtil.context.environment.getProperty("app.product-line.name") + "(" +
-                    SpringUtil.context.environment.getProperty("app.product-line.code") + ")";
+            env.getProperty("app.product-line.name") + "(" +
+                    env.getProperty("app.product-line.code") + ")";
 
         json["启动文件"] = jarFile.name;
         json["启动文件时间"] = Date(jarFile.lastModified()).AsString();
 //        json["登录用户Id"] = request.UserId;
 //        json["登录用户名称"] = request.UserName;
-        json["JAVA_VERSION"] = System.getenv("JAVA_VERSION");
+        json["JAVA_VERSION"] = System.getProperty("java.version");
         json["JAVA_OPTS"] = System.getenv("JAVA_OPTS");
-        json["POD名称"] = System.getenv("HOSTNAME");
+        json["HOST名称"] = System.getenv("HOSTNAME");
 
-        json["镜像版本号"] = System.getenv("DOCKER_IMAGE_VERSION").AsString();
-        json["Git提交Id"] = System.getenv("GIT_COMMIT_ID").AsString();
-        json["Git提交时间"] = System.getenv("GIT_COMMIT_TIME").AsString();
+        json["镜像版本号"] = env.getProperty("app.docker-image-version").AsString();
+        json["Git提交Id"] = env.getProperty("app.git-commit-id").AsString();
+        json["Git提交时间"] = env.getProperty("app.git-commit-time").AsString();
 
 
 //        val sleep = (request.findParameterValue("sleep").AsFloat() * 1000).toLong();

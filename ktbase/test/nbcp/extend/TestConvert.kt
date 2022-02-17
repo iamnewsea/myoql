@@ -24,8 +24,17 @@ class TestConvert : TestBase() {
 
     @Test
     fun testStringFormat() {
-        val d = "{i} love {you}";
-        println(d.formatWithJson(StringMap("i" to "郭", "you" to "黄")))
+        val d = "{i} love {you}, in {flow[1]} , id:{f[1].id}";
+        println(
+            d.formatWithJson(
+                JsonMap(
+                    "i" to "郭",
+                    "you" to "黄",
+                    "flow" to arrayOf("天上", "人间"),
+                    "f" to arrayOf("天上", JsonMap("id" to "111"))
+                )
+            )
+        )
     }
 
     @Test
