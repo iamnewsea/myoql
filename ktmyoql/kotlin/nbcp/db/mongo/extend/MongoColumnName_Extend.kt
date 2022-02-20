@@ -29,9 +29,9 @@ import java.util.regex.Pattern
 //}
 
 class MongoColumnTranslateResult(
-    var key: MongoColumnName,
-    var value: Any?,
-    var changed: Boolean = false
+        var key: MongoColumnName,
+        var value: Any?,
+        var changed: Boolean = false
 )
 
 
@@ -192,15 +192,17 @@ infix fun MongoColumnName.match_exists(value: Boolean): Criteria {
 }
 
 /**
- * field match_hasValue true  => field exists  and field != null
- * field match_hasValue false  => field not exists  or field == null
+ * field match_hasValue  => field exists  and field != null and field != ""
  */
-infix fun MongoColumnName.match_hasValue(value: Boolean): Criteria {
-    if (value) {
-        return this.match_exists(true).match_and(this.match_not_equal(null));
-    }
+fun MongoColumnName.match_hasValue(): Criteria {
+    return this.match_exists(true).match_and(this.match_not_equal(null).match_or(this.match_not_equal("")));
+}
 
-    return this.match_exists(false).match_or(this.match(null));
+/**
+ * field match_isNull => field not exists  or field == null  or field == ""
+ */
+fun MongoColumnName.match_isNull(): Criteria {
+    return this.match_exists(false).match_or(this.match(null).match_or(this.match("")));
 }
 
 
