@@ -201,7 +201,7 @@ fun MongoColumnName.match_hasValue(): Criteria {
 /**
  * field match_isNull => field not exists  or field == null  or field == ""
  */
-fun MongoColumnName.match_isNull(): Criteria {
+fun MongoColumnName.match_isNullOrEmpty(): Criteria {
     return this.match_exists(false).match_or(this.match(null).match_or(this.match("")));
 }
 
