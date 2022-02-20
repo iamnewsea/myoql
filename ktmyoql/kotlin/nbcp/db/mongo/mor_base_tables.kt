@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2022-02-15 14:16:36
+//generate auto @2022-02-20 10:59:58
 
 
 class SerializableMeta(private val _pname: String) : MongoColumnName() {
@@ -150,53 +150,6 @@ class IdUrlMeta(private val _pname: String) : MongoColumnName() {
 }
 
 /**
- * 身份证信息
- */
-@nbcp.db.Cn(value = """身份证信息"""")
-class IdentityCardDataMeta(private val _pname: String) : MongoColumnName() {
-    constructor(_val: MongoColumnName) : this(_val.toString()) {}
-
-    /**
-     * 姓名
-     */
-    @nbcp.db.Cn(value = """姓名"""")
-    val name = join(this._pname, "name")
-
-    /**
-     * 头像
-     */
-    @nbcp.db.Cn(value = """头像"""")
-    val photo = IdUrlMeta(join(this._pname, "photo"))
-
-    /**
-     * 身份证号
-     */
-    @nbcp.db.Cn(value = """身份证号"""")
-    val number = join(this._pname, "number")
-
-    /**
-     * 性别
-     */
-    @nbcp.db.Cn(value = """性别"""")
-    val sex = join(this._pname, "sex")
-
-    /**
-     * 生日
-     */
-    @nbcp.db.Cn(value = """生日"""")
-    val birthday = join(this._pname, "birthday")
-
-    /**
-     * 身份证地址
-     */
-    @nbcp.db.Cn(value = """身份证地址"""")
-    val location = join(this._pname, "location")
-    override fun toString(): String {
-        return join(this._pname).toString()
-    }
-}
-
-/**
  * 请求数据
  */
 @nbcp.db.Cn(value = """请求数据"""")
@@ -282,18 +235,8 @@ class BaseResponseDataMeta(private val _pname: String) : MongoColumnName() {
 @Component("mongo.MongoBase")
 @MetaDataGroup(DatabaseEnum.Mongo, "MongoBase")
 class MongoBaseGroup : IDataGroup {
-    override fun getEntities(): Set<BaseMetaData> = setOf(basicUser, basicUserLoginInfo, sysAnnex, sysCity, sysDictionary, sysDustbin, sysFlywayVersion, sysLastSortNumber, sysLog, sysOrganization)
+    override fun getEntities(): Set<BaseMetaData> = setOf(sysAnnex, sysCity, sysDictionary, sysDustbin, sysFlywayVersion, sysLastSortNumber, sysLog, sysOrganization)
 
-
-    /**
-     * 用户信息
-     */
-    val basicUser get() = BasicUserEntity();
-
-    /**
-     * 用户登录信息
-     */
-    val basicUserLoginInfo get() = BasicUserLoginInfoEntity();
 
     /**
      * 系统附件
@@ -337,163 +280,9 @@ class MongoBaseGroup : IDataGroup {
 
 
     /**
-     * 用户信息
-     */
-    @org.springframework.data.mongodb.core.mapping.Document(language = """"""", collation = """"""", collection = """"""", value = """"""")
-    @nbcp.db.DbEntityGroup(value = """MongoBase"""")
-    @nbcp.db.RemoveToSysDustbin
-    @nbcp.db.Cn(value = """用户信息"""")
-    class BasicUserEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.BasicUser>(nbcp.db.mongo.entity.BasicUser::class.java, collectionName.AsString("basicUser"), databaseId) {
-
-        val id = MongoColumnName("_id")
-
-        /**
-         * 昵称
-         */
-        @nbcp.db.Cn(value = """昵称"""") 
-        val name = MongoColumnName("name")
-
-        /**
-         * 登录名
-         */
-        @nbcp.db.Cn(value = """登录名"""") 
-        val loginName = MongoColumnName("loginName")
-
-        /**
-         * 手机号
-         */
-        @nbcp.db.Cn(value = """手机号"""") 
-        val mobile = MongoColumnName("mobile")
-
-        /**
-         * 电子邮件
-         */
-        @nbcp.db.Cn(value = """电子邮件"""") 
-        val email = MongoColumnName("email")
-
-        /**
-         * 头像
-         */
-        @nbcp.db.Cn(value = """头像"""") 
-        val logo = IdUrlMeta("logo")
-
-        /**
-         * 备注
-         */
-        @nbcp.db.Cn(value = """备注"""") 
-        val remark = MongoColumnName("remark")
-
-        /**
-         * 身份证
-         */
-        @nbcp.db.Cn(value = """身份证"""") 
-        val identityCard = IdentityCardDataMeta("identityCard")
-
-        /**
-         * 创建时间
-         */
-        @nbcp.db.Cn(value = """创建时间"""") 
-        val createAt = MongoColumnName("createAt")
-
-        /**
-         * 更新时间
-         */
-        @nbcp.db.Cn(value = """更新时间"""") 
-        val updateAt = MongoColumnName("updateAt")
-
-    }
-
-    /**
-     * 用户登录信息
-     */
-    @org.springframework.data.mongodb.core.mapping.Document(language = """"""", collation = """"""", collection = """"""", value = """"""")
-    @nbcp.db.DbEntityGroup(value = """MongoBase"""")
-    @nbcp.db.Cn(value = """用户登录信息"""")
-    @nbcp.db.DbEntityIndex(cacheable = false, unique = true, value = arrayOf("""userId""""))
-    class BasicUserLoginInfoEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.BasicUserLoginInfo>(nbcp.db.mongo.entity.BasicUserLoginInfo::class.java, collectionName.AsString("basicUserLoginInfo"), databaseId) {
-
-        val id = MongoColumnName("_id")
-
-        /**
-         * 用户唯一Id
-         */
-        @nbcp.db.Cn(value = """用户唯一Id"""") 
-        val userId = MongoColumnName("userId")
-
-        /**
-         * 登录名
-         */
-        @nbcp.db.Cn(value = """登录名"""") 
-        val loginName = MongoColumnName("loginName")
-
-        /**
-         * 登录手机
-         */
-        @nbcp.db.Cn(value = """登录手机"""") 
-        val mobile = MongoColumnName("mobile")
-
-        /**
-         * 登录邮箱
-         */
-        @nbcp.db.Cn(value = """登录邮箱"""") 
-        val email = MongoColumnName("email")
-
-        /**
-         * 密码
-         */
-        @nbcp.db.Cn(value = """密码"""") 
-        val password = MongoColumnName("password")
-
-        /**
-         * 最后登录时间
-         */
-        @nbcp.db.Cn(value = """最后登录时间"""") 
-        val lastLoginAt = MongoColumnName("lastLoginAt")
-
-        /**
-         * 是否已锁定
-         */
-        @nbcp.db.Cn(value = """是否已锁定"""") 
-        val isLocked = MongoColumnName("isLocked")
-
-        /**
-         * 锁定详情
-         */
-        @nbcp.db.Cn(value = """锁定详情"""") 
-        val lockedRemark = MongoColumnName("lockedRemark")
-
-        /**
-         * 创建时间
-         */
-        @nbcp.db.Cn(value = """创建时间"""") 
-        val createAt = MongoColumnName("createAt")
-
-        /**
-         * 更新时间
-         */
-        @nbcp.db.Cn(value = """更新时间"""") 
-        val updateAt = MongoColumnName("updateAt")
-
-        fun queryByUserId(userId: String): MongoQueryClip<BasicUserLoginInfoEntity, nbcp.db.mongo.entity.BasicUserLoginInfo> {
-            return this.query().where { it.userId match userId }
-        }
-
-        fun deleteByUserId(userId: String): MongoDeleteClip<BasicUserLoginInfoEntity> {
-            return this.delete().where { it.userId match userId }
-        }
-
-        fun updateByUserId(userId: String): MongoUpdateClip<BasicUserLoginInfoEntity, nbcp.db.mongo.entity.BasicUserLoginInfo> {
-            return this.update().where { it.userId match userId }
-        }
-
-    }
-
-    /**
      * 系统附件
      */
-    @org.springframework.data.mongodb.core.mapping.Document(language = """"""", collation = """"""", collection = """"""", value = """"""")
+    @org.springframework.data.mongodb.core.mapping.Document(language = """"""", collection = """"""", collation = """"""", value = """"""")
     @nbcp.db.DbEntityGroup(value = """MongoBase"""")
     @nbcp.db.Cn(value = """系统附件"""")
     class SysAnnexEntity(collectionName: String = "", databaseId: String = "")
@@ -596,7 +385,7 @@ class MongoBaseGroup : IDataGroup {
     /**
      * 城市令牌
      */
-    @org.springframework.data.mongodb.core.mapping.Document(language = """"""", collation = """"""", collection = """"""", value = """"""")
+    @org.springframework.data.mongodb.core.mapping.Document(language = """"""", collection = """"""", collation = """"""", value = """"""")
     @nbcp.db.DbEntityGroup(value = """MongoBase"""")
     @nbcp.db.Cn(value = """城市令牌"""")
     @nbcp.db.DbEntityIndex(cacheable = false, unique = true, value = arrayOf("""code""""))
@@ -694,7 +483,7 @@ class MongoBaseGroup : IDataGroup {
     /**
      * 字典
      */
-    @org.springframework.data.mongodb.core.mapping.Document(language = """"""", collation = """"""", collection = """"""", value = """"""")
+    @org.springframework.data.mongodb.core.mapping.Document(language = """"""", collection = """"""", collation = """"""", value = """"""")
     @nbcp.db.DbEntityGroup(value = """MongoBase"""")
     @nbcp.db.Cn(value = """字典"""")
     @nbcp.db.SortNumber(step = 10, field = """sort"""", groupBy = """"""")
@@ -756,7 +545,7 @@ class MongoBaseGroup : IDataGroup {
     /**
      * 数据垃圾箱
      */
-    @org.springframework.data.mongodb.core.mapping.Document(language = """"""", collation = """"""", collection = """"""", value = """"""")
+    @org.springframework.data.mongodb.core.mapping.Document(language = """"""", collection = """"""", collation = """"""", value = """"""")
     @nbcp.db.DbEntityGroup(value = """MongoBase"""")
     @nbcp.db.Cn(value = """数据垃圾箱"""")
     class SysDustbinEntity(collectionName: String = "", databaseId: String = "")
@@ -805,7 +594,7 @@ class MongoBaseGroup : IDataGroup {
     /**
      * 数据版本
      */
-    @org.springframework.data.mongodb.core.mapping.Document(language = """"""", collation = """"""", collection = """"""", value = """"""")
+    @org.springframework.data.mongodb.core.mapping.Document(language = """"""", collection = """"""", collation = """"""", value = """"""")
     @nbcp.db.DbEntityGroup(value = """MongoBase"""")
     @nbcp.db.Cn(value = """数据版本"""")
     class SysFlywayVersionEntity(collectionName: String = "", databaseId: String = "")
@@ -866,7 +655,7 @@ class MongoBaseGroup : IDataGroup {
     /**
      * 排序记录号
      */
-    @org.springframework.data.mongodb.core.mapping.Document(language = """"""", collation = """"""", collection = """"""", value = """"""")
+    @org.springframework.data.mongodb.core.mapping.Document(language = """"""", collection = """"""", collation = """"""", value = """"""")
     @nbcp.db.DbEntityGroup(value = """MongoBase"""")
     @nbcp.db.Cn(value = """排序记录号"""")
     class SysLastSortNumberEntity(collectionName: String = "", databaseId: String = "")
@@ -909,7 +698,7 @@ class MongoBaseGroup : IDataGroup {
     /**
      * 系统日志
      */
-    @org.springframework.data.mongodb.core.mapping.Document(language = """"""", collation = """"""", collection = """"""", value = """"""")
+    @org.springframework.data.mongodb.core.mapping.Document(language = """"""", collection = """"""", collation = """"""", value = """"""")
     @nbcp.db.DbEntityGroup(value = """MongoBase"""")
     @nbcp.db.Cn(value = """系统日志"""")
     class SysLogEntity(collectionName: String = "", databaseId: String = "")
@@ -976,7 +765,7 @@ class MongoBaseGroup : IDataGroup {
     /**
      * 组织信息
      */
-    @org.springframework.data.mongodb.core.mapping.Document(language = """"""", collation = """"""", collection = """"""", value = """"""")
+    @org.springframework.data.mongodb.core.mapping.Document(language = """"""", collection = """"""", collation = """"""", value = """"""")
     @nbcp.db.DbEntityGroup(value = """MongoBase"""")
     @nbcp.db.RemoveToSysDustbin
     @nbcp.db.Cn(value = """组织信息"""")

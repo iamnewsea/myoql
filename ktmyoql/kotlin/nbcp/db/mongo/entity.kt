@@ -10,11 +10,8 @@ import java.io.Serializable
 /**
  * 用户信息
  */
-@Document
-@DbEntityGroup("MongoBase")
-@RemoveToSysDustbin
 @Cn("用户信息")
-open class BasicUser @JvmOverloads constructor(
+abstract class BasicUser @JvmOverloads constructor(
     @Cn("昵称")
     var name: String = "",      //这里的名称=自定义昵称
     @Cn("登录名")
@@ -36,11 +33,9 @@ open class BasicUser @JvmOverloads constructor(
 /**
  * 登录信息
  */
-@Document
-@DbEntityGroup("MongoBase")
 @Cn("用户登录信息")
 @DbEntityIndex("userId", unique = true)
-open class BasicUserLoginInfo @JvmOverloads constructor(
+abstract class BasicUserLoginInfo @JvmOverloads constructor(
     @Cn("用户唯一Id")
     var userId: String = "",    //用户Id,唯一
     @Cn("登录名")

@@ -212,8 +212,8 @@
     </dependencyManagement>
 
     <build>
-        <sourceDirectory>kotlin</sourceDirectory>
-        <testSourceDirectory>test</testSourceDirectory>
+        <sourceDirectory>test-api/kotlin</sourceDirectory>
+        <testSourceDirectory>test-api/test</testSourceDirectory>
         <!--        <testResources>-->
         <!--            <testResource>-->
         <!--                <directory>test/resources</directory>-->
@@ -221,7 +221,7 @@
         <!--        </testResources>-->
         <resources>
             <resource>
-                <directory>resources</directory>
+                <directory>test-api/resources</directory>
             </resource>
         </resources>
     </build>
