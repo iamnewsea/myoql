@@ -13,7 +13,6 @@
         <module>ktmyoql</module>
         <module>ktmvc</module>
         <module>ktweb</module>
-        <module>tools/test-api</module>
         <module>tools/ktembed</module>
     </modules>
 

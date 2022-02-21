@@ -12,7 +12,7 @@
         <groupId>cn.dev8</groupId>
         <artifactId>mp-base</artifactId>
         <version>1.0.1</version>
-        <relativePath>./pom_base.xml</relativePath>
+        <relativePath>./pom.xml</relativePath>
     </parent>
 
     <dependencies>
@@ -44,13 +44,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter -->
-        <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>2.0.1</version>
-            <scope>provided</scope>
-        </dependency>
+
 
 
         <dependency>
