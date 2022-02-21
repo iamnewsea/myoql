@@ -37,6 +37,7 @@ import org.springframework.core.type.AnnotationMetadata
 import org.springframework.core.type.filter.AssignableTypeFilter
 import org.springframework.stereotype.Component
 
+@Import(FlywayBeanProcessor::class)
 @Configuration
 class MyOqlInitConfig : BeanPostProcessor {
     companion object {

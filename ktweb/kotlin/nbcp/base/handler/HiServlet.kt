@@ -36,10 +36,10 @@ open class HiServlet {
         val env = SpringUtil.context.environment;
 
         val jarFile = ClassUtil.getStartingJarFile();
-        json["应用名称"] = env.getProperty("app.cn_name");
-        json["当前配置"] = env.getProperty("spring.profiles.active");
+        json["应用名称"] = env.getProperty("app.cn_name").AsString();
+        json["当前配置"] = env.getProperty("spring.profiles.active").AsString();
         json["产品线"] =
-            env.getProperty("app.product-line.name") + "(" +
+            env.getProperty("app.product-line.name").AsString() + "(" +
                     env.getProperty("app.product-line.code") + ")";
 
         json["启动文件"] = jarFile.name;

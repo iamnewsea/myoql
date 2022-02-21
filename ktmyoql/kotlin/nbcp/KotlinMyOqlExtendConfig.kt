@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 
 
-@Import(MyOqlInitConfig::class)
+//@Import(MyOqlInitConfig::class)
 @Component
 class KotlinMyOqlExtendConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAware {
     private lateinit var resourceLoader: ResourceLoader
@@ -72,9 +72,9 @@ class KotlinMyOqlExtendConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAwa
             addIncludeFilter(AssignableTypeFilter(MyOqlMultipleDataSourceDefine::class.java))
             addIncludeFilter(AssignableTypeFilter(MyOqlBaseActionLogDefine::class.java))
 
-//            addIncludeFilter(AnnotationTypeFilter(Service::class.java))
-//            addIncludeFilter(AnnotationTypeFilter(Component::class.java))
-//            addIncludeFilter(AnnotationTypeFilter(Configuration::class.java))
+            addIncludeFilter(AnnotationTypeFilter(Service::class.java))
+            addIncludeFilter(AnnotationTypeFilter(Component::class.java))
+            addIncludeFilter(AnnotationTypeFilter(Configuration::class.java))
             /**
              * TODO addExcludeFilter 同样的满足任意 excludeFilters 不会被加载
              */
