@@ -3,51 +3,27 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>api-test</artifactId>
+    <artifactId>test-api</artifactId>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
     <description>能科Saas管理平台</description>
 
     <parent>
         <groupId>cn.dev8</groupId>
-        <artifactId>shop_starter</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
-        <relativePath>pom_starter.xml</relativePath>
+        <artifactId>mp-starter</artifactId>
+        <version>1.0.1</version>
+        <relativePath>../pom_starter.xml</relativePath>
     </parent>
-    <!-- 设定主仓库，按设定顺序进行查找。 -->
-    <repositories>
-        <repository>
-            <id>nancal</id>
-            <name>nancal</name>
-            <url>http://nexus.cloudnk.cn/repository/maven-public/</url>
-        </repository>
-    </repositories>
-
-    <!-- 设定插件仓库 -->
-    <pluginRepositories>
-        <pluginRepository>
-            <id>main-repos</id>
-            <name>main Repository</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
-        </pluginRepository>
-    </pluginRepositories>
 
     <dependencies>
         <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.4.3.2</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>${poi.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>${poi.version}</version>
         </dependency>
 
         <dependency>
@@ -96,7 +72,7 @@
                             <excludeTransitive>false</excludeTransitive>
                             <!-- 忽略版本 -->
                             <stripVersion>false</stripVersion>
-                            <excludeGroupIds>cn.dev8,cn.nancal</excludeGroupIds>
+                            <excludeGroupIds>cn.dev8</excludeGroupIds>
                         </configuration>
                     </execution>
                 </executions>
@@ -123,14 +99,7 @@
                             <groupId>cn.dev8</groupId>
                             <artifactId>ktweb</artifactId>
                         </include>
-                        <include>
-                            <groupId>cn.nancal</groupId>
-                            <artifactId>shop-entity</artifactId>
-                        </include>
-                        <include>
-                            <groupId>cn.nancal</groupId>
-                            <artifactId>shop-orm</artifactId>
-                        </include>
+
                     </includes>
                     <mainClass>nbcp.MainApplicationKt</mainClass>
                 </configuration>
@@ -143,20 +112,11 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.2</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-
-            <plugin>
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <version>${kotlin.version}</version>
                 <configuration>
-                    <jvmTarget>${java.version}</jvmTarget>
+                    <jvmTarget>1.8</jvmTarget>
                     <compilerPlugins>
                         <plugin>spring</plugin>
                     </compilerPlugins>
@@ -187,32 +147,14 @@
                 </dependencies>
             </plugin>
 
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>check</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.owasp</groupId>
-                        <artifactId>dependency-check-maven</artifactId>
-                        <version>6.2.2</version>
-                        <configuration>
-                            <autoUpdate>true</autoUpdate>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
