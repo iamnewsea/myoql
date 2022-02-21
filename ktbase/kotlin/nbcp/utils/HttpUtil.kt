@@ -168,9 +168,20 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         return this
     }
 
+    fun doGet(queryJson: StringMap): String {
+        return doGet(queryJson.toUrlQuery())
+    }
 
-    fun doGet(): String {
+    @JvmOverloads
+    fun doGet(query: String = ""): String {
         this.request.requestMethod = "GET"
+
+        if (query.HasValue) {
+            var queryObj = JsUtil.parseUrlQueryJson(if (query.startsWith('?')) query else "?" + query)
+            var urlObj = JsUtil.parseUrlQueryJson(this.url);
+            urlObj.queryJson.putAll(queryObj.queryJson);
+            this.url = urlObj.toUrl();
+        }
         return doNet()
     }
 

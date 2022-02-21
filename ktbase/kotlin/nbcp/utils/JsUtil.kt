@@ -2,6 +2,7 @@ package nbcp.utils
 
 import nbcp.comm.HasValue
 import nbcp.comm.StringMap
+import nbcp.comm.toUrlQuery
 import nbcp.helper.ScriptLanguageEnum
 import java.lang.RuntimeException
 import java.net.URLDecoder
@@ -35,6 +36,10 @@ object JsUtil {
      */
     fun parseUrlQueryJson(url: String): UrlQueryJsonData {
         return UrlQueryJsonData.of(url);
+    }
+
+    fun toUrlQuery(map: Map<String, *>): String {
+        return map.toUrlQuery()
     }
 }
 
