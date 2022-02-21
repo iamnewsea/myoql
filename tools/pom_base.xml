@@ -10,14 +10,6 @@
     <name>mp-base</name>
     <description>仅定义基础环境</description>
 
-    <modules>
-        <module>base/mp-entity</module>
-        <module>base/mp-orm</module>
-        <module>cloud/gateway</module>
-        <module>cloud/integration</module>
-        <module>portal/admin-api</module>
-    </modules>
-
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -27,7 +19,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>11</java.version>
+        <java.version>1.8</java.version>
         <!--        <jackson.version>2.12.5</jackson.version>-->
         <alibaba.version>2021.1</alibaba.version>
         <spring-boot.version>2.5.7</spring-boot.version>
@@ -158,13 +150,13 @@
                 <version>${okhttp.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>cn.dev8</groupId>
-                <artifactId>kotlin-boot-parent</artifactId>
-                <version>${myoql.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>cn.dev8</groupId>-->
+<!--                <artifactId>kotlin-boot-parent</artifactId>-->
+<!--                <version>${myoql.version}</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
@@ -212,8 +204,8 @@
     </dependencyManagement>
 
     <build>
-        <sourceDirectory>test-api/kotlin</sourceDirectory>
-        <testSourceDirectory>test-api/test</testSourceDirectory>
+        <sourceDirectory>kotlin</sourceDirectory>
+        <testSourceDirectory>test</testSourceDirectory>
         <!--        <testResources>-->
         <!--            <testResource>-->
         <!--                <directory>test/resources</directory>-->
@@ -221,7 +213,7 @@
         <!--        </testResources>-->
         <resources>
             <resource>
-                <directory>test-api/resources</directory>
+                <directory>resources</directory>
             </resource>
         </resources>
     </build>

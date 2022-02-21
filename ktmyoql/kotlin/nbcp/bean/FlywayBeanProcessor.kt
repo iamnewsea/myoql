@@ -56,7 +56,7 @@ class FlywayBeanProcessor : BeanPostProcessor {
                 return@run this.version;
             }
 
-        //对负数版本，倒序执行！
+        //对负数版本，倒序执行，且总是执行！
         flyways.filter { it.version <= 0 }
             .sortedByDescending { it.version }
             .all {
@@ -66,8 +66,10 @@ class FlywayBeanProcessor : BeanPostProcessor {
             }
 
 
-        //对正数版本，总是执行！
-        flyways.filter { it.version > dbMaxVersion }
+        //对正数版本，正序执行！
+        flyways
+            .filter { it.version > 0 }
+            .filter { it.version > dbMaxVersion }
             .sortedBy { it.version }
             .all {
                 playFlyway(it)

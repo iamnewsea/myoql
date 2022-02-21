@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 
 
+@Import(MyOqlInitConfig::class)
 @Component
 class KotlinMyOqlExtendConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAware {
     private lateinit var resourceLoader: ResourceLoader
