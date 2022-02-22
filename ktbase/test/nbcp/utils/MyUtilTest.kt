@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test
 class MyUtilTest : TestBase() {
     @Test
     fun test1() {
-        println(MyUtil.getRandomNumber(1000,9999))
-        println(MyUtil.getRandomNumber(-1000,9))
-        println(MyUtil.getRandomNumber(9999,10))
+        println(MyUtil.joinPath("/a", "..\\b", ".d/../c"))
+        println(MyUtil.getRandomNumber(-1000, 9))
+        println(MyUtil.getRandomNumber(9999, 10))
         println(MyUtil.getRandomWithLength(10))
         println(MyUtil.getBigCamelCase("abc--d__efnf"))
     }

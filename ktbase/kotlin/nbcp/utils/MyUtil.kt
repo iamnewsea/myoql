@@ -3,6 +3,7 @@ package nbcp.utils
 import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.ClassPathResource
+import java.io.File
 import java.lang.reflect.Field
 import java.nio.charset.StandardCharsets
 import java.time.*
@@ -963,6 +964,32 @@ object MyUtil {
             throw RuntimeException("已过期")
         }
         return oriStrings[0]
+    }
+
+    fun joinPath(vararg path: String): String {
+        if (path.any() == false) return "";
+        var isRoot = path.first().startsWith("/")
+
+        var list = mutableListOf<String>()
+
+        path.map {
+            it.split('/', '\\')
+                .filter { it.HasValue }
+                .filter { it != "." }
+        }.Unwind()
+            .forEach {
+                if (it == "..") {
+                    if (list.removeLastOrNull() == null) {
+                        throw RuntimeException("路径溢出")
+                    }
+                    return@forEach
+                }
+
+                list.add(it);
+            }
+
+
+        return (if (isRoot) "/" else "") + list.joinToString(File.separator)
     }
 }
 
