@@ -265,7 +265,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                             ) == "PRI"
                         }
                                 .map { it.getStringValue("column_name") }
-//                    .map { """"${it}"""" }
+//                    .map { """"${it}""" }
                                 .joinToString(",")
                         )
 

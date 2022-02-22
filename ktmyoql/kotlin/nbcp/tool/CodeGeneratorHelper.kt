@@ -196,7 +196,7 @@ object CodeGeneratorHelper {
 
         var v_type = value::class.java;
         if (v_type.IsStringType) {
-            return """${"\""}""${value.AsString()}""${"\""}""""
+            return """${"\""}""${value.AsString()}""${"\""}"""
         } else if (v_type.IsNumberType) {
             return value.AsString()
         } else if (v_type.IsBooleanType) {
