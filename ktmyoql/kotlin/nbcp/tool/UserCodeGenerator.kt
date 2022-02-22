@@ -17,16 +17,16 @@ object UserCodeGenerator {
     /**
      * 生成基础的CRUD接口
      */
-    fun genMongoMvcCrud(group: String, entity: BaseMetaData): String {
-        return gen(group, entity, "/myoql-template/kotlin_mvc_mongo_template_crud.ftl");
+    fun genMongoMvcCrud(group: String, pkg: String, entity: BaseMetaData): String {
+        return gen(group, entity, "/myoql-template/kotlin_mvc_mongo_template_crud.ftl").replace("@pkg@", pkg);
     }
 
-    fun genMySqlMvcCrud(group: String, entity: BaseMetaData): String {
-        return gen(group, entity, "/myoql-template/kotlin_mvc_mysql_template_crud.ftl");
+    fun genMySqlMvcCrud(group: String, pkg: String, entity: BaseMetaData): String {
+        return gen(group, entity, "/myoql-template/kotlin_mvc_mysql_template_crud.ftl").replace("@pkg@", pkg);
     }
 
-    fun genEsMvcCrud(group: String, entity: BaseMetaData): String {
-        return gen(group, entity, "/myoql-template/kotlin_mvc_es_template_crud.ftl");
+    fun genEsMvcCrud(group: String, pkg: String, entity: BaseMetaData): String {
+        return gen(group, entity, "/myoql-template/kotlin_mvc_es_template_crud.ftl").replace("@pkg@", pkg);
     }
 
     /**
@@ -68,13 +68,13 @@ object UserCodeGenerator {
         }
 
         return CodeGeneratorHelper.proc(
-                fileName,
-                CodeGeneratorHelper.CodeTemplateData(
-                        group,
-                        entityClass,
-                        metaEntity.tableName,
-                        idKey
-                )
+            fileName,
+            CodeGeneratorHelper.CodeTemplateData(
+                group,
+                entityClass,
+                metaEntity.tableName,
+                idKey
+            )
         )
     }
 }
