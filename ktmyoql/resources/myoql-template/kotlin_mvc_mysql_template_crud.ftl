@@ -1,14 +1,13 @@
-package nbcp.mvc.${w(group)}
+package @pkg@.mvc.${w(group)}
 
 import io.swagger.annotations.*
 import org.springframework.web.bind.annotation.*
-import nbcp.base.extend.*
+import @pkg@.db.sql.*
+import @pkg@.db.sql.entity.*
 import nbcp.comm.*
 import nbcp.db.*
 import nbcp.db.sql.*
 import nbcp.db.sql.entity.*
-import nbcp.db.mysql.*
-import nbcp.db.mysql.entity.*
 import nbcp.web.*
 import javax.servlet.http.*
 import java.time.*
@@ -61,7 +60,7 @@ class ${entity}AutoController {
             .toEntity()
             .apply {
                 if (this == null) {
-                    return ApiResult<${entity}>("找不到数据")
+                    return ApiResult.error("找不到数据")
                 }
 
                 return ApiResult.of(this)
@@ -88,7 +87,7 @@ class ${entity}AutoController {
             }
             .apply {
                 if (this == 0) {
-                    return ApiResult("更新失败")
+                    return ApiResult.error("更新失败")
                 }
 
                 return ApiResult.of(entity.${idKey})
@@ -112,7 +111,7 @@ class ${entity}AutoController {
             .exec()
             .apply {
                 if (this == 0) {
-                    return JsonResult("更新失败")
+                    return JsonResult.error("更新失败")
                 }
 
                 return JsonResult()
@@ -131,7 +130,7 @@ class ${entity}AutoController {
 
         var entity = dbr.${w(group)}.${entity}.queryBy${W(idKey)}(${idKey}).toEntity()
         if (entity == null) {
-            return JsonResult("找不到数据")
+            return JsonResult.error("找不到数据")
         }
 <#if has_dustbin()>
         //实体上配置了垃圾箱功能，物理删除后会自动移到垃圾箱。
@@ -142,7 +141,7 @@ class ${entity}AutoController {
             .exec()
             .apply {
                 if (this == 0) {
-                    return JsonResult("删除失败")
+                    return JsonResult.error("删除失败")
                 }
 
                 return JsonResult()

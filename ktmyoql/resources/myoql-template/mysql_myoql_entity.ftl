@@ -1,4 +1,4 @@
-package nbcp.db.mysql.entity
+package @pkg@.db.mysql.entity
 
 import nbcp.db.*
 import nbcp.db.sql.*

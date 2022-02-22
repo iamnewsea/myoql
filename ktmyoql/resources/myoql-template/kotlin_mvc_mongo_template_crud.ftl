@@ -1,9 +1,10 @@
-package nbcp.mvc.${w(group)}
+package @pkg@.mvc.${w(group)}
 
 import io.swagger.annotations.*
 import org.springframework.data.mongodb.core.query.*
 import org.springframework.web.bind.annotation.*
-import nbcp.base.extend.*
+import @pkg@.db.mongo.*
+import @pkg@.db.mongo.entity.*
 import nbcp.comm.*
 import nbcp.db.*
 import nbcp.db.mongo.*
@@ -60,7 +61,7 @@ class ${entity}AutoController {
             .toEntity()
             .apply {
                 if (this == null) {
-                    return ApiResult<${entity}>("找不到数据")
+                    return ApiResult.error("找不到数据")
                 }
 
                 return ApiResult.of(this)
@@ -87,7 +88,7 @@ class ${entity}AutoController {
             }
             .apply {
                 if (this == 0) {
-                  return ApiResult("更新失败")
+                  return ApiResult.error("更新失败")
                 }
 
                 return ApiResult.of(entity.id)
@@ -111,7 +112,7 @@ class ${entity}AutoController {
             .exec()
             .apply {
                 if (this == 0) {
-                    return JsonResult("更新失败")
+                    return JsonResult.error("更新失败")
                 }
 
                 return JsonResult()
@@ -130,14 +131,14 @@ class ${entity}AutoController {
 
         var entity = mor.${w(group)}.${entityField}.queryById(id).toEntity()
         if (entity == null) {
-            return JsonResult("找不到数据")
+            return JsonResult.error("找不到数据")
         }
 
         mor.${w(group)}.${entityField}.deleteById(id)
             .exec()
             .apply {
                 if (this == 0) {
-                    return JsonResult("删除失败")
+                    return JsonResult.error("删除失败")
                 }
                 //实体上配置垃圾箱功能，可物理删除，会自动移到垃圾箱。
                 return JsonResult()

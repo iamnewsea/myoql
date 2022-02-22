@@ -90,7 +90,7 @@ ${endif}
         }
         .apply{
             if(this == 0){
-              return ApiResult("更新失败")
+              return ApiResult.error("更新失败")
             }
 
             return ApiResult.of(entity.${idKey})
@@ -114,7 +114,7 @@ ${if:status}
             .exec()
             .apply {
                 if (this == 0) {
-                    return JsonResult("更新失败")
+                    return JsonResult.error("更新失败")
                 }
 
                 return JsonResult()
@@ -132,14 +132,14 @@ ${endif}
 
     var entity = dbr.${group|w}.${entity}.queryBy${idKey|W}(${idKey}).toEntity();
     if(entity == null){
-        return JsonResult("找不到数据")
+        return JsonResult.error("找不到数据")
     }
 
     dbr.${group|w}.${entity}.deleteBy${idKey|W}(${idKey})
         .exec()
         .apply{
             if(this == 0){
-                return JsonResult("删除失败")
+                return JsonResult.error("删除失败")
             }
             //实体上配置垃圾箱功能，可物理删除，会自动移到垃圾箱。
             return JsonResult()
