@@ -19,6 +19,8 @@
 ```
 
 配置项：
+引入 ktbase 后，就可以直接使用 ktbase 里的日志配置文件
+
 ```
 logging:
   config: classpath:logback-skywalking.xml
@@ -27,7 +29,10 @@ logging:
   level:
     root: WARN
 ```
-
+以上 classpath:logback-skywalking.xml 会被解析为：
+```
+jar:file:/home/udi/.m2/repository/cn/dev8/ktbase/1.0.6-SNAPSHOT/ktbase-1.0.6-SNAPSHOT.jar!/logback-skywalking.xml
+```
 
 skywalking/agent/conf/agent.conf 文件内容追加:
 ```
