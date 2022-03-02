@@ -93,26 +93,4 @@ class MyOqlMongoBeanConfig : BeanPostProcessor {
 
         return ret;
     }
-
-
-    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
-        if (inited == false) {
-            inited = true;
-
-            init_app();
-        }
-
-        return super.postProcessBeforeInitialization(bean, beanName)
-    }
-
-    private fun init_app() {
-        clazzesIsSimpleDefine.add(ObjectId::class.java)
-
-        SpringUtil.context.getBeansOfType(BaseJsonMapper::class.java).values.forEach { mapper ->
-            mapper.addTypeModule(ObjectId::class.java, ObjectIdJsonSerializer(), ObjectIdJsonDeserializer())
-            if (mapper is DbJsonMapper) {
-                mapper.addTypeModule(Document::class.java, DocumentJsonSerializer(), DocumentJsonDeserializer())
-            }
-        }
-    }
 }
