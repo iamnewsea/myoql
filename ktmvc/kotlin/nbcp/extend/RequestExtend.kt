@@ -33,9 +33,11 @@ val HttpServletRequest.IsOctetContent: Boolean
 
 
 private fun _getClientIp(request: HttpServletRequest): String {
-    // 如果 X-Real-IP == remoteAddr 且不是局域网Ip，则返回。
-    var remoteAddr = request.remoteAddr
-    var realIp = request.getHeader("X-Real-IP") ?: "";
+    /*
+实际Header：
+x-real-ip: 10.0.4.20
+x-forwarded-for: 103.10.86.226,124.70.126.65,10.0.4.20
+     */
     var forwardIps = (request.getHeader("X-Forwarded-For") ?: "")
         .split(",")
         .map { it.trim() }
@@ -46,13 +48,15 @@ private fun _getClientIp(request: HttpServletRequest): String {
     if (forwardIps.any()) {
         return forwardIps[0];
     }
-    
+
+    var realIp = request.getHeader("X-Real-IP") ?: "";
     // 如果设置了 X-Real-IP
     // 必须 = realIp
     if (MyUtil.isLocalIp(realIp) == false) {
         return realIp;
     }
 
+    var remoteAddr = request.remoteAddr
     return remoteAddr
 }
 
