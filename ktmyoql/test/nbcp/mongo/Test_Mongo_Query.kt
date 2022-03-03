@@ -86,7 +86,7 @@ class Test_Mongo_Query : TestBase() {
                 "tags" to
                         db.mongo.filter(
                             "\$tags", "item",
-                            (MongoColumnName("\$\$item") match 3).toExpression()
+                            (MongoColumnName("\$item") match 3).toExpression()
                         )
             )
 

@@ -181,15 +181,15 @@ object db_mongo {
      *      }
      *   }
      * }
-     * @param condExpression: 不是 db.mongo.cond 方法结构。
+     * @param condExpression: 不是 db.mongo.cond 方法结构。 如果使用 Criteria.toExpression 注意要少一个 $
      */
-    fun filter(input:String,alias:String, condExpression:Map<String,Any?>):MongoExpression{
+    fun filter(input: String, alias: String, condExpression: Map<String, Any?>): MongoExpression {
         var map = MongoExpression();
-        map.put("input",input);
-        map.put("as",alias);
-        map.put("cond",condExpression);
+        map.put("input", input);
+        map.put("as", alias);
+        map.put("cond", condExpression);
 
-        return op(PipeLineOperatorEnum.filter,map);
+        return op(PipeLineOperatorEnum.filter, map);
     }
 
     fun op(operator: PipeLineOperatorEnum, rawValue: String): MongoExpression {
@@ -294,7 +294,7 @@ db.getCollection("adminRole").aggregate(
                     ret.value = value;
 
                     var valueString = value.toString();
-                    if (value is String && ObjectId.isValid(value )) {
+                    if (value is String && ObjectId.isValid(value)) {
                         ret.value = ObjectId(valueString)
                         return ret;
                     }
