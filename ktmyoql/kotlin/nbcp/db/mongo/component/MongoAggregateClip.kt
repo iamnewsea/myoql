@@ -134,7 +134,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
     }
 
     @JvmOverloads
-    fun group(_id: JsonMap?, vararg eachItems: JsonMap ): MongoAggregateClip<M, E> {
+    fun group(_id: JsonMap?, vararg eachItems: JsonMap): MongoAggregateClip<M, E> {
         var raw = JsonMap();
         raw.put("_id", _id)
 
@@ -181,6 +181,8 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
                 var c_value = value.criteriaObject //.procWithMongoScript();
 
                 return@map """{$key:${c_value.toJson().AsString("null")}}"""
+            } else if (value is Document) {
+                return@map """{$key:${value.toJson().AsString("null")}}"""
             } else if (value is Number || value is MyRawString) {
                 return@map "{$key:$value}";
             } else if (value is String) {
@@ -239,7 +241,10 @@ cursor: {} } """
         var error: Exception? = null;
         try {
             this.script = queryJson;
-            result = getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).executeCommand(queryJson)
+            result =
+                getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).executeCommand(
+                    queryJson
+                )
             this.executeTime = LocalDateTime.now() - startAt
 
             usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {

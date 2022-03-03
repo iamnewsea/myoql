@@ -79,7 +79,7 @@ object db_mongo {
         return c;
     }
 
-    fun getMergedMongoCriteria(where: MutableMap<String, Any?>): Criteria {
+    fun getMergedMongoCriteria(where: Map<String, Any?>): Criteria {
         return getMergedMongoCriteria(getCriteriaFromDocument(where))
     }
 
@@ -156,6 +156,17 @@ object db_mongo {
         return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression, trueExpression, falseExpression))
     }
 
+    /**
+     * @param condExpression: 不是 db.mongo.cond 方法结构。
+     */
+    fun filter(input:String,alias:String, condExpression:Map<String,Any?>):MongoExpression{
+        var map = MongoExpression();
+        map.put("input",input);
+        map.put("as",alias);
+        map.put("cond",condExpression);
+
+        return op(PipeLineOperatorEnum.filter,map);
+    }
 
     fun op(operator: PipeLineOperatorEnum, rawValue: String): MongoExpression {
         return MongoExpression("$" + operator.toString() to rawValue)

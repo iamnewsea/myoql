@@ -1,6 +1,5 @@
 package nbcp.mongo
 
-import ch.qos.logback.classic.Level
 import nbcp.TestBase
 import nbcp.comm.*
 import nbcp.db.IdName
@@ -18,6 +17,7 @@ class Test_Mongo_Query : TestBase() {
         var d2 = d.CloneObject();
         println(d2.toString())
     }
+
     @Test
     fun test_query_datetime() {
         var start = LocalDateTime.now().minusHours(1)
@@ -50,6 +50,52 @@ class Test_Mongo_Query : TestBase() {
                 .forEach {
                     println(it.ToJson())
                 }
+
+        }
+    }
+
+    @Test
+    fun testElemMatch() {
+        usingScope(LogLevelScope.info) {
+            var where1 = JsonMap("\$gte" to 1, "\$lte" to 9)
+
+            db.mor_base.sysAnnex.query()
+                .where_select_elemMatch_first_item { it.tags match_elemMatch where1 }
+                .whereData
+                .apply {
+                    println(this.ToJson())
+                }
+
+            /*
+    {
+        $project: {
+         tags: {
+            $filter: {
+               input: "$tags",
+               as: "item",
+               cond:  {
+                   $eq: ["$$item.score" ,  1  ]
+               }
+            }
+         }
+      }
+    }
+
+             */
+            var project = JsonMap(
+                "tags" to
+                        db.mongo.filter(
+                            "\$tags", "item",
+                            (MongoColumnName("\$\$item") match 3).toExpression()
+                        )
+            )
+
+            db.mor_base.sysAnnex.aggregate()
+                .beginMatch()
+                .where { it.tags match_elemMatch where1 }
+                .endMatch()
+                .addPipeLine(PipeLineEnum.project, project)
+                .toList()
 
         }
     }

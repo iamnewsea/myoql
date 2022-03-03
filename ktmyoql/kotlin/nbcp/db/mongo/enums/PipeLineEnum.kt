@@ -21,6 +21,22 @@ enum class PipeLineEnum {
     merge,
     out,
     planCacheStats,
+
+    /*
+ {
+        $project: {
+         tags: {
+            $filter: {
+               input: "$tags",
+               as: "item",
+               cond:  {
+                   $eq: ["$$item.score" ,  1  ]
+               }
+            }
+         }
+      }
+    }
+     */
     project,
     redact,
     replaceRoot,

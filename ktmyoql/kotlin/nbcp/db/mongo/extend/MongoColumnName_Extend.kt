@@ -95,8 +95,7 @@ infix fun String.match(to: Any?): Criteria {
 
 infix fun MongoColumnName.match(to: Any?): Criteria {
     val (key, toValue) = db.mongo.proc_mongo_key_value(this, to);
-
-    return Criteria.where(key).`is`(toValue);// Pair<String, T>(this, to);
+    return Criteria.where(key.AsString("\$eq")).`is`(toValue) ;// Pair<String, T>(this, to);
 }
 
 //array_all
@@ -207,13 +206,43 @@ fun MongoColumnName.match_isNullOrEmpty(): Criteria {
 
 
 /**
- * 用于 数组的 match
+ * 用于 数组的 elemMatch！
+ * @sample
+ * 如附件字段
+ *  tags: [ {name:"a", score: 10},{name:"b", score: 50} ]
+ *
+ *  mongoshell 查询
+ *  db.getCollection('sysAnnex').find(
+ * {   tags:  { $elemMatch: { "score" : 5 } } },
+ * {   tags:  { $elemMatch: { "score" : 5 } } }
+ * )
+ *
+ * 程序：
+ * mor.base.sysAnnex.query()
+ *   .where_select_elemMatch { it.tags  match_elemMatch ( MongoColumName("score") match 5) }
+ *   .toList()
+ * ---
+ * 如果附加字段是简单类型的数组，如:
+ * tags: ["a","b"]
+ *
+ * mongoshell 查询：
+ *  db.getCollection('sysAnnex').find(
+ * {   tags:  { $elemMatch: { "$eq" : "a" } } },
+ * {   tags:  { $elemMatch: { "$eq" : "a" } } }
+ * )
+ *
+ * 程序：
+ * mor.base.sysAnnex.query()
+ *   .where_select_elemMatch { it.tags  ,  MongoColumName() match "a" }
+ *   .toList()
+ *
  * https://docs.mongodb.com/manual/reference/operator/query/elemMatch/index.html
  * https://docs.mongodb.com/manual/reference/operator/projection/elemMatch/index.html
+ * @param value: 和普通的条件是不一样的。
  */
-infix fun MongoColumnName.match_elemMatch(value: Criteria): Criteria {
+infix fun MongoColumnName.match_elemMatch(value: Map<String,Any?>): Criteria {
     var (key) = db.mongo.proc_mongo_key_value(this, null);
-    return Criteria.where(key).`elemMatch`(value);
+    return Criteria.where(key).`elemMatch`(db.mongo.getMergedMongoCriteria(value));
 }
 
 
