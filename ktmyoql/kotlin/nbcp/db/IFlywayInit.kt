@@ -27,7 +27,12 @@ abstract class FlywayVersionBaseService(val version: Int) {
         fileExt: String,
         itemFunc: (String, List<String>) -> Boolean
     ): Boolean {
-        return ClassUtil.findResources(resourcePath).map { it.split('/').filter { it.HasValue }.last() }
+        return ClassUtil.findResources(resourcePath).map {
+            return@map it.substring(resourcePath.length + 1)
+                .split('/')
+                .filter { it.HasValue }
+                .lastOrNull() ?: ""
+        }
             .filter { it.endsWith(fileExt, true) }
             .filter {
                 if (fileName.isEmpty()) {
