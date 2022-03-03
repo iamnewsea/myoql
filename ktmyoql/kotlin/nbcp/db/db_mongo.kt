@@ -128,6 +128,16 @@ object db_mongo {
         return ret;
     }
 
+    /**
+     * @sample
+     * $project: {
+     *   item: 1,
+     *   discount:
+     *     {
+     *       $cond: { if: { $gte: [ "$qty", 250 ] }, then: 30, else: 20 }
+     *     }
+     * }
+     */
     fun cond(ifExpression: Criteria, trueExpression: String, falseExpression: String): MongoExpression {
         return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }

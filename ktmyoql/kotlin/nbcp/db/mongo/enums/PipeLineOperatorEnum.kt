@@ -29,6 +29,17 @@ enum class PipeLineOperatorEnum {
     cmp,
     concat,
     concatArrays,
+
+    /**
+     * @sample
+     * $project: {
+     *   item: 1,
+     *   discount:
+     *     {
+     *       $cond: { if: { $gte: [ "$qty", 250 ] }, then: 30, else: 20 }
+     *     }
+     * }
+     */
     cond,
     convert,
     cos,
@@ -43,6 +54,23 @@ enum class PipeLineOperatorEnum {
     devide,
     eq,
     exp,
+
+    /**
+     * @sample
+     * {
+     *     $project: {
+     *      tags: {
+     *         $filter: {
+     *            input: "$tags",
+     *            as: "item",
+     *            cond:  {
+     *                $eq: ["$$item.score" ,  1  ]
+     *            }
+     *         }
+     *      }
+     *   }
+     * }
+     */
     filter,
     first,
     floor,
