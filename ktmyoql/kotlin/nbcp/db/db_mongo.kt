@@ -157,6 +157,20 @@ object db_mongo {
     }
 
     /**
+     * @sample
+     * {
+     *     $project: {
+     *      tags: {
+     *         $filter: {
+     *            input: "$tags",
+     *            as: "item",
+     *            cond:  {
+     *                $eq: ["$$item.score" ,  1  ]
+     *            }
+     *         }
+     *      }
+     *   }
+     * }
      * @param condExpression: 不是 db.mongo.cond 方法结构。
      */
     fun filter(input:String,alias:String, condExpression:Map<String,Any?>):MongoExpression{
