@@ -6,6 +6,7 @@ import nbcp.db.mongo.MongoBaseMetaCollection
 import nbcp.db.mongo.MongoSetEntityUpdateClip
 import nbcp.db.mongo.batchInsert
 import nbcp.db.mongo.updateWithEntity
+import nbcp.utils.ClassUtil
 import org.bson.Document
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.ClassPathResource
@@ -26,7 +27,7 @@ abstract class FlywayVersionBaseService(val version: Int) {
         fileExt: String,
         itemFunc: (String, List<String>) -> Boolean
     ): Boolean {
-        return ClassPathResource(resourcePath).inputStream.readContentString().split("\n")
+        return ClassUtil.findResources(resourcePath).map { it.split('/').filter { it.HasValue }.last() }
             .filter { it.endsWith(fileExt, true) }
             .filter {
                 if (fileName.isEmpty()) {
