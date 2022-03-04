@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.core.io.InputStreamSource
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.HandlerMapping
+import java.lang.Exception
 import java.lang.reflect.Method
 import java.lang.reflect.ParameterizedType
 import javax.servlet.ServletRequest
@@ -127,13 +128,32 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         //如果是列表。
         if (parameter.parameterType.IsCollectionType) {
             var genType = (parameter.genericParameterType as ParameterizedType).GetActualClass(0);
-            value = value?.ConvertType(parameter.parameterType, genType)
+
+            if (value == null) {
+                return null;
+            }
+
+            try {
+                value = value.ConvertType(parameter.parameterType, genType)
+            } catch (e: Exception) {
+                throw RuntimeException("参数 ${parameter.parameterName} 数据异常! 要求集合类型!")
+            }
+
             if (value is Collection<*> && value.size == 0) {
                 checkRequire(parameter, webRequest);
             }
             return value;
         } else if (parameter.parameterType.isArray) {
-            value = value?.ConvertType(parameter.parameterType)
+            if (value == null) {
+                return null;
+            }
+
+            try {
+                value = value.ConvertType(parameter.parameterType)
+            } catch (e: Exception) {
+                throw RuntimeException("参数 ${parameter.parameterName} 数据异常! 要求数组类型!")
+            }
+
 
             if (value is Array<*> && value.size == 0) {
                 checkRequire(parameter, webRequest);
@@ -142,7 +162,15 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         }
 
         //转换枚举、Map之类的。
-        return value?.ConvertType(parameter.parameterType);
+        if (value == null) {
+            return null;
+        }
+
+        try {
+            return value.ConvertType(parameter.parameterType);
+        } catch (e: Exception) {
+            throw RuntimeException("参数 ${parameter.parameterName} 数据异常! 要求 ${parameter.parameterType.simpleName} 类型!")
+        }
     }
 
     /**
