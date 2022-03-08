@@ -55,10 +55,10 @@ open class HiServlet {
         json["Git提交时间"] = env.getProperty("app.git-commit-time").AsString();
 
 
-//        val sleep = (request.findParameterValue("sleep").AsFloat() * 1000).toLong();
-//        if (sleep > 0 && sleep <= 3600_000) {
-//            Thread.sleep(sleep);
-//        }
+        val sleep = (request.findParameterValue("sleep").AsFloat() * 1000).toLong();
+        if (sleep > 0 && sleep <= 3600_000) {
+            Thread.sleep(sleep);
+        }
 
         val status = request.findParameterValue("status").AsInt()
         if (status.HasValue) {
