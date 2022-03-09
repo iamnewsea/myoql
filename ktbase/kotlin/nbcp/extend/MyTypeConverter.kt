@@ -56,27 +56,11 @@ fun Any.ConvertType(targetClass: Class<*>, genericClassIfTargetIsList: Class<*>?
             }
             return ret;
         }
-    } else if (targetClass.isAssignableFrom(Set::class.java)) {
-
-        //因为 set 也是 Collection,所以先转set
-        if (theClass.isArray) {
-            return (this as Array<*>)
-                .map {
-                    if (genericClassIfTargetIsList !== null || it == null) return@map it;
-                    return@map it.ConvertType(genericClassIfTargetIsList!!)
-                }.toMutableSet();
-        } else if (theClass.IsCollectionType) {
-            return (this as Collection<*>)
-                .map {
-                    if (genericClassIfTargetIsList !== null || it == null) return@map it;
-                    return@map it.ConvertType(genericClassIfTargetIsList!!)
-                }.toMutableSet();
-        }
     } else if (targetClass.IsCollectionType) {
         if (theClass.isArray) {
             (this as Array<*>)
                 .map {
-                    if (genericClassIfTargetIsList !== null || it == null) return@map it;
+                    if (genericClassIfTargetIsList == null || it == null) return@map it;
                     return@map it.ConvertType(genericClassIfTargetIsList!!)
                 }
                 .apply {
@@ -90,7 +74,7 @@ fun Any.ConvertType(targetClass: Class<*>, genericClassIfTargetIsList: Class<*>?
         } else if (theClass.IsCollectionType) {
             (this as Collection<*>)
                 .map {
-                    if (genericClassIfTargetIsList !== null || it == null) return@map it;
+                    if (genericClassIfTargetIsList == null || it == null) return@map it;
                     return@map it.ConvertType(genericClassIfTargetIsList!!)
                 }
                 .apply {
