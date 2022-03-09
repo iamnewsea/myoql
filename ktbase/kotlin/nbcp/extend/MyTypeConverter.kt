@@ -17,7 +17,8 @@ import java.util.*
 @JvmOverloads
 fun Any.ConvertType(targetClass: Class<*>, genericClassIfTargetIsList: Class<*>? = null): Any? {
     var theClass = this.javaClass;
-    if (targetClass.isAssignableFrom(theClass)) {
+
+    if (!targetClass.IsCollectionType && targetClass.isAssignableFrom(theClass)) {
         return this;
     }
 
@@ -73,17 +74,32 @@ fun Any.ConvertType(targetClass: Class<*>, genericClassIfTargetIsList: Class<*>?
         }
     } else if (targetClass.IsCollectionType) {
         if (theClass.isArray) {
-            return (this as Array<*>)
+            (this as Array<*>)
                 .map {
                     if (genericClassIfTargetIsList !== null || it == null) return@map it;
                     return@map it.ConvertType(genericClassIfTargetIsList!!)
-                }.toMutableList();
+                }
+                .apply {
+                    if (targetClass.isAssignableFrom(Set::class.java)) {
+                        return this.toMutableSet()
+                    } else {
+                        return this.toMutableList();
+                    }
+                }
+
         } else if (theClass.IsCollectionType) {
-            return (this as Collection<*>)
+            (this as Collection<*>)
                 .map {
                     if (genericClassIfTargetIsList !== null || it == null) return@map it;
                     return@map it.ConvertType(genericClassIfTargetIsList!!)
-                }.toMutableList();
+                }
+                .apply {
+                    if (targetClass.isAssignableFrom(Set::class.java)) {
+                        return this.toMutableSet()
+                    } else {
+                        return this.toMutableList();
+                    }
+                }
         }
     } else if (targetClass.isEnum) {
         if (this is Number) {
