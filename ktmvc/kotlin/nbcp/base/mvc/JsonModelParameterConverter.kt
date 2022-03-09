@@ -102,7 +102,15 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         }
 
         if (parameter.parameterType.IsStringType) {
-            var strValue = value.AsString().trim()
+            var strValue = "";
+            if (value != null) {
+                var value_type = value::class.java;
+                if (value_type.IsSimpleType()) {
+                    strValue = value.AsString().trim()
+                } else {
+                    throw RuntimeException("参数 ${parameter.parameterName} 数据异常! 要求字符串!")
+                }
+            }
 
             if (strValue.isEmpty()) {
                 checkRequire(parameter, webRequest)
