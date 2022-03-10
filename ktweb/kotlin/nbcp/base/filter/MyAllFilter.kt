@@ -67,7 +67,7 @@ open class MyAllFilter : Filter {
 
     override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
         var httpRequest = request as HttpServletRequest
-        if (matchUrI(httpRequest.requestURI, ignoreLogUrls)) {
+        if (matchUrI(httpRequest.requestURI, ignoreUrls)) {
             chain?.doFilter(request, response)
         }
 
