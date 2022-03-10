@@ -48,8 +48,10 @@ open class MyAllFilter : Filter {
     @Value("\${app.filter.ignore-log-urls:/health}")
     var ignoreLogUrls: List<String> = listOf()
 
+    @Value("\${app.filter.ignore-urls:/health}")
+    var ignoreUrls: List<String> = listOf()
+
     companion object {
-        private val UseClientCacheDataStatus = 280;
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
         fun getRequestWrapper(servletRequest: HttpServletRequest): MyHttpRequestWrapper {
             return MyHttpRequestWrapper.create(servletRequest);
@@ -64,7 +66,12 @@ open class MyAllFilter : Filter {
     }
 
     override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
-        var request = getRequestWrapper(request as HttpServletRequest);
+        var httpRequest = request as HttpServletRequest
+        if (matchUrI(httpRequest.requestURI, ignoreLogUrls)) {
+            chain?.doFilter(request, response)
+        }
+
+        var request = getRequestWrapper(httpRequest);
         var response = getResponseWrapper(response as HttpServletResponse);
 
         request.characterEncoding = "utf-8";
@@ -111,22 +118,7 @@ open class MyAllFilter : Filter {
                 logLevel = Level.toLevel(logLevelString, Level.WARN)
             }
         } else {
-            var ignoreLog = ignoreLogUrls.any {
-                var url = it;
-                var exact = url.startsWith("(") && url.endsWith(")")
-                if (exact) {
-                    url = url.Slice(1, -1);
-                }
-
-                if (url.startsWith("/") == false) {
-                    url = "/" + url;
-                }
-                if (exact) {
-                    return@any httpRequest.requestURI.startsWith(url, true)
-                } else {
-                    return@any httpRequest.requestURI.equals(url, true)
-                }
-            }
+            var ignoreLog = matchUrI(httpRequest.requestURI, ignoreLogUrls)
 
             if (ignoreLog) {
                 logLevel = Level.OFF;
@@ -135,6 +127,25 @@ open class MyAllFilter : Filter {
 
         if (logLevel == null) return null;
         return logLevel.levelInt.ToEnum<LogLevelScope>()
+    }
+
+    private fun matchUrI(requestURI: String, defineUris: List<String>): Boolean {
+        return defineUris.any {
+            var url = it;
+            var exact = url.startsWith("(") && url.endsWith(")")
+            if (exact) {
+                url = url.Slice(1, -1);
+            }
+
+            if (url.startsWith("/") == false) {
+                url = "/" + url;
+            }
+            if (exact) {
+                return@any requestURI.startsWith(url, true)
+            } else {
+                return@any requestURI.equals(url, true)
+            }
+        }
     }
 
 
