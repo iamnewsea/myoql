@@ -1,7 +1,7 @@
 package nbcp
 
-import org.springframework.beans.factory.BeanFactory
-import org.springframework.beans.factory.BeanFactoryAware
+import nbcp.base.filter.MyAllFilter
+import nbcp.base.filter.MyOqlCrossFilter
 import org.springframework.beans.factory.config.BeanDefinitionHolder
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ResourceLoaderAware
@@ -11,6 +11,7 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.type.AnnotationMetadata
 import org.springframework.core.type.filter.AnnotationTypeFilter
+import org.springframework.core.type.filter.AssignableTypeFilter
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.RestController
@@ -50,7 +51,9 @@ class KotlinWebExtendConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAware
             /**
              * TODO addExcludeFilter 同样的满足任意excludeFilters不会被加载
              */
-            // addExcludeFilter(new AnnotationTypeFilter(MyService.class));
+            addExcludeFilter(AssignableTypeFilter(KotlinWebExtendConfig::class.java));
+            addExcludeFilter(AssignableTypeFilter(MyOqlCrossFilter::class.java));
+            addExcludeFilter(AssignableTypeFilter(MyAllFilter::class.java));
         }
 
         public override fun doScan(vararg basePackages: String): Set<BeanDefinitionHolder> {

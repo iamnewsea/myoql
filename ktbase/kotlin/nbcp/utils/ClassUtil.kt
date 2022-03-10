@@ -23,6 +23,10 @@ import java.util.*
  */
 object ClassUtil {
 
+    val startJarPackage:String by lazy{
+        return@lazy Thread.currentThread().stackTrace.last().className.split(".").Slice(0, -1).joinToString(".")
+    }
+
     fun exists(className: String): Boolean {
         try {
             getDefaultClassLoader()!!.loadClass(className);
@@ -122,7 +126,7 @@ object ClassUtil {
             //值是： /D:/code/sites/server/admin/target/classes/
             //处理文件路径中中文的问题。
             var targetPath = File(path).parentFile
-            var mvn_file = targetPath.listFiles { it -> it.name == "maven-archiver" }.firstOrNull()
+            var mvn_file = targetPath?.listFiles { it -> it.name == "maven-archiver" }?.firstOrNull()
                     ?.listFiles { it -> it.name == "pom.properties" }?.firstOrNull()
             if (mvn_file != null) {
                 var jarFile_lines = mvn_file.readLines()

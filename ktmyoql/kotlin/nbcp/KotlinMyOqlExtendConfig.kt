@@ -26,7 +26,6 @@ class KotlinMyOqlExtendConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAwa
     private lateinit var resourceLoader: ResourceLoader
 
 
-
     /**
      * 类 名: MyClassPathBeanDefinitionScanner
      * 描 述: 定义一个扫描器，指定需要扫描的标识
@@ -34,7 +33,7 @@ class KotlinMyOqlExtendConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAwa
      * @author: jiaYao
      */
     class MyOqlClassPathBeanDefinitionScanner(registry: BeanDefinitionRegistry?, useDefaultFilters: Boolean) :
-            ClassPathBeanDefinitionScanner(registry, useDefaultFilters) {
+        ClassPathBeanDefinitionScanner(registry, useDefaultFilters) {
         /**
          * @addIncludeFilter 将自定义的注解添加到扫描任务中
          * @addExcludeFilter 将带有自定义注解的类 ，不加载到容器中
@@ -75,10 +74,8 @@ class KotlinMyOqlExtendConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAwa
             addIncludeFilter(AnnotationTypeFilter(Service::class.java))
             addIncludeFilter(AnnotationTypeFilter(Component::class.java))
             addIncludeFilter(AnnotationTypeFilter(Configuration::class.java))
-            /**
-             * TODO addExcludeFilter 同样的满足任意 excludeFilters 不会被加载
-             */
-            // addExcludeFilter(new AnnotationTypeFilter(MyService.class));
+
+            addExcludeFilter(AssignableTypeFilter(KotlinMyOqlExtendConfig::class.java))
         }
 
         /**
@@ -97,8 +94,8 @@ class KotlinMyOqlExtendConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAwa
      * @param registry
      */
     override fun registerBeanDefinitions(
-            importingClassMetadata: AnnotationMetadata?,
-            registry: BeanDefinitionRegistry?
+        importingClassMetadata: AnnotationMetadata?,
+        registry: BeanDefinitionRegistry?
     ) {
         // 当前MyClassPathBeanDefinitionScanner已被修改为扫描带有指定注解的类
         val scanner = MyOqlClassPathBeanDefinitionScanner(registry, false)
