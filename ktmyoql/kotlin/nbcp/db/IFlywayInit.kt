@@ -145,7 +145,7 @@ abstract class FlywayVersionBaseService(val version: Int) {
                 )
             } catch (ex: Exception) {
                 throw RuntimeException(
-                    "创建索引失败: ${this.tableName} ${indexName} ${dbEntityIndex.unique},${ex.message}",
+                    "创建索引失败: ${this.tableName} ${dbEntityIndex.ToJson()},${ex.message}",
                     ex
                 )
             }
