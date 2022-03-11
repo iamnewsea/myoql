@@ -10,6 +10,7 @@ import nbcp.utils.ClassUtil
 import org.bson.Document
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.ClassPathResource
+import java.lang.Exception
 
 abstract class FlywayVersionBaseService(val version: Int) {
     companion object {
@@ -137,10 +138,17 @@ abstract class FlywayVersionBaseService(val version: Int) {
                 .map { it.get("name").AsString() }
                 .contains(indexName) == false
         ) {
-            collection.createIndex(
-                dbEntityIndex.toDocument(),
-                IndexOptions().name(indexName).unique(dbEntityIndex.unique)
-            )
+            try {
+                collection.createIndex(
+                    dbEntityIndex.toDocument(),
+                    IndexOptions().name(indexName).unique(dbEntityIndex.unique)
+                )
+            } catch (ex: Exception) {
+                throw RuntimeException(
+                    "创建索引失败: ${this.tableName} ${indexName} ${dbEntityIndex.unique},${ex.message}",
+                    ex
+                )
+            }
         }
     }
 
