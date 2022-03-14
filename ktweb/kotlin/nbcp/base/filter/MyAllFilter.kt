@@ -69,6 +69,7 @@ open class MyAllFilter : Filter {
         var httpRequest = request as HttpServletRequest
         if (matchUrI(httpRequest.requestURI, ignoreUrls)) {
             chain?.doFilter(request, response)
+            return;
         }
 
         var request = getRequestWrapper(httpRequest);
