@@ -132,9 +132,9 @@ fun <T : Any> Any.ConvertJson(clazz: KClass<out T>, style: JsonSceneEnumScope? =
  */
 @JvmOverloads
 fun <T> Any.ConvertJson(clazz: Class<out T>, style: JsonSceneEnumScope? = null): T {
-    if (clazz.isAssignableFrom(this::class.java)) {
-        return this as T;
-    }
+//    if (clazz.isAssignableFrom(this::class.java)) {
+//        return this as T;
+//    }
 
     //如果是 String，转
     if (this is String) {
