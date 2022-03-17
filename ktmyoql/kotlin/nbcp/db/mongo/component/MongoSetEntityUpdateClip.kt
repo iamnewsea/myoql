@@ -112,7 +112,6 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
         }
     }
 
-    private var hasWhere = false;
 
     /**
      * 转为 Update子句，执行更多 Update 命令。
@@ -173,9 +172,9 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
             return@recursionJson true;
         }
 
-        this.hasWhere = whereData2.any()
+        var hasWhere = this.whereColumns.size > 0 && (this.whereColumns.size == whereData2.size);
 
-        if (this.hasWhere == false) {
+        if (hasWhere == false) {
             return null;
         }
 
