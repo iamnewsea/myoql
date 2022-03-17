@@ -59,7 +59,7 @@ abstract class FlywayVersionBaseService(val version: Int) {
             if (autoSave) {
                 lines.map { it.FromJson<JsonMap>()!! }
                     .forEach {
-                        count += db.mongo.dynamicEntity(tableName).updateWithEntity(it).exec();
+                        count += db.mongo.dynamicEntity(tableName).updateWithEntity(it).updateOrAdd();
                     }
 
                 logger.Important("同步:${tableName},${count}条数据")

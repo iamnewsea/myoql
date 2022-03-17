@@ -228,12 +228,5 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
         }
         return db.affectRowCount;
     }
-
-    /**
-     * 更新，默认按 id 更新
-     */
-    fun exec(): Int {
-        return updateOrAdd();
-    }
 }
 
