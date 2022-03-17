@@ -112,10 +112,12 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
         }
     }
 
+    private var hasWhere = false;
+
     /**
      * 转为 Update子句，执行更多 Update 命令。
      */
-    fun castToUpdate(): MongoUpdateClip<M, E> {
+    fun castToUpdate(): MongoUpdateClip<M, E>? {
         if (whereColumns.any() == false) {
             whereColumns.add("id")
         }
@@ -171,6 +173,12 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
             return@recursionJson true;
         }
 
+        this.hasWhere = whereData2.any()
+
+        if (this.hasWhere == false) {
+            return null;
+        }
+
         whereData2.forEach { key, value ->
             update.where(key match value);
         }
@@ -204,7 +212,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
      * 执行更新, == exec ,语义清晰
      */
     fun execUpdate(): Int {
-        return this.castToUpdate().exec();
+        return this.castToUpdate()?.exec() ?: -1
     }
 
     /**
@@ -221,9 +229,18 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
      * 先更新，如果不存在，则插入。
      * @return: 返回插入的Id，如果是更新则返回空字串
      */
-    fun updateOrAdd(): Int {
+    fun doubleExecSave(): Int {
         //有一个问题，可能是阻止更新了。所以导致是0。
-        if (this.execUpdate() == 0) {
+        if (this.execUpdate() <= 0) {
+            return this.execInsert()
+        }
+        return db.affectRowCount;
+    }
+
+
+    fun singleExecSave(): Int {
+        //有一个问题，可能是阻止更新了。所以导致是0。
+        if (this.execUpdate() < 0) {
             return this.execInsert()
         }
         return db.affectRowCount;
