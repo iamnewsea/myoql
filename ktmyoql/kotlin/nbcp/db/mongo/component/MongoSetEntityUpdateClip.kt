@@ -50,7 +50,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
         if (this.wholeFieldStyle) {
             throw RuntimeException("请先设置 spreadFieldStyle")
         }
-        
+
         this.spreadFieldStyleSetWholeFieldType.add(clazz);
         return this;
     }
@@ -248,7 +248,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
     }
 
     /**
-     * 先更新，如果不存在，则插入。
+     * 先更新；如果更新影响行数是0，则插入。 可能会执行两次数据库操作
      * @return: 返回插入的Id，如果是更新则返回空字串
      */
     fun doubleExecSave(): Int {
@@ -259,8 +259,10 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
         return db.affectRowCount;
     }
 
-
-    fun singleExecSave(): Int {
+    /**
+     * 如果有匹配条件，则执行更新，如果执行了更新，就不再执行插入。
+     */
+    fun execSave(): Int {
         //有一个问题，可能是阻止更新了。所以导致是0。
         if (this.execUpdate() < 0) {
             return this.execInsert()
