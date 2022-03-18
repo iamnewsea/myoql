@@ -18,8 +18,9 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
 ) : MongoClipBase(moerEntity.tableName) {
 
     private var requestJson: Map<String, Any?> = mapOf()
-    private var setMaxPathField = mutableSetOf<String>()
-    private var setWholeFieldType = mutableSetOf<Class<*>>()
+    private var spreadFieldStyleSetMaxPathField = mutableSetOf<String>()
+    private var spreadFieldStyleSetWholeFieldType = mutableSetOf<Class<*>>()
+    private var wholeFieldStyle = true;
 
     /*
     以 duty 列为例 ：
@@ -38,12 +39,30 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
     private var unsetColumns = mutableSetOf<String>("id", "createAt")
 
     fun setMaxPath(maxPath: String): MongoSetEntityUpdateClip<M, E> {
-        this.setMaxPathField.add(maxPath);
+        if (this.wholeFieldStyle) {
+            throw RuntimeException("请先设置 spreadFieldStyle")
+        }
+        this.spreadFieldStyleSetMaxPathField.add(maxPath);
         return this;
     }
 
     fun setWholeField(clazz: Class<*>): MongoSetEntityUpdateClip<M, E> {
-        this.setWholeFieldType.add(clazz);
+        if (this.wholeFieldStyle) {
+            throw RuntimeException("请先设置 spreadFieldStyle")
+        }
+        
+        this.spreadFieldStyleSetWholeFieldType.add(clazz);
+        return this;
+    }
+
+
+    fun setWholeFieldStyle(): MongoSetEntityUpdateClip<M, E> {
+        this.wholeFieldStyle = true;
+        return this;
+    }
+
+    fun setSpreadFieldStyle(): MongoSetEntityUpdateClip<M, E> {
+        this.wholeFieldStyle = false;
         return this;
     }
 
@@ -154,16 +173,20 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
             }
 
             if (setColumns.contains(wbs) || !keyInWhere) {
+                if (this.wholeFieldStyle) {
+                    setData2.put(wbs, value)
+                    return@recursionJson false
+                }
                 val value_type = value::class.java;
 
                 if (value_type.IsSimpleType()) {
                     setData2.put(wbs, value)
                 } else if (value_type.isArray || value_type.IsCollectionType) {
                     setData2.put(wbs, value);
-                } else if (setMaxPathField.any { it == wbs }) {
+                } else if (spreadFieldStyleSetMaxPathField.any { it == wbs }) {
                     setData2.put(wbs, value);
                     return@recursionJson false
-                } else if (setWholeFieldType.any { it == value_type }) {
+                } else if (spreadFieldStyleSetWholeFieldType.any { it == value_type }) {
                     setData2.put(wbs, value);
                     return@recursionJson false
                 }
