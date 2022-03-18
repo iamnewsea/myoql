@@ -79,10 +79,7 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
      */
     fun setIf(setIf: Boolean, valuePair: (M) -> Pair<MongoColumnName, Any?>): MongoUpdateClip<M, E> {
         if (setIf == false) return this;
-        var v = valuePair(this.moerEntity)
-
-        this.setData.put(v.first.toString(), v.second);
-        return this;
+        return set(valuePair);
     }
 
 
@@ -92,18 +89,30 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
 
     fun set(func: (M) -> Pair<MongoColumnName, Any?>): MongoUpdateClip<M, E> {
         var p = func(moerEntity);
-        this.setData.put(p.first.toString(), p.second);
+        val key = p.first.toString();
+
+        if (key == "id") {
+            throw RuntimeException("不允许更新 id/_id 列")
+        } else if (key == "_id") {
+            throw RuntimeException("不允许更新 id/_id 列")
+        }
+        this.setData.put(key, p.second);
         return this;
     }
 
     fun unset(key: String): MongoUpdateClip<M, E> {
+        if (key == "id") {
+            throw RuntimeException("不允许更新 id/_id 列")
+        } else if (key == "_id") {
+            throw RuntimeException("不允许更新 id/_id 列")
+        }
+
         this.unsetColumns.add(key);
         return this;
     }
 
     fun unset(keyFunc: (M) -> MongoColumnName): MongoUpdateClip<M, E> {
-        this.unsetColumns.add(keyFunc(this.moerEntity).toString());
-        return this;
+        return unset(keyFunc(this.moerEntity).toString());
     }
 
     /**
@@ -112,8 +121,14 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
      */
     fun inc(incData: (M) -> DbIncData): MongoUpdateClip<M, E> {
         var kv = incData(this.moerEntity)
-        this.incData.put(kv.column, kv.incValue);
-        this.removeWhereColumn { MongoColumnName(kv.column) }
+        var key = kv.column;
+        if (key == "id") {
+            throw RuntimeException("不允许更新 id/_id 列")
+        } else if (key == "_id") {
+            throw RuntimeException("不允许更新 id/_id 列")
+        }
+        this.incData.put(key, kv.incValue);
+        this.removeWhereColumn { MongoColumnName(key) }
         return this;
     }
 
@@ -205,13 +220,14 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
         updateOption.upsert(true);
         try {
             this.script = getUpdateScript(criteria, update)
-            resultDocument = getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).findAndModify(
-                query,
-                update,
-                updateOption,
-                Document::class.java,
-                actualTableName
-            );
+            resultDocument =
+                getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).findAndModify(
+                    query,
+                    update,
+                    updateOption,
+                    Document::class.java,
+                    actualTableName
+                );
 
             this.executeTime = LocalDateTime.now() - startAt
 

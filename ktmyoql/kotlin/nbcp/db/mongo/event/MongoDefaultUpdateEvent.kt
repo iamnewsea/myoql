@@ -29,8 +29,12 @@ class MongoDefaultUpdateEvent : IMongoEntityUpdate {
     }
 
     private fun setId2_id(update: MongoBaseUpdateClip) {
-
         db.mongo.transformDocumentIdTo_id(update.setData)
+
+        if (update.setData.containsKey("_id")) {
+            throw RuntimeException("不允许更新 id/_id 列!")
+        }
+
         db.mongo.transformDocumentIdTo_id(update.pushData)
 
         for (kv in update.setData) {
