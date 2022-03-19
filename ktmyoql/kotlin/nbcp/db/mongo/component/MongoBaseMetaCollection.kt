@@ -23,9 +23,9 @@ abstract class MongoBaseMetaCollection<T : Any> @JvmOverloads constructor(
          */
         val entityClass: Class<T>,
         defEntityName: String,
-        entityName: String = "",
+        tableName: String = "",
         databaseId: String = ""
-) : BaseMetaData(defEntityName, entityName, databaseId) {
+) : BaseMetaData(defEntityName, tableName, databaseId) {
     //    abstract fun getColumns(): Array<String>;
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java)

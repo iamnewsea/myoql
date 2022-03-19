@@ -12,9 +12,9 @@ import java.lang.RuntimeException
 abstract class EsBaseMetaEntity<T : Serializable>(
         val entityClass: Class<T>,
         defEntityName: String,
-        entityName: String = "",
+        tableName: String = "",
         databaseId: String = ""
-) : BaseMetaData(defEntityName, entityName, databaseId) {
+) : BaseMetaData(defEntityName, tableName, databaseId) {
     //    abstract fun getColumns(): Array<String>;
     companion object {
     }
