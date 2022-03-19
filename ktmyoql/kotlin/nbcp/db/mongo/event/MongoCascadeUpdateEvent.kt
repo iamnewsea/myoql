@@ -29,7 +29,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
     }
 
 
-    override fun beforeUpdate(update: MongoBaseUpdateClip, chain: EventChain): EventResult {
+    override fun beforeUpdate(update: MongoBaseUpdateClip): EventResult {
         if (scopes.getLatest(MyOqlOrmScope.IgnoreCascadeUpdate) != null) {
             return EventResult(true, null)
         }
@@ -133,7 +133,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
         return idValue
     }
 
-    override fun update(update: MongoBaseUpdateClip, chain: EventChain, eventData: EventResult) {
+    override fun update(update: MongoBaseUpdateClip, eventData: EventResult) {
         if (eventData.extData == null) {
             return;
         }

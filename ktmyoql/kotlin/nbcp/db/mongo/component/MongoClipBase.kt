@@ -17,7 +17,7 @@ import java.time.Duration
 
 
 //collectionClazz 是集合类型。
-open class MongoClipBase(val defEntityName: String) : Serializable {
+open class MongoClipBase(var defEntityName: String) : Serializable {
 
     /**
      * 动态数据源：

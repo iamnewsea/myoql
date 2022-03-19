@@ -82,20 +82,20 @@ class MongoEntityCollector : BeanPostProcessor {
                 db_mongo.groups.add(bean)
 
                 bean.getEntities()
-                    .forEach { moer ->
-                        if (moer is MongoBaseMetaCollection<*>) {
-                            /**
-                             * 这里使用了实体的类．
-                             */
-                            //TODO 使用元数据类，会更好一些．但需要把实体注解，全部转移到元数据类上．
+                        .forEach { moer ->
+                            if (moer is MongoBaseMetaCollection<*>) {
+                                /**
+                                 * 这里使用了实体的类．
+                                 */
+                                //TODO 使用元数据类，会更好一些．但需要把实体注解，全部转移到元数据类上．
 
-                            addDustbin(moer)
-                            addLogHistory(moer);
-                            addRedisCache(moer);
+                                addDustbin(moer)
+                                addLogHistory(moer);
+                                addRedisCache(moer);
 
-                            addRef(moer.entityClass)
+                                addRef(moer.entityClass)
+                            }
                         }
-                    }
             }
         }
 
@@ -129,10 +129,10 @@ class MongoEntityCollector : BeanPostProcessor {
         var list = mutableListOf<RedisCacheColumns>()
         var moerClass = moer::class.java
         moerClass.getAnnotationsByType(DbEntityIndex::class.java)
-            .filter { it.cacheable }
-            .forEach {
-                list.add(RedisCacheColumns(it.value))
-            }
+                .filter { it.cacheable }
+                .forEach {
+                    list.add(RedisCacheColumns(it.value))
+                }
 
         var redisCacheDefine = moerClass.getAnnotation(RedisCacheDefine::class.java);
         if (redisCacheDefine != null) {
@@ -203,7 +203,7 @@ class MongoEntityCollector : BeanPostProcessor {
     }
 
 
-    fun onAggregate(query: MongoAggregateClip<*,out Any>): List<AggregateEventResult> {
+    fun onAggregate(query: MongoAggregateClip<*, out Any>): List<AggregateEventResult> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<AggregateEventResult>()
         usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
@@ -218,6 +218,7 @@ class MongoEntityCollector : BeanPostProcessor {
         }
         return list
     }
+
     fun onInserting(insert: MongoBaseInsertClip): List<InsertEventResult> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<InsertEventResult>()
@@ -235,17 +236,17 @@ class MongoEntityCollector : BeanPostProcessor {
     }
 
     fun onUpdating(update: MongoBaseUpdateClip): List<UpdateEventResult> {
-        var query = MongoBaseQueryClip(update.actualTableName);
-        query.whereData.putAll(update.whereData)
-        var chain = EventChain(query)
+//        var query = MongoBaseQueryClip(update.actualTableName);
+//        query.whereData.putAll(update.whereData)
+//        var chain = EventChain(query)
 
         //先判断是否进行了类拦截.
         var list = mutableListOf<UpdateEventResult>()
         usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
             updateEvents.ForEachExt { it, _ ->
-                var ret = it.beforeUpdate(update, chain);
+                var ret = it.beforeUpdate(update);
                 if (ret.result) {
-                    list.add(UpdateEventResult(it, chain, ret))
+                    list.add(UpdateEventResult(it, ret))
                 }
                 return@ForEachExt true
             }
@@ -254,18 +255,16 @@ class MongoEntityCollector : BeanPostProcessor {
     }
 
     fun onDeleting(delete: MongoDeleteClip<*>): List<DeleteEventResult> {
-
-        var query = MongoBaseQueryClip(delete.actualTableName);
-        query.whereData.putAll(delete.whereData)
-        var chain = EventChain(query)
+//        var query = MongoBaseQueryClip(delete.actualTableName);
+//        query.whereData.putAll(delete.whereData)
 
         //先判断是否进行了类拦截.
         var list = mutableListOf<DeleteEventResult>()
         usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
             deleteEvents.ForEachExt { it, _ ->
-                var ret = it.beforeDelete(delete, chain);
+                var ret = it.beforeDelete(delete );
                 if (ret.result) {
-                    list.add(DeleteEventResult(it, chain, ret))
+                    list.add(DeleteEventResult(it , ret))
                 }
                 return@ForEachExt true
             }

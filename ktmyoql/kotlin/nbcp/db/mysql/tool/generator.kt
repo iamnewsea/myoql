@@ -372,8 +372,8 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                 ""
             )
         }${CodeGeneratorHelper.getAnnotations(entType.annotations)}
-class ${entityTableMetaName}(datasource:String="")
-    :SqlBaseMetaTable<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java,"${dbName}") {
+class ${entityTableMetaName}(collectionName: String = "", datasource:String="")
+    :SqlBaseMetaTable<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, "${dbName}", collectionName.AsString("${dbName}")) {
 ${columnMetaDefines.props.joinToString("\n")}
 
     override fun getSpreadColumns(): Array<String> { return arrayOf<String>(${

@@ -20,7 +20,7 @@ import java.time.LocalDateTime
  * MongoDelete
  */
 class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
-    MongoClipBase(moerEntity.tableName), IMongoWhere {
+        MongoClipBase(moerEntity.tableName), IMongoWhere {
 
     override val whereData = MongoWhereClip()
 
@@ -86,7 +86,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
             if (ret > 0) {
                 usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
                     settingResult.forEach {
-                        it.event.delete(this, it.chain, it.result)
+                        it.event.delete(this, it.result)
                     }
                 }
             }

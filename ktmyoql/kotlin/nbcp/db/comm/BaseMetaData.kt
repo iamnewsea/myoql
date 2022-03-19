@@ -6,10 +6,15 @@ import java.io.Serializable
 
 
 abstract class BaseMetaData @JvmOverloads constructor(
-    var tableName: String,
-    var databaseId: String = ""
-) :
-    Serializable {
+        var defEntityName: String,
+        var tableName: String = "",
+        var databaseId: String = ""
+) : Serializable {
+    init {
+        if (this.tableName.isEmpty()) {
+            this.tableName = defEntityName;
+        }
+    }
 
     val actualTableName by lazy {
         db.mongo.mongoEvents.getActualTableName(tableName);

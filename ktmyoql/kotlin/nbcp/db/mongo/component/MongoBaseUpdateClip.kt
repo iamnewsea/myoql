@@ -150,7 +150,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
                     )
                 ) {
                     settingResult.forEach {
-                        it.event.update(this, it.chain, it.result)
+                        it.event.update(this, it.result)
                     }
                 }
             }

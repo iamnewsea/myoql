@@ -20,12 +20,12 @@ class MongoDefaultDeleteEvent : IMongoEntityDelete {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    override fun beforeDelete(delete: MongoDeleteClip<*>, chain: EventChain): EventResult {
+    override fun beforeDelete(delete: MongoDeleteClip<*>): EventResult {
 
         return EventResult(true, null)
     }
 
-    override fun delete(delete: MongoDeleteClip<*>, chain: EventChain, eventData: EventResult) {
+    override fun delete(delete: MongoDeleteClip<*>, eventData: EventResult) {
         //清缓存
         val cacheGroups = MongoEntityCollector.sysRedisCacheDefines.get(delete.defEntityName)
         if (cacheGroups == null) {

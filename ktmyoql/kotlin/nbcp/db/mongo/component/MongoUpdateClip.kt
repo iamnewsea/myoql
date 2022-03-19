@@ -25,7 +25,7 @@ import java.time.LocalDateTime
  * MongoUpdate
  */
 class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntity: M) :
-    MongoBaseUpdateClip(moerEntity.tableName) {
+        MongoBaseUpdateClip(moerEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -221,13 +221,13 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
         try {
             this.script = getUpdateScript(criteria, update)
             resultDocument =
-                getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).findAndModify(
-                    query,
-                    update,
-                    updateOption,
-                    Document::class.java,
-                    actualTableName
-                );
+                    getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).findAndModify(
+                            query,
+                            update,
+                            updateOption,
+                            Document::class.java,
+                            actualTableName
+                    );
 
             this.executeTime = LocalDateTime.now() - startAt
 
@@ -237,14 +237,14 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
 
 
                 usingScope(
-                    arrayOf(
-                        MyOqlOrmScope.IgnoreAffectRow,
-                        MyOqlOrmScope.IgnoreExecuteTime,
-                        MyOqlOrmScope.IgnoreUpdateAt
-                    )
+                        arrayOf(
+                                MyOqlOrmScope.IgnoreAffectRow,
+                                MyOqlOrmScope.IgnoreExecuteTime,
+                                MyOqlOrmScope.IgnoreUpdateAt
+                        )
                 ) {
                     settingResult.forEach {
-                        it.event.update(this, it.chain, it.result)
+                        it.event.update(this, it.result)
                     }
                 }
             }

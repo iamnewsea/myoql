@@ -13,7 +13,7 @@ import java.time.LocalDateTime
  */
 @Component
 class MongoDefaultUpdateEvent : IMongoEntityUpdate {
-    override fun beforeUpdate(update: MongoBaseUpdateClip, chain: EventChain): EventResult {
+    override fun beforeUpdate(update: MongoBaseUpdateClip): EventResult {
         setId2_id(update)
 
         setUpdateAt(update)
@@ -46,7 +46,7 @@ class MongoDefaultUpdateEvent : IMongoEntityUpdate {
         }
     }
 
-    override fun update(update: MongoBaseUpdateClip, chain: EventChain, eventData: EventResult) {
+    override fun update(update: MongoBaseUpdateClip, eventData: EventResult) {
         //清缓存
         val cacheGroups = MongoEntityCollector.sysRedisCacheDefines.get(update.defEntityName)
         if (cacheGroups == null) {

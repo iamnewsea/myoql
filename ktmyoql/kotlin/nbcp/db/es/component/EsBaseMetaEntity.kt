@@ -10,10 +10,11 @@ import java.lang.RuntimeException
  * es 元数据实体的基类
  */
 abstract class EsBaseMetaEntity<T : Serializable>(
-    val entityClass: Class<T>,
-    entityName: String,
-    databaseId: String = ""
-) : BaseMetaData(entityName,databaseId) {
+        val entityClass: Class<T>,
+        defEntityName: String,
+        entityName: String = "",
+        databaseId: String = ""
+) : BaseMetaData(defEntityName, entityName, databaseId) {
     //    abstract fun getColumns(): Array<String>;
     companion object {
     }
