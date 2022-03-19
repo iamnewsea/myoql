@@ -36,7 +36,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
 
 
         var refs =
-            MongoEntityCollector.refsMap.filter { MyUtil.getSmallCamelCase(it.refEntityClass.simpleName) == update.collectionName }
+            MongoEntityCollector.refsMap.filter { MyUtil.getSmallCamelCase(it.refEntityClass.simpleName) == update.defEntityName }
         if (refs.any() == false) {
             return EventResult(true, null)
         }
@@ -68,7 +68,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
             val masterNameValue = updateSetFields.getValue(ref.refNameField);
 
             //判断新值，旧值是否相等
-            val nameValueQuery = MongoBaseQueryClip(update.collectionName)
+            val nameValueQuery = MongoBaseQueryClip(update.actualTableName)
             nameValueQuery.whereData.putAll(update.whereData)
             nameValueQuery.selectField(ref.refNameField)
 
@@ -124,7 +124,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
             }
 
             //查询数据，把Id查出来。
-            val IdValueQuery = MongoBaseQueryClip(update.collectionName)
+            val IdValueQuery = MongoBaseQueryClip(update.actualTableName)
             IdValueQuery.whereData.putAll(update.whereData)
             IdValueQuery.selectField(ref.refIdField)
 
@@ -153,7 +153,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
                 update2.exec();
 
                 logger.Important(
-                    "mongo级联更新${update2.affectRowCount}条记录,${update.collectionName}-->${targetCollection},${
+                    "mongo级联更新${update2.affectRowCount}条记录,${update.actualTableName}-->${targetCollection},${
                         ref.masterIdValues.joinToString(
                             ","
                         )

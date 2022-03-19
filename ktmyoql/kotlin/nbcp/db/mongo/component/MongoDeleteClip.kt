@@ -56,9 +56,9 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
         var logicalDelete = this.moerEntity.entityClass.getAnnotation(LogicalDelete::class.java)
         if (logicalDelete != null) {
 
-            logger.Important("逻辑删除强制执行更新,${this.collectionName},${this.whereData.ToJson()}")
+            logger.Important("逻辑删除强制执行更新,${this.actualTableName},${this.whereData.ToJson()}")
 
-            var update = MongoBaseUpdateClip(this.collectionName)
+            var update = MongoBaseUpdateClip(this.actualTableName)
             update.whereData.putAll(this.whereData)
             update.setData.put(logicalDelete.value, true);
             return update.exec();
@@ -102,7 +102,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
 
     private fun getDeleteScript(where: Criteria): String {
         var msgs = mutableListOf<String>()
-        msgs.add("[delete] " + this.collectionName);
+        msgs.add("[delete] " + this.actualTableName);
         msgs.add("[where] " + where.criteriaObject.ToJson())
 
         return msgs.joinToString(const.line_break)

@@ -48,7 +48,7 @@ class MongoDefaultUpdateEvent : IMongoEntityUpdate {
 
     override fun update(update: MongoBaseUpdateClip, chain: EventChain, eventData: EventResult) {
         //清缓存
-        val cacheGroups = MongoEntityCollector.sysRedisCacheDefines.get(update.collectionName)
+        val cacheGroups = MongoEntityCollector.sysRedisCacheDefines.get(update.defEntityName)
         if (cacheGroups == null) {
             return;
         }

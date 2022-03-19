@@ -17,7 +17,7 @@ import java.time.Duration
 
 
 //collectionClazz 是集合类型。
-open class MongoClipBase(var collectionName: String) : Serializable {
+open class MongoClipBase(val defEntityName: String) : Serializable {
 
     /**
      * 动态数据源：
@@ -30,7 +30,7 @@ open class MongoClipBase(var collectionName: String) : Serializable {
         var isRead = this is MongoBaseQueryClip || this is MongoAggregateClip<*, *>;
 
         //配置是定海神针。
-        SpringUtil.getBean<MongoCollectionDataSource>().getDataSourceName(this.collectionName, isRead)
+        SpringUtil.getBean<MongoCollectionDataSource>().getDataSourceName(this.defEntityName, isRead)
             .apply {
                 if (this.HasValue) {
                     var uri = SpringUtil.context.environment.getProperty("app.mongo.${this}.ds.uri")
@@ -60,7 +60,7 @@ open class MongoClipBase(var collectionName: String) : Serializable {
 
 
     val actualTableName by lazy {
-        db.mongo.mongoEvents.getActualTableName(collectionName);
+        db.mongo.mongoEvents.getActualTableName(defEntityName);
     }
 
 

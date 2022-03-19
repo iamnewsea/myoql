@@ -18,7 +18,7 @@ class MongoDefaultQueryEvent : IMongoEntityQuery {
             return EventResult(true, null)
         }
 
-        var moer = db.mongo.mongoEvents.getCollection(query.collectionName);
+        var moer = db.mongo.mongoEvents.getCollection(query.defEntityName);
         if (moer == null) {
             return EventResult(true, null)
         }

@@ -27,7 +27,7 @@ class MongoDefaultDeleteEvent : IMongoEntityDelete {
 
     override fun delete(delete: MongoDeleteClip<*>, chain: EventChain, eventData: EventResult) {
         //清缓存
-        val cacheGroups = MongoEntityCollector.sysRedisCacheDefines.get(delete.collectionName)
+        val cacheGroups = MongoEntityCollector.sysRedisCacheDefines.get(delete.defEntityName)
         if (cacheGroups == null) {
             return;
         }

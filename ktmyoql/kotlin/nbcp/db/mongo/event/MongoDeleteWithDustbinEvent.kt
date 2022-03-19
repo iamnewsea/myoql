@@ -27,7 +27,7 @@ class MongoDeleteWithDustbinEvent : IMongoEntityDelete {
 
         //找出数据
         var where = db.mongo.getMergedMongoCriteria(delete.whereData);
-        var query = MongoBaseQueryClip(delete.collectionName);
+        var query = MongoBaseQueryClip(delete.actualTableName);
         query.whereData.putAll(where.criteriaObject);
         var list = query.toList(Document::class.java)
 
@@ -39,12 +39,12 @@ class MongoDeleteWithDustbinEvent : IMongoEntityDelete {
         if (list.isNullOrEmpty()) return;
 
         val dustbin = SysDustbin()
-        dustbin.table = delete.collectionName
+        dustbin.table = delete.actualTableName
         dustbin.data = list as Serializable?;
         db.mor_base.sysDustbin.doInsert(dustbin)
 
         val list_ids = list.map { it.get("_id").AsString() }
 
-        logger.info("${delete.collectionName}.${list_ids.joinToString(",")} 进了垃圾桶")
+        logger.info("${delete.actualTableName}.${list_ids.joinToString(",")} 进了垃圾桶")
     }
 }

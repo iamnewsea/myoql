@@ -235,7 +235,7 @@ class MongoEntityCollector : BeanPostProcessor {
     }
 
     fun onUpdating(update: MongoBaseUpdateClip): List<UpdateEventResult> {
-        var query = MongoBaseQueryClip(update.collectionName);
+        var query = MongoBaseQueryClip(update.actualTableName);
         query.whereData.putAll(update.whereData)
         var chain = EventChain(query)
 
@@ -255,7 +255,7 @@ class MongoEntityCollector : BeanPostProcessor {
 
     fun onDeleting(delete: MongoDeleteClip<*>): List<DeleteEventResult> {
 
-        var query = MongoBaseQueryClip(delete.collectionName);
+        var query = MongoBaseQueryClip(delete.actualTableName);
         query.whereData.putAll(delete.whereData)
         var chain = EventChain(query)
 

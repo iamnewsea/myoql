@@ -17,7 +17,7 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
         var sortNumbers = arrayOf<SortNumber>()
         var tableName = insert.actualTableName;
 
-        var table = db.mongo.mongoEvents.getCollection(insert.collectionName)
+        var table = db.mongo.mongoEvents.getCollection(insert.defEntityName)
         if (table != null) {
             sortNumbers = table::class.java.getAnnotationsByType(SortNumber::class.java)
         }
@@ -121,7 +121,7 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
 
     override fun insert(insert: MongoBaseInsertClip, eventData: EventResult) {
         //清缓存
-        val cacheGroups = MongoEntityCollector.sysRedisCacheDefines.get(insert.collectionName)
+        val cacheGroups = MongoEntityCollector.sysRedisCacheDefines.get(insert.defEntityName)
         if (cacheGroups == null) {
             return;
         }

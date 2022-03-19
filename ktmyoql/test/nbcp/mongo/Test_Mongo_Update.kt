@@ -72,6 +72,6 @@ class Test_Mongo_Update : TestBase() {
             .whereColumn { it.id }
             .castToUpdate();
 
-        update.exec();
+        update!!.exec();
     }
 }

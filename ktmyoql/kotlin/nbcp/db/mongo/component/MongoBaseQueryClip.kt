@@ -199,7 +199,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     }
 
     private fun getMatchDefaultCacheIdValue(): List<StringMap> {
-        var def = MongoEntityCollector.sysRedisCacheDefines.get(this.collectionName)
+        var def = MongoEntityCollector.sysRedisCacheDefines.get(this.defEntityName)
         if (def == null) {
             return listOf();
         }
@@ -240,7 +240,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
 
     private fun getQueryScript(criteria: Criteria): String {
         var msgs = mutableListOf<String>()
-        msgs.add("[query] " + this.collectionName);
+        msgs.add("[query] " + this.actualTableName);
         msgs.add("[where] " + criteria.criteriaObject.ToJson())
         if (selectColumns.any() || selectProjections.any()) {
             msgs.add(

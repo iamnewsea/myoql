@@ -32,7 +32,7 @@ class MongoLogHistoryUpdateEvent : IMongoEntityUpdate {
         }
 
         //查询数据，把Id查出来。
-        var query = MongoBaseQueryClip(update.collectionName)
+        var query = MongoBaseQueryClip(update.actualTableName)
         query.whereData.putAll(update.whereData)
         query.selectField("_id");
 
@@ -61,7 +61,7 @@ class MongoLogHistoryUpdateEvent : IMongoEntityUpdate {
             val log = SysLog()
             log.module = "DbEntityLogHistory"
             log.level = "info"
-            log.tags = mutableListOf(update.collectionName)
+            log.tags = mutableListOf(update.actualTableName)
             log.msg = "更新了关键字段值"
             log.data = it;
 
