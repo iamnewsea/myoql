@@ -6,6 +6,8 @@ import nbcp.comm.*
 import nbcp.web.queryJson
 import nbcp.web.tokenValue
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.AutoConfigureAfter
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import java.lang.RuntimeException
@@ -20,6 +22,8 @@ import javax.servlet.http.HttpServletResponse
  */
 @OpenAction
 @RestController
+@AutoConfigureAfter(IUserAuthenticationService::class)
+@ConditionalOnBean(IUserAuthenticationService::class)
 open class AuthImageServlet {
     @Autowired
     lateinit var userSystemService: IUserAuthenticationService;

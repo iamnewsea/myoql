@@ -7,6 +7,8 @@ import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.reflect.MethodSignature
 import org.slf4j.LoggerFactory
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.scheduling.support.CronExpression
 import org.springframework.stereotype.Component
@@ -20,6 +22,7 @@ import java.time.LocalDateTime
  */
 @Aspect
 @Component
+@ConditionalOnClass(RedisTemplate::class)
 open class RedisCacheAopService {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
