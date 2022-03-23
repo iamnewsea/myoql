@@ -61,6 +61,7 @@ object MyUtil {
         var unwindKeys = keys
             .map { it.split('.') }
             .Unwind()
+            .map { it.trim() }
             .filter { it.HasValue }
             .toTypedArray();
 

@@ -14,11 +14,13 @@ import java.net.Inet4Address
 import java.net.NetworkInterface
 import java.net.URL
 import java.nio.charset.Charset
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.*
 import javax.imageio.ImageIO
-import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.*
 
 
 data class FileMessage @JvmOverloads constructor(
@@ -258,15 +260,51 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         return doNet()
     }
 
+
+    /**
+     * 信任所有服务器地址,不检查任何证书
+     */
+    private fun trustAllHttpsHosts() {
+        //创建SSLContext对象，并使用我们指定的信任管理器初始化
+        val trustAllCert: TrustManager = object : X509TrustManager {
+            //返回受信任的X509证书数组。
+            override fun getAcceptedIssuers(): Array<X509Certificate> {
+                return arrayOf()
+            }
+
+            //该方法检查客户端的证书,由于我们不需要对客户端进行认证，所以可以不用处理
+            override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
+
+            //该方法检查服务器的证书，通过实现该方法，可以指定我们信任的任何证书。
+            //不做任何处理，就会信任任何证书。
+            override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+        }
+
+        // 安装全信任管理器
+        val sc: SSLContext = SSLContext.getInstance("TLS")
+        sc.init(null, arrayOf(trustAllCert), SecureRandom())
+        this.sslSocketFactory = sc.getSocketFactory();
+//        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory())
+    }
+
+
     fun doNet(): String {
         var startAt = LocalDateTime.now();
 
         var conn = URL(url).openConnection() as HttpURLConnection;
 
         try {
-            if (this.sslSocketFactory != null) {
-                (conn as javax.net.ssl.HttpsURLConnection)
-                    .setSSLSocketFactory(this.sslSocketFactory)
+            if (conn is HttpsURLConnection) {
+                if (this.sslSocketFactory == null) {
+                    this.trustAllHttpsHosts();
+                }
+
+                conn.setSSLSocketFactory(this.sslSocketFactory)
+                conn.hostnameVerifier = object : HostnameVerifier {
+                    override fun verify(p0: String, p1: SSLSession): Boolean {
+                        return true;
+                    }
+                }
             }
 
             conn.instanceFollowRedirects = this.request.instanceFollowRedirects
