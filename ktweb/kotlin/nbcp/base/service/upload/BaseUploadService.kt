@@ -61,10 +61,13 @@ abstract class BaseUploadService {
 
         //流不可重复读！！所以要重新从file中获取流
         if (extInfo.extType == FileExtensionTypeEnum.Image) {
-            val bufferedImage = ImageIO.read(file.inputStream)
-            annexInfo.imgWidth = bufferedImage.getWidth();
-            annexInfo.imgHeight = bufferedImage.getHeight();
-
+            try {
+                val bufferedImage = ImageIO.read(file.inputStream)
+                annexInfo.imgWidth = bufferedImage.getWidth();
+                annexInfo.imgHeight = bufferedImage.getHeight();
+            } catch (ex: Exception) {
+                return ApiResult.error("不识别的图片格式!")
+            }
         } else if (extInfo.extType == FileExtensionTypeEnum.Video) {
             VideoUtil.getVideoInfo(file.inputStream).data.apply {
                 if (this != null) {
