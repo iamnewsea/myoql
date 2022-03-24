@@ -41,7 +41,7 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
         private var contextField: ApplicationContext? = null
 
         @JvmStatic
-        val runningInTest :Boolean by lazy{
+        val runningInTest: Boolean by lazy {
             return@lazy Thread.currentThread().stackTrace.last().className == "com.intellij.rt.junit.JUnitStarter"
         }
 
@@ -87,9 +87,9 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
         @JvmStatic
         @JvmOverloads
         fun registerBeanDefinition(
-                name: String,
-                instance: Any,
-                callback: ((BeanDefinitionBuilder) -> Unit) = {}
+            name: String,
+            instance: Any,
+            callback: ((BeanDefinitionBuilder) -> Unit) = {}
         ) {
             registry.registerBeanDefinition(name, getGenericBeanDefinition(instance, callback));
         }
@@ -204,8 +204,8 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
          * 动态创建Bean
          */
         fun getGenericBeanDefinition(
-                instance: Any,
-                callback: ((BeanDefinitionBuilder) -> Unit) = {}
+            instance: Any,
+            callback: ((BeanDefinitionBuilder) -> Unit) = {}
         ): GenericBeanDefinition {
             var type = instance::class.java
             val builder = BeanDefinitionBuilder.genericBeanDefinition(type);
@@ -222,6 +222,13 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
             return definition;
         }
 
+
+        private val init_callbacks = mutableListOf<(ApplicationContext) -> Unit>()
+
+        @JvmStatic
+        fun onInit(callback: (ApplicationContext) -> Unit) {
+            init_callbacks.add(callback);
+        }
     }
 
 //    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
@@ -246,6 +253,10 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
             this.init_app();
             logger.Important("============ SpringUtil初始化! ============")
             //发送初始化事件是没用的，因为需要先注册事件，再发出事件。 要保证注册事件在该方法之前
+
+            init_callbacks.forEach {
+                it.invoke(context);
+            }
         }
     }
 
