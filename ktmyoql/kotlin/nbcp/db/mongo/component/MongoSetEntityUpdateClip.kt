@@ -10,6 +10,7 @@ import nbcp.db.db
 
 /**
  * 只是简单的更新实体。更多操作要转化为 Update 再操作。 castToUpdate
+ * where条件值，不能为空！
  * 不会更新 id
  */
 class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
@@ -17,7 +18,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
     var entity: E
 ) : MongoClipBase(moerEntity.tableName) {
 
-    private var requestJson: Map<String, Any?> = mapOf()
+    //    private var requestJson: Map<String, Any?> = mapOf()
     private var spreadFieldStyleSetMaxPathField = mutableSetOf<String>()
     private var spreadFieldStyleSetWholeFieldType = mutableSetOf<Class<*>>()
     private var wholeFieldStyle = true;
@@ -92,10 +93,10 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
         return this;
     }
 
-    fun withRequestJson(json: Map<String, Any?>): MongoSetEntityUpdateClip<M, E> {
-        this.requestJson = json;
-        return this;
-    }
+//    fun withRequestJson(json: Map<String, Any?>): MongoSetEntityUpdateClip<M, E> {
+//        this.requestJson = json;
+//        return this;
+//    }
 
 
     fun joinWbsPath(a: String, b: String): String {
@@ -155,9 +156,9 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
 
         var ori_entity_map = this.entity.ToJson().FromJson<JsonMap>()!!
 
-        var withRequestJson = this.requestJson.keys.any();
+//        var withRequestJson = this.requestJson.keys.any();
 
-        recursionJson(if (withRequestJson) this.requestJson else ori_entity_map, "") { map, key, value, pWbs ->
+        recursionJson(ori_entity_map, "") { map, key, value, pWbs ->
 
             var wbs = joinWbsPath(pWbs, key);
 
@@ -193,6 +194,19 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
             }
 
             return@recursionJson true;
+        }
+
+        whereData2.keys.toTypedArray().forEach { key ->
+            val value = whereData2.get(key);
+            if (value == null) {
+                whereData2.remove(key);
+                return@forEach
+            }
+
+            if (value is String && value.isNullOrEmpty()) {
+                whereData2.remove(key);
+                return@forEach
+            }
         }
 
         var hasWhere = this.whereColumns.size > 0 && (this.whereColumns.size == whereData2.size);

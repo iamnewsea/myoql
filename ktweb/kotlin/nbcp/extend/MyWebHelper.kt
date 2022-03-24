@@ -193,9 +193,9 @@ val HttpServletRequest.tokenValue: String
     }
 
 
-fun <M : MongoBaseMetaCollection<out E>, E : Any> MongoSetEntityUpdateClip<M, E>.withRequestParams(): MongoSetEntityUpdateClip<M, E> {
-    return this.withRequestJson(HttpContext.request.getPostJson())
-}
+//fun <M : MongoBaseMetaCollection<out E>, E : Any> MongoSetEntityUpdateClip<M, E>.withRequestParams(): MongoSetEntityUpdateClip<M, E> {
+//    return this.withRequestJson(HttpContext.request.getPostJson())
+//}
 
 fun <M : SqlBaseMetaTable<out Serializable>> SqlSetEntityUpdateClip<M>.withRequestParams(): SqlSetEntityUpdateClip<M> {
     var keys = HttpContext.request.getPostJson().keys;
