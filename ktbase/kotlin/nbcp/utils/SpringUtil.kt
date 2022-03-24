@@ -221,14 +221,6 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
             callback(builder);
             return definition;
         }
-
-
-        private val init_callbacks = mutableListOf<(ApplicationContext) -> Unit>()
-
-        @JvmStatic
-        fun onInit(callback: (ApplicationContext) -> Unit) {
-            init_callbacks.add(callback);
-        }
     }
 
 //    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
@@ -253,10 +245,6 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
             this.init_app();
             logger.Important("============ SpringUtil初始化! ============")
             //发送初始化事件是没用的，因为需要先注册事件，再发出事件。 要保证注册事件在该方法之前
-
-            init_callbacks.forEach {
-                it.invoke(context);
-            }
         }
     }
 

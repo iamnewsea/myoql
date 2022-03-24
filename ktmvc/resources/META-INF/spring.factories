@@ -1,3 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=nbcp.MyMvcInitConfig
 
-org.springframework.context.ApplicationListener=nbcp.MyEnvironmentPreparedEvent
