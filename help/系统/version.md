@@ -3,6 +3,8 @@
 > https://spring.io/projects/spring-cloud/
 > https://github.com/alibaba/spring-cloud-alibaba/wiki/%E7%89%88%E6%9C%AC%E8%AF%B4%E6%98%8E
 
+可以查看 Spring-Cloud 源码，看它依赖的 SpringBoot版本。
+
 | SpringBoot 版本 | SpringCloud 版本 | SpringCloudCommons 版本 | spring-cloud-kubernetes 版本 | Spring Cloud Alibaba Version |
 |---------------|----------------|-----------------------|----------------------------|------------------------------|
 | 1.5.x         | Dalston        |                       |                            |                              |
@@ -11,8 +13,8 @@
 | 2.1.x         | Greenwich      | 2.1.1.RELEASE         | 1.0.1.RELEASE              | 2.1.4.RELEASE                |
 | 2.2.x         | Hoxton         |                       |                            | 2.2.1.RELEASE                |
 | 2.3.x         | Hoxton         |                       |                            | 2.2.7.RELEASE                |
-| 2.4.x         | 2020.0.x       | 3.0.x                 |                            |                              |
-| 2.5.x         | 2020.0.x       | 3.0.x                 |                            |                              |
-| 2.6.x         | 2021.0.x       |                       |                            | 2021.0.1.0                   |
+| 2.4.x         | 2020.0.x       | 2.2.x                 |                            |                              |
+| 2.5.x         | 2020.0.x       |                       |                            |                              |
+| 2.6.x         | 2021.0.x       | 3.1.x                 |                            | 2021.0.1.0                   |
 
 
