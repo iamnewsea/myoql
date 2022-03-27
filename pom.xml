@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cn.dev8</groupId>
@@ -26,7 +28,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.5</version>
+        <version>2.6.5</version>
     </parent>
 
 
@@ -356,7 +358,6 @@
             </dependency>
 
 
-
             <dependency>
                 <groupId>org.bytedeco</groupId>
                 <artifactId>javacv</artifactId>
@@ -436,59 +437,59 @@
                 </configuration>
                 <executions>
                     <!-- for Java 11 -->
-<!--                    <execution>-->
-<!--                        <id>java11</id>-->
-<!--                        <phase>none</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>compile</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <release>11</release>-->
-<!--                            <jdkToolchain>-->
-<!--                                <version>11</version>-->
-<!--                            </jdkToolchain>-->
-<!--                            <compileSourceRoots>-->
-<!--                                <compileSourceRoot>${project.basedir}/resources/META-INF/java11</compileSourceRoot>-->
-<!--                            </compileSourceRoots>-->
-<!--                            <multiReleaseOutput>true</multiReleaseOutput>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
+                    <!--                    <execution>-->
+                    <!--                        <id>java11</id>-->
+                    <!--                        <phase>none</phase>-->
+                    <!--                        <goals>-->
+                    <!--                            <goal>compile</goal>-->
+                    <!--                        </goals>-->
+                    <!--                        <configuration>-->
+                    <!--                            <release>11</release>-->
+                    <!--                            <jdkToolchain>-->
+                    <!--                                <version>11</version>-->
+                    <!--                            </jdkToolchain>-->
+                    <!--                            <compileSourceRoots>-->
+                    <!--                                <compileSourceRoot>${project.basedir}/resources/META-INF/java11</compileSourceRoot>-->
+                    <!--                            </compileSourceRoots>-->
+                    <!--                            <multiReleaseOutput>true</multiReleaseOutput>-->
+                    <!--                        </configuration>-->
+                    <!--                    </execution>-->
                     <!-- for Java 14 -->
-<!--                    <execution>-->
-<!--                        <id>java14</id>-->
-<!--                        <phase>none</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>compile</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <release>14</release>-->
-<!--                            <jdkToolchain>-->
-<!--                                <version>14</version>-->
-<!--                            </jdkToolchain>-->
-<!--                            <compileSourceRoots>-->
-<!--                                <compileSourceRoot>${project.basedir}/kotlin/java14</compileSourceRoot>-->
-<!--                            </compileSourceRoots>-->
-<!--                            <multiReleaseOutput>true</multiReleaseOutput>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
+                    <!--                    <execution>-->
+                    <!--                        <id>java14</id>-->
+                    <!--                        <phase>none</phase>-->
+                    <!--                        <goals>-->
+                    <!--                            <goal>compile</goal>-->
+                    <!--                        </goals>-->
+                    <!--                        <configuration>-->
+                    <!--                            <release>14</release>-->
+                    <!--                            <jdkToolchain>-->
+                    <!--                                <version>14</version>-->
+                    <!--                            </jdkToolchain>-->
+                    <!--                            <compileSourceRoots>-->
+                    <!--                                <compileSourceRoot>${project.basedir}/kotlin/java14</compileSourceRoot>-->
+                    <!--                            </compileSourceRoots>-->
+                    <!--                            <multiReleaseOutput>true</multiReleaseOutput>-->
+                    <!--                        </configuration>-->
+                    <!--                    </execution>-->
                     <!-- for Java 17 -->
-<!--                    <execution>-->
-<!--                        <id>java17</id>-->
-<!--                        <phase>none</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>compile</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <release>17</release>-->
-<!--                            <jdkToolchain>-->
-<!--                                <version>17</version>-->
-<!--                            </jdkToolchain>-->
-<!--                            <compileSourceRoots>-->
-<!--                                <compileSourceRoot>${project.basedir}/kotlin/java17</compileSourceRoot>-->
-<!--                            </compileSourceRoots>-->
-<!--                            <multiReleaseOutput>true</multiReleaseOutput>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
+                    <!--                    <execution>-->
+                    <!--                        <id>java17</id>-->
+                    <!--                        <phase>none</phase>-->
+                    <!--                        <goals>-->
+                    <!--                            <goal>compile</goal>-->
+                    <!--                        </goals>-->
+                    <!--                        <configuration>-->
+                    <!--                            <release>17</release>-->
+                    <!--                            <jdkToolchain>-->
+                    <!--                                <version>17</version>-->
+                    <!--                            </jdkToolchain>-->
+                    <!--                            <compileSourceRoots>-->
+                    <!--                                <compileSourceRoot>${project.basedir}/kotlin/java17</compileSourceRoot>-->
+                    <!--                            </compileSourceRoots>-->
+                    <!--                            <multiReleaseOutput>true</multiReleaseOutput>-->
+                    <!--                        </configuration>-->
+                    <!--                    </execution>-->
                 </executions>
             </plugin>
         </plugins>
