@@ -3,6 +3,7 @@ package nbcp.base.handler
 import com.wf.captcha.ArithmeticCaptcha
 import nbcp.base.service.IUserAuthenticationService
 import nbcp.comm.*
+import nbcp.utils.SpringUtil
 import nbcp.web.queryJson
 import nbcp.web.tokenValue
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,10 +24,12 @@ import javax.servlet.http.HttpServletResponse
 @OpenAction
 @RestController
 @AutoConfigureAfter(IUserAuthenticationService::class)
-@ConditionalOnBean(IUserAuthenticationService::class)
+//@ConditionalOnBean(IUserAuthenticationService::class)
 open class AuthImageServlet {
-    @Autowired
-    lateinit var userSystemService: IUserAuthenticationService;
+
+    val userSystemService: IUserAuthenticationService by lazy {
+        return@lazy SpringUtil.getBean()
+    }
 
     @GetMapping("/open/validate-code-image")
     fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
