@@ -23,7 +23,7 @@ import java.util.*
  */
 object ClassUtil {
 
-    val startJarPackage:String by lazy{
+    val startJarPackage: String by lazy {
         return@lazy Thread.currentThread().stackTrace.last().className.split(".").Slice(0, -1).joinToString(".")
     }
 
@@ -40,7 +40,7 @@ object ClassUtil {
      * 获取 AppClassLoader 。
      */
     private fun getLaunchedURLClassLoader(loader: ClassLoader? = null): ClassLoader? {
-        var loader = loader ?: ClassUtils.getDefaultClassLoader()
+        val loader = loader ?: ClassUtils.getDefaultClassLoader()
         if (loader == null) return null;
 
         if (loader::class.java.name == "org.springframework.boot.loader.LaunchedURLClassLoader") {
@@ -54,7 +54,7 @@ object ClassUtil {
     }
 
     private fun getAppClassLoader(loader: ClassLoader? = null): ClassLoader? {
-        var loaderValue = loader ?: ClassUtils.getDefaultClassLoader()
+        val loaderValue = loader ?: ClassUtils.getDefaultClassLoader()
         if (loaderValue == null) return null;
 
         if (loaderValue::class.java.name == "sun.misc.Launcher\$AppClassLoader") {
@@ -97,10 +97,10 @@ object ClassUtil {
 
 
     fun getMainApplicationLastModified(): LocalDateTime? {
-        var list = ClasspathHelper.forResource("");
+        val list = ClasspathHelper.forResource("");
         if (list.any() == false) return null;
 
-        var fileName = list.first().path;
+        val fileName = list.first().path;
 
         return Date(File(fileName).lastModified()).AsLocalDateTime()
     }
@@ -114,7 +114,7 @@ object ClassUtil {
     }
 
     fun getStartingJarFile(url: URL): File {
-        var path = JsUtil.decodeURIComponent(url.path)
+        val path = JsUtil.decodeURIComponent(url.path)
         if (url.protocol == "jar") {
             //值是： file:/D:/code/sites/server/admin/target/admin-api-1.0.1.jar!/BOOT-INF/classes!/
             var index = 0;
@@ -125,13 +125,13 @@ object ClassUtil {
         } else if (url.protocol == "file") {
             //值是： /D:/code/sites/server/admin/target/classes/
             //处理文件路径中中文的问题。
-            var targetPath = File(path).parentFile
-            var mvn_file = targetPath?.listFiles { it -> it.name == "maven-archiver" }?.firstOrNull()
+            val targetPath = File(path).parentFile
+            val mvn_file = targetPath?.listFiles { it -> it.name == "maven-archiver" }?.firstOrNull()
                     ?.listFiles { it -> it.name == "pom.properties" }?.firstOrNull()
             if (mvn_file != null) {
-                var jarFile_lines = mvn_file.readLines()
-                var version = jarFile_lines.first { it.startsWith("version=") }.split("=").last()
-                var artifactId = jarFile_lines.first { it.startsWith("artifactId=") }.split("=").last()
+                val jarFile_lines = mvn_file.readLines()
+                val version = jarFile_lines.first { it.startsWith("version=") }.split("=").last()
+                val artifactId = jarFile_lines.first { it.startsWith("artifactId=") }.split("=").last()
 
                 return File(targetPath.FullName + "/" + artifactId + "-" + version + ".jar")
             } else {
@@ -161,7 +161,7 @@ object ClassUtil {
          * var file = Thread.currentThread().contextClassLoader.getResource("/").path
          */
 //        var file = clazz.protectionDomain.codeSource.location.path
-        var classLoader = Thread.currentThread().contextClassLoader
+        val classLoader = Thread.currentThread().contextClassLoader
 
         /**
          * jar -Dloader.path=libs 方式:
@@ -176,7 +176,7 @@ object ClassUtil {
          * 1. 使用 / 返回 null
          * 2. 使用 ./ 或 空串 ,返回 /D:/code/sites/server/admin/target/classes/
          */
-        var url = classLoader.getResource("/") ?: classLoader.getResource("")
+        val url = classLoader.getResource("/") ?: classLoader.getResource("")
         return getStartingJarFile(url)
     }
 
@@ -206,10 +206,13 @@ object ClassUtil {
      * 查找类。
      */
     fun findClasses(basePack: String, filter: ((String) -> Boolean)? = null): List<Class<*>> {
-
-        var baseResourcePath = basePack.replace(".", "/").trim('/');
-        var ret = mutableListOf<Class<*>>();
-        var url = ClassPathResource(baseResourcePath).url; //得到的结果大概是：jar:file:/C:/Users/ibm/.m2/repository/junit/junit/4.12/junit-4.12.jar!/org/junit
+        val baseResourcePath = basePack.replace(".", "/").trim('/');
+        val ret = mutableListOf<Class<*>>();
+        val resource = ClassPathResource(baseResourcePath);
+        if (resource.exists() == false) {
+            return listOf();
+        }
+        val url = resource.url; //得到的结果大概是：jar:file:/C:/Users/ibm/.m2/repository/junit/junit/4.12/junit-4.12.jar!/org/junit
 
         findResources(url, baseResourcePath, { jarEntryName ->
             //如果是死循环,则停止
@@ -238,13 +241,20 @@ object ClassUtil {
         return ret;
     }
 
+    /**
+     * 判断是否存在资源
+     */
+    fun existsResource(path: String): Boolean {
+        return ClassPathResource(path).exists()
+    }
 
     /**
      * @param basePath: 前后不带/
      */
     fun findResources(basePath: String, filter: ((String) -> Boolean)? = null): List<String> {
-        var url = ClassPathResource(basePath).url;
-        return findResources(url, basePath.trim('/'), filter)
+        val resource = ClassPathResource(basePath);
+        if (resource.exists() == false) return listOf();
+        return findResources(resource.url, basePath.trim('/'), filter)
     }
 
     private fun getClassName(fullPath: String, basePack: String, jarPath: String): String {
@@ -300,6 +310,7 @@ object ClassUtil {
 //        }
 //        return list;
 //    }
+
 
     fun findResources(url: URL, basePath: String, filter: ((String) -> Boolean)? = null): List<String> {
         //转换为JarURLConnection
