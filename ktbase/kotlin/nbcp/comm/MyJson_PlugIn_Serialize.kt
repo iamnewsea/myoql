@@ -133,6 +133,14 @@ class MyStringDeserializer : JsonDeserializer<MyString>() {
         if (json == null) {
             return null;
         }
+
+        if (json.currentToken != JsonToken.VALUE_STRING) {
+            return null;
+        }
+
+        if( json.valueAsString == null){
+            return MyString();
+        }
         return MyString(json.valueAsString)
     }
 }
@@ -141,6 +149,14 @@ class MyRawStringDeserializer : JsonDeserializer<MyRawString>() {
     override fun deserialize(json: JsonParser?, p1: DeserializationContext?): MyRawString? {
         if (json == null) {
             return null;
+        }
+
+        if (json.currentToken != JsonToken.VALUE_STRING) {
+            return null;
+        }
+
+        if( json.valueAsString == null){
+            return MyRawString();
         }
         return MyRawString(json.valueAsString)
     }
