@@ -2,6 +2,7 @@ package nbcp.comm
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonSerializer
@@ -20,6 +21,15 @@ class DateJsonDeserializer : JsonDeserializer<Date>() {
         if (json == null) {
             return null;
         }
+
+        if (json.currentToken != JsonToken.VALUE_STRING) {
+            return null;
+        }
+
+        if( json.valueAsString == null){
+            return null;
+        }
+
         var stringValue = json.valueAsString
         if (stringValue.contains("-") || stringValue.contains("/")) {
             return stringValue.AsDate();
@@ -33,6 +43,14 @@ class DateJsonDeserializer : JsonDeserializer<Date>() {
 class LocalDateJsonDeserializer : JsonDeserializer<LocalDate>() {
     override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): LocalDate? {
         if (json == null) {
+            return null;
+        }
+
+        if (json.currentToken != JsonToken.VALUE_STRING) {
+            return null;
+        }
+
+        if( json.valueAsString == null){
             return null;
         }
 
@@ -51,6 +69,14 @@ class LocalTimeJsonDeserializer : JsonDeserializer<LocalTime>() {
             return null;
         }
 
+        if (json.currentToken != JsonToken.VALUE_STRING) {
+            return null;
+        }
+
+        if( json.valueAsString == null){
+            return null;
+        }
+
         return json.valueAsString.AsLocalTime();
     }
 }
@@ -59,6 +85,14 @@ class LocalTimeJsonDeserializer : JsonDeserializer<LocalTime>() {
 class LocalDateTimeJsonDeserializer : JsonDeserializer<LocalDateTime>() {
     override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): LocalDateTime? {
         if (json == null) {
+            return null;
+        }
+
+        if (json.currentToken != JsonToken.VALUE_STRING) {
+            return null;
+        }
+
+        if( json.valueAsString == null){
             return null;
         }
 
@@ -75,6 +109,14 @@ class LocalDateTimeJsonDeserializer : JsonDeserializer<LocalDateTime>() {
 class TimestampJsonDeserializer : JsonDeserializer<Timestamp>() {
     override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): Timestamp? {
         if (json == null) {
+            return null;
+        }
+
+        if (json.currentToken != JsonToken.VALUE_STRING) {
+            return null;
+        }
+
+        if( json.valueAsString == null){
             return null;
         }
 
