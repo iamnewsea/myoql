@@ -62,6 +62,7 @@ class JsonTest : TestBase() {
         d[0].n = "OK";
         d[0].d = "ee"
 
+        println(d.ToJson(JsonSceneEnumScope.Web))
         println(d.ToJson().FromListJson(TestObj::class.java).ToJson())
     }
 
