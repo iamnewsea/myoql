@@ -2,7 +2,6 @@ package nbcp
 
 import nbcp.comm.GroupLogAopService
 import nbcp.comm.LogLevelAopService
-import nbcp.component.NacosService
 import nbcp.config.TaskConfig
 import nbcp.utils.SpringUtil
 import org.springframework.beans.factory.config.BeanDefinitionHolder

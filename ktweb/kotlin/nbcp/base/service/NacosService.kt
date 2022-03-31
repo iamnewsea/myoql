@@ -1,4 +1,4 @@
-package nbcp.component
+package nbcp.base.service
 
 import nbcp.comm.*
 import nbcp.utils.HttpUtil
