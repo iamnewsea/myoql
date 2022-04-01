@@ -1,4 +1,4 @@
-package nbcp.base.service
+package nbcp.base.mvc.service
 
 import nbcp.base.mvc.HttpContext
 import nbcp.comm.*
@@ -19,8 +19,7 @@ open class SnowFlakeRedisService {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    @Autowired
-    lateinit var nacosService: NacosService;
+    val nacosService = NacosServiceUtil;
 
     /**
      * 设置雪花算法的机器Id，如果有异常，则设置一个500-1000之间的随机数做为机器Id

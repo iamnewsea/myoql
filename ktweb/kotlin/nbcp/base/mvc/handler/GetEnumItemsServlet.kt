@@ -1,4 +1,4 @@
-package nbcp.base.handler
+package nbcp.base.mvc.handler
 
 import ch.qos.logback.classic.Level
 import com.wf.captcha.ArithmeticCaptcha
@@ -9,6 +9,7 @@ import nbcp.db.db
 import nbcp.utils.CodeUtil
 import nbcp.base.mvc.*
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import java.lang.RuntimeException
@@ -22,6 +23,7 @@ import javax.servlet.http.HttpServletResponse
  */
 @OpenAction
 @RestController
+@ConditionalOnClass(HttpServletRequest::class)
 open class GetEnumItemsServlet {
     data class ValueLabelData(var value: String, var label: String)
 

@@ -27,9 +27,12 @@ object ClassUtil {
         return@lazy Thread.currentThread().stackTrace.last().className.split(".").Slice(0, -1).joinToString(".")
     }
 
+    /**
+     * 是否存在类
+     */
     fun exists(className: String): Boolean {
         try {
-            getDefaultClassLoader()!!.loadClass(className);
+            getDefaultClassLoader().loadClass(className);
             return true;
         } catch (e: ClassNotFoundException) {
             return false;
@@ -39,36 +42,40 @@ object ClassUtil {
     /**
      * 获取 AppClassLoader 。
      */
-    private fun getLaunchedURLClassLoader(loader: ClassLoader? = null): ClassLoader? {
-        val loader = loader ?: ClassUtils.getDefaultClassLoader()
-        if (loader == null) return null;
+//    private fun getLaunchedURLClassLoader(loader: ClassLoader? = null): ClassLoader {
+//        val loaderValue = loader ?: ClassUtils.getDefaultClassLoader()
+//        if (loaderValue == null) {
+//            throw RuntimeException("找不到默认的类加载器")
+//        }
+//
+//        if (loaderValue::class.java.name == "org.springframework.boot.loader.LaunchedURLClassLoader") {
+//            return loaderValue;
+//        }
+//
+//        if (loaderValue.parent == null) {
+//            return loaderValue;
+//        }
+//        return getLaunchedURLClassLoader(loaderValue.parent);
+//    }
+//
+//    private fun getAppClassLoader(loader: ClassLoader? = null): ClassLoader {
+//        val loaderValue = loader ?: ClassUtils.getDefaultClassLoader()
+//        if (loaderValue == null) {
+//            throw RuntimeException("找不到默认的类加载器")
+//        }
+//
+//        if (loaderValue::class.java.name == "sun.misc.Launcher\$AppClassLoader") {
+//            return loaderValue;
+//        }
+//
+//        if (loaderValue.parent == null) {
+//            return loaderValue;
+//        }
+//        return getAppClassLoader(loaderValue.parent);
+//    }
 
-        if (loader::class.java.name == "org.springframework.boot.loader.LaunchedURLClassLoader") {
-            return loader;
-        }
-
-        if (loader.parent == null) {
-            return null;
-        }
-        return getLaunchedURLClassLoader(loader.parent);
-    }
-
-    private fun getAppClassLoader(loader: ClassLoader? = null): ClassLoader? {
-        val loaderValue = loader ?: ClassUtils.getDefaultClassLoader()
-        if (loaderValue == null) return null;
-
-        if (loaderValue::class.java.name == "sun.misc.Launcher\$AppClassLoader") {
-            return loaderValue;
-        }
-
-        if (loaderValue.parent == null) {
-            return null;
-        }
-        return getAppClassLoader(loaderValue.parent);
-    }
-
-    fun getDefaultClassLoader(): ClassLoader? {
-        return getLaunchedURLClassLoader() ?: getAppClassLoader()
+    fun getDefaultClassLoader(): ClassLoader {
+        return ClassUtils.getDefaultClassLoader()
     }
 
     fun getClasses(basePackage: String): Set<String> {

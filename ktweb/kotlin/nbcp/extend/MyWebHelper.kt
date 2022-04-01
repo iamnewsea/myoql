@@ -2,12 +2,10 @@ package nbcp.web
 
 import io.jsonwebtoken.Jwts
 import nbcp.base.mvc.*
-import nbcp.base.service.IUserAuthenticationService
+import nbcp.base.mvc.service.IUserAuthenticationService
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.LoginUserModel
-import nbcp.db.mongo.MongoBaseMetaCollection
-import nbcp.db.mongo.MongoSetEntityUpdateClip
 import nbcp.db.sql.SqlBaseMetaTable
 import nbcp.db.sql.SqlSetEntityUpdateClip
 import nbcp.extend.RequestGetTokenEvent

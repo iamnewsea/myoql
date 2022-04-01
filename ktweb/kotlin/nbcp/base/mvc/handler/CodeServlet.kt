@@ -1,4 +1,4 @@
-package nbcp.base.handler
+package nbcp.base.mvc.handler
 
 import ch.qos.logback.classic.Level
 import com.wf.captcha.ArithmeticCaptcha
@@ -7,9 +7,10 @@ import nbcp.comm.*
 import nbcp.db.db
 import nbcp.utils.CodeUtil
 import nbcp.base.mvc.*
-import nbcp.web.tokenValue
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import java.lang.RuntimeException
 
@@ -22,17 +23,19 @@ import javax.servlet.http.HttpServletResponse
  */
 @OpenAction
 @RestController
-open class TokenGeneratorServlet {
-    /**
-     * 由于 SameSite 阻止跨域 Set-Cookie 的问题，所以使用请求参数 token 代替 cookie
-     */
-//    @Value("\${app.token-name:token}")
-//    var tokenName: String = ""
+@ConditionalOnClass(HttpServletRequest::class)
+open class CodeServlet {
 
-    @GetMapping("/open/token")
+    @GetMapping("/open/code")
     fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
-        var token = request.tokenValue;
-        response.WriteJsonRawValue(ApiResult.of(token).ToJson())
+        var code = CodeUtil.getCode();
+        response.WriteJsonRawValue(ApiResult.of(code).ToJson())
     }
+
+//    @PostMapping("/open/code")
+//    fun doPost(request: HttpServletRequest, response: HttpServletResponse) {
+//        var code = CodeUtil.getCode();
+//        response.WriteJsonRawValue(ApiResult.of(code).ToJson())
+//    }
 }
 

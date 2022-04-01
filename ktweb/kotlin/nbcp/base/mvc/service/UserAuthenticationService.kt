@@ -1,4 +1,4 @@
-package nbcp.base.service
+package nbcp.base.mvc.service
 
 import nbcp.comm.*
 import nbcp.db.LoginUserModel
@@ -39,7 +39,7 @@ interface IUserAuthenticationService {
  * 表示 config.userSystem 配置的用户体系的 redis 项，格式如： {config.userSystem}token:{id}
  */
 @Configuration
-@ConditionalOnClass(StringRedisTemplate::class)
+@ConditionalOnClass(StringRedisTemplate::class, HttpServletRequest::class)
 @ConditionalOnMissingBean(IUserAuthenticationService::class)
 class DefaultUserAuthenticationService {
     class MyUserAuthService : IUserAuthenticationService {
@@ -55,7 +55,7 @@ class DefaultUserAuthenticationService {
          */
         private val validateCodeRedis
             get() = RedisStringProxy(
-                "validateCode", config.validateCodeCacheSeconds
+                    "validateCode", config.validateCodeCacheSeconds
             )
 
         override fun getValidateCode(token: String): String {

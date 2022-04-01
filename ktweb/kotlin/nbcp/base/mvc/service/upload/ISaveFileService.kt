@@ -1,4 +1,4 @@
-package nbcp.base.service.upload
+package nbcp.base.mvc.service.upload
 
 import nbcp.comm.JsonResult
 import java.io.InputStream

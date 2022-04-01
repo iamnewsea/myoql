@@ -1,10 +1,11 @@
-package nbcp.base.handler
+package nbcp.base.mvc.handler
 
 import nbcp.comm.*
 import nbcp.db.db
 import nbcp.db.mongo.*
 import nbcp.db.mongo.entity.SysCity
 import nbcp.base.mvc.WriteJsonRawValue
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import javax.servlet.http.HttpServletRequest
@@ -17,6 +18,7 @@ data class cn_city_model(var c: Int, var n: String)
 
 @OpenAction
 @RestController
+@ConditionalOnClass(HttpServletRequest::class)
 open class CityServlet {
     @PostMapping("/open/child-cities")
     fun child(@Require pcode: Int, response: HttpServletResponse): ListResult<cn_city_model> {

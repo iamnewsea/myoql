@@ -7,10 +7,8 @@ import org.springframework.http.server.reactive.ServerHttpResponse
 import nbcp.comm.*
 import org.springframework.http.MediaType
 import nbcp.utils.*
-import okhttp3.internal.wait
 import org.slf4j.LoggerFactory
 import org.springframework.web.server.ServerWebExchange
-import org.springframework.web.servlet.HandlerMapping
 import reactor.core.scheduler.Schedulers
 import java.lang.RuntimeException
 import java.time.Duration
@@ -214,10 +212,10 @@ fun ServerWebExchange.findParameterValue(key: String): Any? {
         return ret;
     }
 
-    ret = (this.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as Map<String, Any?>?)?.get(key)
-    if (ret != null) {
-        return ret;
-    }
+//    ret = (this.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as Map<String, Any?>?)?.get(key)
+//    if (ret != null) {
+//        return ret;
+//    }
 
 
     ret = this.request.queryJson.get(key)

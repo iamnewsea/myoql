@@ -1,4 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=nbcp.KotlinWebExtendConfig\
-,nbcp.base.filter.MyOqlCrossFilter\
-,nbcp.base.filter.MyAllFilter
+,nbcp.base.mvc.filter.MyOqlCrossFilter\
+,nbcp.base.mvc.filter.MyAllFilter\
+,nbcp.base.flux.filter.CrossFilterConfig
 

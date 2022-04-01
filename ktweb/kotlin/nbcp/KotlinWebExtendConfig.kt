@@ -1,7 +1,9 @@
 package nbcp
 
-import nbcp.base.filter.MyAllFilter
-import nbcp.base.filter.MyOqlCrossFilter
+import nbcp.base.flux.filter.CrossFilterConfig
+import nbcp.base.mvc.filter.MyAllFilter
+import nbcp.base.mvc.filter.MyOqlCrossFilter
+import nbcp.utils.ClassUtil
 import org.springframework.beans.factory.config.BeanDefinitionHolder
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ResourceLoaderAware
@@ -12,9 +14,11 @@ import org.springframework.core.io.ResourceLoader
 import org.springframework.core.type.AnnotationMetadata
 import org.springframework.core.type.filter.AnnotationTypeFilter
 import org.springframework.core.type.filter.AssignableTypeFilter
+import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.RestController
+import javax.servlet.Filter
 
 
 //@Import(value = [
@@ -33,7 +37,7 @@ class KotlinWebExtendConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAware
      * @author: jiaYao
      */
     class MyWebClassPathBeanDefinitionScanner(registry: BeanDefinitionRegistry?, useDefaultFilters: Boolean) :
-        ClassPathBeanDefinitionScanner(registry, useDefaultFilters) {
+            ClassPathBeanDefinitionScanner(registry, useDefaultFilters) {
         /**
          * @addIncludeFilter 将自定义的注解添加到扫描任务中
          * @addExcludeFilter 将带有自定义注解的类 ，不加载到容器中
@@ -52,8 +56,23 @@ class KotlinWebExtendConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAware
              * TODO addExcludeFilter 同样的满足任意excludeFilters不会被加载
              */
             addExcludeFilter(AssignableTypeFilter(KotlinWebExtendConfig::class.java));
-            addExcludeFilter(AssignableTypeFilter(MyOqlCrossFilter::class.java));
-            addExcludeFilter(AssignableTypeFilter(MyAllFilter::class.java));
+
+            try {
+                if (ClassUtil.exists(Filter::class.java.name)) {
+                    addExcludeFilter(AssignableTypeFilter(MyOqlCrossFilter::class.java));
+                    addExcludeFilter(AssignableTypeFilter(MyAllFilter::class.java));
+                }
+            } catch (ex: Throwable) {
+            }
+
+
+            try {
+                if (ClassUtil.exists(ServerHttpRequest::class.java.name)) {
+                    addExcludeFilter(AssignableTypeFilter(CrossFilterConfig::class.java));
+                }
+            } catch (ex: Throwable) {
+            
+            }
         }
 
         public override fun doScan(vararg basePackages: String): Set<BeanDefinitionHolder> {
@@ -67,8 +86,8 @@ class KotlinWebExtendConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAware
      * @param registry
      */
     override fun registerBeanDefinitions(
-        importingClassMetadata: AnnotationMetadata?,
-        registry: BeanDefinitionRegistry?
+            importingClassMetadata: AnnotationMetadata?,
+            registry: BeanDefinitionRegistry?
     ) {
         // 当前MyClassPathBeanDefinitionScanner已被修改为扫描带有指定注解的类
         val scanner = MyWebClassPathBeanDefinitionScanner(registry, false)

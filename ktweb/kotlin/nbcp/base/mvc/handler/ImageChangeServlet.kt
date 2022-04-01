@@ -1,9 +1,10 @@
-package nbcp.base.handler
+package nbcp.base.mvc.handler
 
 import nbcp.db.IdUrl
 import nbcp.comm.*
 import nbcp.db.mongo.*
 import nbcp.base.mvc.*
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @RestController
+@ConditionalOnClass(HttpServletRequest::class)
 open class ImageChangeServlet  {
     @PostMapping("/image/change")
     fun doPost(request: HttpServletRequest, resp: HttpServletResponse) {

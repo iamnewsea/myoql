@@ -1,4 +1,4 @@
-package nbcp.base.filter
+package nbcp.base.mvc.filter
 
 import ch.qos.logback.classic.Level
 import nbcp.base.mvc.HttpContext
@@ -162,7 +162,7 @@ open class MyAllFilter : Filter {
         var errorMsg = ""
         try {
             chain?.doFilter(request, response);
-        } catch (ex: Exception) {
+        } catch (ex: Throwable) {
             //全局异常之外的异常会来这。
             var err = getInnerException(ex);
             var errorInfo = mutableListOf<String>()

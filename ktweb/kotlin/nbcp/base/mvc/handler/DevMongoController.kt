@@ -1,4 +1,4 @@
-package nbcp.base.handler
+package nbcp.base.mvc.handler
 
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.RestController
 import nbcp.comm.*
 import nbcp.db.db
 import nbcp.db.mongo.MongoBaseMetaCollection
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.web.bind.annotation.RequestMapping
+import javax.servlet.http.HttpServletRequest
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaType
 
@@ -18,6 +20,7 @@ import kotlin.reflect.jvm.javaType
 @RestController
 @ConditionalOnProperty("server.dev")
 @RequestMapping("/dev/mongo")
+@ConditionalOnClass(HttpServletRequest::class)
 class DevMongoServlet {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

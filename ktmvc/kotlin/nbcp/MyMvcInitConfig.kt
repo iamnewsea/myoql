@@ -2,6 +2,7 @@ package nbcp
 
 import nbcp.base.mvc.JsonModelParameterConverter
 import nbcp.base.*
+import nbcp.base.mvc.ServletBeanProcessor
 import nbcp.comm.const
 import nbcp.component.WebJsonMapper
 import nbcp.utils.SpringUtil
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters
 import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties
 import org.springframework.boot.context.event.ApplicationStartedEvent
+import org.springframework.context.annotation.Import
 import org.springframework.context.event.EventListener
 import org.springframework.core.convert.support.GenericConversionService
 import org.springframework.http.converter.AbstractHttpMessageConverter
@@ -24,7 +26,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
 
 @Component
-//@Import(value = [SpringUtil::class])
+@Import(ServletBeanProcessor::class)
 class MyMvcInitConfig : BeanPostProcessor {
     companion object {
         private var inited = false;
@@ -108,13 +110,6 @@ class MyMvcInitConfig : BeanPostProcessor {
             bean.addConverter(StringToLocalDateConverter())
             bean.addConverter(StringToLocalTimeConverter())
             bean.addConverter(StringToLocalDateTimeConverter())
-        } else if (bean is RequestMappingHandlerAdapter) {
-            var handlerAdapter = bean;
-
-            var listResolvers = mutableListOf<HandlerMethodArgumentResolver>()
-            listResolvers.add(JsonModelParameterConverter());
-            listResolvers.addAll(handlerAdapter.argumentResolvers ?: listOf())
-            handlerAdapter.argumentResolvers = listResolvers;
         }
 
         return super.postProcessAfterInitialization(bean, beanName);

@@ -1,17 +1,13 @@
-package nbcp.base.service
+package nbcp.base.mvc.service
 
 import nbcp.comm.*
 import nbcp.utils.HttpUtil
 import nbcp.utils.JsUtil
 import nbcp.utils.SpringUtil
-import org.springframework.stereotype.Component
 import java.lang.RuntimeException
-import java.net.Inet4Address
-import java.net.NetworkInterface
 import java.time.LocalDateTime
 
-@Component
-class NacosService {
+object NacosServiceUtil {
     data class NacosConfigItemData(
         var id: String = "",
         var dataId: String = "",

@@ -1,7 +1,7 @@
-package nbcp.base.handler
+package nbcp.base.mvc.handler
 
 import com.wf.captcha.ArithmeticCaptcha
-import nbcp.base.service.IUserAuthenticationService
+import nbcp.base.mvc.service.IUserAuthenticationService
 import nbcp.comm.*
 import nbcp.utils.SpringUtil
 import nbcp.base.mvc.queryJson
@@ -9,9 +9,11 @@ import nbcp.web.tokenValue
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import java.lang.RuntimeException
+import javax.servlet.Filter
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -24,6 +26,7 @@ import javax.servlet.http.HttpServletResponse
 @OpenAction
 @RestController
 @AutoConfigureAfter(IUserAuthenticationService::class)
+@ConditionalOnClass(HttpServletRequest::class)
 //@ConditionalOnBean(IUserAuthenticationService::class)
 open class AuthImageServlet {
 

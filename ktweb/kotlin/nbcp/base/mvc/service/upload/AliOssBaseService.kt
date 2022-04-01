@@ -1,4 +1,4 @@
-package nbcp.base.service.upload
+package nbcp.base.mvc.service.upload
 
 import com.aliyun.oss.OSSClientBuilder
 import com.aliyun.oss.internal.OSSHeaders

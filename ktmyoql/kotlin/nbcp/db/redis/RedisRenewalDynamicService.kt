@@ -54,7 +54,7 @@ class RedisRenewalDynamicService : InitializingBean {
                 Thread.sleep(1000)
                 try {
                     renewal_cache.consumeTask()
-                } catch (ex: Exception) {
+                } catch (ex: Throwable) {
                     logger.error("Redis续期线程出错,1秒后再试", ex);
                 }
             }

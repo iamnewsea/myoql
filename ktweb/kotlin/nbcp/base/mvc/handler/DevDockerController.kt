@@ -1,4 +1,4 @@
-package nbcp.base.handler
+package nbcp.base.mvc.handler
 
 import nbcp.comm.*
 import nbcp.utils.*
@@ -6,6 +6,7 @@ import nbcp.db.IdUrl
 import nbcp.base.mvc.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
+import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 
@@ -23,6 +25,7 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @ConditionalOnProperty("server.dev")
 @RequestMapping("/dev/docker")
+@ConditionalOnClass(HttpServletRequest::class)
 class DevDockerServlet {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

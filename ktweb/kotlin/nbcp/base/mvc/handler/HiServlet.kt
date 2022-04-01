@@ -1,4 +1,4 @@
-package nbcp.base.handler
+package nbcp.base.mvc.handler
 
 import ch.qos.logback.classic.Level
 import com.wf.captcha.ArithmeticCaptcha
@@ -9,6 +9,7 @@ import nbcp.utils.ClassUtil
 import nbcp.utils.SpringUtil
 import nbcp.base.mvc.*
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import java.lang.RuntimeException
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServletResponse
  */
 @OpenAction
 @RestController
+@ConditionalOnClass(HttpServletRequest::class)
 open class HiServlet {
     @GetMapping("/hi")
     fun doGet(request: HttpServletRequest, response: HttpServletResponse) {

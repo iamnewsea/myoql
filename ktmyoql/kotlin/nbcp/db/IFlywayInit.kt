@@ -143,7 +143,7 @@ abstract class FlywayVersionBaseService(val version: Int) {
                     dbEntityIndex.toDocument(),
                     IndexOptions().name(indexName).unique(dbEntityIndex.unique)
                 )
-            } catch (ex: Exception) {
+            } catch (ex: Throwable) {
                 throw RuntimeException(
                     "创建索引失败: ${this.tableName} ${dbEntityIndex.ToJson()},${ex.message}",
                     ex

@@ -1,4 +1,4 @@
-package nbcp.base.service.upload
+package nbcp.base.mvc.service.upload
 
 import nbcp.base.util.VideoUtil
 import nbcp.comm.*
@@ -66,7 +66,7 @@ abstract class BaseUploadService {
                 val bufferedImage = ImageIO.read(file.inputStream)
                 annexInfo.imgWidth = bufferedImage.getWidth();
                 annexInfo.imgHeight = bufferedImage.getHeight();
-            } catch (ex: Exception) {
+            } catch (ex: Throwable) {
                 return ApiResult.error("不识别的图片格式!")
             }
         } else if (extInfo.extType == FileExtensionTypeEnum.Video) {

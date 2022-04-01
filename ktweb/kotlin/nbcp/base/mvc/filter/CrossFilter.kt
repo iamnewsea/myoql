@@ -1,4 +1,4 @@
-package nbcp.base.filter
+package nbcp.base.mvc.filter
 
 import nbcp.base.mvc.HttpContext
 import nbcp.base.MyHttpRequestWrapper
