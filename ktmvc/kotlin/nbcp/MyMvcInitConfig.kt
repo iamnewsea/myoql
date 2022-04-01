@@ -1,42 +1,27 @@
 package nbcp
 
-import nbcp.base.mvc.*
-import nbcp.comm.AsInt
-import nbcp.comm.Important
-import nbcp.comm.clazzesIsSimpleDefine
+import nbcp.base.JsonModelParameterConverter
+import nbcp.base.*
 import nbcp.comm.const
-import nbcp.component.BaseJsonMapper
-import nbcp.component.DbJsonMapper
 import nbcp.component.WebJsonMapper
-import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
-import nbcp.web.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters
 import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties
 import org.springframework.boot.context.event.ApplicationStartedEvent
-import org.springframework.context.annotation.Import
 import org.springframework.context.event.EventListener
-import org.springframework.core.convert.ConversionService
 import org.springframework.core.convert.support.GenericConversionService
 import org.springframework.http.converter.AbstractHttpMessageConverter
 import org.springframework.http.converter.FormHttpMessageConverter
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
-import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter
-import org.springframework.scheduling.annotation.SchedulingConfiguration
 import org.springframework.stereotype.Component
 import org.springframework.util.unit.DataSize
 import org.springframework.util.unit.DataUnit
-import org.springframework.web.bind.support.ConfigurableWebBindingInitializer
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
-import java.time.Duration
-import java.time.temporal.Temporal
-import java.time.temporal.TemporalUnit
-import java.util.function.Consumer
 
 @Component
 //@Import(value = [SpringUtil::class])

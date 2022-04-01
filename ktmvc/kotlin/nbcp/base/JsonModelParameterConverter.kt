@@ -1,4 +1,4 @@
-package nbcp.base.mvc
+package nbcp.base
 
 
 import org.springframework.core.MethodParameter
@@ -16,7 +16,6 @@ import nbcp.web.postBody
 import nbcp.web.queryJson
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.InputStreamSource
-import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.HandlerMapping
 import java.lang.Exception
 import java.lang.reflect.Method

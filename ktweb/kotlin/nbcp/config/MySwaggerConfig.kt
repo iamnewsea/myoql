@@ -1,6 +1,6 @@
 //package nbcp.config
 //
-//import nbcp.base.mvc.MyHttpRequestWrapper
+//import nbcp.base.MyHttpRequestWrapper
 //import org.springframework.beans.factory.annotation.Value
 //import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 //import org.springframework.context.annotation.Bean

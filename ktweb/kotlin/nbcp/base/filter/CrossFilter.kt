@@ -1,13 +1,12 @@
 package nbcp.base.filter
 
 import nbcp.base.mvc.HttpContext
-import nbcp.base.mvc.MyHttpRequestWrapper
+import nbcp.base.MyHttpRequestWrapper
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.web.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Component
 import javax.servlet.*
 import javax.servlet.annotation.WebFilter
 import javax.servlet.http.HttpServletRequest

@@ -1,18 +1,11 @@
-package nbcp.base.mvc
+package nbcp.base
 
 
-import nbcp.comm.*
 import org.slf4j.LoggerFactory
-import java.nio.charset.Charset
-import javax.servlet.ReadListener
-import javax.servlet.ServletInputStream
-import nbcp.utils.*
 import java.io.*
 import java.util.*
 import javax.servlet.http.*
-import nbcp.web.IsOctetContent
 import org.springframework.web.util.ContentCachingRequestWrapper
-import java.lang.RuntimeException
 
 /**
  * Created by udi on 17-4-3.
