@@ -1,6 +1,6 @@
 package nbcp
 
-import nbcp.base.JsonModelParameterConverter
+import nbcp.base.mvc.JsonModelParameterConverter
 import nbcp.base.*
 import nbcp.comm.const
 import nbcp.component.WebJsonMapper

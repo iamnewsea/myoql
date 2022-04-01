@@ -6,7 +6,8 @@ import com.wf.captcha.utils.CaptchaUtil
 import nbcp.comm.*
 import nbcp.db.db
 import nbcp.utils.CodeUtil
-import nbcp.web.*
+import nbcp.base.mvc.*
+import nbcp.web.tokenValue
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController

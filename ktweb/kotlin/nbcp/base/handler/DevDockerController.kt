@@ -3,7 +3,7 @@ package nbcp.base.handler
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.IdUrl
-import nbcp.web.setDownloadFileName
+import nbcp.base.mvc.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty

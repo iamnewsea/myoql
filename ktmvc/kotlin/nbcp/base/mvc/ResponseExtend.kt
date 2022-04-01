@@ -1,7 +1,7 @@
 @file:JvmName("MyMvcHelper")
 @file:JvmMultifileClass
 
-package nbcp.web
+package nbcp.base.mvc
 
 import nbcp.comm.*
 import org.springframework.http.MediaType

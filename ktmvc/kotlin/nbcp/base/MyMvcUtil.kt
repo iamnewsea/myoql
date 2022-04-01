@@ -1,7 +1,4 @@
-@file:JvmName("MyMvcHelper")
-@file:JvmMultifileClass
-
-package nbcp.web
+package nbcp.base
 
 import nbcp.base.mvc.HttpContext
 

@@ -4,7 +4,7 @@ import com.wf.captcha.ArithmeticCaptcha
 import nbcp.base.service.IUserAuthenticationService
 import nbcp.comm.*
 import nbcp.utils.SpringUtil
-import nbcp.web.queryJson
+import nbcp.base.mvc.queryJson
 import nbcp.web.tokenValue
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.AutoConfigureAfter

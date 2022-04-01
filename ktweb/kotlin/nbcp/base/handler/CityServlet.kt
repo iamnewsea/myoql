@@ -4,8 +4,7 @@ import nbcp.comm.*
 import nbcp.db.db
 import nbcp.db.mongo.*
 import nbcp.db.mongo.entity.SysCity
-import nbcp.web.WriteJsonRawValue
-import nbcp.web.findParameterIntValue
+import nbcp.base.mvc.WriteJsonRawValue
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import javax.servlet.http.HttpServletRequest

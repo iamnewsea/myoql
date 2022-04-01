@@ -8,7 +8,7 @@ import nbcp.comm.*
 import nbcp.db.*
 import nbcp.db.sql.*
 import nbcp.db.sql.entity.*
-import nbcp.web.*
+import nbcp.base.mvc.*
 import javax.servlet.http.*
 import java.time.*
 

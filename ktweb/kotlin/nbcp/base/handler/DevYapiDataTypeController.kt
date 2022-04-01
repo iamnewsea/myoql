@@ -4,7 +4,7 @@ import nbcp.comm.*
 import nbcp.db.db
 import nbcp.db.mongo.*
 import nbcp.utils.RecursionUtil
-import nbcp.web.findParameterValue
+import nbcp.base.mvc.*
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController

@@ -4,9 +4,11 @@ import nbcp.base.mvc.HttpContext
 import nbcp.base.MyHttpRequestWrapper
 import nbcp.comm.*
 import nbcp.utils.*
-import nbcp.web.*
+import nbcp.base.mvc.*
+import nbcp.base.mvc.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import javax.servlet.*
 import javax.servlet.annotation.WebFilter
 import javax.servlet.http.HttpServletRequest
@@ -26,6 +28,7 @@ import javax.servlet.http.HttpServletResponse
  */
 
 @WebFilter(urlPatterns = ["/*", "/**"])
+@ConditionalOnClass(Filter::class)
 open class MyOqlCrossFilter : Filter {
     @Value("\${app.filter.allow-origins:}")
     var allowOrigins: String = "";

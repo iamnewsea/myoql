@@ -1,15 +1,19 @@
-@file:JvmName("MyMvcHelper")
-@file:JvmMultifileClass
+package nbcp.base.flux
 
-package nbcp.web
+import org.springframework.http.server.reactive.ServerHttpRequest
+import org.springframework.http.server.reactive.ServerHttpResponse
+
 
 import nbcp.comm.*
 import org.springframework.http.MediaType
 import nbcp.utils.*
+import okhttp3.internal.wait
 import org.slf4j.LoggerFactory
+import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.servlet.HandlerMapping
+import reactor.core.scheduler.Schedulers
 import java.lang.RuntimeException
-import javax.servlet.http.HttpServletRequest
+import java.time.Duration
 
 
 /**
@@ -26,23 +30,27 @@ model
 multipart
 video
  */
-val HttpServletRequest.IsOctetContent: Boolean
+val ServerHttpRequest.IsOctetContent: Boolean
     get() {
-        return WebUtil.contentTypeIsOctetContent(this.contentType.AsString());
+        return WebUtil.contentTypeIsOctetContent(this.headers.contentType.AsString());
     }
 
 
-private fun _getClientIp(request: HttpServletRequest): String {
+fun ServerHttpRequest.getHeader(key: String): String? {
+    return this.headers.get(key)?.joinToString(",")
+}
+
+private fun _getClientIp(request: ServerHttpRequest): String {
     /*
 实际Header：
 x-real-ip: 10.0.4.20
 x-forwarded-for: 103.10.86.226,124.70.126.65,10.0.4.20
      */
     var forwardIps = (request.getHeader("X-Forwarded-For") ?: "")
-        .split(",")
-        .map { it.trim() }
-        .filter { it.HasValue && !it.basicSame("unknown") && !MyUtil.isLocalIp(it) }
-        .toList();
+            .split(",")
+            .map { it.trim() }
+            .filter { it.HasValue && !it.basicSame("unknown") && !MyUtil.isLocalIp(it) }
+            .toList();
 
     //如果设置了 X-Forwarded-For
     if (forwardIps.any()) {
@@ -56,7 +64,7 @@ x-forwarded-for: 103.10.86.226,124.70.126.65,10.0.4.20
         return realIp;
     }
 
-    var remoteAddr = request.remoteAddr
+    var remoteAddr = request.remoteAddress.address.hostAddress
     return remoteAddr
 }
 
@@ -69,21 +77,21 @@ x-forwarded-for: 103.10.86.226,124.70.126.65,10.0.4.20
  * 否则返回 X-Real-IP ， X-Forwarded-For
  * 默认返回 remoteAddr
  */
-val HttpServletRequest.ClientIp: String
+val ServerWebExchange.ClientIp: String
     get() {
-        var clientIp = this.getAttribute("[ClientIp]").AsString()
+        var clientIp = this.attributes.get("[ClientIp]").AsString()
         if (clientIp.HasValue) {
             return clientIp
         }
 
-        clientIp = _getClientIp(this);
+        clientIp = _getClientIp(this.request);
 
 
         if (clientIp == "0:0:0:0:0:0:0:1") {
             clientIp = "127.0.0.1"
         }
 
-        this.setAttribute("[ClientIp]", clientIp);
+        this.attributes.set("[ClientIp]", clientIp);
         return clientIp;
     }
 
@@ -91,38 +99,36 @@ val HttpServletRequest.ClientIp: String
 /**
  * 把 queryString 加载为 Json
  */
-val HttpServletRequest.queryJson: JsonMap
+val ServerHttpRequest.queryJson: JsonMap
     get() {
-        var queryJson_key = "[Request.QueryJson]"
-        var dbValue = this.getAttribute(queryJson_key)
-        if (dbValue != null) {
-            return dbValue as JsonMap;
-        }
-
-        var dbValue2 = JsonMap.loadFromUrl(this.queryString ?: "")
-        this.setAttribute(queryJson_key, dbValue2)
-        return dbValue2;
+        return JsonMap(this.queryParams)
     }
 
 //文件上传或 大于 10 MB 会返回 null , throw RuntimeException("超过10MB不能获取Body!");
-val HttpServletRequest.postBody: ByteArray?
+val ServerWebExchange.postBody: ByteArray?
     get() {
         val postBody_key = "[Request.PostBody]"
-        var postBodyValue = this.getAttribute(postBody_key);
+        var postBodyValue = this.attributes.get(postBody_key);
         if (postBodyValue != null) {
             return postBodyValue as ByteArray?
         }
 
 
         //如果 10MB
-        if (this.IsOctetContent) {
+        if (this.request.IsOctetContent) {
             return null;
         }
-        if (this.contentLength > config.maxHttpPostSize.toBytes()) {
+        if (this.request.headers.contentLength > config.maxHttpPostSize.toBytes()) {
             throw RuntimeException("请求体超过${(config.maxHttpPostSize.toString()).AsInt()}!")
         }
-        postBodyValue = this.inputStream.readBytes();
-        this.setAttribute(postBody_key, postBodyValue)
+        postBodyValue = this.request.body.publishOn(Schedulers.single())
+                .map {
+                    return@map it.asInputStream().readBytes()
+                }
+                .blockLast(Duration.ofSeconds(15))
+
+
+        this.attributes.set(postBody_key, postBodyValue)
 
         return postBodyValue;
     }
@@ -144,16 +150,17 @@ private fun setValue(jm: JsonMap, prop: String, arykey: String, value: String) {
 }
 
 
-private fun getPostJsonFromRequest(request: HttpServletRequest): JsonMap {
+private fun getPostJsonFromRequest(swe: ServerWebExchange): JsonMap {
 
-    var contentType = request.contentType;
+    var request = swe.request;
+    var contentType = request.headers.contentType;
 
-    if (contentType.isNullOrEmpty()) {
-        contentType = MediaType.APPLICATION_JSON_VALUE
+    if (contentType == null) {
+        contentType = MediaType.APPLICATION_JSON
     }
 
-    if (contentType.startsWith(MediaType.APPLICATION_JSON_VALUE)) {
-        val bodyString = (request.postBody ?: byteArrayOf()).toString(const.utf8).trim()
+    if (contentType.toString().startsWith(MediaType.APPLICATION_JSON_VALUE)) {
+        val bodyString = (swe.postBody ?: byteArrayOf()).toString(const.utf8).trim()
 
         if (bodyString.isEmpty()) {
             return JsonMap();
@@ -164,55 +171,36 @@ private fun getPostJsonFromRequest(request: HttpServletRequest): JsonMap {
         }
 
         return JsonMap();
-    } else if (contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
-        //按 key进行分组，假设客户端是：
-        // corp[id]=1&corp[name]=abc&role[id]=2&role[name]=def
-        //会分成两组 ret["corp"] = json1 , ret["role"] = json2;
-        //目前只支持两级。不支持  corp[role][id]
-        val ret = JsonMap();
-        if (request.parameterNames.hasMoreElements()) {
-            for (key in request.parameterNames) {
-                val value = request.getParameter(key);
-                val keyLastIndex = key.indexOf('[');
-                if (keyLastIndex >= 0) {
-                    val mk = key.slice(0..keyLastIndex - 1);
+    } else if (contentType.toString().startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
 
-                    setValue(ret, mk, key.substring(keyLastIndex), value);
-                } else {
-                    setValue(ret, key, "", value);
-                }
-            }
+        val bodyString = (swe.postBody ?: byteArrayOf()).toString(const.utf8).trim()
+        return JsonMap.loadFromUrl(bodyString)
 
-            return ret;
-        } else {
-            val bodyString = (request.postBody ?: byteArrayOf()).toString(const.utf8).trim()
-            return JsonMap.loadFromUrl(bodyString)
-        }
     }
 
 //    throw RuntimeException("不识别 content-type:${contentType}")
     return JsonMap();
 }
 
-fun HttpServletRequest.getPostJson(): JsonMap {
+fun ServerWebExchange.getPostJson(): JsonMap {
     val PostJson_key = "[Request.PostJson]"
-    var postJsonValue = this.getAttribute(PostJson_key);
+    var postJsonValue = this.attributes.get(PostJson_key);
     if (postJsonValue != null) {
         return postJsonValue as JsonMap
     }
 
     var ret = getPostJsonFromRequest(this);
 
-    this.setAttribute(PostJson_key, ret);
+    this.attributes.set(PostJson_key, ret);
     return ret;
 }
 
 
-fun HttpServletRequest.findParameterStringValue(key: String): String {
+fun ServerWebExchange.findParameterStringValue(key: String): String {
     return this.findParameterValue(key).AsString()
 }
 
-fun HttpServletRequest.findParameterIntValue(key: String): Int {
+fun ServerWebExchange.findParameterIntValue(key: String): Int {
     return this.findParameterValue(key).AsInt()
 }
 
@@ -220,8 +208,8 @@ fun HttpServletRequest.findParameterIntValue(key: String): Int {
 /**
  * 从request属性，Path变量， URL ， Form表单，Header 中查找参数
  */
-fun HttpServletRequest.findParameterValue(key: String): Any? {
-    var ret = this.getAttribute(key)
+fun ServerWebExchange.findParameterValue(key: String): Any? {
+    var ret = this.attributes.get(key)
     if (ret != null) {
         return ret;
     }
@@ -232,7 +220,7 @@ fun HttpServletRequest.findParameterValue(key: String): Any? {
     }
 
 
-    ret = this.queryJson.get(key)
+    ret = this.request.queryJson.get(key)
     if (ret != null) {
         return ret;
     }
@@ -245,14 +233,14 @@ fun HttpServletRequest.findParameterValue(key: String): Any? {
 
 
     //读取表单内容
-    if (this.contentType != null && this.contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
-        ret = this.getParameter(key)
-        if (ret != null) {
-            return ret;
-        }
-    }
+//    if (this.request.headers.contentType != null && this.request.headers.contentType.toString().startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
+//        ret = this.getParameter(key)
+//        if (ret != null) {
+//            return ret;
+//        }
+//    }
 
-    ret = this.getHeader(key)
+    ret = this.request.headers.get(key)
     if (ret != null) {
         return ret;
     }
@@ -263,26 +251,21 @@ fun HttpServletRequest.findParameterValue(key: String): Any? {
 /**
  * URL + 参数
  */
-val HttpServletRequest.fullUrl: String
+val ServerHttpRequest.fullUrl: String
     get() {
-        return this.requestURI + (if (this.queryString.isNullOrEmpty()) "" else ("?" + this.queryString))
+        return this.uri.toString()
     }
 
 /**
  * 处理跨域。
  * 网关处理完跨域后，应该移除 origin
  */
-fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>, headers: List<String>): StringMap {
+fun ServerHttpRequest.getCorsResponseMap(allowOrigins: List<String>, headers: List<String>): StringMap {
     //https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
 
     var request = this;
-    var requestOrigin_Ori = request.getHeader("origin") ?: ""
-    var requestOrigin = requestOrigin_Ori
-    if (requestOrigin.startsWith("http://", true)) {
-        requestOrigin = requestOrigin.substring("http://".length)
-    } else if (requestOrigin.startsWith("https://", true)) {
-        requestOrigin = requestOrigin.substring("https://".length)
-    }
+    var requestOrigin = request.getHeader("origin") ?: ""
+
 
     var retMap = StringMap();
     if (requestOrigin.isEmpty()) return retMap;
@@ -292,11 +275,11 @@ fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>, headers: L
             requestOrigin.contains("127.0.0");
 
     if (allow == false) {
-        LoggerFactory.getLogger("ktmvc.getCorsResponseMap").warn("系统忽略未允许的跨域请求源:${requestOrigin_Ori}")
+        LoggerFactory.getLogger("ktmvc.getCorsResponseMap").warn("系统忽略未允许的跨域请求源:${requestOrigin}")
         return retMap;
     }
 
-    retMap.put("Access-Control-Allow-Origin", requestOrigin_Ori)
+    retMap.put("Access-Control-Allow-Origin", requestOrigin)
     retMap.put("Access-Control-Max-Age", "2592000") //30天。
 
     retMap.put("Access-Control-Allow-Credentials", "true")
@@ -310,10 +293,10 @@ fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>, headers: L
 //    allowHeaders.add("Authorization")
 
     allowHeaders.addAll(
-        request.getHeader("Access-Control-Request-Headers")
-            .AsString()
-            .split(",")
-            .filter { it.HasValue }
+            request.getHeader("Access-Control-Request-Headers")
+                    .AsString()
+                    .split(",")
+                    .filter { it.HasValue }
     )
 
     allowHeaders.removeIf { it.isEmpty() }
@@ -326,4 +309,4 @@ fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>, headers: L
 }
 
 
-fun HttpServletRequest.getCookie(name: String): String = this.cookies?.firstOrNull { it.name == name }?.value ?: ""
+fun ServerHttpRequest.getCookie(name: String): String = this.cookies.getFirst(name)?.value ?: ""

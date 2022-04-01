@@ -9,7 +9,7 @@ import nbcp.comm.*
 import nbcp.db.*
 import nbcp.db.es.*
 import nbcp.db.es.entity.*
-import nbcp.web.*
+import nbcp.base.mvc.*
 import javax.servlet.http.*
 import java.time.*
 

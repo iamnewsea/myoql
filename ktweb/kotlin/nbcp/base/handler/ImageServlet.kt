@@ -4,8 +4,7 @@ import nbcp.db.IdUrl
 import nbcp.comm.*
 
 import nbcp.db.mongo.*
-import nbcp.web.findParameterStringValue
-import nbcp.web.findParameterValue
+import nbcp.base.mvc.*
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 

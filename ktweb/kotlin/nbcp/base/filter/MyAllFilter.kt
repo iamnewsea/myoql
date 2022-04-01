@@ -4,10 +4,14 @@ import ch.qos.logback.classic.Level
 import nbcp.base.mvc.HttpContext
 import nbcp.base.MyHttpRequestWrapper
 import nbcp.comm.*
-import nbcp.web.*
+import nbcp.base.mvc.*
+import nbcp.base.mvc.*
+import nbcp.web.tokenValue
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.context.annotation.Conditional
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.util.ContentCachingRequestWrapper
@@ -32,6 +36,7 @@ import javax.servlet.http.HttpServletResponse
  * @Component 会使用 simpleName 做为Bean名称。
  */
 @WebFilter(urlPatterns = ["/*", "/**"])
+@ConditionalOnClass(Filter::class)
 //@WebFilter(urlPatterns = arrayOf("/**"), filterName = "MyAllFilter")
 //@ConfigurationProperties(prefix = "nbcp.filter")
 open class MyAllFilter : Filter {
@@ -105,7 +110,7 @@ open class MyAllFilter : Filter {
 
         var logLevelString = httpRequest.queryJson.get("-log-level-").AsString();
         if (logLevelString.HasValue &&
-            config.adminToken == httpRequest.findParameterStringValue("-admin-token-")
+                config.adminToken == httpRequest.findParameterStringValue("-admin-token-")
         ) {
             if (logLevelString.IsNumberic()) {
                 var logLevelInt = logLevelString.AsInt()
@@ -162,12 +167,12 @@ open class MyAllFilter : Filter {
             var err = getInnerException(ex);
             var errorInfo = mutableListOf<String>()
             errorInfo.add(
-                err::class.java.simpleName + ": " + err.Detail.AsString(err.message.AsString()).AsString("(未知错误)")
-                    .Slice(0, 256)
+                    err::class.java.simpleName + ": " + err.Detail.AsString(err.message.AsString()).AsString("(未知错误)")
+                            .Slice(0, 256)
             )
 
             errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }
-                .take(24))
+                    .take(24))
 
             errorMsg = errorInfo.joinToString(const.line_break)
         } finally {
@@ -220,11 +225,11 @@ open class MyAllFilter : Filter {
 
 
     fun afterComplete(
-        request: HttpServletRequest,
-        response: ContentCachingResponseWrapper,
-        callback: String,
-        startAt: LocalDateTime,
-        errorMsg: String
+            request: HttpServletRequest,
+            response: ContentCachingResponseWrapper,
+            callback: String,
+            startAt: LocalDateTime,
+            errorMsg: String
     ) {
         var resStringValue = errorMsg;
         if (resStringValue.HasValue) {

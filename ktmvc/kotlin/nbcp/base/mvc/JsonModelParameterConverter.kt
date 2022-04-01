@@ -1,4 +1,4 @@
-package nbcp.base
+package nbcp.base.mvc
 
 
 import org.springframework.core.MethodParameter
@@ -10,10 +10,6 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.method.support.ModelAndViewContainer
 import nbcp.comm.*
 import nbcp.utils.*
-import nbcp.web.fullUrl
-import nbcp.web.getPostJson
-import nbcp.web.postBody
-import nbcp.web.queryJson
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.InputStreamSource
 import org.springframework.web.servlet.HandlerMapping

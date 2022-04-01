@@ -4,7 +4,7 @@ import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.mongo.*
 import nbcp.model.IUploadFileDbService
-import nbcp.web.*
+import nbcp.base.mvc.*
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController

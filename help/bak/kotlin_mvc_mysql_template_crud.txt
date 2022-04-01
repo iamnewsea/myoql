@@ -10,7 +10,7 @@ import nbcp.db.sql.*
 import nbcp.db.sql.entity.*
 import nbcp.db.mysql.*
 import nbcp.db.mysql.entity.*
-import nbcp.web.*
+import nbcp.base.mvc.*
 import javax.servlet.http.HttpServletRequest
 import java.time.*
 
