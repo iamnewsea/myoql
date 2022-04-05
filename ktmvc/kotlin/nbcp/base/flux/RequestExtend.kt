@@ -8,7 +8,11 @@ import nbcp.comm.*
 import org.springframework.http.MediaType
 import nbcp.utils.*
 import org.slf4j.LoggerFactory
+import org.springframework.core.io.buffer.DataBufferUtils
+import org.springframework.http.server.reactive.ServerHttpRequestDecorator
 import org.springframework.web.server.ServerWebExchange
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
 import java.lang.RuntimeException
 import java.time.Duration
@@ -103,32 +107,42 @@ val ServerHttpRequest.queryJson: JsonMap
     }
 
 //文件上传或 大于 10 MB 会返回 null , throw RuntimeException("超过10MB不能获取Body!");
-val ServerWebExchange.postBody: ByteArray?
+val ServerWebExchange.postBody: Mono<ByteArray>
     get() {
-        val postBody_key = "[Request.PostBody]"
-        var postBodyValue = this.attributes.get(postBody_key);
-        if (postBodyValue != null) {
-            return postBodyValue as ByteArray?
-        }
+//        val postBody_key = "[Request.PostBody]"
+//        var postBodyValue = this.attributes.get(postBody_key) as ByteArray?;
+//        if (postBodyValue != null) {
+//            return postBodyValue
+//        }
 
 
         //如果 10MB
         if (this.request.IsOctetContent) {
-            return null;
+            return Mono.empty();
         }
         if (this.request.headers.contentLength > config.maxHttpPostSize.toBytes()) {
             throw RuntimeException("请求体超过${(config.maxHttpPostSize.toString()).AsInt()}!")
         }
-        postBodyValue = this.request.body.publishOn(Schedulers.single())
+
+        return this.request.body
+                .collectList()
                 .map {
-                    return@map it.asInputStream().readBytes()
+                    val list = mutableListOf<Byte>()
+                    it.forEach { list.addAll(it.asInputStream().readBytes().toTypedArray()) }
+
+                    return@map list.toByteArray()
                 }
-                .blockLast(Duration.ofSeconds(15))
 
 
-        this.attributes.set(postBody_key, postBodyValue)
+//                .subscribe {
+//                    postBodyValue = it.asInputStream().readBytes()
+//
+//                    LoggerFactory.getLogger("ktmvc.flux.request.extend").Important("postBodySize:" + postBodyValue?.size.AsString())
+//                }
 
-        return postBodyValue;
+//        this.attributes.set(postBody_key, postBodyValue)
+
+//        return postBodyValue;
     }
 
 private fun setValue(jm: JsonMap, prop: String, arykey: String, value: String) {
@@ -148,50 +162,56 @@ private fun setValue(jm: JsonMap, prop: String, arykey: String, value: String) {
 }
 
 
-private fun getPostJsonFromRequest(swe: ServerWebExchange): JsonMap {
+//private fun getPostJsonFromRequest(swe: ServerWebExchange): JsonMap {
+//
+//    var request = swe.request;
+//    var contentType = request.headers.contentType;
+//
+//    if (contentType == null) {
+//        contentType = MediaType.APPLICATION_JSON
+//    }
+//
+//    if (contentType.toString().startsWith(MediaType.APPLICATION_JSON_VALUE)) {
+//        swe.postBody.subscribe {
+//            val bodyString = it.toString(const.utf8).trim()
+//
+//            if (bodyString.isEmpty()) {
+//                return@map "";
+//            }
+//
+//            if (bodyString.startsWith("{") && bodyString.endsWith("}")) {
+//                return@map bodyString.FromJsonWithDefaultValue();
+//            }
+//
+//            return@map "";
+//        }
+//
+//    } else if (contentType.toString().startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+//            || contentType.toString().startsWith("application/x-www-form-urlencode")) {
+//
+//        swe.postBody.map {
+//            val bodyString = it.toString(const.utf8).trim()
+//            return@map Mono.just(JsonMap.loadFromUrl(bodyString))
+//        }
+//
+//    }
+//
+////    throw RuntimeException("不识别 content-type:${contentType}")
+//    return Mono.empty();
+//}
 
-    var request = swe.request;
-    var contentType = request.headers.contentType;
-
-    if (contentType == null) {
-        contentType = MediaType.APPLICATION_JSON
-    }
-
-    if (contentType.toString().startsWith(MediaType.APPLICATION_JSON_VALUE)) {
-        val bodyString = (swe.postBody ?: byteArrayOf()).toString(const.utf8).trim()
-
-        if (bodyString.isEmpty()) {
-            return JsonMap();
-        }
-
-        if (bodyString.startsWith("{") && bodyString.endsWith("}")) {
-            return bodyString.FromJsonWithDefaultValue();
-        }
-
-        return JsonMap();
-    } else if (contentType.toString().startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
-
-        val bodyString = (swe.postBody ?: byteArrayOf()).toString(const.utf8).trim()
-        return JsonMap.loadFromUrl(bodyString)
-
-    }
-
-//    throw RuntimeException("不识别 content-type:${contentType}")
-    return JsonMap();
-}
-
-fun ServerWebExchange.getPostJson(): JsonMap {
-    val PostJson_key = "[Request.PostJson]"
-    var postJsonValue = this.attributes.get(PostJson_key);
-    if (postJsonValue != null) {
-        return postJsonValue as JsonMap
-    }
-
-    var ret = getPostJsonFromRequest(this);
-
-    this.attributes.set(PostJson_key, ret);
-    return ret;
-}
+//fun ServerWebExchange.getPostJson(): JsonMap {
+//    val PostJson_key = "[Request.PostJson]"
+//    var postJsonValue = this.attributes.get(PostJson_key);
+//    if (postJsonValue != null) {
+//        return postJsonValue as JsonMap
+//    }
+//
+//    var ret = getPostJsonFromRequest(this);
+//
+//    this.attributes.set(PostJson_key, ret);
+//    return ret;
+//}
 
 
 fun ServerWebExchange.findParameterStringValue(key: String): String {
@@ -224,10 +244,10 @@ fun ServerWebExchange.findParameterValue(key: String): Any? {
     }
 
 
-    ret = this.getPostJson().get(key)
-    if (ret != null) {
-        return ret;
-    }
+//    ret = this.getPostJson().get(key)
+//    if (ret != null) {
+//        return ret;
+//    }
 
 
     //读取表单内容

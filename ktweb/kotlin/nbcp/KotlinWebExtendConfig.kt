@@ -4,6 +4,7 @@ import nbcp.base.flux.filter.CrossFilterConfig
 import nbcp.base.mvc.filter.MyAllFilter
 import nbcp.base.mvc.filter.MyOqlCrossFilter
 import nbcp.utils.ClassUtil
+import org.reactivestreams.Publisher
 import org.springframework.beans.factory.config.BeanDefinitionHolder
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ResourceLoaderAware
@@ -18,6 +19,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Mono
 import javax.servlet.Filter
 
 
@@ -25,7 +27,7 @@ import javax.servlet.Filter
 //    MyWebBeanImporter::class,
 //    DefaultUserAuthenticationService::class
 //])
-@Configuration
+//@Configuration
 class KotlinWebExtendConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAware {
     private lateinit var resourceLoader: ResourceLoader
 
@@ -67,11 +69,11 @@ class KotlinWebExtendConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAware
 
 
             try {
-                if (ClassUtil.exists(ServerHttpRequest::class.java.name)) {
+                if (ClassUtil.exists(Publisher::class.java.name)) {
                     addExcludeFilter(AssignableTypeFilter(CrossFilterConfig::class.java));
                 }
             } catch (ex: Throwable) {
-            
+
             }
         }
 

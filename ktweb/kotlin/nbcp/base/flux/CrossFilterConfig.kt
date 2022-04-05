@@ -2,6 +2,7 @@ package nbcp.base.flux.filter
 
 import nbcp.base.flux.findParameterValue
 import nbcp.comm.*
+import org.reactivestreams.Publisher
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -14,8 +15,8 @@ import reactor.core.publisher.Mono
 import java.lang.Exception
 import java.lang.reflect.UndeclaredThrowableException
 
-@Configuration
-@ConditionalOnClass(ServerHttpRequest::class)
+//@Configuration
+@ConditionalOnClass(Publisher::class)
 class CrossFilterConfig {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
