@@ -29,7 +29,7 @@ import kotlin.reflect.KClass
  * 这样能达到在所有Bean初始化之前执行的目的。
  * 继承 BeanFactoryPostProcessor 保证该组件比较早执行。
  */
-@Component
+//@Component
 @Order(PriorityOrdered.HIGHEST_PRECEDENCE)
 //@Import(value = [SnowFlake::class, AppJsonMapper::class, DbJsonMapper::class, WebJsonMapper::class])
 class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware {

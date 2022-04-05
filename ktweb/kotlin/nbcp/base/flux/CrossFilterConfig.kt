@@ -6,6 +6,7 @@ import org.reactivestreams.Publisher
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -17,6 +18,7 @@ import java.lang.reflect.UndeclaredThrowableException
 
 //@Configuration
 @ConditionalOnClass(Publisher::class)
+@ConditionalOnMissingClass("javax.servlet.http.HttpServletRequest")
 class CrossFilterConfig {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

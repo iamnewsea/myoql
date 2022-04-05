@@ -25,7 +25,7 @@ import org.springframework.util.unit.DataUnit
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
 
-@Component
+//@Component
 @Import(ServletBeanProcessor::class)
 class MyMvcInitConfig : BeanPostProcessor {
     companion object {

@@ -20,7 +20,7 @@ annotation class GroupLog(val value: String = "")
 
 
 @Aspect
-@Component
+//@Component
 class GroupLogAopService {
     @Around("@within(nbcp.comm.GroupLog) || @annotation(nbcp.comm.GroupLog)")
     fun intercept(joinPoint: ProceedingJoinPoint): Any? {

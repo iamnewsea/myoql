@@ -20,7 +20,7 @@ annotation class MyLogLevel(val value: LogLevelScope)
  * 对注解了 MyLogLevel 的Bean或方法，使用 usingScope(LogLevel.NoLog) 包裹
  */
 @Aspect
-@Component
+//@Component
 open class LogLevelAopService {
 
     //@annotation 表示拦截方法级别上的注解。

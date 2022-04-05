@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 
 
-@Configuration
+//@Configuration
 class KotlinExtendInitConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAware {
     private lateinit var resourceLoader: ResourceLoader
 

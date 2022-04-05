@@ -15,7 +15,7 @@ import java.util.concurrent.Executor
  * 给 scheduler 加开关，定义ThreadPoolTaskExecutor的系统参数
  */
 @EnableAsync
-@Configuration
+//@Configuration
 @EnableScheduling
 @ConditionalOnProperty(name = ["app.scheduler"], havingValue = "true", matchIfMissing = true)
 class TaskConfig {
