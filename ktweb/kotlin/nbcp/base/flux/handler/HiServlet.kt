@@ -51,8 +51,10 @@ open class HiServlet {
             env.getProperty("app.product-line.name").AsString() + "(" +
                     env.getProperty("app.product-line.code") + ")";
 
-        json["启动文件"] = jarFile.name;
-        json["启动文件时间"] = Date(jarFile.lastModified()).AsString();
+        if (jarFile != null) {
+            json["启动文件"] = jarFile.name;
+            json["启动文件时间"] = Date(jarFile.lastModified()).AsString();
+        }
 //        json["登录用户Id"] = request.UserId;
 //        json["登录用户名称"] = request.UserName;
         json["JAVA_VERSION"] = System.getProperty("java.version");

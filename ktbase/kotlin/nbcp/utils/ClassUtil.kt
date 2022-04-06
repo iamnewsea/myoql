@@ -120,7 +120,7 @@ object ClassUtil {
         return Thread.currentThread().contextClassLoader.getResource("/") != null;
     }
 
-    fun getStartingJarFile(url: URL): File {
+    fun getStartingJarFile(url: URL): File? {
         val path = JsUtil.decodeURIComponent(url.path)
         if (url.protocol == "jar") {
             //值是： file:/D:/code/sites/server/admin/target/admin-api-1.0.1.jar!/BOOT-INF/classes!/
@@ -135,24 +135,27 @@ object ClassUtil {
             val targetPath = File(path).parentFile
             val mvn_file = targetPath?.listFiles { it -> it.name == "maven-archiver" }?.firstOrNull()
                     ?.listFiles { it -> it.name == "pom.properties" }?.firstOrNull()
-            if (mvn_file != null) {
-                val jarFile_lines = mvn_file.readLines()
-                val version = jarFile_lines.first { it.startsWith("version=") }.split("=").last()
-                val artifactId = jarFile_lines.first { it.startsWith("artifactId=") }.split("=").last()
-
-                return File(targetPath.FullName + "/" + artifactId + "-" + version + ".jar")
-            } else {
-                throw RuntimeException("找不到 maven-archiver , 先打包再运行!")
+            if (mvn_file == null) {
+                return null;
+//                throw RuntimeException("找不到 maven-archiver , 先打包再运行!")
             }
+
+            val jarFile_lines = mvn_file.readLines()
+            val version = jarFile_lines.first { it.startsWith("version=") }.split("=").last()
+            val artifactId = jarFile_lines.first { it.startsWith("artifactId=") }.split("=").last()
+
+            return File(targetPath.FullName + "/" + artifactId + "-" + version + ".jar")
         }
-        throw RuntimeException("不识别的协议类型 ${url.protocol}")
+
+        return null;
+//        throw RuntimeException("不识别的协议类型 ${url.protocol}")
     }
 
     /**
      * 获取启动Jar所的路径
      * 调试时，会返回 target/classes/nbcp/base/utils
      */
-    fun getStartingJarFile(): File {
+    fun getStartingJarFile(): File? {
 //        val stackTraceElements = RuntimeException().stackTrace
 //        for (stackTraceElement in stackTraceElements) {
 //            if ("main" == stackTraceElement.methodName) {
