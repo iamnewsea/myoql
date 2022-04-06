@@ -1,23 +1,17 @@
 package nbcp.base.flux.handler
 
-import ch.qos.logback.classic.Level
-import com.wf.captcha.ArithmeticCaptcha
-import com.wf.captcha.utils.CaptchaUtil
-import nbcp.base.flux.WriteHtmlBodyValue
 import nbcp.comm.*
 import nbcp.db.db
 import nbcp.utils.ClassUtil
 import nbcp.utils.SpringUtil
 import nbcp.base.mvc.*
 import org.reactivestreams.Publisher
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass
-import org.springframework.http.server.reactive.ServerHttpRequest
-import org.springframework.http.server.reactive.ServerHttpResponse
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ServerWebExchange
+import reactor.core.publisher.Mono
 import java.lang.RuntimeException
 import java.util.*
 
@@ -36,11 +30,8 @@ import javax.servlet.http.HttpServletResponse
 @ConditionalOnMissingClass("javax.servlet.http.HttpServletRequest")
 open class HiServlet {
     @GetMapping("/hi")
-    fun doGet(swe: ServerWebExchange) {
-        proc(swe)
-    }
+    fun doGet(swe: ServerWebExchange): Mono<String> {
 
-    private fun proc(swe: ServerWebExchange) {
         val json = mutableMapOf<String, String?>();
         val env = SpringUtil.context.environment;
 
@@ -67,7 +58,7 @@ open class HiServlet {
 
 
 
-        swe.response.WriteHtmlBodyValue("""<style>
+        return Mono.just("""<style>
 body{padding:16px;} 
 div{margin-top:10px;} 
 div>span:first-child{font-size:14px;color:gray} 
