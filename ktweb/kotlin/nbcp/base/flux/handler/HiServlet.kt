@@ -41,15 +41,15 @@ open class HiServlet {
     }
 
     private fun proc(swe: ServerWebExchange) {
-        val json = StringMap();
+        val json = mutableMapOf<String, String?>();
         val env = SpringUtil.context.environment;
 
         val jarFile = ClassUtil.getStartingJarFile();
-        json["应用名称"] = env.getProperty("app.cn_name").AsString();
-        json["当前配置"] = env.getProperty("spring.profiles.active").AsString();
+        json["应用名称"] = env.getProperty("app.cn_name");
+        json["当前配置"] = env.getProperty("spring.profiles.active");
         json["产品线"] =
-                env.getProperty("app.product-line.name").AsString() + "(" +
-                        env.getProperty("app.product-line.code") + ")";
+            env.getProperty("app.product-line.name").AsString() + "(" +
+                    env.getProperty("app.product-line.code") + ")";
 
         json["启动文件"] = jarFile.name;
         json["启动文件时间"] = Date(jarFile.lastModified()).AsString();
@@ -59,9 +59,9 @@ open class HiServlet {
         json["JAVA_OPTS"] = System.getenv("JAVA_OPTS");
         json["HOST名称"] = System.getenv("HOSTNAME");
 
-        json["镜像版本号"] = env.getProperty("app.docker-image-version").AsString();
-        json["Git提交Id"] = env.getProperty("app.git-commit-id").AsString();
-        json["Git提交时间"] = env.getProperty("app.git-commit-time").AsString();
+        json["镜像版本号"] = env.getProperty("app.docker-image-version");
+        json["Git提交Id"] = env.getProperty("app.git-commit-id");
+        json["Git提交时间"] = env.getProperty("app.git-commit-time");
 
 
 
@@ -76,8 +76,8 @@ hr{height: 1px;border: none;border-top: 1px dashed gray;}
 </style>""" +
                 "<h1>" + SpringUtil.context.environment.getProperty("spring.application.name") + "</h1><hr />" +
                 json.filter { it.value.HasValue }
-                        .map { "<div><span>${it.key}</span><span>${it.value}</span></div>" }
-                        .joinToString(""));
+                    .map { "<div><span>${it.key}</span><span>${it.value}</span></div>" }
+                    .joinToString(""));
     }
 }
 

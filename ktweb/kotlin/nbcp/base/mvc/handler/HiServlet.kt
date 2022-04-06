@@ -34,12 +34,12 @@ open class HiServlet {
     }
 
     private fun proc(request: HttpServletRequest, response: HttpServletResponse) {
-        val json = StringMap();
+        val json = mutableMapOf<String, String?>();
         val env = SpringUtil.context.environment;
 
         val jarFile = ClassUtil.getStartingJarFile();
-        json["应用名称"] = env.getProperty("app.cn_name").AsString();
-        json["当前配置"] = env.getProperty("spring.profiles.active").AsString();
+        json["应用名称"] = env.getProperty("app.cn_name");
+        json["当前配置"] = env.getProperty("spring.profiles.active");
         json["产品线"] =
             env.getProperty("app.product-line.name").AsString() + "(" +
                     env.getProperty("app.product-line.code") + ")";
@@ -52,9 +52,9 @@ open class HiServlet {
         json["JAVA_OPTS"] = System.getenv("JAVA_OPTS");
         json["HOST名称"] = System.getenv("HOSTNAME");
 
-        json["镜像版本号"] = env.getProperty("app.docker-image-version").AsString();
-        json["Git提交Id"] = env.getProperty("app.git-commit-id").AsString();
-        json["Git提交时间"] = env.getProperty("app.git-commit-time").AsString();
+        json["镜像版本号"] = env.getProperty("app.docker-image-version");
+        json["Git提交Id"] = env.getProperty("app.git-commit-id");
+        json["Git提交时间"] = env.getProperty("app.git-commit-time");
 
 
         val sleep = (request.findParameterValue("sleep").AsFloat() * 1000).toLong();
