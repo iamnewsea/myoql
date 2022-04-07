@@ -46,11 +46,11 @@ class MyMvcInitConfig : BeanPostProcessor {
          */
         if (bean is MultipartProperties) {
             if (bean.maxFileSize.toMegabytes() <= 1) {
-                bean.maxFileSize = DataSize.of(100, DataUnit.MEGABYTES)
+                bean.maxFileSize = DataSize.of(256, DataUnit.MEGABYTES)
             }
 
             if (bean.maxRequestSize.toMegabytes() <= 10) {
-                bean.maxRequestSize = DataSize.of(120, DataUnit.MEGABYTES)
+                bean.maxRequestSize = DataSize.of(260, DataUnit.MEGABYTES)
             }
         }
 //        else {
