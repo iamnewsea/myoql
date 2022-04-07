@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2022-03-19 14:57:56
+//generate auto @2022-04-07 12:23:46
 
 
 class SerializableMeta(private val _pname: String) : MongoColumnName() {
@@ -337,6 +337,12 @@ class MongoBaseGroup : IDataGroup {
          */
         @nbcp.db.Cn(value = """视频封面地址""") 
         val videoLogoUrl = MongoColumnName("videoLogoUrl")
+
+        /**
+         * 存储类型
+         */
+        @nbcp.db.Cn(value = """存储类型""") 
+        val storageType = MongoColumnName("storageType")
 
         /**
          * 网络路径

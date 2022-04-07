@@ -54,6 +54,7 @@ abstract class BaseUploadService {
 
 
         var annexInfo = SysAnnex();
+        annexInfo.storageType = storageType;
         annexInfo.ext = extInfo.extName
         annexInfo.size = file.size.toInt()
         annexInfo.creator = user
