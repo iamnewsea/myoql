@@ -32,6 +32,7 @@ abstract class BaseUploadService {
      * @param vTempFile , 相对于 uploadPath 的相对路径.
      */
     fun uploadRequestFile(
+        storageType: String,
         file: MultipartFile,
         group: String,
         fileName: String,
@@ -83,7 +84,7 @@ abstract class BaseUploadService {
                     logoFile.extType = FileExtensionTypeEnum.Image;
                     logoFile.fileName = CodeUtil.getCode() + ".png";
 
-                    var logoUrl = saveFile(logoStream, annexInfo.group, logoFile);
+                    var logoUrl = saveFile(storageType, logoStream, annexInfo.group, logoFile);
                     annexInfo.videoLogoUrl = logoUrl
                 }
             }
@@ -94,7 +95,7 @@ abstract class BaseUploadService {
 //        fileData.imgHeight = annexInfo.imgHeight;
         annexInfo.corpId = corpId
 
-        annexInfo.url = saveFile(fileStream, annexInfo.group, fileData).replace("\\", "/")
+        annexInfo.url = saveFile(storageType, fileStream, annexInfo.group, fileData).replace("\\", "/")
 
 
         if (dbService.insert(annexInfo) == 0) {
@@ -119,6 +120,7 @@ abstract class BaseUploadService {
      * 4. 如果是图片，第四级目录是原图片的像素数/万 ，如 800*600 = 480000,则文件夹名为 48 。 忽略小数部分。这样对大部分图片大体归类。
      */
     abstract fun saveFile(
+        storageType: String,
         fileStream: InputStream,
         group: String,
         fileData: UploadFileNameData,
@@ -129,20 +131,21 @@ abstract class BaseUploadService {
     lateinit var dbService: IUploadFileDbService
 
 
-    protected open fun upload(request: HttpServletRequest, response: HttpServletResponse, group: String) {
+    protected open fun upload(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        storageType: String,
+        group: String
+    ) {
 
         if (request is StandardMultipartHttpServletRequest == false) {
             throw RuntimeException("request非StandardMultipartHttpServletRequest类型")
         }
 
-        var groupValue = group;
-        if (groupValue.isEmpty()) {
-            groupValue = request.findParameterStringValue("group")
-        }
-
         val ret = uploadRequest(
+            storageType.AsString { request.findParameterStringValue("storage-type") },
             request,
-            groupValue,
+            group.AsString { request.findParameterStringValue("group") },
             IdName(request.UserId, request.UserName),
             request.LoginUser.organization.id
         );
@@ -171,6 +174,7 @@ abstract class BaseUploadService {
      * 文件上传
      */
     private fun uploadRequest(
+        storageType: String,
         request: StandardMultipartHttpServletRequest,
         group: String,
         user: IdName,
@@ -189,7 +193,7 @@ abstract class BaseUploadService {
 
                 files.ForEachExt for2@{ file, _ ->
                     fileName = getBestFileName(fileName, file.originalFilename)
-                    var ret1 = uploadRequestFile(file, group, fileName, user, corpId);
+                    var ret1 = uploadRequestFile(storageType, file, group, fileName, user, corpId);
                     if (ret1.msg.HasValue) {
                         msg = ret1.msg;
                         return@ForEachExt false
