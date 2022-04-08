@@ -41,23 +41,23 @@ class CrossFilterConfig {
             }
 
             exchange.request.getCorsResponseMap(allowOrigins.split(","), headers)
-                    .apply {
-                        if (this.any()) {
-                            var originClient = exchange.request.getHeader("origin") ?: ""
+                .apply {
+                    if (this.any()) {
+                        var originClient = exchange.request.getHeader("origin") ?: ""
 
-                            var request2 = exchange.request.mutate().headers {
-                                it.remove("origin")
-                            }.build()
+                        var request2 = exchange.request.mutate().headers {
+                            it.remove("origin")
+                        }.build()
 
-                            if (ignoreLog(exchange.request) == false) {
-                                logger.Important("跨域移除(origin)${originClient}, (url)${exchange.request.uri}")
-                            }
-
-                            exchange = exchange.mutate().request(request2).build();
+                        if (ignoreLog(exchange.request) == false) {
+                            logger.Important("跨域移除(origin)${originClient}, (url)${exchange.request.uri}")
                         }
-                    }.forEach { key, value ->
-                        exchange.response.headers.set(key, value);
+
+                        exchange = exchange.mutate().request(request2).build();
                     }
+                }.forEach { key, value ->
+                    exchange.response.headers.set(key, value);
+                }
 
 
             if (exchange.request.method == HttpMethod.OPTIONS) {
@@ -86,12 +86,12 @@ class CrossFilterConfig {
                 }
 
                 errorInfo.add(
-                        err::class.java.simpleName + ": " + err.Detail.AsString(err.message.AsString()).AsString("(未知错误)")
-                                .substring(0, 256)
+                    err::class.java.simpleName + ": " + err.Detail.AsString(err.message.AsString()).AsString("(未知错误)")
+                        .substring(0, 256)
                 )
 
                 errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }
-                        .take(24))
+                    .take(24))
 
                 var errorMsg = errorInfo.joinToString(const.line_break)
 
@@ -147,13 +147,15 @@ class CrossFilterConfig {
 //    allowHeaders.add("Authorization")
 
         allowHeaders.addAll(
-                request.getHeader("Access-Control-Request-Headers")
-                        .AsString()
-                        .split(",")
-                        .filter { it.HasValue }
+            request.getHeader("Access-Control-Request-Headers")
+                .AsString()
+                .split(",")
+                .filter { it.HasValue }
         )
 
         allowHeaders.removeIf { it.isEmpty() }
+
+        allowHeaders = request.headers.keys.toList().intersect(allowHeaders).toMutableSet()
 
         if (allowHeaders.any()) {
             retMap.put("Access-Control-Allow-Headers", allowHeaders.joinToString(","))

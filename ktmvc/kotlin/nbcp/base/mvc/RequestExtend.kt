@@ -39,10 +39,10 @@ x-real-ip: 10.0.4.20
 x-forwarded-for: 103.10.86.226,124.70.126.65,10.0.4.20
      */
     var forwardIps = (request.getHeader("X-Forwarded-For") ?: "")
-            .split(",")
-            .map { it.trim() }
-            .filter { it.HasValue && !it.basicSame("unknown") && !MyUtil.isLocalIp(it) }
-            .toList();
+        .split(",")
+        .map { it.trim() }
+        .filter { it.HasValue && !it.basicSame("unknown") && !MyUtil.isLocalIp(it) }
+        .toList();
 
     //如果设置了 X-Forwarded-For
     if (forwardIps.any()) {
@@ -165,7 +165,8 @@ private fun getPostJsonFromRequest(request: HttpServletRequest): JsonMap {
 
         return JsonMap();
     } else if (contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-            || contentType.startsWith("application/x-www-form-urlencode")) {
+        || contentType.startsWith("application/x-www-form-urlencode")
+    ) {
         //按 key进行分组，假设客户端是：
         // corp[id]=1&corp[name]=abc&role[id]=2&role[name]=def
         //会分成两组 ret["corp"] = json1 , ret["role"] = json2;
@@ -247,8 +248,9 @@ fun HttpServletRequest.findParameterValue(key: String): Any? {
 
     //读取表单内容
     if (this.contentType != null &&
-            (this.contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                    || this.contentType.startsWith("application/x-www-form-urlencode"))) {
+        (this.contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                || this.contentType.startsWith("application/x-www-form-urlencode"))
+    ) {
         ret = this.getParameter(key)
         if (ret != null) {
             return ret;
@@ -308,13 +310,15 @@ fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>, headers: L
 //    allowHeaders.add("Authorization")
 
     allowHeaders.addAll(
-            request.getHeader("Access-Control-Request-Headers")
-                    .AsString()
-                    .split(",")
-                    .filter { it.HasValue }
+        request.getHeader("Access-Control-Request-Headers")
+            .AsString()
+            .split(",")
+            .filter { it.HasValue }
     )
 
     allowHeaders.removeIf { it.isEmpty() }
+    
+    allowHeaders = request.headerNames.toList().intersect(allowHeaders).toMutableSet()
 
     if (allowHeaders.any()) {
         retMap.put("Access-Control-Allow-Headers", allowHeaders.joinToString(","))
