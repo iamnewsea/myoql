@@ -1,7 +1,9 @@
 package nbcp
 
 import nbcp.bean.*
+import nbcp.comm.AsBoolean
 import nbcp.comm.Important
+import nbcp.comm.config
 import nbcp.db.db
 import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
@@ -38,20 +40,22 @@ class MyOqlInitConfig : BeanPostProcessor {
     @EventListener
     fun app_started(ev: ApplicationStartedEvent) {
 
-        val flyways = SpringUtil.getBeanWithNull(FlywayBeanProcessor::class.java)
-        if (flyways != null) {
-            flyways.playFlyVersion();
+        if (config.getConfig("app.flyway.enable", "true").AsBoolean(true)) {
+            val flyways = SpringUtil.getBeanWithNull(FlywayBeanProcessor::class.java)
+            if (flyways != null) {
+                flyways.playFlyVersion();
+            }
         }
 
         db.mongo.groups.map { it::class.java.simpleName }.apply {
-            if( this.any()){
-                logger.Important("mongo groups:" + this                        .joinToString())
+            if (this.any()) {
+                logger.Important("mongo groups:" + this.joinToString())
             }
         }
 
         db.sql.groups.map { it::class.java.simpleName }.apply {
-            if( this.any()){
-                logger.Important("sql groups:" + this                        .joinToString())
+            if (this.any()) {
+                logger.Important("sql groups:" + this.joinToString())
             }
         }
     }
