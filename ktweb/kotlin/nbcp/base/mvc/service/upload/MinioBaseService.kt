@@ -104,7 +104,8 @@ class MinioBaseService : ISaveFileService {
             val size = it.available().toLong();
             val response = minioClient.putObject(
                 PutObjectArgs.builder()
-                    .bucket(group).contentType(contentType)
+                    .bucket(group)
+                    .contentType(contentType)
                     .stream(it, size, -1)
                     .`object`(fileName)
                     .apply {
