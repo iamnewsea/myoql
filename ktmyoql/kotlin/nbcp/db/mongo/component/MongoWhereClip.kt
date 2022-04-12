@@ -23,6 +23,10 @@ class MongoWhereClip() : LinkedList<JsonMap>() {
         this.add(JsonMap(map));
     }
 
+    fun addWhere(key: String, value: Any?) {
+        this.add(JsonMap(key to value))
+    }
+
     /**
      * 从根级查找指定条件的值。
      * @param column , 可能是  _id , user._id
