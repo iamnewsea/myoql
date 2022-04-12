@@ -1,6 +1,7 @@
 package nbcp.base.flux.filter
 
 import nbcp.base.flux.findParameterValue
+import nbcp.base.flux.getCorsResponseMap
 import nbcp.comm.*
 import org.reactivestreams.Publisher
 import org.slf4j.LoggerFactory
@@ -100,68 +101,6 @@ class CrossFilterConfig {
             }
             return@WebFilter ret;
         }
-    }
-
-
-    /**
-     * 处理跨域。
-     * 网关处理完跨域后，应该移除 origin
-     */
-    fun ServerHttpRequest.getCorsResponseMap(allowOrigins: List<String>, headers: List<String>): StringMap {
-        //https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
-
-        var request = this;
-        var requestOrigin = request.getHeader("origin") ?: ""
-
-
-        var retMap = StringMap();
-        if (requestOrigin.isEmpty()) return retMap;
-
-        var allow = allowOrigins.any { requestOrigin.contains(it) } ||
-                requestOrigin.contains("localhost") ||
-                requestOrigin.contains("127.0.0");
-
-        if (allow == false) {
-            logger.warn("系统忽略未允许的跨域请求源:${requestOrigin}")
-            return retMap;
-        }
-
-
-//        var originHost = requestOrigin;
-//        var p_index = requestOrigin.indexOf("://")
-//        if (p_index > 0) {
-//            originHost = originHost.substring(p_index + 3)
-//        }
-
-        retMap.put("Access-Control-Allow-Origin", requestOrigin)
-        retMap.put("Access-Control-Max-Age", "2592000") //30天。
-
-        retMap.put("Access-Control-Allow-Credentials", "true")
-        retMap.put("Access-Control-Allow-Methods", "GET,POST,PATCH,PUT,HEAD,OPTIONS,DELETE")
-
-
-        var allowHeaders = mutableSetOf<String>();
-        allowHeaders.add(config.tokenKey);
-        allowHeaders.addAll(headers)
-        //添加指定的
-//    allowHeaders.add("Authorization")
-
-        allowHeaders.addAll(
-            request.getHeader("Access-Control-Request-Headers")
-                .AsString()
-                .split(",")
-                .filter { it.HasValue }
-        )
-
-        allowHeaders.removeIf { it.isEmpty() }
-
-        allowHeaders = request.headers.keys.toList().intersect(allowHeaders).toMutableSet()
-
-        if (allowHeaders.any()) {
-            retMap.put("Access-Control-Allow-Headers", allowHeaders.joinToString(","))
-            retMap.put("Access-Control-Expose-Headers", allowHeaders.joinToString(","))
-        }
-        return retMap;
     }
 
 

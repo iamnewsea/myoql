@@ -49,10 +49,10 @@ x-real-ip: 10.0.4.20
 x-forwarded-for: 103.10.86.226,124.70.126.65,10.0.4.20
      */
     var forwardIps = (request.getHeader("X-Forwarded-For") ?: "")
-            .split(",")
-            .map { it.trim() }
-            .filter { it.HasValue && !it.basicSame("unknown") && !MyUtil.isLocalIp(it) }
-            .toList();
+        .split(",")
+        .map { it.trim() }
+        .filter { it.HasValue && !it.basicSame("unknown") && !MyUtil.isLocalIp(it) }
+        .toList();
 
     //如果设置了 X-Forwarded-For
     if (forwardIps.any()) {
@@ -125,13 +125,13 @@ val ServerWebExchange.postBody: Mono<ByteArray>
         }
 
         return this.request.body
-                .collectList()
-                .map {
-                    val list = mutableListOf<Byte>()
-                    it.forEach { list.addAll(it.asInputStream().readBytes().toTypedArray()) }
+            .collectList()
+            .map {
+                val list = mutableListOf<Byte>()
+                it.forEach { list.addAll(it.asInputStream().readBytes().toTypedArray()) }
 
-                    return@map list.toByteArray()
-                }
+                return@map list.toByteArray()
+            }
 
 
 //                .subscribe {
@@ -311,10 +311,10 @@ fun ServerHttpRequest.getCorsResponseMap(allowOrigins: List<String>, headers: Li
 //    allowHeaders.add("Authorization")
 
     allowHeaders.addAll(
-            request.getHeader("Access-Control-Request-Headers")
-                    .AsString()
-                    .split(",")
-                    .filter { it.HasValue }
+        request.getHeader("Access-Control-Request-Headers")
+            .AsString()
+            .split(",")
+            .filter { it.HasValue }
     )
 
     allowHeaders.removeIf { it.isEmpty() }

@@ -317,8 +317,8 @@ fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>, headers: L
     )
 
     allowHeaders.removeIf { it.isEmpty() }
-    
-    allowHeaders = request.headerNames.toList().intersect(allowHeaders).toMutableSet()
+
+//    allowHeaders = request.headerNames.toList().intersect(allowHeaders).toMutableSet()
 
     if (allowHeaders.any()) {
         retMap.put("Access-Control-Allow-Headers", allowHeaders.joinToString(","))
