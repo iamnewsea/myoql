@@ -38,7 +38,26 @@ class MongoWhereClip() : LinkedList<JsonMap>() {
         }
     }
 
-    private fun getValueFromMap(map: JsonMap, column: String): Any? {
+    private fun getValueFromMap(map: Map<String, Any?>, column: String): Any? {
+        if (map.keys.size == 1 && map.keys.first() == "\$and") {
+            var vs = map.values.first() as Collection<Map<String, Any?>>?
+
+            if (vs == null || !vs.any()) {
+                return null;
+            }
+
+            vs.stream()
+                .map { getValueFromMap(it, column) }
+                .filter { it != null }
+                .findFirst()
+                .apply {
+                    if (this.isPresent) {
+                        return null;
+                    }
+                    return this.get()
+                }
+        }
+
         var value = map.get(column);
         if (value == null) return null;
 
