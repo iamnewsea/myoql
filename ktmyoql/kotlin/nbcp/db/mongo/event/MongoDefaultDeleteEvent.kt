@@ -39,7 +39,7 @@ class MongoDefaultDeleteEvent : IMongoEntityDelete {
 
         cacheGroups.forEach { groupKeys ->
             val groupValue = groupKeys.map {
-                return@map it to delete.whereData.get(it).AsString()
+                return@map it to delete.whereData.findValueFromRootLevel(it).AsString()
             }.filter { it.second.HasValue }
                 .toMap();
 

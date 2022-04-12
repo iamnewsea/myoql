@@ -59,7 +59,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
             logger.Important("逻辑删除强制执行更新,${this.actualTableName},${this.whereData.ToJson()}")
 
             var update = MongoBaseUpdateClip(this.actualTableName)
-            update.whereData.putAll(this.whereData)
+            update.whereData.addAll(this.whereData)
             update.setData.put(logicalDelete.value, true);
             return update.exec();
         }

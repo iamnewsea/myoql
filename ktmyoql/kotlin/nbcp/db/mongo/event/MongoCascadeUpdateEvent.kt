@@ -69,7 +69,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
 
             //判断新值，旧值是否相等
             val nameValueQuery = MongoBaseQueryClip(update.actualTableName)
-            nameValueQuery.whereData.putAll(update.whereData)
+            nameValueQuery.whereData.addAll(update.whereData)
             nameValueQuery.selectField(ref.refNameField)
 
             val dbNameValues = nameValueQuery.toList(String::class.java).toSet();
@@ -125,7 +125,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
 
             //查询数据，把Id查出来。
             val IdValueQuery = MongoBaseQueryClip(update.actualTableName)
-            IdValueQuery.whereData.putAll(update.whereData)
+            IdValueQuery.whereData.addAll(update.whereData)
             IdValueQuery.selectField(ref.refIdField)
 
             return@getOrPut IdValueQuery.toList(String::class.java).toTypedArray()

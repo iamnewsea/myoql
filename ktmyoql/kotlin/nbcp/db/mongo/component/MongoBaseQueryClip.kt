@@ -214,7 +214,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         def.forEach { cacheColumnGroup ->
             var kv = StringMap();
             cacheColumnGroup.forEach {
-                var v = this.whereData.getStringValue(it)
+                var v = this.whereData.findValueFromRootLevel(it).AsString()
                 if (v.isNullOrEmpty()) return@forEach
                 kv.put(it, v)
             }

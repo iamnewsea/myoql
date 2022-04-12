@@ -59,7 +59,7 @@ class MongoDefaultUpdateEvent : IMongoEntityUpdate {
         }
         cacheGroups.forEach { groupKeys ->
             val groupValue = groupKeys.map {
-                return@map it to update.whereData.get(it).AsString()
+                return@map it to update.whereData.findValueFromRootLevel(it).AsString()
             }.filter { it.second.HasValue }
                 .toMap();
 

@@ -32,8 +32,8 @@ object db_mongo {
         return@lazy SpringUtil.getBean<MongoEntityCollector>();
     }
 
-    fun hasOrClip(where: Map<String, Any?>): Boolean {
-        return where.any { it.key == "\$or" }
+    fun hasOrClip(where: MongoWhereClip): Boolean {
+        return where.any { map -> map.any { it.key == "\$or" } }
     }
 
 //    private var dynamicMongoMap = StringMap();
@@ -79,8 +79,8 @@ object db_mongo {
         return c;
     }
 
-    fun getMergedMongoCriteria(where: Map<String, Any?>): Criteria {
-        return getMergedMongoCriteria(getCriteriaFromDocument(where))
+    fun getMergedMongoCriteria(where: MongoWhereClip): Criteria {
+        return getMergedMongoCriteria(*where.map { getCriteriaFromDocument(it) }.toTypedArray())
     }
 
     fun getMergedMongoCriteria(vararg where: Criteria): Criteria {

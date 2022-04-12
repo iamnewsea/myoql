@@ -242,7 +242,7 @@ fun MongoColumnName.match_isNullOrEmpty(): Criteria {
  */
 infix fun MongoColumnName.match_elemMatch(value: Map<String,Any?>): Criteria {
     var (key) = db.mongo.proc_mongo_key_value(this, null);
-    return Criteria.where(key).`elemMatch`(db.mongo.getMergedMongoCriteria(value));
+    return Criteria.where(key).`elemMatch`(db.mongo.getMergedMongoCriteria(MongoWhereClip(value) ));
 }
 
 
