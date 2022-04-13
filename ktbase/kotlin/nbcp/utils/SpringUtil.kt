@@ -1,13 +1,18 @@
 package nbcp.utils
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.databind.ObjectMapper
 import nbcp.comm.*
 import nbcp.component.*
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.beans.factory.support.BeanDefinitionBuilder
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
 import org.springframework.beans.factory.support.GenericBeanDefinition
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.bind.Binder
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
@@ -32,7 +37,7 @@ import kotlin.reflect.KClass
 //@Component
 @Order(PriorityOrdered.HIGHEST_PRECEDENCE)
 //@Import(value = [SnowFlake::class, AppJsonMapper::class, DbJsonMapper::class, WebJsonMapper::class])
-class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware {
+class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware, BeanPostProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
@@ -262,6 +267,20 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware 
         registryField = registry;
     }
 
+
+    override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
+        //记录所有的 ConfigurationProperties
+        if (bean::class.java.annotations.any { ConfigurationProperties::class.java.isAssignableFrom(it.annotationClass.java) }) {
+            logger.info("属性配置项:" + beanName)
+        }
+
+        if (bean is ObjectMapper) {
+            bean.configure(MapperFeature.USE_STD_BEAN_NAMING, true)
+            bean.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        }
+        
+        return super.postProcessAfterInitialization(bean, beanName)
+    }
 
     /**
      * 在所有Bean初始化之前执行
