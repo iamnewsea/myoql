@@ -52,9 +52,9 @@ class MongoWhereClip() : LinkedList<JsonMap>() {
                 .findFirst()
                 .apply {
                     if (this.isPresent) {
-                        return null;
+                        return this.get()
                     }
-                    return this.get()
+                    return null;
                 }
         }
 
