@@ -270,9 +270,9 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
 
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
         //记录所有的 ConfigurationProperties
-        if (bean::class.java.annotations.any { ConfigurationProperties::class.java.isAssignableFrom(it.annotationClass.java) }) {
-            logger.info("属性配置项:" + beanName)
-        }
+//        if (bean::class.java.annotations.any { ConfigurationProperties::class.java.isAssignableFrom(it.annotationClass.java) }) {
+//            logger.info("属性配置项:" + beanName)
+//        }
 
         if (bean is ObjectMapper) {
             bean.configure(MapperFeature.USE_STD_BEAN_NAMING, true)
