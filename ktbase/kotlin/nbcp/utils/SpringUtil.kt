@@ -274,11 +274,6 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
 //            logger.info("属性配置项:" + beanName)
 //        }
 
-        if (bean is ObjectMapper) {
-            bean.configure(MapperFeature.USE_STD_BEAN_NAMING, true)
-            bean.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-        }
-        
         return super.postProcessAfterInitialization(bean, beanName)
     }
 
