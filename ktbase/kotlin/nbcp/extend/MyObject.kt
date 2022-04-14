@@ -247,3 +247,56 @@ infix fun Any?.basicSame(other: Any?): Boolean {
 
     return false;
 }
+
+fun Any?.simpleFieldToJson(initLevel: Int = 1): Any? {
+    return this.simpleFieldToJson(initLevel, initLevel);
+}
+
+/**
+ * 仅对简单字段转为Map
+ */
+private fun Any?.simpleFieldToJson(initLevel: Int, level: Int): Any? {
+    if (this == null) return null;
+
+
+    var type = this::class.java;
+    if (type.IsSimpleType()) {
+        return this;
+    } else if (type.isArray) {
+        return (this as Array<Any?>).map { it.simpleFieldToJson(initLevel, level) }
+            .filter { it != null && it != "~" }
+    } else if (type.IsCollectionType) {
+        return (this as Collection<Any?>).map { it.simpleFieldToJson(initLevel, level) }
+            .filter { it != null && it != "~" }
+    }
+
+
+    if (level <= 0) {
+        return "~";
+    }
+    if (type.IsMapType) {
+        return (this as Map<String, Any?>)
+            .mapValues { it.value.simpleFieldToJson(initLevel, level - 1) }
+            .filter { it.value != null }
+    }
+
+
+    var map = JsonMap();
+    type.AllFields.forEach {
+        val v = it.get(this).simpleFieldToJson(initLevel, level - 1);
+        if (v == null) {
+            return@forEach
+        }
+
+        map.put(it.name, v)
+    }
+
+    if (initLevel != level) {
+        if (map.keys.any() == false) {
+            return null;
+        }
+        return map;
+    }
+
+    return map.ToJson();
+}

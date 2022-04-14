@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletResponse
  *        B) @Import({SpringUtil.class, MyAllFilter.class})
  * 1. app.filter.allow-origins
  * 2. app.filter.headers
- * 3. 通过 Url参数 log-level 控制 Log级别,可以是数字，也可以是被 ch.qos.logback.classic.Level.toLevel识别的参数，不区分大小写，如：all|trace|debug|info|error|off
+ * 3. 通过 Url参数 -log-level- 控制 Log级别,可以是数字，也可以是被 ch.qos.logback.classic.Level.toLevel识别的参数，不区分大小写，如：all|trace|debug|info|error|off
  */
 
 @WebFilter(urlPatterns = ["/*", "/**"])
@@ -34,10 +34,10 @@ open class MyOqlCrossFilter : Filter {
     var allowOrigins: String = "";
 
     /**
-     * 额外需要允许通过的Key
+     * 可以定义禁止的 header,默认允许通过所有 Header
      */
-    @Value("\${app.filter.headers:token}")
-    var headers: List<String> = listOf()
+    @Value("\${app.filter.deny-headers:}")
+    var denyHeaders: List<String> = listOf()
 
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -53,7 +53,7 @@ open class MyOqlCrossFilter : Filter {
         var httpResponse = response as HttpServletResponse
 
         var request2: HttpServletRequest? = null
-        httpRequest.getCorsResponseMap(this.allowOrigins.split(","), headers).apply {
+        httpRequest.getCorsResponseMap(this.allowOrigins.split(","), denyHeaders).apply {
             if (this.any() && httpRequest.method != "OPTIONS") {
                 request2 = MyAllFilter.getRequestWrapper(httpRequest);
 

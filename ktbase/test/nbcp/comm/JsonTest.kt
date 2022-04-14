@@ -2,8 +2,10 @@ package nbcp.comm
 
 import nbcp.TestBase
 import nbcp.db.IdName
+import nbcp.db.LoginUserModel
 import nbcp.scope.JsonSceneEnumScope
 import nbcp.utils.RecursionUtil
+import nbcp.utils.SpringUtil
 import org.junit.jupiter.api.Test
 import java.io.Serializable
 import java.time.LocalDateTime
@@ -68,7 +70,15 @@ class JsonTest : TestBase() {
 
     @Test
     fun ffff() {
-        println(Void::class.java.simpleName)
+        var l = LoginUserModel();
+        l.loginName = "OK"
+        l.groups = listOf("a", "b")
+
+        println("==============")
+        println(SpringUtil.context.simpleFieldToJson())
+        println("==============")
+        println(SpringUtil.context.simpleFieldToJson(2))
+        println("==============")
     }
 
     class ResultVO(var users: List<IdName>)

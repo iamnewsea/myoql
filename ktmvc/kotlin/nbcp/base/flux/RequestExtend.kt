@@ -48,11 +48,8 @@ private fun _getClientIp(request: ServerHttpRequest): String {
 x-real-ip: 10.0.4.20
 x-forwarded-for: 103.10.86.226,124.70.126.65,10.0.4.20
      */
-    var forwardIps = (request.getHeader("X-Forwarded-For") ?: "")
-        .split(",")
-        .map { it.trim() }
-        .filter { it.HasValue && !it.basicSame("unknown") && !MyUtil.isLocalIp(it) }
-        .toList();
+    var forwardIps = (request.getHeader("X-Forwarded-For") ?: "").split(",").map { it.trim() }
+        .filter { it.HasValue && !it.basicSame("unknown") && !MyUtil.isLocalIp(it) }.toList();
 
     //如果设置了 X-Forwarded-For
     if (forwardIps.any()) {
@@ -124,9 +121,7 @@ val ServerWebExchange.postBody: Mono<ByteArray>
             throw RuntimeException("请求体超过${(config.maxHttpPostSize.toString()).AsInt()}!")
         }
 
-        return this.request.body
-            .collectList()
-            .map {
+        return this.request.body.collectList().map {
                 val list = mutableListOf<Byte>()
                 it.forEach { list.addAll(it.asInputStream().readBytes().toTypedArray()) }
 
@@ -278,7 +273,7 @@ val ServerHttpRequest.fullUrl: String
  * 处理跨域。
  * 网关处理完跨域后，应该移除 origin
  */
-fun ServerHttpRequest.getCorsResponseMap(allowOrigins: List<String>, headers: List<String>): StringMap {
+fun ServerHttpRequest.getCorsResponseMap(allowOrigins: List<String>, denyHeaders: List<String>): StringMap {
     //https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
 
     var request = this;
@@ -288,9 +283,10 @@ fun ServerHttpRequest.getCorsResponseMap(allowOrigins: List<String>, headers: Li
     var retMap = StringMap();
     if (requestOrigin.isEmpty()) return retMap;
 
-    var allow = allowOrigins.any { requestOrigin.contains(it) } ||
-            requestOrigin.contains("localhost") ||
-            requestOrigin.contains("127.0.0");
+    var allow =
+        allowOrigins.any { requestOrigin.contains(it) } || requestOrigin.contains("localhost") || requestOrigin.contains(
+            "127.0.0"
+        );
 
     if (allow == false) {
         LoggerFactory.getLogger("ktmvc.getCorsResponseMap").warn("系统忽略未允许的跨域请求源:${requestOrigin}")
@@ -306,18 +302,15 @@ fun ServerHttpRequest.getCorsResponseMap(allowOrigins: List<String>, headers: Li
 
     var allowHeaders = mutableSetOf<String>();
     allowHeaders.add(config.tokenKey);
-    allowHeaders.addAll(headers)
     //添加指定的
 //    allowHeaders.add("Authorization")
 
-    allowHeaders.addAll(
-        request.getHeader("Access-Control-Request-Headers")
-            .AsString()
-            .split(",")
-            .filter { it.HasValue }
-    )
+    allowHeaders.addAll(request.getHeader("Access-Control-Request-Headers").AsString().split(",")
+        .filter { it.HasValue })
 
     allowHeaders.removeIf { it.isEmpty() }
+
+    allowHeaders -= denyHeaders;
 
     if (allowHeaders.any()) {
         retMap.put("Access-Control-Allow-Headers", allowHeaders.joinToString(","))

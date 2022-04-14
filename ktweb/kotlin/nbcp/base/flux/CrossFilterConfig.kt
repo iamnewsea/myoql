@@ -28,8 +28,11 @@ class CrossFilterConfig {
     @Value("\${app.filter.allow-origins:}")
     var allowOrigins: String = "";
 
-    @Value("\${app.filter.headers:}")
-    var headers: List<String> = listOf()
+    /**
+     * 可以定义禁止的 header,默认允许通过所有 Header
+     */
+    @Value("\${app.filter.deny-headers:}")
+    var denyHeaders: List<String> = listOf()
 
 
     @Bean
@@ -41,7 +44,7 @@ class CrossFilterConfig {
                 return@WebFilter chain.filter(exchange)
             }
 
-            exchange.request.getCorsResponseMap(allowOrigins.split(","), headers)
+            exchange.request.getCorsResponseMap(allowOrigins.split(","), denyHeaders)
                 .apply {
                     if (this.any()) {
                         var originClient = exchange.request.getHeader("origin") ?: ""

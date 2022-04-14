@@ -294,20 +294,19 @@ object RecursionUtil {
         value: Any,
         consumerMap: (Map<*, *>) -> Boolean,
         consumerList: ((Collection<*>) -> Boolean)? = null,
-        consumerObject: ((Any) -> Boolean)? = null,
-        deepth: Int = 0
+        consumerObject: ((Any) -> Boolean)? = null
     ): Boolean {
         var type = value::class.java;
         if (type.IsSimpleType()) {
             return true;
         } else if (type.isArray) {
-            return recursionArray(value as Array<*>, consumerMap, consumerList, consumerObject, deepth + 1);
+            return recursionArray(value as Array<*>, consumerMap, consumerList, consumerObject, 1);
         } else if (type.IsCollectionType) {
-            return recursionList(value as Collection<*>, consumerMap, consumerList, consumerObject, deepth + 1);
+            return recursionList(value as Collection<*>, consumerMap, consumerList, consumerObject, 1);
         } else if (type.IsMapType) {
-            return recursionJson(value as Map<*, *>, consumerMap, consumerList, consumerObject, deepth + 1);
+            return recursionJson(value as Map<*, *>, consumerMap, consumerList, consumerObject, 1);
         } else {
-            return recursionObject(value, consumerMap, consumerList, consumerObject, deepth + 1);
+            return recursionObject(value, consumerMap, consumerList, consumerObject, 1);
         }
     }
 

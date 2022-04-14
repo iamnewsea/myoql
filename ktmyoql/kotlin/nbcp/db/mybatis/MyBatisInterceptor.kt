@@ -1,8 +1,10 @@
 package nbcp.db.mybatis
 
 import nbcp.utils.*
+import org.apache.ibatis.cache.CacheKey
 import org.apache.ibatis.executor.Executor
 import org.apache.ibatis.executor.keygen.SelectKeyGenerator
+import org.apache.ibatis.mapping.BoundSql
 import org.apache.ibatis.mapping.MappedStatement
 import org.apache.ibatis.mapping.SqlCommandType
 import org.apache.ibatis.plugin.*
@@ -15,8 +17,17 @@ import javax.sql.DataSource
 
 
 @Intercepts(
-        Signature(type = Executor::class, method = "update", args = arrayOf(MappedStatement::class, Any::class)),
-        Signature(type = Executor::class, method = "query", args = arrayOf(MappedStatement::class, Object::class, RowBounds::class, ResultHandler::class))
+    Signature(type = Executor::class, method = "update", args = arrayOf(MappedStatement::class, Any::class)),
+    Signature(
+        type = Executor::class, method = "query", args = arrayOf(
+            MappedStatement::class,
+            Object::class,
+            RowBounds::class,
+            ResultHandler::class,
+            CacheKey::class,
+            BoundSql::class
+        )
+    )
 )
 class MyBatisInterceptor : Interceptor {
     @Throws(Throwable::class)
@@ -50,7 +61,7 @@ class MyBatisInterceptor : Interceptor {
 
 
     private fun setReadMode(executor: Executor) {
-        if (SpringUtil.containsBean("slave",DataSource::class.java)) {
+        if (SpringUtil.containsBean("slave", DataSource::class.java)) {
             val slave = SpringUtil.getBeanByName<DataSource>("slave");
             MyUtil.setPrivatePropertyValue(executor.transaction as SpringManagedTransaction, "dataSource", slave)
             return;
@@ -61,7 +72,11 @@ class MyBatisInterceptor : Interceptor {
 
     //默认
     private fun setWriteMode(executor: Executor) {
-        MyUtil.setPrivatePropertyValue(executor.transaction as SpringManagedTransaction, "dataSource", SpringUtil.getBean<DataSource>())
+        MyUtil.setPrivatePropertyValue(
+            executor.transaction as SpringManagedTransaction,
+            "dataSource",
+            SpringUtil.getBean<DataSource>()
+        )
     }
 
     override fun plugin(target: Any): Any {
