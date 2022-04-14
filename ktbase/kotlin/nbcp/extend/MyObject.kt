@@ -301,6 +301,7 @@ private fun Any?.simpleFieldToJson(initLevel: Int, level: Int): Any? {
     try {
         return map.ToJson();
     } catch (ex: Exception) {
+        LoggerFactory.getLogger("myoql.simpleFieldToJson").error(ex.message, ex)
         return "(err)"
     }
 }
