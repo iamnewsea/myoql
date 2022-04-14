@@ -298,5 +298,9 @@ private fun Any?.simpleFieldToJson(initLevel: Int, level: Int): Any? {
         return map;
     }
 
-    return map.ToJson();
+    try {
+        return map.ToJson();
+    } catch (ex: Exception) {
+        return "(err)"
+    }
 }
