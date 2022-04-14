@@ -248,25 +248,33 @@ infix fun Any?.basicSame(other: Any?): Boolean {
     return false;
 }
 
-fun Any?.simpleFieldToJson(initLevel: Int = 1): Any? {
+fun Any?.simpleFieldToJson(
+    initLevel: Int = 1, maxLength: Int
+    = 256
+): Any? {
     return this.simpleFieldToJson(initLevel, initLevel);
 }
 
 /**
  * 仅对简单字段转为Map
  */
-private fun Any?.simpleFieldToJson(initLevel: Int, level: Int): Any? {
+private fun Any?.simpleFieldToValue(initLevel: Int, level: Int, maxLength: Int): Any? {
     if (this == null) return null;
 
 
     var type = this::class.java;
     if (type.IsSimpleType()) {
+        if (this is String) {
+            if (this.length > maxLength) {
+                return this.Slice(0, maxLength) + " ..."
+            }
+        }
         return this;
     } else if (type.isArray) {
-        return (this as Array<Any?>).map { it.simpleFieldToJson(initLevel, level) }
+        return (this as Array<Any?>).map { it.simpleFieldToValue(initLevel, level, maxLength) }
             .filter { it != null && it != "~" }
     } else if (type.IsCollectionType) {
-        return (this as Collection<Any?>).map { it.simpleFieldToJson(initLevel, level) }
+        return (this as Collection<Any?>).map { it.simpleFieldToValue(initLevel, level, maxLength) }
             .filter { it != null && it != "~" }
     }
 
@@ -276,14 +284,14 @@ private fun Any?.simpleFieldToJson(initLevel: Int, level: Int): Any? {
     }
     if (type.IsMapType) {
         return (this as Map<String, Any?>)
-            .mapValues { it.value.simpleFieldToJson(initLevel, level - 1) }
+            .mapValues { it.value.simpleFieldToValue(initLevel, level - 1, maxLength) }
             .filter { it.value != null }
     }
 
 
     var map = JsonMap();
     type.AllFields.forEach {
-        val v = it.get(this).simpleFieldToJson(initLevel, level - 1);
+        val v = it.get(this).simpleFieldToValue(initLevel, level - 1, maxLength);
         if (v == null) {
             return@forEach
         }
