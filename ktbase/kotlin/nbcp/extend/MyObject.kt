@@ -249,10 +249,9 @@ infix fun Any?.basicSame(other: Any?): Boolean {
 }
 
 fun Any?.simpleFieldToJson(
-    initLevel: Int = 1, maxLength: Int
-    = 256
+    initLevel: Int = 1, maxLength: Int = 256
 ): Any? {
-    return this.simpleFieldToJson(initLevel, initLevel);
+    return this.simpleFieldToValue(initLevel, initLevel, maxLength);
 }
 
 /**
