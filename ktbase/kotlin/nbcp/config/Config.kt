@@ -1,16 +1,13 @@
 package nbcp.comm
 
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent
-import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationListener
 import org.springframework.core.env.ConfigurableEnvironment
-import org.springframework.util.unit.DataSize
 
 /**
  * 配置项
  */
 class config : ApplicationListener<ApplicationEnvironmentPreparedEvent> {
-
     override fun onApplicationEvent(event: ApplicationEnvironmentPreparedEvent) {
         if (_env != null) {
             return;
