@@ -1,1 +1,3 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=nbcp.MyOqlDependencyInitConfig
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=nbcp.embed.MyOqlDependencyInitConfig
+
+org.springframework.context.ApplicationListener=nbcp.embed.AppStartEvent

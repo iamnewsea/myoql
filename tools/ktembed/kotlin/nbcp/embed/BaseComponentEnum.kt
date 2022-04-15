@@ -1,4 +1,4 @@
-package nbcp
+package nbcp.embed
 
 enum class BaseComponentEnum {
     Mariadb,

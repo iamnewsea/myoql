@@ -1,8 +1,7 @@
-package nbcp
+package nbcp.embed
 
 import nbcp.comm.AsString
 import nbcp.comm.HasValue
-import nbcp.comm.IsSimpleType
 import nbcp.comm.ifTrue
 import nbcp.utils.ClassUtil
 import nbcp.utils.MyUtil
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.annotation.*
 import org.springframework.context.event.EventListener
-import java.lang.reflect.Proxy
 
 @Configuration
 class MyOqlDependencyInitConfig : BeanPostProcessor {

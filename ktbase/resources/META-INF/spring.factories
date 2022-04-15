@@ -4,5 +4,5 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=nbcp.utils.Spring
 ,nbcp.comm.GroupLogAopService\
 ,nbcp.config.TaskConfig
 
-org.springframework.context.ApplicationListener=nbcp.comm.AppStartEvent\
+org.springframework.context.ApplicationListener=nbcp.config.AppStartEvent\
 ,nbcp.comm.config
