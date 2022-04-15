@@ -1,6 +1,3 @@
-@file:JvmName("MyHelper")
-@file:JvmMultifileClass
-
 package nbcp.comm
 
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent
