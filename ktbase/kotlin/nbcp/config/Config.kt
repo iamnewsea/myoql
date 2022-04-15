@@ -12,6 +12,10 @@ import org.springframework.util.unit.DataSize
 class config : ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
     override fun onApplicationEvent(event: ApplicationEnvironmentPreparedEvent) {
+        if (_env != null) {
+            return;
+        }
+
         _env = event.environment
 
         init_callbacks.forEach {
@@ -198,13 +202,7 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent> {
             return@lazy getConfig("app.validate-code-cache-seconds").AsInt(300)
         }
 
-        @JvmStatic
-        val maxHttpPostSize: DataSize by lazy {
-            return@lazy DataSize.parse(
-                getConfig("server.servlet.max-http-post-size")
-                    .AsString(getConfig("server.tomcat.max-http-post-size", "")).AsString("2MB")
-            )
-        }
+
 
         @JvmStatic
         val redisHost: String by lazy {

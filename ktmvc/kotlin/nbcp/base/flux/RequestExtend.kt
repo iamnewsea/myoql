@@ -10,6 +10,7 @@ import nbcp.utils.*
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.http.server.reactive.ServerHttpRequestDecorator
+import org.springframework.util.unit.DataSize
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -117,16 +118,23 @@ val ServerWebExchange.postBody: Mono<ByteArray>
         if (this.request.IsOctetContent) {
             return Mono.empty();
         }
-        if (this.request.headers.contentLength > config.maxHttpPostSize.toBytes()) {
-            throw RuntimeException("请求体超过${(config.maxHttpPostSize.toString()).AsInt()}!")
+
+        var maxHttpPostSize = DataSize.parse(
+            config.getConfig("server.jetty.max-http-post-size")
+//                .AsString { config.getConfig("server.tomcat.max-http-post-size", "") }
+                .AsString("2MB")
+        )
+
+        if (this.request.headers.contentLength > maxHttpPostSize.toBytes()) {
+            throw RuntimeException("请求体超过${(maxHttpPostSize.toString()).AsInt()}!")
         }
 
         return this.request.body.collectList().map {
-                val list = mutableListOf<Byte>()
-                it.forEach { list.addAll(it.asInputStream().readBytes().toTypedArray()) }
+            val list = mutableListOf<Byte>()
+            it.forEach { list.addAll(it.asInputStream().readBytes().toTypedArray()) }
 
-                return@map list.toByteArray()
-            }
+            return@map list.toByteArray()
+        }
 
 
 //                .subscribe {

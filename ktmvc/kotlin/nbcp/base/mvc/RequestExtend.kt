@@ -7,6 +7,7 @@ import nbcp.comm.*
 import org.springframework.http.MediaType
 import nbcp.utils.*
 import org.slf4j.LoggerFactory
+import org.springframework.util.unit.DataSize
 import org.springframework.web.servlet.HandlerMapping
 import java.lang.RuntimeException
 import javax.servlet.http.HttpServletRequest
@@ -118,8 +119,15 @@ val HttpServletRequest.postBody: ByteArray?
         if (this.IsOctetContent) {
             return null;
         }
-        if (this.contentLength > config.maxHttpPostSize.toBytes()) {
-            throw RuntimeException("请求体超过${(config.maxHttpPostSize.toString()).AsInt()}!")
+
+        var maxHttpPostSize = DataSize.parse(
+            config.getConfig("server.servlet.max-http-post-size")
+                .AsString{config.getConfig("server.tomcat.max-http-post-size", "")}
+//                .AsString{config.getConfig("server.tomcat.max-http-post-size", "")}
+                .AsString("2MB")
+        )
+        if (this.contentLength > maxHttpPostSize.toBytes()) {
+            throw RuntimeException("请求体超过${(maxHttpPostSize.toString()).AsInt()}!")
         }
         postBodyValue = this.inputStream.readBytes();
         this.setAttribute(postBody_key, postBodyValue)
