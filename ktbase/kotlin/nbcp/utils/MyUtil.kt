@@ -136,7 +136,11 @@ object MyUtil {
                 key = vbKeys.first().toString();
             }
 
-            var v = data.get(key)!!
+            var v = data.get(key)
+
+            if (v == null) {
+                return null;
+            }
 
             if (left_keys.any() == false) return v;
 
