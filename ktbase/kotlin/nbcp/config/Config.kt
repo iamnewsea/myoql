@@ -26,8 +26,7 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
 
         @JvmStatic
         val debug: Boolean
-            @JvmName("debug")
-            get() {
+            @JvmName("debug") get() {
                 if (_debug != null) {
                     return _debug!!;
                 }
@@ -102,13 +101,13 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
             }
 
             var cacheValue = cache.get(key) as String?;
-            if (cacheValue != null) return cacheValue.AsString()
+            if (cacheValue != null) return cacheValue
 
             cacheValue = contextField!!.environment.getProperty(key).AsStringWithNull()
             if (cacheValue != null) {
                 cache.set(key, cacheValue);
             }
-            return cacheValue.AsString()
+            return cacheValue
         }
 
 
@@ -176,7 +175,7 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
          */
         @JvmStatic
         val tokenKey: String
-            get() = getConfig("app.token-key") ?: "token"
+            get() = getConfig("app.token-key").AsString("token")
 
         /**
          * 配置 redis 存储方式 。
@@ -222,22 +221,17 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
 
         @JvmStatic
         val wxAppId: String
-            get() = getConfig("app.wx.appId")
-                .must { it.HasValue }
-                .elseThrow { "必须指定 app.wx.appId" }
+            get() = getConfig("app.wx.appId").must { it.HasValue }.elseThrow { "必须指定 app.wx.appId" }
 
 
         @JvmStatic
         val wxMchId: String
-            get() = getConfig("app.wx.mchId")
-                .must { it.HasValue }
-                .elseThrow { "必须指定 app.wx.mchId" }
+            get() = getConfig("app.wx.mchId").must { it.HasValue }.elseThrow { "必须指定 app.wx.mchId" }
 
 
         @JvmStatic
         val applicationName: String
-            get() = getConfig("spring.application.name")
-                .must { it.HasValue }
+            get() = getConfig("spring.application.name").must { it.HasValue }
                 .elseThrow { "必须指定 spring.application.name" }
     }
 
