@@ -1,35 +1,26 @@
 package nbcp.comm
 
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
 import org.springframework.context.ApplicationListener
 import org.springframework.core.env.ConfigurableEnvironment
 
 /**
  * 配置项
  */
-class config : ApplicationListener<ApplicationEnvironmentPreparedEvent> {
+class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, ApplicationContextAware {
     override fun onApplicationEvent(event: ApplicationEnvironmentPreparedEvent) {
-        if (_env != null) {
-            return;
-        }
-
-        _env = event.environment
+        env = event.environment
 
         init_callbacks.forEach {
-            it.invoke(_env!!);
+            it.invoke(env!!);
         }
     }
 
     companion object {
-        private var _env: ConfigurableEnvironment? = null;
-        val env: ConfigurableEnvironment
-            get() {
-                if (_env == null) {
-                    throw RuntimeException("初始化环境失败!")
-                }
-
-                return _env!!;
-            }
+        private var contextField: ApplicationContext? = null
+        private var env: ConfigurableEnvironment? = null;
 
         private var _debug: Boolean? = null;
 
@@ -41,7 +32,7 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent> {
                     return _debug!!;
                 }
 
-                if (_env == null) return false;
+                if (env == null) return false;
                 _debug = getConfig("debug").AsBoolean();
                 return _debug ?: false;
             }
@@ -53,60 +44,82 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent> {
             init_callbacks.add(callback);
         }
 
-        /**
-         * 是否在Web环境
-         */
-        @JvmStatic
-        val isInWebEnv by lazy {
-            try {
-                arrayOf(
-                    "javax.servlet.Servlet",
-                    "org.springframework.web.context.ConfigurableWebApplicationContext"
-                ).forEach {
-                    Class.forName(it)
-                }
-                return@lazy true;
-            } catch (e: Exception) {
-                return@lazy false;
-            }
-        }
+//        /**
+//         * 是否在Web环境
+//         */
+//        @JvmStatic
+//        val isInWebEnv by lazy {
+//            try {
+//                arrayOf(
+//                    "javax.servlet.Servlet",
+//                    "org.springframework.web.context.ConfigurableWebApplicationContext"
+//                ).forEach {
+//                    Class.forName(it)
+//                }
+//                return@lazy true;
+//            } catch (e: Exception) {
+//                return@lazy false;
+//            }
+//        }
 
         /**
          * redis 前缀
          */
         @JvmStatic
-        val productLineCode by lazy {
-            return@lazy getConfig("app.product-line.code").AsString()
-        }
+        val productLineCode = getConfig("app.product-line.code").AsString()
+
 
         @JvmStatic
-        val redisProductLineCodePrefixEnable by lazy {
-            return@lazy getConfig("app.product-line.redis-prefix-enable").AsBoolean()
-        }
+        val redisProductLineCodePrefixEnable = getConfig("app.product-line.redis-prefix-enable").AsBoolean()
+
+
+        @JvmStatic
+        private val cache: JsonMap = JsonMap();
 
         @JvmStatic
         fun getConfig(key: String, defaultValue: String): String {
-            return env.getProperty(key) ?: defaultValue
+            if (contextField == null) {
+                return env?.getProperty(key) ?: defaultValue
+            }
+
+
+            var cacheValue = cache.get(key) as String?;
+            if (cacheValue != null) return cacheValue.AsString()
+
+            cacheValue = contextField!!.environment.getProperty(key).AsStringWithNull()
+            if (cacheValue != null) {
+                cache.set(key, cacheValue);
+            }
+            return cacheValue.AsString()
         }
 
         @JvmStatic
         fun getConfig(key: String): String? {
-            return env.getProperty(key)
+            if (contextField == null) {
+                return env?.getProperty(key)
+            }
+
+            var cacheValue = cache.get(key) as String?;
+            if (cacheValue != null) return cacheValue.AsString()
+
+            cacheValue = contextField!!.environment.getProperty(key).AsStringWithNull()
+            if (cacheValue != null) {
+                cache.set(key, cacheValue);
+            }
+            return cacheValue.AsString()
         }
 
 
         @JvmStatic
-        val adminToken: String by lazy {
-            return@lazy getConfig("app.admin-token").AsString()
-        }
+        val adminToken: String = getConfig("app.admin-token").AsString()
+
 
         /**
          * 指定 ${app}.log 是否包含全部GroupLog日志。
          */
         @JvmStatic
-        val defAllScopeLog: Boolean by lazy {
-            return@lazy getConfig("app.def-all-scope-log").AsBoolean()
-        }
+        val defAllScopeLog: Boolean = getConfig("app.def-all-scope-log").AsBoolean()
+
 
         /**
          * 上传到本地时使用该配置,最后不带 "/"
@@ -125,31 +138,26 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 //            .must { it.HasValue }
 //            .elseThrow { "必须指定 app.upload.path" }
 //    }
-        @JvmStatic
-        val mybatisPackage: String by lazy {
-            return@lazy getConfig("app.mybatis.package", "")
-        }
-
-        @JvmStatic
-        val myoqlKeepDbName: Boolean by lazy {
-            return@lazy getConfig("app.myoql.sql.keep-db-name").AsBoolean(true)
-        }
-
-        @JvmStatic
-        val listResultWithCount: Boolean by lazy {
-            return@lazy getConfig("app.list-result-with-count", "").AsBoolean()
-        }
 
 
         @JvmStatic
-        val jwtSignatureAlgorithm: String by lazy {
-            return@lazy getConfig("app.jwt-signature-algorithm") ?: "HS256"
-        }
+        val mybatisPackage: String = getConfig("app.mybatis.package", "")
 
         @JvmStatic
-        val jwtSecretKey: String by lazy {
-            return@lazy getConfig("app.jwt-secret-key") ?: ""
-        }
+        val myoqlKeepDbName: Boolean = getConfig("app.myoql.sql.keep-db-name").AsBoolean(true)
+
+
+        @JvmStatic
+        val listResultWithCount: Boolean = getConfig("app.list-result-with-count", "").AsBoolean()
+
+
+        @JvmStatic
+        val jwtSignatureAlgorithm: String = getConfig("app.jwt-signature-algorithm") ?: "HS256"
+
+
+        @JvmStatic
+        val jwtSecretKey: String = getConfig("app.jwt-secret-key") ?: ""
+
 
         /**
          * 由于 SameSite 限制，避免使用 Cookie，定义一个额外值来保持会话。
@@ -158,9 +166,7 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent> {
          * redis: admin:token
          */
         @JvmStatic
-        val tokenKey: String by lazy {
-            return@lazy getConfig("app.token-key") ?: "token"
-        }
+        val tokenKey: String = getConfig("app.token-key") ?: "token"
 
         /**
          * 配置 redis 存储方式 。
@@ -187,45 +193,40 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent> {
          * token 缓存时间，默认四个小时
          */
         @JvmStatic
-        val tokenCacheSeconds: Int by lazy {
-            return@lazy getConfig("app.token-cache-seconds").AsInt(4 * 3600)
-        }
+        val tokenCacheSeconds: Int = getConfig("app.token-cache-seconds").AsInt(4 * 3600)
+
 
         /**
          * 验证码缓存时间，默认5分钟
          */
         @JvmStatic
-        val validateCodeCacheSeconds: Int by lazy {
-            return@lazy getConfig("app.validate-code-cache-seconds").AsInt(300)
-        }
-
+        val validateCodeCacheSeconds: Int = getConfig("app.validate-code-cache-seconds").AsInt(300)
 
 
         @JvmStatic
-        val redisHost: String by lazy {
-            return@lazy getConfig("spring.redis.host", "");
-        }
+        val redisHost: String = getConfig("spring.redis.host", "");
 
 
         @JvmStatic
-        val wxAppId: String by lazy {
-            return@lazy getConfig("app.wx.appId")
-                .must { it.HasValue }
-                .elseThrow { "必须指定 app.wx.appId" }
-        }
+        val wxAppId: String = getConfig("app.wx.appId")
+            .must { it.HasValue }
+            .elseThrow { "必须指定 app.wx.appId" }
+
 
         @JvmStatic
-        val wxMchId: String by lazy {
-            return@lazy getConfig("app.wx.mchId")
-                .must { it.HasValue }
-                .elseThrow { "必须指定 app.wx.mchId" }
-        }
+        val wxMchId: String = getConfig("app.wx.mchId")
+            .must { it.HasValue }
+            .elseThrow { "必须指定 app.wx.mchId" }
+
 
         @JvmStatic
-        val applicationName: String by lazy {
-            return@lazy getConfig("spring.application.name")
-                .must { it.HasValue }
-                .elseThrow { "必须指定 spring.application.name" }
-        }
+        val applicationName: String = getConfig("spring.application.name")
+            .must { it.HasValue }
+            .elseThrow { "必须指定 spring.application.name" }
+
+    }
+
+    override fun setApplicationContext(applicationContext: ApplicationContext) {
+        contextField = applicationContext
     }
 }
