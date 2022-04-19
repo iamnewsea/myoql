@@ -62,7 +62,7 @@ class MongoWhereClip() : LinkedList<JsonMap>() {
         if (value == null) return null;
 
         var value_type = value::class.java;
-        if (value_type.IsSimpleType()) return value_type;
+        if (value_type.IsSimpleType()) return value;
 
         if (value_type.IsMapType) {
             var map = value as Map<String, Any?>
@@ -74,6 +74,6 @@ class MongoWhereClip() : LinkedList<JsonMap>() {
                 }
             }
         }
-        return null;
+        return value;
     }
 }
