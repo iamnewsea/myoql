@@ -7,10 +7,10 @@ import nbcp.utils.ClassUtil
 import org.reactivestreams.Publisher
 import org.springframework.beans.factory.config.BeanDefinitionHolder
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.context.ResourceLoaderAware
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.type.AnnotationMetadata
@@ -24,12 +24,13 @@ import reactor.core.publisher.Mono
 import javax.servlet.Filter
 
 
-@Import(value = [
-    KotlinWebExtendConfigServlet::class,
-    KotlinWebExtendConfigWebFlux::class
-])
-//@Configuration
-class KotlinWebExtendConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAware {
+//@Import(value = [
+//    MyWebBeanImporter::class,
+//    DefaultUserAuthenticationService::class
+//])
+@Component
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+class KotlinWebExtendConfigWebFlux : ImportBeanDefinitionRegistrar, ResourceLoaderAware {
     private lateinit var resourceLoader: ResourceLoader
 
 
@@ -40,42 +41,13 @@ class KotlinWebExtendConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAware
      * @author: jiaYao
      */
     class MyWebClassPathBeanDefinitionScanner(registry: BeanDefinitionRegistry?, useDefaultFilters: Boolean) :
-            ClassPathBeanDefinitionScanner(registry, useDefaultFilters) {
+        ClassPathBeanDefinitionScanner(registry, useDefaultFilters) {
         /**
          * @addIncludeFilter 将自定义的注解添加到扫描任务中
          * @addExcludeFilter 将带有自定义注解的类 ，不加载到容器中
          */
         fun registerFilters() {
-
-            /**
-             * TODO addIncludeFilter  满足任意includeFilters会被加载
-             */
-            addIncludeFilter(AnnotationTypeFilter(RestController::class.java))
-            addIncludeFilter(AnnotationTypeFilter(Service::class.java))
-            addIncludeFilter(AnnotationTypeFilter(Configuration::class.java))
-            addIncludeFilter(AnnotationTypeFilter(Component::class.java))
-//        addIncludeFilter(AnnotationTypeFilter(AutoLoadBean::class.java))
-            /**
-             * TODO addExcludeFilter 同样的满足任意excludeFilters不会被加载
-             */
-            addExcludeFilter(AssignableTypeFilter(KotlinWebExtendConfig::class.java));
-
-//            try {
-//                if (ClassUtil.exists(Filter::class.java.name)) {
-//                    addExcludeFilter(AssignableTypeFilter(MyOqlCrossFilter::class.java));
-//                    addExcludeFilter(AssignableTypeFilter(MyAllFilter::class.java));
-//                }
-//            } catch (ex: Throwable) {
-//            }
-//
-//
-//            try {
-//                if (ClassUtil.exists(Publisher::class.java.name)) {
-//                    addExcludeFilter(AssignableTypeFilter(CrossFilterConfig::class.java));
-//                }
-//            } catch (ex: Throwable) {
-//
-//            }
+            addExcludeFilter(AssignableTypeFilter(CrossFilterConfig::class.java));
         }
 
         public override fun doScan(vararg basePackages: String): Set<BeanDefinitionHolder> {
@@ -89,8 +61,8 @@ class KotlinWebExtendConfig : ImportBeanDefinitionRegistrar, ResourceLoaderAware
      * @param registry
      */
     override fun registerBeanDefinitions(
-            importingClassMetadata: AnnotationMetadata?,
-            registry: BeanDefinitionRegistry?
+        importingClassMetadata: AnnotationMetadata?,
+        registry: BeanDefinitionRegistry?
     ) {
         // 当前MyClassPathBeanDefinitionScanner已被修改为扫描带有指定注解的类
         val scanner = MyWebClassPathBeanDefinitionScanner(registry, false)

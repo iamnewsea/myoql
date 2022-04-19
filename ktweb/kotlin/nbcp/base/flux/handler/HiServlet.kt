@@ -8,6 +8,7 @@ import nbcp.base.mvc.*
 import org.reactivestreams.Publisher
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ServerWebExchange
@@ -26,8 +27,9 @@ import javax.servlet.http.HttpServletResponse
  */
 @OpenAction
 @RestController
-@ConditionalOnClass(Publisher::class)
-@ConditionalOnMissingClass("javax.servlet.http.HttpServletRequest")
+//@ConditionalOnClass(Publisher::class)
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+//@ConditionalOnMissingClass("javax.servlet.http.HttpServletRequest")
 open class HiServlet {
     @GetMapping("/hi")
     fun doGet(swe: ServerWebExchange): Mono<String> {
