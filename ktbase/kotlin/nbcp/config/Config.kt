@@ -66,11 +66,13 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
          * redis 前缀
          */
         @JvmStatic
-        val productLineCode = getConfig("app.product-line.code").AsString()
+        val productLineCode
+            get() = getConfig("app.product-line.code").AsString()
 
 
         @JvmStatic
-        val redisProductLineCodePrefixEnable = getConfig("app.product-line.redis-prefix-enable").AsBoolean()
+        val redisProductLineCodePrefixEnable
+            get() = getConfig("app.product-line.redis-prefix-enable").AsBoolean()
 
 
         @JvmStatic
@@ -111,14 +113,16 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
 
 
         @JvmStatic
-        val adminToken: String = getConfig("app.admin-token").AsString()
+        val adminToken: String
+            get() = getConfig("app.admin-token").AsString()
 
 
         /**
          * 指定 ${app}.log 是否包含全部GroupLog日志。
          */
         @JvmStatic
-        val defAllScopeLog: Boolean = getConfig("app.def-all-scope-log").AsBoolean()
+        val defAllScopeLog: Boolean
+            get() = getConfig("app.def-all-scope-log").AsBoolean()
 
 
         /**
@@ -141,22 +145,27 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
 
 
         @JvmStatic
-        val mybatisPackage: String = getConfig("app.mybatis.package", "")
+        val mybatisPackage: String
+            get() = getConfig("app.mybatis.package", "")
 
         @JvmStatic
-        val myoqlKeepDbName: Boolean = getConfig("app.myoql.sql.keep-db-name").AsBoolean(true)
-
-
-        @JvmStatic
-        val listResultWithCount: Boolean = getConfig("app.list-result-with-count", "").AsBoolean()
+        val myoqlKeepDbName: Boolean
+            get() = getConfig("app.myoql.sql.keep-db-name").AsBoolean(true)
 
 
         @JvmStatic
-        val jwtSignatureAlgorithm: String = getConfig("app.jwt-signature-algorithm") ?: "HS256"
+        val listResultWithCount: Boolean
+            get() = getConfig("app.list-result-with-count", "").AsBoolean()
 
 
         @JvmStatic
-        val jwtSecretKey: String = getConfig("app.jwt-secret-key") ?: ""
+        val jwtSignatureAlgorithm: String
+            get() = getConfig("app.jwt-signature-algorithm") ?: "HS256"
+
+
+        @JvmStatic
+        val jwtSecretKey: String
+            get() = getConfig("app.jwt-secret-key") ?: ""
 
 
         /**
@@ -166,7 +175,8 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
          * redis: admin:token
          */
         @JvmStatic
-        val tokenKey: String = getConfig("app.token-key") ?: "token"
+        val tokenKey: String
+            get() = getConfig("app.token-key") ?: "token"
 
         /**
          * 配置 redis 存储方式 。
@@ -193,37 +203,42 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
          * token 缓存时间，默认四个小时
          */
         @JvmStatic
-        val tokenCacheSeconds: Int = getConfig("app.token-cache-seconds").AsInt(4 * 3600)
+        val tokenCacheSeconds: Int
+            get() = getConfig("app.token-cache-seconds").AsInt(4 * 3600)
 
 
         /**
          * 验证码缓存时间，默认5分钟
          */
         @JvmStatic
-        val validateCodeCacheSeconds: Int = getConfig("app.validate-code-cache-seconds").AsInt(300)
+        val validateCodeCacheSeconds: Int
+            get() = getConfig("app.validate-code-cache-seconds").AsInt(300)
 
 
         @JvmStatic
-        val redisHost: String = getConfig("spring.redis.host", "");
+        val redisHost: String
+            get() = getConfig("spring.redis.host", "");
 
 
         @JvmStatic
-        val wxAppId: String = getConfig("app.wx.appId")
-            .must { it.HasValue }
-            .elseThrow { "必须指定 app.wx.appId" }
+        val wxAppId: String
+            get() = getConfig("app.wx.appId")
+                .must { it.HasValue }
+                .elseThrow { "必须指定 app.wx.appId" }
 
 
         @JvmStatic
-        val wxMchId: String = getConfig("app.wx.mchId")
-            .must { it.HasValue }
-            .elseThrow { "必须指定 app.wx.mchId" }
+        val wxMchId: String
+            get() = getConfig("app.wx.mchId")
+                .must { it.HasValue }
+                .elseThrow { "必须指定 app.wx.mchId" }
 
 
         @JvmStatic
-        val applicationName: String = getConfig("spring.application.name")
-            .must { it.HasValue }
-            .elseThrow { "必须指定 spring.application.name" }
-
+        val applicationName: String
+            get() = getConfig("spring.application.name")
+                .must { it.HasValue }
+                .elseThrow { "必须指定 spring.application.name" }
     }
 
     override fun setApplicationContext(applicationContext: ApplicationContext) {
