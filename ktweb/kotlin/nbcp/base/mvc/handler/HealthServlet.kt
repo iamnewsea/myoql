@@ -3,6 +3,7 @@ package nbcp.base.mvc.handler
 
 import nbcp.comm.*
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -17,7 +18,7 @@ import javax.servlet.http.HttpServletResponse
  */
 @OpenAction
 @RestController
-@ConditionalOnClass(HttpServletRequest::class)
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 open class HealthServlet {
 
     @GetMapping("/health")

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import java.lang.RuntimeException
@@ -26,7 +27,7 @@ import javax.servlet.http.HttpServletResponse
 @OpenAction
 @RestController
 @AutoConfigureAfter(IUserAuthenticationService::class)
-@ConditionalOnClass(HttpServletRequest::class)
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 //@ConditionalOnBean(IUserAuthenticationService::class)
 open class AuthImageServlet {
 

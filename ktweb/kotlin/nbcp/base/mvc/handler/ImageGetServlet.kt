@@ -6,6 +6,7 @@ import nbcp.db.mongo.*
 import nbcp.model.IUploadFileDbService
 import nbcp.base.mvc.*
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
@@ -21,7 +22,7 @@ import javax.servlet.http.HttpServletResponse
  */
 @OpenAction
 @RestController
-@ConditionalOnClass(HttpServletRequest::class)
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 open class ImageGetServlet   {
 
     private val dbService by lazy {

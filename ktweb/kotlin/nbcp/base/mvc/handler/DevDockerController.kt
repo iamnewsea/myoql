@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -25,7 +26,7 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @ConditionalOnProperty("server.dev")
 @RequestMapping("/dev/docker")
-@ConditionalOnClass(HttpServletRequest::class)
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 class DevDockerServlet {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

@@ -6,6 +6,7 @@ import nbcp.db.mongo.*
 import nbcp.utils.RecursionUtil
 import nbcp.base.mvc.*
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
@@ -15,7 +16,7 @@ import javax.servlet.http.HttpServletRequest
 @OpenAction
 @RestController
 @RequestMapping("/dev/yapi")
-@ConditionalOnClass(HttpServletRequest::class)
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 class DevYapiDataTypeServlet {
     /**
      * 修正 yapi 的数据类型,在 title 字段设置如下格式： :IdName,IdUrl,会对其下属性添加 id,name,url 字段。

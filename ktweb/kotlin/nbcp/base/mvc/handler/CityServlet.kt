@@ -6,6 +6,7 @@ import nbcp.db.mongo.*
 import nbcp.db.mongo.entity.SysCity
 import nbcp.base.mvc.WriteJsonRawValue
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import javax.servlet.http.HttpServletRequest
@@ -18,7 +19,7 @@ data class cn_city_model(var c: Int, var n: String)
 
 @OpenAction
 @RestController
-@ConditionalOnClass(HttpServletRequest::class)
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 open class CityServlet {
     @PostMapping("/open/child-cities")
     fun child(@Require pcode: Int, response: HttpServletResponse): ListResult<cn_city_model> {
