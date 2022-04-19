@@ -33,9 +33,13 @@ class MongoWhereClip() : LinkedList<JsonMap>() {
      * @return 可能是简单类型，也可能是List类型
      */
     fun findValueFromRootLevel(column: String): Any? {
-        return this.firstOrNull { map ->
-            return@firstOrNull getValueFromMap(map, column) != null
+        for (map in this) {
+            val findedValue = getValueFromMap(map, column);
+            if (findedValue != null) {
+                return findedValue;
+            }
         }
+        return null;
     }
 
     private fun getValueFromMap(map: Map<String, Any?>, column: String): Any? {
