@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.context.annotation.Conditional
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
@@ -37,6 +38,7 @@ import javax.servlet.http.HttpServletResponse
  */
 @WebFilter(urlPatterns = ["/*", "/**"])
 @ConditionalOnClass(Filter::class)
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 //@WebFilter(urlPatterns = arrayOf("/**"), filterName = "MyAllFilter")
 //@ConfigurationProperties(prefix = "nbcp.filter")
 open class MyAllFilter : Filter {
