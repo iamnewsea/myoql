@@ -1,9 +1,7 @@
 package nbcp.utils
 
 import nbcp.TestBase
-import nbcp.comm.JsonMap
-import nbcp.comm.StringMap
-import nbcp.comm.ToJson
+import nbcp.comm.*
 import nbcp.db.IdName
 import org.junit.jupiter.api.Test
 
@@ -22,6 +20,28 @@ class MyUtilTest : TestBase() {
         println(
             MyUtil.getCurrentMethodInfo().methodName
         )
+    }
+
+    @Test
+    fun takeNumber12f() {
+        println(Regex("(\\d+)").splitBoundary("111aaaa22222bbbb3333ccccc")).ToJson()
+        println(Regex("(\\D)+").splitBoundary("111aaaa22222bbbb3333ccccc")).ToJson()
+    }
+
+    @Test
+    fun takeNumber() {
+        println("1a2b3c".takeNumber().ToJson())
+        println("11111a222222b333333c".takeNumber().ToJson())
+        println("~~~~~sdf```11111--------222222////////333333!!!!!!".takeNumber().ToJson())
+    }
+
+    @Test
+    fun versionCompareTest() {
+        println(MyUtil.compareVersion("1.10", "1.9"))
+        println(MyUtil.compareVersion("1.10.s", "1.x"))
+        println(MyUtil.compareVersion("1", "1.x"))
+        println(MyUtil.compareVersion("1.10-SNAPSHOT", "1.9-SNAPSHOT"))
+        println(MyUtil.compareVersion("1.10-SNAPSHOT", "1.10"))
     }
 
     @Test

@@ -996,5 +996,45 @@ object MyUtil {
 
         return (if (isRoot) "/" else "") + list.joinToString(File.separator)
     }
+
+
+    /**
+     * 比较版本
+     * @return 相等返回0, 大于返回1,小于返回 -1
+     */
+    public fun compareVersion(v1: String, v2: String): Int {
+        if (v1 == v2) return 0;
+        if (v1.isEmpty()) return -1;
+        if (v2.isEmpty()) return 1;
+
+        //按 . 分隔，比较每个部分。
+        var v1Sects = Regex("\\d+").splitBoundary(v1)
+        var v2Sects = Regex("\\d+").splitBoundary(v2)
+
+        var commonLen = Math.min(v1Sects.size, v2Sects.size)
+        for (i in 0 until commonLen) {
+            var v1v = v1Sects[i];
+            var v2v = v2Sects[i];
+
+            var c_ret = 0
+            if (v1v.IsNumberic() && v2v.IsNumberic()) {
+                c_ret = v1v.AsInt().compareTo(v2v.AsInt())
+            } else {
+                //快照版本 1.0-SNAPSHOT，小于 正式版本 1.0
+                //先提取数字比较
+                c_ret = v1v.compareTo(v2v);
+            }
+
+            if (c_ret != 0) {
+                return c_ret;
+            }
+        }
+
+        //数字相同的情况下， 越短，版本越大。 如带有 -SNAPSHOT的版本要小。
+        if (v1Sects.size > commonLen) return -1;
+        else if (v2Sects.size > commonLen) return 1
+
+        return 0;
+    }
 }
 

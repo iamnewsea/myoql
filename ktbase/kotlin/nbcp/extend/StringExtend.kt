@@ -65,6 +65,36 @@ fun String.IsNumberic(): Boolean {
     return true;
 }
 
+
+/**
+ * 提取出数字
+ */
+fun String.takeNumber(): Array<String> {
+    return this.split(Regex("""\D+""")).filter { it.HasValue }.toTypedArray()
+}
+
+/**
+ * 按数字分隔，返回数字和非数字各部分
+ */
+fun Regex.splitBoundary(value:String): Array<String> {
+    var ret = mutableListOf<String>()
+
+    var prevIndex = 0;
+    this.findAll(value).forEachIndexed { index, matchResult ->
+        if (prevIndex != matchResult.range.first) {
+            ret.add(value.substring(prevIndex, matchResult.range.first))
+        }
+        ret.add(matchResult.value)
+
+        prevIndex = matchResult.range.last + 1;
+    }
+
+    if (prevIndex != value.length) {
+        ret.add(value.substring(prevIndex))
+    }
+    return ret.filter { it.HasValue }.toTypedArray();
+}
+
 /**
  * 使用指定字符，初始化字符串
  */
@@ -637,7 +667,7 @@ fun String.formatWithJson(
         regexp = "@(\\w+)"
     } else if (styleValue == "@@") {
         regexp = "@([^@]+)@"
-    }else {
+    } else {
         throw java.lang.RuntimeException("不识别的样式 " + styleValue)
     }
 
