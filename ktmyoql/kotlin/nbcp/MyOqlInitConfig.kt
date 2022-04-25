@@ -14,28 +14,10 @@ import org.springframework.context.event.EventListener
 
 @Import(FlywayBeanProcessor::class)
 @Configuration
-class MyOqlInitConfig : BeanPostProcessor {
+class MyOqlInitConfig {
     companion object {
-        private var inited = false;
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
-
-    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
-        if (inited == false) {
-            inited = true;
-
-            init_app();
-        }
-
-        return super.postProcessBeforeInitialization(bean, beanName)
-    }
-
-    /**
-     * 在所有Bean初始化之前执行
-     */
-    private fun init_app() {
-    }
-
 
     @EventListener
     fun app_started(ev: ApplicationStartedEvent) {

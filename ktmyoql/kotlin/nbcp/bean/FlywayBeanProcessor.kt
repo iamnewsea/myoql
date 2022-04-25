@@ -18,21 +18,9 @@ import java.time.LocalDateTime
 @Component
 @ConditionalOnClass(MongoTemplate::class)
 @ConditionalOnProperty("spring.data.mongodb.uri")
-class FlywayBeanProcessor : BeanPostProcessor {
+class FlywayBeanProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
-
-        //需要删 除后放入垃圾箱的实体
-        @JvmStatic
-        val flyways = mutableListOf<FlywayVersionBaseService>()  //mongo entity class
-    }
-
-    override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
-        if (bean is FlywayVersionBaseService) {
-            flyways.add(bean)
-        }
-
-        return super.postProcessAfterInitialization(bean, beanName)
     }
 
     /**
@@ -55,6 +43,8 @@ class FlywayBeanProcessor : BeanPostProcessor {
 
                 return@run this.version;
             }
+
+        var flyways = SpringUtil.context.getBeansOfType(FlywayVersionBaseService::class.java).values
 
         //对负数版本，倒序执行，且总是执行！
         flyways.filter { it.version <= 0 }

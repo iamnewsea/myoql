@@ -126,8 +126,8 @@ class MyMvcInitConfig : BeanPostProcessor {
     /**
      * 系统预热之后，最后执行事件。
      */
-    @EventListener
-    fun app_started(event: ApplicationStartedEvent) {
-    }
+//    @EventListener
+//    fun app_started(event: ApplicationStartedEvent) {
+//    }
 
 }
