@@ -27,7 +27,7 @@ inline fun <T> usingScope(initObjects: List<IScopeData>, body: () -> T): T {
 }
 
 
-inline fun <T> usingScope(initObjects: Array<IScopeData>, body: () -> T): T {
+inline fun <T> usingScope(initObjects: Array<out IScopeData>, body: () -> T): T {
     return usingScope(initObjects.toList(), body, {})
 }
 
@@ -40,7 +40,7 @@ inline fun <T> usingScope(initObject: IScopeData, body: () -> T, finally: ((ISco
     return usingScope(listOf(initObject), body, finally)
 }
 
-inline fun <T> usingScope(init_list: List<IScopeData>, body: () -> T, finally: ((IScopeData) -> Unit)): T {
+inline fun <T> usingScope(init_list: List<out IScopeData>, body: () -> T, finally: ((IScopeData) -> Unit)): T {
 //    if (initObjects is Level) {
 //        throw RuntimeException("请使用 LogLevel 枚举")
 //    }

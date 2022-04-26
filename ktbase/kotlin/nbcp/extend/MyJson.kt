@@ -46,17 +46,19 @@ import kotlin.reflect.KClass
  * 样式请使用 usingScope(listOf(JsonStyleEnum.FieldStyle)){}
  */
 @JvmOverloads
-fun <T> T.ToJson(style: JsonSceneEnumScope? = null): String {
+fun <T> T.ToJson(style: JsonSceneEnumScope? = null, vararg jsonScopes: JsonStyleEnumScope): String {
     if (this is String) return this;
 
     var mapper = style.getJsonMapper();
 
-    var styles = scopes.getScopeTypes<JsonStyleEnumScope>()
-    if (styles.contains(JsonStyleEnumScope.Pretty)) {
-        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this) ?: ""
-    }
+    usingScope(jsonScopes) {
+        var styles = scopes.getScopeTypes<JsonStyleEnumScope>()
+        if (styles.contains(JsonStyleEnumScope.Pretty)) {
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this) ?: ""
+        }
 
-    return mapper.writeValueAsString(this) ?: ""
+        return mapper.writeValueAsString(this) ?: ""
+    }
 }
 
 //fun <T> T.ToJsonWithNull(getSetStyle: Boolean = false, pretty: Boolean = false): String {
