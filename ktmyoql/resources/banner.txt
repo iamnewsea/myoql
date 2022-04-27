@@ -3,4 +3,4 @@
    │││ └┬┘ │ │ │─┼┐ │
    ┴ ┴  ┴  └─┘ └─┘└ ┴─┘
 ﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊
-${spring.application.name}.${spring.profiles.active}  ${server.servlet.context-path:/}:${server.port}
+${app.group}  ${spring.application.name}  ${spring.profiles.active}  ${server.servlet.context-path:/}:${server.port}
