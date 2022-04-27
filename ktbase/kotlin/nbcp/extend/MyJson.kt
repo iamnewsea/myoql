@@ -41,12 +41,20 @@ import kotlin.reflect.KClass
 //    else FieldTypeJsonMapper.instance
 //}
 
+@JvmOverloads
+fun <T> T.ToJson(style: JsonSceneEnumScope? = null): String {
+    return this.ToJson(style, *arrayOf<JsonStyleEnumScope>())
+}
+
+fun <T> T.ToJson(vararg jsonScopes: JsonStyleEnumScope): String {
+    return this.ToJson(null, *jsonScopes)
+}
 
 /**
  * 样式请使用 usingScope(listOf(JsonStyleEnum.FieldStyle)){}
  */
 @JvmOverloads
-fun <T> T.ToJson(style: JsonSceneEnumScope? = null, vararg jsonScopes: JsonStyleEnumScope): String {
+fun <T> T.ToJson(style: JsonSceneEnumScope?, vararg jsonScopes: JsonStyleEnumScope): String {
     if (this is String) return this;
 
     var mapper = style.getJsonMapper();
