@@ -97,8 +97,11 @@ open class JsonMap : StringKeyMap<Any?> {
             set_key_value(subObj, keys.Slice(1), value);
         }
 
+        /**
+         * 忽略
+         */
         @JvmStatic
-        fun loadFromUrl(urlQueryString: String): JsonMap {
+        fun loadFromUrl(urlQueryString: String, soloIsTrue: Boolean = false): JsonMap {
             val ret = JsonMap()
             var urlQuery = urlQueryString.trim()
             if (urlQuery.isEmpty()) return ret;
@@ -111,7 +114,16 @@ open class JsonMap : StringKeyMap<Any?> {
                 }
 
                 var key = kv[0];
-                var value = if (kv.size == 1) null else JsUtil.decodeURIComponent(kv[1]);
+                var value: String? = null;
+
+                if (kv.size == 1) {
+                    if (soloIsTrue) {
+                        value = "true"
+                    }
+                } else {
+                    value = JsUtil.decodeURIComponent(kv[1]);
+                }
+
                 if (value == null) {
                     continue;
                 }
@@ -152,16 +164,16 @@ open class JsonMap : StringKeyMap<Any?> {
 
 //差异数据: T 表示第一个数据，R表示第2个数据。如： 123， 234 ，common = 23 , more = 1 , less = 4
 data class DiffData<T, R> @JvmOverloads constructor(
-        //公共索引,key=第一个数据索引， value = 第二个数据索引。
-        var commonIndexMap: Map<Int, Int> = mapOf<Int, Int>(),
-        //第一部分多出的数据
-        var more1: List<T> = listOf<T>(),
-        //第一部分公共数据
-        var common1: List<T> = listOf<T>(),
-        //第二部分公共数据
-        var common2: List<R> = listOf<R>(),
-        //第二部分多出的数据。
-        var more2: List<R> = listOf<R>()
+    //公共索引,key=第一个数据索引， value = 第二个数据索引。
+    var commonIndexMap: Map<Int, Int> = mapOf<Int, Int>(),
+    //第一部分多出的数据
+    var more1: List<T> = listOf<T>(),
+    //第一部分公共数据
+    var common1: List<T> = listOf<T>(),
+    //第二部分公共数据
+    var common2: List<R> = listOf<R>(),
+    //第二部分多出的数据。
+    var more2: List<R> = listOf<R>()
 ) {
     companion object {
         //把数据分隔为 DiffData，
