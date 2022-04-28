@@ -49,90 +49,14 @@ open class JsonMap : StringKeyMap<Any?> {
 //            throw RuntimeException("实体${entity::class.java}转JsonMap出错!")
 //        }
 
-        private fun set_key_value(ret: JsonMap, keys: List<String>, value: String) {
-            if (keys.any() == false) return;
 
-            var key = keys.first();
-            if (keys.size == 1) {
-                //如果指明是数组 []
-//                var isArray = false;
-                if (key.endsWith("[]")) {
-                    key = key.Slice(0, -2);
-//                    isArray = true;
-
-                    if (ret.containsKey(key) == false) {
-                        ret.put(key, mutableListOf<String>())
-                    }
-                }
-
-                if (ret.containsKey(key) == false) {
-                    ret.put(key, value)
-                    return;
-                }
-
-                var v_list = mutableListOf<String>()
-                var dbValue = ret[key];
-                if (dbValue is ArrayList<*>) {
-                    v_list = dbValue as ArrayList<String>;
-                } else {
-                    if (dbValue != null) {
-                        v_list.add(dbValue.AsString())
-                    }
-                }
-
-                v_list.add(value)
-                ret.set(key, v_list);
-                return;
-            }
-
-            if (ret.containsKey(key) == false) {
-                ret.put(key, JsonMap());
-            }
-
-            var subObj = ret.get(key)!!
-            if (subObj is JsonMap == false) {
-                throw RuntimeException("${keys.joinToString(".")},已有类型:${subObj::class.java.name}")
-            }
-
-            set_key_value(subObj, keys.Slice(1), value);
-        }
 
         /**
          * 忽略
          */
         @JvmStatic
         fun loadFromUrl(urlQueryString: String, soloIsTrue: Boolean = false): JsonMap {
-            val ret = JsonMap()
-            var urlQuery = urlQueryString.trim()
-            if (urlQuery.isEmpty()) return ret;
-
-            val list = urlQuery.split("&").dropLastWhile { it.isEmpty() }.toTypedArray()
-            for (item in list) {
-                val kv = item.split("=").dropLastWhile { it.isEmpty() }.toTypedArray()
-                if (kv.size < 1) {
-                    continue;
-                }
-
-                var key = kv[0];
-                var value: String? = null;
-
-                if (kv.size == 1) {
-                    if (soloIsTrue) {
-                        value = "true"
-                    }
-                } else {
-                    value = JsUtil.decodeURIComponent(kv[1]);
-                }
-
-                if (value == null) {
-                    continue;
-                }
-                //如果 key 是多级对象。
-                var key_parts = key.split(".");
-                set_key_value(ret, key_parts, value);
-            }
-
-            return ret
+            return JsUtil.urlQueryToJson(urlQueryString,soloIsTrue)
         }
     }
 

@@ -284,14 +284,13 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         val key = parameter.parameterName!!
 
         val queryMap = webRequest.queryJson
-        if (queryMap.containsKey(key) == false) {
-            return null;
-        }
-
         var value = queryMap.get(key)
 
         if (value == null) {
-            if (parameter.parameterType.IsBooleanType) {
+            //判断是否是 solo
+            if (parameter.parameterType.IsBooleanType
+                && webRequest.soloQueryKeys.contains(key)
+            ) {
                 return true;
             }
             return null;

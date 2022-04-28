@@ -105,6 +105,11 @@ val HttpServletRequest.queryJson: JsonMap
         return dbValue2;
     }
 
+val HttpServletRequest.soloQueryKeys: Array<String>
+    get() {
+        return JsUtil.getSoloKeysFromUrl(this.queryString ?: "")
+    }
+
 //文件上传或 大于 10 MB 会返回 null , throw RuntimeException("超过10MB不能获取Body!");
 val HttpServletRequest.postBody: ByteArray?
     get() {
