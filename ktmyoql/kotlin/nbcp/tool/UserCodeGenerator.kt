@@ -50,6 +50,17 @@ object UserCodeGenerator {
         return gen(group, entity, "/myoql-template/vue_ref_template.ftl");
     }
 
+    fun genVueCard(entityClass: Class<*>): String {
+        return CodeGeneratorHelper.proc(
+            "/myoql-template/vue_card_prop_template.ftl",
+            CodeGeneratorHelper.CodeTemplateData(
+                "",
+                entityClass,
+                "",
+                ""
+            )
+        )
+    }
 
     private fun gen(group: String, metaEntity: BaseMetaData, fileName: String): String {
 

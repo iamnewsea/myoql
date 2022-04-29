@@ -1,15 +1,8 @@
 <template>
     <div class="card-page">
-        <tool-bar nav="" :title="action_name + '${title}'">
-            <el-button size="mini" @click="$router.push('${url}/add')" v-if="action=='edit'">新建</el-button>
-            <el-button size="mini" @click="save_click" type="primary">保存</el-button>
-        </tool-bar>
         <el-row :gutter="12" type="flex">
             <el-col>
                 <el-card shadow="always">
-                    <div slot="header">
-                        <span>基本信息</span>
-                    </div>
 <#list fields as field>
     <#if field.getName() == "id">
     <#elseif field.getName() == "creator" || field.getName() == "createBy">
@@ -84,13 +77,7 @@
 </#list>
                 </el-card>
             </el-col>
-            <el-col>
-                <el-card shadow="always">
-                    <div slot="header">
-                        <span>扩展信息</span>
-                    </div>
-                </el-card>
-            </el-col>
+
         </el-row>
     </div>
 </template>
@@ -132,7 +119,7 @@ export default {
         }
     },
     props: {
-        id: {type: String, default: ""}
+        value: {type: Object, default:()=>  { return {} }}
     },
     computed: {
         action() {
@@ -143,29 +130,18 @@ export default {
         }
     },
     mounted() {
-        this.loadData();
     },
-    methods: {
-        async loadData() {
-            if (!this.id) return;
-            var res = await this.$http.post("${url}/detail/" + this.id)
-            this.info = res.data.data;
-        },
-        async save_click() {
-            //校验
-            if (this.chk() == false) {
-                return;
+    watch:{
+        value: {
+            immediate: true, handler(v) {
+                if( this.info == v) return;
+                this.info = v;
             }
-
-            var res =await this.$http.post("${url}/save", this.info)
-            //[axios拦截器中已处理了异常]。
-            jv.info(this.action_name + " 成功");
-            if (this.action == "add") {
-                var id = res.data.data
-                jv.setLastRowId("${url}/list", "list", id);
-                this.$router.push("${url}/edit/" + id)
-            } else if (this.action == "edit") {
-                this.$router.push("${url}/list")
+        },
+        info:{
+            immediate: true, handler(v) {
+                if( this.info == v) return;
+                this.$emit("input",v)
             }
         }
     }
