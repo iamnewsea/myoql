@@ -12,6 +12,7 @@ import nbcp.db.mongo.entity.*
 import nbcp.base.mvc.*
 import javax.servlet.http.*
 import java.time.*
+import nbcp.web.*
 
 /**
  * Created by CodeGenerator at ${now}
@@ -78,7 +79,7 @@ class ${entity}AutoController {
         var userId = request.UserId;
 
         mor.${w(group)}.${entityField}.updateWithEntity(entity)
-            .withRequestParams()
+            .withColumns(request.requestParameterKeys)
             .run {
                 if (entity.id.HasValue) {
                     return@run this.execUpdate()

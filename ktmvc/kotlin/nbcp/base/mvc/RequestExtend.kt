@@ -110,6 +110,11 @@ val HttpServletRequest.soloQueryKeys: Array<String>
         return JsUtil.getSoloKeysFromUrl(this.queryString ?: "")
     }
 
+val HttpServletRequest.requestParameterKeys: Set<String>
+    get() {
+        return this.queryJson.keys + this.soloQueryKeys + this.getPostJson().keys
+    }
+
 //文件上传或 大于 10 MB 会返回 null , throw RuntimeException("超过10MB不能获取Body!");
 val HttpServletRequest.postBody: ByteArray?
     get() {
@@ -127,7 +132,7 @@ val HttpServletRequest.postBody: ByteArray?
 
         var maxHttpPostSize = DataSize.parse(
             config.getConfig("server.servlet.max-http-post-size")
-                .AsString{config.getConfig("server.tomcat.max-http-post-size", "")}
+                .AsString { config.getConfig("server.tomcat.max-http-post-size", "") }
 //                .AsString{config.getConfig("server.tomcat.max-http-post-size", "")}
                 .AsString("2MB")
         )

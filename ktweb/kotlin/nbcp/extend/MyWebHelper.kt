@@ -195,14 +195,13 @@ val HttpServletRequest.tokenValue: String
 //    return this.withRequestJson(HttpContext.request.getPostJson())
 //}
 
-fun <M : SqlBaseMetaTable<out Serializable>> SqlSetEntityUpdateClip<M>.withRequestParams(): SqlSetEntityUpdateClip<M> {
-    var keys = HttpContext.request.getPostJson().keys;
-    var columns = this.mainEntity.getColumns();
-    keys.forEach { key ->
-        var column = columns.firstOrNull { it.name == key }
-        if (column != null) {
-            this.withColumn { column }
-        }
-    }
-    return this
-}
+//fun <M : SqlBaseMetaTable<out Serializable>> SqlSetEntityUpdateClip<M>.withRequestParams(): SqlSetEntityUpdateClip<M> {
+//    var columns = this.mainEntity.getColumns();
+//    HttpContext.request.requestParameterKeys .forEach { key ->
+//        var column = columns.firstOrNull { it.name == key }
+//        if (column != null) {
+//            this.withColumn { column }
+//        }
+//    }
+//    return this
+//}

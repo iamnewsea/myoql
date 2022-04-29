@@ -11,6 +11,7 @@ import nbcp.db.sql.entity.*
 import nbcp.base.mvc.*
 import javax.servlet.http.*
 import java.time.*
+import nbcp.web.*
 
 /**
  * Created by CodeGenerator at ${now}
@@ -77,7 +78,7 @@ class ${entity}AutoController {
         var userId = request.UserId
 
         dbr.${w(group)}.${entity}.updateWithEntity(entity)
-            .withRequestParams()
+            .withColumns(request.requestParameterKeys)
             .run {
                 if (entity.${idKey}.HasValue) {
                     return@run this.execUpdate()
