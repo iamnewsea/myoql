@@ -43,7 +43,7 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
             init_callbacks.add(callback);
         }
 
-//        /**
+        //        /**
 //         * 是否在Web环境
 //         */
 //        @JvmStatic
@@ -60,6 +60,14 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
 //                return@lazy false;
 //            }
 //        }
+
+        /**
+         * 当前集群
+         */
+        @JvmStatic
+        val appGroup
+            get() = getConfig("app.group").AsString()
+
 
         /**
          * redis 前缀
