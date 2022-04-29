@@ -3,7 +3,7 @@
         <el-row :gutter="12" type="flex">
             <el-col>
                 <el-card shadow="always">
-                    <div slot="header">
+                    <div slot="header" v-if="title">
                         <span>{{title}}</span>
                     </div>
 <#list fields as field>
