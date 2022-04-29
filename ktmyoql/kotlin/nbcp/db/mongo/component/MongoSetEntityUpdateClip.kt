@@ -78,6 +78,11 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
     }
 
 
+    fun withColumns(columns: Collection<String>): MongoSetEntityUpdateClip<M, E> {
+        this.setColumns.addAll(columns)
+        return this;
+    }
+
     fun withoutColumn(setFunc: (M) -> MongoColumnName): MongoSetEntityUpdateClip<M, E> {
         this.unsetColumns.add(setFunc(this.moerEntity).toString())
         return this;
