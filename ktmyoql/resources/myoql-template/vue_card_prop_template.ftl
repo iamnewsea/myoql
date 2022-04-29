@@ -4,7 +4,7 @@
             <el-col>
                 <el-card shadow="always">
                     <div slot="header">
-                        <span>${title}</span>
+                        <span>{{title}}</span>
                     </div>
 <#list fields as field>
     <#if field.getName() == "id">
