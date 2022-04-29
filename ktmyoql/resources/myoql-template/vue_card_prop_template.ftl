@@ -3,6 +3,9 @@
         <el-row :gutter="12" type="flex">
             <el-col>
                 <el-card shadow="always">
+                    <div slot="header">
+                        <span>${title}</span>
+                    </div>
 <#list fields as field>
     <#if field.getName() == "id">
     <#elseif field.getName() == "creator" || field.getName() == "createBy">
@@ -119,17 +122,8 @@ export default {
         }
     },
     props: {
-        value: {type: Object, default:()=>  { return {} }}
-    },
-    computed: {
-        action() {
-            return this.id ? "edit" : "add";
-        },
-        action_name() {
-            return {add: "添加", edit: "修改"}[this.action]
-        }
-    },
-    mounted() {
+        value: {type: Object, default:()=>  { return {} }},
+        title: {type:String, default: ""}
     },
     watch:{
         value: {
