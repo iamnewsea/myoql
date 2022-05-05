@@ -143,7 +143,6 @@ open class RedisCacheAopService {
 
     @Around("@annotation(org.springframework.scheduling.annotation.Scheduled)")
     fun oneTask(joinPoint: ProceedingJoinPoint): Any? {
-        val now = LocalDateTime.now();
         val signature = joinPoint.signature as MethodSignature;
         var method = signature.method
         val key = "task:" + config.applicationName + ":" + signature.declaringType.name + "." + method.name
@@ -151,6 +150,7 @@ open class RedisCacheAopService {
         var cacheTime = 0;
         var scheduled = method.getAnnotationsByType(Scheduled::class.java).first()
         if (scheduled.cron.HasValue) {
+            val now = LocalDateTime.now();
             var cornExp = CronExpression.parse(scheduled.cron)
             var timeSpan = cornExp.next(now)!! - now;
             cacheTime = timeSpan.seconds.AsInt();
@@ -160,10 +160,7 @@ open class RedisCacheAopService {
             cacheTime = (scheduled.fixedRate / 1000).AsInt();
         }
 
-        if (cacheTime > 3) {
-            cacheTime--;
-        }
-
+        val now = LocalDateTime.now();
         //如果存在,则查看时间
         var v = db.rer_base.taskLock.get(key);
         if (v.HasValue && v.AsLocalDateTime()!!.plusSeconds(cacheTime.AsLong()) > now) {
