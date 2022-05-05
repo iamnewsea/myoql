@@ -145,7 +145,7 @@ open class RedisCacheAopService {
     fun oneTask(joinPoint: ProceedingJoinPoint): Any? {
         val signature = joinPoint.signature as MethodSignature;
         var method = signature.method
-        val key = "task:" + config.applicationName + ":" + signature.declaringType.name + "." + method.name
+        val key = config.applicationName + ":" + signature.declaringType.name + "." + method.name
 
         val now = LocalDateTime.now();
         var cacheTime = 0;
