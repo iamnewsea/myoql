@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service
 
 //@Configuration
 
-@Import(TaskConfig::class)
 class KotlinExtendInitConfig : BaseImportBeanDefinitionRegistrar(
     "nbcp",
     listOf(

@@ -2,11 +2,14 @@ package nbcp
 
 import nbcp.comm.AsInt
 import nbcp.comm.config
+import nbcp.config.TaskConfig
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Import
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 
 @Configuration
+@Import(TaskConfig::class)
 class ThreadPoolConfig {
     @Bean
     fun myoqlTaskExecutor(): ThreadPoolTaskExecutor {
