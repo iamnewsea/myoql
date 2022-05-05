@@ -2,6 +2,7 @@ package nbcp.db.cache
 
 import nbcp.comm.*
 import nbcp.db.db
+import nbcp.utils.CodeUtil
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
@@ -145,7 +146,7 @@ open class RedisCacheAopService {
         val now = LocalDateTime.now();
         val signature = joinPoint.signature as MethodSignature;
         var method = signature.method
-        val key = signature.declaringType.name + "." + method.name
+        val key = "task:" + config.applicationName + ":" + signature.declaringType.name + "." + method.name
 
         var cacheTime = 0;
         var scheduled = method.getAnnotationsByType(Scheduled::class.java).first()
@@ -163,8 +164,16 @@ open class RedisCacheAopService {
             cacheTime--;
         }
 
+        //如果存在,则查看时间
+        var v = db.rer_base.taskLock.get(key);
+        if (v.HasValue && v.AsLocalDateTime()!!.plusSeconds(cacheTime.AsLong()) > now) {
+            return null;
+        }
+
+        db.rer_base.taskLock.deleteKeys(key)
+
         var setted =
-            db.rer_base.taskLock.setIfAbsent(key, LocalDateTime.now().toNumberString(), cacheTime);
+            db.rer_base.taskLock.setIfAbsent(key, now.toNumberString(), cacheTime);
 
         if (setted == false) {
             return null;
