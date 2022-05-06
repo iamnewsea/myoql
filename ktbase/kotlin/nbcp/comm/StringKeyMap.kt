@@ -1,5 +1,6 @@
 package nbcp.comm
 
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
 import org.slf4j.LoggerFactory
 import nbcp.comm.*
 import java.io.Serializable
@@ -84,5 +85,10 @@ open class StringKeyMap<T> : LinkedHashMap<String, T> {
             }
             return@filter true
         }.map { """"${it.key}":${toJsonValueString(it.value)}""" }.joinToString(",") + "}"
+    }
+
+
+    fun toYaml(): String {
+        return YAMLMapper().writeValueAsString(this)
     }
 }
