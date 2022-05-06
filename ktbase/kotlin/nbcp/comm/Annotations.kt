@@ -19,8 +19,14 @@ import kotlin.reflect.KClass
  */
 @kotlin.annotation.Target(AnnotationTarget.FIELD, AnnotationTarget.TYPE_PARAMETER, AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
-//@Repeatable
 annotation class Require(val value: String = "")
+
+/**
+ * 参数注解，默认的数值。
+ */
+@kotlin.annotation.Target(AnnotationTarget.FIELD, AnnotationTarget.TYPE_PARAMETER, AnnotationTarget.VALUE_PARAMETER)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class DefaultNumberValue(val value: Int = 0)
 
 /**
  * 忽略字段
@@ -41,4 +47,4 @@ annotation class Ignore(val value: String = "")
 //@Retention(AnnotationRetention.RUNTIME)
 //annotation class Setting(val settingFunc: String = "")
 
-open class RequireException(var key:String) : Exception("${key} 为必填项")
+open class RequireException(var key: String) : Exception("${key} 为必填项")

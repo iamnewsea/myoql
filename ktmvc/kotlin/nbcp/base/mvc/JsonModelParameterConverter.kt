@@ -120,7 +120,12 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
             } else if (parameter.parameterType.IsCollectionType) {
                 value = listOf<Any>()
             } else if (parameter.parameterType.IsNumberType) {
-                value = MyUtil.getSimpleClassDefaultValue(parameter.parameterType);
+                var defNumberValue = parameter.getParameterAnnotation(DefaultNumberValue::class.java)
+                if (defNumberValue != null) {
+                    value = defNumberValue.value
+                } else {
+                    value = MyUtil.getSimpleClassDefaultValue(parameter.parameterType);
+                }
             }
         }
 
