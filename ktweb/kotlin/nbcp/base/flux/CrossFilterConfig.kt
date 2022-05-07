@@ -1,7 +1,11 @@
 package nbcp.base.flux.filter
 
+import ch.qos.logback.classic.Level
 import nbcp.base.flux.findParameterValue
 import nbcp.base.flux.getCorsResponseMap
+import nbcp.base.flux.queryJson
+import nbcp.base.mvc.findParameterStringValue
+import nbcp.base.mvc.queryJson
 import nbcp.comm.*
 import org.reactivestreams.Publisher
 import org.slf4j.LoggerFactory
@@ -108,6 +112,33 @@ class CrossFilterConfig {
         }
     }
 
+    private fun getLogLevel(httpRequest: ServerHttpRequest): LogLevelScope? {
+        var logLevel: Level? = null;
+
+        var logLevelString = httpRequest.queryJson.get("-log-level-").AsString();
+        if (logLevelString.HasValue &&
+            config.adminToken == httpRequest.queryJson.get("-admin-token-")
+        ) {
+            if (logLevelString.IsNumberic()) {
+                var logLevelInt = logLevelString.AsInt()
+                if (logLevelInt > 0) {
+                    logLevel = Level.toLevel(logLevelInt, Level.WARN)
+                }
+            } else {
+                logLevel = Level.toLevel(logLevelString, Level.WARN)
+            }
+        } else {
+            var ignoreLog = matchUrI(httpRequest.path.value(), ignoreLogUrls)
+
+            if (ignoreLog) {
+                logLevel = Level.OFF;
+            }
+        }
+
+        if (logLevel == null) return null;
+        return logLevel.levelInt.ToEnum<LogLevelScope>()
+    }
+
 
     @Value("\${app.filter.ignore-log-urls:/health}")
     var ignoreLogUrls: List<String> = listOf()
@@ -134,11 +165,11 @@ class CrossFilterConfig {
 
 
     fun ignoreFilter(request: ServerHttpRequest): Boolean {
-        return matchUrI(request.uri.toString(), ignoreUrls)
+        return matchUrI(request.path.value(), ignoreUrls)
     }
 
     fun ignoreLog(request: ServerHttpRequest): Boolean {
-        return matchUrI(request.uri.toString(), ignoreLogUrls) == false
+        return matchUrI(request.path.value(), ignoreLogUrls)
     }
 
 
