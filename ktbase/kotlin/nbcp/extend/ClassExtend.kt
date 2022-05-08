@@ -353,6 +353,14 @@ fun Class<*>.GetFirstTypeArguments(): Array<Type> {
 
 
 /**
+ * 类型是否是泛型
+ */
+val Class<*>.IsGenericType : Boolean
+    get(){
+        return this.typeParameters.size > 0;
+    }
+
+/**
  * 获取方法参数名
  */
 fun Method.getParameterNames(): List<String> {
