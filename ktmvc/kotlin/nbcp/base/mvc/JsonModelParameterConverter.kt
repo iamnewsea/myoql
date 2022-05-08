@@ -328,22 +328,20 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         if (parameter.parameterType.isArray) {
             val genType = parameter.parameterType.componentType
             if (genType.IsSimpleType() && value::class.java.IsStringType) {
-                return mutableListOf(value.AsString()
+                return value.AsString()
                     .split(",")
                     .filter { it.HasValue }
                     .map { it.ConvertType(genType) }
-                )
             }
 
             value = arrayOf(value.ConvertType(genType))
         } else if (parameter.parameterType.IsCollectionType) {
             val genType = (parameter.genericParameterType as ParameterizedType).GetActualClass(0);
             if (genType.IsSimpleType() && value::class.java.IsStringType) {
-                return mutableListOf(value.AsString()
+                return value.AsString()
                     .split(",")
                     .filter { it.HasValue }
                     .map { it.ConvertType(genType) }
-                )
             }
 
             value = mutableListOf(value.ConvertType(genType))
