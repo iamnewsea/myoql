@@ -9,6 +9,9 @@ import java.util.function.Supplier
  * 常驻内存型缓存
  */
 object MemoryCacheDb {
+    var warnCapacity: Int = 100
+    var errorCapacity: Int = 1000
+
     private val map = JsonMap()
 
     class CacheItem(var callback: Supplier<Any>, var cacheSeconds: Int = 180) {
