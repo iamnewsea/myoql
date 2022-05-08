@@ -109,6 +109,23 @@ fun <T> String.FromListJson(componentClass: Class<T>, style: JsonSceneEnumScope?
     }
 }
 
+/**
+ * 反序列化泛型类
+ */
+@JvmOverloads
+fun <T> String.FromGenericJson(type: Class<T>, genericClass: Class<*>, style: JsonSceneEnumScope? = null): T? {
+    if (this.isEmpty()) return null
+    val mapper = style.getJsonMapper();
+
+    try {
+        var t = mapper.getTypeFactory().constructParametricType(type, genericClass);
+        return mapper.readValue(this, t)
+    } catch (e: Exception) {
+        var msg = "Json转换出错！Json数据：${this}\n 类型:${type.name} \n 错误消息:" + e.message;
+        throw RuntimeException(msg, e);
+    }
+}
+
 
 fun <T : Any> String.FromJson(clazz: KClass<T>, style: JsonSceneEnumScope? = null): T? {
     return this.FromJson(clazz.java, style)
