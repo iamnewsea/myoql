@@ -54,5 +54,12 @@ class TestKtExt_Json : TestBase() {
             var r3 = str.FromGenericJson(ListResult::class.java,IdName::class.java)!!
             println(r3.data.first()!!::class.java.name)
         }
+
+
+        var list = listOf(b)
+        str = list.ToJson()
+
+        var d = str.FromGenericJson(List::class.java,bc::class.java)!!;
+        println(d.first()!!::class.java.name)
     }
 }
