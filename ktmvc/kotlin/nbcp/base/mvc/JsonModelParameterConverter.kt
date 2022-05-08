@@ -326,10 +326,27 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
 
         //如果得到了一个值，但是参数是 List.
         if (parameter.parameterType.isArray) {
-            value = arrayOf(value.ConvertType(parameter.parameterType.componentType))
+            val genType = parameter.parameterType.componentType
+            if (genType.IsSimpleType() && value::class.java.IsStringType) {
+                return mutableListOf(value.AsString()
+                    .split(",")
+                    .filter { it.HasValue }
+                    .map { it.ConvertType(genType) }
+                )
+            }
+
+            value = arrayOf(value.ConvertType(genType))
         } else if (parameter.parameterType.IsCollectionType) {
             val genType = (parameter.genericParameterType as ParameterizedType).GetActualClass(0);
-            value = listOf(value.ConvertType(genType))
+            if (genType.IsSimpleType() && value::class.java.IsStringType) {
+                return mutableListOf(value.AsString()
+                    .split(",")
+                    .filter { it.HasValue }
+                    .map { it.ConvertType(genType) }
+                )
+            }
+
+            value = mutableListOf(value.ConvertType(genType))
         } else if (!parameter.parameterType.IsStringType) {
             value = value.ConvertType(parameter.parameterType)
         }
