@@ -47,7 +47,7 @@ class FlywayBeanProcessor {
         var flyways = SpringUtil.context.getBeansOfType(FlywayVersionBaseService::class.java).values
 
         //对负数版本，倒序执行，且总是执行！
-        flyways.filter { it.version <= 0 }
+        flyways.filter { it.version < 0 }
             .sortedByDescending { it.version }
             .all {
                 playFlyway(it)
@@ -58,7 +58,7 @@ class FlywayBeanProcessor {
 
         //对正数版本，正序执行！
         flyways
-            .filter { it.version > 0 }
+            .filter { it.version >= 0 }
             .filter { it.version > dbMaxVersion }
             .sortedBy { it.version }
             .all {
