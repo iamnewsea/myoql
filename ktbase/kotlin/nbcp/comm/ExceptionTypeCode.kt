@@ -16,7 +16,7 @@ import nbcp.db.IntCodeName
  * 第2位的前3个是一样的：
  * 系统异常 [-1 到 -2000)
  * 其中 < -1000的是能明确分类的。   > -1000 的表示没有明确分类！ 因为有些系统异常可能比较短，没有明确的包名。
- *      第1位， 1Json,正则，Xml   2 文件，资源  3 网络Http  ，          9 OS
+ *      第1位， 1Json,正则，Xml   2 安全   ，  3文件，资源     4 网络Http  ，           9 OS
  *      第2位，（1配置 ，2安全问题， 3 异常，超时,数据格式，网络 ）
  * 微服务异常   [-2000 到 -3000)
  *      第1位， 表示使用的产品组件： 1 Eureka, 2 nacos , 3 consul, 4 zk , 5k8s , 6Apollo
@@ -84,12 +84,13 @@ private fun getSysCode(errorTypeName: String): IntCodeName? {
         WordsErrorTypeDef("xml", "", 1),
         WordsErrorTypeDef("html", "", 1),
 
-        WordsErrorTypeDef("File", "", 2),
-        WordsErrorTypeDef("resource", "", 2),
+        WordsErrorTypeDef("security", "", 2),
 
+        WordsErrorTypeDef("File", "", 3),
+        WordsErrorTypeDef("resource", "", 3),
 
-        WordsErrorTypeDef("net", "网络", 3),
-        WordsErrorTypeDef("http", "HTTP", 3),
+        WordsErrorTypeDef("net", "网络", 4),
+        WordsErrorTypeDef("http", "HTTP", 4),
 
         WordsErrorTypeDef("memory", "内存", 9),
     ).firstOrNull { errorTypeName.contains_words(it.word) }
@@ -115,8 +116,8 @@ private fun getSysCode(errorTypeName: String): IntCodeName? {
 }
 
 private fun getSysCode2(errorTypeName: String): WordsErrorTypeDef? {
-    return listOf<WordsErrorTypeDef>(
-    
+    return listOf(
+        WordsErrorTypeDef("BadPadding", "RSA", 2)
     ).firstOrNull { errorTypeName.contains_words(it.word) }
 }
 
@@ -173,6 +174,7 @@ private fun getDbCode(errorTypeName: String): IntCodeName? {
         WordsErrorTypeDef("postgresql", "", 1),
         WordsErrorTypeDef("sqlite", "", 1),
         WordsErrorTypeDef("excel", "", 1),
+        WordsErrorTypeDef("sql", "", 1),
 
         WordsErrorTypeDef("redis", "", 2),
         WordsErrorTypeDef("jedis", "redis", 2),
