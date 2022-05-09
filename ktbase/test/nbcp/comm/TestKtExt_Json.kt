@@ -43,13 +43,23 @@ class TestKtExt_Json : TestBase() {
         b.isDeleted = true;
 
 
-        var result = ApiResult<Any>();
-        result.data = b;
+        var result = ListResult<bc>();
+        result.data = listOf(b);
 
         var str = result.ToJson();
         usingScope(JsonSceneEnumScope.Web) {
-            result = str.FromJson<ApiResult<Any>>()!!;
-            println(result.data!!.ConvertJson(bc::class.java).list.first().ToJson())
+            var r2 = str.FromJson<ListResult<bc>>()!!;
+            println(r2.data!!.first()::class.java.name)
+
+            var r3 = str.FromGenericJson(ListResult::class.java,IdName::class.java)!!
+            println(r3.data.first()!!::class.java.name)
         }
+
+
+        var list = listOf(b)
+        str = list.ToJson()
+
+        var d = str.FromGenericJson(List::class.java,bc::class.java)!!;
+        println(d.first()!!::class.java.name)
     }
 }

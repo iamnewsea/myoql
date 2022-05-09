@@ -180,6 +180,37 @@ fun <T> Class<T>.GetEnumNumberField(): Field? {
     return null;
 }
 
+val Method.IsPrivate: Boolean
+    get() {
+        return Modifier.isPrivate(this.modifiers)
+    }
+
+val Method.IsPublic: Boolean
+    get() {
+        return Modifier.isPublic(this.modifiers)
+    }
+
+val Method.IsStatic: Boolean
+    get() {
+        return Modifier.isStatic(this.modifiers)
+    }
+
+
+val Field.IsStatic: Boolean
+    get() {
+        return Modifier.isStatic(this.modifiers)
+    }
+
+val Field.IsPrivate: Boolean
+    get() {
+        return Modifier.isPrivate(this.modifiers)
+    }
+
+val Field.IsPublic: Boolean
+    get() {
+        return Modifier.isPublic(this.modifiers)
+    }
+
 /**
  * 获取枚举类的第一个String类型的字段。
  */
@@ -320,6 +351,14 @@ fun Class<*>.GetFirstTypeArguments(): Array<Type> {
     return this.superclass.GetFirstTypeArguments();
 }
 
+
+/**
+ * 类型是否是泛型
+ */
+val Class<*>.IsGenericType : Boolean
+    get(){
+        return this.typeParameters.size > 0;
+    }
 
 /**
  * 获取方法参数名
