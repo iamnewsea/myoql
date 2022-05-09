@@ -10,30 +10,21 @@ import java.io.Serializable
 
 open class IdValue @JvmOverloads constructor(var id: String = "", var value: String = "") : Serializable {
     override fun toString(): String {
-        if (this::class.java == IdValue::class.java) {
-            return "${id}:${value}"
-        }
-        return super.toString()
+        return this.ToJson().Slice(1, -1)
     }
 }
 
 open class IdName @JvmOverloads constructor(var id: String = "", @Cn("名称") var name: String = "") :
     Serializable {
     override fun toString(): String {
-        if (this::class.java == IdName::class.java) {
-            return "${id}:${name}"
-        }
-        return super.toString()
+        return this.ToJson().Slice(1, -1)
     }
 }
 
 open class KeyValueString @JvmOverloads constructor(@Cn("键") var key: String = "", @Cn("值") var value: String = "") :
     Serializable {
     override fun toString(): String {
-        if (this::class.java == KeyValueString::class.java) {
-            return "${key}:${value}"
-        }
-        return super.toString()
+        return this.ToJson().Slice(1, -1)
     }
 }
 
@@ -45,6 +36,9 @@ open class KeyValueString @JvmOverloads constructor(@Cn("键") var key: String =
 abstract class BaseUrlModel() : Serializable {
     @Cn("网络资源地址")
     var url: String = ""
+    override fun toString(): String {
+        return this.ToJson().Slice(1, -1)
+    }
 }
 
 
@@ -54,13 +48,6 @@ open class IdUrl() : BaseUrlModel() {
     constructor(id: String, url: String) : this() {
         this.id = id;
         this.url = url;
-    }
-
-    override fun toString(): String {
-        if (this::class.java == IdUrl::class.java) {
-            return "${id}:${url}"
-        }
-        return super.toString()
     }
 }
 
@@ -72,34 +59,24 @@ open class NameUrl() : BaseUrlModel() {
         this.name = name;
         this.url = url;
     }
-
-    override fun toString(): String {
-        if (this::class.java == NameUrl::class.java) {
-            return "${name}:${url}"
-        }
-        return super.toString()
-    }
 }
 
 open class IdNameUrl @JvmOverloads constructor(var id: String = "", name: String = "", url: String = "") :
     NameUrl(name, url) {
-    override fun toString(): String {
-        if (this::class.java == IdNameUrl::class.java) {
-            return "${id}:${name}:${url}"
-        }
-        return super.toString()
-    }
 }
 
 open class IdNamePath @JvmOverloads constructor(id: String = "", name: String = "", @Cn("路径") var path: String = "") :
     IdName(id, name) {
+}
+
+
+open class IntCodeName @JvmOverloads constructor(@Cn("编码") var code: Int = 0, @Cn("名称") var name: String = "") :
+    Serializable {
     override fun toString(): String {
-        if (this::class.java == IdNamePath::class.java) {
-            return "${id}:${name}:${path}"
-        }
-        return super.toString()
+        return this.ToJson().Slice(1, -1)
     }
 }
+
 
 /**
  * 只能用于 code 不变的情况。
@@ -107,10 +84,7 @@ open class IdNamePath @JvmOverloads constructor(id: String = "", name: String = 
 open class CodeName @JvmOverloads constructor(@Cn("编码") var code: String = "", @Cn("名称") var name: String = "") :
     Serializable {
     override fun toString(): String {
-        if (this::class.java == CodeName::class.java) {
-            return "${code}:${name}"
-        }
-        return super.toString()
+        return this.ToJson().Slice(1, -1)
     }
 }
 
@@ -120,30 +94,18 @@ open class CodeName @JvmOverloads constructor(@Cn("编码") var code: String = "
 open class CodeValue @JvmOverloads constructor(@Cn("编码") var code: String = "", @Cn("值") var value: String = "") :
     Serializable {
     override fun toString(): String {
-        if (this::class.java == CodeValue::class.java) {
-            return "${code}:${value}"
-        }
-        return super.toString()
+        return this.ToJson().Slice(1, -1)
     }
 }
 
 open class IdCodeName @JvmOverloads constructor(var id: String = "", code: String = "", name: String = "") :
     CodeName(code, name) {
-    override fun toString(): String {
-        if (this::class.java == IdCodeName::class.java) {
-            return "${id}:${code}:${name}"
-        }
-        return super.toString()
-    }
 }
 
 
 open class LoginNamePasswordData(var loginName: String = "", var password: String = "") : Serializable {
     override fun toString(): String {
-        if (this::class.java == LoginNamePasswordData::class.java) {
-            return "${loginName}:${password}"
-        }
-        return super.toString()
+        return this.ToJson().Slice(1, -1)
     }
 }
 
