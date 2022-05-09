@@ -186,7 +186,8 @@ private fun getDbCode2(errorTypeName: String): WordsErrorTypeDef? {
         WordsErrorTypeDef("DataAccess", "数据访问", 5),
         WordsErrorTypeDef("Request", "请求", 5),
         WordsErrorTypeDef("Response", "响应", 5),
-        WordsErrorTypeDef("Aggregation", "响应", 5),
+        WordsErrorTypeDef("Aggregation", "聚合", 5),
+        WordsErrorTypeDef("Pipeline", "流水线", 5),
 
 
         WordsErrorTypeDef("DuplicateKey", "数据键重复", 6),
