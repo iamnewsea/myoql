@@ -95,18 +95,7 @@ fun Regex.splitBoundary(value:String): Array<String> {
     return ret.filter { it.HasValue }.toTypedArray();
 }
 
-/**
- * 使用指定字符，初始化字符串
- */
-fun Char.NewString(count: Int): String {
-    var chrs = StringBuilder();
 
-    for (i in 0..count - 1) {
-        chrs.append(this);
-    }
-
-    return chrs.toString();
-}
 
 /**
  * 高效的批量移除字符串

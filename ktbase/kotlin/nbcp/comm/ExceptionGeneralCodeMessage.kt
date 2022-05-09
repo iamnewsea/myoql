@@ -1,8 +1,17 @@
 package nbcp.comm
 
-import nbcp.db.CodeName
-import nbcp.db.IdName
-import nbcp.db.IntCodeName
+import sun.reflect.generics.reflectiveObjects.NotImplementedException
+import java.io.NotSerializableException
+
+/**
+ * 异常的大概性含义表达
+ */
+class ExceptionGeneralCodeMessage(var code: Int = 0, var msg: String = "", var fixed: Boolean = false) {
+    fun setFixed(): ExceptionGeneralCodeMessage {
+        this.fixed = true;
+        return this;
+    }
+}
 
 /**
  * 异常进行分类，用于隐藏异常的详细消息。
@@ -16,7 +25,7 @@ import nbcp.db.IntCodeName
  * 第2位的前3个是一样的：
  * 系统异常 [-1 到 -2000)
  * 其中 < -1000的是能明确分类的。   > -1000 的表示没有明确分类！ 因为有些系统异常可能比较短，没有明确的包名。
- *      第1位， 1Json,正则，Xml   2 安全   ，  3文件，资源     4 网络Http  ，           9 OS
+ *      第1位， 1Json,正则，Xml   2 安全   ，3 参数非法，   4文件，资源     5 网络Http  ，          9,  OS
  *      第2位，（1配置 ，2安全问题， 3 异常，超时,数据格式，网络 ）
  * 微服务异常   [-2000 到 -3000)
  *      第1位， 表示使用的产品组件： 1 Eureka, 2 nacos , 3 consul, 4 zk , 5k8s , 6Apollo
@@ -27,10 +36,16 @@ import nbcp.db.IntCodeName
  *      第1位， 数据库种类：分别表示： 1mysql(任意关系型数据),2redis,3mongo,4mq(任意Mq),5es, 9cache,  0 表示其它数据库
  *      第2位， （1配置异常, 2安全问题 ， 3 异常，超时,数据格式，网络 ）                 + 4连接异常, 5执行异常, 6数据异常（重复键，类型不对等）
  */
-fun Throwable.GetExceptionTypeCode(): IntCodeName? {
+fun Throwable.GetExceptionTypeCode(): ExceptionGeneralCodeMessage? {
     var errorTypeName = this::class.java.name;
 
-    return getDbCode(errorTypeName) ?: getMsCode(errorTypeName) ?: getSysCode(errorTypeName)
+    (getFixError(this)?.setFixed() ?: getDbCode(errorTypeName) ?: getMsCode(errorTypeName) ?: getSysCode(errorTypeName))
+        .apply {
+            if (this == null) return null;
+            if (this.msg.last().IsSpecialChar) return this;
+            this.msg += " 出现错误!"
+            return this;
+        }
 }
 
 
@@ -38,6 +53,28 @@ private class WordsErrorTypeDef(var word: String, var cn: String, var value: Int
 
 private fun String.contains_words(vararg words: String): Boolean {
     return words.any { this.contains(it, true) }
+}
+
+
+private fun getFixError(error: Throwable): ExceptionGeneralCodeMessage? {
+    if (error is NotImplementedException) {
+        return ExceptionGeneralCodeMessage(-1000, "方法未实现!")
+    }
+    if (error is ClassNotFoundException) {
+        return ExceptionGeneralCodeMessage(-1000, "找不到类 ${error.message}!")
+    }
+    if (error is NotSerializableException) {
+        return ExceptionGeneralCodeMessage(-1000, "没有实现序列化 ${error.message}!")
+    }
+
+    if (error is CloneNotSupportedException) {
+        return ExceptionGeneralCodeMessage(-1000, "不支持克隆!")
+    }
+    if (error is TypeNotPresentException) {
+        return ExceptionGeneralCodeMessage(-1000, "类型不存在 ${error.typeName()}!")
+    }
+
+    return null;
 }
 
 private fun getCommonCode2(errorTypeName: String): WordsErrorTypeDef? {
@@ -74,7 +111,7 @@ private fun getCommonCode2(errorTypeName: String): WordsErrorTypeDef? {
 }
 
 
-private fun getSysCode(errorTypeName: String): IntCodeName? {
+private fun getSysCode(errorTypeName: String): ExceptionGeneralCodeMessage? {
     listOf(
         WordsErrorTypeDef("Json", "", 1),
         WordsErrorTypeDef("jackson", "", 1),
@@ -84,13 +121,16 @@ private fun getSysCode(errorTypeName: String): IntCodeName? {
         WordsErrorTypeDef("xml", "", 1),
         WordsErrorTypeDef("html", "", 1),
 
-        WordsErrorTypeDef("security", "", 2),
+        WordsErrorTypeDef("security", "安全", 2),
 
-        WordsErrorTypeDef("File", "", 3),
-        WordsErrorTypeDef("resource", "", 3),
+        WordsErrorTypeDef("Argument", "参数", 3),
+        WordsErrorTypeDef("Argument", "参数", 3),
 
-        WordsErrorTypeDef("net", "网络", 4),
-        WordsErrorTypeDef("http", "HTTP", 4),
+        WordsErrorTypeDef("File", "文件", 4),
+        WordsErrorTypeDef("resource", "资源", 4),
+
+        WordsErrorTypeDef("net", "网络", 5),
+        WordsErrorTypeDef("http", "HTTP", 5),
 
         WordsErrorTypeDef("memory", "内存", 9),
     ).firstOrNull { errorTypeName.contains_words(it.word) }
@@ -100,7 +140,7 @@ private fun getSysCode(errorTypeName: String): IntCodeName? {
                 if (c3 == null) {
                     return null;
                 }
-                return IntCodeName(
+                return ExceptionGeneralCodeMessage(
                     c3.value.AsInt(0) * 100,
                     c3.cn.AsString(c3?.word.AsString())
                 );
@@ -108,7 +148,7 @@ private fun getSysCode(errorTypeName: String): IntCodeName? {
             this.value = 10 + this.value;
 
             var c2 = getSysCode2(errorTypeName) ?: getCommonCode2(errorTypeName)
-            return IntCodeName(
+            return ExceptionGeneralCodeMessage(
                 this.value * 1000 + c2?.value.AsInt(0) * 100,
                 this.cn.AsString(this.word) + c2?.cn.AsString(c2?.word.AsString())
             );
@@ -122,7 +162,7 @@ private fun getSysCode2(errorTypeName: String): WordsErrorTypeDef? {
 }
 
 
-private fun getMsCode(errorTypeName: String): IntCodeName? {
+private fun getMsCode(errorTypeName: String): ExceptionGeneralCodeMessage? {
     listOf(
         WordsErrorTypeDef("Eureka", "", 1),
         WordsErrorTypeDef("Netfetflix", "", 1),
@@ -140,7 +180,7 @@ private fun getMsCode(errorTypeName: String): IntCodeName? {
             this.value = 20 + this.value;
 
             var c2 = getMsCode2(errorTypeName) ?: getCommonCode2(errorTypeName)
-            return IntCodeName(
+            return ExceptionGeneralCodeMessage(
                 this.value * 1000 + c2?.value.AsInt(0) * 100,
                 this.cn.AsString(this.word) + c2?.cn.AsString(c2?.word.AsString())
             );
@@ -163,7 +203,7 @@ private fun getMsCode2(errorTypeName: String): WordsErrorTypeDef? {
 }
 
 
-private fun getDbCode(errorTypeName: String): IntCodeName? {
+private fun getDbCode(errorTypeName: String): ExceptionGeneralCodeMessage? {
     listOf(
         WordsErrorTypeDef("mysql", "", 1),
         WordsErrorTypeDef("maria", "mariadb", 1),
@@ -203,7 +243,7 @@ private fun getDbCode(errorTypeName: String): IntCodeName? {
             this.value = 30 + this.value;
 
             var c2 = getDbCode2(errorTypeName) ?: getCommonCode2(errorTypeName)
-            return IntCodeName(
+            return ExceptionGeneralCodeMessage(
                 this.value * 1000 + c2?.value.AsInt(0) * 100,
                 this.cn.AsString(this.word) + c2?.cn.AsString(c2?.word.AsString())
             );
