@@ -14,9 +14,10 @@ import nbcp.db.IntCodeName
  * Java普通异常 -500
  * 一般编码有三位，每位有不同的含义 ， 最后一位，用于自定义扩展，现返回0
  * 第2位的前3个是一样的：
- * 系统异常 [-1000 到 -2000)
- *      第1位，
- *      第2位，
+ * 系统异常 [-1 到 -2000)
+ * 其中 < -1000的是能明确分类的。   > -1000 的表示没有明确分类！ 因为有些系统异常可能比较短，没有明确的包名。
+ *      第1位， 1Json,正则，Xml   2 文件，资源  3 网络Http  ，          9 OS
+ *      第2位，（1配置 ，2安全问题， 3 异常，超时,数据格式，网络 ）
  * 微服务异常   [-2000 到 -3000)
  *      第1位， 表示使用的产品组件： 1 Eureka, 2 nacos , 3 consul, 4 zk , 5k8s , 6Apollo
  *      第2位， 表示微服务组件 ： （1配置 ，2安全问题， 3 异常，超时,数据格式，网络 ）     + 4网关 ， 5 配置中心, 6Feign   7Hystrix断路器 ， 8Ribbon负载
@@ -29,7 +30,7 @@ import nbcp.db.IntCodeName
 fun Throwable.GetExceptionTypeCode(): IntCodeName? {
     var errorTypeName = this::class.java.name;
 
-    return getDbCode(errorTypeName) ?: getMsCode(errorTypeName)
+    return getDbCode(errorTypeName) ?: getMsCode(errorTypeName) ?: getSysCode(errorTypeName)
 }
 
 
@@ -38,7 +39,6 @@ private class WordsErrorTypeDef(var word: String, var cn: String, var value: Int
 private fun String.contains_words(vararg words: String): Boolean {
     return words.any { this.contains(it, true) }
 }
-
 
 private fun getCommonCode2(errorTypeName: String): WordsErrorTypeDef? {
     return listOf(
@@ -72,6 +72,54 @@ private fun getCommonCode2(errorTypeName: String): WordsErrorTypeDef? {
         WordsErrorTypeDef("Format", "格式", 3),
     ).firstOrNull { errorTypeName.contains_words(it.word) }
 }
+
+
+private fun getSysCode(errorTypeName: String): IntCodeName? {
+    listOf(
+        WordsErrorTypeDef("Json", "", 1),
+        WordsErrorTypeDef("jackson", "", 1),
+        WordsErrorTypeDef("gson", "", 1),
+        WordsErrorTypeDef("text", "", 1),
+        WordsErrorTypeDef("regex", "", 1),
+        WordsErrorTypeDef("xml", "", 1),
+        WordsErrorTypeDef("html", "", 1),
+
+        WordsErrorTypeDef("File", "", 2),
+        WordsErrorTypeDef("resource", "", 2),
+
+
+        WordsErrorTypeDef("net", "网络", 3),
+        WordsErrorTypeDef("http", "HTTP", 3),
+
+        WordsErrorTypeDef("memory", "内存", 9),
+    ).firstOrNull { errorTypeName.contains_words(it.word) }
+        .apply {
+            if (this == null) {
+                var c3 = getCommonCode2(errorTypeName)
+                if (c3 == null) {
+                    return null;
+                }
+                return IntCodeName(
+                    c3.value.AsInt(0) * 100,
+                    c3.cn.AsString(c3?.word.AsString())
+                );
+            }
+            this.value = 10 + this.value;
+
+            var c2 = getSysCode2(errorTypeName) ?: getCommonCode2(errorTypeName)
+            return IntCodeName(
+                this.value * 1000 + c2?.value.AsInt(0) * 100,
+                this.cn.AsString(this.word) + c2?.cn.AsString(c2?.word.AsString())
+            );
+        }
+}
+
+private fun getSysCode2(errorTypeName: String): WordsErrorTypeDef? {
+    return listOf<WordsErrorTypeDef>(
+    
+    ).firstOrNull { errorTypeName.contains_words(it.word) }
+}
+
 
 private fun getMsCode(errorTypeName: String): IntCodeName? {
     listOf(
