@@ -26,18 +26,10 @@ import nbcp.db.IntCodeName
  *      第1位， 数据库种类：分别表示： 1mysql(任意关系型数据),2redis,3mongo,4mq(任意Mq),5es, 9cache,  0 表示其它数据库
  *      第2位， （1配置异常, 2安全问题 ， 3 异常，超时,数据格式，网络 ）                 + 4连接异常, 5执行异常, 6数据异常（重复键，类型不对等）
  */
-fun Throwable.GetExceptionTypeCode(): JsonResult {
-    var ret = JsonResult();
+fun Throwable.GetExceptionTypeCode(): IntCodeName? {
     var errorTypeName = this::class.java.name;
 
-
-    var code = getDbCode(errorTypeName) ?: getMsCode(errorTypeName)
-
-    if (code == null) {
-        return JsonResult.error("服务器错误", -500)
-    }
-
-    return JsonResult.error(code.name, code.code);
+    return getDbCode(errorTypeName) ?: getMsCode(errorTypeName)
 }
 
 
