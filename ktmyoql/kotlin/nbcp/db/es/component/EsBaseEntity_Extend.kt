@@ -5,7 +5,8 @@ import java.io.Serializable
 fun <M : EsBaseMetaEntity<T>, T : Serializable> M.query(): EsQueryClip<M, T> = EsQueryClip(this);
 
 
-fun <M : EsBaseMetaEntity<T>, T : Serializable> M.queryById(id: String): EsQueryClip<M, T> = this.query()
+fun <M : EsBaseMetaEntity<T>, T : Serializable> M.queryById(id: String): EsQueryClip<M, T> =
+    this.query()
     .must({ EsColumnName("id") term id })
 
 
