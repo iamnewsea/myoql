@@ -1,13 +1,9 @@
 package nbcp.db.mysql
 
-import com.mysql.cj.jdbc.MysqlDataSource
 import com.zaxxer.hikari.HikariDataSource
 import nbcp.comm.HasValue
-import nbcp.db.sql.component.JsonMapRowMapper
 import nbcp.utils.ClassUtil
 import nbcp.utils.SpringUtil
-import org.mariadb.jdbc.MariaDbDataSource
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
