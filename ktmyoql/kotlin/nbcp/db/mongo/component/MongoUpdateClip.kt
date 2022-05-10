@@ -134,6 +134,7 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
 
     /**
      * 向数组中添加一条。
+     * @param pair:
      * key:是实体的属性，内容是数组，如 roles。
      * value是要插入实体值。如： UserRole
      */
