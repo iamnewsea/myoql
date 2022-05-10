@@ -50,4 +50,19 @@ class TypeTest : TestBase() {
         // seconds == totalSeconds
         println(Duration.ofDays(3).seconds)
     }
+
+
+    @Test
+    fun test_str() {
+        // seconds == totalSeconds
+        println(abcfff())
+    }
+
+    fun abcfff(): String {
+        var d: String? = null;
+        d = ":"
+        d.must().elseReturn { return "nulllll" }
+
+        return "proced"
+    }
 }
