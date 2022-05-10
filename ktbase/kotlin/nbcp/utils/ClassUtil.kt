@@ -30,7 +30,7 @@ object ClassUtil {
     /**
      * 是否存在类
      */
-    fun exists(className: String): Boolean {
+    fun existsClass(className: String): Boolean {
         try {
             getDefaultClassLoader().loadClass(className);
             return true;

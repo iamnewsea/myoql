@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationListener
 import org.springframework.core.env.ConfigurableEnvironment
 
 /**
- * 配置项
+ * 配置项, 不能用Component 或Bean，因为它的时机，比Spring容器还要早。
  */
 class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, ApplicationContextAware {
     override fun onApplicationEvent(event: ApplicationEnvironmentPreparedEvent) {
@@ -78,8 +78,16 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
 
 
         @JvmStatic
-        val redisProductLineCodePrefixEnable
-            get() = getConfig("app.product-line.redis-prefix-enable").AsBoolean()
+        val redisProductLineCodePrefixEnable: Boolean
+            get() {
+                getConfig("app.product-line.redis-prefix-enable")
+                    .apply {
+                        if (this.isNullOrEmpty()) {
+                            return true;
+                        }
+                        return this.AsBoolean()
+                    }
+            }
 
 
         @JvmStatic
