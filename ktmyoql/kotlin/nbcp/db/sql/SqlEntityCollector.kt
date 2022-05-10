@@ -5,9 +5,13 @@ import nbcp.comm.ForEachExt
 import nbcp.db.*
 import nbcp.db.cache.RedisCacheColumns
 import nbcp.db.cache.RedisCacheDefine
+import nbcp.db.mysql.ExistsSqlSourceConfigCondition
 import nbcp.db.sql.event.*
+import org.mariadb.jdbc.MariaDbDataSource
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.context.annotation.Conditional
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import javax.sql.DataSource
@@ -17,7 +21,8 @@ import java.io.Serializable
  * 事件处理中心
  */
 @Component
-@ConditionalOnClass(value = arrayOf(JdbcTemplate::class))
+@Conditional(ExistsSqlSourceConfigCondition::class)
+@ConditionalOnProperty("spring.datasource.url")
 class SqlEntityCollector : BeanPostProcessor {
     companion object {
         //需要删 除后放入垃圾箱的实体

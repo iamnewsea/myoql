@@ -26,7 +26,7 @@ abstract class FlywayVersionBaseService(val version: Int) {
         resourcePath: String,
         fileName: String,
         fileExt: String,
-        itemFunc: (String, List<String>) -> Boolean
+        tableCallback: (String, List<String>) -> Boolean
     ): Boolean {
         return ClassUtil.findResources(resourcePath).map {
             return@map it.substring(resourcePath.length + 1)
@@ -45,7 +45,7 @@ abstract class FlywayVersionBaseService(val version: Int) {
             .all {
                 var tableName = it.split(".").first()
                 var content = ClassPathResource(resourcePath + "/" + it).inputStream.readContentString()
-                return@all itemFunc.invoke(tableName, content.split("\n").filter { it.HasValue })
+                return@all tableCallback.invoke(tableName, content.split("\n").filter { it.HasValue })
             }
     }
 
@@ -53,7 +53,7 @@ abstract class FlywayVersionBaseService(val version: Int) {
     /**
      * 初始化数据,目录：flyway-v${version}, 文件后缀 .dat
      */
-    fun addResourceData(tableName: String = "", autoSave: Boolean = false) {
+    fun addResourceData(tableName: String = "", autoSave: Boolean = true) {
         loadResource("flyway-v${version}", tableName, ".dat") { tableName, lines ->
             var count = 0;
             if (autoSave) {
