@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationListener
 import org.springframework.core.env.ConfigurableEnvironment
 
 /**
- * 配置项
+ * 配置项, 不能用Component 或Bean，因为它的时机，比Spring容器还要早。
  */
 class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, ApplicationContextAware {
     override fun onApplicationEvent(event: ApplicationEnvironmentPreparedEvent) {
