@@ -24,10 +24,10 @@ data class CheckMustExpresstion<T>(var condition: Boolean, var data: T?) {
         else throw RuntimeException(msg(data));
     }
 
-    inline fun elseReturn(block: T?.() -> Unit): T? {
+    inline fun elseReturn(block: T?.() -> Unit): T {
         if (condition) return data!!
         data.block()
-        return null;
+        throw RuntimeException("else Return 必须使用 return!")
     }
 }
 

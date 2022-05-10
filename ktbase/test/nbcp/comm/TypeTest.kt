@@ -60,7 +60,7 @@ class TypeTest : TestBase() {
 
     fun abcfff(): String {
         var d: String? = null;
-        d = ":"
+
         d.must().elseReturn { return "nulllll" }
 
         return "proced"
