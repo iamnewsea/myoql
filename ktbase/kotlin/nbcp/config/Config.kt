@@ -78,8 +78,16 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
 
 
         @JvmStatic
-        val redisProductLineCodePrefixEnable
-            get() = getConfig("app.product-line.redis-prefix-enable").AsBoolean()
+        val redisProductLineCodePrefixEnable: Boolean
+            get() {
+                getConfig("app.product-line.redis-prefix-enable")
+                    .apply {
+                        if (this.isNullOrEmpty()) {
+                            return true;
+                        }
+                        return this.AsBoolean()
+                    }
+            }
 
 
         @JvmStatic
