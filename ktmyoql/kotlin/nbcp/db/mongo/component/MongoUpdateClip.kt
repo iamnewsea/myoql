@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.FindAndModifyOptions
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
-import java.io.Serializable
 import java.time.LocalDateTime
 
 /**
@@ -25,7 +24,7 @@ import java.time.LocalDateTime
  * MongoUpdate
  */
 class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntity: M) :
-        MongoBaseUpdateClip(moerEntity.tableName) {
+    MongoBaseUpdateClip(moerEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -138,7 +137,7 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
      * key:是实体的属性，内容是数组，如 roles。
      * value是要插入实体值。如： UserRole
      */
-    fun push(pair: (M) -> Pair<MongoColumnName, Serializable>): MongoUpdateClip<M, E> {
+    fun push(pair: (M) -> Pair<MongoColumnName, Any>): MongoUpdateClip<M, E> {
         var pairObject = pair(this.moerEntity);
         this.pushData.put(pairObject.first.toString(), pairObject.second);
         return this;
@@ -222,13 +221,13 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
         try {
             this.script = getUpdateScript(criteria, update)
             resultDocument =
-                    getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).findAndModify(
-                            query,
-                            update,
-                            updateOption,
-                            Document::class.java,
-                            actualTableName
-                    );
+                getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).findAndModify(
+                    query,
+                    update,
+                    updateOption,
+                    Document::class.java,
+                    actualTableName
+                );
 
             this.executeTime = LocalDateTime.now() - startAt
 
@@ -238,11 +237,11 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
 
 
                 usingScope(
-                        arrayOf(
-                                MyOqlOrmScope.IgnoreAffectRow,
-                                MyOqlOrmScope.IgnoreExecuteTime,
-                                MyOqlOrmScope.IgnoreUpdateAt
-                        )
+                    arrayOf(
+                        MyOqlOrmScope.IgnoreAffectRow,
+                        MyOqlOrmScope.IgnoreExecuteTime,
+                        MyOqlOrmScope.IgnoreUpdateAt
+                    )
                 ) {
                     settingResult.forEach {
                         it.event.update(this, it.result)
