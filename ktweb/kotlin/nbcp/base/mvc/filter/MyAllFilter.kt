@@ -112,7 +112,7 @@ open class MyAllFilter : Filter {
 
         var logLevelString = httpRequest.queryJson.get("-log-level-").AsString();
         if (logLevelString.HasValue &&
-                config.adminToken == httpRequest.findParameterStringValue("-admin-token-")
+            config.adminToken == httpRequest.findParameterStringValue("-admin-token-")
         ) {
             if (logLevelString.IsNumberic()) {
                 var logLevelInt = logLevelString.AsInt()
@@ -155,9 +155,9 @@ open class MyAllFilter : Filter {
 
 
     private fun procFilter(
-            request: MyHttpRequestWrapper,
-            response: ContentCachingResponseWrapper,
-            chain: FilterChain?
+        request: MyHttpRequestWrapper,
+        response: ContentCachingResponseWrapper,
+        chain: FilterChain?
     ) {
         var startAt = LocalDateTime.now()
         beforeRequest(request)
@@ -169,12 +169,12 @@ open class MyAllFilter : Filter {
             var err = getInnerException(ex);
             var errorInfo = mutableListOf<String>()
             errorInfo.add(
-                    err::class.java.simpleName + ": " + err.Detail.AsString(err.message.AsString()).AsString("(未知错误)")
-                            .Slice(0, 256)
+                err::class.java.simpleName + ": " + err.Detail.AsString(err.message.AsString()).AsString("(未知错误)")
+                    .Slice(0, 256)
             )
 
             errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }
-                    .take(24))
+                .take(24))
 
             errorMsg = errorInfo.joinToString(const.line_break)
         } finally {
@@ -227,15 +227,15 @@ open class MyAllFilter : Filter {
 
 
     fun afterComplete(
-            request: HttpServletRequest,
-            response: ContentCachingResponseWrapper,
-            callback: String,
-            startAt: LocalDateTime,
-            errorMsg: String
+        request: HttpServletRequest,
+        response: ContentCachingResponseWrapper,
+        callback: String,
+        startAt: LocalDateTime,
+        errorMsg: String
     ) {
         var resStringValue = errorMsg;
         if (resStringValue.HasValue) {
-            response.contentType = "application/json;charset=UTF-8"
+            response.contentType = "text/plain;charset=UTF-8"
             val content = resStringValue.toByteArray(const.utf8);
 
             //重设输出。
@@ -252,12 +252,14 @@ open class MyAllFilter : Filter {
 
             if (callback.isNotEmpty() && response.contentType.contains("json")) {
                 response.contentType = "application/javascript;charset=UTF-8"
-                val content = """${callback}(${resStringValue})""".toByteArray(const.utf8)
+                resStringValue = """${callback}(${resStringValue})"""
+
+                var resStringBytes = resStringValue.toByteArray(const.utf8)
 
                 response.reset()
-                response.setContentLength(content.size)
+                response.setContentLength(resStringBytes.size)
                 response.outputStream.use {
-                    it.write(content)
+                    it.write(resStringBytes)
                     it.flush()
                 }
             }
