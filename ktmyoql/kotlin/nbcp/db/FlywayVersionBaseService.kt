@@ -3,14 +3,12 @@ package nbcp.db
 import com.mongodb.client.model.IndexOptions
 import nbcp.comm.*
 import nbcp.db.mongo.MongoBaseMetaCollection
-import nbcp.db.mongo.MongoSetEntityUpdateClip
 import nbcp.db.mongo.batchInsert
 import nbcp.db.mongo.updateWithEntity
 import nbcp.utils.ClassUtil
 import org.bson.Document
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.ClassPathResource
-import java.lang.Exception
 
 abstract class FlywayVersionBaseService(val version: Int) {
     companion object {
@@ -49,11 +47,24 @@ abstract class FlywayVersionBaseService(val version: Int) {
             }
     }
 
+    /**
+     * 推送所有数据
+     */
+    fun pushAllResourcesData(autoSave: Boolean) {
+        return addResourceData("", autoSave)
+    }
+
+    fun pushResourcesData(tableName: String, autoSave: Boolean) {
+        if (tableName.isEmpty()) {
+            throw RuntimeException("tableName不能为空")
+        }
+        return addResourceData(tableName, autoSave)
+    }
 
     /**
      * 初始化数据,目录：flyway-v${version}, 文件后缀 .dat
      */
-    fun addResourceData(tableName: String = "", autoSave: Boolean = true) {
+    protected fun addResourceData(tableName: String = "", autoSave: Boolean = true) {
         loadResource("flyway-v${version}", tableName, ".dat") { tableName, lines ->
             var count = 0;
             if (autoSave) {

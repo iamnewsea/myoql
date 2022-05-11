@@ -1,5 +1,6 @@
 package nbcp.bean
 
+import nbcp.comm.AsInt
 import nbcp.comm.Important
 import nbcp.db.*
 import nbcp.db.mongo.*
@@ -36,13 +37,8 @@ class FlywayBeanProcessor {
             .where { it.isSuccess match true }
             .orderByDesc { it.version }
             .toEntity()
-            .run {
-                if (this == null) {
-                    return@run 0;
-                }
+            ?.version
 
-                return@run this.version;
-            }
 
         var flyways = SpringUtil.context.getBeansOfType(FlywayVersionBaseService::class.java).values
 
@@ -59,7 +55,7 @@ class FlywayBeanProcessor {
         //对正数版本，正序执行！
         flyways
             .filter { it.version >= 0 }
-            .filter { it.version > dbMaxVersion }
+            .filter { it.version > (dbMaxVersion ?: -1) }
             .sortedBy { it.version }
             .all {
                 playFlyway(it)
