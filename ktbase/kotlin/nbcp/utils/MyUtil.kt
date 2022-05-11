@@ -45,6 +45,37 @@ object MyUtil {
     }
 
 
+    fun getHttpHostUrl(host: String): String {
+        if(host.isEmpty()) return ""
+
+        if (host.startsWith("http://", true) || host.startsWith("https://", true)) {
+            return host;
+        }
+
+        if (host.startsWith("//")) {
+            return "http:" + host;
+        }
+
+        return "http://" + host;
+    }
+
+    fun getHostUrlWithoutHttp(host: String): String {
+        if(host.isEmpty()) return ""
+
+        if (host.startsWith("http://", true)) {
+            return host.substring(5);
+        }
+        if (host.startsWith("https://", true)) {
+            return host.substring(6);
+        }
+
+        if (host.startsWith("//")) {
+            return host;
+        }
+
+        return "//" + host;
+    }
+
     /**
      * 通过 path 获取 value,每级返回的值必须是 Map<String,V> 否则返回 null
      * @param keys: 可以传多个key，也可以使用 . 分隔；如果查询数组，使用 products[],products[0], products.[] 或 products.[0] 或 "products","[]"
@@ -234,10 +265,12 @@ object MyUtil {
     /**
      * 多层级设置值
      */
-    fun setValueByWbsPath(data: Any,
-                          vararg keys: String,
-                          value: Any?,
-                          ignoreCase: Boolean = false): Boolean {
+    fun setValueByWbsPath(
+        data: Any,
+        vararg keys: String,
+        value: Any?,
+        ignoreCase: Boolean = false
+    ): Boolean {
         if (keys.any() == false) return false;
 
         var unwindKeys = keys
