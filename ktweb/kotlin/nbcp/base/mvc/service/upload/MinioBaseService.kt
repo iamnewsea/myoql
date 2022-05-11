@@ -122,9 +122,7 @@ class MinioBaseService : ISaveFileService {
 
             var responseHost = MyUtil.getHostUrlWithoutHttp(WEB_HOST.AsString(API_HOST))
 
-            return@use listOf(responseHost, response.bucket(), response.`object`())
-                .map { it.trim('/') }
-                .joinToString("/")
+            return@use MyUtil.joinUrl(responseHost, response.bucket(), response.`object`())
         }
     }
 

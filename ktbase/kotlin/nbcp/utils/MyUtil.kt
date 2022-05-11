@@ -46,7 +46,7 @@ object MyUtil {
 
 
     fun getHttpHostUrl(host: String): String {
-        if(host.isEmpty()) return ""
+        if (host.isEmpty()) return ""
 
         if (host.startsWith("http://", true) || host.startsWith("https://", true)) {
             return host;
@@ -60,7 +60,7 @@ object MyUtil {
     }
 
     fun getHostUrlWithoutHttp(host: String): String {
-        if(host.isEmpty()) return ""
+        if (host.isEmpty()) return ""
 
         if (host.startsWith("http://", true)) {
             return host.substring(5);
@@ -1007,9 +1007,12 @@ object MyUtil {
         return oriStrings[0]
     }
 
-    fun joinPath(vararg path: String): String {
+    /**
+     * 把文件的各个部分组织在一起， 处理 . 和 .. 部分
+     */
+    fun joinFilePath(vararg path: String): String {
         if (path.any() == false) return "";
-        var isRoot = path.first().startsWith("/")
+        var isRoot = path.first().let { it.startsWith('/') || it.startsWith('\\') }
 
         var list = mutableListOf<String>()
 
@@ -1017,11 +1020,12 @@ object MyUtil {
             it.split('/', '\\')
                 .filter { it.HasValue }
                 .filter { it != "." }
-        }.Unwind()
+        }
+            .Unwind()
             .forEach {
                 if (it == "..") {
                     if (list.removeLastOrNull() == null) {
-                        throw RuntimeException("路径溢出")
+                        throw RuntimeException("路径层级溢出")
                     }
                     return@forEach
                 }
@@ -1030,7 +1034,36 @@ object MyUtil {
             }
 
 
-        return (if (isRoot) "/" else "") + list.joinToString(File.separator)
+        return (if (isRoot) File.separator else "") + list.joinToString(File.separator)
+    }
+
+    /**
+     * 处理 Url，连接各个部分， 其中第一部分是 Host， 不处理。
+     */
+    fun joinUrl(host: String, vararg path: String): String {
+        if (path.any() == false) return host;
+
+        var list = mutableListOf<String>()
+
+        path.map {
+            it.split('/')
+                .filter { it.HasValue }
+                .filter { it != "." }
+        }
+            .Unwind()
+            .forEach {
+                if (it == "..") {
+                    if (list.removeLastOrNull() == null) {
+                        throw RuntimeException("url地址层级溢出")
+                    }
+                    return@forEach
+                }
+
+                list.add(it);
+            }
+
+
+        return host + list.map { "/" + it }.joinToString("")
     }
 
 

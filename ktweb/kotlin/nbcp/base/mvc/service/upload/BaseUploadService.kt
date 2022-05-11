@@ -132,6 +132,10 @@ abstract class BaseUploadService {
     lateinit var dbService: IUploadFileDbService
 
 
+    /**
+     * 文件上传
+     * 头格式：  Content-Disposition: form-data; name="多文件上传时可能是多个文件名，或空"; filename="具体文件名"
+     */
     protected open fun upload(
         request: HttpServletRequest,
         response: HttpServletResponse,
