@@ -188,6 +188,11 @@ abstract class BaseUploadService {
         request
             .multiFileMap
             .toList()
+            .apply {
+                if (this.any() == false) {
+                    throw RuntimeException("找不到上传的文件!")
+                }
+            }
             .ForEachExt { it, _ ->
                 var fileName = it.first;
                 var files = it.second;
