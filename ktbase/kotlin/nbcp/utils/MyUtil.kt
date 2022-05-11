@@ -234,7 +234,10 @@ object MyUtil {
     /**
      * 多层级设置值
      */
-    fun setValueByWbsPath(data: Any, vararg keys: String, ignoreCase: Boolean = false, value: Any?): Boolean {
+    fun setValueByWbsPath(data: Any,
+                          vararg keys: String,
+                          value: Any?,
+                          ignoreCase: Boolean = false): Boolean {
         if (keys.any() == false) return false;
 
         var unwindKeys = keys
@@ -600,8 +603,8 @@ object MyUtil {
     private fun setPrivatePropertyValue(
         entity: Any?,
         vararg properties: String,
-        ignoreCase: Boolean = false,
-        value: Any?
+        value: Any?,
+        ignoreCase: Boolean = false
     ): Boolean {
         if (entity == null) return false;
         if (properties.any() == false) return false;

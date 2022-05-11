@@ -84,20 +84,20 @@ fun Map<*, *>.getIntValue(vararg keys: String, ignoreCase: Boolean = false): Int
 /**
  * 多层级设置值
  */
-fun  Map<String, *>.setValueByWbsPath(
+fun Map<String, *>.setValueByWbsPath(
     vararg keys: String,
-    ignoreCase: Boolean = false,
-    value: Any?
+    value: Any?,
+    ignoreCase: Boolean = false
 ): Boolean {
-    return MyUtil.setValueByWbsPath(this, *keys, ignoreCase = ignoreCase, value = value);
+    return MyUtil.setValueByWbsPath(this, *keys, value = value, ignoreCase = ignoreCase);
 }
 
 
-fun  Map<String, *>.getValueByWbsPath(
+fun Map<String, *>.getValueByWbsPath(
     vararg keys: String,
     ignoreCase: Boolean = false
 ): Any? {
-    return MyUtil.getValueByWbsPath(this, *keys, ignoreCase = ignoreCase );
+    return MyUtil.getValueByWbsPath(this, *keys, ignoreCase = ignoreCase);
 }
 //------------------
 
