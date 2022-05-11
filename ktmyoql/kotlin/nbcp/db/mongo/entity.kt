@@ -110,12 +110,8 @@ open class SysAnnex @JvmOverloads constructor(
     @Cn("存储类型")
     var storageType: String = "",
 
-
-    @Cn("下载地址头")
-    var urlPrefix:String = "",
-
     /**
-     * 下载地址可能是 双斜线 开头。 那头就保存到了 url
+     * 下载地址
      */
     @Cn("下载地址")
     var url: String = "",           //下载的路径。没有 host
