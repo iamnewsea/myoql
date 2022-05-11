@@ -23,6 +23,12 @@ data class CheckMustExpresstion<T>(var condition: Boolean, var data: T?) {
         if (condition) return data!!
         else throw RuntimeException(msg(data));
     }
+
+    inline fun elseReturn(block: T?.() -> Unit): T {
+        if (condition) return data!!
+        data.block()
+        throw RuntimeException("else Return 必须使用 return!")
+    }
 }
 
 @JvmOverloads
