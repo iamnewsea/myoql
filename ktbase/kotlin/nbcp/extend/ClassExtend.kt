@@ -334,6 +334,7 @@ val Class<*>.AllGetPropertyMethods: List<Method>
 
 /** 获取该类以及基类的所有字段。 并设置为可写。
  * 如果父类与子类有相同的字段，返回子类字段。
+ * 移除 IsTransient 非序列化字段
  */
 val Class<*>.AllFields: List<Field>
     get() {
