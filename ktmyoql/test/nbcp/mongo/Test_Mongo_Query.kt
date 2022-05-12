@@ -19,6 +19,25 @@ class Test_Mongo_Query : TestBase() {
     }
 
     @Test
+    fun test_query_where() {
+        usingScope(LogLevelScope.debug) {
+            db.mor_base.sysLog.query()
+                .apply {
+                    this.where(
+                        """
+var v = this.ext;
+return  this.tags && this.tags.some(function(it) { return it == v } ) 
+"""
+                    )
+                }
+                .toList()
+                .apply {
+                    println(this.size)
+                }
+        }
+    }
+
+    @Test
     fun test_query_datetime() {
         var start = LocalDateTime.now().minusHours(1)
         var end = LocalDateTime.now().plusHours(1);

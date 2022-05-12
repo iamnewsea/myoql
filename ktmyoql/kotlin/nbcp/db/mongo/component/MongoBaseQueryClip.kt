@@ -38,8 +38,11 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         this.selectColumns.add(column);
     }
 
-    companion object {
-        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    /**
+     * TODO 需要将 jsCallback 转化为Mongo的函数对象！
+     */
+    fun where(jsCallback: String) {
+        this.whereData.add(JsonMap("${'$'}where" to jsCallback));
     }
 
     /**
@@ -111,7 +114,12 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         }
 
         if (cursor == null) {
-            cursor = getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).find(query, Document::class.java, this.actualTableName)
+            cursor =
+                getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).find(
+                    query,
+                    Document::class.java,
+                    this.actualTableName
+                )
         }
 
         this.executeTime = LocalDateTime.now() - startAt
@@ -281,7 +289,11 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         var query = Query.query(criteria);
         try {
             this.script = getQueryScript(criteria)
-            ret = getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).count(query, actualTableName).toInt()
+            ret =
+                getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).count(
+                    query,
+                    actualTableName
+                ).toInt()
             this.executeTime = LocalDateTime.now() - startAt
 
             usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
@@ -317,7 +329,11 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         var error: Exception? = null;
         try {
             this.script = getQueryScript(criteria)
-            ret = getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).exists(query, actualTableName);
+            ret =
+                getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).exists(
+                    query,
+                    actualTableName
+                );
             this.executeTime = LocalDateTime.now() - startAt;
 
             usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {

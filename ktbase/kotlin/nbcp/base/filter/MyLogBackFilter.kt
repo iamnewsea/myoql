@@ -16,6 +16,8 @@ import org.slf4j.Marker
  * logback-spring.xml 文件中，
  * configuration 下面添加 <turboFilter class="nbcp.filter.MyLogBackFilter"></turboFilter>
  * Filter<ILoggingEvent> 是后置过滤器
+ *
+ * isInfoEnabled, 也会走前置处理器进行判断
  */
 class MyLogBackFilter : TurboFilter() {
     companion object {
