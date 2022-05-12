@@ -14,9 +14,13 @@ class TestMyString : TestBase() {
 
     @Test
     fun test_get_json() {
-        var d = MyString("ok")
-        var d2 = d.CloneObject();
-        println(d2)
+        var map1 = mapOf("a" to 1, "b" to 2)
+        var map2 = mapOf("a" to 1, "b" to 3)
+        var map3: Map<String, Int>? = null;
+
+        println((map1 + map2).ToJson())   // b=3
+        println((map2 + map1).ToJson())   // b=2
+
     }
 
 
@@ -28,7 +32,7 @@ class TestMyString : TestBase() {
     fun fun_1() {
         ByteArrayOutputStream().use {
 
-            while(true) {
+            while (true) {
                 ByteArrayOutputStream().use {
                     return
                 }

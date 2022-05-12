@@ -130,4 +130,12 @@ annotation class DbDefines(vararg val value: DbDefine)
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class DbDefine(val fieldName: String, val define: String)
+
+
+/**
+ * ik分词器字段定义
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class IkFieldDefine(vararg val fieldNames: String)
 //--------------------

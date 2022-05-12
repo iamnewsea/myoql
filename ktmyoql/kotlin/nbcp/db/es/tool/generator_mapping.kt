@@ -140,7 +140,20 @@ class generator_mapping {
     fun getDefines(entType: Class<*>): Map<String, String> {
         var defines = entType.getAnnotationsByType(DbDefine::class.java)
 
-        return defines.map { it.fieldName to it.define }.toMap()
+        defines.map { it.fieldName to it.define }
+            .toMap()
+            .toMutableMap()
+            .apply {
+                var ikMap = mapOf<String, String>()
+                var ikDefines = entType.getAnnotation(IkFieldDefine::class.java)
+                if (ikDefines != null) {
+                    ikMap =
+                        ikDefines.fieldNames.map { it to """{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}""" }
+                            .toMap()
+                }
+
+                return ikMap + this
+            }
     }
 
     /**
