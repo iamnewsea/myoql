@@ -20,7 +20,7 @@ class DataTable<T : Any>(clazz: Class<T>) : Serializable {
         this.sheetName = type.simpleName;
 
         if (type.isMemberClass == false) {
-            this.columns = type.declaredFields.map { it.name }.toTypedArray()
+            this.columns = type.AllFields.map { it.name }.toTypedArray()
         }
     }
 
@@ -58,59 +58,61 @@ class DataTable<T : Any>(clazz: Class<T>) : Serializable {
         @JvmStatic
         fun <T : Any> loadFromCsv(content: String, clazz: Class<T>): DataTable<T> {
             var ret = DataTable(clazz)
-            var words = content.Tokenizer({ it == ',' || it == '\n' }, arrayOf(
-                    TokenQuoteDefine('"', '"', '"'))
+            var words = content.Tokenizer(
+                { it == ',' || it == '\n' }, arrayOf(
+                    TokenQuoteDefine('"', '"', '"')
+                )
             );
 
 
             var findTitle = false;
 
             words.SplitGroup { it == "\n" }
-                    .map { rowData ->
-                        //去除 ，,注意连续两个逗号的情况，奇数位置必须是 逗号
-                        var list = mutableListOf<String>()
-                        list.addAll(rowData);
-                        for (i in 0 until list.size) {
-                            if (i % 2 == 0) {
-                                if (list[i] == ",") {
-                                    list.add(i, "");
-                                }
+                .map { rowData ->
+                    //去除 ，,注意连续两个逗号的情况，奇数位置必须是 逗号
+                    var list = mutableListOf<String>()
+                    list.addAll(rowData);
+                    for (i in 0 until list.size) {
+                        if (i % 2 == 0) {
+                            if (list[i] == ",") {
+                                list.add(i, "");
                             }
                         }
-
-                        for (i in list.size - 1 downTo 0) {
-                            if (i % 2 == 1) {
-                                list.removeAt(i);
-                            }
-                        }
-
-                        return@map list.map { getCsvItemText(it) }
                     }
-                    .filter { rowData ->
-                        if (rowData.size == 0) return@filter false;
-                        if (rowData.size == 1 && rowData.first().trim().isEmpty()) return@filter false;
-                        return@filter true;
-                    }
-                    .forEach { rowData ->
-                        if (findTitle == false) {
-                            ret.columns = rowData.toTypedArray();
-                            findTitle = true;
 
-                            return@forEach
+                    for (i in list.size - 1 downTo 0) {
+                        if (i % 2 == 1) {
+                            list.removeAt(i);
                         }
-
-                        var jsonMap = JsonMap();
-
-                        ret.columns.forEachIndexed { index, k ->
-                            if (index < rowData.size) {
-                                jsonMap.put(k, rowData.get(index))
-                            } else {
-                                jsonMap.put(k, "");
-                            }
-                        }
-
-                        ret.rows.add(jsonMap.ConvertJson(clazz));
                     }
+
+                    return@map list.map { getCsvItemText(it) }
+                }
+                .filter { rowData ->
+                    if (rowData.size == 0) return@filter false;
+                    if (rowData.size == 1 && rowData.first().trim().isEmpty()) return@filter false;
+                    return@filter true;
+                }
+                .forEach { rowData ->
+                    if (findTitle == false) {
+                        ret.columns = rowData.toTypedArray();
+                        findTitle = true;
+
+                        return@forEach
+                    }
+
+                    var jsonMap = JsonMap();
+
+                    ret.columns.forEachIndexed { index, k ->
+                        if (index < rowData.size) {
+                            jsonMap.put(k, rowData.get(index))
+                        } else {
+                            jsonMap.put(k, "");
+                        }
+                    }
+
+                    ret.rows.add(jsonMap.ConvertJson(clazz));
+                }
 
             return ret;
         }

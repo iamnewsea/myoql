@@ -174,16 +174,19 @@ fun <T> Class<T>.GetEnumNumberField(): Field? {
     if (this.isEnum == false) return null
 
 
-    var ret_fields = this.declaredFields.filter {
-        (it.modifiers and Modifier.PRIVATE) > 0 &&
-                (it.modifiers and Modifier.STATIC == 0) &&
-                it.type.IsNumberType
-    }
-    if (ret_fields.size == 1) {
-        var ret = ret_fields.first();
-        ret.isAccessible = true;
-        return ret;
-    }
+    this.declaredFields
+        .filter {
+            it.IsPrivate && it.IsStatic && it.type.IsNumberType
+        }
+        .let { ret_fields ->
+            if (ret_fields.size == 1) {
+                var ret = ret_fields.first();
+                ret.isAccessible = true;
+                return ret;
+            }
+        }
+
+
     return null;
 }
 
@@ -208,6 +211,11 @@ val Field.IsStatic: Boolean
         return Modifier.isStatic(this.modifiers)
     }
 
+val Field.IsTransient: Boolean
+    get() {
+        return Modifier.isTransient(this.modifiers)
+    }
+
 val Field.IsPrivate: Boolean
     get() {
         return Modifier.isPrivate(this.modifiers)
@@ -225,17 +233,19 @@ fun <T> Class<T>.GetEnumStringField(): Field? {
     if (this.isEnum == false) return null
 
 
-    var ret_fields = this.declaredFields.filter {
-        (it.modifiers and Modifier.PRIVATE) > 0 &&
-                it.modifiers and Modifier.STATIC == 0 &&
-                it.type.IsStringType
-    }
+    this.declaredFields
+        .filter {
+            it.IsPrivate && it.IsStatic && it.type.IsStringType
+        }
+        .let { ret_fields ->
+            if (ret_fields.any()) {
+                var ret = ret_fields.first();
+                ret.isAccessible = true;
+                return ret;
+            }
+        }
 
-    if (ret_fields.any()) {
-        var ret = ret_fields.first();
-        ret.isAccessible = true;
-        return ret;
-    }
+
     return null;
 }
 
@@ -247,14 +257,15 @@ val Class<*>.AllFields: List<Field>
     get() {
         var ret = mutableListOf<Field>();
 
-        var fields = this.declaredFields.filter {
-            if (it.modifiers and Modifier.STATIC > 0) return@filter false;
-            if (it.modifiers and Modifier.TRANSIENT > 0) return@filter false;
+        var fields = this.declaredFields
+            .filter {
+                if (it.IsStatic) return@filter false;
+                if (it.IsTransient) return@filter false;
 
-            it.isAccessible = true;
+                it.isAccessible = true;
 
-            return@filter true
-        };
+                return@filter true
+            };
 
         ret.addAll(fields);
 
