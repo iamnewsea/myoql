@@ -268,12 +268,12 @@ private fun Class<*>.getPropertyGetMethods(): List<Method> {
         if (it.IsStatic) return@filter false;
         if (it.IsPrivate) return@filter false;
         if (it.IsTransient) return@filter false;
-        if (it.parameters.any()) return@filter false;
 
         return@filter it.name.startsWith("is") || it.name.startsWith("get") || it.name.startsWith("set")
     }
 
     return methods.filter {
+        if (it.parameters.any()) return@filter false;
 
         if (it.returnType.IsBooleanType) {
             if (it.name.startsWith("is")) {
