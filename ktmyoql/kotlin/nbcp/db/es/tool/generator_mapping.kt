@@ -176,6 +176,12 @@ class generator_mapping {
                 if (type.IsSimpleType()) {
                     if (defineJson == null) {
                         defineJson = JsonMap("type" to getJsType(it.type))
+                        if (type.IsAnyDateOrTimeType) {
+                            //默认是 strict_date_optional_time||epoch_millis
+                            //自定义为不记录毫秒
+                            //strict_date_optional_time 合法格式： 2020-01-01T00:00:00Z , 2020-01-01
+                            defineJson.put("format", "strict_date_optional_time||yyyy-MM-dd HH:mm:ss||epoch_second")
+                        }
                     }
 
                     json.put(it.name, defineJson);

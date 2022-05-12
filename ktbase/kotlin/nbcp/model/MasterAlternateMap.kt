@@ -10,7 +10,7 @@ import kotlin.concurrent.thread
  *
  *
  */
-open class MasterAlternateMap<K, V>(private var v_callback: (V, V) -> V, private var consumer: (K, V) -> Unit) {
+open class MasterAlternateMap<K, V>() {
     private var masterOpen = false;
     private val masterMap = mutableMapOf<K, V>()
     private val alternateMap = mutableMapOf<K, V>()
@@ -20,13 +20,15 @@ open class MasterAlternateMap<K, V>(private var v_callback: (V, V) -> V, private
     }
 
     fun consumeTask() {
+        if (consumer == null) return;
+
         var consumerMap: (MutableMap<K, V>) -> Unit = {
             var len = it.count();
             for (i in 1..len) {
                 var key = it.entries.elementAt(0) as K;
                 var value = it.get(key);
                 if (value != null) {
-                    consumer(key, it.get(key)!!)
+                    consumer!!.invoke(key, it.get(key)!!)
                 }
                 it.remove(key);
             }
@@ -54,12 +56,37 @@ open class MasterAlternateMap<K, V>(private var v_callback: (V, V) -> V, private
     fun push(key: K, value: V) {
         var map = getIdleMap();
 
+        if (v_callback != null) {
+            map.put(key, value);
+            return;
+        }
+
         var oriValue = map.get(key)
         if (oriValue == null) {
             map.put(key, value);
-        } else {
-            map.put(key, v_callback(oriValue, value));
+            return;
         }
+
+
+        map.put(key, v_callback!!.invoke(oriValue, value));
+    }
+
+
+    private var consumer: ((K, V) -> Unit)? = null
+    private var v_callback: ((V, V) -> V)? = null
+
+
+    fun consumer(consumer: (K, V) -> Unit): MasterAlternateMap<K, V> {
+        this.consumer = consumer;
+        return this;
+    }
+
+    /**
+     * 当蓄水池中有相同的值时，谁覆盖谁的策略
+     */
+    fun withSameValueStrategy(v_callback: (V, V) -> V): MasterAlternateMap<K, V> {
+        this.v_callback = v_callback;
+        return this;
     }
 
     /**

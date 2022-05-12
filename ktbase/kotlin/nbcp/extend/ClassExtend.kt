@@ -6,6 +6,9 @@ package nbcp.comm
 import java.lang.RuntimeException
 import java.lang.reflect.*
 import java.io.IOException
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.*
 
 
@@ -27,22 +30,15 @@ fun Class<*>.IsSimpleType(): Boolean {
     if (this.isPrimitive) return true;
     if (this.isEnum) return true;
 
-    if (Number::class.java.isAssignableFrom(this)) {
+    if (this.IsNumberType) {
         return true;
     }
 
-    if (CharSequence::class.java.isAssignableFrom(this)) {
-        return true;
-    }
-
-    if (this == java.lang.String::class.java) return true;
+    if (this.IsStringType) return true;
     if (this == java.lang.Character::class.java) return true;
     if (this == java.lang.Boolean::class.java) return true;
-    if (this == java.time.LocalDate::class.java) return true;
-    if (this == java.time.LocalTime::class.java) return true;
-    if (this == java.time.LocalDateTime::class.java) return true;
+    if (this.IsAnyDateOrTimeType) return true;
     if (this == UUID::class.java) return true;
-    if (Date::class.java.isAssignableFrom(this)) return true;
 
     if (this.name == "org.bson.types.ObjectId") {
         return true;
@@ -94,6 +90,17 @@ val Class<*>.IsBooleanType: Boolean
     get() {
         if (this == Boolean::class.java) return true;
         if (this == java.lang.Boolean::class.java) return true;
+        return false;
+    }
+
+val Class<*>.IsAnyDateOrTimeType: Boolean
+    get() {
+        if (this == LocalDate::class.java) return true;
+        if (this == LocalDateTime::class.java) return true;
+        if (this == LocalTime::class.java) return true;
+        if (Date::class.java.isAssignableFrom(this)) return true;
+        if (Calendar::class.java.isAssignableFrom(this)) return true;
+
         return false;
     }
 
@@ -355,8 +362,8 @@ fun Class<*>.GetFirstTypeArguments(): Array<Type> {
 /**
  * 类型是否是泛型
  */
-val Class<*>.IsGenericType : Boolean
-    get(){
+val Class<*>.IsGenericType: Boolean
+    get() {
         return this.typeParameters.size > 0;
     }
 
