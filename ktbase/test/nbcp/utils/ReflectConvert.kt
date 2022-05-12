@@ -20,8 +20,21 @@ class ReflectUtils : TestBase() {
 
     @Test
     fun r2() {
-         ClassUtil.getClasses("nbcp").forEach {
-             println(it)
-         }
+        ClassUtil.getClasses("nbcp").forEach {
+            println(it)
+        }
+    }
+
+    class abc : JsonMap() {
+        var ddd: String
+            get() {
+                return ""
+            }
+            set(value) {}
+    }
+
+    @Test
+    fun testAllGetPropertyMethods() {
+        println(abc::class.java.AllGetPropertyMethods)
     }
 }

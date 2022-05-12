@@ -10,6 +10,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
+import kotlin.collections.AbstractSet
+import kotlin.collections.LinkedHashMap
 
 
 val clazzesIsSimpleDefine = mutableSetOf<Class<*>>()
@@ -205,6 +207,11 @@ val Method.IsStatic: Boolean
         return Modifier.isStatic(this.modifiers)
     }
 
+val Method.IsTransient: Boolean
+    get() {
+        return Modifier.isTransient(this.modifiers)
+    }
+
 
 val Field.IsStatic: Boolean
     get() {
@@ -249,6 +256,81 @@ fun <T> Class<T>.GetEnumStringField(): Field? {
     return null;
 }
 
+private fun getPropertySetMethod(methods: List<Method>, fieldType: Class<*>, methodName: String): Method? {
+    return methods.filter { it.name == methodName }
+        .filter { it.parameterCount == 1 && it.parameters.first().type == fieldType }
+        .firstOrNull()
+}
+
+
+private fun Class<*>.getPropertyGetMethods(): List<Method> {
+    var methods = this.methods.filter {
+        if (it.IsStatic) return@filter false;
+        if (it.IsPrivate) return@filter false;
+        if (it.IsTransient) return@filter false;
+        if (it.parameters.any()) return@filter false;
+
+        return@filter it.name.startsWith("is") || it.name.startsWith("get") || it.name.startsWith("set")
+    }
+
+    return methods.filter {
+
+        if (it.returnType.IsBooleanType) {
+            if (it.name.startsWith("is")) {
+                //忽略中文属性
+                if (it.name.length > 2 && !it.name[2].isUpperCase()) {
+                    return@filter false;
+                }
+                return@filter getPropertySetMethod(methods, it.returnType, "set" + it.name.substring(2)) != null
+            } else if (it.name.startsWith("get")) {
+                //忽略中文属性
+                if (it.name.length > 3 && !it.name[3].isUpperCase()) {
+                    return@filter false;
+                }
+
+                return@filter getPropertySetMethod(methods, it.returnType, "set" + it.name.substring(3)) != null
+            }
+
+            return@filter false;
+        }
+
+        if (it.name.startsWith("get")) {
+            //忽略中文属性
+            if (it.name.length > 3 && !it.name[3].isUpperCase()) {
+                return@filter false;
+            }
+
+            return@filter getPropertySetMethod(methods, it.returnType, "set" + it.name.substring(3)) != null
+        }
+
+        return@filter false;
+    }
+}
+
+/**
+ * 仅返回 get/set 中的 GetMethod
+ */
+val Class<*>.AllGetPropertyMethods: List<Method>
+    get() {
+        var ret = mutableListOf<Method>();
+        if (this.IsSimpleType()) return ret;
+
+        ret.addAll(this.getPropertyGetMethods())
+
+
+        if (LinkedHashMap::class.java.isAssignableFrom(this)) {
+            var baseMethods = LinkedHashMap::class.java.getPropertyGetMethods().map { it.name };
+            ret.removeAll { it.name.IsIn(baseMethods) }
+        } else if (HashMap::class.java.isAssignableFrom(this)) {
+            var baseMethods = HashMap::class.java.getPropertyGetMethods().map { it.name };
+            ret.removeAll { it.name.IsIn(baseMethods) }
+        } else if (Hashtable::class.java.isAssignableFrom(this)) {
+            var baseMethods = Hashtable::class.java.getPropertyGetMethods().map { it.name };
+            ret.removeAll { it.name.IsIn(baseMethods) }
+        }
+
+        return ret;
+    }
 
 /** 获取该类以及基类的所有字段。 并设置为可写。
  * 如果父类与子类有相同的字段，返回子类字段。
@@ -256,6 +338,24 @@ fun <T> Class<T>.GetEnumStringField(): Field? {
 val Class<*>.AllFields: List<Field>
     get() {
         var ret = mutableListOf<Field>();
+        if (this.IsSimpleType()) return ret;
+
+        if (
+//            this == ArrayList::class.java ||
+//            this == HashSet::class.java ||
+//            this == AbstractSet::class.java ||
+//            this == LinkedList::class.java ||
+//            this == AbstractCollection::class.java ||
+//            this == Vector::class.java ||
+
+            this == LinkedHashMap::class.java ||
+            this == HashMap::class.java ||
+            this == Hashtable::class.java
+        ) {
+            return ret;
+        }
+
+        //如果是Map
 
         var fields = this.declaredFields
             .filter {
