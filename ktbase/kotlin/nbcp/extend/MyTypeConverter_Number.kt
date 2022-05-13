@@ -3,6 +3,7 @@
 
 package nbcp.comm
 
+import org.slf4j.LoggerFactory
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
@@ -10,6 +11,7 @@ import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.*
 
+private val logger = LoggerFactory.getLogger("nbcp.comm.MyHelper")
 
 /**
  * 转为Int。
@@ -19,162 +21,183 @@ import java.util.*
  */
 @JvmOverloads
 fun Any?.AsInt(defaultValue: Int = 0): Int {
-    if (this == null) return defaultValue;
-    var ret = defaultValue;
+    this.AsIntWithNull()
+        .apply {
+            if (this == null) return defaultValue
+            if (this == 0) return defaultValue
+            return this;
+        }
+}
 
+@JvmOverloads
+fun Any?.AsIntWithNull(): Int? {
+    if (this == null) return null;
+
+    if (this is Int) {
+        this;
+    } else if (this is Number) {
+        return this.toInt()
+    } else if (this is Boolean) {
+        if (this == true) return 1;
+        return 0;
+    }
 
     try {
-        if (this is Int) {
-            if (this == 0) return defaultValue;
-            return this;
-        } else if (this is Number) {
-            var d = this.toInt()
-            if (d == 0) return defaultValue;
-            return d
-        } else if (this is Boolean) {
-            if (this == true) return 1;
-            return 0;
-        } else {
-            var value = this;
+        var value = this;
 
-            if (value is CharSequence) {
-                value = value.toString();
-            }
-            //特殊处理一下。
-            //Char的AsInt
-            else if (value is Char) {
-                value = value.toString()
-            }
-
-            if (value is String) {
-                var strValue = value.trim()
-                if (strValue.isEmpty()) return defaultValue
-
-
-                if (strValue.length > 2 && strValue[0] == '0' && strValue[1].uppercaseChar() == 'X') {
-                    ret = strValue.substring(2).toInt(16);
-                } else {
-                    ret = strValue.toBigDecimal().toInt()
-                }
-
-                return ret;
-            }
+        if (value is CharSequence) {
+            value = value.toString();
+        }
+        //特殊处理一下。
+        //Char的AsInt
+        else if (value is Char) {
+            value = value.toString()
         }
 
-        if (ret == 0) return defaultValue;
-        return ret;
+        if (value is String) {
+            var strValue = value.trim()
+            if (strValue.isEmpty()) return null
+
+            if (strValue.length > 2 && strValue[0] == '0' && strValue[1].uppercaseChar() == 'X') {
+                return strValue.substring(2).toInt(16);
+            }
+            return strValue.toBigDecimal().toInt()
+        }
+
+        throw RuntimeException("不识别的数据类型${this::class.java.name}")
     } catch (e: java.lang.Exception) {
-        return defaultValue;
+        logger.error(e.message, e);
     }
+    return null;
 }
+
 
 @JvmOverloads
 fun Any?.AsLong(defaultValue: Long = 0L): Long {
-    if (this == null) return defaultValue;
-
-    try {
-        var ret = defaultValue;
-        if (this is Long) {
-            if (this == 0L) return defaultValue;
+    this.AsLongWithNull()
+        .apply {
+            if (this == null) return defaultValue
+            if (this == 0L) return defaultValue
             return this;
-        } else if (this is Number) {
-            var l = this.toLong();
-            if (l == 0L) return defaultValue;
-            return l;
-        } else {
-            var value = this;
-
-            if (value is CharSequence) {
-                value = value.toString()
-            }
-            if (value is String) {
-                var strValue = value.trim()
-                if (strValue.isEmpty()) return defaultValue
-
-
-                if (strValue.length > 2 && strValue[0] == '0' && strValue[1].uppercaseChar() == 'X') {
-                    ret = strValue.substring(2).toLong(16)
-                } else {
-                    ret = strValue.toLongOrNull() ?: defaultValue
-                }
-                return ret;
-            }
         }
 
-        if (ret == 0L) return defaultValue;
-        return ret;
-    } catch (e: Exception) {
-        return defaultValue;
-    }
 }
 
 @JvmOverloads
-fun Any?.AsDouble(defaultValue: Double = 0.0): Double {
-    if (this == null) return defaultValue;
-    var ret = defaultValue;
-
+fun Any?.AsLongWithNull(): Long? {
+    if (this == null) return null;
+    if (this is Long) {
+        return this;
+    } else if (this is Number) {
+        return this.toLong();
+    }
     try {
-        if (this is Double) {
-            if (this == 0.0) return defaultValue;
-            return this;
-        } else if (this is Number) {
-            var d = this.toDouble();
-            if (d == 0.0) return defaultValue;
-            return d;
-        } else {
-            var value = this;
 
-            if (value is CharSequence) {
-                value = value.toString()
-            }
-            if (value is String) {
-                var strValue = value.trim();
-                if (strValue.isEmpty()) return defaultValue
+        var value = this;
 
-                ret = strValue.toDoubleOrNull() ?: defaultValue
-                return ret;
-            }
+        if (value is CharSequence) {
+            value = value.toString()
         }
 
-        if (ret == 0.0) return defaultValue;
-        return ret
+        if (value is String) {
+            var strValue = value.trim()
+            if (strValue.isEmpty()) return null
+
+
+            if (strValue.length > 2 && strValue[0] == '0' && strValue[1].uppercaseChar() == 'X') {
+                return strValue.substring(2).toLong(16)
+            }
+            return strValue.toLongOrNull()
+        }
+        throw RuntimeException("不识别的数据类型${this::class.java.name}")
     } catch (e: Exception) {
-        return defaultValue;
+        logger.error(e.message, e);
     }
+
+    return null;
+}
+
+
+@JvmOverloads
+fun Any?.AsDouble(defaultValue: Double = 0.0): Double {
+    this.AsDoubleWithNull()
+        .apply {
+            if (this == null) return defaultValue
+            if (this == 0.0) return defaultValue
+            return this;
+        }
+}
+
+@JvmOverloads
+fun Any?.AsDoubleWithNull(): Double? {
+    if (this == null) return null;
+    if (this is Double) {
+        return this;
+    } else if (this is Number) {
+        return this.toDouble();
+    }
+
+    try {
+
+        var value = this;
+
+        if (value is CharSequence) {
+            value = value.toString()
+        }
+
+        if (value is String) {
+            var strValue = value.trim();
+            if (strValue.isEmpty()) return null
+
+            return strValue.toDoubleOrNull()
+        }
+        throw RuntimeException("不识别的数据类型${this::class.java.name}")
+
+    } catch (e: Exception) {
+        logger.error(e.message, e);
+    }
+    return null;
 }
 
 @JvmOverloads
 fun Any?.AsFloat(defaultValue: Float = 0F): Float {
-    if (this == null) return defaultValue;
-    var ret = defaultValue;
+    this.AsFloatWithNull()
+        .apply {
+            if (this == null) return defaultValue
+            if (this == 0F) return defaultValue
+            return this;
+        }
+}
+
+@JvmOverloads
+fun Any?.AsFloatWithNull(): Float? {
+    if (this == null) return null;
+    if (this is Float) {
+        return this;
+    } else if (this is Number) {
+        return this.toFloat();
+    }
 
     try {
-        if (this is Float) {
-            if (this == 0F) return defaultValue;
-            return this;
-        } else if (this is Number) {
-            var f = this.toFloat();
-            if (f == 0F) return defaultValue;
-            return f;
-        } else {
-            var value = this;
-            if (value is CharSequence) {
-                value = value.toString()
-            }
 
-            if (value is String) {
-                var strValue = value.trim();
-                if (strValue.isEmpty()) return defaultValue
-                ret = strValue.toFloatOrNull() ?: defaultValue
-                return ret;
-            }
+        var value = this;
+        if (value is CharSequence) {
+            value = value.toString()
         }
 
-        if (ret == 0F) return defaultValue;
-        return ret;
+        if (value is String) {
+            var strValue = value.trim();
+            if (strValue.isEmpty()) return null
+            return strValue.toFloatOrNull()
+
+        }
+
+        throw RuntimeException("不识别的数据类型${this::class.java.name}")
     } catch (e: Exception) {
-        return defaultValue;
+        logger.error(e.message, e)
     }
+
+    return null;
 }
 
 

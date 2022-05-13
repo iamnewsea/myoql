@@ -38,7 +38,7 @@ open class BaseFlywayServlet {
      * 清除 sysFlywayVersion.version 中 非0 的记录，并重新执行！
      */
     @GetMapping("/open/mongo/flyway/replay")
-    fun doGet(request: HttpServletRequest, response: HttpServletResponse): JsonResult {
+    fun doGet(version: String, request: HttpServletRequest, response: HttpServletResponse): JsonResult {
         db.mor_base.sysFlywayVersion.delete()
             .where { it.version match_not_equal 0 }
             .exec();
@@ -48,7 +48,7 @@ open class BaseFlywayServlet {
             return JsonResult.error("找不到Flyway相关配置！")
         }
 
-        flyways.playFlyVersion();
+        flyways.playFlyVersion(version.AsIntWithNull());
 
         return JsonResult()
     }

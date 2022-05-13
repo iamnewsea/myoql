@@ -27,11 +27,24 @@ class FlywayBeanProcessor {
     /**
      * 同步版本
      */
-    fun playFlyVersion() {
+    fun playFlyVersion(version: Int? = null) {
         if (SpringUtil.runningInTest) {
             logger.Important("单元测试环境下,跳过Flyway处理!")
             return;
         }
+        var flyways = SpringUtil.context.getBeansOfType(FlywayVersionBaseService::class.java).values
+
+        if (version != null) {
+            flyways.firstOrNull { it.version == version }
+                .apply {
+                    if (this == null) {
+                        throw  RuntimeException("找不到Flyway版本号:${version}")
+                    }
+
+                    playFlyway(this);
+                }
+        }
+
 
         var dbMaxVersion = db.mor_base.sysFlywayVersion.query()
             .where { it.isSuccess match true }
@@ -39,8 +52,6 @@ class FlywayBeanProcessor {
             .toEntity()
             ?.version
 
-
-        var flyways = SpringUtil.context.getBeansOfType(FlywayVersionBaseService::class.java).values
 
         //对负数版本，倒序执行，且总是执行！
         flyways.filter { it.version < 0 }
