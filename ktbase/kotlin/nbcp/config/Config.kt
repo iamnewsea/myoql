@@ -127,9 +127,12 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
         }
 
 
+        /**
+         * 优先获取 app.admin-token，否则获取 app.docker-image-version
+         */
         @JvmStatic
         val adminToken: String
-            get() = getConfig("app.admin-token").AsString()
+            get() = getConfig("app.admin-token").AsString("app.docker-image-version")
 
 
         /**
