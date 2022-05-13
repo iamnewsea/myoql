@@ -34,7 +34,7 @@ fun Any?.AsIntWithNull(): Int? {
     if (this == null) return null;
 
     if (this is Int) {
-        this;
+        return this;
     } else if (this is Number) {
         return this.toInt()
     } else if (this is Boolean) {
@@ -64,7 +64,7 @@ fun Any?.AsIntWithNull(): Int? {
             return strValue.toBigDecimal().toInt()
         }
 
-        throw RuntimeException("不识别的数据类型${this::class.java.name}")
+        logger.Important("AsIntWithNull 不识别的数据类型${this::class.java.name}")
     } catch (e: java.lang.Exception) {
         logger.error(e.message, e);
     }
@@ -86,6 +86,7 @@ fun Any?.AsLong(defaultValue: Long = 0L): Long {
 @JvmOverloads
 fun Any?.AsLongWithNull(): Long? {
     if (this == null) return null;
+
     if (this is Long) {
         return this;
     } else if (this is Number) {
@@ -109,7 +110,8 @@ fun Any?.AsLongWithNull(): Long? {
             }
             return strValue.toLongOrNull()
         }
-        throw RuntimeException("不识别的数据类型${this::class.java.name}")
+
+        logger.Important("AsLongWithNull 不识别的数据类型${this::class.java.name}")
     } catch (e: Exception) {
         logger.error(e.message, e);
     }
@@ -151,8 +153,7 @@ fun Any?.AsDoubleWithNull(): Double? {
 
             return strValue.toDoubleOrNull()
         }
-        throw RuntimeException("不识别的数据类型${this::class.java.name}")
-
+        logger.Important("AsDoubleWithNull 不识别的数据类型${this::class.java.name}")
     } catch (e: Exception) {
         logger.error(e.message, e);
     }
@@ -172,6 +173,7 @@ fun Any?.AsFloat(defaultValue: Float = 0F): Float {
 @JvmOverloads
 fun Any?.AsFloatWithNull(): Float? {
     if (this == null) return null;
+
     if (this is Float) {
         return this;
     } else if (this is Number) {
@@ -192,7 +194,7 @@ fun Any?.AsFloatWithNull(): Float? {
 
         }
 
-        throw RuntimeException("不识别的数据类型${this::class.java.name}")
+        logger.Important("AsFloatWithNull 不识别的数据类型${this::class.java.name}")
     } catch (e: Exception) {
         logger.error(e.message, e)
     }
@@ -200,8 +202,16 @@ fun Any?.AsFloatWithNull(): Float? {
     return null;
 }
 
+fun Any?.AsBigDecimal(defaultValue: BigDecimal = BigDecimal.ZERO): BigDecimal {
+    this.AsBigDecimalWithNull()
+        .apply {
+            if (this == null) return defaultValue
+            if (this == BigDecimal.ZERO) return defaultValue
+            return this;
+        }
+}
 
-fun Any?.AsBigDecimal(): BigDecimal? {
+fun Any?.AsBigDecimalWithNull(): BigDecimal? {
     if (this == null) return null;
     if (this is BigDecimal) return this;
 
@@ -212,7 +222,8 @@ fun Any?.AsBigDecimal(): BigDecimal? {
         return this.toBigDecimal()
     }
 
-    throw java.lang.RuntimeException("不识别的数据类型:${this::class.java}")
+    logger.Important("AsBigDecimalWithNull 不识别的数据类型:${this::class.java}")
+    return null;
 }
 
 
