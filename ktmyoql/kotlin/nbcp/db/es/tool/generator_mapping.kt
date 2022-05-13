@@ -209,13 +209,16 @@ class generator_mapping {
                     defineJson.put("type", "nested")
                 }
 
-                defineJson.put(
-                    "properties", genEntity(
-                        type,
-                        if (wbs.HasValue) wbs + "." + it.name else it.name,
-                        getDefSelf
-                    )
-                )
+                genEntity(
+                    type,
+                    if (wbs.HasValue) wbs + "." + it.name else it.name,
+                    getDefSelf
+                ).also { json ->
+                    if (json.any()) {
+                        defineJson.put("properties", json)
+                    }
+                }
+
                 json.put(it.name, defineJson)
             }
 
