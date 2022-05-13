@@ -176,14 +176,25 @@ fun Map<String, Any?>.getKeyByValue(value: Any): String? {
  * 仅移除最后一个Path项
  */
 fun MutableMap<String, Any?>.removeByWbsPath(vararg keys: String): Boolean {
-    if (keys.any()) return false;
-    if (keys.size == 1) {
-        return this.remove(keys.first()) != null
+
+    var unwindKeys = keys
+        .map { it.split('.') }
+        .Unwind()
+        .map { it.trim() }
+        .filter { it.HasValue }
+        .toTypedArray();
+
+    if (unwindKeys.any() == false) return false;
+    if (unwindKeys.size == 1) {
+        return this.remove(unwindKeys.first()) != null
     }
 
-    var target = this.getValueByWbsPath(*keys.Slice(0, -1).toTypedArray()) as MutableMap<String, *>?
+    var target = this.getValueByWbsPath(*unwindKeys.Slice(0, -1).toTypedArray())
     if (target == null) return false;
-    return target.remove(keys.last()) != null
+    if (target is MutableMap<*, *> == false) {
+        throw RuntimeException("移除的对象不是Map,是:${target::class.java.name} ,path: ${unwindKeys.joinToString(".")}")
+    }
+    return target.remove(unwindKeys.last()) != null
 }
 
 /**
