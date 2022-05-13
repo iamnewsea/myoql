@@ -43,7 +43,7 @@ fun Throwable.GetExceptionTypeCode(): ExceptionGeneralCodeMessage? {
         .apply {
             if (this == null) return null;
             if (this.msg.last().IsSpecialChar) return this;
-            this.msg += " 出现错误!"
+            this.msg += " 错误!"
             return this;
         }
 }
@@ -89,17 +89,17 @@ private fun getCommonCode2(errorTypeName: String): WordsErrorTypeDef? {
         WordsErrorTypeDef("Certificat", "证书", 2),
 
 
-        WordsErrorTypeDef("ServiceUnavailable", "服务不可用", 3),
-        WordsErrorTypeDef("ServerUnavailable", "服务器不可用", 3),
+        WordsErrorTypeDef("ServiceUnavailable", "服务不可用!", 3),
+        WordsErrorTypeDef("ServerUnavailable", "服务器不可用!", 3),
         WordsErrorTypeDef("Timeout", "超时", 3),
         WordsErrorTypeDef("socket", "网络", 3),
         WordsErrorTypeDef("Channel", "网络", 3),
         WordsErrorTypeDef("Http", "网络", 3),
         WordsErrorTypeDef("Connection", "网络", 3),
         WordsErrorTypeDef("Proxy", "网络", 3),
-        WordsErrorTypeDef("NotFound", "不存在", 3),
-        WordsErrorTypeDef("NotExists", "不存在", 3),
-        WordsErrorTypeDef("Exists", "已存在", 3),
+//        WordsErrorTypeDef("NotFound", "不存在", 3),
+//        WordsErrorTypeDef("NotExists", "不存在", 3),
+//        WordsErrorTypeDef("Exists", "已存在", 3),
         WordsErrorTypeDef("Lock", "锁", 3),
         WordsErrorTypeDef("Encoder", "编码", 3),
         WordsErrorTypeDef("Decoder", "解码", 3),
@@ -116,7 +116,6 @@ private fun getSysCode(errorTypeName: String): ExceptionGeneralCodeMessage? {
         WordsErrorTypeDef("Json", "", 1),
         WordsErrorTypeDef("jackson", "", 1),
         WordsErrorTypeDef("gson", "", 1),
-        WordsErrorTypeDef("text", "", 1),
         WordsErrorTypeDef("regex", "", 1),
         WordsErrorTypeDef("xml", "", 1),
         WordsErrorTypeDef("html", "", 1),
