@@ -4,22 +4,15 @@ import ch.qos.logback.classic.Level
 import nbcp.base.flux.findParameterValue
 import nbcp.base.flux.getCorsResponseMap
 import nbcp.base.flux.queryJson
-import nbcp.base.mvc.findParameterStringValue
-import nbcp.base.mvc.queryJson
 import nbcp.comm.*
-import org.reactivestreams.Publisher
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.web.server.WebFilter
 import reactor.core.publisher.Mono
-import java.lang.Exception
 import java.lang.reflect.UndeclaredThrowableException
 
 //@Configuration
@@ -128,6 +121,10 @@ class CrossFilterConfig {
                 logLevel = Level.toLevel(logLevelString, Level.WARN)
             }
         } else {
+            if (logLevelString.HasValue) {
+                logger.Important("-admin-token-参数值不匹配！忽略 -log-level-")
+            }
+
             var ignoreLog = matchUrI(httpRequest.path.value(), ignoreLogUrls)
 
             if (ignoreLog) {

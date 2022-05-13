@@ -5,14 +5,12 @@ import nbcp.base.mvc.HttpContext
 import nbcp.base.MyHttpRequestWrapper
 import nbcp.comm.*
 import nbcp.base.mvc.*
-import nbcp.base.mvc.*
 import nbcp.web.tokenValue
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
-import org.springframework.context.annotation.Conditional
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.util.ContentCachingRequestWrapper
@@ -123,6 +121,10 @@ open class MyAllFilter : Filter {
                 logLevel = Level.toLevel(logLevelString, Level.WARN)
             }
         } else {
+            if (logLevelString.HasValue) {
+                logger.Important("-admin-token-参数值不匹配！忽略 -log-level-")
+            }
+
             var ignoreLog = matchUrI(httpRequest.requestURI, ignoreLogUrls)
 
             if (ignoreLog) {
