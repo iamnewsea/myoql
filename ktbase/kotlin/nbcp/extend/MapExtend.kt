@@ -171,10 +171,19 @@ fun Map<String, Any?>.getKeyByValue(value: Any): String? {
     return this.entries.firstOrNull { it.value == value }?.key
 }
 
-fun MutableMap<String, Any?>.removeKeys(vararg key: String) {
-    key.forEach {
-        this.remove(it);
+
+/**
+ * 仅移除最后一个Path项
+ */
+fun MutableMap<String, Any?>.removeByWbsPath(vararg keys: String): Boolean {
+    if (keys.any()) return false;
+    if (keys.size == 1) {
+        return this.remove(keys.first()) != null
     }
+
+    var target = this.getValueByWbsPath(*keys.Slice(0, -1).toTypedArray()) as MutableMap<String, *>?
+    if (target == null) return false;
+    return target.remove(keys.last()) != null
 }
 
 /**
