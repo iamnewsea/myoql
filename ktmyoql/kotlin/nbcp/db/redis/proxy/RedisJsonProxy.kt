@@ -9,16 +9,22 @@ import java.time.Duration
  * Created by udi on 17-7-14.
  */
 class RedisJsonProxy<T> @JvmOverloads constructor(
-        group: String,
-        val clazz:Class<T>,
-        defaultCacheSeconds: Int = 0) :
-        BaseRedisProxy(group, defaultCacheSeconds) {
+    group: String,
+    val clazz: Class<T>,
+    defaultCacheSeconds: Int = 0,
+    var autoRenewal: Boolean = false
+) :
+    BaseRedisProxy(group, defaultCacheSeconds) {
 
 
     fun get(key: String = ""): T? {
         var cacheKey = getFullKey(key)
         var value = stringCommand.opsForValue().get(cacheKey)
         if (value == null) return null;
+
+        if (autoRenewal) {
+            renewalKey(key)
+        }
         return value.FromJson(clazz)
     }
 
