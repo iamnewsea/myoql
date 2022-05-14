@@ -9,7 +9,7 @@ import java.time.Duration
 class RedisNumberProxy(
     group: String,
     defaultCacheSeconds: Int = 0,
-    var autoRenewal: Boolean = false
+    val autoRenewal: Boolean = false
 ) :
     BaseRedisProxy(group, defaultCacheSeconds) {
 
