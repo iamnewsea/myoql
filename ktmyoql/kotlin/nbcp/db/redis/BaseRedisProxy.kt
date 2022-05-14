@@ -5,13 +5,6 @@ import nbcp.db.db
 import org.springframework.data.redis.core.StringRedisTemplate
 import java.util.concurrent.TimeUnit
 
-enum class RedisRenewalTypeEnum {
-    None, //不续期
-    Read, //读取续期
-    Write //写入续期
-}
-
-
 /**
  * 命令参考
  * http://doc.redisfans.com/

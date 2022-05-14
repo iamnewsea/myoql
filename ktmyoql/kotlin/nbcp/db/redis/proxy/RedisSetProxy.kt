@@ -3,7 +3,6 @@ package nbcp.db.redis.proxy
 import nbcp.comm.AsInt
 import nbcp.comm.AsLong
 import nbcp.db.redis.BaseRedisProxy
-import nbcp.db.redis.RedisRenewalTypeEnum
 import org.springframework.data.redis.core.ScanOptions
 
 /**

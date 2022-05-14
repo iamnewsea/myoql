@@ -79,32 +79,32 @@ class MyOqlDependencyInitConfig : BeanPostProcessor {
     private fun getDependencys(): DependencyData {
         var dependency = DependencyData();
 
-        ClassUtil.exists("org.springframework.data.redis.core.RedisTemplate").ifTrue {
+        ClassUtil.existsClass("org.springframework.data.redis.core.RedisTemplate").ifTrue {
             dependency.components.add(BaseComponentEnum.Redis)
         }
 
-        ClassUtil.exists("org.springframework.data.mongodb.core.MongoTemplate").ifTrue {
+        ClassUtil.existsClass("org.springframework.data.mongodb.core.MongoTemplate").ifTrue {
             dependency.components.add(BaseComponentEnum.Mongo)
         }
 
-        ClassUtil.exists("org.springframework.jdbc.core.JdbcTemplate").ifTrue {
+        ClassUtil.existsClass("org.springframework.jdbc.core.JdbcTemplate").ifTrue {
             dependency.components.add(BaseComponentEnum.Jdbc)
 
 
         }
-        ClassUtil.exists("org.springframework.amqp.rabbit.core.RabbitTemplate").ifTrue {
+        ClassUtil.existsClass("org.springframework.amqp.rabbit.core.RabbitTemplate").ifTrue {
             dependency.components.add(BaseComponentEnum.Rabbitmq)
         }
 
-        ClassUtil.exists("org.elasticsearch.client.RestClientBuilder").ifTrue {
+        ClassUtil.existsClass("org.elasticsearch.client.RestClientBuilder").ifTrue {
             dependency.components.add(BaseComponentEnum.Es)
         }
 
-        ClassUtil.exists("org.springframework.cloud.openfeign.FeignClient").ifTrue {
+        ClassUtil.existsClass("org.springframework.cloud.openfeign.FeignClient").ifTrue {
             dependency.components.add(BaseComponentEnum.Feign)
         }
 
-        ClassUtil.exists("io.minio.MinioClient").ifTrue {
+        ClassUtil.existsClass("io.minio.MinioClient").ifTrue {
             dependency.components.add(BaseComponentEnum.Minio)
         }
 

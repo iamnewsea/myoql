@@ -3,10 +3,7 @@ package nbcp.db.redis.proxy
 import nbcp.comm.AsInt
 import nbcp.comm.AsString
 import nbcp.db.redis.BaseRedisProxy
-import nbcp.db.redis.RedisRenewalTypeEnum
 import org.springframework.data.redis.core.DefaultTypedTuple
-import org.springframework.data.redis.core.ScanOptions
-import org.springframework.data.redis.core.ZSetOperations
 
 /**
  * 有序集合，是按 分值排序。

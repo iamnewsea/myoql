@@ -3,11 +3,6 @@ package nbcp.db.redis.proxy
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.redis.BaseRedisProxy
-import nbcp.db.redis.RedisRenewalTypeEnum
-import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.data.redis.core.StringRedisTemplate
-import org.springframework.data.redis.core.ValueOperations
-import java.io.Serializable
 import java.time.Duration
 
 /**
