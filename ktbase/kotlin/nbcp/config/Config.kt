@@ -132,7 +132,7 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
          */
         @JvmStatic
         val adminToken: String
-            get() = getConfig("app.admin-token").AsString("app.docker-image-version")
+            get() = getConfig("app.admin-token").AsString { getConfig("app.docker-image-version").AsString() }
 
 
         /**
