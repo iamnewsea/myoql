@@ -120,10 +120,12 @@ abstract class FlywayVersionBaseService(val version: Int) {
             .filter { it.value.size == 1 && it.value.first() != "id" }
             .map { it.indexName() }
 
-        collection.listIndexes().toList()
-            .map { it.get("name").AsString() }
-            .intersect(indexes)
-            .forEach {
+        (indexes +
+                collection.listIndexes()
+                    .toList()
+                    .map { it.get("name").AsString() }
+                    .filter { it.startsWith("i.") }
+                ).forEach {
                 collection.dropIndex(it);
             }
     }
