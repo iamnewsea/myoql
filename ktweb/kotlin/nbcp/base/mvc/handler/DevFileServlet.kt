@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse
  * 客户端启动，接收浏览器请求，操作本地文件。
  */
 @RestController
-@ConditionalOnProperty("server.dev")
+@AdminSysOpsAction
 @RequestMapping("/dev/file")
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 class DevFileServlet {

@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse
 /**
  * Created by udi on 20-8-27.
  */
-@OpenAction
+@AdminSysOpsAction
 @RestController
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(MongoTemplate::class)

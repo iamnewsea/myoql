@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletResponse
  * 三个固定参数： token,container,work_path,bash是可选
  */
 @RestController
-@ConditionalOnProperty("server.dev")
+@AdminSysOpsAction
 @RequestMapping("/dev/docker")
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 class DevDockerServlet {

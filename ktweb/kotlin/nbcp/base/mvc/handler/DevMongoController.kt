@@ -19,7 +19,7 @@ import kotlin.reflect.jvm.javaType
  * Created by udi on 17-3-19.
  */
 @RestController
-@ConditionalOnProperty("server.dev")
+@AdminSysOpsAction
 @RequestMapping("/dev/mongo")
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 class DevMongoServlet {

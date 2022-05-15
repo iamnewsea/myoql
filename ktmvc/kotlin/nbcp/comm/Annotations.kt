@@ -17,6 +17,9 @@ import kotlin.reflect.KClass
 @Retention(AnnotationRetention.RUNTIME)
 annotation class OpenAction
 
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class AdminSysOpsAction
 /**
  * 把客户Post的Json,整体映射到Model上.如:
  * 客户端Post : { id: 1 , name: "ok" }  -> 服务器接收:  info: IdName
