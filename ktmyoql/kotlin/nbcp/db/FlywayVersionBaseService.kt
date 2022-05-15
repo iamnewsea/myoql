@@ -123,7 +123,7 @@ abstract class FlywayVersionBaseService(val version: Int) {
         collection.listIndexes()
             .toList()
             .map { it.get("name").AsString() }
-            .filter { it.startsWith("i.") }
+            .filter { it.startsWith("i.") } // i. 表示是组件自动创建的索引
             .forEach {
                 collection.dropIndex(it);
             }
