@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(MongoTemplate::class)
-@ConditionalOnProperty("spring.data.mongodb.uri")
 open class BaseFlywayServlet {
     /**
      * 清除 sysFlywayVersion.version 中 非0 的记录，并重新执行！
