@@ -108,9 +108,9 @@ class CrossFilterConfig {
     private fun getLogLevel(httpRequest: ServerHttpRequest): LogLevelScope? {
         var logLevel: Level? = null;
 
-        var logLevelString = httpRequest.queryJson.get("-log-level-").AsString();
+        var logLevelString = httpRequest.queryJson.get("log-level").AsString();
         if (logLevelString.HasValue &&
-            config.adminToken == httpRequest.queryJson.get("-admin-token-")
+            config.adminToken == httpRequest.queryJson.get("admin-token")
         ) {
             if (logLevelString.IsNumberic()) {
                 var logLevelInt = logLevelString.AsInt()
@@ -122,7 +122,7 @@ class CrossFilterConfig {
             }
         } else {
             if (logLevelString.HasValue) {
-                logger.Important("-admin-token-参数值不匹配！忽略 -log-level-")
+                logger.Important("admin-token参数值不匹配！忽略 log-level")
             }
 
             var ignoreLog = matchUrI(httpRequest.path.value(), ignoreLogUrls)
