@@ -38,10 +38,11 @@ class FlywayBeanProcessor {
             flyways.firstOrNull { it.version == version }
                 .apply {
                     if (this == null) {
-                        throw  RuntimeException("找不到Flyway版本号:${version}")
+                        throw RuntimeException("找不到Flyway版本号:${version}")
                     }
 
                     playFlyway(this);
+                    return;
                 }
         }
 
