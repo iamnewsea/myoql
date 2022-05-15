@@ -115,17 +115,16 @@ abstract class FlywayVersionBaseService(val version: Int) {
         var db = mongoTemplate.db;
         var collection = db.getCollection(this.tableName)
 
-        var indexes = this.entityClass.getAnnotationsByType(DbEntityIndex::class.java)
-            .filter { it.value.any() }
-            .filter { it.value.size == 1 && it.value.first() != "id" }
-            .map { it.indexName() }
+//        var indexes = this.entityClass.getAnnotationsByType(DbEntityIndex::class.java)
+//            .filter { it.value.any() }
+//            .filter { it.value.size == 1 && it.value.first() != "id" }
+//            .map { it.indexName() }
 
-        (indexes +
-                collection.listIndexes()
-                    .toList()
-                    .map { it.get("name").AsString() }
-                    .filter { it.startsWith("i.") }
-                ).forEach {
+        collection.listIndexes()
+            .toList()
+            .map { it.get("name").AsString() }
+            .filter { it.startsWith("i.") }
+            .forEach {
                 collection.dropIndex(it);
             }
     }
