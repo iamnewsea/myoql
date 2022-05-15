@@ -37,7 +37,7 @@ open class BaseFlywayServlet {
     /**
      * 清除 sysFlywayVersion.version 中 非0 的记录，并重新执行！
      */
-    @GetMapping("/open/mongo/flyway/replay")
+    @GetMapping("/ops/flyway/mongo/replay")
     fun doGet(version: String, request: HttpServletRequest, response: HttpServletResponse): JsonResult {
         db.mor_base.sysFlywayVersion.delete()
             .where { it.version match_not_equal 0 }
