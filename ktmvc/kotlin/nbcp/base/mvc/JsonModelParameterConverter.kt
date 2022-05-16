@@ -123,9 +123,10 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
                 var defNumberValue = parameter.getParameterAnnotation(DefaultNumberValue::class.java)
                 if (defNumberValue != null) {
                     value = defNumberValue.value
-                } else {
-                    value = MyUtil.getSimpleClassDefaultValue(parameter.parameterType);
                 }
+//                else {
+//                    value = MyUtil.getSimpleClassDefaultValue(parameter.parameterType);
+//                }
             }
         }
 
