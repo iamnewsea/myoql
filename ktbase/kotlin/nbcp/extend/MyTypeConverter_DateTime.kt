@@ -317,6 +317,12 @@ fun Any?.AsDate(): Date? {
 //        c.set(this.year, this.monthValue - 1, this.dayOfMonth, this.hour, this.minute, this.second)
 //        c.set(Calendar.MILLISECOND, this.nano * 1000000)
 //        return c.time
+    } else if (this is Temporal) {
+        var dt = this.AsLocalDateTime()!!;
+        if (dt.year < 0) return null;
+        return Date.from(dt.atZone(ZoneId.systemDefault()).toInstant());
+    } else if (this is Calendar) {
+        return this.time;
     } else {
         var value = this;
 
