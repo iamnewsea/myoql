@@ -6,6 +6,9 @@ package nbcp.comm
 import org.slf4j.LoggerFactory
 import java.time.*
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoField
+import java.time.temporal.Temporal
+import java.time.temporal.TemporalField
 import java.util.*
 
 fun Any?.AsLocalDate(): LocalDate? {
@@ -84,14 +87,20 @@ fun Any?.AsLocalDateTime(): LocalDateTime? {
         strValue = this
     } else if (this is CharSequence) {
         strValue = this.toString();
-    } else if (this is java.sql.Date) {
-        return this.toLocalDate().atStartOfDay();
-    } else if (this is java.sql.Time) {
-        return this.toLocalTime().atDate(LocalDate.of(0, 1, 1))
-    } else if (this is java.sql.Timestamp) {
-        return this.toLocalDateTime()
     } else if (this is Date) {
         return LocalDateTime.ofInstant(this.toInstant(), ZoneId.systemDefault());
+    } else if (this is Temporal) {
+        return LocalDateTime.of(
+            this.get(ChronoField.YEAR),
+            this.get(ChronoField.MONTH_OF_YEAR),
+            this.get(ChronoField.DAY_OF_MONTH),
+            this.get(ChronoField.HOUR_OF_DAY),
+            this.get(ChronoField.MINUTE_OF_HOUR),
+            this.get(ChronoField.SECOND_OF_MINUTE),
+            this.get(ChronoField.MILLI_OF_SECOND),
+        )
+    } else if (this is Calendar) {
+        return LocalDateTime.ofInstant(this.time.toInstant(), this.timeZone.toZoneId());
     } else {
         throw RuntimeException("非法的类型转换,试图从 ${this::class.java}类型 到 LocalDateTime类型")
     }
