@@ -5,12 +5,11 @@ package nbcp.comm
 
 import java.lang.RuntimeException
 import java.lang.reflect.*
-import java.io.IOException
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.temporal.Temporal
 import java.util.*
-import kotlin.collections.AbstractSet
 import kotlin.collections.LinkedHashMap
 
 
@@ -102,6 +101,7 @@ val Class<*>.IsAnyDateOrTimeType: Boolean
         if (this == LocalTime::class.java) return true;
         if (Date::class.java.isAssignableFrom(this)) return true;
         if (Calendar::class.java.isAssignableFrom(this)) return true;
+        if (Temporal::class.java.isAssignableFrom(this)) return true;
 
         return false;
     }
