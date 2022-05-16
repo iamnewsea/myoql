@@ -4,6 +4,7 @@ import nbcp.TestBase
 import nbcp.db.IdName
 import nbcp.scope.JsonSceneEnumScope
 import nbcp.utils.RecursionUtil
+import okio.internal.commonToUtf8String
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayOutputStream
 import java.io.Serializable
@@ -26,7 +27,7 @@ class TestMyString : TestBase() {
 
     @Test
     fun test_usefff() {
-        println(fun_1())
+        println("abc".toByteArray().toUtf8String())
     }
 
     fun fun_1() {

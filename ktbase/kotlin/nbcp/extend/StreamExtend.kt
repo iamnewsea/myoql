@@ -23,6 +23,9 @@ fun ByteBuffer.toByteArray(): ByteArray {
     return copy
 }
 
+fun ByteArray.toUtf8String(): String {
+    return this.toString(const.utf8)
+}
 
 /**
  * 把流转化为可重复读的流。
