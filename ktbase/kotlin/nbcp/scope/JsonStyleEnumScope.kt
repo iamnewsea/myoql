@@ -1,8 +1,8 @@
 package nbcp.scope
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import nbcp.comm.scopes
 import nbcp.component.AppJsonMapper
-import nbcp.component.BaseJsonMapper
 import nbcp.component.DbJsonMapper
 import nbcp.component.WebJsonMapper
 import nbcp.utils.SpringUtil
@@ -18,7 +18,7 @@ enum class JsonSceneEnumScope : IScopeData {
 }
 
 
-fun JsonSceneEnumScope?.getJsonMapper(): BaseJsonMapper {
+fun JsonSceneEnumScope?.getJsonMapper(): ObjectMapper {
     var style: JsonSceneEnumScope? = this;
     if (style == null) {
         style = scopes.getLatest<JsonSceneEnumScope>()

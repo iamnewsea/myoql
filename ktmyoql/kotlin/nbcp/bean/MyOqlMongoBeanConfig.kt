@@ -1,18 +1,11 @@
 package nbcp.bean
 
 import com.mongodb.MongoClientSettings
-import nbcp.MyOqlInitConfig
 import nbcp.comm.HasValue
-import nbcp.comm.clazzesIsSimpleDefine
 import nbcp.comm.getStringValue
-import nbcp.component.BaseJsonMapper
-import nbcp.component.DbJsonMapper
 import nbcp.db.mongo.*
 import nbcp.utils.JsUtil
-import nbcp.utils.SpringUtil
-import org.bson.Document
 import org.bson.UuidRepresentation
-import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass

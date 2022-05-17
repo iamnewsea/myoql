@@ -3,6 +3,8 @@
 
 package nbcp.comm
 
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
+import nbcp.utils.SpringUtil
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
@@ -22,6 +24,15 @@ val String?.HasValue: Boolean
     get() {
         return !this.isNullOrEmpty()
     }
+
+
+inline fun <reified T> String.FromYamlText(): T {
+    return this.FromYamlText(T::class.java)
+}
+
+fun <T> String.FromYamlText(clazz: Class<T>): T {
+    return SpringUtil.getBean<YAMLMapper>().readValue(this, clazz)
+}
 
 /**
  * 如果有值 ， 返回计算表达式。 否则返回空。
@@ -76,7 +87,7 @@ fun String.takeNumber(): Array<String> {
 /**
  * 按数字分隔，返回数字和非数字各部分
  */
-fun Regex.splitBoundary(value:String): Array<String> {
+fun Regex.splitBoundary(value: String): Array<String> {
     var ret = mutableListOf<String>()
 
     var prevIndex = 0;
@@ -94,7 +105,6 @@ fun Regex.splitBoundary(value:String): Array<String> {
     }
     return ret.filter { it.HasValue }.toTypedArray();
 }
-
 
 
 /**

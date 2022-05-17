@@ -133,6 +133,12 @@ fun <T : Any> String.FromJson(clazz: KClass<T>, style: JsonSceneEnumScope? = nul
 
 @JvmOverloads
 fun <T> String.FromJson(clazz: Class<T>, style: JsonSceneEnumScope? = null): T? {
+    return this.FromJsonText(clazz, style)
+}
+
+
+@JvmOverloads
+fun <T> String.FromJsonText(clazz: Class<T>, style: JsonSceneEnumScope? = null): T? {
     if (this.isEmpty()) return null
 
     if (clazz == String::class.java) {

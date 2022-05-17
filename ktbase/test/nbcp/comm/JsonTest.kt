@@ -3,6 +3,7 @@ package nbcp.comm
 import nbcp.TestBase
 import nbcp.db.IdName
 import nbcp.db.LoginUserModel
+import nbcp.extend.ToYaml
 import nbcp.scope.JsonSceneEnumScope
 import nbcp.utils.RecursionUtil
 import nbcp.utils.SpringUtil
@@ -66,6 +67,9 @@ class JsonTest : TestBase() {
 
         println(d.ToJson(JsonSceneEnumScope.Web))
         println(d.ToJson().FromListJson(TestObj::class.java).ToJson())
+        println(d.first().ToYaml())
+        println(d.first().ToYaml().FromYamlText(JsonMap::class.java).ToJson())
+        println(d.first().ToYaml().FromYamlText(TestObj::class.java).ToJson())
     }
 
     @Test
