@@ -64,7 +64,7 @@ abstract class FlywayVersionBaseService(val version: Int) {
     /**
      * 初始化数据,目录：flyway-v${version}, 文件后缀 .dat
      */
-    protected fun addResourceData(tableName: String = "", autoSave: Boolean = true) {
+    private fun addResourceData(tableName: String = "", autoSave: Boolean = true) {
         loadResource("flyway-v${version}", tableName, ".dat") { tableName, lines ->
             var count = 0;
             if (autoSave) {
