@@ -2,6 +2,7 @@ package nbcp.bean
 
 import nbcp.comm.AsInt
 import nbcp.comm.Important
+import nbcp.comm.config
 import nbcp.db.*
 import nbcp.db.mongo.*
 import nbcp.db.mongo.entity.SysFlywayVersion
@@ -18,7 +19,6 @@ import java.time.LocalDateTime
 
 @Component
 @ConditionalOnClass(MongoTemplate::class)
-@ConditionalOnProperty("spring.data.mongodb.uri")
 class FlywayBeanProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -32,6 +32,12 @@ class FlywayBeanProcessor {
             logger.Important("单元测试环境下,跳过Flyway处理!")
             return;
         }
+
+        if (config.getConfig("spring.data.mongodb.uri").isNullOrEmpty()) {
+            logger.Important("找不到数据库连接字符串配置:spring.data.mongodb.uri,跳过Flyway处理!")
+            return;
+        }
+
         var flyways = SpringUtil.context.getBeansOfType(FlywayVersionBaseService::class.java).values
 
         if (version != null) {
