@@ -719,7 +719,7 @@ object MyUtil {
 
         //不应该执行这句.
         if (clazz.isPrimitive) {
-            return null;
+            return clazz.constructors.firstOrNull { it.parameters.size == 0 }?.newInstance()
         } else if (clazz.isEnum) {
             return clazz.declaredFields.first().get(null);
         } else if (clazz == String::class.java) {
@@ -737,7 +737,7 @@ object MyUtil {
 //            return ObjectId(0, 0, 0, 0)
 //        }
 
-        return null;
+        return clazz.constructors.firstOrNull { it.parameters.size == 0 }?.newInstance()
     }
 
     fun allCharIsUpperCase(value: String): Boolean {
