@@ -62,7 +62,7 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
 //        }
 
         /**
-         * 当前集群
+         * 当前集群，一个集群可能有多个产品线。
          */
         @JvmStatic
         val appGroup
@@ -70,11 +70,11 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
 
 
         /**
-         * redis 前缀
+         * 产品线编码， 默认=appGroup， 用于 redis 前缀，隔离key
          */
         @JvmStatic
         val productLineCode
-            get() = getConfig("app.product-line.code").AsString()
+            get() = getConfig("app.product-line.code").AsString(appGroup)
 
 
         @JvmStatic
