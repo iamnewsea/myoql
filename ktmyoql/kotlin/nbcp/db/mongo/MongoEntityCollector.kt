@@ -2,12 +2,14 @@ package nbcp.db.mongo
 
 import nbcp.comm.ForEachExt
 import nbcp.comm.HasValue
+import nbcp.comm.config
 import nbcp.scope.*
 import nbcp.comm.usingScope
 import nbcp.db.*
 import nbcp.db.cache.RedisCacheColumns
 import nbcp.db.cache.RedisCacheDefine
 import nbcp.db.mongo.event.*
+import nbcp.utils.SpringUtil
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.data.mongodb.core.MongoTemplate
@@ -82,21 +84,25 @@ class MongoEntityCollector : BeanPostProcessor {
                 db_mongo.groups.add(bean)
 
                 bean.getEntities()
-                        .forEach { moer ->
-                            if (moer is MongoBaseMetaCollection<*>) {
-                                /**
-                                 * 这里使用了实体的类．
-                                 */
-                                //TODO 使用元数据类，会更好一些．但需要把实体注解，全部转移到元数据类上．
+                    .forEach { moer ->
+                        if (moer is MongoBaseMetaCollection<*>) {
+                            /**
+                             * 这里使用了实体的类．
+                             */
+                            //TODO 使用元数据类，会更好一些．但需要把实体注解，全部转移到元数据类上．
 
-                                addDustbin(moer)
-                                addLogHistory(moer);
-                                addRedisCache(moer);
+                            addDustbin(moer)
+                            addLogHistory(moer);
+                            addRedisCache(moer);
 
-                                addRef(moer.entityClass)
-                            }
+                            addRef(moer.entityClass)
                         }
+                    }
             }
+        }
+
+        if (SpringUtil.runningInTest) {
+            return super.postProcessAfterInitialization(bean, beanName)
         }
 
         if (bean is IMongoEntityQuery) {
@@ -129,10 +135,10 @@ class MongoEntityCollector : BeanPostProcessor {
         var list = mutableListOf<RedisCacheColumns>()
         var moerClass = moer::class.java
         moerClass.getAnnotationsByType(DbEntityIndex::class.java)
-                .filter { it.cacheable }
-                .forEach {
-                    list.add(RedisCacheColumns(it.value))
-                }
+            .filter { it.cacheable }
+            .forEach {
+                list.add(RedisCacheColumns(it.value))
+            }
 
         var redisCacheDefine = moerClass.getAnnotation(RedisCacheDefine::class.java);
         if (redisCacheDefine != null) {
@@ -262,9 +268,9 @@ class MongoEntityCollector : BeanPostProcessor {
         var list = mutableListOf<DeleteEventResult>()
         usingScope(arrayOf(MyOqlOrmScope.IgnoreAffectRow, MyOqlOrmScope.IgnoreExecuteTime)) {
             deleteEvents.ForEachExt { it, _ ->
-                var ret = it.beforeDelete(delete );
+                var ret = it.beforeDelete(delete);
                 if (ret.result) {
-                    list.add(DeleteEventResult(it , ret))
+                    list.add(DeleteEventResult(it, ret))
                 }
                 return@ForEachExt true
             }
