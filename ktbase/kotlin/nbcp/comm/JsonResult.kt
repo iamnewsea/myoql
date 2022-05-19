@@ -73,16 +73,16 @@ open class ApiResult<T>() : JsonResult() {
 
 
 class ParameterInvalidException @JvmOverloads constructor(msg: String = "") :
-        RuntimeException(msg.AsString("参数非法"))
+    RuntimeException(msg.AsString("参数非法"))
 
 class NoDataException @JvmOverloads constructor(msg: String = "") :
-        RuntimeException(msg.AsString("找不到数据"))
+    RuntimeException(msg.AsString("找不到数据"))
 
 class ExecuteDbException @JvmOverloads constructor(msg: String = "") :
-        RuntimeException(msg.AsString("操作数据库失败"))
+    RuntimeException(msg.AsString("操作数据库失败"))
 
 class ServerException @JvmOverloads constructor(msg: String = "") :
-        RuntimeException(msg.AsString("服务器异常"))
+    RuntimeException(msg.AsString("服务器异常"))
 
 /**
  * 查询对象
@@ -97,13 +97,16 @@ open class ListQueryModel {
     var skip: Int = 0;
     var take: Int = -1;
     var sorts = mutableListOf<SortQueryModel>()
+
+    val firstSort: SortQueryModel
+        get() = sorts.firstOrNull() ?: SortQueryModel()
 }
 
 /**
  * 列表返回对象
  */
 open class ListResult<T>(
-        //@Transient val clazz: Class<T>
+    //@Transient val clazz: Class<T>
 ) : JsonResult() {
 
     var total: Int = -1
