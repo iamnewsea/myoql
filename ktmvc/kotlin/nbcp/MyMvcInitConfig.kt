@@ -1,6 +1,5 @@
 package nbcp
 
-import nbcp.base.mvc.JsonModelParameterConverter
 import nbcp.base.*
 import nbcp.base.mvc.ServletBeanProcessor
 import nbcp.comm.const
@@ -10,20 +9,15 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters
 import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties
-import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.annotation.Import
-import org.springframework.context.event.EventListener
 import org.springframework.core.convert.support.GenericConversionService
 import org.springframework.http.converter.AbstractHttpMessageConverter
 import org.springframework.http.converter.FormHttpMessageConverter
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
-import org.springframework.stereotype.Component
 import org.springframework.util.unit.DataSize
 import org.springframework.util.unit.DataUnit
-import org.springframework.web.method.support.HandlerMethodArgumentResolver
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
 
 //@Component
 @Import(ServletBeanProcessor::class)

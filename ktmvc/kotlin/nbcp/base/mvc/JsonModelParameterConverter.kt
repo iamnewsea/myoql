@@ -242,7 +242,6 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
                 //如果用 JsonModel 接收 String 等简单参数？
                 val postBody = webRequest.postBody?.toString(const.utf8) ?: ""
                 if (postBody.HasValue) {
-
                     if (parameter.parameterType.isArray) {
                         return postBody.ConvertType(parameter.parameterType);
                     }
@@ -251,6 +250,8 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
                         return postBody.FromListJson(p1Type);
                     }
                     return postBody.ConvertType(parameter.parameterType);
+                } else {
+                    return MyUtil.getSimpleClassDefaultValue(parameter.parameterType);
                 }
             }
 
