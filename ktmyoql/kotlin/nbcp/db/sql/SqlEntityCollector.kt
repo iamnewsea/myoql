@@ -7,6 +7,7 @@ import nbcp.db.cache.RedisCacheColumns
 import nbcp.db.cache.RedisCacheDefine
 import nbcp.db.mysql.ExistsSqlSourceConfigCondition
 import nbcp.db.sql.event.*
+import nbcp.utils.SpringUtil
 import org.mariadb.jdbc.MariaDbDataSource
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -75,6 +76,11 @@ class SqlEntityCollector : BeanPostProcessor {
                 }
             }
         }
+
+        if (SpringUtil.runningInTest) {
+            return super.postProcessAfterInitialization(bean, beanName)
+        }
+
 
         if (bean is ISqlEntitySelect) {
             selectEvents.add(bean)

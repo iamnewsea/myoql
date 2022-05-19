@@ -3,6 +3,7 @@ package nbcp.db.es
 import nbcp.comm.*
 import nbcp.db.*
 import nbcp.scope.*
+import nbcp.utils.SpringUtil
 import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.beans.factory.config.BeanPostProcessor
@@ -77,6 +78,12 @@ class EsEntityCollector : BeanPostProcessor {
                 }
             }
         }
+
+
+        if (SpringUtil.runningInTest) {
+            return super.postProcessAfterInitialization(bean, beanName)
+        }
+
 
         if (bean is IEsEntityQuery) {
             queryEvents.add(bean)
