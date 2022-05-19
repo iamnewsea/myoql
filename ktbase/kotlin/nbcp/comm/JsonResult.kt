@@ -88,15 +88,15 @@ class ServerException @JvmOverloads constructor(msg: String = "") :
  * 查询对象
  */
 
-open class SortQueryItemModel {
-    var field: String = "";
+open class SortQueryModel {
+    var sort: String = "";
     var asc: Boolean = false
 }
 
 open class ListQueryModel {
     var skip: Int = 0;
     var take: Int = -1;
-    var sorts = mutableListOf<SortQueryItemModel>()
+    var sorts = mutableListOf<SortQueryModel>()
 }
 
 /**
