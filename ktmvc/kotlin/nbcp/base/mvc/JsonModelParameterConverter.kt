@@ -124,7 +124,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
                 if (defNumberValue != null) {
                     value = defNumberValue.value
                 } else {
-                    value = MyUtil.getSimpleClassDefaultValue(parameter.parameterType);
+                    value = MyUtil.getTypeDefaultValue(parameter.parameterType);
                 }
             }
         }
@@ -251,7 +251,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
                     }
                     return postBody.ConvertType(parameter.parameterType);
                 } else {
-                    return MyUtil.getSimpleClassDefaultValue(parameter.parameterType);
+                    return MyUtil.getTypeDefaultValue(parameter.parameterType);
                 }
             }
 

@@ -683,12 +683,12 @@ object MyUtil {
         }
     }
 
-    fun <T : Any> getSimpleClassDefaultValue(clazz: KClass<T>): Any? {
-        return getSimpleClassDefaultValue(clazz.java)
+    fun <T : Any> getTypeDefaultValue(clazz: KClass<T>): Any? {
+        return getTypeDefaultValue(clazz.java)
     }
 
     //简单类型，请参考 Class.IsSimpleType
-    fun <T> getSimpleClassDefaultValue(clazz: Class<T>): Any? {
+    fun <T> getTypeDefaultValue(clazz: Class<T>): Any? {
 
 //        var className = clazz.name;
         if (clazz == Boolean::class.java || clazz == java.lang.Boolean::class.java) {
