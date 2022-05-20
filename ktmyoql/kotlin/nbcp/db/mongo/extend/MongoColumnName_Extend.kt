@@ -29,9 +29,9 @@ import java.util.regex.Pattern
 //}
 
 class MongoColumnTranslateResult(
-        var key: MongoColumnName,
-        var value: Any?,
-        var changed: Boolean = false
+    var key: MongoColumnName,
+    var value: Any?,
+    var changed: Boolean = false
 )
 
 
@@ -95,7 +95,7 @@ infix fun String.match(to: Any?): Criteria {
 
 infix fun MongoColumnName.match(to: Any?): Criteria {
     val (key, toValue) = db.mongo.proc_mongo_key_value(this, to);
-    return Criteria.where(key.AsString("\$eq")).`is`(toValue) ;// Pair<String, T>(this, to);
+    return Criteria.where(key.AsString("\$eq")).`is`(toValue);// Pair<String, T>(this, to);
 }
 
 //array_all
@@ -180,6 +180,10 @@ infix fun MongoColumnName.match_notin(to: Collection<*>): Criteria {
     return this.match_notin(to.toTypedArray())
 }
 
+fun MongoColumnName.match_exists(): Criteria {
+    return this.match_exists(true)
+}
+
 /**
  * 用法：
  * 判断数组没有值，好处理： tags match_size 0
@@ -194,7 +198,7 @@ infix fun MongoColumnName.match_exists(value: Boolean): Criteria {
  * field match_hasValue  => field exists  and field != null and field != ""
  */
 fun MongoColumnName.match_hasValue(): Criteria {
-    return this.match_exists(true).match_and(this.match_not_equal(null).match_or(this.match_not_equal("")));
+    return this.match_exists().match_and(this.match_not_equal(null).match_or(this.match_not_equal("")));
 }
 
 /**
@@ -240,9 +244,9 @@ fun MongoColumnName.match_isNullOrEmpty(): Criteria {
  * https://docs.mongodb.com/manual/reference/operator/projection/elemMatch/index.html
  * @param value: 和普通的条件是不一样的。
  */
-infix fun MongoColumnName.match_elemMatch(value: Map<String,Any?>): Criteria {
+infix fun MongoColumnName.match_elemMatch(value: Map<String, Any?>): Criteria {
     var (key) = db.mongo.proc_mongo_key_value(this, null);
-    return Criteria.where(key).`elemMatch`(db.mongo.getMergedMongoCriteria(MongoWhereClip(value) ));
+    return Criteria.where(key).`elemMatch`(db.mongo.getMergedMongoCriteria(MongoWhereClip(value)));
 }
 
 
