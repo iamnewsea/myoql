@@ -371,7 +371,7 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                 entType,
                 ""
             )
-        }${CodeGeneratorHelper.getAnnotations(entType.annotations)}
+        }${ProgramCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
 class ${entityTableMetaName}(collectionName: String = "", datasource:String="")
     :SqlBaseMetaTable<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, "${dbName}", collectionName.AsString("${dbName}")) {
 ${columnMetaDefines.props.joinToString("\n")}

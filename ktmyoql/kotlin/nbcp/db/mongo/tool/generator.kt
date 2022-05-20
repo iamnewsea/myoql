@@ -339,7 +339,7 @@ data class moer_map(val _pname: String) {
             .map {
                 var v1 = getMetaValue(it, entType, entTypeName, 1)
 
-                return@map """${CodeGeneratorHelper.getFieldComment(it)}${CodeGeneratorHelper.getAnnotations(it.annotations)}
+                return@map """${CodeGeneratorHelper.getFieldComment(it)}${ProgramCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }.joinToString("")}
 val ${it.name} = ${v1}""".removeEmptyLine().ToTab(1)
             }
 
@@ -347,7 +347,7 @@ val ${it.name} = ${v1}""".removeEmptyLine().ToTab(1)
 
 
         var ent =
-            """${CodeGeneratorHelper.getEntityComment(entType)}${CodeGeneratorHelper.getAnnotations(entType.annotations)}
+            """${CodeGeneratorHelper.getEntityComment(entType)}${ProgramCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
 class ${entityTypeName}Meta(private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
 ${props.map { const.line_break + it }.joinToString(const.line_break)}
@@ -451,7 +451,7 @@ fun ${entityVarName}(${
                 var (retValue, retTypeIsBasicType) = getEntityValue1(it, entType)
 
                 var pv =
-                    """${CodeGeneratorHelper.getFieldComment(it)}${CodeGeneratorHelper.getAnnotations(it.annotations)} """
+                    """${CodeGeneratorHelper.getFieldComment(it)}${ProgramCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }.joinToString("")} """
 
                 if (retTypeIsBasicType) {
                     return@map """${pv}
@@ -569,7 +569,7 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
                     entType,
                     varTableRemark
                 )
-            }${CodeGeneratorHelper.getAnnotations(entType.annotations)}
+            }${ProgramCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
 class ${entityTypeName}(collectionName: String = "", databaseId: String = "")
     : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, "${dbName}", collectionName.AsString("${dbName}"), databaseId) {
 ${props.map { const.line_break + it }.joinToString(const.line_break)}

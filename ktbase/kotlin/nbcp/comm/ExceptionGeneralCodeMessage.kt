@@ -73,7 +73,9 @@ private fun getFixError(error: Throwable): ExceptionGeneralCodeMessage? {
     if (error is TypeNotPresentException) {
         return ExceptionGeneralCodeMessage(-1000, "类型不存在 ${error.typeName()}!")
     }
-
+    if (error is NullPointerException) {
+        return ExceptionGeneralCodeMessage(-1000, "空指针!")
+    }
     return null;
 }
 

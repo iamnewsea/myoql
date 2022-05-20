@@ -468,7 +468,7 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
                     entType,
                     ""
             )
-        }${CodeGeneratorHelper.getAnnotations(entType.annotations)}
+        }${ProgramCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
 class ${entityTypeName}(collectionName:String="")
     :EsBaseMetaEntity<${entType.name}>(${entType.name}::class.java, "${dbName}", collectionName.AsString("${dbName}")) {
 ${props.joinToString("\n")}

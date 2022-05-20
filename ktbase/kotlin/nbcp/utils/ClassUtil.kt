@@ -376,34 +376,4 @@ object ClassUtil {
     }
 
 
-    /**
-     * 根据Mvc的类，自动生成 Feign风格的代码
-     */
-    fun getFeignClientCode(clazz: Class<*>, name: String = ""): CodeValue {
-        var beanName = name;
-        if (beanName.isEmpty()) {
-            beanName = clazz.simpleName;
-        }
-
-        var clientName = "";
-        if (beanName.endsWith("Controller")) {
-            clientName = beanName.Slice(0, 0 - "Controller".length) + "FeignClient";
-        } else {
-            clientName = beanName + "FeignClient";
-        }
-
-        var ret = CodeValue();
-
-        ret.code = clazz.`package`.name.replace(".mvc.",".client.")
-            .replace(".web.",".client.")
-
-        ret.value =  """
-package nbcp.comm
-@FeignClient("${config.applicationName}")
-interface ${clientName} {
-"""
-
-        return ret;
-    }
-
 }
