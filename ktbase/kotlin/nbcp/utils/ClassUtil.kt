@@ -1,6 +1,8 @@
 package nbcp.utils
 
 import nbcp.comm.*
+import nbcp.db.CodeName
+import nbcp.db.CodeValue
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
 import org.reflections.scanners.TypeAnnotationsScanner
@@ -80,25 +82,25 @@ object ClassUtil {
 
     fun getClasses(basePackage: String): Set<String> {
         return Reflections(
-                ConfigurationBuilder()
-                        .forPackages(basePackage)
-                        .setScanners(SubTypesScanner(false))
+            ConfigurationBuilder()
+                .forPackages(basePackage)
+                .setScanners(SubTypesScanner(false))
         ).allTypes
     }
 
     fun getClassesWithBaseType(basePackage: String, baseType: Class<*>): Set<Class<*>> {
         return Reflections(
-                ConfigurationBuilder()
-                        .forPackages(basePackage)
-                        .setScanners(SubTypesScanner())
+            ConfigurationBuilder()
+                .forPackages(basePackage)
+                .setScanners(SubTypesScanner())
         ).getSubTypesOf(baseType)
     }
 
     fun getClassesWithAnnotationType(basePackage: String, annotationType: Class<out Annotation>): Set<Class<*>> {
         return Reflections(
-                ConfigurationBuilder()
-                        .forPackages(basePackage)
-                        .setScanners(SubTypesScanner(false), TypeAnnotationsScanner())
+            ConfigurationBuilder()
+                .forPackages(basePackage)
+                .setScanners(SubTypesScanner(false), TypeAnnotationsScanner())
         ).getTypesAnnotatedWith(annotationType)
     }
 
@@ -134,7 +136,7 @@ object ClassUtil {
             //处理文件路径中中文的问题。
             val targetPath = File(path).parentFile
             val mvn_file = targetPath?.listFiles { it -> it.name == "maven-archiver" }?.firstOrNull()
-                    ?.listFiles { it -> it.name == "pom.properties" }?.firstOrNull()
+                ?.listFiles { it -> it.name == "pom.properties" }?.firstOrNull()
             if (mvn_file == null) {
                 return null;
 //                throw RuntimeException("找不到 maven-archiver , 先打包再运行!")
@@ -222,7 +224,8 @@ object ClassUtil {
         if (resource.exists() == false) {
             return listOf();
         }
-        val url = resource.url; //得到的结果大概是：jar:file:/C:/Users/ibm/.m2/repository/junit/junit/4.12/junit-4.12.jar!/org/junit
+        val url =
+            resource.url; //得到的结果大概是：jar:file:/C:/Users/ibm/.m2/repository/junit/junit/4.12/junit-4.12.jar!/org/junit
 
         findResources(url, baseResourcePath, { jarEntryName ->
             //如果是死循环,则停止
@@ -238,7 +241,7 @@ object ClassUtil {
             }
 
             val className = jarEntryName.Slice(0, -".class".length)
-                    .replace('/', '.')
+                .replace('/', '.')
 
             if (filter != null && !filter.invoke(className)) {
                 return@findResources false;
@@ -357,15 +360,15 @@ object ClassUtil {
             var base = url.file.split("/target/classes/")[1]
 
             url.openConnection().inputStream.readContentString()
-                    .split("\n")
-                    .filter { it.HasValue }
-                    .forEach { it ->
-                        var jarClassName = base + "/" + it;
+                .split("\n")
+                .filter { it.HasValue }
+                .forEach { it ->
+                    var jarClassName = base + "/" + it;
 
-                        if (filter?.invoke(jarClassName) ?: true) {
-                            list.add(jarClassName);
-                        }
+                    if (filter?.invoke(jarClassName) ?: true) {
+                        list.add(jarClassName);
                     }
+                }
             return list;
         }
 
@@ -373,49 +376,34 @@ object ClassUtil {
     }
 
 
-//    private fun getClassesFromFile(
-//            fullPath: String,
-//            basePack: String,
-//            filter: ((Class<*>) -> Boolean)? = null
-//    ): List<Class<*>> {
-//
-//        //通过当前线程得到类加载器从而得到URL的枚举
-//        var classLeader = Thread.currentThread().contextClassLoader
-//        var jarPath = File(
-//                classLeader.getResource(basePack.replace('.', '/') + ".class").path.Slice(
-//                        0,
-//                        -basePack.length - ".class".length
-//                )
-//        ).path;
-//
-//
-//        var list = mutableListOf<Class<*>>()
-//        var className = ""
-//        var file = File(fullPath)
-//        if (file.isFile) {
-//            className = getClassName(file.name, basePack, jarPath);
-//            if (className.HasValue) {
-//                var cls = Class.forName(className)
-//                if (filter?.invoke(cls) ?: true) {
-//                    list.add(cls);
-//                }
-//            }
-//            return list;
-//        } else {
-//            file.listFiles().forEach {
-//                if (it.isFile) {
-//                    className = getClassName(it.path, basePack, jarPath);
-//                    if (className.HasValue) {
-//                        var cls = Class.forName(className);
-//                        if (filter?.invoke(cls) ?: true) {
-//                            list.add(cls);
-//                        }
-//                    }
-//                } else {
-//                    list.addAll(getClassesFromFile(it.path, basePack, jarPath, filter))
-//                }
-//            }
-//        }
-//        return list;
-//    }
+    /**
+     * 根据Mvc的类，自动生成 Feign风格的代码
+     */
+    fun getFeignClientCode(clazz: Class<*>, name: String = ""): CodeValue {
+        var beanName = name;
+        if (beanName.isEmpty()) {
+            beanName = clazz.simpleName;
+        }
+
+        var clientName = "";
+        if (beanName.endsWith("Controller")) {
+            clientName = beanName.Slice(0, 0 - "Controller".length) + "FeignClient";
+        } else {
+            clientName = beanName + "FeignClient";
+        }
+
+        var ret = CodeValue();
+
+        ret.code = clazz.`package`.name.replace(".mvc.",".client.")
+            .replace(".web.",".client.")
+
+        ret.value =  """
+package nbcp.comm
+@FeignClient("${config.applicationName}")
+interface ${clientName} {
+"""
+
+        return ret;
+    }
+
 }

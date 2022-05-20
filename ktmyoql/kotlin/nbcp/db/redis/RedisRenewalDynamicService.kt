@@ -1,7 +1,7 @@
 package nbcp.db.redis
 
 import nbcp.comm.AsLong
-import nbcp.model.MasterAlternateMap
+import nbcp.model.DualPoolMap
 import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
@@ -19,12 +19,12 @@ class RedisRenewalDynamicService : InitializingBean {
          * 定时任务，使键续期。
          */
         fun setDelayRenewalKey(key: String, cacheSecond: Int) {
-            renewal_cache.push(key, cacheSecond);
+            renewal_cache.openPool.put(key, cacheSecond);
         }
 
         fun clearDelayRenewalKeys(vararg keys: String) {
             keys.forEach {
-                renewal_cache.removeAll(it);
+                renewal_cache.removeAllItem(it);
             }
         }
 
@@ -39,13 +39,11 @@ class RedisRenewalDynamicService : InitializingBean {
         /**
          * 续期的 keys，value=过期时间，单位秒
          */
-        private var renewal_cache = MasterAlternateMap<String, Int>()
-            .withSameValueStrategy { a, b -> Math.max(a, b) }
+        private var renewal_cache = DualPoolMap<String, Int>()
             .consumer { key, cacheSecond ->
                 if (cacheSecond <= 0) {
                     return@consumer
                 }
-
 
                 redisTemplate.expire(key, cacheSecond.AsLong(), TimeUnit.SECONDS)
             }

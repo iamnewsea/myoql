@@ -10,67 +10,37 @@ import kotlin.concurrent.thread
  *
  *
  */
-open class MasterAlternateSet<T>(private var consumer: Consumer<T>) {
-    private var masterOpen = false;
-    private val masterSet = mutableSetOf<T>()
-    private val alternateSet = mutableSetOf<T>()
+open class DualPoolSet<T>() : DualPoolData<MutableSet<T>>(mutableSetOf<T>(), mutableSetOf<T>()) {
+
 
     fun isEmpty(): Boolean {
-        return this.masterSet.isEmpty() && this.alternateSet.isEmpty()
+        return this.masterPool.isEmpty() && this.alternatePool.isEmpty()
     }
 
-    fun consumeTask() {
-        var consumerSet: (MutableSet<T>) -> Unit = {
-            var len = it.count();
-            for (i in 1..len) {
-                var item = it.elementAt(0);
-                consumer.accept(item);
-                it.remove(item);
-            }
+    override fun consumePool(pool: MutableSet<T>) {
+        if (consumer == null) return;
+
+        var len = pool.count();
+        for (i in 1..len) {
+            var item = pool.elementAt(0);
+            consumer!!.invoke(item);
+            pool.remove(item);
         }
-
-        consumerSet(getIdleSet());
-        masterOpen = !masterOpen;
-        consumerSet(getIdleSet());
     }
 
-    fun getWorkingSet(): MutableSet<T> {
-        if (masterOpen) return masterSet;
-        else return alternateSet;
-    }
 
-    fun getIdleSet(): MutableSet<T> {
-        if (masterOpen) return alternateSet;
-        else return masterSet;
-    }
-
-    /**
-     * 写入蓄水池
-     */
-    fun push(value: T) {
-        if (masterOpen) {
-            alternateSet.add(value);
-        } else {
-            masterSet.add(value);
-        }
+    private var consumer: ((T) -> Unit)? = null
+    fun consumer(consumer: (T) -> Unit): DualPoolSet<T> {
+        this.consumer = consumer;
+        return this;
     }
 
     /**
      * 清除所有存储空间的指定key
      */
-    fun removeAll(key: T) {
-        masterSet.remove(key);
-        alternateSet.remove(key);
+    fun removeAllItem(key: T) {
+        masterPool.remove(key);
+        alternatePool.remove(key);
     }
 
-    /**
-     * 清空流出池
-     */
-    fun clearWorking() {
-        if (masterOpen) {
-            masterSet.clear();
-        } else {
-            alternateSet.clear()
-        }
-    }
 }
