@@ -38,7 +38,7 @@ object memoryCacheDb {
         return item.data ?: throw java.lang.RuntimeException("异常:刚添加的数据为空!");
     }
 
-    fun getItem(key: String, cacheSeconds: Int = 180, callback: Supplier<Any>): Any? {
+    fun getMemoryCacheData(key: String, cacheSeconds: Int = 180, callback: Supplier<Any>): Any? {
         var value = map.get(key) as CacheItem?
         if (value == null) {
             return addItem(key, cacheSeconds, callback);
