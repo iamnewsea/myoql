@@ -18,6 +18,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 import java.lang.RuntimeException
 
@@ -36,7 +38,7 @@ open class BaseFlywayServlet {
     /**
      * 清除 sysFlywayVersion.version 中 非0 的记录，并重新执行！
      */
-    @GetMapping("/ops/flyway/mongo/replay")
+    @RequestMapping("/ops/flyway/mongo/replay", method = arrayOf(RequestMethod.GET, RequestMethod.POST))
     fun doGet(version: String, request: HttpServletRequest, response: HttpServletResponse): JsonResult {
         db.mor_base.sysFlywayVersion.delete()
             .where { it.version match_not_equal 0 }
