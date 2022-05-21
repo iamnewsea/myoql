@@ -9,7 +9,7 @@ import java.util.function.Supplier
 /**
  * 常驻内存型缓存
  */
-object MemoryCacheDb {
+object memoryCacheDb {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     var warnEachCapacity: Int = 100
@@ -22,7 +22,7 @@ object MemoryCacheDb {
         var addAt: LocalDateTime = LocalDateTime.now()
     }
 
-    fun addItem(key: String, cacheSeconds: Int = 180, callback: Supplier<Any>) {
+    private fun addItem(key: String, cacheSeconds: Int = 180, callback: Supplier<Any>): Any {
         if (map.size > 0) {
             if (map.size >= errorMaxCapacity) {
                 throw java.lang.RuntimeException("缓存数据已达到最大条数 ${map.size} 条!")
@@ -33,22 +33,26 @@ object MemoryCacheDb {
             }
         }
 
-        map.put(key, CacheItem(callback, cacheSeconds))
+        var item = CacheItem(callback, cacheSeconds);
+        map.put(key, item)
+        return item.data ?: throw java.lang.RuntimeException("异常:刚添加的数据为空!");
     }
 
-    fun getItem(key: String): Any? {
+    fun getItem(key: String, cacheSeconds: Int = 180, callback: Supplier<Any>): Any? {
         var value = map.get(key) as CacheItem?
-        if (value == null) return null;
+        if (value == null) {
+            return addItem(key, cacheSeconds, callback);
+        }
 
         /**
          * 如果过期
          */
         if (value.addAt.plusSeconds(value.cacheSeconds) > LocalDateTime.now()) {
-            value.data = null
+            return addItem(key, cacheSeconds, callback);
         }
 
         if (value.data == null) {
-            value.data = value.callback.get()
+            throw java.lang.RuntimeException("异常:缓存的数据为空!");
         }
 
         return value.data;
