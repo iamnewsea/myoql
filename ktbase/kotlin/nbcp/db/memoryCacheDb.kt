@@ -6,6 +6,13 @@ import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import java.util.function.Supplier
 
+
+class MemoryCacheItem(var callback: Supplier<out Any>, var cacheSeconds: Int = 180) {
+    var data: Any? = null
+    var addAt: LocalDateTime = LocalDateTime.now()
+}
+
+
 /**
  * 常驻内存型缓存
  */
@@ -17,12 +24,8 @@ object memoryCacheDb {
 
     private val map = JsonMap()
 
-    class CacheItem(var callback: Supplier<out Any>, var cacheSeconds: Int = 180) {
-        var data: Any? = null
-        var addAt: LocalDateTime = LocalDateTime.now()
-    }
 
-    private fun addItem(key: String, cacheSeconds: Int = 180, callback: Supplier<out Any>): Any {
+    fun addToMemoryCache(key: String, cacheSeconds: Int = 180, callback: Supplier<out Any>) {
         if (map.size > 0) {
             if (map.size >= errorMaxCapacity) {
                 throw java.lang.RuntimeException("缓存数据已达到最大条数 ${map.size} 条!")
@@ -33,32 +36,34 @@ object memoryCacheDb {
             }
         }
 
-        var item = CacheItem(callback, cacheSeconds);
-        map.put(key, item)
-        return item.data ?: throw java.lang.RuntimeException("异常:刚添加的数据为空!");
+        map.put(key, MemoryCacheItem(callback, cacheSeconds))
     }
 
-    inline fun <reified T : Any> getFromMemoryCache(key: String, cacheSeconds: Int = 180, callback: Supplier<T>): T {
-        return getDataFromMemoryCache(key, cacheSeconds, callback) as T
+
+    inline fun <reified T : Any> getFromMemoryCache(key: String): T? {
+        return getDataFromMemoryCache(key) as T?
     }
 
-    fun getDataFromMemoryCache(key: String, cacheSeconds: Int = 180, callback: Supplier<out Any>): Any {
-        var value = map.get(key) as CacheItem?
+    fun getDataFromMemoryCache(key: String): Any? {
+        var value = map.get(key) as MemoryCacheItem?
         if (value == null) {
-            return addItem(key, cacheSeconds, callback);
+            return null;
         }
 
         /**
          * 如果过期
          */
         if (value.addAt.plusSeconds(value.cacheSeconds) > LocalDateTime.now()) {
-            return addItem(key, cacheSeconds, callback);
+            value.data = value.callback.get()
+
+            return value.data;
         }
 
         if (value.data == null) {
-            throw java.lang.RuntimeException("异常:缓存的数据为空!");
+            value.data = value.callback.get()
+            return value.data;
         }
 
-        return value.data!!;
+        return value.data;
     }
 }
