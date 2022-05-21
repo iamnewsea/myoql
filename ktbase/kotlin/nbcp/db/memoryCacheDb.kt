@@ -17,12 +17,12 @@ object memoryCacheDb {
 
     private val map = JsonMap()
 
-    class CacheItem(var callback: Supplier<Any>, var cacheSeconds: Int = 180) {
+    class CacheItem(var callback: Supplier<out Any>, var cacheSeconds: Int = 180) {
         var data: Any? = null
         var addAt: LocalDateTime = LocalDateTime.now()
     }
 
-    private fun addItem(key: String, cacheSeconds: Int = 180, callback: Supplier<Any>): Any {
+    private fun addItem(key: String, cacheSeconds: Int = 180, callback: Supplier<out Any>): Any {
         if (map.size > 0) {
             if (map.size >= errorMaxCapacity) {
                 throw java.lang.RuntimeException("缓存数据已达到最大条数 ${map.size} 条!")
@@ -38,7 +38,11 @@ object memoryCacheDb {
         return item.data ?: throw java.lang.RuntimeException("异常:刚添加的数据为空!");
     }
 
-    fun getMemoryCacheData(key: String, cacheSeconds: Int = 180, callback: Supplier<Any>): Any? {
+    inline fun <reified T : Any> getFromMemoryCache(key: String, cacheSeconds: Int = 180, callback: Supplier<T>): T {
+        return getDataFromMemoryCache(key, cacheSeconds, callback) as T
+    }
+
+    fun getDataFromMemoryCache(key: String, cacheSeconds: Int = 180, callback: Supplier<out Any>): Any {
         var value = map.get(key) as CacheItem?
         if (value == null) {
             return addItem(key, cacheSeconds, callback);
@@ -55,6 +59,6 @@ object memoryCacheDb {
             throw java.lang.RuntimeException("异常:缓存的数据为空!");
         }
 
-        return value.data;
+        return value.data!!;
     }
 }
