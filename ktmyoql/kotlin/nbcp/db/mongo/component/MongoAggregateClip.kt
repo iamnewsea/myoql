@@ -118,6 +118,18 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
     }
 
     /**
+     * @param group: 必须包含 _id
+     */
+    fun group(group: (M) -> JsonMap): MongoAggregateClip<M, E> {
+        var raw = group.invoke(this.moerEntity)
+        if (raw.containsKey("_id") == false) {
+            throw RuntimeException("group必须包含_id列")
+        }
+        pipeLines.add("\$group" to raw)
+        return this;
+    }
+
+    /**
      * @param _id: 如果要设置列，前面加$.
      * @param eachItems: 每一个聚合的表达式。
      * @see MongoExpression
