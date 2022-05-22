@@ -30,6 +30,13 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
     /**
      * 通用函数
      */
+    fun addPipeLine(key: PipeLineEnum, jsonCallback: (M) -> Map<String, Any?>): MongoAggregateClip<M, E> {
+        return addPipeLine(key, jsonCallback.invoke(this.moerEntity));
+    }
+
+    /**
+     * 通用函数
+     */
     fun addPipeLine(key: PipeLineEnum, json: Map<String, Any?>): MongoAggregateClip<M, E> {
         this.pipeLines.add("\$${key}" to json);
         return this;
