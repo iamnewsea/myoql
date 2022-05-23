@@ -9,7 +9,7 @@ import org.springframework.web.server.ServerWebExchange
  * 当前连接的上下文信息
  */
 object HttpContext {
-    private var _exchange: ThreadLocal<ServerWebExchange?> = ThreadLocal.withInitial { null }
+    private var _exchange: InheritableThreadLocal<ServerWebExchange?> = InheritableThreadLocal()
 
     fun init(exchange: ServerWebExchange) {
         _exchange.set(exchange);
