@@ -40,7 +40,7 @@ class CrossFilterConfig {
         return WebFilter { exchange_ori, chain ->
             var exchange = exchange_ori
 
-            HttpContext.init(exchange)
+//            HttpContext.init(exchange)
 
             if (ignoreFilter(exchange.request)) {
                 return@WebFilter chain.filter(exchange)
