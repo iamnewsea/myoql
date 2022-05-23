@@ -1,6 +1,7 @@
 package nbcp.db
 
 import nbcp.comm.JsonMap
+import nbcp.comm.StringKeyMap
 import nbcp.comm.plusSeconds
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
@@ -10,6 +11,11 @@ import java.util.function.Supplier
 class MemoryCacheItem(var callback: Supplier<out Any>, var cacheSeconds: Int = 180) {
     var data: Any? = null
     var addAt: LocalDateTime = LocalDateTime.now()
+
+    fun reloadData() {
+        this.addAt = LocalDateTime.now();
+        this.data = this.callback.get();
+    }
 }
 
 
@@ -22,8 +28,40 @@ object memoryCacheDb {
     var warnEachCapacity: Int = 100
     var errorMaxCapacity: Int = 1000
 
-    private val map = JsonMap()
+    private val map = StringKeyMap<MemoryCacheItem>()
 
+
+    /**
+     * 清除以 key 开头的 所有项
+     */
+    fun brokeStartsWithMemoryCache(key: String): Int {
+        return map.keys
+            .filter { it.startsWith(key) }
+            .map {
+                this.brokeMemoryCache(it)
+            }
+            .filter { it }
+            .count()
+    }
+
+    fun brokeMemoryCache(key: ((String) -> Boolean)): Int {
+        return map.keys
+            .filter(key)
+            .map {
+                this.brokeMemoryCache(it)
+            }
+            .filter { it }
+            .count()
+    }
+
+    fun brokeMemoryCache(key: String): Boolean {
+        val value = map.get(key)
+        if (value == null) return false;
+
+        value.addAt = LocalDateTime.now()
+        value.data = null;
+        return true;
+    }
 
     fun addToMemoryCache(key: String, cacheSeconds: Int = 180, callback: Supplier<out Any>) {
         if (map.size > 0) {
@@ -45,24 +83,25 @@ object memoryCacheDb {
     }
 
     fun getDataFromMemoryCache(key: String): Any? {
-        var value = map.get(key) as MemoryCacheItem?
+        var value = map.get(key)
         if (value == null) {
             return null;
+        }
+
+        if (value.data == null) {
+            value.reloadData();
+            return value.data;
         }
 
         /**
          * 如果过期
          */
         if (value.addAt.plusSeconds(value.cacheSeconds) > LocalDateTime.now()) {
-            value.data = value.callback.get()
+            value.reloadData();
 
             return value.data;
         }
 
-        if (value.data == null) {
-            value.data = value.callback.get()
-            return value.data;
-        }
 
         return value.data;
     }
