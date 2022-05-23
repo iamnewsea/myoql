@@ -30,15 +30,15 @@ object HttpContext {
             return false;
         }
 
-    @JvmStatic
-    val hasResponse: Boolean
-        get() {
-            if (_response.get() != null) return true;
-            if ((RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.response != null) {
-                return true;
-            }
-            return false;
-        }
+//    @JvmStatic
+//    val hasResponse: Boolean
+//        get() {
+//            if (_response.get() != null) return true;
+//            if ((RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.response != null) {
+//                return true;
+//            }
+//            return false;
+//        }
 
     @JvmStatic
     val request: HttpServletRequest

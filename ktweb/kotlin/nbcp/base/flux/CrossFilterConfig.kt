@@ -1,6 +1,7 @@
 package nbcp.base.flux.filter
 
 import ch.qos.logback.classic.Level
+import nbcp.base.flux.HttpContext
 import nbcp.base.flux.findParameterValue
 import nbcp.base.flux.getCorsResponseMap
 import nbcp.base.flux.queryJson
@@ -38,6 +39,8 @@ class CrossFilterConfig {
     fun getCrossFilter(): WebFilter {
         return WebFilter { exchange_ori, chain ->
             var exchange = exchange_ori
+
+            HttpContext.init(exchange)
 
             if (ignoreFilter(exchange.request)) {
                 return@WebFilter chain.filter(exchange)
