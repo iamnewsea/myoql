@@ -1,6 +1,5 @@
 package nbcp.bean
 
-import nbcp.comm.AsInt
 import nbcp.comm.Important
 import nbcp.comm.config
 import nbcp.db.*
@@ -8,10 +7,7 @@ import nbcp.db.mongo.*
 import nbcp.db.mongo.entity.SysFlywayVersion
 import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.context.ApplicationEvent
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -19,7 +15,7 @@ import java.time.LocalDateTime
 
 @Component
 @ConditionalOnClass(MongoTemplate::class)
-class FlywayBeanProcessor {
+class MongoFlywayBeanProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

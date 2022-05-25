@@ -7,12 +7,11 @@ import nbcp.comm.config
 import nbcp.db.db
 import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.annotation.*
 import org.springframework.context.event.EventListener
 
-@Import(FlywayBeanProcessor::class)
+@Import(MongoFlywayBeanProcessor::class)
 @Configuration
 class MyOqlInitConfig {
     companion object {
@@ -23,7 +22,7 @@ class MyOqlInitConfig {
     fun app_started(ev: ApplicationStartedEvent) {
 
         if (config.getConfig("app.flyway.enable", "true").AsBoolean(true)) {
-            val flyways = SpringUtil.getBeanWithNull(FlywayBeanProcessor::class.java)
+            val flyways = SpringUtil.getBeanWithNull(MongoFlywayBeanProcessor::class.java)
             if (flyways != null) {
                 flyways.playFlyVersion();
             }
