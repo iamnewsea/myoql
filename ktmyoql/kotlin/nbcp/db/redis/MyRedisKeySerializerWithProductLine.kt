@@ -23,7 +23,7 @@ class MyRedisKeySerializerWithProductLine : StringRedisSerializer() {
         var key2 = super.deserialize(bytes)
         val prefix = getProductLineCodePrefix();
 
-        if (prefix.HasValue && !key2.startsWith(prefix + ":")) {
+        if (prefix.HasValue && key2.startsWith(prefix + ":")) {
             key2 = key2.substring(prefix.length + 1);
         }
         return key2;

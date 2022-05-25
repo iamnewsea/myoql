@@ -45,9 +45,15 @@ class MySqlDataSourceConfig {
             return;
         }
 
+        var jdbcs = SpringUtil.beanFactory.getBeansOfType(JdbcTemplate::class.java)
+        if (jdbcs.size > 1 && !jdbcs.any { SpringUtil.beanFactory.getBeanDefinition(it.key).isPrimary }) {
+            SpringUtil.beanFactory.getBeanDefinition("jdbcTemplate")?.isPrimary = true;
+        }
 
-        SpringUtil.beanFactory.getBeanDefinition("dataSource").isPrimary = true;
-        SpringUtil.beanFactory.getBeanDefinition("jdbcTemplate").isPrimary = true;
+        var dss = SpringUtil.beanFactory.getBeansOfType(DataSource::class.java)
+        if (dss.size > 1 && !dss.any { SpringUtil.beanFactory.getBeanDefinition(it.key).isPrimary }) {
+            SpringUtil.beanFactory.getBeanDefinition("dataSource")?.isPrimary = true;
+        }
 
 
         var slaveDataProperties =
