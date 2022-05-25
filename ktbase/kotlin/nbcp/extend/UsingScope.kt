@@ -49,23 +49,28 @@ inline fun <T> usingScope(init_list: List<out IScopeData>, body: () -> T, finall
         scopes.push(it);
     }
 
-    val ret = body();
+    try {
+        var ret = body();
 
-    //自动释放
-    init_list.asReversed().forEach {
-        if (it is Flushable) {
-            it.flush()
+        //自动释放
+        init_list.asReversed().forEach {
+            if (it is Flushable) {
+                it.flush()
+            }
+            if (it is AutoCloseable) {
+                it.close()
+            }
+
+            finally(it)
         }
-        if (it is AutoCloseable) {
-            it.close()
+
+        return ret;
+    } finally {
+        //自动释放
+        init_list.asReversed().forEach {
+            scopes.pop();
         }
-
-        finally(it)
-
-        scopes.pop();
     }
-
-    return ret;
 }
 
 
