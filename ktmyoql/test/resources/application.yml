@@ -10,6 +10,8 @@ logging:
           Heartbeat: ERROR
 
 app:
+  product-line:
+    code: mp
   filter:
     allowOrigins: dev8.cn
     ignore-log-urls: /open/log,/log,/favicon.ico,/index.html,/webjars/,/swagger-resources/,/v2/api-docs,/swagger-ui.html

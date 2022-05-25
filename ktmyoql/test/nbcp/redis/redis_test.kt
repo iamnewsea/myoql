@@ -3,10 +3,13 @@ package nbcp.redis
 import nbcp.TestBase
 import nbcp.db.db
 import nbcp.db.redis.scanKeys
+import nbcp.utils.SpringUtil
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
+import java.time.Duration
+import java.util.concurrent.TimeUnit
 
 @Component
 class testa : TestBase() {
@@ -16,7 +19,7 @@ class testa : TestBase() {
 
     @Test
     fun testScanKeys() {
-        template.scanKeys("sys:*") {
+        template.scanKeys("mp:*ip*") {
             println(it)
             return@scanKeys true;
         }
@@ -24,8 +27,16 @@ class testa : TestBase() {
 
     @Test
     fun Scan() {
-        var d = db.redis.scanKeys("mp:*");
-        println(d)
+        var t = SpringUtil.getBean<StringRedisTemplate>();
+        var key = "def"
+
+        t.opsForValue().set(key, "!!abc!!", Duration.ofHours(4))
+        println(t.opsForValue().get(key))
+        println("expire:" + t.getExpire(key, TimeUnit.MINUTES))
+        t.expire(key, Duration.ofHours(1)).apply {
+            println(this)
+        }
+        println("expire:" + t.getExpire(key, TimeUnit.MINUTES))
     }
 
     @Test
