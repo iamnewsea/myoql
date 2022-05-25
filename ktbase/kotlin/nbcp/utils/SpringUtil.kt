@@ -98,6 +98,9 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
             callback: ((BeanDefinitionBuilder) -> Unit) = {}
         ) {
             registry.registerBeanDefinition(name, getGenericBeanDefinition(instance, callback));
+
+            //添加这一句,就可以执行 Bean 的接口了.
+            context.getBean(name, instance::class.java);
         }
 
         /**
@@ -225,7 +228,7 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
                 definition.isPrimary = true;
             }
 
-            if( instance is InitializingBean){
+            if (instance is InitializingBean) {
                 instance.afterPropertiesSet()
             }
 

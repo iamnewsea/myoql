@@ -49,7 +49,7 @@ class RedisRenewalDynamicService :InitializingBean {
             }
 
 
-        private val task =  thread(start = true, isDaemon = true, name = "RedisRenewalTask") {
+        private val task =  thread(start = false, isDaemon = true, name = "RedisRenewalTask") {
             while (true) {
                 Thread.sleep(5000)
                 try {
