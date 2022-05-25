@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 @ConditionalOnClass(StringRedisTemplate::class)
-class RedisRenewalDynamicService : InitializingBean {
+class RedisRenewalDynamicService :InitializingBean {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
@@ -47,14 +47,9 @@ class RedisRenewalDynamicService : InitializingBean {
 
                 redisTemplate.expire(key, cacheSecond.AsLong(), TimeUnit.SECONDS)
             }
-    }
 
 
-    /**
-     * 每10秒同步一次。
-     */
-    override fun afterPropertiesSet() {
-        thread(start = true, isDaemon = true, name = "RedisRenewalTask") {
+        private val task =  thread(start = true, isDaemon = true, name = "RedisRenewalTask") {
             while (true) {
                 Thread.sleep(5000)
                 try {
@@ -65,5 +60,13 @@ class RedisRenewalDynamicService : InitializingBean {
                 Thread.sleep(5000)
             }
         }
+    }
+
+
+    /**
+     * 每10秒同步一次。
+     */
+    override fun afterPropertiesSet() {
+        task.start()
     }
 }

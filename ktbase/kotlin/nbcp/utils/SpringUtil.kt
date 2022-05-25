@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import nbcp.comm.*
 import nbcp.component.*
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.beans.factory.support.BeanDefinitionBuilder
@@ -218,9 +219,14 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
             val definition = builder.rawBeanDefinition as GenericBeanDefinition;
             definition.autowireMode = GenericBeanDefinition.AUTOWIRE_BY_TYPE
             definition.instanceSupplier = Supplier { instance }
+            definition.lazyInit = true
 
             if (type.getAnnotation(Primary::class.java) != null) {
                 definition.isPrimary = true;
+            }
+
+            if( instance is InitializingBean){
+                instance.afterPropertiesSet()
             }
 
             callback(builder);
