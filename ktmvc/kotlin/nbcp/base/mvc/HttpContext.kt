@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletResponse
  * 当前连接的上下文信息
  */
 object HttpContext {
-    private var _request: InheritableThreadLocal<HttpServletRequest?> = InheritableThreadLocal()
-    private var _response: InheritableThreadLocal<HttpServletResponse?> = InheritableThreadLocal()
+    private var _request = ThreadLocal.withInitial<HttpServletRequest?> { null }
+    private var _response = ThreadLocal.withInitial<HttpServletResponse?> { null }
 
     fun init(request: HttpServletRequest, response: HttpServletResponse) {
         _request.set(request);

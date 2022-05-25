@@ -11,7 +11,7 @@ import java.io.Flushable
 import java.util.*
 
 
-private val _scopes = InheritableThreadLocal<ScopeStack>().also { it.set(ScopeStack()) }
+private val _scopes = ThreadLocal.withInitial { ScopeStack() }
 
 val scopes: ScopeStack
     get() = _scopes.get();
