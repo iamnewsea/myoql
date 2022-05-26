@@ -27,6 +27,30 @@ fun <T> MutableList<T>.Swap(index1: Int, index2: Int) {
 }
 
 
+fun <T> List<T>.SplitList(item: ((T) -> Boolean)): List<List<T>> {
+    var list = mutableListOf<List<T>>();
+
+    var group = mutableListOf<T>()
+    this.forEach {line ->
+        if (item(line) == true) {
+            if (group.any()) {
+                list.add(group);
+                group = mutableListOf()
+            }
+            return@forEach
+        }
+        group.add(line);
+    }
+
+    if (group.any()) {
+        list.add(group);
+        group = mutableListOf()
+    }
+
+    return list;
+}
+
+
 //把最里面的数据收集起来。
 //inline fun <reified T> Collection<Array<T>>.Unwind(): Array<T> {
 //    var list = mutableListOf<T>()

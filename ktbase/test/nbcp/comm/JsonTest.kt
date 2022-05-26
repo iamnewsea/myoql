@@ -61,9 +61,11 @@ class JsonTest : TestBase() {
 
     @Test
     fun test_list_json() {
-        var d = listOf(TestObj())
+        var d = listOf(TestObj(), TestObj())
         d[0].n = "OK";
         d[0].d = "ee"
+
+        d[1].n = "ok2222"
 
         println(d.ToJson(JsonSceneEnumScope.Web))
         println(d.ToJson().FromListJson(TestObj::class.java).ToJson())

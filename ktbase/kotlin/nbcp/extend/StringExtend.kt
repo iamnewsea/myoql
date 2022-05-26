@@ -10,6 +10,7 @@ import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 import java.io.ByteArrayInputStream
 import java.lang.StringBuilder
+import java.util.ArrayList
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.TransformerFactory
 import kotlin.reflect.KClass
@@ -33,6 +34,17 @@ inline fun <reified T> String.FromYamlText(): T {
 fun <T> String.FromYamlText(clazz: Class<T>): T {
     return SpringUtil.getBean<YAMLMapper>().readValue(this, clazz)
 }
+
+/**
+ *@param clazz: 类型
+ */
+fun <T> String.FromListYarmText(clazz: Class<T>): List<T> {
+    var mapper = SpringUtil.getBean<YAMLMapper>();
+    var t = mapper.getTypeFactory().constructParametricType(ArrayList::class.java, clazz);
+
+    return mapper.readValue<List<T>>(this, t) ?: listOf()
+}
+
 
 /**
  * 如果有值 ， 返回计算表达式。 否则返回空。

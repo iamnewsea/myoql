@@ -17,6 +17,16 @@ class TestConvert : TestBase() {
     }
 
     @Test
+    fun testList() {
+        var list = "a,b,c,---,d,e,f,---,x,y,z".split(",")
+            .SplitList {
+                it == "---"
+            };
+
+        println(list.ToJson())
+    }
+
+    @Test
     fun testNumberAmountFormat() {
         val d = 1234123456789L;
         println(d.ToReadableAmountValue())
