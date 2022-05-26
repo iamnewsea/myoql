@@ -38,6 +38,8 @@ class RedisStringProxy @JvmOverloads constructor(
     fun set(key: String, value: String, cacheSecond: Int = defaultCacheSeconds) {
         var cacheKey = getFullKey(key)
 
+        this.defaultCacheSeconds = cacheSecond;
+
         if (cacheSecond < 0) {
             stringCommand.opsForValue().set(cacheKey, value)
         } else {
@@ -51,6 +53,8 @@ class RedisStringProxy @JvmOverloads constructor(
      */
     fun setIfAbsent(key: String, value: String, cacheSecond: Int = defaultCacheSeconds): Boolean {
         var cacheKey = getFullKey(key)
+
+        this.defaultCacheSeconds = cacheSecond;
 
         if (cacheSecond < 0) {
             return stringCommand.opsForValue().setIfAbsent(cacheKey, value)

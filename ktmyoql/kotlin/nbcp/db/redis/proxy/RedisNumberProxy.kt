@@ -30,6 +30,8 @@ class RedisNumberProxy(
      */
     fun set(key: String, value: Long, cacheSecond: Int = defaultCacheSeconds) {
         var cacheKey = getFullKey(key)
+        this.defaultCacheSeconds = cacheSecond;
+
         if (cacheSecond <= 0) {
             stringCommand.opsForValue().set(cacheKey, value.toString())
         } else {

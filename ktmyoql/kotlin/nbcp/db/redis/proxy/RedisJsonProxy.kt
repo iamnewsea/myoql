@@ -33,6 +33,8 @@ class RedisJsonProxy<T> @JvmOverloads constructor(
     fun set(key: String, value: T, cacheSecond: Int = defaultCacheSeconds) {
         var cacheKey = getFullKey(key)
 
+        this.defaultCacheSeconds = cacheSecond;
+
         if (cacheSecond <= 0) {
             stringCommand.opsForValue().set(cacheKey, value.ToJson())
         } else {
