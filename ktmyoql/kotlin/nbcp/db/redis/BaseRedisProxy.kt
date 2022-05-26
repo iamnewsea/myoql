@@ -75,6 +75,6 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
      * 获取ttl，
      */
     fun getExpireSeconds(key: String): Int {
-        return stringCommand.getExpire(key, TimeUnit.SECONDS).AsInt()
+        return stringCommand.getExpire(getFullKey(key), TimeUnit.SECONDS).AsInt()
     }
 }

@@ -32,6 +32,7 @@ abstract class DualPoolData<T>(protected val masterPool: T, protected val altern
         consumePool(getCloseMap());
         this.shift()
         consumePool(getCloseMap());
+        this.shift()
     }
 }
 
@@ -44,12 +45,10 @@ open class DualPoolMap<K, V>() : DualPoolData<MutableMap<K, V>>(mutableMapOf<K, 
     override fun consumePool(pool: MutableMap<K, V>) {
         if (consumer == null) return;
 
-        var len = pool.count();
-        for (i in 1..len) {
-            var key = pool.entries.elementAt(0) as K;
-            var value = pool.get(key);
+        pool.keys.forEach { key ->
+            val value = pool.get(key);
             if (value != null) {
-                consumer!!.invoke(key, pool.get(key)!!)
+                consumer!!.invoke(key, value)
             }
             pool.remove(key);
         }

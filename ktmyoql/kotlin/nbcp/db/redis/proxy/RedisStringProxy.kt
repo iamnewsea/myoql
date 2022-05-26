@@ -11,7 +11,10 @@ import java.time.Duration
 class RedisStringProxy @JvmOverloads constructor(
     group: String,
     defaultCacheSeconds: Int = 0,
-    val autoRenewal: Boolean = false
+    val autoRenewal: Boolean = false,
+    // 自动续期,不能无限续期, 要设置创建时间,及绝对过期时间.
+    // 在 创建时间  + 绝对过期时间秒数 < 当前时间 , 就强制过期了.
+    //    var renewalExpiredSeconds: Int = 0
 ) :
     BaseRedisProxy(group, defaultCacheSeconds) {
 

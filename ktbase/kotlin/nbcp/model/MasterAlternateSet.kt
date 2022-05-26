@@ -20,8 +20,11 @@ open class DualPoolSet<T>() : DualPoolData<MutableSet<T>>(mutableSetOf<T>(), mut
     override fun consumePool(pool: MutableSet<T>) {
         if (consumer == null) return;
 
-        var len = pool.count();
-        for (i in 1..len) {
+        while (true) {
+            if (pool.any() == false) {
+                break;
+            }
+
             var item = pool.elementAt(0);
             consumer!!.invoke(item);
             pool.remove(item);

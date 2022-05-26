@@ -27,16 +27,20 @@ class testa : TestBase() {
 
     @Test
     fun Scan() {
-        var t = SpringUtil.getBean<StringRedisTemplate>();
-        var key = "def"
+        var key = "127"
+        db.rer_base.cityCodeName.set(key, "localhost")
+        Thread.sleep(15000);
+        println("sleep5 , expire: ~ 3585 , " + db.rer_base.cityCodeName.getExpireSeconds(key))
 
-        t.opsForValue().set(key, "!!abc!!", Duration.ofHours(4))
-        println(t.opsForValue().get(key))
-        println("expire:" + t.getExpire(key, TimeUnit.MINUTES))
-        t.expire(key, Duration.ofHours(1)).apply {
-            println(this)
-        }
-        println("expire:" + t.getExpire(key, TimeUnit.MINUTES))
+        db.rer_base.cityCodeName.get(key)
+        println("续期! expire: ~ 3585 , " + db.rer_base.cityCodeName.getExpireSeconds(key))
+
+        Thread.sleep(1000)
+        println("get, expire: ~ 3590 , " + db.rer_base.cityCodeName.getExpireSeconds(key))
+
+        Thread.sleep(1000)
+        println("get, expire: ~ 3580 , " + db.rer_base.cityCodeName.getExpireSeconds(key))
+        println("done!")
     }
 
     @Test

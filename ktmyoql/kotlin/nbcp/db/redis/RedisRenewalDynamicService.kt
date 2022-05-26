@@ -1,6 +1,7 @@
 package nbcp.db.redis
 
 import nbcp.comm.AsLong
+import nbcp.comm.Important
 import nbcp.model.DualPoolMap
 import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
@@ -45,19 +46,22 @@ class RedisRenewalDynamicService : InitializingBean {
                     return@consumer
                 }
 
-                redisTemplate.expire(key, cacheSecond.AsLong(), TimeUnit.SECONDS)
+                var ret = redisTemplate.expire(key, cacheSecond.AsLong(), TimeUnit.SECONDS)
+                if (ret == false) {
+                    println("设置过期 ${key} 失败")
+                }
             }
 
 
         private val task = thread(start = false, isDaemon = true, name = "RedisRenewalTask") {
             while (true) {
-                Thread.sleep(5000)
+                Thread.sleep(3000)
                 try {
                     renewal_cache.consumeTask()
                 } catch (ex: Throwable) {
-                    logger.error("Redis续期线程出错,10秒后再试", ex);
+                    logger.error("Redis续期线程出错,6秒后再试", ex);
                 }
-                Thread.sleep(5000)
+                Thread.sleep(3000)
             }
         }
     }
@@ -68,6 +72,7 @@ class RedisRenewalDynamicService : InitializingBean {
      */
     override fun afterPropertiesSet() {
         if (task.isAlive == false) {
+            logger.Important("Redis续期服务已启动!")
             task.start()
         }
     }
