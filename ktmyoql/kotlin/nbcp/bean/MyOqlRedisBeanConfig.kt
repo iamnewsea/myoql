@@ -54,7 +54,9 @@ class MyOqlRedisBeanConfig : BeanPostProcessor {
     }
 
     private fun loadRedisDependencyBeans() {
-        SpringUtil.registerBeanDefinition(RedisRenewalDynamicService())
+        if (SpringUtil.containsBean(RedisRenewalDynamicService::class.java) == false) {
+            SpringUtil.registerBeanDefinition(RedisRenewalDynamicService())
+        }
 //        SpringUtil.registerBeanDefinition(RedisCacheAopService())
     }
 

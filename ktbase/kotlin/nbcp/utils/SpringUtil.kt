@@ -228,9 +228,9 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
                 definition.isPrimary = true;
             }
 
-            if (instance is InitializingBean) {
-                instance.afterPropertiesSet()
-            }
+//            if (instance is InitializingBean) {
+//                instance.afterPropertiesSet()
+//            }
 
             callback(builder);
             return definition;
