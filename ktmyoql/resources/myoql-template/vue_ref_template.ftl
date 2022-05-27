@@ -13,7 +13,7 @@
         :readOnly="readOnly"
     >
         <el-table-column type="index" align="center" width="50"></el-table-column>
-        <!--<template slot-scope="scope"></template>-->
+        <!--<template v-scope="scope"></template>-->
 <#list fields as field>
 <#if field.getName() == "id">
 <#elseif field.getName() == "creator" || field.getName() == "createBy">
@@ -22,7 +22,7 @@
 <#elseif field.getName() == "updateAt">
 <#elseif field.getName() == "name">
         <el-table-column label="${field_cn(field)}" align="center">
-            <template slot-scope="scope">
+            <template v-scope="scope">
                 {{ scope.row.name }}
             </template>
         </el-table-column>
@@ -32,7 +32,7 @@
         <el-table-column align="center" label="${field_cn(field)}" prop="${field.getName()}.name"></el-table-column>
 <#elseif is_type(field,"IdUrl")>
         <el-table-column label="${field_cn(field)}" align="center">
-            <template slot-scope="scope">
+            <template v-scope="scope">
                 <img :src="scope.row.url" />
             </template>
         </el-table-column>
