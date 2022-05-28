@@ -233,7 +233,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
             );
 
         if (value == null && webRequest.queryString != null) {
-            value = getFromQuery(webRequest, parameter);
+            value = getFromQuery(webRequest, parameter, parameterName);
         }
 
         if (value == null) {
@@ -286,16 +286,21 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         throw RequireException(parameter.parameterName!!)
     }
 
-    private fun getFromQuery(webRequest: HttpServletRequest, parameter: MethodParameter): Any? {
-        val key = parameter.parameterName!!
-
+    private fun getFromQuery(webRequest: HttpServletRequest, parameter: MethodParameter, parameterName: String): Any? {
         val queryMap = webRequest.queryJson
-        var value = queryMap.get(key)
+
+        var parameterName = parameterName;
+        if (parameterName.isEmpty()) {
+            parameterName = parameter.parameterName;
+        }
+
+
+        var value = queryMap.get(parameterName)
 
         if (value == null) {
             //判断是否是 solo
             if (parameter.parameterType.IsBooleanType
-                && webRequest.soloQueryKeys.contains(key)
+                && webRequest.soloQueryKeys.contains(parameterName)
             ) {
                 return true;
             }
