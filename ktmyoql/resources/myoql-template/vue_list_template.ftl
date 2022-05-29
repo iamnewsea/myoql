@@ -72,7 +72,7 @@ export default {
     components: {},
     data() {
         return {
-            //默认查询条件
+            //默认查询条件,默认存储
             query:{},
 <#list fields as field>
 <#if field.getType().isEnum()>
@@ -85,13 +85,11 @@ export default {
     },
     mounted() {
         //加载存储的查询条件
-        this.$loadData("query")
     },
     methods: {
         //处理请求参数
         preload(param) {
             //保存查询条件
-            this.$saveData("query");
 
             //添加查询参数，修改分页参数等。
             //param.type = this.$route.params.type
