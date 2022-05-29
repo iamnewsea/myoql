@@ -81,7 +81,6 @@ export default {
         };
     },
     mounted() {
-        this.loadData();
     },
     methods: {
         //处理请求参数
