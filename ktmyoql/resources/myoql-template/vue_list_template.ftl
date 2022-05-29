@@ -10,6 +10,7 @@
             @loaded="procData"
             :page-size="10"
             :store="true"
+            :query="query"
         >
             <el-table-column type="index" align="center" width="50"></el-table-column>
                         <!--<template v-scope="scope"></template>-->
@@ -71,6 +72,8 @@ export default {
     components: {},
     data() {
         return {
+            //默认查询条件
+            query:{},
 <#list fields as field>
 <#if field.getType().isEnum()>
             ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
@@ -81,10 +84,15 @@ export default {
         };
     },
     mounted() {
+        //加载存储的查询条件
+        this.$loadData("query")
     },
     methods: {
         //处理请求参数
         preload(param) {
+            //保存查询条件
+            this.$saveData("query");
+
             //添加查询参数，修改分页参数等。
             //param.type = this.$route.params.type
         },
