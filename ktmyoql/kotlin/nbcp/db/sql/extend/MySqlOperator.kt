@@ -75,7 +75,10 @@ infix fun SqlColumnName.match(value: Serializable): WhereData {
     return this.column_match_value("=", value);
 }
 
+infix fun SqlColumnName.match_regexp(value: String): WhereData {
 
+    return this.column_match_value("regexp", value);
+}
 //infix fun SqlColumnName.match_not_equal(value: Number): WhereData = this.column_match_value("!=", value)
 //infix fun SqlColumnName.match_not_equal(value: String): WhereData = this.column_match_value("!=", value)
 //infix fun SqlColumnName.match_not_equal(value: Boolean): WhereData = this.column_match_value("!=", value)
