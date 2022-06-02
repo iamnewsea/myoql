@@ -8,7 +8,9 @@ import org.springframework.http.MediaType
 import nbcp.utils.*
 import org.slf4j.LoggerFactory
 import org.springframework.util.unit.DataSize
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
 import org.springframework.web.servlet.HandlerMapping
+import java.io.InputStream
 import java.lang.RuntimeException
 import javax.servlet.http.HttpServletRequest
 
@@ -290,6 +292,17 @@ val HttpServletRequest.fullUrl: String
     get() {
         return this.requestURI + (if (this.queryString.isNullOrEmpty()) "" else ("?" + this.queryString))
     }
+
+
+fun StandardMultipartHttpServletRequest.getFirstUploadFileStream(key: String): InputStream {
+    return this
+        .multiFileMap
+        .values
+        .first()
+        .first()
+        .inputStream
+}
+
 
 /**
  * 处理跨域。
