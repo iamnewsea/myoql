@@ -58,7 +58,7 @@ class ExcelComponent(val excelStream: () -> InputStream) {
         }
 
 
-    fun select(sheetName: String): ExcelSheetComponent {
+    fun select(sheetName: String = ""): ExcelSheetComponent {
         return ExcelSheetComponent(sheetName.AsString(sheetNames.first()), excelStream);
     }
 
