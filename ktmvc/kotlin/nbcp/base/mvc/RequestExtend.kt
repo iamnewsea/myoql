@@ -294,7 +294,7 @@ val HttpServletRequest.fullUrl: String
     }
 
 
-fun StandardMultipartHttpServletRequest.getFirstUploadFileStream(key: String): InputStream {
+fun StandardMultipartHttpServletRequest.getFirstUploadFileStream(): InputStream {
     return this
         .multiFileMap
         .values
