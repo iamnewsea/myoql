@@ -48,8 +48,10 @@ class ExcelComponent(val excelStream: () -> InputStream) {
     val sheetNames: Array<String>
         get() {
             var ret = mutableListOf<String>()
+            var stream = excelStream()
+            stream.reset();
 
-            WorkbookFactory.create(excelStream()).use { book ->
+            WorkbookFactory.create(stream).use { book ->
                 for (i in 0..(book.numberOfSheets - 1)) {
                     ret.add(book.getSheetAt(i).sheetName)
                 }
@@ -68,6 +70,13 @@ class ExcelComponent(val excelStream: () -> InputStream) {
         private var rowOffset: Int = 0;
         private var pks: Array<out String> = arrayOf()
         private var strictMode: Boolean = true;
+
+
+        private fun getStream(): InputStream {
+            var stream = excelStream();
+            stream.reset();
+            return stream;
+        }
 
         fun setStrictMode(value: Boolean): ExcelSheetComponent {
             this.strictMode = value;
@@ -115,7 +124,7 @@ class ExcelComponent(val excelStream: () -> InputStream) {
          * 从Sheet中读出列
          */
         fun readSheetColumns(): List<String> {
-            val fm = FileMagic.prepareToCheckMagic(excelStream()).use { file ->
+            val fm = FileMagic.prepareToCheckMagic(getStream()).use { file ->
                 return@use FileMagic.valueOf(file)
             }
 
@@ -198,7 +207,7 @@ SXSSF：是在XSSF基础上，POI3.8版本开始提供的支持低内存占用�
                 }
             }
 
-            val fm = FileMagic.prepareToCheckMagic(excelStream()).use { file ->
+            val fm = FileMagic.prepareToCheckMagic(getStream()).use { file ->
                 return@use FileMagic.valueOf(file)
             }
 
@@ -249,7 +258,7 @@ SXSSF：是在XSSF基础上，POI3.8版本开始提供的支持低内存占用�
          * @param getRowData: 返回 null 停止。
          */
         fun writeData(outputStream: OutputStream, getRowData: (Int) -> JsonMap?) {
-            OPCPackage.open(excelStream()).use { xlsxPackage ->
+            OPCPackage.open(getStream()).use { xlsxPackage ->
                 var book = SXSSFWorkbook(XSSFWorkbook(xlsxPackage), 1000)
 
                 //公式执行器
@@ -327,7 +336,7 @@ SXSSF：是在XSSF基础上，POI3.8版本开始提供的支持低内存占用�
             filter: (JsonMap, Map<Int, String>) -> Boolean,
             sheetColumnsCallback: (Map<Int, String>) -> Boolean
         ) {
-            WorkbookFactory.create(excelStream()).use { book ->
+            WorkbookFactory.create(getStream()).use { book ->
 
                 var sheet: Sheet;
 
@@ -421,7 +430,7 @@ SXSSF：是在XSSF基础上，POI3.8版本开始提供的支持低内存占用�
             filter: (JsonMap, Map<Int, String>) -> Boolean,
             sheetColumnsCallback: (Map<Int, String>) -> Boolean
         ) {
-            OPCPackage.open(excelStream()).use { xlsxPackage ->
+            OPCPackage.open(getStream()).use { xlsxPackage ->
                 var xssfReader = XSSFReader(xlsxPackage)
 
                 var iter = xssfReader.sheetsData as XSSFReader.SheetIterator
