@@ -4,6 +4,7 @@
 package nbcp.comm
 
 import nbcp.scope.*
+import nbcp.utils.MyUtil
 import java.util.*
 import kotlin.RuntimeException
 import kotlin.reflect.KClass
@@ -172,7 +173,21 @@ fun <T> Any.ConvertJson(clazz: Class<out T>, style: JsonSceneEnumScope? = null):
     //如果是 String，转
     if (this is String) {
         return this.FromJson(clazz, style) ?: throw RuntimeException("转换Json出错")
+    } else if (this is MutableMap<*, *>) {
+        if (Map::class.java.isAssignableFrom(clazz) == false) {
+            //处理 a.b.c = "10
+            this.keys
+                .filter {
+                    var key = it.AsString();
+                    return@filter key.contains(".") || key.contains("[]")
+                }
+                .forEach{it ->
+                    var key = it.AsString();
+                    MyUtil.setValueByWbsPath(this, key , value = this.get(key))
+                }
+        }
     }
+
     return style.getJsonMapper().convertValue(this, clazz)
 }
 

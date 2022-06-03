@@ -62,4 +62,21 @@ class TestKtExt_Json : TestBase() {
         var d = str.FromGenericJson(List::class.java,bc::class.java)!!;
         println(d.first()!!::class.java.name)
     }
+
+    class b{
+        var c = ""
+    }
+    class a{
+        var b = b();
+    }
+    class ccc{
+        var a = a()
+    }
+
+    @Test
+    fun abc(){
+        var map = JsonMap("a.b.c" to "ok")
+        var e = map.ConvertJson(ccc::class.java)
+        println(e.a.b.c)
+    }
 }
