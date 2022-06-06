@@ -1,5 +1,7 @@
 package nbcp.utils
 
+import nbcp.comm.const
+import nbcp.comm.toUtf8String
 import java.util.*
 import javax.crypto.*
 import javax.crypto.spec.*
@@ -12,7 +14,7 @@ object CipherUtil {
      * 返回 3des key base64格式的文本
      */
     fun get3desKey(): String {
-        return MyUtil.getBase64(Des3Util.generateKey())
+        return Des3Util.generateKey()
     }
 
     /**
@@ -30,31 +32,44 @@ object CipherUtil {
     }
 
 
-    /**
-     * 返回 3des key base64格式的文本
-     */
-    fun getDesKey(): String {
-        return MyUtil.getBase64(DesUtil.generateKey())
+    object AESUtil {
+        private const val CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding"
+        private const val KEY_ALGORITHM = "AES"
+        fun generateKey(): String {
+            val kg: KeyGenerator = KeyGenerator.getInstance(KEY_ALGORITHM)
+
+            val secretKey: SecretKey = kg.generateKey()
+            return secretKey.encoded.toUtf8String()
+        }
+
+        // 加密
+        fun encrypt(sSrc: String, sKey: String): String {
+            val raw = sKey.toByteArray(const.utf8)
+            val skeySpec = SecretKeySpec(raw, KEY_ALGORITHM)
+            val cipher = Cipher.getInstance(CIPHER_ALGORITHM)//"算法/模式/补码方式"
+            cipher.init(Cipher.ENCRYPT_MODE, skeySpec)
+            val encrypted = cipher.doFinal(sSrc.toByteArray(const.utf8))
+
+            return Base64Util.toBase64(encrypted)
+        }
+
+        // 解密
+        @Throws(Exception::class)
+        fun decrypt(sSrc: String, sKey: String): String {
+            val raw = sKey.toByteArray(const.utf8)
+            val skeySpec = SecretKeySpec(raw, KEY_ALGORITHM)
+            val cipher = Cipher.getInstance(CIPHER_ALGORITHM)
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec)
+            val encrypted1 = Base64Util.readFromBase64(sSrc)//先用base64解密
+
+            val original = cipher.doFinal(encrypted1)
+            return String(original, const.utf8)
+        }
     }
 
-    /**
-     * 加密
-     * @param key: 使用 get3desKey 生成的 key
-     */
-    fun encryptDes(text: String, key: String): String {
-        return MyUtil.getBase64(DesUtil.encrypt(text.toByteArray(), MyUtil.getFromBase64(key)))
-    }
 
     /**
-     * 解密
-     * @param key: 使用 get3desKey 生成的 key
-     */
-    fun decryptDes(text: String, key: String): String {
-        return String(DesUtil.decrypt(MyUtil.getFromBase64(text), MyUtil.getFromBase64(key)))
-    }
-
-    /**
-     * 3des
+     * des
      * https://www.jianshu.com/p/3df4b2a12b3c
      */
     object DesUtil {
@@ -64,13 +79,13 @@ object CipherUtil {
         /**
          * 产生符合要求的Key,如果不用KeyGenerator随机性不好,而且要求自己对算法比较熟悉,能产生符合要求的Key
          */
-        fun generateKey(): ByteArray {
+        fun generateKey(): String {
             val kg: KeyGenerator = KeyGenerator.getInstance(KEY_ALGORITHM)
             // 3DES要求使用112或者168位密钥
             // kg.init(112);
             kg.init(56)
             val secretKey: SecretKey = kg.generateKey()
-            return secretKey.encoded
+            return secretKey.encoded.toUtf8String()
         }
 
         /**
@@ -103,6 +118,10 @@ object CipherUtil {
         }
     }
 
+    /**
+     * 3des
+     * https://www.jianshu.com/p/3df4b2a12b3c
+     */
     object Des3Util {
         private const val CIPHER_ALGORITHM = "DESede/ECB/PKCS5Padding"
         private const val KEY_ALGORITHM = "DESede"
@@ -110,13 +129,13 @@ object CipherUtil {
         /**
          * 产生符合要求的Key,如果不用KeyGenerator随机性不好,而且要求自己对算法比较熟悉,能产生符合要求的Key
          */
-        fun generateKey(): ByteArray {
+        fun generateKey(): String {
             val kg: KeyGenerator = KeyGenerator.getInstance(KEY_ALGORITHM)
             // 3DES要求使用112或者168位密钥
             // kg.init(112);
             kg.init(112)
             val secretKey: SecretKey = kg.generateKey()
-            return secretKey.encoded
+            return secretKey.encoded.toUtf8String()
         }
 
         /**

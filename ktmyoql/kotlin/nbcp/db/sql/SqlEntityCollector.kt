@@ -77,9 +77,9 @@ class SqlEntityCollector : BeanPostProcessor {
             }
         }
 
-        if (SpringUtil.runningInTest) {
-            return super.postProcessAfterInitialization(bean, beanName)
-        }
+//        if (SpringUtil.runningInTest) {
+//            return super.postProcessAfterInitialization(bean, beanName)
+//        }
 
 
         if (bean is ISqlEntitySelect) {

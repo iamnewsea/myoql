@@ -24,20 +24,20 @@ object Base64Util {
     /**
      * 获取 Base64
      */
-    fun getBase64(target: String): String {
+    fun toBase64(target: String): String {
         return Base64.getEncoder().encodeToString(target.toByteArray(const.utf8));
     }
 
-    fun getBase64(bytes: ByteArray): String {
+    fun toBase64(bytes: ByteArray): String {
         return Base64.getEncoder().encodeToString(bytes);
     }
 
-    fun getFromBase64(base64: String): ByteArray {
+    fun readFromBase64(base64: String): ByteArray {
         return Base64.getDecoder().decode(base64);
     }
 
     fun getStringContentFromBase64(base64: String): String {
-        return String(getFromBase64(base64), const.utf8)
+        return String(readFromBase64(base64), const.utf8)
     }
 
 }

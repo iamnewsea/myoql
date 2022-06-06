@@ -10,14 +10,11 @@ import java.time.format.DateTimeFormatter
 class CodeTest : TestBase() {
     @Test
     fun test_code() {
-        val sect = MyUtil.getBigCamelCase("AbcDefXyz").replace(Regex("[A-Z]"), {
-            if(it.range.first == 0){
-                return@replace it.value.lowercase()
-            }
-            return@replace "-" + it.value.lowercase()
-        })
-
-        println(sect)
+        var e = CipherUtil.AESUtil.generateKey();
+        println(e)
+        var r = CipherUtil.AESUtil.encrypt("abc", e)
+        println(r)
+        println(CipherUtil.AESUtil.decrypt(r, e))
     }
 
 //    @Test
