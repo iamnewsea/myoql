@@ -1,5 +1,6 @@
 package nbcp.bean
 
+import nbcp.comm.AsBoolean
 import nbcp.comm.Important
 import nbcp.comm.config
 import nbcp.db.*
@@ -26,6 +27,11 @@ class MongoFlywayBeanProcessor {
     fun playFlyVersion(version: Int? = null) {
         if (SpringUtil.runningInTest) {
             logger.Important("单元测试环境下,跳过Flyway处理!")
+            return;
+        }
+
+        if (config.getConfig("app.flyway.mongo.enable").AsBoolean(true)) {
+            logger.Important("app.flyway.mongo.enable 配置为禁用!")
             return;
         }
 
