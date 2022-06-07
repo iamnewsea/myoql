@@ -4,6 +4,9 @@ import nbcp.comm.*
 import nbcp.utils.HttpUtil
 import nbcp.utils.JsUtil
 import nbcp.utils.SpringUtil
+import org.apache.http.HttpException
+import org.springframework.web.client.HttpServerErrorException
+import org.springframework.web.client.RestClientException
 import java.lang.RuntimeException
 import java.time.LocalDateTime
 
@@ -48,8 +51,8 @@ object NacosServiceUtil {
         val http =
             HttpUtil("${getConfigServerHost(serverHost)}/v1/cs/configs?dataId=${dataId.AsString("*")}&group=${group}&tenant=$ns&pageNo=${pageNumber}&pageSize=100&search=${searchType}")
         val res = http.doGet();
-        if (http.status != 200) {
-            throw RuntimeException("ns:$ns,dataId:$dataId,group:$group , 获取nacos配置错误 : $res")
+        if (http.isError) {
+            throw HttpInvokeException(http.status, "ns:$ns,dataId:$dataId,group:$group , 获取nacos配置错误 : $res")
         }
         var list = mutableListOf<NacosConfigItemData>()
         var data = res.FromJson<NacosConfigsResponseDataModel>()!!;
@@ -74,10 +77,10 @@ object NacosServiceUtil {
         val http =
             HttpUtil("${getConfigServerHost(serverHost)}/v1/cs/configs?dataId=${dataId}&group=${group}&tenant=$ns")
         val res = http.doGet();
-        if (http.status == 200) {
+        if (http.isOk) {
             return ApiResult.of(res)
         }
-        throw RuntimeException("ns:$ns,dataId:$dataId,group:$group , 获取nacos配置错误 : $res")
+        throw HttpInvokeException(http.status, "ns:$ns,dataId:$dataId,group:$group , 获取nacos配置错误 : $res")
     }
 
     /**
@@ -102,10 +105,13 @@ object NacosServiceUtil {
                 }&type=${type.AsString("yaml")}"
             )
 
-        if (http.status == 200) {
+        if (http.isOk) {
             return JsonResult()
         } else {
-            throw RuntimeException("ns:$ns,dataId:$dataId,group:${group.AsString("DEFAULT_GROUP")} , 发布nacos错误 : $res")
+            throw HttpInvokeException(
+                http.status,
+                "ns:$ns,dataId:$dataId,group:${group.AsString("DEFAULT_GROUP")} , 发布nacos错误 : $res"
+            )
         }
     }
 
@@ -287,8 +293,11 @@ ${end_sign}
 
         val http = HttpUtil("${getDiscoveryServerHost(serverHost)}/v1/ns/instance/list?${query.toUrlQuery()}")
         val res = http.doGet();
-        if (http.status != 200) {
-            throw RuntimeException("ns:$namespaceId,dataId:$serviceName,group:$group , 获取nacos实例错误 : $res")
+        if (http.isError) {
+            throw HttpInvokeException(
+                http.status,
+                "ns:$namespaceId,dataId:$serviceName,group:$group , 获取nacos实例错误 : $res"
+            )
         }
 
         return res.FromJson<NacosInstanceData>()!!.hosts
@@ -327,8 +336,11 @@ ${end_sign}
 
         val http = HttpUtil("${getDiscoveryServerHost(serverHost)}/v1/ns/instance?${query.toUrlQuery()}")
         val res = http.doGet();
-        if (http.status != 200) {
-            throw RuntimeException("ns:$namespaceId,dataId:$serviceName,group:$group , 获取nacos实例错误 : $res")
+        if (http.isError) {
+            throw HttpInvokeException(
+                http.status,
+                "ns:$namespaceId,dataId:$serviceName,group:$group , 获取nacos实例错误 : $res"
+            )
         }
 
         return res.FromJson<NacosInstanceDetailData>()!!

@@ -53,6 +53,11 @@ object WxH5Group {
         var ret = ApiResult.error<H5AccessTokenData>("异常");
         var http = HttpUtil(url);
         var data = http.doGet().FromJson<H5AccessTokenData>() ?: H5AccessTokenData();
+        if( http.isError){
+            ret.code = http.status;
+            ret.msg = "接口调用出错!"
+            return ret;
+        }
         if (data.errcode != 0) {
             ret.msg = data.errmsg;
             if (ret.msg.HasValue) {
@@ -75,6 +80,11 @@ object WxH5Group {
         var ret = ApiResult<WxH5UserInfoData>();
         var http = HttpUtil(url);
         var data = http.doGet().FromJson<WxH5UserInfoData>() ?: WxH5UserInfoData();
+        if( http.isError){
+            ret.code = http.status;
+            ret.msg = "接口调用出错!"
+            return ret;
+        }
         if (data.errcode != 0) {
             ret.msg = data.errmsg;
             if (ret.msg.HasValue) {

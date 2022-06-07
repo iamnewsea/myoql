@@ -152,6 +152,19 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
     var status: Int = 0
         private set;
 
+
+    /**
+     * 是否有错误
+     */
+    val isError: Boolean
+        get() {
+            return this.isOk == false
+        }
+
+    val isOk: Boolean
+        get() {
+            return this.status.Between(200, 399)
+        }
     /**
      * 请求耗时时间
      */

@@ -60,16 +60,21 @@ data class WxPrePayServerRequestData @JvmOverloads constructor(
      * 获取预付Id
      */
     fun getPrepayId(mchSecret: String): ApiResult<String> {
-        val url = HttpUtil("https://api.mch.weixin.qq.com/pay/unifiedorder")
-        url.request. contentType = "text/xml;charset=UTF-8"
+        val ajax = HttpUtil("https://api.mch.weixin.qq.com/pay/unifiedorder")
+        ajax.request. contentType = "text/xml;charset=UTF-8"
 
-        val result = url.doPost(this.toWxAppPayXml(mchSecret))
+        val result = ajax.doPost(this.toWxAppPayXml(mchSecret))
+            .apply {
+                if( ajax.isError){
+                    return ApiResult.error("接口调用出错!")
+                }
+            }
             .Xml2Json()
             .get("xml")
             ?.ConvertJson(WxPrePayServerResponseData::class.java)
 
         if (result == null) {
-            return ApiResult.error("请求中出错!")
+            return ApiResult.error("接口返回数据错误!")
         }
 
         if (result.return_code != "SUCCESS" && result.result_code != "SUCCESS") {

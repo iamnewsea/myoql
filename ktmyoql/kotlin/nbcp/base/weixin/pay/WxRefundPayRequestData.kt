@@ -79,10 +79,15 @@ data class WxRefundPayRequestData @JvmOverloads constructor(
         http.sslSocketFactory = getSSLSocketFactory(mch_id)
 
         val result = http.doPost(postData)
+            .apply {
+                if( http.isError){
+                    return JsonResult.error("接口调用出错!")
+                }
+            }
             .Xml2Json()
             .get("xml")
             ?.ConvertJson(WxRefundPayResponseData::class.java)
-            ?: return JsonResult.error("请求中出错!");
+            ?: return JsonResult.error("接口返回数据错误!");
 
         if (result.return_code != "SUCCESS" && result.result_code != "SUCCESS") {
             return JsonResult.error("退款错误:" + result.return_msg.AsString(result.err_code_des));

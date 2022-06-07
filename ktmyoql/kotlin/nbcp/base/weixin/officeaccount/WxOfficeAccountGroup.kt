@@ -27,6 +27,11 @@ object WxOfficeAccountGroup {
         var url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=${token}&type=jsapi"
         val ajax = HttpUtil(url);
         val res = ajax.doGet().FromJson<StringMap>() ?: StringMap();
+        if( ajax.isError){
+            ret.code = ajax.status;
+            ret.msg = "接口调用出错!"
+            return ret;
+        }
 
         if (res.get("errcode").AsInt() != 0) {
             ret.msg = res["errmsg"].AsString();
@@ -62,6 +67,11 @@ object WxOfficeAccountGroup {
         var url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${wx.appId}&secret=${appSecret}"
         val ajax = HttpUtil(url);
         val res = ajax.doGet().FromJson<StringMap>();
+        if( ajax.isError){
+            ret.code = ajax.status;
+            ret.msg = "接口调用出错!"
+            return ret;
+        }
         if (res == null) {
             ret.msg = "网络错误";
             return ret;

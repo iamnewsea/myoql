@@ -13,11 +13,11 @@ object WxMiniProgramGroup {
      * wx.login 返回 code ,通过上述URL返回的数据
      */
     data class WxLoginInfoModel @JvmOverloads constructor(
-            var openid: String = "",
-            var session_key: String = "",
-            var unionid: String = "",
-            var errcode: String = "",
-            var errmsg: String = ""
+        var openid: String = "",
+        var session_key: String = "",
+        var unionid: String = "",
+        var errcode: String = "",
+        var errmsg: String = ""
     )
 
     /**
@@ -31,12 +31,17 @@ object WxMiniProgramGroup {
             return ApiResult.of(openId);
         }
 
-        val url = "https://api.weixin.qq.com/sns/jscode2session?appid=${wx.appId}&secret=${appSecret}&js_code=${code}&grant_type=authorization_code"
+        val url =
+            "https://api.weixin.qq.com/sns/jscode2session?appid=${wx.appId}&secret=${appSecret}&js_code=${code}&grant_type=authorization_code"
 
         val ajax = HttpUtil(url);
         var data = ajax.doGet().FromJson<WxLoginInfoModel>();
+        if (ajax.isError) {
+            return ApiResult.error("接口调用出错", ajax.status);
+        }
+
         if (data == null) {
-            return ApiResult.error("网络错误")
+            return ApiResult.error("接口调用没有返回数据!")
         }
 
         if (data.errmsg.HasValue) {

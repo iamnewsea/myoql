@@ -156,8 +156,8 @@ object WxSystemGroup {
         http.setPostBody(postBody.ToJson());
 
         var bytes = http.doNet();
-        if (http.status != 200 || http.response.contentType.contains("json")) {
-            return ApiResult.error(bytes)
+        if (http.isError || http.response.contentType.contains("json")) {
+            return ApiResult.error(bytes, http.status)
         }
 
         return ApiResult.of(http)
@@ -250,15 +250,21 @@ object WxSystemGroup {
 
         val tokenData = wx.officeAccount.getAccessToken(appSecret)
 
-        val url = HttpUtil();
+        val http = HttpUtil();
         if (tokenData.msg.HasValue) {
             return ApiResult.error(tokenData.msg)
         }
 
-        url.url = "${wx_url}${tokenData.data!!.token}"
-        url.request.contentType = "application/json"
+        http.url = "${wx_url}${tokenData.data!!.token}"
+        http.request.contentType = "application/json"
 
-        val ret = url.doPost(data.ToJson()).FromJson<wx_return_data>() ?: wx_return_data()
+        val ret = http.doPost(data.ToJson())
+            .apply {
+                if( http.isError){
+                    return ApiResult.error("接口调用出错!")
+                }
+            }
+            .FromJson<wx_return_data>() ?: wx_return_data()
         if (ret.errcode != 0) {
             return ApiResult.error(ret.errmsg);
         }
