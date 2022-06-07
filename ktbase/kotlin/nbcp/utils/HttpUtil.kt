@@ -18,7 +18,6 @@ import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import java.time.Duration
 import java.time.LocalDateTime
-import java.util.*
 import javax.imageio.ImageIO
 import javax.net.ssl.*
 
@@ -158,10 +157,10 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
      */
     val isError: Boolean
         get() {
-            return this.isOk == false
+            return this.isSuccess == false
         }
 
-    val isOk: Boolean
+    val isSuccess: Boolean
         get() {
             return this.status.Between(200, 399)
         }

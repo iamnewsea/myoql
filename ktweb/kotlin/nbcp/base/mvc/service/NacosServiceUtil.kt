@@ -4,10 +4,6 @@ import nbcp.comm.*
 import nbcp.utils.HttpUtil
 import nbcp.utils.JsUtil
 import nbcp.utils.SpringUtil
-import org.apache.http.HttpException
-import org.springframework.web.client.HttpServerErrorException
-import org.springframework.web.client.RestClientException
-import java.lang.RuntimeException
 import java.time.LocalDateTime
 
 object NacosServiceUtil {
@@ -77,7 +73,7 @@ object NacosServiceUtil {
         val http =
             HttpUtil("${getConfigServerHost(serverHost)}/v1/cs/configs?dataId=${dataId}&group=${group}&tenant=$ns")
         val res = http.doGet();
-        if (http.isOk) {
+        if (http.isSuccess) {
             return ApiResult.of(res)
         }
         throw HttpInvokeException(http.status, "ns:$ns,dataId:$dataId,group:$group , 获取nacos配置错误 : $res")
@@ -105,7 +101,7 @@ object NacosServiceUtil {
                 }&type=${type.AsString("yaml")}"
             )
 
-        if (http.isOk) {
+        if (http.isSuccess) {
             return JsonResult()
         } else {
             throw HttpInvokeException(
