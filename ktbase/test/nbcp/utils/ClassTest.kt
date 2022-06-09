@@ -13,7 +13,7 @@ class ClassTest : TestBase() {
         var d = 0;
         println(Int::class.java.simpleName)
         println(Float::class.java.simpleName)
-        println(Float::class.java.IsType("Int"))
-        println(Float::class.java.IsType("Number"))
+        println(Int::class.java.IsType("Int"))
+        println(Float::class.java.IsType("Float"))
     }
 }
