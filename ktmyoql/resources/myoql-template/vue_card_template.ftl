@@ -162,7 +162,6 @@ export default {
             jv.info(this.action_name + " 成功");
             if (this.action == "add") {
                 var id = res.data.data
-                jv.setLastRowId("${url}/list", "list", id);
                 this.$router.push("${url}/edit/" + id)
             } else if (this.action == "edit") {
                 this.$router.push("${url}/list")
