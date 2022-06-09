@@ -10,6 +10,10 @@ import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 
+fun _get_value_items(vararg p1: Any?): List<Any?> {
+    return p1?.map { _get_value_item(it) }
+}
+
 
 fun _get_value_item(p1: Any?): Any {
     if (p1 == null) {
@@ -176,11 +180,11 @@ class Freemarker_IsIn : TemplateMethodModelEx {
 class Freemarker_IsType : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
         var paramValue = _get_value_item(p0[0]);
-        var clazz = _get_value_item(p0[1]) as String;
+        var clazzes = _get_value_items(*p0.Slice(1).toTypedArray()).map { it.AsString() } ;
         if (paramValue is Field) {
-            return paramValue.type.IsType(clazz)
+            return clazzes.any { paramValue.type.IsType(it) }
         } else if (paramValue is Class<*>) {
-            return paramValue.IsType(clazz)
+            return clazzes.any { paramValue.IsType(it) }
         }
         throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
     }

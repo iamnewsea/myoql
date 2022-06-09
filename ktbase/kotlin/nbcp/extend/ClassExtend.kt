@@ -73,10 +73,11 @@ val Class<*>.kotlinTypeName: String
     }
 
 /**
- * 是否是类型
+ * 是否是类型 (不能判断接口，不区分大小写。)
  */
 fun Class<*>.IsType(value: String): Boolean {
-    if (this.name == value || this.simpleName == value) return true;
+    if (this.name basicSame value || this.simpleName basicSame value) return true;
+
 
     if (this.superclass != null) {
         return this.superclass.IsType(value)

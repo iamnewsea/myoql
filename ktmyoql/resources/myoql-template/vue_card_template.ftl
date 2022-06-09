@@ -68,6 +68,14 @@
                     <kv label="${field_cn(field)}">
                         <el-time-select v-model="info.${field.getName()}" placeholder="选择时间" />
                     </kv>
+    <#elseif is_type(field,"byte,int,long")>
+                    <kv label="${field_cn(field)}">
+                        <el-input v-model="info.${field.getName()}" chk="?int" />
+                    </kv>
+    <#elseif is_type(field,"float,double")>
+        <kv label="${field_cn(field)}">
+            <el-input v-model="info.${field.getName()}" chk="?float" />
+        </kv>
     <#elseif field.getName() == "name">
                     <kv label="${field_cn(field)}">
                         <el-input v-model="info.${field.getName()}" chk="*" />

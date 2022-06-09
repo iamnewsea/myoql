@@ -98,7 +98,7 @@ plugin.toolkit.log.grpc.reporter.upstream_timeout=${SW_GRPC_LOG_GRPC_UPSTREAM_TI
     - GetEnumNumberField
     - GetEnumStringField
 - String
-    - VbSame
+    - basicSame
     - NewString
     - Repeat 
     - HasValue
