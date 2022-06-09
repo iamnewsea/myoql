@@ -30,7 +30,7 @@ class MongoFlywayBeanProcessor {
             return;
         }
 
-        if (config.getConfig("app.flyway.mongo.enable").AsBoolean(true)) {
+        if (config.getConfig("app.flyway.mongo.enable").AsBoolean(true) == false) {
             logger.Important("app.flyway.mongo.enable 配置为禁用!")
             return;
         }
