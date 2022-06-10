@@ -1,7 +1,8 @@
 <template>
     <my-ref
+        v-if="value2"
         url="${url}/list"
-        v-model="value"
+        v-model="value2"
         @loaded="procData"
         :multi="multi"
         :page-size="10"
@@ -69,6 +70,7 @@ export default {
     },
     data() {
       return {
+          value2: null,
 <#list fields as field>
 <#if field.getType().isEnum()>
                 ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
@@ -77,6 +79,18 @@ export default {
 </#if>
 </#list>
       }
+    },
+    watch:{
+        value:{
+          deep: true,immediate: true, handler(v){
+              this.value2 = v;
+          }
+        },
+        value2:{
+            deep: true,immediate: true, handler(v){
+                this.$emit("input",v);
+            }
+        }
     },
     methods: {
       procData(res, op) {
