@@ -43,11 +43,11 @@
             <el-table-column label="操作" align="center">
                 <template v-slot="scope">
                     <#if has("status")>
-                    <el-button @click="set_click(scope.row)" size="small">
+                    <el-button round @click="set_click(scope.row)" size="small">
                         设置状态
                     </el-button>
                     </#if>
-                    <el-button @click="delete_click(scope.row)" size="small">
+                    <el-button type="warning" plain round @click="delete_click(scope.row)" size="small">
                         删除
                     </el-button>
                 </template>
