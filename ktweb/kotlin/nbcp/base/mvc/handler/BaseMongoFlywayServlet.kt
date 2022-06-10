@@ -4,6 +4,7 @@ import nbcp.comm.*
 import nbcp.db.db
 import nbcp.bean.MongoFlywayBeanProcessor
 import nbcp.db.mongo.delete
+import nbcp.db.mongo.match_gte
 import nbcp.db.mongo.match_not_equal
 import nbcp.utils.SpringUtil
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -32,6 +33,11 @@ open class BaseMongoFlywayServlet {
     fun doGet(version: String, request: HttpServletRequest, response: HttpServletResponse): JsonResult {
         db.mor_base.sysFlywayVersion.delete()
             .where { it.version match_not_equal 0 }
+            .apply {
+                if (version.HasValue) {
+                    this.where { it.version match_gte version.AsInt() }
+                }
+            }
             .exec();
 
         val flyways = SpringUtil.getBeanWithNull(MongoFlywayBeanProcessor::class.java)
