@@ -7,15 +7,21 @@ import nbcp.comm.formatWithJson
 import nbcp.comm.usingScope
 import org.junit.jupiter.api.Test
 import org.springframework.boot.logging.LogLevel
+import java.io.File
 import java.io.FileInputStream
 
 
 class HttpUtilTest : TestBase() {
     @Test
     fun abfc() {
-        var http = HttpUtil("http://localhost:8084/sys/upload")
+        var http = HttpUtil("http://localhost:8089/sys/upload")
         http.request.headers.set("group", "lowcode")
-        var ret = http.submitForm(mapOf("DevOps流程.vsdx" to  FileInputStream("""D:\b.xlsx""")))
+        var ret = http.submitForm(
+            mapOf(
+                "a" to "b",
+                "cmd.zip" to File("""/home/udi/Downloads/jenkins-ops-cmd.zip""")
+            )
+        )
         println(ret)
     }
 

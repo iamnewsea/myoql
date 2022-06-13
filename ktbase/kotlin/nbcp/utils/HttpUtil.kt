@@ -576,7 +576,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
 Content-Disposition: form-data; name="${fileName}"
 
 ${value}
-""".replace("\n", "\r\n").toByteArray()
+""".replace("\n", "\r\n").toByteArray(const.utf8)
                 )
 
                 return@forEach
@@ -595,7 +595,7 @@ ${value}
 Content-Disposition: form-data; name="${fileName}"; filename="${fileName}"
 Content-Type: application/octet-stream
 
-""".replace("\n", "\r\n").toByteArray()
+""".replace("\n", "\r\n").toByteArray(const.utf8)
                 )
 
                 val bytes = ByteArray(cacheSize);
@@ -609,11 +609,10 @@ Content-Type: application/octet-stream
                     }
                 }
 
-                out.write("\r\n--${boundary}".toByteArray())
             }
         }
 
-        out.write("--".toByteArray())
+        out.write("\r\n--${boundary}--".toByteArray(const.utf8))
     }
 
     /**
