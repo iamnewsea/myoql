@@ -52,6 +52,11 @@ open class StringKeyMap<T> : LinkedHashMap<String, T> {
         return this[key2];
     }
 
+
+    fun containsKeyIgnoreCase(key: String): Boolean {
+        return this.keys.any { it basicSame key };
+    }
+
     private fun toJsonValueString(value: Any?): String {
         if (value == null) return "null"
         var type = value::class.java
