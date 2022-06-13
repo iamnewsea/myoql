@@ -6,6 +6,7 @@ package nbcp.utils
 
 import nbcp.comm.*
 import nbcp.db.LoginNamePasswordData
+import nbcp.db.UploadFileResource
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.Resource
 import java.awt.image.BufferedImage
@@ -535,10 +536,35 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
 
     private val CACHESIZE = 1024 * 1024;
 
+    fun submitForm(form: Map<String, Any>): String {
+        var items = form
+            .filter { it.value::class.java.IsSimpleType() }
+            .mapValues { it.AsString() }
+            .filter { it.value.HasValue }
+
+        var files = form
+            .filter { it.value::class.java.IsSimpleType() == false }
+            .mapValues {
+                var v = it.value;
+                if (v is UploadFileResource) {
+                    return@mapValues v;
+                }
+
+                if (v is File) {
+                    return@mapValues UploadFileResource(v.name, v.inputStream())
+                }
+
+                throw RuntimeException("不识别的类型:${v::class.java.name}")
+            }
+
+        return submitForm(items, files)
+    }
+
+
     /**
      * 提交表单
      */
-    fun submitForm(items: Map<String, String>, files: Map<String, Resource>): String {
+    fun submitForm(items: Map<String, String>, files: Map<String, UploadFileResource>): String {
         // https://blog.csdn.net/Sunfj0821/article/details/104605290/
 
         val boundary = CodeUtil.getCode();
@@ -592,7 +618,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
 
     }
 
-    private fun writeFormFile(out: DataOutputStream, map: Map<String, Resource>, boundary: String) {
+    private fun writeFormFile(out: DataOutputStream, map: Map<String, UploadFileResource>, boundary: String) {
 
         map.keys.forEach { fileName ->
             var resource = map.get(fileName)!!;
@@ -601,7 +627,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
 
 
             if (this.request.headers.containsKeyIgnoreCase("Transfer-Encoding") == false) {
-                contentLength = resource.contentLength().toInt();
+                contentLength = resource.stream.available();
             }
 
 
@@ -611,10 +637,10 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
                 fileName,
                 "application/octet-stream",
                 contentLength,
-                resource.filename.AsString("filename")
+                resource.fileName.AsString("filename")
             )
 
-            resource.file.inputStream().copyTo(out, CACHESIZE)
+            resource.stream.copyTo(out, CACHESIZE)
         }
 
     }
