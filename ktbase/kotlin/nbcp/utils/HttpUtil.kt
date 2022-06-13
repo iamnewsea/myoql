@@ -164,6 +164,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         get() {
             return this.status.Between(200, 399)
         }
+
     /**
      * 请求耗时时间
      */
@@ -476,9 +477,9 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
 
     /**
      * 下载文件
-     * @param filePath:保存位置，优先使用Url中的文件名，如果存在，则用唯一Code命名。
+     * @param filePath:保存位置，优先使用Url中的文件名，如果为空，则用唯一Code命名。
      */
-    fun doDownloadFile(filePath: String): FileMessage {
+    fun doDownloadFile(targetFileName: String): FileMessage {
         val CACHESIZE = 1024 * 1024;
 
         val remoteImage = url;
@@ -492,12 +493,11 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         ret.name = extInfo.name;
         ret.extName = extInfo.extName;
 
-        val oriFile = filePath + File.separatorChar + extInfo.name + "." + extInfo.extName;
-        val tempFile = filePath + File.separatorChar + CodeUtil.getCode() + "." + extInfo.extName;
+        var fileName = targetFileName.AsString { MyUtil.joinUrl("./", extInfo.getFileName()) }
 
-        ret.fullPath = tempFile;
+        ret.fullPath = fileName;
 
-        val destFilePath = File(tempFile)
+        val destFilePath = File(fileName)
 
         try {
             if (destFilePath.parentFile.exists() == false) {
@@ -509,7 +509,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         }
 
         if (destFilePath.createNewFile() == false) {
-            ret.msg = "创建文件${tempFile} 失败"
+            ret.msg = "创建文件${fileName} 失败"
             return ret;
         }
 
@@ -529,24 +529,13 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
 
         doNet();
 
-        //判断是否存在原始文件
-        if (File(oriFile).exists() == false) {
-            File(tempFile).renameTo(File(oriFile));
-
-            ret.fullPath = oriFile;
-        }
-
         return ret;
     }
 
-
     /**
-     * 大文件上传文件，块大小1MB
-     * @param fileName: 文件名。
-     * @param fileStream: 文件输入流。
-     * @return 上传文件返回的结果，如Json：{id,name,url,msg}
+     * 提交表单
      */
-    fun uploadFile(fileName: String, fileStream: InputStream): String {
+    fun submitForm(map: Map<String, Any>): String {
         val CACHESIZE = 1024 * 1024;
 
         val boundary = "------" + CodeUtil.getCode();
@@ -564,27 +553,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
 //        }
 
         this.request.postAction = { out ->
-            out.write(
-                """--${boundary}
-Content-Disposition: form-data; name="${fileName}"; filename="${fileName}"
-Content-Type: application/octet-stream
-
-""".replace("\n", "\r\n").toByteArray()
-            )
-
-
-            val bytes = ByteArray(CACHESIZE);
-            fileStream.use { input ->
-                while (true) {
-                    val bytes_len = input.read(bytes)
-                    if (bytes_len <= 0) {
-                        break;
-                    }
-                    out.write(bytes, 0, bytes_len)
-                }
-            }
-
-            out.write("\r\n--${boundary}--".toByteArray())
+            writeForm(out, map, boundary, CACHESIZE);
         }
 
         val ret = this.doNet()
@@ -595,4 +564,111 @@ Content-Type: application/octet-stream
 
         return ret;
     }
+
+    private fun writeForm(out: DataOutputStream, map: Map<String, Any>, boundary: String, cacheSize: Int) {
+
+        map.keys.forEach { fileName ->
+            var value = map.get(fileName)!!;
+
+            if (value::class.java.IsSimpleType()) {
+                out.write(
+                    """--${boundary}
+Content-Disposition: form-data; name="${fileName}"
+
+${value}
+""".replace("\n", "\r\n").toByteArray()
+                )
+
+                return@forEach
+            }
+
+            var fileStream: InputStream? = null;
+            if (value is File) {
+                fileStream = value.inputStream()
+            } else if (value is InputStream) {
+                fileStream = value;
+            }
+
+            if (fileStream != null) {
+                out.write(
+                    """--${boundary}
+Content-Disposition: form-data; name="${fileName}"; filename="${fileName}"
+Content-Type: application/octet-stream
+
+""".replace("\n", "\r\n").toByteArray()
+                )
+
+                val bytes = ByteArray(cacheSize);
+                fileStream.use { input ->
+                    while (true) {
+                        val bytes_len = input.read(bytes)
+                        if (bytes_len <= 0) {
+                            break;
+                        }
+                        out.write(bytes, 0, bytes_len)
+                    }
+                }
+
+                out.write("\r\n--${boundary}".toByteArray())
+            }
+        }
+
+        out.write("--".toByteArray())
+    }
+
+    /**
+     * 大文件上传文件，块大小1MB
+     * @param fileName: 文件名。
+     * @param fileStream: 文件输入流。
+     * @return 上传文件返回的结果，如Json：{id,name,url,msg}
+     */
+//    fun upload1File(fileName: String, fileStream: InputStream): String {
+//        val CACHESIZE = 1024 * 1024;
+//
+//        val boundary = "------" + CodeUtil.getCode();
+//
+//        this.request.requestMethod = "POST"
+//        this.request.connectTimeout = 1200_000
+//        this.request.readTimeout = 1200_000
+//        this.request.headers.set("Connection", "keep-alive")
+//        this.request.headers.set("Content-Type", "multipart/form-data; boundary=${boundary}")
+//        this.request.chunkedStreamingMode = CACHESIZE
+//
+////        var isTxt = false;
+////        this.setResponse { conn ->
+////            isTxt = getTextTypeFromContentType(conn.contentType)
+////        }
+//
+//        this.request.postAction = { out ->
+//            out.write(
+//                """--${boundary}
+//Content-Disposition: form-data; name="${fileName}"; filename="${fileName}"
+//Content-Type: application/octet-stream
+//
+//""".replace("\n", "\r\n").toByteArray()
+//            )
+//
+//
+//            val bytes = ByteArray(CACHESIZE);
+//            fileStream.use { input ->
+//                while (true) {
+//                    val bytes_len = input.read(bytes)
+//                    if (bytes_len <= 0) {
+//                        break;
+//                    }
+//                    out.write(bytes, 0, bytes_len)
+//                }
+//            }
+//
+//            out.write("\r\n--${boundary}--".toByteArray())
+//        }
+//
+//        val ret = this.doNet()
+//
+//        if (this.response.resultIsText) {
+//            logger.info(ret.Slice(0, 4096))
+//        }
+//
+//        return ret;
+//    }
 }

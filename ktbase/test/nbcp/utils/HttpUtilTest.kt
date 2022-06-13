@@ -15,7 +15,7 @@ class HttpUtilTest : TestBase() {
     fun abfc() {
         var http = HttpUtil("http://localhost:8084/sys/upload")
         http.request.headers.set("group", "lowcode")
-        var ret = http.uploadFile("DevOps流程.vsdx", FileInputStream("""D:\b.xlsx"""))
+        var ret = http.submitForm(mapOf("DevOps流程.vsdx" to  FileInputStream("""D:\b.xlsx""")))
         println(ret)
     }
 
