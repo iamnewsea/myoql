@@ -536,6 +536,8 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
      * 提交表单
      */
     fun submitForm(map: Map<String, Any>): String {
+        // https://blog.csdn.net/Sunfj0821/article/details/104605290/
+
         val CACHESIZE = 1024 * 1024;
 
         val boundary = "------" + CodeUtil.getCode();
