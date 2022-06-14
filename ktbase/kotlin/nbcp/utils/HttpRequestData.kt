@@ -3,6 +3,7 @@ package nbcp.utils
 import nbcp.comm.AsString
 import nbcp.comm.StringMap
 import org.apache.http.HttpHeaders
+import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
 
 data class HttpRequestData @JvmOverloads constructor(
@@ -38,7 +39,7 @@ data class HttpRequestData @JvmOverloads constructor(
     /**
      * postAction 是上传专用
      */
-    var postAction: ((DataOutputStream) -> Unit)? = null
+    var postAction: ((ByteArrayOutputStream) -> Unit)? = null
 
     /**
      * post 小数据量
