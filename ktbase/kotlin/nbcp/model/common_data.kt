@@ -3,7 +3,6 @@ package nbcp.db
 import nbcp.comm.*
 import nbcp.utils.*
 import java.io.InputStream
-import java.io.OutputStream
 import java.io.Serializable
 
 /**
@@ -162,4 +161,4 @@ open class LoginUserModel @JvmOverloads constructor(
 //}
 
 
-data class UploadFileResource(var fileName: String = "", var stream: InputStream)
+data class UploadFileResource(var fileName: String, val stream: InputStream)
