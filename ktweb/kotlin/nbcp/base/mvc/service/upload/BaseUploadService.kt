@@ -203,7 +203,7 @@ abstract class BaseUploadService {
                 var files = it.second;
 
                 files.ForEachExt for2@{ file, _ ->
-                    fileName = getBestFileName(fileName, file.originalFilename)
+                    fileName = getBestFileName(file.originalFilename, fileName)
                     var ret1 = uploadRequestFile(storageType, file, group, fileName, user, corpId);
                     if (ret1.msg.HasValue) {
                         msg = ret1.msg;
@@ -228,13 +228,17 @@ abstract class BaseUploadService {
      * 找到最合适的文件名
      */
     fun getBestFileName(fileName: String?, originalFilename: String?): String {
-        if (fileName == null && originalFilename == null) {
+        if (fileName.isNullOrEmpty() && originalFilename.isNullOrEmpty()) {
             throw RuntimeException("找不到文件名")
         }
-        if (fileName == null) {
-            return originalFilename!!;
+        if (fileName.isNullOrEmpty()) {
+            return originalFilename!!
         }
-        if (originalFilename == null) return fileName;
+        if (originalFilename.isNullOrEmpty()) return fileName;
+
+        if (fileName == "blob") {
+            return originalFilename.AsString()
+        }
 
         if (fileName.contains(".")) {
             return fileName

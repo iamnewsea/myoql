@@ -660,7 +660,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         if (fileName.isEmpty()) {
             out.writeLine("""Content-Disposition: form-data; name="${key}"""")
         } else {
-            out.writeLine("""Content-Disposition: form-data; name="${key}; filename="${fileName}"""")
+            out.writeLine("""Content-Disposition: form-data; name="${key}"; filename="${fileName}"""")
         }
 
         out.writeLine("""Content-Type: ${contentType}""")
