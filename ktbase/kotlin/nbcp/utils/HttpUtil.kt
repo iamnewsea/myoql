@@ -613,6 +613,9 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
 
             writeBoundary(out, boundary);
             writeDispositionHeaders(out, fileName, "text/plain;charset=UTF-8", contentLength)
+
+
+            out.writeNewLine()
             out.writeLine(value.AsString());
         }
 
@@ -640,6 +643,8 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
                 resource.fileName.AsString("filename")
             )
 
+
+            out.writeNewLine()
             resource.stream.copyTo(out, CACHESIZE)
         }
 
@@ -669,8 +674,6 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         if (contentLength > 0) {
             out.writeLine("""Content-Length: ${contentLength}""")
         }
-
-        out.writeNewLine()
     }
 
     private fun OutputStream.writeLine(txt: String) {
