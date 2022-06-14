@@ -19,7 +19,7 @@ class HttpUtilTest : TestBase() {
         var ret = http.submitForm(
             mapOf(
                 "a" to "b",
-                "cmd.zip" to File("""/home/udi/Downloads/jenkins-ops-cmd.zip""")
+                "tar.txt" to File("""/opt/idea-2022.1/Install-Linux-tar.txt""")
             )
         )
         println(ret)

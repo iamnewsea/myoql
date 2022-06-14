@@ -359,8 +359,9 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
                         out.flush();
                     }
                 } else if (this.request.postAction != null) {
-                    DataOutputStream(conn.outputStream).use { out ->
+                    ByteArrayOutputStream().use { out ->
                         this.request.postAction?.invoke(out);
+                        out.writeTo(conn.outputStream)
                         out.flush();
                     }
                 }
@@ -539,7 +540,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
     fun submitForm(form: Map<String, Any>): String {
         var items = form
             .filter { it.value::class.java.IsSimpleType() }
-            .mapValues { it.AsString() }
+            .mapValues { it.value.AsString() }
             .filter { it.value.HasValue }
 
         var files = form
@@ -576,11 +577,6 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         this.request.headers.set("Content-Type", "multipart/form-data; boundary=${boundary}")
         this.request.chunkedStreamingMode = CACHESIZE
 
-//        var isTxt = false;
-//        this.setResponse { conn ->
-//            isTxt = getTextTypeFromContentType(conn.contentType)
-//        }
-
         this.request.postAction = { out ->
             writeFormSimple(out, items, boundary);
             writeFormFile(out, files, boundary);
@@ -598,7 +594,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         return ret;
     }
 
-    private fun writeFormSimple(out: DataOutputStream, map: Map<String, String>, boundary: String) {
+    private fun writeFormSimple(out: ByteArrayOutputStream, map: Map<String, String>, boundary: String) {
 
         map.keys.forEach { fileName ->
             var value = map.get(fileName)!!;
@@ -621,7 +617,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
 
     }
 
-    private fun writeFormFile(out: DataOutputStream, map: Map<String, UploadFileResource>, boundary: String) {
+    private fun writeFormFile(out: ByteArrayOutputStream, map: Map<String, UploadFileResource>, boundary: String) {
 
         map.keys.forEach { fileName ->
             var resource = map.get(fileName)!!;
