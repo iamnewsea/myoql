@@ -16,6 +16,40 @@
     > mvn clean install -Dmaven.test.skip=true  -P release
     > mvn clean deploy -Dmaven.test.skip=true -P release
 
+
+### 注意
+需要集成 kotlin-maven-plugin
+```
+<plugin>
+    <groupId>org.jetbrains.kotlin</groupId>
+    <artifactId>kotlin-maven-plugin</artifactId>
+    <version>${kotlin.version}</version>
+    <executions>
+        <execution>
+            <id>compile</id>
+            <phase>validate</phase>
+            <goals>
+                <goal>compile</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>test-compile</id>
+            <phase>test-compile</phase>
+            <goals>
+                <goal>test-compile</goal>
+            </goals>
+        </execution>
+    </executions>
+    <configuration>
+        <jvmTarget>1.8</jvmTarget>
+    </configuration>
+</plugin>
+```
+`<phase>validate</phase>` 表示在 validate 阶段编译 kotlin
+让 `kotlin-maven-plugin` 执行编译的时机, 早于 默认的 `maven-compiler-plugin`
+
+`maven-compiler-plugin` 也可以编译 java . 所以 集成了 `maven-compiler-plugin` 后不必集成 `maven-compiler-plugin`
+ 
 ## 发布到私服
 maven的 setting.xml 增加
 
