@@ -6,7 +6,9 @@ package nbcp.utils
 
 import nbcp.comm.*
 import nbcp.db.LoginNamePasswordData
+import nbcp.db.UploadFileResource
 import org.slf4j.LoggerFactory
+import org.springframework.core.io.Resource
 import java.awt.image.BufferedImage
 import java.io.*
 import java.net.HttpURLConnection
@@ -357,8 +359,9 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
                         out.flush();
                     }
                 } else if (this.request.postAction != null) {
-                    DataOutputStream(conn.outputStream).use { out ->
+                    ByteArrayOutputStream().use { out ->
                         this.request.postAction?.invoke(out);
+                        out.writeTo(conn.outputStream)
                         out.flush();
                     }
                 }
@@ -532,13 +535,38 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         return ret;
     }
 
+    private val CACHESIZE = 1024 * 1024;
+
+    fun submitForm(form: Map<String, Any>): String {
+        var items = form
+            .filter { it.value::class.java.IsSimpleType() }
+            .mapValues { it.value.AsString() }
+            .filter { it.value.HasValue }
+
+        var files = form
+            .filter { it.value::class.java.IsSimpleType() == false }
+            .mapValues {
+                var v = it.value;
+                if (v is UploadFileResource) {
+                    return@mapValues v;
+                }
+
+                if (v is File) {
+                    return@mapValues UploadFileResource(v.name, v.inputStream())
+                }
+
+                throw RuntimeException("不识别的类型:${v::class.java.name}")
+            }
+
+        return submitForm(items, files)
+    }
+
+
     /**
      * 提交表单
      */
-    fun submitForm(map: Map<String, Any>): String {
+    fun submitForm(items: Map<String, String>, files: Map<String, UploadFileResource>): String {
         // https://blog.csdn.net/Sunfj0821/article/details/104605290/
-
-        val CACHESIZE = 1024 * 1024;
 
         val boundary = CodeUtil.getCode();
 
@@ -549,13 +577,12 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         this.request.headers.set("Content-Type", "multipart/form-data; boundary=${boundary}")
         this.request.chunkedStreamingMode = CACHESIZE
 
-//        var isTxt = false;
-//        this.setResponse { conn ->
-//            isTxt = getTextTypeFromContentType(conn.contentType)
-//        }
-
         this.request.postAction = { out ->
-            writeForm(out, map, boundary, CACHESIZE);
+            writeFormSimple(out, items, boundary);
+            writeFormFile(out, files, boundary);
+
+
+            out.write("--${boundary}--".toByteArray(const.utf8))
         }
 
         val ret = this.doNet()
@@ -567,81 +594,61 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         return ret;
     }
 
-    private fun writeForm(out: DataOutputStream, map: Map<String, Any>, boundary: String, cacheSize: Int) {
+    private fun writeFormSimple(out: ByteArrayOutputStream, map: Map<String, String>, boundary: String) {
 
         map.keys.forEach { fileName ->
             var value = map.get(fileName)!!;
 
             var contentLength = -1;
 
-            if (value::class.java.IsSimpleType()) {
-                if (this.request.headers.containsKeyIgnoreCase("Transfer-Encoding") == false) {
-                    contentLength = value.AsString().toByteArray(const.utf8).size;
-                }
 
-
-                writeBoundary(out, boundary);
-                writeDispositionHeaders(out, fileName, "text/plain;charset=UTF-8", contentLength)
-                out.writeLine(value.AsString());
-//                out.write(
-//                    """--${boundary}
-//Content-Disposition: form-data; name="${fileName}"
-//Content-Type: text/plain;charset=UTF-8
-//
-//${value}
-//""".replace("\n", "\r\n").toByteArray(const.utf8)
-//                )
-
-                return@forEach
+            if (this.request.headers.containsKeyIgnoreCase("Transfer-Encoding") == false) {
+                contentLength = value.AsString().toByteArray(const.utf8).size;
             }
 
-            var fileStream: InputStream? = null;
-            if (value is File) {
-                fileStream = value.inputStream()
-            } else if (value is InputStream) {
-                fileStream = value;
-            }
+            out.writeLine("--${boundary}")
+            writeDispositionHeaders(out, fileName, "text/plain;charset=UTF-8", contentLength)
 
-            if (fileStream != null) {
-                if (this.request.headers.containsKeyIgnoreCase("Transfer-Encoding") == false) {
-                    contentLength = fileStream.available();
-                }
-
-
-                writeBoundary(out, boundary);
-                writeDispositionHeaders(out, fileName, "application/octet-stream", contentLength, fileName)
-                out.writeLine(value.AsString());
-                fileStream.copyTo(out, cacheSize)
-
-//                out.write(
-//                    """--${boundary}
-//Content-Disposition: form-data; name="${fileName}"; filename="${fileName}"
-//Content-Type: application/octet-stream
-//
-//""".replace("\n", "\r\n").toByteArray(const.utf8)
-//                )
-
-//                val bytes = ByteArray(cacheSize);
-//                fileStream.use { input ->
-//                    while (true) {
-//                        val bytes_len = input.read(bytes)
-//                        if (bytes_len <= 0) {
-//                            break;
-//                        }
-//                        out.write(bytes, 0, bytes_len)
-//                    }
-//                }
-
-            }
+            out.writeNewLine()
+            out.writeLine(value.AsString());
         }
 
-        out.write("\r\n--${boundary}--".toByteArray(const.utf8))
+    }
+
+    private fun writeFormFile(out: ByteArrayOutputStream, map: Map<String, UploadFileResource>, boundary: String) {
+
+        map.keys.forEach { fileName ->
+            var resource = map.get(fileName)!!;
+
+            var contentLength = -1;
+
+
+            if (this.request.headers.containsKeyIgnoreCase("Transfer-Encoding") == false) {
+                contentLength = resource.stream.available();
+            }
+
+
+            out.writeLine("--${boundary}")
+            writeDispositionHeaders(
+                out,
+                fileName,
+                "application/octet-stream",
+                contentLength,
+                resource.fileName.AsString("filename")
+            )
+
+
+            out.writeNewLine()
+            resource.stream.copyTo(out, CACHESIZE)
+            out.writeNewLine()
+        }
+
     }
 
     // /home/udi/.m2/repository/org/springframework/spring-web/5.3.20/spring-web-5.3.20-sources.jar!/org/springframework/http/converter/FormHttpMessageConverter.java
-    private fun writeBoundary(out: OutputStream, boundary: String) {
-        out.writeLine("--${boundary}")
-    }
+//    private fun writeBoundary(out: OutputStream, boundary: String) {
+//        out.writeLine("--${boundary}")
+//    }
 
     private fun writeDispositionHeaders(
         out: OutputStream,
@@ -653,7 +660,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         if (fileName.isEmpty()) {
             out.writeLine("""Content-Disposition: form-data; name="${key}"""")
         } else {
-            out.writeLine("""Content-Disposition: form-data; name="${key}; filename="${fileName}""""")
+            out.writeLine("""Content-Disposition: form-data; name="${key}"; filename="${fileName}"""")
         }
 
         out.writeLine("""Content-Type: ${contentType}""")
@@ -662,8 +669,10 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         if (contentLength > 0) {
             out.writeLine("""Content-Length: ${contentLength}""")
         }
+    }
 
-        out.writeNewLine()
+    private fun OutputStream.writeText(txt: String) {
+        this.write("${txt}".toByteArray(const.utf8));
     }
 
     private fun OutputStream.writeLine(txt: String) {

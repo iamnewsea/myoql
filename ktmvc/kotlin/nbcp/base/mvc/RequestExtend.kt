@@ -253,12 +253,16 @@ fun HttpServletRequest.findParameterValue(key: String): Any? {
         return ret;
     }
 
-
     ret = this.queryJson.get(key)
     if (ret != null) {
         return ret;
     }
 
+
+    var ret2 = this.parameterMap.get(key)
+    if (ret2 != null && ret2.any()) {
+        return ret2.joinToString(",");
+    }
 
     ret = this.getPostJson().get(key)
     if (ret != null) {
