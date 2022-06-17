@@ -88,7 +88,7 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
      * 从Array最后位置获取。
      */
     fun select_array_from_last(select: (M) -> MongoColumnName, take: Int): MongoQueryClip<M, E> {
-        return select_array_slice(select(this.moerEntity).toString(), 0 - take)
+        return select_array_slice(select(this.moerEntity).toString(), if (take < 0) take else (0 - take))
     }
 
     /**
