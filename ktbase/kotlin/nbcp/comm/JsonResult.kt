@@ -71,6 +71,8 @@ open class ApiResult<T>() : JsonResult() {
     }
 }
 
+class DataInvalidateException @JvmOverloads constructor(msg: String = "") :
+    RuntimeException(msg.AsString("数据非法"))
 
 class ParameterInvalidException @JvmOverloads constructor(msg: String = "") :
     RuntimeException(msg.AsString("参数非法"))

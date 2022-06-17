@@ -2,14 +2,11 @@ package nbcp.db.mongo
 
 import nbcp.comm.*
 import nbcp.db.db
-import nbcp.db.sql.MyOqlSqlTreeData
-import nbcp.db.sql.SqlColumnName
 import org.bson.Document
 import org.springframework.data.mongodb.core.query.Criteria
 //import nbcp.comm.*
 
 
-import org.slf4j.LoggerFactory
 import java.io.Serializable
 
 /**
@@ -84,26 +81,32 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
      * 获取Array的某几个
      */
     fun select_array_from_first(select: (M) -> MongoColumnName, skip: Int, take: Int): MongoQueryClip<M, E> {
-        return select_array_slice(select(this.moerEntity).toString(), false, skip, take)
+        return select_array_slice(select(this.moerEntity).toString(), skip, take)
     }
 
     /**
      * 从Array最后位置获取。
      */
-    fun select_array_from_last(select: (M) -> MongoColumnName, skip: Int, take: Int): MongoQueryClip<M, E> {
-        return select_array_slice(select(this.moerEntity).toString(), true, skip, take)
+    fun select_array_from_last(select: (M) -> MongoColumnName, take: Int): MongoQueryClip<M, E> {
+        return select_array_slice(select(this.moerEntity).toString(), 0 - take)
     }
 
-
-    private fun select_array_slice(select: String, isFromLast: Boolean, skip: Int, take: Int): MongoQueryClip<M, E> {
-        var doc = Document();
-        var offset = 0;
-        if (isFromLast) {
-            offset = -1;
+    /**
+     * https://docs.mongodb.com/manual/reference/operator/projection/slice/#proj._S_slice
+     */
+    private fun select_array_slice(select: String, vararg values: Int): MongoQueryClip<M, E> {
+        if (values.isEmpty() || values.size > 2) {
+            throw DataInvalidateException()
         }
 
+        var doc = Document();
         var slice = Document();
-        slice.put("\$slice", listOf(skip - offset, take))
+
+        if (values.size == 1) {
+            slice.put("\$slice", values.first())
+        } else {
+            slice.put("\$slice", values)
+        }
 
         doc.put(select, slice)
         this.selectProjections.putAll(doc)

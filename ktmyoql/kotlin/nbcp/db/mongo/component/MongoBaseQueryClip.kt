@@ -27,7 +27,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     protected var selectColumns = mutableSetOf<String>();
 
     /**
-     * 更复杂的查询表达式，如  https://docs.mongodb.com/manual/reference/operator/projection/slice/#proj._S_slice
+     * 更复杂的查询表达式
      */
     protected var selectProjections = JsonMap();
 
