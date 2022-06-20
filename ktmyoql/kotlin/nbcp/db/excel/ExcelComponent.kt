@@ -50,9 +50,9 @@ class ExcelComponent(val excelStream: () -> InputStream) {
             var ret = mutableListOf<String>()
             var stream = excelStream()
 
-            if (stream.markSupported()) {
-                stream.reset();
-            }
+//            if (stream.markSupported()) {
+//                stream.reset();
+//            }
 
             WorkbookFactory.create(stream).use { book ->
                 for (i in 0..(book.numberOfSheets - 1)) {
@@ -80,9 +80,9 @@ class ExcelComponent(val excelStream: () -> InputStream) {
 
         private fun getStream(): InputStream {
             var stream = excelStream();
-            if (stream.markSupported()) {
-                stream.reset();
-            }
+//            if (stream.markSupported()) {
+//                stream.reset();
+//            }
             return stream;
         }
 
