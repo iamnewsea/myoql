@@ -67,6 +67,9 @@ class ExcelComponent(val excelStream: () -> InputStream) {
         return ExcelSheetComponent(sheetName.AsString(sheetNames.first()), excelStream);
     }
 
+    fun select(sheetIndex: Int = 0): ExcelSheetComponent {
+        return ExcelSheetComponent(sheetNames.elementAt(sheetIndex), excelStream);
+    }
 
     class ExcelSheetComponent(val sheetName: String, val excelStream: () -> InputStream) {
         private var columns: Array<out String> = arrayOf()
