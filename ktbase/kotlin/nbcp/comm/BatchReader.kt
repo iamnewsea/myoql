@@ -52,40 +52,73 @@ BatchReader.init{ skip,take -> mor.table1.limit(skip,take).where{ it.status matc
 
     private var nextEntity: T? = null
 
-    var skip = 0;
+    var skip = 0
+        get
+        private set;
+
+    private var doFetch = true;
+    private var over = false;
 
     private var currentData = listOf<T>();
-    private var fetchCount = 0;
-    private var current = 0;
 
-    private lateinit var nextFunc: Supplier<T?>
+    var fetchCount = 0
+        get
+        private set;
+
+    var total = 0
+        get
+        private set;
+
+    var current = 0
+        get
+        private set;
+
+    private fun doNextFunc(): T? {
+        if (doFetch && !over) {
+            current = 0;
+            skip += batchSize;
+
+            currentData = producer(skip, batchSize);
+            if (currentData.any() == false) {
+                over = true;
+                return null;
+            }
+
+            doFetch = false;
+            fetchCount++;
+            total += currentData.size;
+        }
+
+        if (current in currentData.indices) {
+            var ret = currentData[current];
+            current++;
+            return ret;
+        }
+
+        return null;
+    }
+
+    private fun nextFunc(): T? {
+        if (over) {
+            return null;
+        }
+        
+        var ret = doNextFunc()
+        if (ret != null) {
+            return ret;
+        }
+
+        if (over) {
+            return null;
+        }
+
+        doFetch = true;
+        return doNextFunc()
+    }
 
     init {
         skip = startIndex - batchSize;
-
-        nextFunc = Supplier abc@{
-            if (current % batchSize == 0) {
-                current = 0;
-                skip += batchSize;
-
-                currentData = producer(skip, batchSize);
-
-                fetchCount++;
-            }
-
-            if (currentData.any() == false) {
-                return@abc null;
-            }
-            if (current in currentData.indices) {
-                var ret = currentData[current];
-                current++;
-                return@abc ret;
-            }
-
-            return@abc null;
-        }
-
-        nextEntity = nextFunc.get();
+        nextEntity = nextFunc();
     }
 
     override fun hasNext(): Boolean {
@@ -98,7 +131,7 @@ BatchReader.init{ skip,take -> mor.table1.limit(skip,take).where{ it.status matc
             throw RuntimeException("null")
         }
 
-        this.nextEntity = nextFunc.get();
+        this.nextEntity = nextFunc();
         return nextValue;
     }
 }
