@@ -9,16 +9,16 @@ import org.springframework.data.redis.core.DefaultTypedTuple
  * 有序集合，是按 分值排序。
  */
 open class RedisSortedSetProxy @JvmOverloads constructor(
-        group: String,
+        key: String,
         defaultCacheSeconds: Int = 0) :
-        BaseRedisProxy(group, defaultCacheSeconds) {
+        BaseRedisProxy(key, defaultCacheSeconds) {
 
-    fun add(key: String, member: String, score: Double) {
+    fun add(  member: String, score: Double) {
         val cacheKey = getFullKey(key);
         stringCommand.opsForZSet().add(cacheKey, member, score)
     }
 
-    fun add(key: String, vararg value: Pair<String, Double>) {
+    fun add(  vararg value: Pair<String, Double>) {
         if (value.any() == false) return
         val cacheKey = getFullKey(key);
 
@@ -26,12 +26,12 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
         stringCommand.opsForZSet().add(cacheKey, set)
     }
 
-    fun size(key: String, member: String): Int {
+    fun size(): Int {
         val cacheKey = getFullKey(key);
         return stringCommand.opsForZSet().size(cacheKey).AsInt();
     }
 
-    fun isMember(key: String, member: String): Boolean {
+    fun isMember(member: String): Boolean {
         val cacheKey = getFullKey(key);
         return stringCommand.opsForZSet().score(cacheKey, member) != null
     }
@@ -39,7 +39,7 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
     /**
      *
      */
-    fun getItem(key: String, minScore: Double, maxScore: Double): String {
+    fun getItem(minScore: Double, maxScore: Double): String {
         var cacheKey = getFullKey(key);
         return stringCommand.opsForZSet().rangeByScore(cacheKey, minScore, maxScore, 0L, 1L).firstOrNull().AsString()
 
@@ -48,7 +48,7 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
     /**
      * 按分值获取区间
      */
-    fun getListByScore(key: String, minScore: Double, maxScore: Double): List<String> {
+    fun getListByScore(minScore: Double, maxScore: Double): List<String> {
         val cacheKey = getFullKey(key);
         return stringCommand.opsForZSet().rangeByScore(cacheKey, minScore, maxScore).map { it.AsString() }
     }
@@ -56,7 +56,7 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
     /**
      * 按索引获取区间
      */
-    fun getListByIndex(key: String, start: Int, end: Int): List<String> {
+    fun getListByIndex(start: Int, end: Int): List<String> {
         val cacheKey = getFullKey(key);
         return stringCommand.opsForZSet().range(cacheKey, start.toLong(), end.toLong()).map { it.AsString() }
     }
@@ -64,7 +64,7 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
     /**
      * 按索引取第一个
      */
-    fun getItem(key: String): String {
+    fun getItem(): String {
         val cacheKey = getFullKey(key);
         return stringCommand.opsForZSet().range(cacheKey, 0L, 0L).firstOrNull().AsString()
     }
@@ -72,7 +72,7 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
     /**
      * 获取分值
      */
-    fun getScore(key: String, member: String): Double {
+    fun getScore(member: String): Double {
         val cacheKey = getFullKey(key);
         return stringCommand.opsForZSet().score(cacheKey, member)
     }
@@ -91,7 +91,7 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
     /**
      * 移除
      */
-    fun removeItems(key: String, vararg members: String): Long {
+    fun removeItems(vararg members: String): Long {
         val cacheKey = getFullKey(key);
         return  stringCommand.opsForZSet().remove(cacheKey, *members)
     }

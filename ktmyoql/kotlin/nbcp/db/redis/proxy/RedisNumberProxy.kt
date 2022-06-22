@@ -7,18 +7,18 @@ import java.time.Duration
 
 
 class RedisNumberProxy(
-    group: String,
+    key: String,
     defaultCacheSeconds: Int = 0,
     val autoRenewal: Boolean = false
 ) :
-    BaseRedisProxy(group, defaultCacheSeconds) {
+    BaseRedisProxy(key, defaultCacheSeconds) {
 
-    fun get(key: String = ""): Long {
+    fun get(): Long {
         var cacheKey = getFullKey(key)
         var value = stringCommand.opsForValue().get(cacheKey).AsLong()
 
         if (autoRenewal) {
-            renewalKey(key)
+            renewalKey()
         }
         return value.AsLong()
     }
@@ -28,7 +28,7 @@ class RedisNumberProxy(
     /**
      * @param cacheSecond: 0=默认值 , -1为不设置缓存时间
      */
-    fun set(key: String, value: Long, cacheSecond: Int = defaultCacheSeconds) {
+    fun set(value: Long, cacheSecond: Int = defaultCacheSeconds) {
         var cacheKey = getFullKey(key)
         this.defaultCacheSeconds = cacheSecond;
 
@@ -40,14 +40,14 @@ class RedisNumberProxy(
     }
 
 
-    fun increment(key: String, value: Int = 1): Long {
+    fun increment( value: Int = 1): Long {
         var cacheKey = getFullKey(key)
         if (cacheKey.isEmpty()) return -1L
 
         return stringCommand.opsForValue().increment(cacheKey, value.AsLong())
     }
 
-    fun decrement(key: String, value: Int = 1): Long {
+    fun decrement(value: Int = 1): Long {
         var cacheKey = getFullKey(key)
         if (cacheKey.isEmpty()) return -1L
 

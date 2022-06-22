@@ -10,20 +10,21 @@ import org.springframework.data.redis.core.ScanOptions
  */
 
 open class RedisSetProxy @JvmOverloads constructor(
-        group: String,
-        defaultCacheSeconds: Int = 0) :
-        BaseRedisProxy(group, defaultCacheSeconds) {
+    key: String,
+    defaultCacheSeconds: Int = 0
+) :
+    BaseRedisProxy(key, defaultCacheSeconds) {
 
 
     /**
      * 成员数量
      */
-    fun size(key: String): Int {
+    fun size(): Int {
         val cacheKey = getFullKey(key);
         return stringCommand.opsForSet().size(cacheKey).toInt().AsInt()
     }
 
-    fun isMember(key: String, member: String): Boolean {
+    fun isMember(member: String): Boolean {
         val cacheKey = getFullKey(key);
         return stringCommand.opsForSet().isMember(cacheKey, member)
     }
@@ -32,7 +33,7 @@ open class RedisSetProxy @JvmOverloads constructor(
      * 删除成员
      * 返回删除的成员个数。
      */
-    fun removeItems(key: String, vararg members: String): Long {
+    fun removeItems(vararg members: String): Long {
         if (!members.any()) return 0;
         val cacheKey = getFullKey(key);
         return stringCommand.opsForSet().remove(cacheKey, *members);
@@ -42,7 +43,7 @@ open class RedisSetProxy @JvmOverloads constructor(
     /**
      * 添加
      */
-    fun add(key: String, vararg value: String) {
+    fun add(vararg value: String) {
         if (value.any() == false) return
         var cacheKey = getFullKey(key);
         stringCommand.opsForSet().add(cacheKey, *value)
@@ -51,7 +52,7 @@ open class RedisSetProxy @JvmOverloads constructor(
     /**
      * 获取成员
      */
-    fun getListString(key: String): List<String> {
+    fun getListString(): List<String> {
         var cacheKey = getFullKey(key);
         return stringCommand.opsForSet().members(cacheKey).map { it.toString() }
     }
@@ -59,7 +60,7 @@ open class RedisSetProxy @JvmOverloads constructor(
     /**
      * 移除并返回一个随机元素
      */
-    fun spop(key: String): String? {
+    fun spop(): String? {
         var cacheKey = getFullKey(key);
         return stringCommand.opsForSet().pop(cacheKey)?.toString()
     }
@@ -67,19 +68,19 @@ open class RedisSetProxy @JvmOverloads constructor(
     /**
      * 扫描
      */
-    fun sscan(key: String, pattern: String, limit: Int = 999): Set<String> {
+    fun sscan(pattern: String, limit: Int = 999): Set<String> {
 
         var cacheKey = getFullKey(key);
 
         stringCommand.opsForSet()
-                .scan(cacheKey, ScanOptions.scanOptions().match(group + pattern).count(limit.AsLong()).build())
-                .use { result ->
-                    var list = mutableSetOf<String>()
-                    while (result.hasNext()) {
-                        list.add(result.next().toString())
-                    }
-                    return list;
+            .scan(cacheKey, ScanOptions.scanOptions().match(pattern).count(limit.AsLong()).build())
+            .use { result ->
+                var list = mutableSetOf<String>()
+                while (result.hasNext()) {
+                    list.add(result.next().toString())
                 }
+                return list;
+            }
     }
 
 

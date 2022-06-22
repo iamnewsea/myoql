@@ -9,23 +9,23 @@ import java.time.Duration
  * Created by udi on 17-7-14.
  */
 class RedisStringProxy @JvmOverloads constructor(
-    group: String,
+    key: String,
     defaultCacheSeconds: Int = 0,
     val autoRenewal: Boolean = false,
     // 自动续期,不能无限续期, 要设置创建时间,及绝对过期时间.
     // 在 创建时间  + 绝对过期时间秒数 < 当前时间 , 就强制过期了.
     //    var renewalExpiredSeconds: Int = 0
 ) :
-    BaseRedisProxy(group, defaultCacheSeconds) {
+    BaseRedisProxy(key, defaultCacheSeconds) {
 
 
-    fun get(key: String = ""): String {
+    fun get(): String {
         var cacheKey = getFullKey(key)
         var value = stringCommand.opsForValue().get(cacheKey)
         if (value == null) return "";
 
         if (autoRenewal) {
-            renewalKey(key)
+            renewalKey()
         }
         return value
     }
@@ -35,7 +35,7 @@ class RedisStringProxy @JvmOverloads constructor(
     /**
      * @param cacheSecond: 0=默认值 , -1为不设置缓存时间
      */
-    fun set(key: String, value: String, cacheSecond: Int = defaultCacheSeconds) {
+    fun set(value: String, cacheSecond: Int = defaultCacheSeconds) {
         var cacheKey = getFullKey(key)
 
         this.defaultCacheSeconds = cacheSecond;
@@ -51,7 +51,7 @@ class RedisStringProxy @JvmOverloads constructor(
     /**
      * @param cacheSecond: 0=默认值 , -1为不设置缓存时间
      */
-    fun setIfAbsent(key: String, value: String, cacheSecond: Int = defaultCacheSeconds): Boolean {
+    fun setIfAbsent(value: String, cacheSecond: Int = defaultCacheSeconds): Boolean {
         var cacheKey = getFullKey(key)
 
         this.defaultCacheSeconds = cacheSecond;
