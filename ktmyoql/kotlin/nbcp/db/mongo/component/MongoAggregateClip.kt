@@ -126,8 +126,16 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
 
     /**
      * @param group: 必须包含 _id
+     *
+     * {
+     *  "列名1": { "聚合函数": "列名"} ,
+     *  "列名2": { "聚合函数": "列名"} ,
+     *  "列名3": { "聚合函数": "列名"}
+     * }
+     *
+     * 其中, 列名1,列名2,列名3,必须有一个是 _id
      */
-    fun group(group: (M) -> JsonMap): MongoAggregateClip<M, E> {
+    fun group(group: (M) -> LinkedHashMap<String,out Any>): MongoAggregateClip<M, E> {
         var raw = group.invoke(this.moerEntity)
         if (raw.containsKey("_id") == false) {
             throw RuntimeException("group必须包含_id列")
@@ -140,9 +148,8 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
      * @param _id: 如果要设置列，前面加$.
      * @param eachItems: 每一个聚合的表达式。
      * @see MongoExpression
-     * .group("$level",db.mongo..)
      */
-    fun group(_id: String, eachItems: JsonMap): MongoAggregateClip<M, E> {
+    fun group(_id: String, eachItems: LinkedHashMap<String,out Any>): MongoAggregateClip<M, E> {
         var raw = JsonMap();
         raw.put("_id", _id)
         raw.putAll(eachItems)
@@ -153,7 +160,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
     }
 
     @JvmOverloads
-    fun group(_id: JsonMap?, vararg eachItems: JsonMap): MongoAggregateClip<M, E> {
+    fun group(_id: JsonMap?, vararg eachItems: LinkedHashMap<String,out Any>): MongoAggregateClip<M, E> {
         var raw = JsonMap();
         raw.put("_id", _id)
 
