@@ -18,26 +18,6 @@ abstract class BaseRedisProxy(var key: String, var defaultCacheSeconds: Int) {
 //            if (key.startsWith(group + ":")) return key;
 //            return arrayOf(group, key).filter { it.isNotEmpty() }.joinToString(":");
 //        }
-
-
-        /***
-         * 删除键，使键过期。
-         * 如果参数为空，则删除group键
-         */
-        fun deleteKeys(vararg keys: String): Long {
-
-            if (keys.any() == false) {
-                return 0;
-            }
-            RedisRenewalDynamicService.clearDelayRenewalKeys(*keys);
-
-            var group = "";
-            var groups = keys.map { it.split(":").first() };
-            if (groups.size == 1) {
-                group = groups.first();
-            }
-            return db.redis.getStringRedisTemplate(group).delete(keys.map { it });
-        }
     }
 
     /**

@@ -28,24 +28,24 @@ class testa : TestBase() {
     @Test
     fun Scan() {
         var key = "127"
-        db.rer_base.cityCodeName.set(key, "localhost")
+        db.rer_base.cityCodeName(key).set("localhost")
         Thread.sleep(15000);
-        println("sleep5 , expire: ~ 3585 , " + db.rer_base.cityCodeName.getExpireSeconds(key))
+        println("sleep5 , expire: ~ 3585 , " + db.rer_base.cityCodeName(key).getExpireSeconds())
 
-        db.rer_base.cityCodeName.get(key)
-        println("续期! expire: ~ 3585 , " + db.rer_base.cityCodeName.getExpireSeconds(key))
-
-        Thread.sleep(1000)
-        println("get, expire: ~ 3590 , " + db.rer_base.cityCodeName.getExpireSeconds(key))
+        db.rer_base.cityCodeName(key).get()
+        println("续期! expire: ~ 3585 , " + db.rer_base.cityCodeName(key).getExpireSeconds())
 
         Thread.sleep(1000)
-        println("get, expire: ~ 3580 , " + db.rer_base.cityCodeName.getExpireSeconds(key))
+        println("get, expire: ~ 3590 , " + db.rer_base.cityCodeName(key).getExpireSeconds())
+
+        Thread.sleep(1000)
+        println("get, expire: ~ 3580 , " + db.rer_base.cityCodeName(key).getExpireSeconds())
         println("done!")
     }
 
     @Test
     fun testSetNx() {
-        var d = db.rer_base.taskLock.setIfAbsent("abc", "ffff")
+        var d = db.rer_base.taskLock("abc").setIfAbsent("ffff")
         println(d)
     }
 }
