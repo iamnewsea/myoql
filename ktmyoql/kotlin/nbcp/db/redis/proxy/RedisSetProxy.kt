@@ -66,14 +66,18 @@ open class RedisSetProxy @JvmOverloads constructor(
     }
 
     /**
-     * 扫描
+     * 扫描 key
      */
     fun sscan(pattern: String, limit: Int = 999): Set<String> {
-
         var cacheKey = getFullKey(key);
 
         stringCommand.opsForSet()
-            .scan(cacheKey, ScanOptions.scanOptions().match(pattern).count(limit.AsLong()).build())
+            .scan(
+                cacheKey, ScanOptions.scanOptions()
+                    .match(pattern)
+                    .count(limit.AsLong())
+                    .build()
+            )
             .use { result ->
                 var list = mutableSetOf<String>()
                 while (result.hasNext()) {
