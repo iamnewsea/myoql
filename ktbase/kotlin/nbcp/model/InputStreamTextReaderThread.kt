@@ -5,17 +5,22 @@ import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
 
-class InputStreamTextReaderThread(var inputStream:InputStream ) : Thread() {
-    private  var br = BufferedReader(InputStreamReader(inputStream, "utf-8"));
+class InputStreamTextReaderThread(var inputStream: InputStream, var bufferTime: Int = 1000) : Thread() {
+    private var br = BufferedReader(InputStreamReader(inputStream, "utf-8"), 1024);
 
 
     override fun run() {
         while (true) {
-            Thread.sleep(100);
+            sleep(bufferTime.toLong());
             try {
-                result += br.readText()
+                var lines = br.readLines()
+                if (lines.any() == false) {
+                    continue;
+                }
 
-                if(done){
+                this.result += lines.joinToString("\n");
+
+                if (done) {
                     break;
                 }
             } catch (e: Exception) {
@@ -39,8 +44,8 @@ class InputStreamTextReaderThread(var inputStream:InputStream ) : Thread() {
         private set
 
     private var done = false;
-    fun done(){
+    fun done() {
         this.done = true;
-        this.join(150);
+        this.join(bufferTime.toLong() * 2);
     }
 }

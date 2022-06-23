@@ -22,19 +22,21 @@ object ShellUtil {
         logger.info(cmds.joinToString(" "));
         var p = Runtime.getRuntime().exec(cmds);
 
-        var done = false;
-
-
         var t1 = InputStreamTextReaderThread(p.inputStream)
         var t2 = InputStreamTextReaderThread(p.errorStream)
 
         t1.start();
         t2.start();
 
-        if (waitSeconds > 0) {
-            p.waitFor(waitSeconds.toLong(), TimeUnit.SECONDS)
-        } else {
-            p.waitFor()
+        var count = -1;
+        while (true) {
+            count++;
+
+            if (waitSeconds > 0 && count > waitSeconds) {
+                break;
+            }
+
+            p.waitFor(1, TimeUnit.SECONDS);
         }
 
         if (p.exitValue() == 0) {
