@@ -545,7 +545,7 @@
             <id>nancal-dev</id>
             <distributionManagement>
                 <repository>
-                    <id>nancal-dev</id>
+                    <id>nancal</id>
                     <url>http://nexus.cloudnk.cn/repository/maven-releases/</url>
                 </repository>
             </distributionManagement>
@@ -555,7 +555,7 @@
             <id>nancal-snapshots</id>
             <distributionManagement>
                 <repository>
-                    <id>nancal-snapshots</id>
+                    <id>nancal</id>
                     <url>http://nexus.cloudnk.cn/repository/maven-snapshots/</url>
                 </repository>
             </distributionManagement>
