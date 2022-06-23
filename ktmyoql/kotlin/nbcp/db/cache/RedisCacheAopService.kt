@@ -161,15 +161,15 @@ open class RedisCacheAopService {
         }
 
         //如果存在,则查看时间
-        var v = db.rer_base.taskLock.get(key);
+        var v = db.rer_base.taskLock(key).get();
         if (v.HasValue && v.AsLocalDateTime()!!.plusSeconds(cacheTime.AsLong()) > now) {
             return null;
         }
 
-        db.rer_base.taskLock.deleteKeys(key)
+        db.rer_base.taskLock(key).deleteKey()
 
         var setted =
-            db.rer_base.taskLock.setIfAbsent(key, now.toNumberString(), cacheTime);
+            db.rer_base.taskLock(key).setIfAbsent(now.toNumberString(), cacheTime);
 
         if (setted == false) {
             return null;

@@ -47,23 +47,22 @@ class DefaultUserAuthenticationService {
         /**
          * 保存到 Redis 的 token
          */
-        private val userSystemRedis
-            get() = RedisStringProxy(config.tokenKey, config.tokenCacheSeconds)
+        private fun userSystemRedis(key: String) =
+            RedisStringProxy(config.tokenKey + ":${key}", config.tokenCacheSeconds)
 
         /**
          * 用户体系的图片验证码，格式如：validateCode:{id}
          */
-        private val validateCodeRedis
-            get() = RedisStringProxy(
-                    "validateCode", config.validateCodeCacheSeconds
-            )
+        private fun validateCodeRedis(key: String) = RedisStringProxy(
+            "validateCode:${key}", config.validateCodeCacheSeconds
+        )
 
         override fun getValidateCode(token: String): String {
-            return validateCodeRedis.get(token);
+            return validateCodeRedis(token).get();
         }
 
         override fun setValidateCode(token: String, value: String) {
-            validateCodeRedis.set(token, value);
+            validateCodeRedis(token).set(value);
         }
 
 
@@ -75,9 +74,9 @@ class DefaultUserAuthenticationService {
             if (token.isEmpty()) return null;
 
             if (renewal) {
-                userSystemRedis.renewalKey(token);
+                userSystemRedis(token).renewalKey();
             }
-            return userSystemRedis.get(token).FromJson<LoginUserModel>();
+            return userSystemRedis(token).get().FromJson<LoginUserModel>();
         }
 
         /**
@@ -86,8 +85,8 @@ class DefaultUserAuthenticationService {
         override fun saveLoginUserInfo(request: HttpServletRequest, userInfo: LoginUserModel): Int {
             request.setAttribute("[LoginUser]", userInfo)
             if (userInfo.id.HasValue && userInfo.token.HasValue) {
-                userSystemRedis.set(userInfo.token, userInfo.ToJson())
-                return userSystemRedis.defaultCacheSeconds;
+                userSystemRedis(userInfo.token).set(userInfo.ToJson())
+                return userSystemRedis(userInfo.token).defaultCacheSeconds;
             }
             return 0
         }
@@ -98,7 +97,7 @@ class DefaultUserAuthenticationService {
         override fun deleteToken(request: HttpServletRequest) {
             var token = request.tokenValue;
             if (token.isEmpty()) return;
-            userSystemRedis.deleteKeys(token)
+            userSystemRedis(token).deleteKey()
         }
     }
 

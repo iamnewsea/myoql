@@ -134,4 +134,9 @@ BatchReader.init{ skip,take -> mor.table1.limit(skip,take).where{ it.status matc
         this.nextEntity = nextFunc();
         return nextValue;
     }
+
+    fun firstOrNull(predicate: (T) -> Boolean):T?{
+        for (element in this) if (predicate(element)) return element
+        return null
+    }
 }

@@ -19,17 +19,17 @@ class RedisBaseGroup {
 
 
     //城市数据，缓存两个小时
-    val cityCodeName get() = RedisStringProxy("city-code-name", 3600, true)
+    fun cityCodeName(code: String) = RedisStringProxy("city-name:${code}", 3600, true)
 
-    val nacosInstance get() = RedisHashProxy("nacos-ins")
+    fun nacosInstance(key: String) = RedisHashProxy("nacos-ins:${key}")
 
-    val taskLock get() = RedisStringProxy("lock", defaultCacheSeconds = 60)
+    fun taskLock(key: String) = RedisStringProxy("lock:${key}", defaultCacheSeconds = 60)
 
     /**
      * 获取城市
      */
     fun getCityNameByCode(code: Int): String {
-        var name = cityCodeName.get(code.toString())
+        var name = cityCodeName(code.toString()).get()
         if (name.HasValue) {
             return name;
         }
@@ -42,7 +42,7 @@ class RedisBaseGroup {
             .toEntity(String::class.java) ?: "";
 
         if (name.HasValue) {
-            cityCodeName.set(code.toString(), name);
+            cityCodeName(code.toString()).set(name);
         }
 
         return name;

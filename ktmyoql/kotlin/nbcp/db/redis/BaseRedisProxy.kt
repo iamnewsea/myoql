@@ -11,13 +11,13 @@ import java.util.concurrent.TimeUnit
  * http://redisdoc.com/index.html
  * @param group: 系统推荐所有的Redis键，都要分组，带前缀！
  */
-abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
+abstract class BaseRedisProxy(var key: String, var defaultCacheSeconds: Int) {
     companion object {
-        @JvmStatic
-        fun getFullKey(group: String, key: String): String {
-            if (key.startsWith(group + ":")) return key;
-            return arrayOf(group, key).filter { it.isNotEmpty() }.joinToString(":");
-        }
+//        @JvmStatic
+//        fun getFullKey(group: String, key: String): String {
+//            if (key.startsWith(group + ":")) return key;
+//            return arrayOf(group, key).filter { it.isNotEmpty() }.joinToString(":");
+//        }
     }
 
     /**
@@ -28,12 +28,13 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
      */
     protected val stringCommand: StringRedisTemplate
         get() {
-            return db.redis.getStringRedisTemplate(group)
+            return db.redis.getStringRedisTemplate(key.split(":").first())
         }
 
     fun getFullKey(key: String): String {
-        if (key.startsWith(group + ":")) return key;
-        return arrayOf(group, key).filter { it.isNotEmpty() }.joinToString(":");
+//        if (key.startsWith(group + ":")) return key;
+//        return arrayOf(group, key).filter { it.isNotEmpty() }.joinToString(":");
+        return key;
     }
 
 
@@ -42,7 +43,7 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
      * @param key:不带group
      */
     @JvmOverloads
-    fun renewalKey(key: String, cacheSeconds: Int = defaultCacheSeconds) {
+    fun renewalKey(cacheSeconds: Int = defaultCacheSeconds) {
         val cs = cacheSeconds.AsInt();
         if (cs <= 0) {
             RedisRenewalDynamicService.clearDelayRenewalKeys(getFullKey(key))
@@ -57,24 +58,20 @@ abstract class BaseRedisProxy(var group: String, var defaultCacheSeconds: Int) {
      * 删除键，使键过期。
      * 如果参数为空，则删除group键
      */
-    fun deleteKeys(vararg keys: String): Long {
-        val fullKeys = keys.map { getFullKey(it) }
-        if (fullKeys.any() == false) {
-            return 0;
-        }
-        RedisRenewalDynamicService.clearDelayRenewalKeys(*fullKeys.toTypedArray());
-        return stringCommand.delete(fullKeys);
+    fun deleteKey(): Boolean {
+        RedisRenewalDynamicService.clearDelayRenewalKeys(key);
+        return stringCommand.delete(key);
     }
 
     /**
      * 判断是否存在该Key
      */
-    fun existsKey(key: String): Boolean = stringCommand.hasKey(getFullKey(key));
+    fun existsKey(): Boolean = stringCommand.hasKey(getFullKey(key));
 
     /**
      * 获取ttl，
      */
-    fun getExpireSeconds(key: String): Int {
+    fun getExpireSeconds(): Int {
         return stringCommand.getExpire(getFullKey(key), TimeUnit.SECONDS).AsInt()
     }
 }

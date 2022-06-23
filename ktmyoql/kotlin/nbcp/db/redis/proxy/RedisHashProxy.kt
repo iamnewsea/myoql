@@ -10,17 +10,17 @@ import java.io.Serializable
 
 
 class RedisHashProxy @JvmOverloads constructor(
-    group: String,
+    key: String,
     defaultCacheSeconds: Int = 0
-) : BaseRedisProxy(group, defaultCacheSeconds) {
+) : BaseRedisProxy(key, defaultCacheSeconds) {
 
 
-    fun keys(key: String): Set<String> {
+    fun keys(): Set<String> {
         var cacheKey = getFullKey(key)
         return stringCommand.opsForHash<String, Any>().keys(cacheKey)
     }
 
-    fun getMap(key: String): Map<String, Any> {
+    fun getMap(): Map<String, Any> {
         var cacheKey = getFullKey(key)
         return stringCommand.opsForHash<String, Any>().entries(cacheKey)
     }
@@ -29,7 +29,7 @@ class RedisHashProxy @JvmOverloads constructor(
     /**
      * 增加其中的某一项。
      */
-    fun increment(key: String, field: String, value: Long = 1): Long {
+    fun increment(field: String, value: Long = 1): Long {
         var cacheKey = getFullKey(key);
         return stringCommand.opsForHash<String, Any>().increment(cacheKey, field, value)
     }
@@ -45,12 +45,12 @@ class RedisHashProxy @JvmOverloads constructor(
 //        }
 //    }
 
-    inline fun <reified T> getJson(key: String): T? {
-        return getMap(key).ConvertJson(T::class.java)
+    inline fun <reified T> getJson(): T? {
+        return getMap().ConvertJson(T::class.java)
     }
 
 
-    fun getItem(key: String, field: String): Any? {
+    fun getItem(field: String): Any? {
         var cacheKey = getFullKey(key)
 
         return stringCommand.opsForHash<String, Any>().get(cacheKey, field)
@@ -70,7 +70,7 @@ class RedisHashProxy @JvmOverloads constructor(
      * 设置多个 key 值，不会删除其它key 。
      *
      */
-    fun putMap(key: String, value: Map<String, Any>) {
+    fun putMap(value: Map<String, Any>) {
         if (value.any() == false) return
 
         var cacheKey = getFullKey(key)
@@ -81,24 +81,24 @@ class RedisHashProxy @JvmOverloads constructor(
     /**
      * 覆盖性设置 Hash，会删除其它key
      */
-    fun resetMap(key: String, value: Map<String, Any>) {
-        var keys = keys(key);
+    fun resetMap(value: Map<String, Any>) {
+        var keys = keys();
         var deleteKeys = keys - value.keys;
         removeItems(key, *deleteKeys.toTypedArray());
 
-        putMap(key, value);
+        putMap(value);
     }
 
     /**
      * 设置一个字段的值。
      */
-    fun setItem(key: String, field: String, value: Any) {
+    fun setItem(field: String, value: Any) {
         var cacheKey = getFullKey(key)
 
         stringCommand.opsForHash<String, Any>().put(cacheKey, field, value)
     }
 
-    fun removeItems(key: String, vararg members: String) {
+    fun removeItems(vararg members: String) {
         if (members.any() == false) return;
 
         var cacheKey = getFullKey(key)

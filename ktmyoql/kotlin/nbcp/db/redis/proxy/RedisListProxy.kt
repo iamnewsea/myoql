@@ -7,19 +7,19 @@ import nbcp.db.redis.BaseRedisProxy
  * 列表，主要做队列用。
  */
 class RedisListProxy @JvmOverloads constructor(
-        group: String,
-        defaultCacheSeconds: Int = 0)
-    : BaseRedisProxy(group, defaultCacheSeconds) {
+    key: String,
+    defaultCacheSeconds: Int = 0
+) : BaseRedisProxy(key, defaultCacheSeconds) {
 
     /**
      * 成员数量
      */
-    fun size(key: String): Int {
+    fun size(): Int {
         var cacheKey = getFullKey(key);
         return stringCommand.opsForList().size(cacheKey).toInt().AsInt()
     }
 
-    fun getIndex(key: String, index: Int): String {
+    fun getIndex(index: Int): String {
         var cacheKey = getFullKey(key);
         return stringCommand.opsForList().index(cacheKey, index.AsLong()).toString()
     }
@@ -28,7 +28,7 @@ class RedisListProxy @JvmOverloads constructor(
      * 删除成员
      * 返回删除的成员个数。
      */
-    fun removeItems(key: String, member: String): Int {
+    fun removeItems(member: String): Int {
         var cacheKey = getFullKey(key);
         return stringCommand.opsForList().remove(cacheKey, 0, member).AsInt()
     }
@@ -36,7 +36,7 @@ class RedisListProxy @JvmOverloads constructor(
     /**
      * RPush，在最尾部添加。
      */
-    fun push(key: String, vararg members: String): Int {
+    fun push(vararg members: String): Int {
         var cacheKey = getFullKey(key);
         return stringCommand.opsForList().rightPushAll(cacheKey, *members).AsInt()
     }
@@ -44,15 +44,18 @@ class RedisListProxy @JvmOverloads constructor(
     /**
      * RPop，在最尾部移除一个。
      */
-    fun pop(key: String): String {
+    fun pop(): String {
         var cacheKey = getFullKey(key);
         return stringCommand.opsForList().rightPop(cacheKey).AsString()
     }
 
-    fun popPush(key: String, targetGroup: String, targetKey: String): String {
+    /**
+     * Rpoplpush 命令用于移除列表的最后一个元素，并将该元素添加到另一个列表并返回。
+     * 如:  RpopLpush 列表1  列表2  ---> 把列表1的最后一个 移动 到列表2的末尾.
+     */
+    fun popPush(targetKey: String): String {
         var cacheKey = getFullKey(key);
-        var targetKeyValue = BaseRedisProxy.getFullKey(targetGroup, targetKey)
-        return stringCommand.opsForList().rightPopAndLeftPush(cacheKey, targetKeyValue).AsString()
+        return stringCommand.opsForList().rightPopAndLeftPush(cacheKey, targetKey).AsString()
     }
 
     /**
@@ -60,7 +63,7 @@ class RedisListProxy @JvmOverloads constructor(
      * @param start, 起始位置
      * @param end ,包含该索引的元素。-1表示包含最后一个索引。
      */
-    fun getListString(key: String, start: Int = 0, end: Int = -1): List<String> {
+    fun getListString(start: Int = 0, end: Int = -1): List<String> {
         var cacheKey = getFullKey(key)
         return stringCommand.opsForList().range(cacheKey, start.AsLong(), end.AsLong()).map { it.AsString() }
     }

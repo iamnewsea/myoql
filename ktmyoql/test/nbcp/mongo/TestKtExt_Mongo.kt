@@ -21,8 +21,9 @@ import java.time.LocalDateTime
 import java.util.*
 
 class TestKtExt_Mongo : TestBase() {
-    @BeforeEach
-    fun init() {
 
+    fun agg() {
+        db.mor_base.sysCity.aggregate()
+            .group { JsonMap() }
     }
 }
