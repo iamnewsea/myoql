@@ -11,14 +11,18 @@ class InputStreamTextReaderThread(var inputStream: InputStream, var bufferTime: 
 
     override fun run() {
         while (true) {
-            sleep(bufferTime.toLong());
+            sleep(10)
             try {
-                var lines = br.readLines()
-                if (lines.any() == false) {
+                var line = br.readLine()
+                if (line == null) {
+                    break;
+                }
+
+                if (line.startsWith("Progress (") && line.contains("/")) {
                     continue;
                 }
 
-                this.result += lines.joinToString("\n");
+                this.result += line + "\n";
 
                 if (done) {
                     break;
