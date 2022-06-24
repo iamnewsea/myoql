@@ -4,6 +4,7 @@
 package nbcp.comm
 
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
+import nbcp.component.YamlObjectMapper
 import nbcp.utils.SpringUtil
 import org.w3c.dom.Element
 import org.w3c.dom.Node
@@ -33,7 +34,7 @@ inline fun <reified T> String.FromYamlText(): T {
 }
 
 fun <T> String.FromYamlText(clazz: Class<T>): T {
-    return SpringUtil.getBean<YAMLMapper>().readValue(this, clazz)
+    return YamlObjectMapper.INSTANCE.readValue(this, clazz)
 }
 
 fun Char.IsCn(): Boolean {
@@ -51,7 +52,7 @@ fun String.hasCn(): Boolean {
  *@param clazz: 类型
  */
 fun <T> String.FromListYarmText(clazz: Class<T>): List<T> {
-    var mapper = SpringUtil.getBean<YAMLMapper>();
+    var mapper = YamlObjectMapper.INSTANCE;
     var t = mapper.getTypeFactory().constructParametricType(ArrayList::class.java, clazz);
 
     return mapper.readValue<List<T>>(this, t) ?: listOf()
