@@ -9,8 +9,6 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Component
 
-
-@Primary
 class AppJsonMapper : ObjectMapper(), InitializingBean {
 
     companion object {
