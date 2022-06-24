@@ -4,6 +4,7 @@ import nbcp.TestBase
 import nbcp.comm.*
 import nbcp.utils.*
 import org.junit.jupiter.api.Test
+import java.util.regex.Pattern
 
 class TestKtExt_String : TestBase() {
 
@@ -15,8 +16,10 @@ class TestKtExt_String : TestBase() {
 "28099","9",31.246717000000000,121.593050000000005,0.020000000000000,0.000000000000000,14.100000000000000,"12",2020-05-29 09:56:45
         """
 
-        txt.Tokenizer({ it == ',' || it == '\n' }, arrayOf(
-                TokenQuoteDefine('"', '"', '"'))
+        txt.Tokenizer(
+            { it == ',' || it == '\n' }, arrayOf(
+                TokenQuoteDefine('"', '"', '"')
+            )
         ).forEachIndexed { index, s ->
             println("[" + index.toString() + "]:" + s)
         }
@@ -49,7 +52,8 @@ select * from[pub space].tab where`id`  like'% 1 %'
     fun test_3des() {
         var key1 = CipherUtil.get3desKey();
         println("key:" + key1)
-        var result1 = CipherUtil.decrypt3des("println(ConvertToLocalDateTime(\"20111203101530\",DateTimeFormatter.", key1)
+        var result1 =
+            CipherUtil.decrypt3des("println(ConvertToLocalDateTime(\"20111203101530\",DateTimeFormatter.", key1)
         println("结果:" + result1);
         println("原文:" + CipherUtil.decrypt3des(result1, key1))
 
@@ -67,5 +71,14 @@ select * from[pub space].tab where`id`  like'% 1 %'
         println(v)
         println(v.toString(36))
         println(java.lang.Long.valueOf(v.toString(36), 36))
+    }
+
+
+    @Test
+    fun test_cn() {
+        println("afd".hasCn())
+        println("吕".hasCn())
+        println("从".hasCn())
+        println("111从22".hasCn())
     }
 }

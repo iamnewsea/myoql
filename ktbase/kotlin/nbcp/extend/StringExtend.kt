@@ -11,6 +11,7 @@ import org.w3c.dom.NodeList
 import java.io.ByteArrayInputStream
 import java.lang.StringBuilder
 import java.util.ArrayList
+import java.util.regex.Pattern
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.TransformerFactory
 import kotlin.reflect.KClass
@@ -33,6 +34,17 @@ inline fun <reified T> String.FromYamlText(): T {
 
 fun <T> String.FromYamlText(clazz: Class<T>): T {
     return SpringUtil.getBean<YAMLMapper>().readValue(this, clazz)
+}
+
+fun Char.IsCn(): Boolean {
+    return this.code.Between(19968, 40908)
+}
+
+/**
+ * 是否包含中文
+ */
+fun String.hasCn(): Boolean {
+    return this.any { it.IsCn() }
 }
 
 /**
