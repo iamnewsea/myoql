@@ -27,11 +27,11 @@ class KotlinExtendInitConfig : BaseImportBeanDefinitionRegistrar(
 ) {
 
 
-    @EventListener
-    fun prepared(ev: ApplicationPreparedEvent) {
-        var om = SpringUtil.beanFactory.getBeansOfType(ObjectMapper::class.java);
-        if (om.size > 1 && !om.any { SpringUtil.beanFactory.getBeanDefinition(it.key).isPrimary }) {
-            SpringUtil.beanFactory.getBeanDefinition("appJsonMapper").isPrimary = true;
-        }
-    }
+//    @EventListener
+//    fun prepared(ev: ApplicationPreparedEvent) {
+//        var om = SpringUtil.beanFactory.getBeansOfType(ObjectMapper::class.java);
+//        if (om.size > 1 && !om.any { SpringUtil.beanFactory.getBeanDefinition(it.key).isPrimary }) {
+//            SpringUtil.beanFactory.getBeanDefinition("appJsonMapper").isPrimary = true;
+//        }
+//    }
 }
