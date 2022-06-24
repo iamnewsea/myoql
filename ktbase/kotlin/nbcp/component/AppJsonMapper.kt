@@ -20,7 +20,6 @@ class AppJsonMapper : ObjectMapper(), InitializingBean {
 
 
     override fun afterPropertiesSet() {
-        this.initObjectMapper();
 
         this.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
         this.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
