@@ -279,7 +279,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
     /**
      * 信任所有服务器地址,不检查任何证书
      */
-    private fun trustAllHttpsHosts() {
+    fun trustAllHttpsHosts() {
         //创建SSLContext对象，并使用我们指定的信任管理器初始化
         val trustAllCert: TrustManager = object : X509TrustManager {
             //返回受信任的X509证书数组。
