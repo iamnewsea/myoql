@@ -12,6 +12,8 @@ import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.context.event.ApplicationStartedEvent
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 
 @Component
@@ -30,24 +32,28 @@ class MyOqlBsonBeanConfig : BeanPostProcessor {
         }
 
         if (bean is ObjectMapper) {
-            procObjectMapper(bean);
+            bean.addObjectMapperTypeModule(
+                ObjectId::class.java,
+                ObjectIdJsonSerializer(),
+                ObjectIdJsonDeserializer()
+            )
+
+            bindExtendObjectMappers();
         }
 
         return super.postProcessBeforeInitialization(bean, beanName)
     }
 
-    private fun procObjectMapper(bean: ObjectMapper) {
+    @EventListener
+    fun app_started(ev: ApplicationStartedEvent) {
+        bindExtendObjectMappers();
+    }
 
-        bean.addObjectMapperTypeModule(
-            ObjectId::class.java,
-            ObjectIdJsonSerializer(),
-            ObjectIdJsonDeserializer()
-        )
-
+    private fun bindExtendObjectMappers() {
         if (objectMapperProced) {
             objectMapperProced = true;
-            
-            AppJsonMapper.extendMappers.forEach { mapper ->
+
+            AppJsonMapper.extendObjectMappers.forEach { mapper ->
                 mapper.addObjectMapperTypeModule(
                     ObjectId::class.java,
                     ObjectIdJsonSerializer(),
@@ -61,10 +67,10 @@ class MyOqlBsonBeanConfig : BeanPostProcessor {
                 DocumentJsonDeserializer()
             )
         }
+
     }
 
     private fun init_app() {
         clazzesIsSimpleDefine.add(ObjectId::class.java)
-
     }
 }

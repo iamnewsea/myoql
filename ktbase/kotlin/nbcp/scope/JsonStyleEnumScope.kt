@@ -25,7 +25,7 @@ fun JsonSceneEnumScope?.getJsonMapper(): ObjectMapper {
     }
 
     if (style == null) {
-        return SpringUtil.getBean<AppJsonMapper>()
+        return SpringUtil.getBean<ObjectMapper>()
     }
 
     if (style == JsonSceneEnumScope.App) {
@@ -35,7 +35,7 @@ fun JsonSceneEnumScope?.getJsonMapper(): ObjectMapper {
     } else if (style == JsonSceneEnumScope.Web) {
         return  WebJsonMapper.INSTANCE
     }
-    return SpringUtil.getBean<AppJsonMapper>()
+    return SpringUtil.getBean<ObjectMapper>()
 }
 
 enum class JsonStyleEnumScope private constructor(val mutexGroup: String) : IScopeData {

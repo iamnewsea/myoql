@@ -13,9 +13,11 @@ import org.springframework.stereotype.Component
 @Primary
 class AppJsonMapper : ObjectMapper(), InitializingBean {
 
-    companion object{
-        var extendMappers = listOf<ObjectMapper>()
+    companion object {
+        var allObjectMappers = listOf<ObjectMapper>()
             private set
+
+        var extendObjectMappers = listOf<ObjectMapper>()
     }
 
 
@@ -28,6 +30,7 @@ class AppJsonMapper : ObjectMapper(), InitializingBean {
         this.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
 
-        extendMappers = listOf(DbJsonMapper.INSTANCE, WebJsonMapper.INSTANCE,YamlObjectMapper.INSTANCE)
+        allObjectMappers = listOf(this, DbJsonMapper.INSTANCE, WebJsonMapper.INSTANCE, YamlObjectMapper.INSTANCE)
+        extendObjectMappers = listOf(DbJsonMapper.INSTANCE, WebJsonMapper.INSTANCE, YamlObjectMapper.INSTANCE)
     }
 }
