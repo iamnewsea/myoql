@@ -9,8 +9,15 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Component
 
-@Component
+
+@Primary
 class AppJsonMapper : ObjectMapper(), InitializingBean {
+
+    companion object{
+        var extendMappers = listOf<ObjectMapper>()
+            private set
+    }
+
 
     override fun afterPropertiesSet() {
         this.initObjectMapper();
@@ -19,5 +26,8 @@ class AppJsonMapper : ObjectMapper(), InitializingBean {
         this.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
         this.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE);
         this.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+
+
+        extendMappers = listOf(DbJsonMapper.INSTANCE, WebJsonMapper.INSTANCE,YamlObjectMapper.INSTANCE)
     }
 }

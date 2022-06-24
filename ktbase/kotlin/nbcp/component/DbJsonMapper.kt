@@ -11,9 +11,15 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.stereotype.Component
 
 
-@Component("DbJson")
-class DbJsonMapper : ObjectMapper(), InitializingBean {
-    override fun afterPropertiesSet() {
+//@Component("DbJson")
+class DbJsonMapper private constructor() : ObjectMapper() {
+    companion object {
+        val INSTANCE: DbJsonMapper by lazy {
+            return@lazy DbJsonMapper();
+        }
+    }
+
+    init {
         this.initObjectMapper();
 
         this.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
@@ -23,9 +29,15 @@ class DbJsonMapper : ObjectMapper(), InitializingBean {
     }
 }
 
-@Component("YamlObjectMapper")
-class YamlObjectMapper : YAMLMapper(), InitializingBean {
-    override fun afterPropertiesSet() {
+//@Component("YamlObjectMapper")
+class YamlObjectMapper private constructor(): YAMLMapper() {
+    companion object {
+        val INSTANCE: YamlObjectMapper by lazy {
+            return@lazy YamlObjectMapper();
+        }
+    }
+
+    init {
         this.initObjectMapper()
     }
 }

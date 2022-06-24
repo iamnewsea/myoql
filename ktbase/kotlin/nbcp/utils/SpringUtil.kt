@@ -37,7 +37,6 @@ import kotlin.reflect.KClass
  */
 //@Component
 @Order(PriorityOrdered.HIGHEST_PRECEDENCE)
-//@Import(value = [SnowFlake::class, AppJsonMapper::class, DbJsonMapper::class, WebJsonMapper::class])
 class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware, BeanPostProcessor {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

@@ -1,7 +1,8 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=nbcp.utils.SpringUtil\
 ,nbcp.KotlinExtendInitConfig\
 ,nbcp.comm.LogLevelAopService\
-,nbcp.comm.GroupLogAopService
+,nbcp.comm.GroupLogAopService\
+,nbcp.component.AppJsonMapper
 
 org.springframework.context.ApplicationListener=nbcp.config.AppStartEvent\
 ,nbcp.comm.config

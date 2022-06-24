@@ -2,7 +2,9 @@ package nbcp.bean
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import nbcp.comm.clazzesIsSimpleDefine
+import nbcp.component.AppJsonMapper
 import nbcp.component.DbJsonMapper
+import nbcp.component.WebJsonMapper
 import nbcp.db.mongo.*
 import nbcp.extend.addObjectMapperTypeModule
 import nbcp.utils.SpringUtil
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Component
 class MyOqlBsonBeanConfig : BeanPostProcessor {
     companion object {
         private var inited = false;
+        private var objectMapperProced = false;
     }
 
     override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
@@ -26,18 +29,42 @@ class MyOqlBsonBeanConfig : BeanPostProcessor {
             init_app();
         }
 
+        if (bean is ObjectMapper) {
+            procObjectMapper(bean);
+        }
+
         return super.postProcessBeforeInitialization(bean, beanName)
+    }
+
+    private fun procObjectMapper(bean: ObjectMapper) {
+
+        bean.addObjectMapperTypeModule(
+            ObjectId::class.java,
+            ObjectIdJsonSerializer(),
+            ObjectIdJsonDeserializer()
+        )
+
+        if (objectMapperProced) {
+            objectMapperProced = true;
+            
+            AppJsonMapper.extendMappers.forEach { mapper ->
+                mapper.addObjectMapperTypeModule(
+                    ObjectId::class.java,
+                    ObjectIdJsonSerializer(),
+                    ObjectIdJsonDeserializer()
+                )
+            }
+
+            DbJsonMapper.INSTANCE.addObjectMapperTypeModule(
+                Document::class.java,
+                DocumentJsonSerializer(),
+                DocumentJsonDeserializer()
+            )
+        }
     }
 
     private fun init_app() {
         clazzesIsSimpleDefine.add(ObjectId::class.java)
 
-        SpringUtil.context.getBeansOfType(ObjectMapper::class.java).values
-            .forEach { mapper ->
-                mapper.addObjectMapperTypeModule(ObjectId::class.java, ObjectIdJsonSerializer(), ObjectIdJsonDeserializer())
-                if (mapper is DbJsonMapper) {
-                    mapper.addObjectMapperTypeModule(Document::class.java, DocumentJsonSerializer(), DocumentJsonDeserializer())
-                }
-            }
     }
 }

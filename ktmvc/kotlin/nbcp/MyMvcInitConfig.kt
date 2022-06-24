@@ -69,7 +69,6 @@ class MyMvcInitConfig : BeanPostProcessor {
 
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
         if (bean is HttpMessageConverters) {
-            var webJsonMapper = SpringUtil.getBean<WebJsonMapper>();
             bean.converters.forEach { converter ->
                 if (converter is AbstractHttpMessageConverter) {
                     converter.defaultCharset = const.utf8
@@ -78,7 +77,7 @@ class MyMvcInitConfig : BeanPostProcessor {
                 //解决绝大多数Json转换问题
                 if (converter is MappingJackson2HttpMessageConverter) {
                     converter.defaultCharset = const.utf8
-                    converter.objectMapper = webJsonMapper
+                    converter.objectMapper = WebJsonMapper.INSTANCE
                     return@forEach
                 }
 

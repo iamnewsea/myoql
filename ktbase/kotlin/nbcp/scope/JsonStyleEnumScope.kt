@@ -31,9 +31,9 @@ fun JsonSceneEnumScope?.getJsonMapper(): ObjectMapper {
     if (style == JsonSceneEnumScope.App) {
         return SpringUtil.getBean<AppJsonMapper>()
     } else if (style == JsonSceneEnumScope.Db) {
-        return SpringUtil.getBean<DbJsonMapper>();
+        return  DbJsonMapper.INSTANCE
     } else if (style == JsonSceneEnumScope.Web) {
-        return SpringUtil.getBean<WebJsonMapper>();
+        return  WebJsonMapper.INSTANCE
     }
     return SpringUtil.getBean<AppJsonMapper>()
 }

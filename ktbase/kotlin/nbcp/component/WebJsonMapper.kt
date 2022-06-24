@@ -11,11 +11,15 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.stereotype.Component
 
 
-@Component("WebJson")
-class WebJsonMapper : ObjectMapper(), InitializingBean {
+//@Component("WebJson")
+class WebJsonMapper private constructor(): ObjectMapper() {
+    companion object {
+        val INSTANCE: WebJsonMapper by lazy {
+            return@lazy WebJsonMapper();
+        }
+    }
 
-
-    override fun afterPropertiesSet() {
+    init {
         this.initObjectMapper();
 
         this.setSerializationInclusion(JsonInclude.Include.USE_DEFAULTS)
@@ -23,7 +27,5 @@ class WebJsonMapper : ObjectMapper(), InitializingBean {
         this.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.DEFAULT);
         this.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.DEFAULT);
         this.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.NONE);
-
     }
-
 }
