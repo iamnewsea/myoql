@@ -65,6 +65,22 @@ object NacosServiceUtil {
         return ListResult.of(list)
     }
 
+
+    /**
+     * 删除配置
+     */
+    fun deleteConfig(serverHost: String, ns: String, group: String, dataId: String): JsonResult {
+        val group = group.AsString("DEFAULT_GROUP")
+        val http =
+            HttpUtil("${getConfigServerHost(serverHost)}/v1/cs/configs?dataId=${dataId}&group=${group}&tenant=$ns")
+        http.request.requestMethod = "DELETE"
+        val res = http.doNet();
+        if (http.isSuccess) {
+            return ApiResult.of(res)
+        }
+        throw HttpInvokeException(http.status, "ns:$ns,dataId:$dataId,group:$group , 获取nacos配置错误 : $res")
+    }
+
     /**
      * 获取配置信息
      */
