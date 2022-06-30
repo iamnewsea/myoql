@@ -59,6 +59,14 @@ fun <T> String.FromListYarmText(clazz: Class<T>): List<T> {
 }
 
 
+fun <T> String.FromListYarmTextWithSplit(clazz: Class<T>): List<T> {
+    return this.split("\n")
+        .SplitList { it == "---" }
+        .filter { it.isNotEmpty() }
+        .map { it.joinToString("\n").FromYamlText(clazz) }
+}
+
+
 /**
  * 如果有值 ， 返回计算表达式。 否则返回空。
  */
