@@ -235,17 +235,16 @@ ${end_sign}
     )
 
     fun getConfigServerHost(host: String = ""): String {
-        var ret = host;
-        if (ret.isEmpty()) {
-            ret = SpringUtil.context.environment.getProperty("spring.cloud.nacos.discovery.server-addr").AsString();
-        }
-        return fillHost(ret);
+        return getDiscoveryServerHost(host);
     }
 
     fun getDiscoveryServerHost(host: String = ""): String {
         var ret = host;
         if (ret.isEmpty()) {
             ret = SpringUtil.context.environment.getProperty("spring.cloud.nacos.discovery.server-addr").AsString();
+        }
+        if (ret.isEmpty()) {
+            throw RuntimeException("找不到nacos配置项: spring.cloud.nacos.discovery.server-addr")
         }
         return fillHost(ret);
     }
