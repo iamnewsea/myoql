@@ -81,6 +81,23 @@ object NacosServiceUtil {
         throw HttpInvokeException(http.status, "ns:$ns,dataId:$dataId,group:$group , 获取nacos配置错误 : $res")
     }
 
+    fun existsConfig(serverHost: String, ns: String, group: String, dataId: String): ApiResult<Boolean> {
+        try {
+            getConfig(serverHost, ns, group, dataId)
+                .apply {
+                    if (this.msg.HasValue) {
+                        return ApiResult.error(this.msg)
+                    }
+                    return ApiResult.of(true)
+                }
+        } catch (e: HttpInvokeException) {
+            if (e.status == 404) {
+                return ApiResult.of(false)
+            }
+            throw e;
+        }
+    }
+
     /**
      * 获取配置信息
      */
