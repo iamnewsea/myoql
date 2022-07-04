@@ -124,6 +124,21 @@ object NacosServiceUtil {
         content: String
     ): JsonResult {
 
+        var type2 = type;
+        if (type2.isEmpty()) {
+            if (dataId.endsWith(".yml", ignoreCase = true) ||
+                dataId.endsWith(".yaml", ignoreCase = true)
+            ) {
+                type2 = "yaml"
+            } else if (dataId.endsWith(".properties", ignoreCase = true)) {
+                type2 = "properties"
+            }
+
+            if (type2.isEmpty()) {
+                type2 = "yaml"
+            }
+        }
+
         val http = HttpUtil("${getConfigServerHost(serverHost)}/v1/cs/configs")
         val res =
             http.doPost(
@@ -131,7 +146,7 @@ object NacosServiceUtil {
                     JsUtil.encodeURIComponent(
                         content
                     )
-                }&type=${type.AsString("yaml")}"
+                }&type=${type2}"
             )
 
         if (http.isSuccess) {
