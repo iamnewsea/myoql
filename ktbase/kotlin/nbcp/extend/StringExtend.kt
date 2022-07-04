@@ -6,6 +6,7 @@ package nbcp.comm
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
 import nbcp.component.YamlObjectMapper
 import nbcp.utils.SpringUtil
+import org.slf4j.LoggerFactory
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
@@ -17,6 +18,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.TransformerFactory
 import kotlin.reflect.KClass
 
+private val logger = LoggerFactory.getLogger("MyHelper.StringExtend")
 
 /**
  * 判断是否有内容：非空且有长度
@@ -34,7 +36,17 @@ inline fun <reified T> String.FromYamlText(): T {
 }
 
 fun <T> String.FromYamlText(clazz: Class<T>): T {
-    return YamlObjectMapper.INSTANCE.readValue(this, clazz)
+    try {
+        return YamlObjectMapper.INSTANCE.readValue(this, clazz)
+    } catch (e: Exception) {
+        logger.error(
+            """
+转换Yaml出错:
+${this}
+"""
+        );
+        throw e;
+    }
 }
 
 fun Char.IsCn(): Boolean {
