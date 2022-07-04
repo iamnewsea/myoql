@@ -5,6 +5,8 @@ package nbcp.comm
 
 import nbcp.utils.JsUtil
 import nbcp.utils.MyUtil
+import java.util.*
+import kotlin.collections.LinkedHashMap
 
 
 //fun <V> LinkedHashMap<String, V>.RenameKey(oldKey: String, newKey: String) {
@@ -230,4 +232,60 @@ fun Map<*, *>.EqualMapContent(value: Map<*, *>, compare: ((Any?, Any?) -> Boolea
         } == false) return false;
 
     return true;
+}
+
+fun Map<String, Any?>.ToProperties(): Properties {
+    var ret = Properties();
+    ret.putAll(this)
+    return ret;
+}
+
+/**
+ * 深度合并
+ */
+fun Map<String, Any?>.deepJoin(map2: Map<String, Any?>): Map<String, Any?> {
+    return this.deepJoin(map2, "")
+}
+
+fun Map<String, Any?>.deepJoin(map2: Map<String, Any?>, prefix: String): Map<String, Any?> {
+    var ret = mutableMapOf<String, Any?>()
+    (this.keys - map2.keys).forEach { key ->
+        val value = this.get(key);
+        ret.put(key, value);
+    }
+
+
+    (map2.keys - this.keys).forEach { key ->
+        val value = map2.get(key);
+        ret.put(key, value);
+    }
+
+    this.keys.intersect(map2.keys).forEach { key ->
+        val v1 = this.get(key);
+        var v2 = map2.get(key);
+
+        if (v1 == null) {
+            ret.put(key, v2)
+            return@forEach
+        } else if (v2 == null) {
+            ret.put(key, v1)
+            return@forEach
+        }
+
+        var v1_type = v1::class.java
+        var v2_type = v2::class.java
+
+        if (v1_type.IsSimpleType() || v2_type.IsSimpleType()) {
+            ret.put(key, v2)
+            return@forEach
+        }
+
+        var v1_map = v1.ConvertType(Map::class.java) as Map<String, Any?>
+        var v2_map = v2.ConvertType(Map::class.java) as Map<String, Any?>
+
+        var prefix = listOf(prefix, key).filter { it.HasValue }.joinToString(".")
+        ret.put(prefix, v1_map.deepJoin(v2_map, prefix))
+    }
+
+    return ret;
 }
