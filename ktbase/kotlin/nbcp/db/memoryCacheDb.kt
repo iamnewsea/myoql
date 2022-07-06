@@ -63,7 +63,10 @@ object memoryCacheDb {
         return true;
     }
 
-    fun addToMemoryCache(key: String, cacheSeconds: Int = 180, callback: Supplier<out Any>) {
+    /**
+     * 添加数据缓存提供者, 不执行
+     */
+    fun addMemoryCacheSupplier(key: String, cacheSeconds: Int = 180, callback: Supplier<out Any>) {
         if (map.size > 0) {
             if (map.size >= errorMaxCapacity) {
                 throw java.lang.RuntimeException("缓存数据已达到最大条数 ${map.size} 条!")
@@ -77,11 +80,16 @@ object memoryCacheDb {
         map.put(key, MemoryCacheItem(callback, cacheSeconds))
     }
 
-
+    /**
+     * 获取缓存数据
+     */
     inline fun <reified T : Any> getFromMemoryCache(key: String): T? {
         return getDataFromMemoryCache(key) as T?
     }
 
+    /**
+     * 获取缓存数据
+     */
     fun getDataFromMemoryCache(key: String): Any? {
         var value = map.get(key)
         if (value == null) {
