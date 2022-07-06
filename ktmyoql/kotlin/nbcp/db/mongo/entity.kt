@@ -266,12 +266,14 @@ data class SysDictionary(
     var owner: String = "",
     @Cn("组")
     var group: String = "",
+
     @Cn("键")
     var key: String = "",
     @Cn("值")
     var value: String = "",
-    @Cn("中文")
-    var label: String = "",
+
+    @Cn("备注")
+    var remark: String = "",
     @Cn("排序")
     var sort: Float = 0F,
 ) : BaseEntity()
