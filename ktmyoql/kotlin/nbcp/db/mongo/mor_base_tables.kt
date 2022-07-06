@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2022-05-11 15:05:21
+//generate auto @2022-07-06 13:33:39
 
 
 class SerializableMeta(private val _pname: String) : MongoColumnName() {
@@ -523,10 +523,10 @@ class MongoBaseGroup : IDataGroup {
         val value = MongoColumnName("value")
 
         /**
-         * 中文
+         * 备注
          */
-        @nbcp.db.Cn(value = """中文""") 
-        val label = MongoColumnName("label")
+        @nbcp.db.Cn(value = """备注""") 
+        val remark = MongoColumnName("remark")
 
         /**
          * 排序
