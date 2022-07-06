@@ -55,11 +55,12 @@ class DevDockerServlet {
         return execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd);
     }
 
-    @Value("\${app.upload.local.path:}")
-    var uploadPath: String = ""
 
     val path: String
-        get() = uploadPath + File.separator + "docker-" + LocalDate.now().Format("yyyy-MM-dd") + File.separator
+        get() = MyUtil.joinFilePath(
+            System.getProperty("java.io.tmpdir"),
+            "docker-" + LocalDate.now().Format("yyyy-MM-dd")
+        )
 
     /**
      * 把文件拷到宿主机
