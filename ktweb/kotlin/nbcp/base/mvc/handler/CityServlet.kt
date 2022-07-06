@@ -23,10 +23,6 @@ data class cn_city_model(var c: Int, var n: String)
 open class CityServlet {
     @PostMapping("/open/child-cities")
     fun child(@Require pcode: Int, response: HttpServletResponse): ListResult<cn_city_model> {
-        if (pcode == 0) {
-            throw NoDataException("城市code不能为空")
-        }
-
         if (pcode % 100 != 0) {
             throw ParameterInvalidException("城市code非法")
         }
