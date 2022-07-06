@@ -18,7 +18,7 @@ object ShellUtil {
     /**
      * 简单的方式是，传递3个参数： "sh","-c","复杂的命令字符串"
      */
-    fun execRuntimeCommand(vararg cmds: String, waitSeconds: Int = 0): List<String> {
+    fun execRuntimeCommand(vararg cmds: String, waitSeconds: Int = 30): List<String> {
         logger.info(cmds.joinToString(" "));
         var p = Runtime.getRuntime().exec(cmds);
 
@@ -32,11 +32,13 @@ object ShellUtil {
         while (true) {
             count++;
 
-            if (waitSeconds > 0 && count > waitSeconds) {
+            if (count > waitSeconds) {
                 break;
             }
 
-            p.waitFor(1, TimeUnit.SECONDS);
+            if (p.waitFor(1, TimeUnit.SECONDS)) {
+                break;
+            }
         }
 
         if (p.exitValue() == 0) {
@@ -46,7 +48,7 @@ object ShellUtil {
             if (t1.error != null) {
                 throw RuntimeException(t1.error);
             }
-            return t1.result.replace("\r\n", "\n").split("\n")
+            return t1.results
         } else {
             t1.done()
             t2.done()
@@ -54,7 +56,7 @@ object ShellUtil {
             if (t2.error != null) {
                 throw RuntimeException(t2.error);
             }
-            throw RuntimeException(t2.result)
+            throw RuntimeException(t2.results.joinToString("\n"))
         }
     }
 }

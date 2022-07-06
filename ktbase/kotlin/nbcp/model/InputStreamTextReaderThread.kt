@@ -11,7 +11,6 @@ class InputStreamTextReaderThread(var inputStream: InputStream, var bufferTime: 
 
     override fun run() {
         while (true) {
-            sleep(10)
             try {
                 var line = br.readLine()
                 if (line == null) {
@@ -22,7 +21,7 @@ class InputStreamTextReaderThread(var inputStream: InputStream, var bufferTime: 
                     continue;
                 }
 
-                this.result += line + "\n";
+                this.results.add(line)
 
                 if (done) {
                     break;
@@ -43,7 +42,7 @@ class InputStreamTextReaderThread(var inputStream: InputStream, var bufferTime: 
         get
         private set
 
-    var result = ""
+    var results = mutableListOf<String>()
         get
         private set
 
