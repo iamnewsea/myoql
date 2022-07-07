@@ -146,7 +146,6 @@ open class RedisCacheAopService {
         val signature = joinPoint.signature as MethodSignature;
         var method = signature.method
         val key = listOf(
-            "scheduled",
             config.applicationName,
             signature.declaringType.name + "." + method.name
         )
