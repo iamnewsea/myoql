@@ -169,8 +169,9 @@ open class RedisCacheAopService {
         try {
             //如果存在,则查看时间
             var v = db.rer_base.taskLock(key).get();
-            if (v.HasValue && v.AsLocalDateTime()!!.plusSeconds(cacheTime.AsLong()) > now) {
 
+            //如果上一个任务还在执行
+            if (v.HasValue && (now < v.AsLocalDateTime()!!.plusSeconds(cacheTime.AsLong()))) {
                 logger.Important("Redis锁 ${key} 被占用,跳过任务")
                 return null;
             }

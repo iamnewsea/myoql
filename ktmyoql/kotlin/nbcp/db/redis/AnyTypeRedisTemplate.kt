@@ -12,11 +12,13 @@ import org.springframework.data.redis.core.ScanOptions
  */
 @JvmOverloads
 fun RedisTemplate<*, *>.scanKeys(pattern: String, limit: Int = 9999, callback: (String) -> Boolean) {
+    val prefix = config.getAppPrefix(":");
+
     var searchPatternValue = pattern;
-    if (config.productLineCode.HasValue &&
-        !searchPatternValue.startsWith(config.productLineCode + ":")
+    if (prefix.HasValue &&
+        !searchPatternValue.startsWith(prefix + ":")
     ) {
-        searchPatternValue = config.productLineCode + ":" + searchPatternValue
+        searchPatternValue = prefix + ":" + searchPatternValue
     }
 
     this.scanAllKeys(searchPatternValue, limit, callback)
