@@ -159,24 +159,33 @@ open class RedisCacheAopService {
         } else if (scheduled.fixedRate > 0) {
             cacheTime = (scheduled.fixedRate / 1000).AsInt();
         }
+        var setted = false;
 
-        //如果存在,则查看时间
-        var v = db.rer_base.taskLock(key).get();
-        if (v.HasValue && v.AsLocalDateTime()!!.plusSeconds(cacheTime.AsLong()) > now) {
+        try {
+            //如果存在,则查看时间
+            var v = db.rer_base.taskLock(key).get();
+            if (v.HasValue && v.AsLocalDateTime()!!.plusSeconds(cacheTime.AsLong()) > now) {
+                return null;
+            }
+
+            db.rer_base.taskLock(key).deleteKey()
+
+            setted = db.rer_base.taskLock(key).setIfAbsent(now.toNumberString(), cacheTime);
+        } catch (e: Exception) {
+            logger.error(e.message, e);
             return null;
         }
-
-        db.rer_base.taskLock(key).deleteKey()
-
-        var setted =
-            db.rer_base.taskLock(key).setIfAbsent(now.toNumberString(), cacheTime);
 
         if (setted == false) {
             return null;
         }
 
-        val ret = joinPoint.proceed(joinPoint.args)
-        return ret;
-    }
 
+        try {
+            return joinPoint.proceed(joinPoint.args)
+        } catch (e: Exception) {
+            logger.error(e.message, e);
+            return null;
+        }
+    }
 }
