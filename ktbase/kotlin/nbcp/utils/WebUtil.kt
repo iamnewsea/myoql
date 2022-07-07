@@ -1,5 +1,6 @@
 package nbcp.utils
 
+import nbcp.comm.insertAt
 import nbcp.helper.ScriptLanguageEnum
 import java.net.URLDecoder
 import java.net.URLEncoder
@@ -47,5 +48,14 @@ object WebUtil {
         // https://www.iana.org/assignments/media-types/media-types.xhtml
 
         return true;
+    }
+
+    fun fillUrlWithUserPassword(url: String, userName: String, password: String): String {
+        var index = url.indexOf("//")
+        if (index < 0) {
+            throw java.lang.RuntimeException("${url} 不合法")
+        }
+
+        return url.insertAt(index + 2, "${JsUtil.encodeURIComponent(userName)}:${JsUtil.encodeURIComponent(password)}@")
     }
 }
