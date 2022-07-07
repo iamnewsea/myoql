@@ -149,7 +149,9 @@ open class RedisCacheAopService {
             config.appGroup,
             config.applicationName,
             signature.declaringType.name + "." + method.name
-        ).joinToString(":")
+        )
+            .filter { it.HasValue }
+            .joinToString(":")
 
         val now = LocalDateTime.now();
         var cacheTime = 0;
