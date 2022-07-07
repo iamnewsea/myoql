@@ -153,32 +153,37 @@ open class RedisCacheAopService {
             .joinToString(":")
 
         val now = LocalDateTime.now();
-        var cacheTime = 0;
-        var scheduled = method.getAnnotationsByType(Scheduled::class.java).first()
-        if (scheduled.cron.HasValue) {
-            var cornExp = CronExpression.parse(scheduled.cron)
-            var timeSpan = cornExp.next(now)!! - now;
-            cacheTime = timeSpan.seconds.AsInt();
-        } else if (scheduled.fixedDelay > 0) {
-            cacheTime = (scheduled.fixedDelay / 1000).AsInt();
-        } else if (scheduled.fixedRate > 0) {
-            cacheTime = (scheduled.fixedRate / 1000).AsInt();
-        }
-        var setted = false;
+//        var cacheTime = 0;
+//        var scheduled = method.getAnnotationsByType(Scheduled::class.java).first()
+//        if (scheduled.cron.HasValue) {
+//            var cornExp = CronExpression.parse(scheduled.cron)
+//            var timeSpan = cornExp.next(now)!! - now;
+//            cacheTime = timeSpan.seconds.AsInt();
+//        } else if (scheduled.fixedDelay > 0) {
+//            cacheTime = (scheduled.fixedDelay / 1000).AsInt();
+//        } else if (scheduled.fixedRate > 0) {
+//            cacheTime = (scheduled.fixedRate / 1000).AsInt();
+//        }
 
+//
+//        if (cacheTime < 3) {
+//            cacheTime = 3;
+//        }
+//
+//        cacheTime = cacheTime * 1000;
+
+        var setted = false;
         try {
             //如果存在,则查看时间
-            var v = db.rer_base.taskLock(key).get();
+            var v = db.rer_base.taskLock(key).existsKey();
 
-            //如果上一个任务还在执行
-            if (v.HasValue && (now < v.AsLocalDateTime()!!.plusSeconds(cacheTime.AsLong()))) {
+            if (v) {
                 logger.Important("Redis锁 ${key} 被占用,跳过任务")
                 return null;
             }
 
-            db.rer_base.taskLock(key).deleteKey()
-
-            setted = db.rer_base.taskLock(key).setIfAbsent(now.toNumberString(), cacheTime);
+            setted = db.rer_base.taskLock(key)
+                .setIfAbsent(System.getenv("HOSTNAME").AsString(now.toNumberString()), 4 * 3600);
         } catch (e: Exception) {
             logger.error(e.message, e);
             return null;
@@ -195,6 +200,12 @@ open class RedisCacheAopService {
         } catch (e: Exception) {
             logger.error(e.message, e);
             return null;
+        } finally {
+            try {
+                db.rer_base.taskLock(key).deleteKey();
+            } catch (e: Exception) {
+                logger.error(e.message, e);
+            }
         }
     }
 }
