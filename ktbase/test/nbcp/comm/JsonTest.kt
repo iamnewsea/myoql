@@ -61,17 +61,56 @@ class JsonTest : TestBase() {
 
     @Test
     fun test_list_json() {
-        var d = listOf(TestObj(), TestObj())
-        d[0].n = "OK";
-        d[0].d = "ee"
+        var txt = """
+logging:
+  level:
+    root: WARN
+    com:
+      mongodb: TRACE
+    org:
+      springframework:
+        data:
+          mongodb: TRACE
+        security: WARN
+    nbcp:
+      MainApplication: TRACE
+      client: DEBUG
+      base:
+        filter: INFO
+      db:
+        mongo: TRACE
+        redis: INFO
+        mysql: INFO
+        mq: INFO
+    sample:
+      mybatis:
+        mapper: TRACE
+"""
 
-        d[1].n = "ok2222"
+        var txt2 = """
+logging:
+  config: classpath:logback-skywalking.xml
+  file:
+    path: logs
+  level:
+    root: WARN
+    nbcp:
+      base:
+        filter: WARN
+      utils:
+        HttpUtil: INFO
+        """
 
-        println(d.ToJson(JsonSceneEnumScope.Web))
-        println(d.ToJson().FromListJson(TestObj::class.java).ToJson())
-        println(d.first().ToYaml())
-        println(d.first().ToYaml().FromYamlText(JsonMap::class.java).ToJson())
-        println(d.first().ToYaml().FromYamlText(TestObj::class.java).ToJson())
+        var map = txt.FromYamlText<JsonMap>();
+        var map2 = txt2.FromYamlText<JsonMap>()
+        println(map.ToJson())
+        println(map2.ToJson())
+
+
+        println("=================")
+        println(map.deepJoin(map2).ToJson())
+        println(map.deepJoin(map2).ToYaml())
+        println("=================")
     }
 
     @Test

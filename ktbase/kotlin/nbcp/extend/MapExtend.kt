@@ -244,10 +244,7 @@ fun Map<String, Any?>.ToProperties(): Properties {
  * 深度合并
  */
 fun Map<String, Any?>.deepJoin(map2: Map<String, Any?>): Map<String, Any?> {
-    return this.deepJoin(map2, "")
-}
-
-fun Map<String, Any?>.deepJoin(map2: Map<String, Any?>, prefix: String): Map<String, Any?> {
+    
     var ret = mutableMapOf<String, Any?>()
     (this.keys - map2.keys).forEach { key ->
         val value = this.get(key);
@@ -283,8 +280,7 @@ fun Map<String, Any?>.deepJoin(map2: Map<String, Any?>, prefix: String): Map<Str
         var v1_map = v1.ConvertType(Map::class.java) as Map<String, Any?>
         var v2_map = v2.ConvertType(Map::class.java) as Map<String, Any?>
 
-        var prefix = listOf(prefix, key).filter { it.HasValue }.joinToString(".")
-        ret.put(prefix, v1_map.deepJoin(v2_map, prefix))
+        ret.put(key, v1_map.deepJoin(v2_map))
     }
 
     return ret;
