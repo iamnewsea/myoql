@@ -165,6 +165,8 @@ open class RedisCacheAopService {
             //如果存在,则查看时间
             var v = db.rer_base.taskLock(key).get();
             if (v.HasValue && v.AsLocalDateTime()!!.plusSeconds(cacheTime.AsLong()) > now) {
+
+                logger.Important("Redis锁 ${key} 被占用,跳过任务")
                 return null;
             }
 
@@ -177,6 +179,7 @@ open class RedisCacheAopService {
         }
 
         if (setted == false) {
+            logger.Important("未能获取到锁 ${key}")
             return null;
         }
 
