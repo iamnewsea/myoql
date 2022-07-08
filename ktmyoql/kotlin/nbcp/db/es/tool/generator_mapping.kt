@@ -205,9 +205,9 @@ class generator_mapping {
                 if (defineJson == null) {
                     defineJson = JsonMap();
                 }
-                if (defineJson.containsKey("type") == false) {
-                    defineJson.put("type", "nested")
-                }
+//                if (defineJson.containsKey("type") == false) {
+//                    defineJson.put("type", "nested")
+//                }
 
                 genEntity(
                     type,
@@ -265,6 +265,14 @@ class generator_mapping {
             return "bool"
         }
 
-        return "nested"
+        if (type.IsSimpleType()) {
+            return "";
+        }
+
+        if (type.isArray || type.IsCollectionType) {
+            return "nested"
+        }
+
+        return "";
     }
 }
