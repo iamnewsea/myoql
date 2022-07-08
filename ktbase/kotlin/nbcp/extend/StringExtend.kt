@@ -31,6 +31,10 @@ val String?.HasValue: Boolean
     }
 
 
+fun String.insertAt(index: Int, value: String): String {
+    return this.substring(0, index) + value + this.substring(index);
+}
+
 inline fun <reified T> String.FromYamlText(): T {
     return this.FromYamlText(T::class.java)
 }
