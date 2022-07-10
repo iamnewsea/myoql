@@ -29,6 +29,13 @@ open class KeyValueString @JvmOverloads constructor(@Cn("键") var key: String =
     }
 }
 
+open class JsonKeyValuePair<T> @JvmOverloads constructor(@Cn("键") var key: String = "", @Cn("值") var value: T? = null) :
+    Serializable {
+    override fun toString(): String {
+        return this.ToJson().Slice(1, -1)
+    }
+}
+
 /**
  * 表示Mongo数据库里 Id，Url 的附件实体引用。
  * 保存到Mongo数据库的时候，使用 field Json，无Host。

@@ -3,6 +3,8 @@
 
 package nbcp.comm
 
+import nbcp.db.JsonKeyValuePair
+import nbcp.db.KeyValueString
 import nbcp.utils.JsUtil
 import nbcp.utils.MyUtil
 import java.util.*
@@ -240,12 +242,43 @@ fun Map<String, Any?>.ToProperties(): Properties {
     return ret;
 }
 
+fun Map<String, Any?>.ToListKv(prefix:String = ""): List<JsonKeyValuePair<Any>> {
+    var list = mutableListOf<JsonKeyValuePair<Any>>()
+
+    this.keys.forEach { key ->
+        var value = this.get(key);
+        if( value == null){
+            return@forEach
+        }
+
+        var v_type = value::class.java;
+        if( v_type.IsSimpleType()){
+            list.add(JsonKeyValuePair(key,value))
+
+            return@forEach
+        }
+
+        var v1_map = value.ConvertType(Map::class.java) as Map<String,Any?>
+
+        var p = listOf(prefix,key).filter { it.HasValue }.joinToString(".")
+        var v1_kvs = v1_map.ToListKv(p);
+
+        v1_kvs.forEach{
+            it.key = p + it.key
+        }
+
+        list.addAll(v1_kvs)
+    }
+
+    return list
+}
+
 /**
  * 深度合并
  */
 fun Map<String, Any?>.deepJoin(map2: Map<String, Any?>): Map<String, Any?> {
-    
-    var ret = mutableMapOf<String, Any?>()
+
+    var ret = JsonMap()
     (this.keys - map2.keys).forEach { key ->
         val value = this.get(key);
         ret.put(key, value);
