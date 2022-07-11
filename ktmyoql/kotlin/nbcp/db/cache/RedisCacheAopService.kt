@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.scheduling.support.CronExpression
 import org.springframework.stereotype.Component
 import java.lang.reflect.Method
+import java.time.Duration
 import java.time.LocalDateTime
 
 /**
@@ -175,22 +176,24 @@ open class RedisCacheAopService {
         var setted = false;
         try {
             //如果存在,则查看时间
-            var v = db.rer_base.taskLock(key).existsKey();
+            var v = db.rer_base.taskLock(key).get();
 
-            if (v) {
-                logger.Important("Redis锁 ${key} 被占用,跳过任务")
-                return null;
+            if (v.HasValue) {
+                if (Duration.between(v.AsLocalDateTime(), now).toHours() < 1) {
+                    logger.debug("Redis锁 ${key} 被占用,跳过任务")
+                    return null;
+                }
             }
 
             setted = db.rer_base.taskLock(key)
-                .setIfAbsent(System.getenv("HOSTNAME").AsString(now.toNumberString()), 4 * 3600);
+                .setIfAbsent(now.toNumberString(), 3600);
         } catch (e: Exception) {
             logger.error(e.message, e);
             return null;
         }
 
         if (setted == false) {
-            logger.Important("未能获取到锁 ${key}")
+            logger.debug("未能获取到锁 ${key}")
             return null;
         }
 
