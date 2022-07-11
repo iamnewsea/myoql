@@ -78,7 +78,7 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
         //setOf(appGroup, getConfig("app.product-line.code")).filter { it.HasValue }.joinToString(".")
 
         fun getAppPrefix(join: String = ":"): String {
-            return setOf(appGroup, productLineCode).filter { it.HasValue }.joinToString(join)
+            return productLineCode.AsString()
         }
 
         @JvmStatic
