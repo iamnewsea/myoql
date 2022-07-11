@@ -242,32 +242,96 @@ fun Map<String, Any?>.ToProperties(): Properties {
     return ret;
 }
 
-fun Map<String, Any?>.ToListKv(prefix:String = ""): List<JsonKeyValuePair<Any>> {
+private fun Collection<Any?>.ToListKv(): List<JsonKeyValuePair<Any>> {
+    var ret = mutableListOf<JsonKeyValuePair<Any>>()
+    this.forEachIndexed { index, value ->
+        if (value == null) {
+            return@forEachIndexed
+        }
+
+        var v_type = value::class.java;
+        if (v_type.IsSimpleType()) {
+            ret.add(JsonKeyValuePair("[${index}]", value))
+            return@forEachIndexed
+        }
+
+        if (v_type.IsCollectionType) {
+            var list3 = (value as Collection<Any?>).ToListKv();
+            list3.forEach {
+                it.key = "[${index}]" + it.key;
+            }
+            ret.addAll(list3);
+            return@forEachIndexed
+        }
+
+        if (v_type.isArray) {
+            var list3 = (value as Array<Any?>).toList().ToListKv();
+            list3.forEach {
+                it.key = "[${index}]" + it.key;
+            }
+            ret.addAll(list3);
+            return@forEachIndexed
+        }
+
+        var list4 = (value.ConvertType(Map::class.java) as Map<String, Any?>).ToListKv()
+        list4.forEach {
+            it.key = "[${index}]." + it.key;
+        }
+        ret.addAll(list4);
+
+        return@forEachIndexed
+    }
+
+    return ret;
+}
+
+fun Map<String, Any?>.ToListKv(prefix: String = ""): List<JsonKeyValuePair<Any>> {
     var list = mutableListOf<JsonKeyValuePair<Any>>()
 
     this.keys.forEach { key ->
         var value = this.get(key);
-        if( value == null){
+        if (value == null) {
             return@forEach
         }
 
         var v_type = value::class.java;
-        if( v_type.IsSimpleType()){
-            list.add(JsonKeyValuePair(key,value))
+        if (v_type.IsSimpleType()) {
+            list.add(JsonKeyValuePair(key, value))
 
             return@forEach
         }
 
-        var v1_map = value.ConvertType(Map::class.java) as Map<String,Any?>
+        if (v_type.IsCollectionType) {
+            var list2 = (value as Collection<Any?>).ToListKv()
+            list2.forEach {
+                it.key = key + it.key;
+            }
 
-        var p = listOf(prefix,key).filter { it.HasValue }.joinToString(".")
-        var v1_kvs = v1_map.ToListKv(p);
-
-        v1_kvs.forEach{
-            it.key = p + it.key
+            list.addAll(list2);
+            return@forEach
         }
 
+        if (v_type.isArray) {
+            var list2 = (value as Array<Any?>).toList().ToListKv()
+            list2.forEach {
+                it.key = key + it.key;
+            }
+
+            list.addAll(list2);
+            return@forEach
+        }
+
+        var v1_map = value.ConvertType(Map::class.java) as Map<String, Any?>
+
+        var v1_kvs = v1_map.ToListKv(key);
+
         list.addAll(v1_kvs)
+    }
+
+    if (prefix.HasValue) {
+        list.forEach {
+            it.key = prefix + "." + it.key
+        }
     }
 
     return list

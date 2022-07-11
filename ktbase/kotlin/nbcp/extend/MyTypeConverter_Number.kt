@@ -24,7 +24,7 @@ fun Any?.AsInt(defaultValue: Int = 0): Int {
     this.AsIntWithNull()
         .apply {
             if (this == null) return defaultValue
-            if (this == 0) return defaultValue
+            if (this == 0) return 0
             return this;
         }
 }
@@ -77,7 +77,7 @@ fun Any?.AsLong(defaultValue: Long = 0L): Long {
     this.AsLongWithNull()
         .apply {
             if (this == null) return defaultValue
-            if (this == 0L) return defaultValue
+            if (this == 0L) return 0L
             return this;
         }
 
@@ -125,7 +125,7 @@ fun Any?.AsDouble(defaultValue: Double = 0.0): Double {
     this.AsDoubleWithNull()
         .apply {
             if (this == null) return defaultValue
-            if (this == 0.0) return defaultValue
+            if (this == 0.0) return 0.0
             return this;
         }
 }
@@ -165,7 +165,7 @@ fun Any?.AsFloat(defaultValue: Float = 0F): Float {
     this.AsFloatWithNull()
         .apply {
             if (this == null) return defaultValue
-            if (this == 0F) return defaultValue
+            if (this == 0F) return 0F
             return this;
         }
 }
@@ -206,7 +206,7 @@ fun Any?.AsBigDecimal(defaultValue: BigDecimal = BigDecimal.ZERO): BigDecimal {
     this.AsBigDecimalWithNull()
         .apply {
             if (this == null) return defaultValue
-            if (this == BigDecimal.ZERO) return defaultValue
+            if (this == BigDecimal.ZERO) return BigDecimal.ZERO
             return this;
         }
 }
