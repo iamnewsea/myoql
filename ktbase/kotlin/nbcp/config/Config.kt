@@ -74,12 +74,12 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
          */
         @JvmStatic
         val productLineCode
-            get() = getConfig("app.product-line.code");
+            get() = getConfig("app.product-line.code").AsString();
         //setOf(appGroup, getConfig("app.product-line.code")).filter { it.HasValue }.joinToString(".")
 
-        fun getAppPrefix(join: String = ":"): String {
-            return productLineCode.AsString()
-        }
+        val appPrefix: String
+            get() = productLineCode
+
 
         @JvmStatic
         val redisProductLineCodePrefixEnable: Boolean

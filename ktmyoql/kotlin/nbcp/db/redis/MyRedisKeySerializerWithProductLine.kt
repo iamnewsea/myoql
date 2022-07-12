@@ -36,7 +36,7 @@ class MyRedisKeySerializerWithProductLine : StringRedisSerializer() {
         }
 
         if (config.redisProductLineCodePrefixEnable) {
-            return config.getAppPrefix(":");
+            return config.appPrefix;
         }
 
         return "";
