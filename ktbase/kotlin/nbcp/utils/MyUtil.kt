@@ -557,8 +557,12 @@ object MyUtil {
     /**
      * 从 resource 读取内容
      */
-    fun readResourceContent(path: String): String {
+    fun readResourceContentText(path: String): String {
         return ClassPathResource(path).inputStream.readContentString();
+    }
+
+    fun readResourceContentBytes(path: String): ByteArray {
+        return ClassPathResource(path).inputStream.readBytes();
     }
 
 //
