@@ -13,7 +13,7 @@ data class HttpRequestData @JvmOverloads constructor(
     var readTimeout: Int = 30_000,
     var chunkedStreamingMode: Int = 0,
 
-    var requestMethod: String = "",
+    var requestMethod: String = "GET",
     var headers: StringMap = StringMap()
 ) {
     init {
