@@ -9,6 +9,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 import nbcp.scope.*
+import nbcp.utils.CodeUtil
+import nbcp.utils.MyUtil
 import java.time.LocalTime
 
 class testa : TestBase() {
@@ -37,9 +39,9 @@ class testa : TestBase() {
     }
 
     data class abc(
-        var t: LocalDateTime = LocalDateTime.now(),
-        var i: Date = Date(),
-        var l: LocalDate = LocalDate.now()
+            var t: LocalDateTime = LocalDateTime.now(),
+            var i: Date = Date(),
+            var l: LocalDate = LocalDate.now()
     )
 
     @Test
@@ -59,7 +61,7 @@ class testa : TestBase() {
 
     @Test
     fun abcd() {
-        for(i in 1 until 1000){
+        for (i in 1 until 1000) {
             var now = LocalDateTime.now();
             println( now.AsString() + "  " +  System.nanoTime())
         }

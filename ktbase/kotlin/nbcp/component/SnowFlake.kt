@@ -27,7 +27,7 @@ class SnowFlake : InitializingBean {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
         /**
-         * 起始的时间戳 = 2000年1月1日
+         * 起始的时间戳 = 2000年1月1日的毫秒數
          */
         private const val START_STMP = 946684800000L
 
@@ -35,12 +35,12 @@ class SnowFlake : InitializingBean {
          * 每一部分占用的位数
          */
         private const val SEQUENCE_BIT: Int = 10 //序列号占用的位数
-        private const val MACHINE_BIT: Int = 10 //机器标识占用的位数
+        private const val MACHINE_BIT: Int = 10  //机器标识占用的位数
 
         /**
          * 每一部分的最大值
          */
-        private const val MAX_MACHINE_NUM = -1L xor (-1L shl MACHINE_BIT)
+//        private const val MAX_MACHINE_NUM = -1L xor (-1L shl MACHINE_BIT)
         private const val MAX_SEQUENCE = -1L xor (-1L shl SEQUENCE_BIT)
 
         /**
@@ -65,8 +65,8 @@ class SnowFlake : InitializingBean {
     override fun afterPropertiesSet() {
         val appMachineId = config.getConfig("app.machine-id").AsInt()
 
-        if (appMachineId <= MAX_MACHINE_NUM && appMachineId >= 1) {
-            this.machineId = appMachineId;
+        if (appMachineId >= 1) {
+            this.machineId = ((appMachineId % 128) shl 3) + MyUtil.getRandomNumber(0, 8).AsInt();
         }
     }
 
