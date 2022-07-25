@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 /**
@@ -39,8 +40,8 @@ class SnowFlake : InitializingBean {
         /**
          * 每一部分的最大值
          */
-        private const val MAX_MACHINE_NUM = -1L xor (-1L shl MACHINE_BIT.toInt())
-        private const val MAX_SEQUENCE = -1L xor (-1L shl SEQUENCE_BIT.toInt())
+        private const val MAX_MACHINE_NUM = -1L xor (-1L shl MACHINE_BIT)
+        private const val MAX_SEQUENCE = -1L xor (-1L shl SEQUENCE_BIT)
 
         /**
          * 每一部分向左的位移

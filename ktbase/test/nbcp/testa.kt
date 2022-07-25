@@ -9,6 +9,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 import nbcp.scope.*
+import java.time.LocalTime
 
 class testa : TestBase() {
 
@@ -58,8 +59,10 @@ class testa : TestBase() {
 
     @Test
     fun abcd() {
-        var clss = ByteArray::class.java
-        println(clss.typeName)
+        for(i in 1 until 1000){
+            var now = LocalDateTime.now();
+            println( now.AsString() + "  " +  System.nanoTime())
+        }
     }
 
     @Test
