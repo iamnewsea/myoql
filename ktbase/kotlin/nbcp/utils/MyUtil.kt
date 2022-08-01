@@ -30,7 +30,7 @@ object MyUtil {
         ZoneId.systemDefault().rules.getStandardOffset(Date().toInstant()).totalSeconds  //系统时区相差的秒数
 
     @JvmStatic
-    private val random = Random(LocalTime.now().nano.toLong());
+    private val random = Random(System.nanoTime());
 
     //    /**
 //     * 北京时间的今天凌晨。
