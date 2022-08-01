@@ -22,6 +22,10 @@ class SqlDefaultInsertEvent : ISqlEntityInsert {
     }
 
     override fun insert(insert: SqlInsertClip<*, *>, eventData: EventResult) {
+        brokeCache(insert)
+    }
+
+    private fun brokeCache(insert: SqlInsertClip<*, *>) {
         val cacheGroups = MongoEntityCollector.sysRedisCacheDefines.get(insert.tableName)
         if (cacheGroups == null) {
             return;

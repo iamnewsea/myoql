@@ -18,6 +18,10 @@ class SqlDefaultUpdateEvent : ISqlEntityUpdate {
     }
 
     override fun update(update: SqlUpdateClip<*>, eventData: EventResult) {
+        brokeCache(update)
+    }
+
+    private fun brokeCache(update: SqlUpdateClip<*>) {
         val cacheGroups = MongoEntityCollector.sysRedisCacheDefines.get(update.tableName)
         if (cacheGroups == null) {
             return;

@@ -19,6 +19,10 @@ class SqlDefaultDeleteEvent : ISqlEntityDelete {
 
     override fun delete(delete: SqlDeleteClip<*>, eventData: EventResult) {
         //破坏缓存
+        brokeCache(delete)
+    }
+
+    private fun brokeCache(delete: SqlDeleteClip<*>) {
         val cacheGroups = MongoEntityCollector.sysRedisCacheDefines.get(delete.tableName)
         if (cacheGroups == null) {
             return;
