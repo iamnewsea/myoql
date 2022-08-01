@@ -14,6 +14,9 @@ import javax.sql.DataSource
  * ORM解决80%的问题即可. 对于 自连接,复杂的查询, 直接写Sql吧.
  *
  * 1. 读写分离
+ *
+ *      当前线程中,如果对某一个表进行了修改,则之后对该表的查询,也定位到主库.
+ *
  * https://www.jianshu.com/p/f728e8c131a9
  * 配置： spring.datasource 是主库的数据库连接。
  * 额外增加： spring.datasource-slave 表示是从库连接。参数继承 spring.datasource
