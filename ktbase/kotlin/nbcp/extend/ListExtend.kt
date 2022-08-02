@@ -355,7 +355,7 @@ fun Collection<*>.getObject(index: Int): Any? {
 }
 
 fun List<*>.getListObject(): List<Any?> {
-    return this as List<Any?>
+    return this
 }
 
 fun Array<*>.getArrayObject(): Array<Any?> {

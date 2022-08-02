@@ -173,7 +173,7 @@ class TypedMapResult<T>() : JsonMap() {
         get() {
             val _data = this.get("data");
             if (_data == null) return null;
-            return _data as T
+            return _data as T?
         }
         set(value) {
             this.set("data", value);

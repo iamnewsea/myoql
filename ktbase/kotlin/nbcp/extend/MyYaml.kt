@@ -7,7 +7,7 @@ import nbcp.scope.JsonSceneEnumScope
 import nbcp.scope.JsonStyleEnumScope
 import nbcp.utils.SpringUtil
 
-@JvmOverloads
+
 fun <T> T.ToYaml(): String {
     return YamlObjectMapper.INSTANCE.writeValueAsString(this)
 }

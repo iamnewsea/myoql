@@ -54,7 +54,6 @@ fun <T> T.ToJson(vararg jsonScopes: JsonStyleEnumScope): String {
 /**
  * 样式请使用 usingScope(listOf(JsonStyleEnum.FieldStyle)){}
  */
-@JvmOverloads
 fun <T> T.ToJson(style: JsonSceneEnumScope?, vararg jsonScopes: JsonStyleEnumScope): String {
     if (this is String) return this;
 

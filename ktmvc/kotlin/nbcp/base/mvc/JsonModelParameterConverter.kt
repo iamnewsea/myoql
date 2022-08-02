@@ -220,20 +220,20 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         parameterName: String = ""
     ): Any? {
 
-        var parameterName = parameterName;
-        if (parameterName.isEmpty()) {
-            parameterName = parameter.parameterName
+        var parameterNameLocal = parameterName;
+        if (parameterNameLocal.isEmpty()) {
+            parameterNameLocal = parameter.parameterName
         }
 
 //        val myRequest = getMyRequest(webRequest);
         //获取 PathVariable 的值
         var value: Any? =
             (webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as Map<String, Any?>?)?.get(
-                parameterName
+                parameterNameLocal
             );
 
         if (value == null && webRequest.queryString != null) {
-            value = getFromQuery(webRequest, parameter, parameterName);
+            value = getFromQuery(webRequest, parameter, parameterNameLocal);
         }
 
         if (value == null) {
@@ -255,11 +255,11 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
                 }
             }
 
-            value = webRequest.getPostJson().get(parameterName)
+            value = webRequest.getPostJson().get(parameterNameLocal)
         }
 
         if (value == null) {
-            value = webRequest.getHeader(parameterName)
+            value = webRequest.getHeader(parameterNameLocal)
         }
 
         return value;
@@ -289,18 +289,18 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
     private fun getFromQuery(webRequest: HttpServletRequest, parameter: MethodParameter, parameterName: String): Any? {
         val queryMap = webRequest.queryJson
 
-        var parameterName = parameterName;
-        if (parameterName.isEmpty()) {
-            parameterName = parameter.parameterName;
+        var parameterNameLocal = parameterName;
+        if (parameterNameLocal.isEmpty()) {
+            parameterNameLocal = parameter.parameterName;
         }
 
 
-        var value = queryMap.get(parameterName)
+        var value = queryMap.get(parameterNameLocal)
 
         if (value == null) {
             //判断是否是 solo
             if (parameter.parameterType.IsBooleanType
-                && webRequest.soloQueryKeys.contains(parameterName)
+                && webRequest.soloQueryKeys.contains(parameterNameLocal)
             ) {
                 return true;
             }

@@ -29,7 +29,7 @@ fun Any?.AsInt(defaultValue: Int = 0): Int {
         }
 }
 
-@JvmOverloads
+
 fun Any?.AsIntWithNull(): Int? {
     if (this == null) return null;
 
@@ -83,7 +83,7 @@ fun Any?.AsLong(defaultValue: Long = 0L): Long {
 
 }
 
-@JvmOverloads
+
 fun Any?.AsLongWithNull(): Long? {
     if (this == null) return null;
 
@@ -130,7 +130,7 @@ fun Any?.AsDouble(defaultValue: Double = 0.0): Double {
         }
 }
 
-@JvmOverloads
+
 fun Any?.AsDoubleWithNull(): Double? {
     if (this == null) return null;
     if (this is Double) {
@@ -170,7 +170,7 @@ fun Any?.AsFloat(defaultValue: Float = 0F): Float {
         }
 }
 
-@JvmOverloads
+
 fun Any?.AsFloatWithNull(): Float? {
     if (this == null) return null;
 

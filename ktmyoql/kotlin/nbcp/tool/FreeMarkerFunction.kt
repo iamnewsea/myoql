@@ -11,7 +11,7 @@ import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 
 fun _get_value_items(vararg p1: Any?): List<Any?> {
-    return p1?.map { _get_value_item(it) }
+    return p1.map { _get_value_item(it) }
 }
 
 

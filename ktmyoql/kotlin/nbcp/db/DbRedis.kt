@@ -62,7 +62,7 @@ object DbRedis {
         var list = mutableListOf<String>()
         getStringRedisTemplate(group).scanKeys(pattern, callback = {
             list.add(it);
-            return@scanKeys true;
+            true;
         });
         return list;
     }

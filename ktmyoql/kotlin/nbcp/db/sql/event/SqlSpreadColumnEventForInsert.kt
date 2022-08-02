@@ -22,7 +22,7 @@ class SqlSpreadColumnEventForInsert : ISqlEntityInsert {
 
         insert.mainEntity.getSpreadColumns().forEach { column ->
             insert.entities.forEach { entity ->
-                val value = entity.get(column) as Map<String, *>;
+                val value = entity.get(column) as Map<String, *>?;
                 if (value == null) {
                     return@forEach
                 }

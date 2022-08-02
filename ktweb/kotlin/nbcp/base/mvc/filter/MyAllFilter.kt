@@ -67,15 +67,15 @@ open class MyAllFilter : Filter {
         }
     }
 
-    override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
-        var httpRequest = request as HttpServletRequest
+    override fun doFilter(oriRequest: ServletRequest?, oriResponse: ServletResponse?, chain: FilterChain?) {
+        var httpRequest = oriRequest as HttpServletRequest
         if (matchUrI(httpRequest.requestURI, ignoreUrls)) {
-            chain?.doFilter(request, response)
+            chain?.doFilter(oriRequest, oriResponse)
             return;
         }
 
         var request = getRequestWrapper(httpRequest);
-        var response = getResponseWrapper(response as HttpServletResponse);
+        var response = getResponseWrapper(oriResponse as HttpServletResponse);
 
         request.characterEncoding = "utf-8";
 

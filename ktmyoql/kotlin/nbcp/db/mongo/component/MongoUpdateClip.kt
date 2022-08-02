@@ -38,10 +38,9 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
         var item = where(moerEntity).toString()
         var items = mutableListOf(item);
 
-        item = db.mongo.getMongoColumnName(item)
-
         items.forEach { key ->
             this.setData.remove(key);
+            this.setData.remove(db.mongo.getMongoColumnName(key));
         }
         return this;
     }

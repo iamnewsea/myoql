@@ -143,7 +143,7 @@ private fun getSysCode(errorTypeName: String): ExceptionGeneralCodeMessage? {
                 }
                 return ExceptionGeneralCodeMessage(
                     c3.value.AsInt(0) * 100,
-                    c3.cn.AsString(c3?.word.AsString())
+                    c3.cn.AsString(c3.word.AsString())
                 );
             }
             this.value = 10 + this.value;

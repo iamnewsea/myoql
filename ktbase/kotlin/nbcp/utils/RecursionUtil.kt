@@ -325,7 +325,7 @@ object RecursionUtil {
             }
         }
 
-        return value::class.java.AllFields.ForEachExt { it, index ->
+        return value::class.java.AllFields.ForEachExt { it, _ ->
 
 //            var key = it.name;
             val fieldValue = it.get(value);
@@ -395,7 +395,7 @@ object RecursionUtil {
             }
         }
 
-        return array.ForEachExt { it, index ->
+        return array.ForEachExt { it, _ ->
             var value = it;
 
             if (value == null) {

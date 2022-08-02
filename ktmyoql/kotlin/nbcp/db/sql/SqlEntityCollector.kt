@@ -116,7 +116,7 @@ class SqlEntityCollector : BeanPostProcessor {
         var ret = dataSourceMap.get(key);
         if (ret != null) return ret;
 
-        dataSources.ForEachExt { iSqlDataSource, i ->
+        dataSources.ForEachExt { iSqlDataSource, _ ->
             var v = iSqlDataSource.run(tableName, isRead)
             if (v == null) {
                 return@ForEachExt false;
@@ -182,7 +182,7 @@ class SqlEntityCollector : BeanPostProcessor {
         var list = mutableListOf<Pair<ISqlEntitySelect, EventResult>>()
         selectEvents.ForEachExt { it, _ ->
             var ret = it.beforeSelect(select);
-            if (ret != null && ret.result == false) {
+            if (ret.result == false) {
                 return@ForEachExt false;
             }
             list.add(it to ret)

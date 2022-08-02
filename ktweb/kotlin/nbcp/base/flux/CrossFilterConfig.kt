@@ -49,7 +49,7 @@ class CrossFilterConfig {
             exchange.request.getCorsResponseMap(allowOrigins.split(","), denyHeaders)
                 .apply {
                     if (this.any()) {
-                        var originClient = exchange.request.getHeader("origin") ?: ""
+                        var originClient = exchange.request.getHeader("origin")
 
                         var request2 = exchange.request.mutate().headers {
                             it.remove("origin")

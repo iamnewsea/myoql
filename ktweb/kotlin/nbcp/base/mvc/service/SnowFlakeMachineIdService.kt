@@ -92,10 +92,10 @@ open class SnowFlakeRedisService {
 
         redisNacosInstanceNewData.filter { it.value == 0 }.keys.forEach { ipPort ->
             var randomId = 0;
-            (1..3).forEach {
+            (1..3).forEach for1@{
                 randomId = MyUtil.getRandomNumber(100, 500);
                 if (usedId.contains(randomId) == false) {
-                    return@forEach
+                    return@for1
                 }
             }
 

@@ -3,19 +3,9 @@
 
 package nbcp.comm
 
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
 import nbcp.component.YamlObjectMapper
-import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
-import org.w3c.dom.Element
-import org.w3c.dom.Node
-import org.w3c.dom.NodeList
-import java.io.ByteArrayInputStream
-import java.lang.StringBuilder
 import java.util.ArrayList
-import java.util.regex.Pattern
-import javax.xml.parsers.DocumentBuilderFactory
-import javax.xml.transform.TransformerFactory
 import kotlin.reflect.KClass
 
 private val logger = LoggerFactory.getLogger("MyHelper.StringExtend")
@@ -340,9 +330,9 @@ fun String.Tokenizer(
     ),
     only1Blank: Boolean = true
 ): List<String> {
-    var wordSplit = wordSplit;
-    if (wordSplit == null) {
-        wordSplit = { it.isLetterOrDigit() == false }
+    var wordSplitLocal = wordSplit;
+    if (wordSplitLocal == null) {
+        wordSplitLocal = { it.isLetterOrDigit() == false }
     }
     var list = mutableListOf<String>()
 
@@ -356,7 +346,7 @@ fun String.Tokenizer(
             break;
         }
 
-        var nextIndex = getNextSplitIndex(this, index, quoteDefines, wordSplit);
+        var nextIndex = getNextSplitIndex(this, index, quoteDefines, wordSplitLocal);
         if (nextIndex < 0) {
             list.add(this.substring(index, nextIndex));
             break;

@@ -61,7 +61,7 @@ fun Any.ConvertType(targetClass: Class<*>, genericClassIfTargetIsList: Class<*>?
             (this as Array<*>)
                 .map {
                     if (genericClassIfTargetIsList == null || it == null) return@map it;
-                    return@map it.ConvertType(genericClassIfTargetIsList!!)
+                    return@map it.ConvertType(genericClassIfTargetIsList)
                 }
                 .apply {
                     if (targetClass.isAssignableFrom(Set::class.java)) {
@@ -75,7 +75,7 @@ fun Any.ConvertType(targetClass: Class<*>, genericClassIfTargetIsList: Class<*>?
             (this as Collection<*>)
                 .map {
                     if (genericClassIfTargetIsList == null || it == null) return@map it;
-                    return@map it.ConvertType(genericClassIfTargetIsList!!)
+                    return@map it.ConvertType(genericClassIfTargetIsList)
                 }
                 .apply {
                     if (targetClass.isAssignableFrom(Set::class.java)) {

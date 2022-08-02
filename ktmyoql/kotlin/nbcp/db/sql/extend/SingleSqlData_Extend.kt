@@ -64,17 +64,17 @@ fun BaseAliasSqlSect.count(): SqlParameterData {
     return op_ext_sql(this, "count");
 }
 
-@JvmOverloads
+
 fun BaseAliasSqlSect.min(): SqlParameterData {
     return op_ext_sql(this, "min");
 }
 
-@JvmOverloads
+
 fun BaseAliasSqlSect.max(): SqlParameterData {
     return op_ext_sql(this, "max");
 }
 
-@JvmOverloads
+
 fun BaseAliasSqlSect.avg(): SqlParameterData {
     return op_ext_sql(this, "avg");
 }
@@ -89,12 +89,12 @@ fun BaseAliasSqlSect.avg(): SqlParameterData {
 /**
  * 字符个数
  */
-@JvmOverloads
-fun BaseAliasSqlSect.character_length( ): SqlParameterData {
+
+fun BaseAliasSqlSect.character_length(): SqlParameterData {
     return op_ext_sql(this, "character_length" );
 }
 
-@JvmOverloads
+
 fun BaseAliasSqlSect.ifNull(elseValue: BaseAliasSqlSect): SqlParameterData {
     var ret = this.toSingleSqlData();
     ret.expression = "ifNull(${ret.expression},"

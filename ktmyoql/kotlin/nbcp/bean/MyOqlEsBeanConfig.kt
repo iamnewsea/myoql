@@ -23,7 +23,7 @@ class MyOqlEsBeanConfig : BeanPostProcessor {
         //解决 长时间空闲，连接不上的错误
         if (bean is RestClientBuilder) {
             bean.setHttpClientConfigCallback {
-                it.setKeepAliveStrategy { response, context ->
+                it.setKeepAliveStrategy { _, _ ->
                     return@setKeepAliveStrategy TimeUnit.MINUTES.toMillis(3)
                 }
             }

@@ -42,20 +42,20 @@ object NacosServiceUtil {
         dataId: String,
         pageNumber: Int = 1
     ): ListResult<NacosConfigItemData> {
-        val group = group.AsString("DEFAULT_GROUP")
+        val groupLocal = group.AsString("DEFAULT_GROUP")
         var searchType = "blur"; // blur： 模糊，  accurate ：精确
         val http =
-            HttpUtil("${getConfigServerHost(serverHost)}/v1/cs/configs?dataId=${dataId.AsString("*")}&group=${group}&tenant=$ns&pageNo=${pageNumber}&pageSize=100&search=${searchType}")
+            HttpUtil("${getConfigServerHost(serverHost)}/v1/cs/configs?dataId=${dataId.AsString("*")}&group=${groupLocal}&tenant=$ns&pageNo=${pageNumber}&pageSize=100&search=${searchType}")
         val res = http.doGet();
         if (http.isError) {
-            throw HttpInvokeException(http.status, "ns:$ns,dataId:$dataId,group:$group , 获取nacos配置错误 : $res")
+            throw HttpInvokeException(http.status, "ns:$ns,dataId:$dataId,group:$groupLocal , 获取nacos配置错误 : $res")
         }
         var list = mutableListOf<NacosConfigItemData>()
         var data = res.FromJson<NacosConfigsResponseDataModel>()!!;
         list.addAll(data.pageItems)
 
         if (data.pagesAvailable > data.pageNumber) {
-            var dataNext = queryConfigs(serverHost, ns, group, dataId, pageNumber + 1);
+            var dataNext = queryConfigs(serverHost, ns, groupLocal, dataId, pageNumber + 1);
             if (dataNext.msg.HasValue) {
                 return ListResult.error(dataNext.msg);
             }
@@ -70,15 +70,15 @@ object NacosServiceUtil {
      * 删除配置
      */
     fun deleteConfig(serverHost: String, ns: String, group: String, dataId: String): JsonResult {
-        val group = group.AsString("DEFAULT_GROUP")
+        val groupLocal = group.AsString("DEFAULT_GROUP")
         val http =
-            HttpUtil("${getConfigServerHost(serverHost)}/v1/cs/configs?dataId=${dataId}&group=${group}&tenant=$ns")
+            HttpUtil("${getConfigServerHost(serverHost)}/v1/cs/configs?dataId=${dataId}&group=${groupLocal}&tenant=$ns")
         http.request.requestMethod = "DELETE"
         val res = http.doNet();
         if (http.isSuccess) {
             return ApiResult.of(res)
         }
-        throw HttpInvokeException(http.status, "ns:$ns,dataId:$dataId,group:$group , 获取nacos配置错误 : $res")
+        throw HttpInvokeException(http.status, "ns:$ns,dataId:$dataId,group:$groupLocal , 获取nacos配置错误 : $res")
     }
 
     fun existsConfig(serverHost: String, ns: String, group: String, dataId: String): ApiResult<Boolean> {
@@ -102,14 +102,14 @@ object NacosServiceUtil {
      * 获取配置信息
      */
     fun getConfig(serverHost: String, ns: String, group: String, dataId: String): ApiResult<String> {
-        val group = group.AsString("DEFAULT_GROUP")
+        val groupLocal = group.AsString("DEFAULT_GROUP")
         val http =
-            HttpUtil("${getConfigServerHost(serverHost)}/v1/cs/configs?dataId=${dataId}&group=${group}&tenant=$ns")
+            HttpUtil("${getConfigServerHost(serverHost)}/v1/cs/configs?dataId=${dataId}&group=${groupLocal}&tenant=$ns")
         val res = http.doGet();
         if (http.isSuccess) {
             return ApiResult.of(res)
         }
-        throw HttpInvokeException(http.status, "ns:$ns,dataId:$dataId,group:$group , 获取nacos配置错误 : $res")
+        throw HttpInvokeException(http.status, "ns:$ns,dataId:$dataId,group:$groupLocal , 获取nacos配置错误 : $res")
     }
 
     /**
