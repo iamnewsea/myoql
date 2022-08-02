@@ -449,7 +449,7 @@ object MyUtil {
     )
 
     fun getMimeType(extName: String): String {
-        return mimeLists.getStringValue(extName.lowercase()).AsString("application/octet-stream")
+        return mimeLists.getStringValue(extName.lowercase()).AsString()
     }
 
 

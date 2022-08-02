@@ -101,7 +101,7 @@ class MinioBaseService : ISaveFileService {
         val fileName = fileData.getTargetFileName('/')
 
         //类型
-        val contentType = MyUtil.getMimeType(fileData.extName)
+        val contentType = MyUtil.getMimeType(fileData.extName).AsString("application/octet-stream")
         //把文件放置MinIo桶(文件夹)
 
         return fileStream.use {

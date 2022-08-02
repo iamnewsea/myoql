@@ -4,6 +4,7 @@ import com.aliyun.oss.OSSClientBuilder
 import com.aliyun.oss.internal.OSSHeaders
 import com.aliyun.oss.model.ObjectMetadata
 import com.aliyun.oss.model.StorageClass
+import nbcp.comm.AsString
 import nbcp.comm.HasValue
 import nbcp.comm.JsonResult
 import nbcp.utils.MyUtil
@@ -33,7 +34,7 @@ class AliOssBaseService : ISaveFileService {
         return@lazy OSSClientBuilder().build(ALI_HOST, ALI_ACCESSKEY, ALI_SECRETKEY)
     }
 
-      fun check(): Boolean {
+    fun check(): Boolean {
         return ALI_HOST.HasValue && ALI_ACCESSKEY.HasValue && ALI_SECRETKEY.HasValue
     }
 
@@ -48,7 +49,7 @@ class AliOssBaseService : ISaveFileService {
 
         //5、如果需要在初始化分片时设置文件存储类型，并通过setContentType决定链接是预览还是下载
         val metadata = ObjectMetadata()
-        metadata.setContentType(MyUtil.getMimeType(fileData.extName))
+        metadata.setContentType(MyUtil.getMimeType(fileData.extName).AsString("application/octet-stream"))
         metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString())
         metadata.setContentLength(contentLength.toLong())
 
