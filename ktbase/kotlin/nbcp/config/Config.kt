@@ -78,7 +78,7 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
         //setOf(appGroup, getConfig("app.product-line.code")).filter { it.HasValue }.joinToString(".")
 
         val appPrefix: String
-            get() = productLineCode
+            get() = productLineCode.AsString(appGroup.AsString())
 
 
         @JvmStatic
