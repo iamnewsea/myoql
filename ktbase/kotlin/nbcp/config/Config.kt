@@ -70,13 +70,16 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
 
 
         /**
-         * 产品线编码， 默认=appGroup， 用于 redis 前缀，隔离key
+         * 产品线编码
          */
         @JvmStatic
         val productLineCode
             get() = getConfig("app.product-line.code").AsString();
         //setOf(appGroup, getConfig("app.product-line.code")).filter { it.HasValue }.joinToString(".")
 
+        /**
+         * redis 前缀，隔离key, = productLineCode/appGroup
+         */
         val appPrefix: String
             get() = productLineCode.AsString(appGroup.AsString())
 
