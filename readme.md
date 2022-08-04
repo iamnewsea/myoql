@@ -16,7 +16,7 @@
     > mvn clean install -Dmaven.test.skip=true  -P release
     > mvn clean deploy -Dmaven.test.skip=true -P release
 
-
+pom.xml 中 profiles.release.profile.id == profiles.release.distributionManagement.repository.id == maven setting.xml servers.server.id
 ### 注意
 需要集成 kotlin-maven-plugin
 ```

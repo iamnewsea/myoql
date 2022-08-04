@@ -540,7 +540,7 @@
 
             <distributionManagement>
                 <repository>
-                    <id>releases</id>
+                    <id>release</id>
                     <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
                 </repository>
                 <snapshotRepository>
