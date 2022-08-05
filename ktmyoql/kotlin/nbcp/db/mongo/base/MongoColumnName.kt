@@ -1,6 +1,9 @@
 package nbcp.db.mongo
 
+import nbcp.comm.AsString
 import nbcp.comm.MyString
+import nbcp.db.db
+import org.springframework.data.mongodb.core.query.Criteria
 
 /**
  * Mongo列
@@ -12,6 +15,12 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
 //
 //    val desc: MongoOrderBy
 //        get() = MongoOrderBy(false, this)
+
+
+    fun match(to: Any?): Criteria {
+        val (key, toValue) = db.mongo.proc_mongo_key_value(this, to);
+        return Criteria.where(key.AsString("\$eq")).`is`(toValue);// Pair<String, T>(this, to);
+    }
 
     operator fun plus(value: String): MongoColumnName {
         return MongoColumnName(this.toString() + value)

@@ -259,30 +259,11 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
             return EntityResult();
         }
 
-//        var autoIncrementKey = "";
-//        val uks = mutableSetOf<String>()
-//        val fks = mutableSetOf<FkDefine>()
-//        val pks = mutableListOf<String>()
-//        val columns = mutableListOf<String>()
-//        val columns_spread = mutableListOf<String>()
-//        val columns_convertValue = mutableListOf<String>()
-//
-//        val props = mutableListOf<String>();
-//        val extMethods = mutableListOf<String>()
-//        val entityTypeName = getEntityClassName(tableName)
         val idMethods = mutableListOf<String>()
 
         val entityName = entType.name.split(".").last();
         val entityTableMetaName = getEntityClassName(entityName)
         val columnMetaDefines = getColumnMetaDefines(groupName, entityName, entType);
-
-
-//        kotlin.run {
-//            var rks_define = entType.getAnnotation(SqlRks::class.java)
-//            if (rks_define != null) {
-//                rks.addAll(rks_define.rkColumns)
-//            }
-//        }
 
 
         var uks2 =
@@ -371,7 +352,7 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                 entType,
                 ""
             )
-        }${ProgramCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
+        }${KotlinCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
 class ${entityTableMetaName}(collectionName: String = "", datasource:String="")
     :SqlBaseMetaTable<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, "${dbName}", collectionName.AsString("${dbName}")) {
 ${columnMetaDefines.props.joinToString("\n")}
@@ -445,29 +426,12 @@ ${idMethods.joinToString("\n")}
                 field.isAccessible = true
                 var db_column_name = parentEntityPrefix + field.name;
 
-//                    var dbName = field.getAnnotation(DbName::class.java);
-//                    if (dbName != null) {
-//                        db_column_name = dbName.value;
-//                    }
 
                 if (field.getAnnotation(SqlAutoIncrementKey::class.java) != null) {
                     ret.autoIncrementKey = db_column_name
                     ret.uks.add(db_column_name)
                 }
 
-//                    if (field.getAnnotation(DbKey::class.java) != null) {
-//                        ret.pks.add(db_column_name);
-//                    }
-
-
-//                    var converter = field.getAnnotation(ConverterValueToDb::class.java)
-//                    var ann_converter = "";
-//                    if (converter != null) {
-//                        ret.columns_convertValue.add(db_column_name);
-//                        ann_converter =
-//                                "@ConverterValueToDb(" + (converter.value.map { it.qualifiedName + "::class" }.joinToString(",")
-//                                        ?: "") + ")\n";
-//                    }
 
                 val fieldDbType = DbType.of(field.type)
                 if (fieldDbType == DbType.Other) {

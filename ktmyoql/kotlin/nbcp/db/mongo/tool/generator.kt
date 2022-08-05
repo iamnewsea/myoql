@@ -117,11 +117,14 @@ private fun join(vararg args: String): MongoColumnName {
     return MongoColumnName(args.toList().filter { it.HasValue }.joinToString("."))
 }
 
-private fun join_map(vararg args: String): moer_map {
-    return moer_map(args.toList().filter { it.HasValue }.joinToString("."))
-}
+//private fun join_map(vararg args: String): moer_map {
+//    return moer_map(args.toList().filter { it.HasValue }.joinToString("."))
+//}
 
 data class moer_map(val _pname: String) {
+    constructor(vararg args: String): this(args.toList().filter { it.HasValue }.joinToString(".")) {
+    }
+    
     fun keys(keys: String): String {
         return this._pname + "." + keys
     }
@@ -239,7 +242,7 @@ data class moer_map(val _pname: String) {
         }
 
         if (Map::class.java.isAssignableFrom(fieldType)) {
-            return "join_map(this._pname, \"${fieldName}\")/*:map*/"
+            return "moer_map(this._pname, \"${fieldName}\")/*:map*/"
         }
 
         if (fieldType.isArray) {
@@ -339,7 +342,7 @@ data class moer_map(val _pname: String) {
             .map {
                 var v1 = getMetaValue(it, entType, entTypeName, 1)
 
-                return@map """${CodeGeneratorHelper.getFieldComment(it)}${ProgramCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }.joinToString("")}
+                return@map """${CodeGeneratorHelper.getFieldComment(it)}${KotlinCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }.joinToString("")}
 val ${it.name} = ${v1}""".removeEmptyLine().ToTab(1)
             }
 
@@ -347,7 +350,7 @@ val ${it.name} = ${v1}""".removeEmptyLine().ToTab(1)
 
 
         var ent =
-            """${CodeGeneratorHelper.getEntityComment(entType)}${ProgramCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
+            """${CodeGeneratorHelper.getEntityComment(entType)}${KotlinCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
 class ${entityTypeName}Meta(private val _pname: String) : MongoColumnName() {
     constructor(_val: MongoColumnName) : this(_val.toString()) {}
 ${props.map { const.line_break + it }.joinToString(const.line_break)}
@@ -451,7 +454,7 @@ fun ${entityVarName}(${
                 var (retValue, retTypeIsBasicType) = getEntityValue1(it, entType)
 
                 var pv =
-                    """${CodeGeneratorHelper.getFieldComment(it)}${ProgramCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }.joinToString("")} """
+                    """${CodeGeneratorHelper.getFieldComment(it)}${KotlinCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }.joinToString("")} """
 
                 if (retTypeIsBasicType) {
                     return@map """${pv}
@@ -569,7 +572,7 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
                     entType,
                     varTableRemark
                 )
-            }${ProgramCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
+            }${KotlinCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
 class ${entityTypeName}(collectionName: String = "", databaseId: String = "")
     : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, "${dbName}", collectionName.AsString("${dbName}"), databaseId) {
 ${props.map { const.line_break + it }.joinToString(const.line_break)}

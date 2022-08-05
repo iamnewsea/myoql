@@ -107,12 +107,14 @@ private fun join(vararg args:String): EsColumnName{
     return EsColumnName( args.toList().filter{it.HasValue}.joinToString (".") )
 }
 
-private fun join_map(vararg args:String):moer_map{
-    return moer_map(args.toList().filter{it.HasValue}.joinToString ("."))
-}
+//private fun join_map(vararg args:String):moer_map{
+//    return moer_map(args.toList().filter{it.HasValue}.joinToString ("."))
+//}
 
-data class moer_map(val _pname:String)
-{
+data class moer_map(val _pname:String) {
+    constructor(vararg args: String): this(args.toList().filter { it.HasValue }.joinToString(".")) {
+    }
+    
     fun keys(keys:String):String{
         return this._pname + "." + keys
     }
@@ -234,7 +236,7 @@ data class moer_map(val _pname:String)
         }
 
         if (Map::class.java.isAssignableFrom(fieldType)) {
-            return "join_map(this._pname, \"${fieldName}\")/*:map*/"
+            return "moer_map(this._pname, \"${fieldName}\")/*:map*/"
         }
 
         if (fieldType.isArray) {
@@ -468,7 +470,7 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
                     entType,
                     ""
             )
-        }${ProgramCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
+        }${KotlinCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
 class ${entityTypeName}(collectionName:String="")
     :EsBaseMetaEntity<${entType.name}>(${entType.name}::class.java, "${dbName}", collectionName.AsString("${dbName}")) {
 ${props.joinToString("\n")}

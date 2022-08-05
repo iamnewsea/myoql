@@ -1,13 +1,11 @@
 package nbcp.utils
 
 import nbcp.comm.*
-import nbcp.db.CodeName
-import nbcp.db.CodeValue
 import java.lang.RuntimeException
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 
-class ProgramCoderUtil {
+class KotlinCoderUtil {
     companion object{
         /**
          * 如果存在， 就有隔行。 如果不存在就返回空。

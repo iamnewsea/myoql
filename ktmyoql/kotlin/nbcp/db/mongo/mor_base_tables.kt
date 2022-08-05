@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-//generate auto @2022-07-06 13:33:39
+//generate auto @2022-08-05 14:28:43
 
 
 class SerializableMeta(private val _pname: String) : MongoColumnName() {
@@ -184,7 +184,7 @@ class BaseRequestDataMeta(private val _pname: String) : MongoColumnName() {
      * 请求头
      */
     @nbcp.db.Cn(value = """请求头""")
-    val header = join_map(this._pname, "header")/*:map*/
+    val header = moer_map(this._pname, "header")/*:map*/
 
     /**
      * 客户端Ip
@@ -219,7 +219,7 @@ class BaseResponseDataMeta(private val _pname: String) : MongoColumnName() {
      * 响应头
      */
     @nbcp.db.Cn(value = """响应头""")
-    val header = join_map(this._pname, "header")/*:map*/
+    val header = moer_map(this._pname, "header")/*:map*/
 
     /**
      * 结果
@@ -850,11 +850,14 @@ private fun join(vararg args: String): MongoColumnName {
     return MongoColumnName(args.toList().filter { it.HasValue }.joinToString("."))
 }
 
-private fun join_map(vararg args: String): moer_map {
-    return moer_map(args.toList().filter { it.HasValue }.joinToString("."))
-}
+//private fun join_map(vararg args: String): moer_map {
+//    return moer_map(args.toList().filter { it.HasValue }.joinToString("."))
+//}
 
 data class moer_map(val _pname: String) {
+    constructor(vararg args: String): this(args.toList().filter { it.HasValue }.joinToString(".")) {
+    }
+    
     fun keys(keys: String): String {
         return this._pname + "." + keys
     }
