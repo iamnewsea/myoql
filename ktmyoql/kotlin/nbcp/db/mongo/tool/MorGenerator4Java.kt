@@ -1,4 +1,4 @@
-package nbcp.db.mongo.tool
+package nancal.iam.dev
 
 import nbcp.comm.*
 import nbcp.data.Sys
@@ -15,8 +15,9 @@ import java.time.LocalDateTime
 /**
  * 代码生成器
  */
-class generator {
+class MorGenerator4Java {
     private var nameMapping: StringMap = StringMap();
+
 
     private fun String.GetSafeKotlinName(): String {
         if (this.isEmpty()) return this;
@@ -45,10 +46,7 @@ class generator {
 
         var p = File.separator;
 
-//        var path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0]
-//        var moer_Path = File(path).parentFile.path + "/shop-orm/kotlin/nbcp/db/mongo/mor_tables.kt".replace("/", p);
 //        var moer_Path = targetFileName.replace("/", p).replace("\\", p);
-
 
         File(targetEntityPathName).deleteRecursively();
         File(targetEntityPathName).mkdirs()
@@ -58,19 +56,21 @@ class generator {
         var embClasses = getEmbClasses(groups);
 
         println("开始生成 mor...")
-        var fileHeader = """package ${packageName}
 
-import nbcp.db.*
-import nbcp.db.mongo.*
-import nbcp.utils.*
-import nbcp.comm.*
-import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Component
-${packages.map { "import " + it }.joinToString(const.line_break)}
+        var fileHeader = """package ${packageName};
+
+import nbcp.db.*;
+import nbcp.db.mongo.*;
+import nbcp.utils.*;
+import nbcp.comm.*;
+import java.util.*;
+import java.util.stream.*;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+${packages.map { "import " + it + ";" }.joinToString(const.line_break)}
 
 //generate auto @${LocalDateTime.now().AsString()}
 """
-
 
         embClasses.forEach {
             writeToFile(it.simpleName + "Meta", fileHeader + genEmbEntity(it));
@@ -87,11 +87,17 @@ ${packages.map { "import " + it }.joinToString(const.line_break)}
                 fileHeader +
                         """
 @Component("mongo.${groupName}")
-@MetaDataGroup(DatabaseEnum.Mongo, "${groupName}")
-class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup {
-    override fun getEntities(): Set<BaseMetaData> = setOf(${
-                            group.value.map { genVarName(it).GetSafeKotlinName() }.joinToString(", ")
-                        })
+@MetaDataGroup(dbType = DatabaseEnum.Mongo, value = "${groupName}")
+public class ${MyUtil.getBigCamelCase(groupName)}Group implements IDataGroup {
+    @Override
+    public HashSet<BaseMetaData> getEntities(){
+        return new HashSet(){ { 
+${
+                            group.value.map { "add(" + genVarName(it).GetSafeKotlinName() + ");" }.map { it.ToTab(3) }
+                                .joinToString("\n")
+                        }
+        } };
+    }
 """
             )
             println("${groupName}:")
@@ -112,27 +118,38 @@ class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup {
         }
 
         writeToFile(
-            "MoerMetaMap",
+            "MoerUtil",
             fileHeader +
                     """
 
-fun mongoColumnJoin(vararg args: String): MongoColumnName {
-    return MongoColumnName(args.toList().filter { it.HasValue }.joinToString("."))
-}
-
-
-data class MoerMetaMap(val parentPropertyName: String) {
-    constructor(vararg args: String): this(args.toList().filter { it.HasValue }.joinToString(".")) {
-    }
-    
-    fun keys(keys: String): String {
-        return this.parentPropertyName + "." + keys
+public class MoerUtil{
+    public static MongoColumnName mongoColumnJoin(String... args) {
+        return new MongoColumnName(Arrays.asList(args).stream().filter (it-> MyHelper.hasValue( it) ).collect(Collectors.joining(".")));
     }
 }
 
 """
         )
 
+        writeToFile(
+            "MoerMetaMap",
+            fileHeader +
+                    """
+
+public class MoerMetaMap {
+    private String parentPropertyName;
+    
+    public MoerMetaMap(String... args){
+        this.parentPropertyName = Arrays.asList(args).stream().filter (it-> MyHelper.hasValue( it) ).collect(Collectors.joining("."));
+    }
+    
+    public String keys(String... keys) {
+        return this.parentPropertyName + "." + Arrays.asList(keys).stream().filter (it-> MyHelper.hasValue( it) ).collect(Collectors.joining("."));
+    }
+}
+
+"""
+        )
         println("生成 mor 完成!")
     }
 
@@ -140,10 +157,10 @@ data class MoerMetaMap(val parentPropertyName: String) {
 
 
     fun writeToFile(className: String, content: String) {
-        FileWriter(MyUtil.joinFilePath(targetEntityPathName, className + ".kt"), true).use { moer_File ->
-            moer_File.appendLine(content)
-            moer_File.flush()
-        }
+        var moer_File = FileWriter(MyUtil.joinFilePath(targetEntityPathName, className + ".java"), true);
+        moer_File.appendLine(content)
+        moer_File.flush()
+        moer_File.close();
     }
 
     fun getEntityName(name: String): String {
@@ -232,23 +249,23 @@ data class MoerMetaMap(val parentPropertyName: String) {
     private fun getMetaValue(fieldName: String, fieldType: Class<*>, parentTypeName: String): String {
 
         if (fieldName == "id") {
-            return "mongoColumnJoin(this.parentPropertyName, \"_id\")"
+            return "MoerUtil.mongoColumnJoin(this.parentPropertyName, \"_id\")"
         }
 
         if (fieldType.IsSimpleType()) {
-            return "mongoColumnJoin(this.parentPropertyName, \"${fieldName}\")"
+            return "MoerUtil.mongoColumnJoin(this.parentPropertyName, \"${fieldName}\")"
         }
 
         if (fieldType.simpleName == parentTypeName) {
-            return "mongoColumnJoin(this.parentPropertyName, \"${fieldName}\") /*:递归类*/"
+            return "MoerUtil.mongoColumnJoin(this.parentPropertyName, \"${fieldName}\") /*:递归类*/"
         }
 
         if (Map::class.java.isAssignableFrom(fieldType)) {
-            return "MoerMetaMap(this.parentPropertyName, \"${fieldName}\")/*:map*/"
+            return "new MoerMetaMap(this.parentPropertyName, \"${fieldName}\")/*:map*/"
         }
 
         if (fieldType.isArray) {
-            return "mongoColumnJoin(this.parentPropertyName, \"${fieldName}\")/*:array*/"
+            return "MoerUtil.mongoColumnJoin(this.parentPropertyName, \"${fieldName}\")/*:array*/"
         }
 
         if (List::class.java.isAssignableFrom(fieldType)) {
@@ -256,13 +273,14 @@ data class MoerMetaMap(val parentPropertyName: String) {
             return ""
         }
 
-        return """${fieldType.name.split(".").last()}Meta(mongoColumnJoin(this.parentPropertyName, "${fieldName}"))""";
+        return """new ${fieldType.name.split(".").last()}Meta(MoerUtil.mongoColumnJoin(this.parentPropertyName, "${fieldName}"))""";
     }
 
     private fun getMetaValue(field: Field, parentType: Class<*>, parentTypeName: String, deepth: Int): String {
 
         if (deepth > maxLevel) {
             throw RuntimeException("-------------------已超过最大深度${field.name}:${field.type.name}-----------------");
+            return "";
         }
 
         val ret = getMetaValue(field.name, field.type, parentTypeName);
@@ -342,11 +360,16 @@ data class MoerMetaMap(val parentPropertyName: String) {
             .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
             .map {
                 var v1 = getMetaValue(it, entType, entTypeName, 1)
+                var v1_type = "MongoColumnName";
+                if (v1.startsWith("new ")) {
+                    var v1_index_end = v1.indexOf('(');
+                    v1_type = v1.Slice(4, v1_index_end);
+                }
 
                 return@map """${CodeGeneratorHelper.getFieldComment(it)}${
-                    KotlinCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }.joinToString("")
+                    JavaCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }.joinToString("")
                 }
-val ${it.name} = ${v1}""".removeEmptyLine().ToTab(1)
+public ${v1_type} ${it.name} = ${v1};""".removeEmptyLine().ToTab(1)
             }
 
         var entityTypeName = entTypeName;
@@ -354,13 +377,21 @@ val ${it.name} = ${v1}""".removeEmptyLine().ToTab(1)
 
         var ent =
             """${CodeGeneratorHelper.getEntityComment(entType)}${
-                KotlinCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")
+                JavaCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")
             }
-class ${entityTypeName}Meta(private val parentPropertyName: String) : MongoColumnName() {
-    constructor(value: MongoColumnName) : this(value.toString()) {}
+public class ${entityTypeName}Meta extends MongoColumnName{
+    private String parentPropertyName;
+    ${entityTypeName}Meta(String parentPropertyName) {
+        this.parentPropertyName = parentPropertyName;
+    }
+    
+    ${entityTypeName}Meta(MongoColumnName value) {
+        this(value.toString());
+    }
 ${props.map { const.line_break + it }.joinToString(const.line_break)}
-    override fun toString(): String {
-        return mongoColumnJoin(this.parentPropertyName).toString()
+    @Override 
+    public String toString() {
+        return MoerUtil.mongoColumnJoin(this.parentPropertyName).toString();
     }
 }
 """
@@ -401,7 +432,7 @@ ${props.map { const.line_break + it }.joinToString(const.line_break)}
 
         ret.add(
             """${CodeGeneratorHelper.getEntityComment(entType, tailRemark)}
-val ${entityVarName} get() = ${entityTypeName}();"""
+public ${entityTypeName} ${entityVarName} = new ${entityTypeName}();"""
         )
 
 
@@ -431,9 +462,11 @@ val ${entityVarName} get() = ${entityTypeName}();"""
 
             ret.add(
                 """${CodeGeneratorHelper.getEntityComment(entType, tailRemark)}
-fun ${entityVarName}(${
-                    params.keys.filter { it.HasValue }.map { it + ":String" }.joinToString(", ")
-                }) = ${entityTypeName}(${params.values.first()},${params.values.last()});"""
+public ${entityTypeName} ${entityVarName}(${
+                    params.keys.filter { it.HasValue }.map { "String " + it }.joinToString(", ")
+                }) {
+    return new ${entityTypeName}(${params.values.first()},${params.values.last()});
+}"""
             )
         }
 
@@ -460,16 +493,21 @@ fun ${entityVarName}(${
 
                 var pv =
                     """${CodeGeneratorHelper.getFieldComment(it)}${
-                        KotlinCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }
+                        JavaCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }
                             .joinToString("")
                     } """
 
                 if (retTypeIsBasicType) {
                     return@map """${pv}
-val ${it.name} = MongoColumnName(${retValue})""".removeEmptyLine().ToTab(1)
+public MongoColumnName ${it.name} = new MongoColumnName(${retValue});""".removeEmptyLine().ToTab(1)
                 } else {
+                    var v1_type = "MongoColumnName"
+                    var l_index =  retValue.indexOf('(')
+                    if( l_index>0){
+                        v1_type = retValue.Slice(0,l_index);
+                    }
                     return@map """${pv}
-val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
+public ${v1_type} ${it.name} = new ${retValue};""".removeEmptyLine().ToTab(1)
                 }
             }.toSet()
 
@@ -503,46 +541,52 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
 
             idMethods.add(
                 """
-    fun queryBy${
+    public MongoQueryClip<${entityTypeName}, ${entType.name}> queryBy${
                     keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
                 }(${
                     keys.map {
-                        "${MyUtil.getSmallCamelCase(it)}: ${
+                        "${
                             entType.GetFieldPath(
                                 *it.split(".").toTypedArray()
                             )!!.type.kotlinTypeName
-                        }"
+                        } ${MyUtil.getSmallCamelCase(it)}"
                     }.joinToString(",")
-                }): MongoQueryClip<${entityTypeName}, ${entType.name}> {
-        return this.query()${keys.map { ".where { it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+                }) {
+        return this.query()${
+                    keys.map { ".where( it-> it.${it}.match( ${MyUtil.getSmallCamelCase(it)} ))" }.joinToString("")
+                } ;
     }
 
-    fun deleteBy${
+    public MongoDeleteClip<${entityTypeName}> deleteBy${
                     keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
                 }(${
                     keys.map {
-                        "${MyUtil.getSmallCamelCase(it)}: ${
+                        "${
                             entType.GetFieldPath(
                                 *it.split(".").toTypedArray()
                             )!!.type.kotlinTypeName
-                        }"
+                        } ${MyUtil.getSmallCamelCase(it)}"
                     }.joinToString(",")
-                }): MongoDeleteClip<${entityTypeName}> {
-        return this.delete()${keys.map { ".where { it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+                }) {
+        return this.delete()${
+                    keys.map { ".where (it-> it.${it}.match( ${MyUtil.getSmallCamelCase(it)} ))" }.joinToString("")
+                };
     }
 
-    fun updateBy${
+    public MongoUpdateClip<${entityTypeName}, ${entType.name}> updateBy${
                     keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
                 }(${
                     keys.map {
-                        "${MyUtil.getSmallCamelCase(it)}: ${
+                        "${
                             entType.GetFieldPath(
                                 *it.split(".").toTypedArray()
                             )!!.type.kotlinTypeName
-                        }"
+                        } ${MyUtil.getSmallCamelCase(it)}"
                     }.joinToString(",")
-                }): MongoUpdateClip<${entityTypeName}, ${entType.name}> {
-        return this.update()${keys.map { ".where { it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+                }) {
+        return this.update()${
+                    keys.map { ".where ( it-> it.${it}.match( ${MyUtil.getSmallCamelCase(it)} ))" }.joinToString("")
+                };
     }
 """
             )
@@ -580,10 +624,36 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
                     entType,
                     varTableRemark
                 )
-            }${KotlinCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
-class ${entityTypeName}(collectionName: String = "", databaseId: String = "")
-    : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, "${dbName}", collectionName.AsString("${dbName}"), databaseId) {
+            }${JavaCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
+public class ${entityTypeName}
+    extends MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}> {
+    public String collectionName;
+    public String databaseId;
+    public ${entityTypeName}(String collectionName,String databaseId){
+        super(${entType.name.GetSafeKotlinName()}.class, "${dbName}", MyHelper.AsString(collectionName,"${dbName}"), databaseId);
+    
+        this.collectionName = collectionName;
+        this.databaseId = databaseId;
+        }
+    
+    public ${entityTypeName}(){
+        this("","");
+    }
+    
 ${props.map { const.line_break + it }.joinToString(const.line_break)}
+
+    public MongoQueryClip<${entityTypeName}, ${entType.name}> query(){
+        return new MongoQueryClip(this);
+    }
+    
+    public MongoUpdateClip<${entityTypeName}, ${entType.name}> update(){
+        return new MongoUpdateClip(this);
+    }
+    
+    public MongoDeleteClip<${entityTypeName}> delete(){
+        return new MongoDeleteClip(this);
+    }
+    
 ${idMethods.joinToString(const.line_break)}
 }
 """
