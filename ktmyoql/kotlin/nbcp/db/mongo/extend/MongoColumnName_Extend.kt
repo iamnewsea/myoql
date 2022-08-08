@@ -36,7 +36,7 @@ class MongoColumnTranslateResult(
 
 
 infix fun MongoColumnName.match_size(value: Int): Criteria {
-    return Criteria.where(this.toString()).size(value);
+    return this.match_size(value);
 }
 
 
@@ -53,31 +53,19 @@ infix fun MongoColumnName.match_size(value: Int): Criteria {
  * @param pattern: 不会转义
  */
 infix fun MongoColumnName.match_pattern(pattern: String): Criteria {
-    return Criteria.where(this.toString()).regex(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE))
+    return this.match_pattern(pattern)
 }
 
 /**
  * @param like: 会对查询内容中的特殊字符转义，避免与正则表达式冲突
  */
 infix fun MongoColumnName.match_like(like: String): Criteria {
-    return this match_pattern "${getSafeRegText(like)}"
+    return this.match_like(like);
 }
 
-private fun getSafeRegText(value: String): String {
-    //https://www.cnblogs.com/ysk123/p/9858387.html
-
-    var v = value;
-
-    // 第一个必须是 反斜线！
-    """\/|()[]{}*+.?^${'$'}""".forEach {
-        v = v.replace(it.toString(), "\\${it}")
-    }
-    return v;
-}
 
 infix fun MongoColumnName.match_not_equal(value: Any?): Criteria {
-    val (key, toValue) = db.mongo.proc_mongo_key_value(this, value);
-    return Criteria.where(key).`ne`(toValue)
+    return this.match_not_equal(value);
 }
 
 
@@ -94,18 +82,12 @@ infix fun String.match(to: Any?): Criteria {
 }
 
 infix fun MongoColumnName.match(to: Any?): Criteria {
-    val (key, toValue) = db.mongo.proc_mongo_key_value(this, to);
-    return Criteria.where(key.AsString("\$eq")).`is`(toValue);// Pair<String, T>(this, to);
+    return this.match(to);
 }
 
 //array_all
 infix fun MongoColumnName.match_all(to: Array<*>): Criteria {
-    val (key, tos) = db.mongo.proc_mongo_key_value(this, to.toSet())
-
-    if (tos is Array<*>) {
-        return Criteria.where(key).`all`(*(tos as Array<*>));
-    }
-    return Criteria.where(key).`all`(*(tos as Collection<*>).toTypedArray());
+    return this.match_all(to);
 }
 
 //infix fun <T> String.match_like(to: T): Criteria {
@@ -115,74 +97,51 @@ infix fun MongoColumnName.match_all(to: Array<*>): Criteria {
 
 
 infix fun MongoColumnName.match_type(to: MongoTypeEnum): Criteria {
-    val (key, _) = db.mongo.proc_mongo_key_value(this, to);
-
-    return Criteria.where(key).`type`(to.value);// Pair<String, T>(this, to);
+    return this.match_type(to);
 }
 
 
 infix fun MongoColumnName.match_gte(to: Any): Criteria {
-    val (key, toValue) = db.mongo.proc_mongo_key_value(this, to);
-    return Criteria.where(key).gte(toValue!!);
+    return this.match_gte(to);
 }
 
 infix fun MongoColumnName.match_lte(to: Any): Criteria {
-    val (key, toValue) = db.mongo.proc_mongo_key_value(this, to);
-    return Criteria.where(key).lte(toValue!!);
+    return this.match_lte(to);
 }
 
 infix fun MongoColumnName.match_greaterThan(to: Any): Criteria {
-    val (key, toValue) = db.mongo.proc_mongo_key_value(this, to);
-    return Criteria.where(key).gt(toValue!!);
+    return this.match_greaterThan(to);
 }
 
 infix fun MongoColumnName.match_lessThan(to: Any): Criteria {
-    val (key, toValue) = db.mongo.proc_mongo_key_value(this, to);
-    return Criteria.where(key).lt(toValue!!);
+    return this.match_lessThan(to);
 }
 
 /**
  * 大于等于并且小于。
  */
 infix fun MongoColumnName.match_between(value: Pair<Any, Any>): Criteria {
-    var (key, value2) = db.mongo.proc_mongo_key_value(this, value);
-    var pair = value2 as Pair<Any, Any>
-
-    var dict = BasicBSONObject()
-    dict.put("\$gte", pair.first)
-    dict.put("\$lt", pair.second)
-    return Criteria.where(key).`is`(dict)
-    //return Criteria.where(key).gte(from).andOperator(Criteria.where(key).lt(to))
+    return this.match_between(value);
 }
 
 infix fun MongoColumnName.match_in(to: Collection<*>): Criteria {
-    return this.match_in(to.toTypedArray())
+    return this.match_in(to)
 }
 
 //db.test1.find({"age":{"$in":['值1','值2',.....]}})
 infix fun MongoColumnName.match_in(to: Array<*>): Criteria {
-    var (key, tos) = db.mongo.proc_mongo_key_value(this, to.toSet())
-    if (tos is Array<*>) {
-        return Criteria.where(key).`in`(*(tos as Array<*>));
-    }
-    return Criteria.where(key).`in`(*(tos as Collection<*>).toTypedArray());
+    return this.match_in(to)
 }
 
 infix fun MongoColumnName.match_notin(to: Array<*>): Criteria {
-    var (key, tos) = db.mongo.proc_mongo_key_value(this, to.toSet())
-    if (tos is Array<*>) {
-        return Criteria.where(key).`nin`(*(tos as Array<*>));
-    }
-    return Criteria.where(key).`nin`(*(tos as Collection<*>).toTypedArray());
+    return this.match_notin(to)
 }
 
 infix fun MongoColumnName.match_notin(to: Collection<*>): Criteria {
-    return this.match_notin(to.toTypedArray())
+    return this.match_notin(to)
 }
 
-fun MongoColumnName.match_exists(): Criteria {
-    return this.match_exists(true)
-}
+
 
 /**
  * 用法：
@@ -190,24 +149,8 @@ fun MongoColumnName.match_exists(): Criteria {
  * 判断数组有值,转化为：第一元素是否存在  MongoColumnName("tags.0")  match_exists true
  */
 infix fun MongoColumnName.match_exists(value: Boolean): Criteria {
-    var (key) = db.mongo.proc_mongo_key_value(this, null);
-    return Criteria.where(key).`exists`(value);
+    return this.match_exists(value);
 }
-
-/**
- * field match_hasValue  => field exists  and field != null and field != ""
- */
-fun MongoColumnName.match_hasValue(): Criteria {
-    return this.match_exists().match_and(this.match_not_equal(null).match_or(this.match_not_equal("")));
-}
-
-/**
- * field match_isNull => field not exists  or field == null  or field == ""
- */
-fun MongoColumnName.match_isNullOrEmpty(): Criteria {
-    return this.match_exists(false).match_or(this.match(null).match_or(this.match("")));
-}
-
 
 /**
  * 用于 数组的 elemMatch！
@@ -245,8 +188,7 @@ fun MongoColumnName.match_isNullOrEmpty(): Criteria {
  * @param value: 和普通的条件是不一样的。
  */
 infix fun MongoColumnName.match_elemMatch(value: Map<String, Any?>): Criteria {
-    var (key) = db.mongo.proc_mongo_key_value(this, null);
-    return Criteria.where(key).`elemMatch`(db.mongo.getMergedMongoCriteria(MongoWhereClip(value)));
+    return this.match_elemMatch(value);
 }
 
 
