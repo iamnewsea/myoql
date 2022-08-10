@@ -312,7 +312,25 @@ fun String.nextIndexOf(startIndex: Int, until: (Char) -> Boolean): Int {
     return -1;
 }
 
-/**分词器
+//
+//fun String.getNextMatchedIndex(
+//    match: String,
+//    escape: String = """\""",
+//    quoteDefines: StringMap = StringMap(
+//        "`" to "`",
+//        "[" to "]",
+//        "(" to ")",
+//        "{" to "}",
+//        """"""""" to """"""""",
+//        "'" to "'",
+//        """"""" to """""""
+//    )
+//): Pair<Int, Int> {
+//    return 0 to 0;
+//}
+
+
+/** 分词器,用于Sql，分析出关键内容
  * select "id" from `table`  按空格分词, 把字符串 , [] 等单独对待
  * @param wordSplit  单词分隔标志.如 空格 ,.@# 注意, 一定不能是 quoteDefines 的内容.
  * @param quoteDefine ,单词的包装符, key =" , value = "
