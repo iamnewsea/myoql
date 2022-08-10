@@ -4,8 +4,6 @@ import nbcp.comm.*
 import nbcp.db.db
 import nbcp.bean.MongoFlywayBeanProcessor
 import nbcp.db.mongo.delete
-import nbcp.db.mongo.match_gte
-import nbcp.db.mongo.match_not_equal
 import nbcp.utils.SpringUtil
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
