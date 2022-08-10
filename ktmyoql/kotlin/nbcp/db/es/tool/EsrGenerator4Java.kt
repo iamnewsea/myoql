@@ -1,10 +1,11 @@
-package nbcp.db.mongo.tool
+package nbcp.db.es.tool
 
 import nbcp.comm.*
 import nbcp.data.Sys
 import nbcp.utils.*
 import nbcp.db.*
 import nbcp.tool.CodeGeneratorHelper
+
 import java.io.File
 import java.io.FileWriter
 import java.lang.RuntimeException
@@ -15,9 +16,8 @@ import java.time.LocalDateTime
 /**
  * 代码生成器
  */
-class generator {
+class EsrGenerator4Java {
     private var nameMapping: StringMap = StringMap();
-
     private fun String.GetSafeKotlinName(): String {
         if (this.isEmpty()) return this;
 
@@ -30,47 +30,41 @@ class generator {
     }
 
     private var targetEntityPathName: String = ""
-
     fun work(
         targetPath: String,  //目标文件
         basePackage: String,   //实体的包名
-        packageName: String = "nbcp.db.mongo.table",
+        packageName: String = "nbcp.db.es.table",
         packages: Array<String> = arrayOf(),   //import 包名
         entityFilter: ((Class<*>) -> Boolean) = { true },
         nameMapping: StringMap = StringMap(), // 名称转换
-        ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
+        ignoreGroups: List<String> = listOf("EsBase")  //忽略的包名
     ) {
         targetEntityPathName = MyUtil.joinFilePath(targetPath, packageName.split(".").joinToString("/"))
         this.nameMapping = nameMapping;
 
         var p = File.separator;
 
-//        var path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0]
-//        var moer_Path = File(path).parentFile.path + "/shop-orm/kotlin/nbcp/db/mongo/mor_tables.kt".replace("/", p);
-//        var moer_Path = targetFileName.replace("/", p).replace("\\", p);
-
-
         File(targetEntityPathName).deleteRecursively();
         File(targetEntityPathName).mkdirs()
-
 
         var groups = getGroups(basePackage).filter { ignoreGroups.contains(it.key) == false };
         var embClasses = getEmbClasses(groups);
 
-        println("开始生成 mor...")
+        println("开始生成 esr...")
+
+
         var fileHeader = """package ${packageName}
 
 import nbcp.db.*
-import nbcp.db.mongo.*
+import nbcp.db.es.*
 import nbcp.utils.*
 import nbcp.comm.*
 import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.*
 ${packages.map { "import " + it }.joinToString(const.line_break)}
 
 //generate auto @${LocalDateTime.now().AsString()}
 """
-
 
         embClasses.forEach {
             writeToFile(it.simpleName + "Meta", fileHeader + genEmbEntity(it));
@@ -79,54 +73,76 @@ ${packages.map { "import " + it }.joinToString(const.line_break)}
         var count = 0;
         groups.forEach { group ->
             var groupName = group.key
-            var groupEntities = group.value.filter(entityFilter);
-
+            var groupEntities = group.value.filter(entityFilter)
 
             writeToFile(
                 "${MyUtil.getBigCamelCase(groupName)}Group",
                 fileHeader +
                         """
-@Component("mongo.${groupName}")
-@MetaDataGroup(DatabaseEnum.Mongo, "${groupName}")
-class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup {
-    override fun getEntities(): Set<BaseMetaData> = setOf(${
-                            group.value.map { genVarName(it).GetSafeKotlinName() }.joinToString(", ")
+@Component("es.${groupName}")
+@MetaDataGroup(DatabaseEnum.ElasticSearch, "${groupName}")
+public class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
+    @Override
+    public Set<BaseMetaData> getEntities(){
+        return new HashSet(){ { 
+${
+                            group.value
+                                .map { "add(" + genVarName(it).GetSafeKotlinName() + ");" }
+                                .map { it.ToTab(3) }
+                                .joinToString(",")
                         })
+        }};
+    }
 """
             )
             println("${groupName}:")
-            writeToFile(
-                "${MyUtil.getBigCamelCase(groupName)}Group",
-                groupEntities.map { (genVarEntity(it).ToTab(1)) }.joinToString(const.line_break)
-            )
-
-            writeToFile("${MyUtil.getBigCamelCase(groupName)}Group", const.line_break)
-
             groupEntities.forEach {
                 count++;
-                println("${count.toString().padStart(2, ' ')} 生成实体：${groupName}.${it.simpleName}".ToTab(1))
 
+                var dbName = it.getAnnotation(DbName::class.java)?.value.AsString(it.simpleName)
+
+                dbName = MyUtil.getKebabCase(dbName)
+
+                println("${count.toString().padStart(2, ' ')} 生成实体：${groupName}.${dbName}".ToTab(1))
+                writeToFile("${MyUtil.getBigCamelCase(groupName)}Group", genVarEntity(it).ToTab(1))
+            }
+
+            writeToFile("${MyUtil.getBigCamelCase(groupName)}Group", "\n")
+
+            groupEntities.forEach {
                 writeToFile("${MyUtil.getBigCamelCase(groupName)}Group", genEntity(it).ToTab(1))
             }
             writeToFile("${MyUtil.getBigCamelCase(groupName)}Group", """}""")
         }
 
         writeToFile(
-            "MoerMetaMap",
+            "EsrUtil",
             fileHeader +
+
+                    """
+public class EsrUtil{
+    public static esColumnJoin(String... args): EsColumnName {
+        return new EsColumnName(Arrays.asList(args).stream().filter (it-> MyHelper.hasValue( it) ).collect(Collectors.joining(".")));
+    }
+}
+"""
+        )
+
+        writeToFile(
+            "EsrMetaMap",
+            fileHeader +
+
                     """
 
-fun mongoColumnJoin(vararg args: String): MongoColumnName {
-    return MongoColumnName(args.toList().filter { it.HasValue }.joinToString("."))
-}
-
-
-data class MoerMetaMap(val parentPropertyName: String) {
-    constructor(vararg args: String): this(args.toList().filter { it.HasValue }.joinToString(".")) {
+public class EsrMetaMap {
+    private String parentPropertyName;
+    
+    public EsrMetaMap(String... args){
+        this.parentPropertyName = Arrays.asList(args).stream().filter (it-> MyHelper.hasValue( it) ).collect(Collectors.joining("."));
     }
     
-    fun keys(keys: String): String {
-        return this.parentPropertyName + "." + keys
+    public String keys(String... keys) {
+        return this.parentPropertyName + "." + Arrays.asList(keys).stream().filter (it-> MyHelper.hasValue( it) ).collect(Collectors.joining("."));
     }
 }
 
@@ -179,7 +195,9 @@ data class MoerMetaMap(val parentPropertyName: String) {
      * 递归返回嵌入实体。
      */
     fun findEmbClasses(clazz: Class<*>, deep: Int = 0): List<Class<*>> {
+
         if (deep == 6) return listOf();
+
         var ret = clazz.AllFields
             .filter {
                 if (it.type.IsSimpleType()) return@filter false;
@@ -231,24 +249,25 @@ data class MoerMetaMap(val parentPropertyName: String) {
 
     private fun getMetaValue(fieldName: String, fieldType: Class<*>, parentTypeName: String): String {
 
+
         if (fieldName == "id") {
-            return "mongoColumnJoin(this.parentPropertyName, \"_id\")"
+            return "EsrUtil.esColumnJoin(this.parentPropertyName, \"_id\")"
         }
 
         if (fieldType.IsSimpleType()) {
-            return "mongoColumnJoin(this.parentPropertyName, \"${fieldName}\")"
+            return "EsrUtil.esColumnJoin(this.parentPropertyName, \"${fieldName}\")"
         }
 
         if (fieldType.simpleName == parentTypeName) {
-            return "mongoColumnJoin(this.parentPropertyName, \"${fieldName}\") /*:递归类*/"
+            return "EsrUtil.esColumnJoin(this.parentPropertyName, \"${fieldName}\") /*:递归类*/"
         }
 
         if (Map::class.java.isAssignableFrom(fieldType)) {
-            return "MoerMetaMap(this.parentPropertyName, \"${fieldName}\")/*:map*/"
+            return "new EsrMetaMap(this.parentPropertyName, \"${fieldName}\") /*:map*/"
         }
 
         if (fieldType.isArray) {
-            return "mongoColumnJoin(this.parentPropertyName, \"${fieldName}\")/*:array*/"
+            return "EsrUtil.esColumnJoin(this.parentPropertyName, \"${fieldName}\") /*:array*/"
         }
 
         if (List::class.java.isAssignableFrom(fieldType)) {
@@ -256,7 +275,7 @@ data class MoerMetaMap(val parentPropertyName: String) {
             return ""
         }
 
-        return """${fieldType.name.split(".").last()}Meta(mongoColumnJoin(this.parentPropertyName, "${fieldName}"))""";
+        return """new ${fieldType.name.split(".").last()}Meta(EsrUtil.esColumnJoin(this.parentPropertyName,"${fieldName}"))""";
     }
 
     private fun getMetaValue(field: Field, parentType: Class<*>, parentTypeName: String, deepth: Int): String {
@@ -265,18 +284,18 @@ data class MoerMetaMap(val parentPropertyName: String) {
             throw RuntimeException("-------------------已超过最大深度${field.name}:${field.type.name}-----------------");
         }
 
-        val ret = getMetaValue(field.name, field.type, parentTypeName);
+        var ret = getMetaValue(field.name, field.type, parentTypeName);
         if (ret.HasValue) return ret;
 
 
         if (List::class.java.isAssignableFrom(field.type)) {
-            val actType = (field.genericType as ParameterizedType).GetActualClass(0, {
+            var actType = (field.genericType as ParameterizedType).GetActualClass(0, {
                 return@GetActualClass parentType.GetFirstTypeArguments()[0] as Class<*>;
             })
 
 
-            val ret2 = getMetaValue(field.name, actType, parentTypeName);
-            if (ret2.HasValue) return ret2;
+            var v = getMetaValue(field.name, actType, parentTypeName);
+            if (v.HasValue) return v;
         }
 
         return "----找不到getMetaValue----"
@@ -311,15 +330,13 @@ data class MoerMetaMap(val parentPropertyName: String) {
     }
 
 
-    private fun getEntityValue1(field: Field, parentType: Class<*>): Pair<String, Boolean> {
+    private fun getEntityValue(field: Field): Pair<String, Boolean> {
         var (ret, retTypeIsBasicType) = getEntityValue(field.name, field.type);
         if (ret.HasValue) return ret to retTypeIsBasicType;
 
 
         if (List::class.java.isAssignableFrom(field.type)) {
-            var actType = (field.genericType as ParameterizedType).GetActualClass(0, {
-                return@GetActualClass parentType.GetFirstTypeArguments()[0] as Class<*>;
-            });
+            var actType = (field.genericType as ParameterizedType).GetActualClass(0);
 
             var (ret2, retTypeIsBasicType2) = getEntityValue(field.name, actType);
             if (ret2.HasValue) return ret2 to retTypeIsBasicType2;
@@ -339,34 +356,43 @@ data class MoerMetaMap(val parentPropertyName: String) {
 
         var props = entType.AllFields
             .filter { it.name != "Companion" }
-            .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
             .map {
                 var v1 = getMetaValue(it, entType, entTypeName, 1)
+                var v1_type = "EsColumnName";
+                if (v1.startsWith("new ")) {
+                    var v1_index_end = v1.indexOf('(');
+                    v1_type = v1.Slice(4, v1_index_end);
+                }
 
                 return@map """${CodeGeneratorHelper.getFieldComment(it)}${
-                    KotlinCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }.joinToString("")
-                }
-val ${it.name} = ${v1}""".removeEmptyLine().ToTab(1)
+JavaCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }.joinToString("")
+}
+public ${v1_type} ${it.name} = ${v1}""".removeEmptyLine().ToTab(1)
             }
 
         var entityTypeName = entTypeName;
+//        var entityVarName = getEntityName(entTypeName);
 
+        var ent = """public class ${entityTypeName}Meta extends EsColumnName {
+    private String parentPropertyName:String;
+    ${entityTypeName}Meta(String parentPropertyName) {
+        this.parentPropertyName = parentPropertyName;
+    }
+    
+    ${entityTypeName}Meta(MongoColumnName value) {
+        this(value.toString());
+    }
 
-        var ent =
-            """${CodeGeneratorHelper.getEntityComment(entType)}${
-                KotlinCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")
-            }
-class ${entityTypeName}Meta(private val parentPropertyName: String) : MongoColumnName() {
-    constructor(value: MongoColumnName) : this(value.toString()) {}
-${props.map { const.line_break + it }.joinToString(const.line_break)}
-    override fun toString(): String {
-        return mongoColumnJoin(this.parentPropertyName).toString()
+${props.joinToString("\n")}
+
+    @Override
+    public String toString() {
+        return EsrUtil.esColumnJoin(this.parentPropertyName).toString()
     }
 }
 """
         return ent;
     }
-
 
     fun genVarName(entType: Class<*>): String {
         var entTypeName = entType.name.split(".").last();
@@ -384,111 +410,45 @@ ${props.map { const.line_break + it }.joinToString(const.line_break)}
         }
 
         var entityTypeName = entTypeName + "Entity";
-        var entityVarName = getEntityName(entTypeName).GetSafeKotlinName();
+        var entityVarName = getEntityName(entTypeName);
 
-        var varTable = entType.getAnnotation(VarTable::class.java)
-        var varDb = entType.getAnnotation(VarDatabase::class.java)
-        var tailRemark = "";
-        if (varTable != null) {
-            tailRemark += " (变表)"
-        }
-        if (varDb != null) {
-            tailRemark += " (动态库)"
-        }
-
-        var ret = mutableListOf<String>()
-        ret.add("")
-
-        ret.add(
-            """${CodeGeneratorHelper.getEntityComment(entType, tailRemark)}
-val ${entityVarName} get() = ${entityTypeName}();"""
-        )
-
-
-        //可能既变表，又变库。可能两个参数。
-        var params = StringMap();
-
-        if (varTable?.value.HasValue) {
-            params.put(
-                MyUtil.getSmallCamelCase(varTable?.value.AsString("")),
-                """"${entityVarName}-${'$'}{${MyUtil.getSmallCamelCase(varTable.value)}}""""
-            )
-        } else {
-            params.put("", "\"\"")
-        }
-
-        if (varDb?.value.HasValue) {
-            params.put(
-                MyUtil.getSmallCamelCase(varDb.value.AsString()),
-                MyUtil.getSmallCamelCase(varDb.value.AsString())
-            );
-        } else {
-            params.put("", "\"\"")
-        }
-
-        if (params.keys.any { it.HasValue }) {
-            ret.add("")
-
-            ret.add(
-                """${CodeGeneratorHelper.getEntityComment(entType, tailRemark)}
-fun ${entityVarName}(${
-                    params.keys.filter { it.HasValue }.map { it + ":String" }.joinToString(", ")
-                }) = ${entityTypeName}(${params.values.first()},${params.values.last()});"""
-            )
-        }
-
-        return ret.joinToString(const.line_break);
+        return """public ${entityTypeName} ${entityVarName} = ${entityTypeName}();
+fun ${entityVarName}(String collectionName) = new ${entityTypeName}(collectionName);""";
     }
 
 
-    /**
-     * 核心，生成一个实体
-     */
     fun genEntity(entType: Class<*>): String {
 
         var entTypeName = entType.name.split(".").last();
         if (entTypeName.endsWith("\$Companion")) {
             return "";
         }
-
-        val props = entType.AllFields
+        var props = entType.AllFields
             .filter { it.name != "Companion" }
-            .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
             .map {
 
-                var (retValue, retTypeIsBasicType) = getEntityValue1(it, entType)
-
-                var pv =
-                    """${CodeGeneratorHelper.getFieldComment(it)}${
-                        KotlinCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }
-                            .joinToString("")
-                    } """
-
+                var (retValue, retTypeIsBasicType) = getEntityValue(it)
                 if (retTypeIsBasicType) {
-                    return@map """${pv}
-val ${it.name} = MongoColumnName(${retValue})""".removeEmptyLine().ToTab(1)
+                    return@map "val ${it.name} = new EsColumnName(${retValue})".ToTab(1)
                 } else {
-                    return@map """${pv}
-val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
+                    return@map "val ${it.name} = new ${retValue}".ToTab(1)
                 }
-            }.toSet()
+            }
 
-        val entityTypeName = entTypeName + "Entity"
-        var dbName = entType.getAnnotation(DbName::class.java)?.value ?: ""
 
-        if (dbName.isEmpty()) {
-            dbName = MyUtil.getSmallCamelCase(entType.simpleName)
-        }
+        var entityTypeName = entTypeName + "Entity"
+//        var entityVarName = getEntityName(entTypeName)
 
-        val idMethods = mutableSetOf<String>()
+        var dbName = entType.getAnnotation(DbName::class.java)?.value.AsString(entType.simpleName)
+        dbName = MyUtil.getKebabCase(dbName)
+
+
+        var idMethods = mutableListOf<String>()
 
         //每一项是 用逗号分隔的主键组合
-        val uks = mutableSetOf<String>();
-
-
+        var uks = mutableListOf<String>();
 
         uks.addAll(CodeGeneratorHelper.getEntityUniqueIndexesDefine(entType))
-
 
         uks.forEach { uk ->
             var keys = uk.split(",")
@@ -500,26 +460,25 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
                 }
             }
 
-
             idMethods.add(
                 """
-    fun queryBy${
+    public EsQueryClip<${entityTypeName}, ${entType.name}> queryBy${
                     keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
-                }(${
+                } (${
                     keys.map {
-                        "${MyUtil.getSmallCamelCase(it)}: ${
+                        "${
                             entType.GetFieldPath(
                                 *it.split(".").toTypedArray()
-                            )!!.type.kotlinTypeName
-                        }"
+                            )!!.type.javaTypeName
+                        } ${MyUtil.getSmallCamelCase(it)}"
                     }.joinToString(",")
-                }): MongoQueryClip<${entityTypeName}, ${entType.name}> {
-        return this.query()${keys.map { ".where { it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+                }) {
+        return this.query()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
-    fun deleteBy${
+    public EsDeleteClip<${entityTypeName}> deleteBy${
                     keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
-                }(${
+                } (${
                     keys.map {
                         "${MyUtil.getSmallCamelCase(it)}: ${
                             entType.GetFieldPath(
@@ -527,13 +486,13 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
                             )!!.type.kotlinTypeName
                         }"
                     }.joinToString(",")
-                }): MongoDeleteClip<${entityTypeName}> {
-        return this.delete()${keys.map { ".where { it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+                }) {
+        return this.delete()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
-    fun updateBy${
+    public EsUpdateClip<${entityTypeName}> updateBy${
                     keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
-                }(${
+                } (${
                     keys.map {
                         "${MyUtil.getSmallCamelCase(it)}: ${
                             entType.GetFieldPath(
@@ -541,50 +500,47 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
                             )!!.type.kotlinTypeName
                         }"
                     }.joinToString(",")
-                }): MongoUpdateClip<${entityTypeName}, ${entType.name}> {
-        return this.update()${keys.map { ".where { it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+                }) {
+        return this.update()${keys.map { ".where{ it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 """
             )
         }
 
-        var varTable = entType.getAnnotation(VarTable::class.java);
+        val ent = """${
+            CodeGeneratorHelper.getEntityComment(
+                entType,
+                ""
+            )
+        }${KotlinCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
+public class ${entityTypeName} extends
+    :EsBaseMetaEntity<${entType.name}> {
+private String collectionName = "";
+public String databaseId;
 
-        var varTableRemark = "";
-        if (varTable != null) {
-            varTableRemark = " (变表)"
-//            varTableCode = """${const.line_break}@VarTable("${varTable.value}")"""
+(${entType.name}.class, "${dbName}", collectionName.AsString("${dbName}"))
+
+    public ${entityTypeName}(String collectionName,String databaseId){
+        super(${entType.name.GetSafeKotlinName()}.class, "${dbName}", MyHelper.AsString(collectionName,"${dbName}"), databaseId);
+    
+        this.collectionName = collectionName;
+        this.databaseId = databaseId;
         }
-        var varDb = entType.getAnnotation(VarDatabase::class.java)
-        if (varDb != null) {
-            varTableRemark += " (动态库)"
-//            varTableCode = """${const.line_break}@VarDatabase("${varDb.value}")"""
-        }
+        
+${props.joinToString("\n")}
+${idMethods.joinToString("\n")}
 
-
-//        var sortNumberAnnotation = entType.getAnnotation(SortNumber::class.java)
-//        if (sortNumberAnnotation != null) {
-//            sortNumber =
-//                """${const.line_break}@SortNumber("${sortNumberAnnotation.field}","${sortNumberAnnotation.groupBy}",${sortNumberAnnotation.step})"""
-//        }
-//        var logicalDelete = "";
-//        var LogicalDeleteAnnotation = entType.getAnnotation(LogicalDelete::class.java)
-//        if (LogicalDeleteAnnotation != null) {
-//            logicalDelete = """${const.line_break}@LogicalDelete("${LogicalDeleteAnnotation.value}")"""
-//        }
-
-
-        val ent =
-            """${
-                CodeGeneratorHelper.getEntityComment(
-                    entType,
-                    varTableRemark
-                )
-            }${KotlinCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
-class ${entityTypeName}(collectionName: String = "", databaseId: String = "")
-    : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, "${dbName}", collectionName.AsString("${dbName}"), databaseId) {
-${props.map { const.line_break + it }.joinToString(const.line_break)}
-${idMethods.joinToString(const.line_break)}
+public EsQueryClip<${entityTypeName}, ${entType.name}> query(){
+        return new EsQueryClip(this);
+    }
+    
+    public EsUpdateClip<${entityTypeName}, ${entType.name}> update(){
+        return new EsUpdateClip(this);
+    }
+    
+    public EsDeleteClip<${entityTypeName}> delete(){
+        return new EsDeleteClip(this);
+    }
 }
 """
 

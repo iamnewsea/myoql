@@ -51,6 +51,22 @@ fun Class<*>.IsSimpleType(): Boolean {
 }
 
 /**
+ * 代码生成器使用，获取Java的类型名称
+ */
+val Class<*>.javaTypeName: String
+    get() {
+
+        if (this.isArray) {
+            if (this.componentType.isPrimitive) {
+                var name = this.componentType.simpleName;
+                return name.first().uppercaseChar() + name.substring(1) + "[]";
+            }
+        }
+
+        return this.simpleName;
+    }
+
+/**
  * 代码生成器使用，获取Kotlin的类型名称
  */
 val Class<*>.kotlinTypeName: String

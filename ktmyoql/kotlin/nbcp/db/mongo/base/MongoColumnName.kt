@@ -1,5 +1,6 @@
 package nbcp.db.mongo
 
+import com.mongodb.BasicDBList
 import nbcp.comm.AsString
 import nbcp.comm.MyString
 import nbcp.db.db
@@ -19,17 +20,29 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
 //        get() = MongoOrderBy(false, this)
 
 
-    fun match(to: Any?): Criteria {
+    infix fun match(to: Any?): Criteria {
         val (key, toValue) = db.mongo.proc_mongo_key_value(this, to);
         return Criteria.where(key.AsString("\$eq")).`is`(toValue);// Pair<String, T>(this, to);
     }
 
-    fun match_not_equal(value: Any?): Criteria {
+    infix fun match_not_equal(value: Any?): Criteria {
         val (key, toValue) = db.mongo.proc_mongo_key_value(this, value);
         return Criteria.where(key).`ne`(toValue)
     }
 
-    fun match_pattern(pattern: String): Criteria {
+    /**
+     * 模糊查询，用法：
+     * mor.code.qrCodeInfo.product.name match_pattern "国际"
+     * 即：内容包含 "国际"。
+     *
+     * mor.code.qrCodeInfo.product.name match_pattern "^国际"
+     * 即：内容以 "国际" 开头。
+     *
+     * mor.code.qrCodeInfo.product.name match_pattern "国际$"
+     * 即：内容以 "国际" 结尾。
+     * @param pattern: 不会转义
+     */
+    infix fun match_pattern(pattern: String): Criteria {
         return Criteria.where(this.toString()).regex(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE))
     }
 
@@ -46,27 +59,30 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
         return v;
     }
 
-    fun match_like(like: String): Criteria {
+    /**
+     * @param like: 会对查询内容中的特殊字符转义，避免与正则表达式冲突
+     */
+    infix fun match_like(like: String): Criteria {
         return this match_pattern "${getSafeRegText(like)}"
     }
 
 
-    fun match_gte(to: Any): Criteria {
+    infix fun match_gte(to: Any): Criteria {
         val (key, toValue) = db.mongo.proc_mongo_key_value(this, to);
         return Criteria.where(key).gte(toValue!!);
     }
 
-    fun match_lte(to: Any): Criteria {
+    infix fun match_lte(to: Any): Criteria {
         val (key, toValue) = db.mongo.proc_mongo_key_value(this, to);
         return Criteria.where(key).lte(toValue!!);
     }
 
-    fun match_greaterThan(to: Any): Criteria {
+    infix fun match_greaterThan(to: Any): Criteria {
         val (key, toValue) = db.mongo.proc_mongo_key_value(this, to);
         return Criteria.where(key).gt(toValue!!);
     }
 
-    fun match_lessThan(to: Any): Criteria {
+    infix fun match_lessThan(to: Any): Criteria {
         val (key, toValue) = db.mongo.proc_mongo_key_value(this, to);
         return Criteria.where(key).lt(toValue!!);
     }
@@ -74,7 +90,7 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
     /**
      * 大于等于并且小于。
      */
-    fun match_between(value: Pair<Any, Any>): Criteria {
+    infix fun match_between(value: Pair<Any, Any>): Criteria {
         var (key, value2) = db.mongo.proc_mongo_key_value(this, value);
         var pair = value2 as Pair<Any, Any>
 
@@ -85,12 +101,12 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
         //return Criteria.where(key).gte(from).andOperator(Criteria.where(key).lt(to))
     }
 
-    fun match_in(to: Collection<*>): Criteria {
+    infix fun match_in(to: Collection<*>): Criteria {
         return this.match_in(to.toTypedArray())
     }
 
     //db.test1.find({"age":{"$in":['值1','值2',.....]}})
-    fun match_in(to: Array<*>): Criteria {
+    infix fun match_in(to: Array<*>): Criteria {
         var (key, tos) = db.mongo.proc_mongo_key_value(this, to.toSet())
         if (tos is Array<*>) {
             return Criteria.where(key).`in`(*(tos as Array<*>));
@@ -98,7 +114,7 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
         return Criteria.where(key).`in`(*(tos as Collection<*>).toTypedArray());
     }
 
-    fun match_notin(to: Array<*>): Criteria {
+    infix fun match_notin(to: Array<*>): Criteria {
         var (key, tos) = db.mongo.proc_mongo_key_value(this, to.toSet())
         if (tos is Array<*>) {
             return Criteria.where(key).`nin`(*(tos as Array<*>));
@@ -106,18 +122,18 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
         return Criteria.where(key).`nin`(*(tos as Collection<*>).toTypedArray());
     }
 
-    fun match_notin(to: Collection<*>): Criteria {
+    infix fun match_notin(to: Collection<*>): Criteria {
         return this.match_notin(to.toTypedArray())
     }
 
 
 
-    fun match_size(value: Int): Criteria {
+    infix fun match_size(value: Int): Criteria {
         return Criteria.where(this.toString()).size(value);
     }
 
     //array_all
-    fun match_all(to: Array<*>): Criteria {
+    infix fun match_all(to: Array<*>): Criteria {
         val (key, tos) = db.mongo.proc_mongo_key_value(this, to.toSet())
 
         if (tos is Array<*>) {
@@ -126,7 +142,7 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
         return Criteria.where(key).`all`(*(tos as Collection<*>).toTypedArray());
     }
 
-    fun match_type(to: MongoTypeEnum): Criteria {
+    infix fun match_type(to: MongoTypeEnum): Criteria {
         val (key, _) = db.mongo.proc_mongo_key_value(this, to);
 
         return Criteria.where(key).`type`(to.value);// Pair<String, T>(this, to);
@@ -168,7 +184,7 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
      * https://docs.mongodb.com/manual/reference/operator/projection/elemMatch/index.html
      * @param value: 和普通的条件是不一样的。
      */
-    fun match_elemMatch(value: Map<String, Any?>): Criteria {
+    infix fun match_elemMatch(value: Map<String, Any?>): Criteria {
         var (key) = db.mongo.proc_mongo_key_value(this, null);
         return Criteria.where(key).`elemMatch`(db.mongo.getMergedMongoCriteria(MongoWhereClip(value)));
     }
@@ -183,7 +199,7 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
      * 判断数组没有值，好处理： tags match_size 0
      * 判断数组有值,转化为：第一元素是否存在  MongoColumnName("tags.0")  match_exists true
      */
-    fun match_exists(value: Boolean): Criteria {
+    infix fun match_exists(value: Boolean): Criteria {
         var (key) = db.mongo.proc_mongo_key_value(this, null);
         return Criteria.where(key).`exists`(value);
     }
@@ -201,6 +217,62 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
     fun match_isNullOrEmpty(): Criteria {
         return this.match_exists(false).match_or(this.match(null).match_or(this.match("")));
     }
+
+
+
+
+    /**
+     * Created by udi on 17-7-10.
+     */
+    /**
+     * 另一种形式的条件。值可以是字段。
+     */
+    fun match_expr (op:String, to: MongoColumnName): Criteria {
+        var d2 = BasicDBList();
+        d2.add("$" + this.toString())
+        d2.add("$" + to)
+
+        var dict = BasicBSONObject()
+        dict.put("$" + op, d2)
+
+        return Criteria.where("$" + "expr").`is`(dict);
+    }
+
+    infix fun match_expr_equal(to: MongoColumnName): Criteria {
+        return this.match_expr("eq",to);
+    }
+
+
+    infix fun match_expr_not_equal(to: MongoColumnName): Criteria {
+        return this.match_expr("ne",to);
+    }
+
+    infix fun match_expr_gte(to: MongoColumnName): Criteria {
+        return this.match_expr("gte",to);
+    }
+
+    infix fun match_expr_lte(to: MongoColumnName): Criteria {
+        return this.match_expr("lte",to);
+    }
+
+
+    infix fun match_expr_greaterThan(to: MongoColumnName): Criteria {
+        return this.match_expr("gt",to);
+    }
+
+    infix fun match_expr_lessThan(to: MongoColumnName): Criteria {
+        return this.match_expr("lt",to);
+    }
+
+    infix fun match_expr_between(to: MongoColumnName): Criteria {
+        return this.match_expr("between",to);
+    }
+
+
+
+
+
+
 
     operator fun plus(value: String): MongoColumnName {
         return MongoColumnName(this.toString() + value)

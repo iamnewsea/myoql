@@ -1,11 +1,41 @@
 package nbcp.db.es
 
+import nbcp.comm.JsonMap
 import nbcp.comm.MyString
+import nbcp.db.db
 
 /**
  * es 列
  */
 open class EsColumnName @JvmOverloads constructor(_es_value: String = "") : MyString(_es_value) {
+
+    infix fun term(target: Any?): WhereData {
+        var target = db.es.proc_es_value(target);
+
+        return WhereData("term" to JsonMap(
+            this.toString() to target
+        )
+        )
+    }
+
+
+    infix fun match(target: Any?): WhereData {
+        var target = db.es.proc_es_value(target);
+
+        return WhereData("match" to JsonMap(
+            this.toString() to target
+        )
+        )
+    }
+
+
+
+
+
+
+
+
+
 
 //    val asc: EsOrderBy
 //        get() = EsOrderBy(true, this)

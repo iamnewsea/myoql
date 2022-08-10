@@ -9,8 +9,7 @@ import nbcp.utils.*
 import org.springframework.stereotype.*
 
 
-//generate auto @2022-03-19 14:57:07
-
+//generate auto @2022-08-10 14:29:07
 
 @Component("sql.SqlBase")
 @MetaDataGroup(DatabaseEnum.Sql, "SqlBase")

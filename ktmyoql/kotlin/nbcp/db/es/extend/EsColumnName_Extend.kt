@@ -1,6 +1,3 @@
-@file:JvmName("MyOqlEs")
-@file:JvmMultifileClass
-
 package nbcp.db.es
 
 import nbcp.comm.*
@@ -16,22 +13,6 @@ import java.util.regex.Pattern
  * Created by udi on 17-7-10.
  */
 
-infix fun EsColumnName.term(target: Any?): WhereData {
-    var target = db.es.proc_es_value(target);
-
-    return WhereData("term" to JsonMap(
-        this.toString() to target
-    ))
-}
-
-
-infix fun EsColumnName.match(target: Any?): WhereData {
-    var target = db.es.proc_es_value(target);
-
-    return WhereData("match" to JsonMap(
-        this.toString() to target
-    ))
-}
 
 /*
 insert 返回结果：

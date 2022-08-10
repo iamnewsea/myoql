@@ -15,13 +15,13 @@ import java.time.LocalDateTime
 /**
  * 代码生成器
  */
-class generator {
+class EsrGenerator4Kotlin {
     private var nameMapping: StringMap = StringMap();
 
-    private lateinit var moer_File: FileWriter
 
+    private var targetEntityPathName: String = ""
     fun work(
-            targetFileName: String,  //目标文件
+            targetPath: String,  //目标文件
             basePackage: String,   //实体的包名
             packageName: String = "nbcp.db.es.table",
             packages: Array<String> = arrayOf(),   //import 包名
@@ -29,27 +29,21 @@ class generator {
             nameMapping: StringMap = StringMap(), // 名称转换
             ignoreGroups: List<String> = listOf("EsBase")  //忽略的包名
     ) {
+        targetEntityPathName = MyUtil.joinFilePath(targetPath, packageName.split(".").joinToString("/"))
         this.nameMapping = nameMapping;
 
         var p = File.separator;
 
-//        var path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0]
-//        var moer_Path = File(path).parentFile.path + "/shop-orm/kotlin/nbcp/db/es/mor_tables.kt".replace("/", p);
-        var moer_Path = targetFileName.replace("/", p).replace("\\", p);
-
-
-        File(moer_Path).delete();
-        File(moer_Path).createNewFile()
-
-        moer_File = FileWriter(moer_Path, true);
+        File(targetEntityPathName).deleteRecursively();
+        File(targetEntityPathName).mkdirs()
 
         var groups = getGroups(basePackage).filter { ignoreGroups.contains(it.key) == false };
         var embClasses = getEmbClasses(groups);
 
         println("开始生成 esr...")
 
-        writeToFile(
-                """package ${packageName}
+
+        var fileHeader =  """package ${packageName}
 
 import nbcp.db.*
 import nbcp.db.es.*
@@ -61,9 +55,9 @@ ${packages.map { "import " + it }.joinToString(const.line_break)}
 
 //generate auto @${LocalDateTime.now().AsString()}
 """
-        )
+
         embClasses.forEach {
-            writeToFile(genEmbEntity(it));
+            writeToFile(it.simpleName + "Meta", fileHeader + genEmbEntity(it));
         }
 
         var count = 0;
@@ -72,6 +66,8 @@ ${packages.map { "import " + it }.joinToString(const.line_break)}
             var groupEntities = group.value.filter(entityFilter)
 
             writeToFile(
+                "${MyUtil.getBigCamelCase(groupName)}Group",
+                fileHeader +
                     """
 @Component("es.${groupName}")
 @MetaDataGroup(DatabaseEnum.ElasticSearch, "${groupName}")
@@ -88,35 +84,33 @@ class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
                 dbName = MyUtil.getKebabCase(dbName)
 
                 println("${count.toString().padStart(2, ' ')} 生成实体：${groupName}.${dbName}".ToTab(1))
-                writeToFile(genVarEntity(it).ToTab(1))
+                writeToFile("${MyUtil.getBigCamelCase(groupName)}Group", genVarEntity(it).ToTab(1))
             }
 
-            writeToFile("\n")
+            writeToFile("${MyUtil.getBigCamelCase(groupName)}Group","\n")
 
             groupEntities.forEach {
-                writeToFile(genEntity(it).ToTab(1))
+                writeToFile("${MyUtil.getBigCamelCase(groupName)}Group",genEntity(it).ToTab(1))
             }
-            writeToFile("""}""")
+            writeToFile("${MyUtil.getBigCamelCase(groupName)}Group","""}""")
         }
 
         writeToFile(
+            "EsrMetaMap",
+            fileHeader +
+
                 """
 
-
-private fun join(vararg args:String): EsColumnName{
+fun esColumnJoin(vararg args:String): EsColumnName{
     return EsColumnName( args.toList().filter{it.HasValue}.joinToString (".") )
 }
 
-//private fun join_map(vararg args:String):moer_map{
-//    return moer_map(args.toList().filter{it.HasValue}.joinToString ("."))
-//}
-
-data class moer_map(val _pname:String) {
+data class EsrMetaMap(val parentPropertyName:String) {
     constructor(vararg args: String): this(args.toList().filter { it.HasValue }.joinToString(".")) {
     }
     
     fun keys(keys:String):String{
-        return this._pname + "." + keys
+        return this.parentPropertyName + "." + keys
     }
 }
 
@@ -129,10 +123,11 @@ data class moer_map(val _pname:String) {
     var maxLevel = 9;
 
 
-    fun writeToFile(msg: String) {
-        moer_File.appendLine(msg)
-        moer_File.flush()
-//        println(msg)
+    fun writeToFile(className: String, content: String) {
+        FileWriter(MyUtil.joinFilePath(targetEntityPathName, className + ".kt"), true).use { moer_File ->
+            moer_File.appendLine(content)
+            moer_File.flush()
+        }
     }
 
     fun getEntityName(name: String): String {
@@ -224,23 +219,23 @@ data class moer_map(val _pname:String) {
 
 
         if (fieldName == "id") {
-            return "join(this._pname, \"_id\")"
+            return "esColumnJoin(this.parentPropertyName, \"_id\")"
         }
 
         if (fieldType.IsSimpleType()) {
-            return "join(this._pname, \"${fieldName}\")"
+            return "esColumnJoin(this.parentPropertyName, \"${fieldName}\")"
         }
 
         if (fieldType.simpleName == parentTypeName) {
-            return "join(this._pname, \"${fieldName}\") /*:递归类*/"
+            return "esColumnJoin(this.parentPropertyName, \"${fieldName}\") /*:递归类*/"
         }
 
         if (Map::class.java.isAssignableFrom(fieldType)) {
-            return "moer_map(this._pname, \"${fieldName}\")/*:map*/"
+            return "EsrMetaMap(this.parentPropertyName, \"${fieldName}\") /*:map*/"
         }
 
         if (fieldType.isArray) {
-            return "join(this._pname, \"${fieldName}\")/*:array*/"
+            return "esColumnJoin(this.parentPropertyName, \"${fieldName}\") /*:array*/"
         }
 
         if (List::class.java.isAssignableFrom(fieldType)) {
@@ -248,14 +243,13 @@ data class moer_map(val _pname:String) {
             return ""
         }
 
-        return """${fieldType.name.split(".").last()}Meta(join(this._pname,"${fieldName}"))""";
+        return """${fieldType.name.split(".").last()}Meta(esColumnJoin(this.parentPropertyName,"${fieldName}"))""";
     }
 
     private fun getMetaValue(field: Field, parentType: Class<*>, parentTypeName: String, deepth: Int): String {
 
         if (deepth > maxLevel) {
-            writeToFile("-------------------已超过最大深度${field.name}:${field.type.name}-----------------");
-            return "";
+            throw RuntimeException("-------------------已超过最大深度${field.name}:${field.type.name}-----------------");
         }
 
         var ret = getMetaValue(field.name, field.type, parentTypeName);
@@ -339,13 +333,13 @@ data class moer_map(val _pname:String) {
         var entityTypeName = entTypeName;
 //        var entityVarName = getEntityName(entTypeName);
 
-        var ent = """class ${entityTypeName}Meta (private val _pname:String):EsColumnName() {
+        var ent = """class ${entityTypeName}Meta (private val parentPropertyName:String):EsColumnName() {
     constructor(_val:EsColumnName):this(_val.toString()) {}
 
 ${props.joinToString("\n")}
 
     override fun toString(): String {
-        return join(this._pname).toString()
+        return esColumnJoin(this.parentPropertyName).toString()
     }
 }
 """
@@ -387,9 +381,9 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
 
                     var (retValue, retTypeIsBasicType) = getEntityValue(it)
                     if (retTypeIsBasicType) {
-                        return@map "val ${it.name}=EsColumnName(${retValue})".ToTab(1)
+                        return@map "val ${it.name} = EsColumnName(${retValue})".ToTab(1)
                     } else {
-                        return@map "val ${it.name}=${retValue}".ToTab(1)
+                        return@map "val ${it.name} = ${retValue}".ToTab(1)
                     }
                 }
 

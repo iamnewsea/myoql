@@ -1,9 +1,6 @@
 package nbcp
 
-import nbcp.TestBase
 import org.junit.jupiter.api.Test
-import nbcp.comm.*
-import nbcp.db.sql.entity.*
 import java.io.File
 
 
@@ -13,8 +10,8 @@ class tool : TestBase() {
     fun gen_dbr() {
         var path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0];
 
-        nbcp.db.mysql.tool.generator().work(
-            File(path).parentFile.path + "/ktmyoql/kotlin/nbcp/db/sql/dbr_base_tables.kt",
+        nbcp.db.mysql.tool.DbrGenerator4Kotlin().work(
+            File(path).parentFile.path + "/ktmyoql/kotlin",
             "nbcp.db.sql.entity."
         )
     }
@@ -23,8 +20,8 @@ class tool : TestBase() {
     fun gen_mor() {
         val path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0]
 
-        nbcp.db.mongo.tool.generator().work(
-            File(path).parentFile.path + "/ktmyoql/kotlin/nbcp/db/mongo/mor_base_tables.kt",
+        nbcp.db.mongo.tool.MorGenerator4Kotlin().work(
+            File(path).parentFile.path + "/ktmyoql/kotlin",
             "nbcp.db.mongo.entity.",
             ignoreGroups = listOf()
         )

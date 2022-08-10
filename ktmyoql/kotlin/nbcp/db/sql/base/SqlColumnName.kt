@@ -2,6 +2,8 @@ package nbcp.db.sql
 
 import nbcp.comm.AsString
 import nbcp.comm.HasValue
+import nbcp.comm.JsonMap
+import java.io.Serializable
 
 
 open class SqlColumnName(
@@ -18,6 +20,195 @@ open class SqlColumnName(
      * 列名
      */
     var name: String = name
+
+
+    private fun SqlColumnName.column_match_value(op: String, value: Serializable): WhereData {
+        var valueValue = proc_value(value);
+        return WhereData("${this.fullName} ${op} :${this.paramVarKeyName}", JsonMap(this.paramVarKeyName to valueValue))
+    }
+
+
+    /**
+     * like 操作
+     * @param value: 可以包含合法的 %,_
+     */
+    infix fun like(value: String): WhereData = this.column_match_value("like", value)
+
+    /**
+     * like "%查询内容%"
+     */
+    infix fun like_all(value: String): WhereData = this.column_match_value("like", ("%" + value + "%"))
+
+
+    /**
+     * 相等操作
+     */
+    infix fun match(value: Serializable): WhereData {
+        if (value is SqlColumnName) {
+            return WhereData("${this.fullName} = ${value.fullName}")
+        }
+        return this.column_match_value("=", value);
+    }
+
+    infix fun match_regexp(value: String): WhereData {
+        return this.column_match_value("regexp", value);
+    }
+
+    /*
+    * 不等操作
+    */
+    infix fun match_not_equal(value: Serializable): WhereData {
+        if (value is SqlColumnName) {
+            return WhereData("${this.fullName} != ${value.fullName}")
+        }
+        return this.column_match_value("!=", value);
+    }
+
+    /**
+     * 大于等于操作
+     */
+    infix fun match_gte(value: Serializable): WhereData {
+        if (value is SqlColumnName) {
+            return WhereData("${this.fullName} >= ${value.fullName}")
+        }
+        return this.column_match_value(">=", value)
+    }
+
+    /**
+     * 大于操作，不包含等于
+     */
+    infix fun match_greaterThan(value: Serializable): WhereData {
+        if (value is SqlColumnName) {
+            return WhereData("${this.fullName} > ${value.fullName}")
+        }
+        return this.column_match_value(">", value);
+    }
+
+    /**
+     * 小于等于操作。
+     */
+    infix fun match_lte(value: Serializable): WhereData {
+        if (value is SqlColumnName) {
+            return WhereData("${this.fullName} <= ${value.fullName}")
+        }
+
+        return this.column_match_value("<=", value)
+    }
+
+    /**
+     * 小于操作，不包含等于
+     */
+    infix fun match_lessThan(value: Serializable): WhereData {
+        if (value is SqlColumnName) {
+            return WhereData("${this.fullName} < ${value.fullName}")
+        }
+        return this.column_match_value("<", value)
+    }
+
+
+    private fun column_match_between(min: Any, max: Any): WhereData {
+        var minValue = proc_value(min);
+        var maxValue = proc_value(max);
+
+        return WhereData("${this.fullName} >= :${this.paramVarKeyName}_min and ${this.fullName} < :${this.paramVarKeyName}_max", JsonMap("${this.paramVarKeyName}_min" to minValue, "${this.paramVarKeyName}_max" to maxValue));
+    }
+
+    /**
+     * 大于等于，并且 小于
+     */
+    fun <T : Serializable> match_between(min: T, max: T): WhereData {
+        if (min is SqlColumnName && max is SqlColumnName) {
+            return WhereData("${this.fullName} >= ${min.fullName} and ${this.fullName} < ${max.fullName}")
+        }
+        return this.column_match_between(min, max);
+    }
+
+
+    /**
+     * in (values)操作
+     */
+    infix inline fun <reified T : Serializable> match_in(values: Array<T>): WhereData {
+        if (T::class.java == SqlColumnName::class.java) {
+            return WhereData("${this.fullName} in (${values.map { (it as SqlColumnName).fullName }.joinToString(",").AsString("null")} )")
+        }
+
+
+        var needWrap = this.dbType.needTextWrap()
+        var value = values
+            .map {
+                var v = proc_value(it)
+                if (needWrap) {
+                    return@map "'" + v + "'"
+                }
+                return@map v;
+            }
+            .joinToString(",")
+            .AsString("null")
+
+        return WhereData("${this.fullName} in ( ${value} )");
+    }
+
+
+
+    /**
+     * in 子查询
+     */
+    infix fun SqlColumnName.match_in(select: SqlQueryClip<*, *>): WhereData {
+        var subSelect = select.toSql()
+        var ret = WhereData("${this.fullName} in ( ${subSelect.expression} )")
+        ret.values += subSelect.values
+        return ret;
+    }
+
+    /**
+     * not in (values) 操作
+     */
+    infix inline fun <reified T : Serializable> match_not_in(values: Array<T>): WhereData {
+        if (T::class.java == SqlColumnName::class.java) {
+            return WhereData("${this.fullName} not in (${values.map { (it as SqlColumnName).fullName }.joinToString(",").AsString("null")} )")
+        }
+
+
+        var needWrap = this.dbType.needTextWrap()
+        var value = values
+            .map {
+                var v = proc_value(it)
+                if (needWrap) {
+                    return@map "'" + v + "'"
+                }
+                return@map v;
+            }
+            .joinToString(",")
+            .AsString("null")
+
+        return WhereData("${this.fullName} not in ( ${value} )");
+    }
+
+    /**
+     * not in 子查询
+     */
+    infix fun match_not_in(select: SqlQueryClip<*, *>): WhereData {
+        var subSelect = select.toSql()
+        var ret = WhereData("${this.fullName} not in ( ${subSelect.expression} )")
+        ret.values += subSelect.values
+        return ret;
+    }
+
+
+    /**
+     * 生成 (col is null or col = 0/'' )
+     */
+    fun isNullOrEmpty(): WhereData {
+        var emptyValue = "";
+        if (this.dbType.isNumberic()) {
+            emptyValue = " or ${this.fullName} = 0"
+        } else if (this.dbType != DbType.Other) {
+            emptyValue = " or ${this.fullName} = ''";
+        }
+
+        return WhereData("(${this.fullName} is null ${emptyValue})")
+    }
+
 
 
     companion object {
