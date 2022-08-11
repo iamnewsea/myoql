@@ -274,7 +274,9 @@ public class MoerMetaMap {
             return ""
         }
 
-        return """new ${fieldType.name.split(".").last()}Meta(MoerUtil.mongoColumnJoin(this.parentPropertyName, "${fieldName}"))""";
+        return """new ${
+            fieldType.name.split(".").last()
+        }Meta(MoerUtil.mongoColumnJoin(this.parentPropertyName, "${fieldName}"))""";
     }
 
     private fun getMetaValue(field: Field, parentType: Class<*>, parentTypeName: String, deepth: Int): String {
@@ -495,6 +497,11 @@ public ${entityTypeName} ${entityVarName}(${
         return ret.joinToString(const.line_break);
     }
 
+    fun getKey(key: String): String {
+        var items = key.split(".");
+        return items.first() + items.Slice(1).map { ".get" + MyUtil.getBigCamelCase(it) + "()" }.joinToString("");
+    }
+
 
     /**
      * 核心，生成一个实体
@@ -524,9 +531,9 @@ public ${entityTypeName} ${entityVarName}(${
 public MongoColumnName ${it.name} = new MongoColumnName(${retValue});""".removeEmptyLine().ToTab(1)
                 } else {
                     var v1_type = "MongoColumnName"
-                    var l_index =  retValue.indexOf('(')
-                    if( l_index>0){
-                        v1_type = retValue.Slice(0,l_index);
+                    var l_index = retValue.indexOf('(')
+                    if (l_index > 0) {
+                        v1_type = retValue.Slice(0, l_index);
                     }
                     return@map """${pv}
 public ${v1_type} ${it.name} = new ${retValue};""".removeEmptyLine().ToTab(1)
@@ -570,12 +577,13 @@ public ${v1_type} ${it.name} = new ${retValue};""".removeEmptyLine().ToTab(1)
                         "${
                             entType.GetFieldPath(
                                 *it.split(".").toTypedArray()
-                            )!!.type.kotlinTypeName
+                            )!!.type.javaTypeName
                         } ${MyUtil.getSmallCamelCase(it)}"
                     }.joinToString(",")
                 }) {
         return this.query()${
-                    keys.map { ".where( it-> it.${it}.match( ${MyUtil.getSmallCamelCase(it)} ))" }.joinToString("")
+                    keys.map { ".where( it-> it.${getKey(it)}.match( ${MyUtil.getSmallCamelCase(it)} ))" }
+                        .joinToString("")
                 } ;
     }
 
@@ -586,12 +594,12 @@ public ${v1_type} ${it.name} = new ${retValue};""".removeEmptyLine().ToTab(1)
                         "${
                             entType.GetFieldPath(
                                 *it.split(".").toTypedArray()
-                            )!!.type.kotlinTypeName
+                            )!!.type.javaTypeName
                         } ${MyUtil.getSmallCamelCase(it)}"
                     }.joinToString(",")
                 }) {
         return this.delete()${
-                    keys.map { ".where (it-> it.${it}.match( ${MyUtil.getSmallCamelCase(it)} ))" }.joinToString("")
+                    keys.map { ".where (it-> it.${getKey(it)}.match( ${MyUtil.getSmallCamelCase(it)} ))" }.joinToString("")
                 };
     }
 
@@ -602,12 +610,12 @@ public ${v1_type} ${it.name} = new ${retValue};""".removeEmptyLine().ToTab(1)
                         "${
                             entType.GetFieldPath(
                                 *it.split(".").toTypedArray()
-                            )!!.type.kotlinTypeName
+                            )!!.type.javaTypeName
                         } ${MyUtil.getSmallCamelCase(it)}"
                     }.joinToString(",")
                 }) {
         return this.update()${
-                    keys.map { ".where ( it-> it.${it}.match( ${MyUtil.getSmallCamelCase(it)} ))" }.joinToString("")
+                    keys.map { ".where ( it-> it.${getKey(it)}.match( ${MyUtil.getSmallCamelCase(it)} ))" }.joinToString("")
                 };
     }
 """
