@@ -356,7 +356,7 @@ public class MoerMetaMap {
             return "";
         }
 
-        var props = entType.AllFields
+        var props_fun = entType.AllFields
             .filter { it.name != "Companion" }
             .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
             .map {
@@ -370,7 +370,27 @@ public class MoerMetaMap {
                 return@map """${CodeGeneratorHelper.getFieldComment(it)}${
                     JavaCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }.joinToString("")
                 }
-public ${v1_type} ${it.name} = ${v1};""".removeEmptyLine().ToTab(1)
+private ${v1_type} ${it.name} = null;
+public ${v1_type} get${MyUtil.getBigCamelCase(it.name)}(){
+    return ${it.name};
+}""".removeEmptyLine().ToTab(1)
+            }
+
+
+        var props_set = entType.AllFields
+            .filter { it.name != "Companion" }
+            .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
+            .map {
+                var v1 = getMetaValue(it, entType, entTypeName, 1)
+                var v1_type = "MongoColumnName";
+                if (v1.startsWith("new ")) {
+                    var v1_index_end = v1.indexOf('(');
+                    v1_type = v1.Slice(4, v1_index_end);
+                }
+
+                return@map """ 
+this.${it.name} = ${v1};
+""".removeEmptyLine().ToTab(1)
             }
 
         var entityTypeName = entTypeName;
@@ -382,14 +402,15 @@ public ${v1_type} ${it.name} = ${v1};""".removeEmptyLine().ToTab(1)
             }
 public class ${entityTypeName}Meta extends MongoColumnName{
     private String parentPropertyName;
-    ${entityTypeName}Meta(String parentPropertyName) {
+    public ${entityTypeName}Meta(String parentPropertyName) {
         this.parentPropertyName = parentPropertyName;
+        ${props_set.map { const.line_break + it }.joinToString(const.line_break)}
     }
     
-    ${entityTypeName}Meta(MongoColumnName value) {
+    public ${entityTypeName}Meta(MongoColumnName value) {
         this(value.toString());
     }
-${props.map { const.line_break + it }.joinToString(const.line_break)}
+${props_fun.map { const.line_break + it }.joinToString(const.line_break)}
     @Override 
     public String toString() {
         return MoerUtil.mongoColumnJoin(this.parentPropertyName).toString();
@@ -635,7 +656,7 @@ public class ${entityTypeName}
     
         this.collectionName = collectionName;
         this.databaseId = databaseId;
-        }
+    }
     
     public ${entityTypeName}(){
         this("","");
