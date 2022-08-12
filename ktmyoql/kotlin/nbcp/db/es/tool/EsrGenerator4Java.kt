@@ -437,7 +437,7 @@ ${props_fun.map { const.line_break + it }.joinToString(const.line_break).ToTab(1
 
         return """public ${entityTypeName} ${entityVarName} = new ${entityTypeName}();
 public ${entityTypeName} ${entityVarName}(String collectionName){
-    return new ${entityTypeName}(collectionName);
+    return new ${entityTypeName}(collectionName,"");
 }""";
     }
 
