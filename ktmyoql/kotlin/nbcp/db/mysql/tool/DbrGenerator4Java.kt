@@ -77,6 +77,7 @@ import nbcp.db.mysql.*;
 import nbcp.comm.*;
 import nbcp.utils.*;
 import java.util.*;
+import java.util.stream.*;
 import org.springframework.stereotype.*;
 ${packages.map { "import " + it + ";"}.joinToString(const.line_break)}
 

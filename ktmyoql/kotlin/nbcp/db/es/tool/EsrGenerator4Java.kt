@@ -53,15 +53,17 @@ class EsrGenerator4Java {
         println("开始生成 esr...")
 
 
-        var fileHeader = """package ${packageName}
+        var fileHeader = """package ${packageName};
 
-import nbcp.db.*
-import nbcp.db.es.*
-import nbcp.utils.*
-import nbcp.comm.*
-import org.slf4j.LoggerFactory
-import org.springframework.stereotype.*
-${packages.map { "import " + it }.joinToString(const.line_break)}
+import nbcp.db.*;
+import nbcp.db.es.*;
+import nbcp.utils.*;
+import nbcp.comm.*;
+import java.util.*;
+import java.util.stream.*;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.*;
+${packages.map { "import " + it + ";" }.joinToString(const.line_break)}
 
 //generate auto @${LocalDateTime.now().AsString()}
 """
@@ -80,8 +82,8 @@ ${packages.map { "import " + it }.joinToString(const.line_break)}
                 fileHeader +
                         """
 @Component("es.${groupName}")
-@MetaDataGroup(DatabaseEnum.ElasticSearch, "${groupName}")
-public class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
+@MetaDataGroup(dbType =DatabaseEnum.ElasticSearch, value = "${groupName}")
+public class ${MyUtil.getBigCamelCase(groupName)}Group implements IDataGroup{
     @Override
     public Set<BaseMetaData> getEntities(){
         return new HashSet(){ { 
@@ -89,8 +91,8 @@ ${
                             group.value
                                 .map { "add(" + genVarName(it).GetSafeKotlinName() + ");" }
                                 .map { it.ToTab(3) }
-                                .joinToString(",")
-                        })
+                                .joinToString("\n")
+                        }
         }};
     }
 """
@@ -121,7 +123,7 @@ ${
 
                     """
 public class EsrUtil{
-    public static esColumnJoin(String... args): EsColumnName {
+    public static EsColumnName esColumnJoin(String... args) {
         return new EsColumnName(Arrays.asList(args).stream().filter (it-> MyHelper.hasValue( it) ).collect(Collectors.joining(".")));
     }
 }
@@ -156,7 +158,7 @@ public class EsrMetaMap {
 
 
     fun writeToFile(className: String, content: String) {
-        FileWriter(MyUtil.joinFilePath(targetEntityPathName, className + ".kt"), true).use { moer_File ->
+        FileWriter(MyUtil.joinFilePath(targetEntityPathName, className + ".java"), true).use { moer_File ->
             moer_File.appendLine(content)
             moer_File.flush()
         }
@@ -275,7 +277,9 @@ public class EsrMetaMap {
             return ""
         }
 
-        return """new ${fieldType.name.split(".").last()}Meta(EsrUtil.esColumnJoin(this.parentPropertyName,"${fieldName}"))""";
+        return """new ${
+            fieldType.name.split(".").last()
+        }Meta(EsrUtil.esColumnJoin(this.parentPropertyName,"${fieldName}"))""";
     }
 
     private fun getMetaValue(field: Field, parentType: Class<*>, parentTypeName: String, deepth: Int): String {
@@ -354,7 +358,7 @@ public class EsrMetaMap {
             return "";
         }
 
-        var props = entType.AllFields
+        var props_fun = entType.AllFields
             .filter { it.name != "Companion" }
             .map {
                 var v1 = getMetaValue(it, entType, entTypeName, 1)
@@ -365,29 +369,48 @@ public class EsrMetaMap {
                 }
 
                 return@map """${CodeGeneratorHelper.getFieldComment(it)}${
-JavaCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }.joinToString("")
-}
-public ${v1_type} ${it.name} = ${v1}""".removeEmptyLine().ToTab(1)
+                    JavaCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }.joinToString("")
+                }
+private ${v1_type} ${it.name} = null;
+public ${v1_type} get${MyUtil.getBigCamelCase(it.name)}(){
+    return ${it.name};
+}""".removeEmptyLine()
+            }
+
+
+        var props_set = entType.AllFields
+            .filter { it.name != "Companion" }
+            .map {
+                var v1 = getMetaValue(it, entType, entTypeName, 1)
+                if (v1.startsWith("new ")) {
+                    var v1_index_end = v1.indexOf('(');
+                }
+
+                return@map """ 
+this.${it.name} = ${v1};
+""".removeEmptyLine()
             }
 
         var entityTypeName = entTypeName;
 //        var entityVarName = getEntityName(entTypeName);
 
         var ent = """public class ${entityTypeName}Meta extends EsColumnName {
-    private String parentPropertyName:String;
+    private String parentPropertyName;
     ${entityTypeName}Meta(String parentPropertyName) {
         this.parentPropertyName = parentPropertyName;
+        
+${props_set.map { const.line_break + it }.joinToString(const.line_break).ToTab(2)}
     }
     
-    ${entityTypeName}Meta(MongoColumnName value) {
+    ${entityTypeName}Meta(EsColumnName value) {
         this(value.toString());
     }
 
-${props.joinToString("\n")}
+${props_fun.map { const.line_break + it }.joinToString(const.line_break).ToTab(1)}
 
     @Override
     public String toString() {
-        return EsrUtil.esColumnJoin(this.parentPropertyName).toString()
+        return EsrUtil.esColumnJoin(this.parentPropertyName).toString();
     }
 }
 """
@@ -412,8 +435,10 @@ ${props.joinToString("\n")}
         var entityTypeName = entTypeName + "Entity";
         var entityVarName = getEntityName(entTypeName);
 
-        return """public ${entityTypeName} ${entityVarName} = ${entityTypeName}();
-fun ${entityVarName}(String collectionName) = new ${entityTypeName}(collectionName);""";
+        return """public ${entityTypeName} ${entityVarName} = new ${entityTypeName}();
+public ${entityTypeName} ${entityVarName}(String collectionName){
+    return new ${entityTypeName}(collectionName);
+}""";
     }
 
 
@@ -429,9 +454,16 @@ fun ${entityVarName}(String collectionName) = new ${entityTypeName}(collectionNa
 
                 var (retValue, retTypeIsBasicType) = getEntityValue(it)
                 if (retTypeIsBasicType) {
-                    return@map "val ${it.name} = new EsColumnName(${retValue})".ToTab(1)
+                    return@map "public EsColumnName ${it.name} = new EsColumnName(${retValue});".ToTab(1)
                 } else {
-                    return@map "val ${it.name} = new ${retValue}".ToTab(1)
+
+                    var v1_type = "EsColumnName"
+                    var l_index = retValue.indexOf('(')
+                    if (l_index > 0) {
+                        v1_type = retValue.Slice(0, l_index);
+                    }
+
+                    return@map "public ${v1_type} ${it.name} = new ${retValue};".ToTab(1)
                 }
             }
 
@@ -483,7 +515,7 @@ fun ${entityVarName}(String collectionName) = new ${entityTypeName}(collectionNa
                         "${MyUtil.getSmallCamelCase(it)}: ${
                             entType.GetFieldPath(
                                 *it.split(".").toTypedArray()
-                            )!!.type.kotlinTypeName
+                            )!!.type.javaTypeName
                         }"
                     }.joinToString(",")
                 }) {
@@ -497,7 +529,7 @@ fun ${entityVarName}(String collectionName) = new ${entityTypeName}(collectionNa
                         "${MyUtil.getSmallCamelCase(it)}: ${
                             entType.GetFieldPath(
                                 *it.split(".").toTypedArray()
-                            )!!.type.kotlinTypeName
+                            )!!.type.javaTypeName
                         }"
                     }.joinToString(",")
                 }) {
@@ -512,25 +544,27 @@ fun ${entityVarName}(String collectionName) = new ${entityTypeName}(collectionNa
                 entType,
                 ""
             )
-        }${KotlinCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
-public class ${entityTypeName} extends
-    :EsBaseMetaEntity<${entType.name}> {
-private String collectionName = "";
-public String databaseId;
-
-(${entType.name}.class, "${dbName}", collectionName.AsString("${dbName}"))
+        }${JavaCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
+public class ${entityTypeName} extends EsBaseMetaEntity<${entType.name}> {
+    public String collectionName;
+    public String databaseId;
 
     public ${entityTypeName}(String collectionName,String databaseId){
         super(${entType.name.GetSafeKotlinName()}.class, "${dbName}", MyHelper.AsString(collectionName,"${dbName}"), databaseId);
     
         this.collectionName = collectionName;
         this.databaseId = databaseId;
-        }
+    }
+    
+    public ${entityTypeName}(){
+        this("","");
+    }
+    
         
 ${props.joinToString("\n")}
 ${idMethods.joinToString("\n")}
 
-public EsQueryClip<${entityTypeName}, ${entType.name}> query(){
+    public EsQueryClip<${entityTypeName}, ${entType.name}> query(){
         return new EsQueryClip(this);
     }
     

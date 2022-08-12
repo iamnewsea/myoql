@@ -375,7 +375,7 @@ public class MoerMetaMap {
 private ${v1_type} ${it.name} = null;
 public ${v1_type} get${MyUtil.getBigCamelCase(it.name)}(){
     return ${it.name};
-}""".removeEmptyLine().ToTab(1)
+}""".removeEmptyLine()
             }
 
 
@@ -384,15 +384,10 @@ public ${v1_type} get${MyUtil.getBigCamelCase(it.name)}(){
             .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
             .map {
                 var v1 = getMetaValue(it, entType, entTypeName, 1)
-                var v1_type = "MongoColumnName";
-                if (v1.startsWith("new ")) {
-                    var v1_index_end = v1.indexOf('(');
-                    v1_type = v1.Slice(4, v1_index_end);
-                }
 
                 return@map """ 
 this.${it.name} = ${v1};
-""".removeEmptyLine().ToTab(1)
+""".removeEmptyLine()
             }
 
         var entityTypeName = entTypeName;
@@ -406,13 +401,13 @@ public class ${entityTypeName}Meta extends MongoColumnName{
     private String parentPropertyName;
     public ${entityTypeName}Meta(String parentPropertyName) {
         this.parentPropertyName = parentPropertyName;
-        ${props_set.map { const.line_break + it }.joinToString(const.line_break)}
+${props_set.map { const.line_break + it }.joinToString(const.line_break).ToTab(2)}
     }
     
     public ${entityTypeName}Meta(MongoColumnName value) {
         this(value.toString());
     }
-${props_fun.map { const.line_break + it }.joinToString(const.line_break)}
+${props_fun.map { const.line_break + it }.joinToString(const.line_break).ToTab(1)}
     @Override 
     public String toString() {
         return MoerUtil.mongoColumnJoin(this.parentPropertyName).toString();
@@ -655,8 +650,7 @@ public ${v1_type} ${it.name} = new ${retValue};""".removeEmptyLine().ToTab(1)
                     varTableRemark
                 )
             }${JavaCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
-public class ${entityTypeName}
-    extends MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}> {
+public class ${entityTypeName} extends MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}> {
     public String collectionName;
     public String databaseId;
     public ${entityTypeName}(String collectionName,String databaseId){
