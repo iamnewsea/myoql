@@ -23,7 +23,6 @@ import java.io.Serializable
  */
 @Component
 @Conditional(ExistsSqlSourceConfigCondition::class)
-@ConditionalOnProperty("spring.datasource.url")
 class SqlEntityCollector : BeanPostProcessor {
     companion object {
         //需要删 除后放入垃圾箱的实体
@@ -178,6 +177,8 @@ class SqlEntityCollector : BeanPostProcessor {
     }
 
     fun onSelecting(select: SqlBaseQueryClip): Array<Pair<ISqlEntitySelect, EventResult>> {
+        if (select.tableName.isEmpty()) return arrayOf();
+
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<ISqlEntitySelect, EventResult>>()
         selectEvents.ForEachExt { it, _ ->
@@ -193,6 +194,8 @@ class SqlEntityCollector : BeanPostProcessor {
 
 
     fun onInserting(insert: SqlInsertClip<*, *>): Array<Pair<ISqlEntityInsert, EventResult>> {
+        if (insert.tableName.isEmpty()) return arrayOf();
+
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<ISqlEntityInsert, EventResult>>()
         insertEvents.ForEachExt { it, _ ->
@@ -208,6 +211,7 @@ class SqlEntityCollector : BeanPostProcessor {
 
 
     fun onUpdating(update: SqlUpdateClip<*>): Array<Pair<ISqlEntityUpdate, EventResult>> {
+        if (update.tableName.isEmpty()) return arrayOf();
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<ISqlEntityUpdate, EventResult>>()
         updateEvents.ForEachExt { it, _ ->
@@ -222,7 +226,8 @@ class SqlEntityCollector : BeanPostProcessor {
     }
 
     fun onDeleting(delete: SqlDeleteClip<*>): Array<Pair<ISqlEntityDelete, EventResult>> {
-
+        if (delete.tableName.isEmpty()) return arrayOf();
+        
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<ISqlEntityDelete, EventResult>>()
         deleteEvents.ForEachExt { it, _ ->

@@ -504,9 +504,7 @@ object MyUtil {
     }
 
     fun isLocalIp(Ip: String): Boolean {
-        return Ip.isEmpty() || Ip.startsWith("192.168.") || Ip.startsWith("10.") || Ip.startsWith("172.") || Ip.startsWith(
-            "127."
-        ) || Ip.startsWith("0.") || Ip.startsWith("0:")
+        return Ip.isEmpty() || Ip.startsWith("127.") || Ip.startsWith("0.") || Ip.startsWith("0:")
     }
 
     /**

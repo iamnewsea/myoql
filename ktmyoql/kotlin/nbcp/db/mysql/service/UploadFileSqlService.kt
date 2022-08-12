@@ -18,7 +18,7 @@ import javax.sql.DataSource
 
 @Component
 @Conditional(ExistsSqlSourceConfigCondition::class)
-@ConditionalOnProperty("spring.datasource.url")
+//@ConditionalOnProperty("spring.datasource.url")
 class UploadFileSqlService : IUploadFileDbService {
     override fun insert(annex: SysAnnex): Int {
         var ent = annex.ConvertJson(s_annex::class.java);

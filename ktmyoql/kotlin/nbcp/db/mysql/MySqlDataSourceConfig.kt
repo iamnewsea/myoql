@@ -23,7 +23,7 @@ import javax.sql.DataSource
 @Component
 //@Import(JsonMapRowMapper::class)
 @Conditional(ExistsSqlSourceConfigCondition::class)
-@ConditionalOnProperty("spring.datasource.url")
+//@ConditionalOnProperty("spring.datasource.url")
 class MySqlDataSourceConfig {
     companion object {
         @JvmStatic
@@ -75,6 +75,10 @@ class MySqlDataSourceConfig {
 
 class ExistsSqlSourceConfigCondition : Condition {
     override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata): Boolean {
+        if( nbcp.comm.config.getConfig("spring.datasource.url").isNullOrEmpty()){
+            return false;
+        }
+
         return ClassUtil.existsClass("org.mariadb.jdbc.Driver") ||
                 ClassUtil.existsClass("com.mysql.cj.jdbc.Driver") ||
                 ClassUtil.existsClass("com.microsoft.sqlserver.jdbc.SQLServerDriver") ||
