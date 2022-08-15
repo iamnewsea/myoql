@@ -2,7 +2,6 @@ package nbcp.db.cache
 
 import nbcp.comm.*
 import nbcp.db.db
-import nbcp.utils.CodeUtil
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
@@ -10,8 +9,6 @@ import org.aspectj.lang.reflect.MethodSignature
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.scheduling.annotation.Scheduled
-import org.springframework.scheduling.support.CronExpression
 import org.springframework.stereotype.Component
 import java.lang.reflect.Method
 import java.time.Duration
@@ -176,7 +173,7 @@ open class RedisCacheAopService {
         var setted = false;
         try {
             //如果存在,则查看时间
-            var v = db.rer_base.taskLock(key).get();
+            var v = db.rerBase.taskLock(key).get();
 
             if (v.HasValue) {
                 if (Duration.between(v.AsLocalDateTime(), now).toHours() < 1) {
@@ -185,7 +182,7 @@ open class RedisCacheAopService {
                 }
             }
 
-            setted = db.rer_base.taskLock(key)
+            setted = db.rerBase.taskLock(key)
                 .setIfAbsent(now.toNumberString(), 3600);
         } catch (e: Exception) {
             logger.error(e.message, e);
@@ -205,7 +202,7 @@ open class RedisCacheAopService {
             return null;
         } finally {
             try {
-                db.rer_base.taskLock(key).deleteKey();
+                db.rerBase.taskLock(key).deleteKey();
             } catch (e: Exception) {
                 logger.error(e.message, e);
             }

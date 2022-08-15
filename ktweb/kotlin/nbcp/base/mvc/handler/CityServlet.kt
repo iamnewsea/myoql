@@ -3,13 +3,9 @@ package nbcp.base.mvc.handler
 import nbcp.comm.*
 import nbcp.db.db
 import nbcp.db.mongo.*
-import nbcp.db.mongo.entity.SysCity
-import nbcp.base.mvc.WriteJsonRawValue
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
-import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 /**
@@ -27,7 +23,7 @@ open class CityServlet {
             throw ParameterInvalidException("城市code非法")
         }
 
-        var list = db.mor_base.sysCity.query()
+        var list = db.morBase.sysCity.query()
             .select { it.code }
             .select { it.shortName }
             .where { it.pcode match pcode }
@@ -48,7 +44,7 @@ open class CityServlet {
 
         var city_codes = getWbsCodes(code)
 
-        var list = db.mor_base.sysCity.query()
+        var list = db.morBase.sysCity.query()
             .select { it.code }
             .select { it.shortName }
             .where { it.code match_in city_codes }

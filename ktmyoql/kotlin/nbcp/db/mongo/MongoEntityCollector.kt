@@ -2,19 +2,15 @@ package nbcp.db.mongo
 
 import nbcp.comm.ForEachExt
 import nbcp.comm.HasValue
-import nbcp.comm.config
-import nbcp.scope.*
 import nbcp.comm.usingScope
 import nbcp.db.*
 import nbcp.db.cache.RedisCacheColumns
 import nbcp.db.cache.RedisCacheDefine
 import nbcp.db.mongo.event.*
-import nbcp.utils.SpringUtil
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
-import java.io.Serializable
 
 
 @Component
@@ -64,7 +60,7 @@ class MongoEntityCollector : BeanPostProcessor {
      */
     fun getCollection(collectionName: String): MongoBaseMetaCollection<Any>? {
         var ret: BaseMetaData? = null
-        db_mongo.groups.any { group ->
+        dbMongo.groups.any { group ->
             ret = group.getEntities().firstOrNull() { it.tableName == collectionName }
 
             return@any ret != null
@@ -81,7 +77,7 @@ class MongoEntityCollector : BeanPostProcessor {
         if (bean is IDataGroup) {
             var group = bean::class.java.getAnnotation(MetaDataGroup::class.java)
             if (group.dbType == DatabaseEnum.Mongo) {
-                db_mongo.groups.add(bean)
+                dbMongo.groups.add(bean)
 
                 bean.getEntities()
                     .forEach { moer ->

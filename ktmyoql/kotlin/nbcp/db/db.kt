@@ -2,12 +2,10 @@ package nbcp.db
 
 import nbcp.comm.*
 import nbcp.db.cache.*
-import nbcp.utils.*
 import nbcp.db.mongo.table.MongoBaseGroup
 import nbcp.db.redis.RedisBaseGroup
 import nbcp.db.sql.table.SqlBaseGroup
 import java.time.Duration
-import nbcp.scope.*
 import java.util.function.Supplier
 import kotlin.reflect.KClass
 
@@ -21,13 +19,13 @@ object db {
 //    }
 
     @JvmStatic
-    val sql = db_sql;
+    val sql = dbSql;
 
     @JvmStatic
-    val mongo = db_mongo;
+    val mongo = dbMongo;
 
     @JvmStatic
-    val es = db_es;
+    val es = dbEs;
 
     @JvmStatic
     val redis = DbRedis;
@@ -150,15 +148,15 @@ object db {
 //        })
 //    }
     @JvmStatic
-    val mor_base
+    val morBase
         get() = MongoBaseGroup()
 
     @JvmStatic
-    val rer_base
+    val rerBase
         get() = RedisBaseGroup()
 
     @JvmStatic
-    val sql_base
+    val sqlBase
         get() = SqlBaseGroup()
 
 

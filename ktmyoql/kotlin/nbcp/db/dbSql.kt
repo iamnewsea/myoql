@@ -5,7 +5,6 @@ import nbcp.comm.AsString
 import nbcp.comm.config
 import nbcp.db.sql.*
 import nbcp.utils.*
-import nbcp.db.sql.event.*
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
 import org.springframework.util.StringUtils
@@ -15,7 +14,7 @@ import javax.sql.DataSource
 /**
  * 请使用 db.sql
  */
-object db_sql {
+object dbSql {
 
     //所有的组。
     val groups = mutableSetOf<IDataGroup>()

@@ -1,26 +1,16 @@
 package nbcp.mongo
 
-import ch.qos.logback.classic.Level
 import nbcp.TestBase
 import nbcp.comm.*
-import nbcp.db.DbIncData
 import nbcp.db.IdName
 import nbcp.db.db
 import nbcp.db.mongo.*
-import nbcp.db.mongo.entity.BasicUser
 import nbcp.db.mongo.entity.SysAnnex
-import nbcp.db.mongo.entity.SysLog
 import nbcp.db.op_inc
-import nbcp.db.sql.doInsert
-import nbcp.db.sql.entity.s_annex
-import nbcp.db.sql.updateWithEntity
-import nbcp.tool.UserCodeGenerator
 import nbcp.utils.CodeUtil
 import org.bson.Document
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
-import org.springframework.transaction.annotation.Transactional
-import java.lang.RuntimeException
 
 class Test_Mongo_Update : TestBase() {
     @BeforeEach
@@ -37,7 +27,7 @@ class Test_Mongo_Update : TestBase() {
 
     @Test
     fun test_save() {
-        var d = db.mor_base.sysLastSortNumber.update()
+        var d = db.morBase.sysLastSortNumber.update()
             .where { it.table match "abc" }
             .where { it.group match "def" }
             .inc { it.value op_inc 3 }
@@ -52,7 +42,7 @@ class Test_Mongo_Update : TestBase() {
         annex.name = "wwwfffw"
         annex.id = CodeUtil.getCode();
         annex.creator = IdName(CodeUtil.getCode(), "test")
-        var d = db.mor_base.sysAnnex.updateWithEntity(annex)
+        var d = db.morBase.sysAnnex.updateWithEntity(annex)
             .whereColumn { it.name }
             .castToUpdate()
 
@@ -68,7 +58,7 @@ class Test_Mongo_Update : TestBase() {
         annex.put("name2", listOf("a", "b"))
         annex.put("creator", JsonMap("id" to CodeUtil.getCode(), "name" to "test"))
 
-        var update = db.mor_base.sysAnnex.updateWithEntity(annex)
+        var update = db.morBase.sysAnnex.updateWithEntity(annex)
             .whereColumn { it.id }
             .castToUpdate();
 

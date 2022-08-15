@@ -54,7 +54,7 @@ class MongoLogHistoryUpdateEvent : IMongoEntityUpdate {
 
 
         //批量记录到日志
-        val batchInsert = db.mor_base.sysLog.batchInsert()
+        val batchInsert = db.morBase.sysLog.batchInsert()
 
         ret.forEach {
 

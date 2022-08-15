@@ -111,7 +111,7 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
     }
 
     private fun getSortNumber(tableName: String, groupBy: String, step: Number): Float? {
-        return db.mor_base.sysLastSortNumber.update()
+        return db.morBase.sysLastSortNumber.update()
             .where { it.table match tableName }
             .where { it.group match groupBy }
             .inc { it.value op_inc step }

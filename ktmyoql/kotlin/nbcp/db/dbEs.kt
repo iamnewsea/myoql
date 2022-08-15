@@ -4,7 +4,6 @@ import nbcp.scope.*
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.es.*
-import nbcp.db.mongo.MongoBaseMetaCollection
 import org.apache.http.HttpHost
 import org.elasticsearch.client.*
 import org.slf4j.LoggerFactory
@@ -15,7 +14,7 @@ import java.time.LocalDateTime
 /**
  * 请使用 db.mongo
  */
-object db_es {
+object dbEs {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     //所有的组。

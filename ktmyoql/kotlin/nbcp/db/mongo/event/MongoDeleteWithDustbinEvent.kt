@@ -41,7 +41,7 @@ class MongoDeleteWithDustbinEvent : IMongoEntityDelete {
         val dustbin = SysDustbin()
         dustbin.table = delete.actualTableName
         dustbin.data = list as Serializable?;
-        db.mor_base.sysDustbin.doInsert(dustbin)
+        db.morBase.sysDustbin.doInsert(dustbin)
 
         val list_ids = list.map { it.get("_id").AsString() }
 

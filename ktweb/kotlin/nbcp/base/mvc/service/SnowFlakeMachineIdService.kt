@@ -1,12 +1,10 @@
 package nbcp.base.mvc.service
 
-import nbcp.base.mvc.HttpContext
 import nbcp.comm.*
 import nbcp.component.SnowFlake
 import nbcp.db.db
 import nbcp.utils.*
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 
@@ -61,7 +59,7 @@ open class SnowFlakeRedisService {
 
         val appName = namespaceId + "-" + serviceName;
         //第一次初始化应用。
-        val redisInstances = db.rer_base.nacosInstance(appName).getMap()
+        val redisInstances = db.rerBase.nacosInstance(appName).getMap()
             .mapValues { it.value.AsInt() }
             .toMutableMap()
 
@@ -79,7 +77,7 @@ open class SnowFlakeRedisService {
 
         SpringUtil.getBean<SnowFlake>().machineId = machineId;
 
-        db.rer_base.nacosInstance(appName).resetMap(redisInstances);
+        db.rerBase.nacosInstance(appName).resetMap(redisInstances);
         return machineId;
     }
 

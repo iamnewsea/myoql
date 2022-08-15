@@ -1,7 +1,5 @@
 package nbcp.sql
 
-import ch.qos.logback.classic.Level
-import ch.qos.logback.classic.db.names.ColumnName
 import com.zaxxer.hikari.HikariDataSource
 import nbcp.TestBase
 import nbcp.comm.*
@@ -30,14 +28,14 @@ class TestKtExt_MySql : TestBase() {
         file.creator = IdName("1", "abc");
         file.name = "OK";
 
-        db.sql_base.s_annex.doInsert(file)
+        db.sqlBase.s_annex.doInsert(file)
 
         println()
     }
 
     @Test
     fun test_update_ConverterValueToDb() {
-        db.sql_base.s_annex.updateById("56Fgk7UEAm0Z")
+        db.sqlBase.s_annex.updateById("56Fgk7UEAm0Z")
             .set { it.id to "56Fgk7UEAm0Z" }
             .exec();
 
@@ -47,9 +45,9 @@ class TestKtExt_MySql : TestBase() {
     @Test
     fun test_update_spread() {
         usingScope(LogLevelScope.debug) {
-            var ent = db.sql_base.s_annex.queryById("56Fgk7UEAm0Z").toEntity()!!;
+            var ent = db.sqlBase.s_annex.queryById("56Fgk7UEAm0Z").toEntity()!!;
             ent.creator = IdName("2", "rr")
-            db.sql_base.s_annex.updateWithEntity(ent)
+            db.sqlBase.s_annex.updateWithEntity(ent)
                 .set { it.name to "eee" }
                 .exec();
 
@@ -59,13 +57,13 @@ class TestKtExt_MySql : TestBase() {
 
     @Test
     fun test_select_spread() {
-        var ent = db.sql_base.s_annex.queryById("56Fgk7UEAm0Z")
+        var ent = db.sqlBase.s_annex.queryById("56Fgk7UEAm0Z")
             .apply {
                 var where = WhereData();
-                where.or(db.sql_base.s_annex.ext match "png")
-                where.or(db.sql_base.s_annex.ext match "gif")
-                where.or(db.sql_base.s_annex.ext match "jpg")
-                where.or(db.sql_base.s_annex.ext match "bmp")
+                where.or(db.sqlBase.s_annex.ext match "png")
+                where.or(db.sqlBase.s_annex.ext match "gif")
+                where.or(db.sqlBase.s_annex.ext match "jpg")
+                where.or(db.sqlBase.s_annex.ext match "bmp")
                 this.where { where }
             }
             .toSql();
@@ -92,7 +90,7 @@ class TestKtExt_MySql : TestBase() {
 
     @Test
     fun test_gen() {
-        val file = UserCodeGenerator.genVueCard("base", db.sql_base.s_annex);
+        val file = UserCodeGenerator.genVueCard("base", db.sqlBase.s_annex);
 
         println(file)
     }

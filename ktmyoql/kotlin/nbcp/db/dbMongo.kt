@@ -13,16 +13,14 @@ import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext
 import org.springframework.data.mongodb.core.query.Criteria
-import java.lang.Exception
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.LinkedHashMap
 
 
 /**
  * 请使用 db.mongo
  */
-object db_mongo {
+object dbMongo {
 
     //所有的组。
     val groups = mutableSetOf<IDataGroup>()

@@ -55,7 +55,7 @@ class MongoFlywayBeanProcessor {
         }
 
 
-        var dbMaxVersion = db.mor_base.sysFlywayVersion.query()
+        var dbMaxVersion = db.morBase.sysFlywayVersion.query()
             .where { it.isSuccess match true }
             .orderByDesc { it.version }
             .toEntity()
@@ -95,10 +95,10 @@ class MongoFlywayBeanProcessor {
             it.exec();
             ent.isSuccess = true;
             ent.finishAt = LocalDateTime.now();
-            db.mor_base.sysFlywayVersion.doInsert(ent);
+            db.morBase.sysFlywayVersion.doInsert(ent);
         } catch (e: Exception) {
             ent.isSuccess = false;
-            db.mor_base.sysFlywayVersion.doInsert(ent);
+            db.morBase.sysFlywayVersion.doInsert(ent);
             err_msg = e.message ?: "异常!";
             throw e;
         } finally {

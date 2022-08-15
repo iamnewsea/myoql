@@ -37,7 +37,7 @@ class RedisBaseGroup {
 
         //如果是 mongo, 如果是 mysql
 
-        name = db.mor_base.sysCity.queryByCode(code)
+        name = db.morBase.sysCity.queryByCode(code)
             .select { it.name }
             .toEntity(String::class.java) ?: "";
 

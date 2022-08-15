@@ -35,6 +35,6 @@ class SqlDefaultSysDustbinEvent : ISqlEntityDelete {
         dustbin.table = delete.mainEntity.tableName
         dustbin.data = data.ToJson()
 
-        db.sql_base.s_dustbin.doInsert(dustbin)
+        db.sqlBase.s_dustbin.doInsert(dustbin)
     }
 }
