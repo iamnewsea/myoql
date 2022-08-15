@@ -678,6 +678,9 @@ ${props.map { const.line_break + it }.joinToString(const.line_break)}
         return new MongoDeleteClip(this);
     }
     
+    public MongoInsertClip<${entityTypeName}> batchInsert(){
+        return new MongoInsertClip(this);
+    }    
 ${idMethods.joinToString(const.line_break)}
 }
 """
