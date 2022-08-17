@@ -13,7 +13,6 @@ import kotlin.reflect.KClass
  * Created by udi on 17-5-23.
  */
 
-
 //class RawJsonObject(value: String) : MyString(value) {}
 //
 //@Component
@@ -42,16 +41,6 @@ import kotlin.reflect.KClass
 //    else FieldTypeJsonMapper.instance
 //}
 
-/**
- * 仅为了Java规范
- */
-object MyJson {
-    @JvmStatic
-    @JvmOverloads
-    fun <T> toJson(value: T, style: JsonSceneEnumScope? = null, vararg jsonScopes: JsonStyleEnumScope): String {
-        return this.ToJson(style, *jsonScopes);
-    }
-}
 
 @JvmOverloads
 fun <T> T.ToJson(style: JsonSceneEnumScope? = null): String {
