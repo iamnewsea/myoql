@@ -35,6 +35,7 @@ class RedisStringProxy @JvmOverloads constructor(
     /**
      * @param cacheSecond: 0=默认值 , -1为不设置缓存时间
      */
+    @JvmOverloads
     fun set(value: String, cacheSecond: Int = defaultCacheSeconds) {
         var cacheKey = getFullKey(key)
 
@@ -51,6 +52,7 @@ class RedisStringProxy @JvmOverloads constructor(
     /**
      * @param cacheSecond: 0=默认值 , -1为不设置缓存时间
      */
+    @JvmOverloads
     fun setIfAbsent(value: String, cacheSecond: Int = defaultCacheSeconds): Boolean {
         var cacheKey = getFullKey(key)
 

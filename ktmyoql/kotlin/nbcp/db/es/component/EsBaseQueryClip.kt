@@ -158,7 +158,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
         return ret
     }
 
-
+    @JvmOverloads
     fun <R> toListResult(clazz: Class<R>, mapFunc: ((Map<String, Any?>) -> Unit)? = null): ListResult<R> {
         var ret = ListResult<R>();
         ret.data = toList(clazz, mapFunc);

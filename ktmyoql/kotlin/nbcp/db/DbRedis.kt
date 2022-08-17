@@ -38,6 +38,7 @@ object DbRedis {
         return db.redis.getStringRedisTemplate(group).delete(keys.map { it });
     }
 
+    @JvmOverloads
     fun getStringRedisTemplate(group: String = ""): StringRedisTemplate {
         if (group.HasValue) {
             val config = SpringUtil.getBean<RedisDataSource>();

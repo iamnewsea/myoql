@@ -83,6 +83,7 @@ object JsUtil {
     /**
      */
     @JvmStatic
+    @JvmOverloads
     fun urlQueryToJson(urlQueryString: String, soloIsTrue: Boolean = false): JsonMap {
         val ret = JsonMap()
         var urlQuery = urlQueryString.trim().split("?").last()

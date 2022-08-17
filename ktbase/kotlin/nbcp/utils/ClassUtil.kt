@@ -217,6 +217,7 @@ object ClassUtil {
     /**
      * 查找类。
      */
+    @JvmOverloads
     fun findClasses(basePack: String, filter: ((String) -> Boolean)? = null): List<Class<*>> {
         val baseResourcePath = basePack.replace(".", "/").trim('/');
         val ret = mutableListOf<Class<*>>();
@@ -264,6 +265,7 @@ object ClassUtil {
     /**
      * @param basePath: 前后不带/
      */
+    @JvmOverloads
     fun findResources(basePath: String, filter: ((String) -> Boolean)? = null): List<String> {
         val resource = ClassPathResource(basePath);
         if (resource.exists() == false) return listOf();
@@ -324,7 +326,7 @@ object ClassUtil {
 //        return list;
 //    }
 
-
+    @JvmOverloads
     fun findResources(url: URL, basePath: String, filter: ((String) -> Boolean)? = null): List<String> {
         //转换为JarURLConnection
         val connection = url.openConnection()

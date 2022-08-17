@@ -21,6 +21,7 @@ class BatchReader<T> private constructor(
     private val producer: (Int, Int) -> List<T>
 ) : Iterator<T> {
     companion object {
+
         @JvmStatic
         fun <T> init(batchSize: Int = 20, producer: (Int, Int) -> List<T>): BatchReader<T> {
             return init(0, batchSize, producer);
@@ -44,7 +45,10 @@ BatchReader.init{ skip,take -> mor.table1.limit(skip,take).where{ it.status matc
          * @param producer:生产者，参数是 startIndex + 偏移,batchSize，如果生产者返回空列表，则遍历完成。
          *
          */
+
+        @JvmName("init1")
         @JvmStatic
+        @JvmOverloads
         fun <T> init(startIndex: Int = 0, batchSize: Int = 20, producer: (Int, Int) -> List<T>): BatchReader<T> {
             return BatchReader(startIndex, batchSize, producer)
         }

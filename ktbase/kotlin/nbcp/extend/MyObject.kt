@@ -163,6 +163,7 @@ fun ByteArray.ToHexLowerString(): String {
 比较两个数组的内容是否相同, 去除相同数据进行比较 .如:
 [1,1,2] .equalArrayContent( [1,2,2] )  == true
  */
+@JvmOverloads
 fun Collection<*>.EqualArrayContent(other: Collection<*>, withIndex: Boolean = false): Boolean {
     if (this.size == 0 && other.size == 0) return true;
     else if (this.size == 0) return false;

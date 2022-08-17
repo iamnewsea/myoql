@@ -55,6 +55,7 @@ open class JsonMap : StringKeyMap<Any?> {
          * 忽略
          */
         @JvmStatic
+        @JvmOverloads
         fun loadFromUrl(urlQueryString: String, soloIsTrue: Boolean = false): JsonMap {
             return JsUtil.urlQueryToJson(urlQueryString,soloIsTrue)
         }

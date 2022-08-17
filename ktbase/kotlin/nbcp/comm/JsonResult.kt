@@ -27,6 +27,7 @@ open class JsonResult() : Serializable {
 
     companion object {
         @JvmStatic
+        @JvmOverloads
         fun error(msg: String, code: Int = 0): JsonResult {
             var ret = JsonResult();
             ret.code = code;
@@ -47,6 +48,7 @@ open class ApiResult<T>() : JsonResult() {
 
     companion object {
         @JvmStatic
+        @JvmOverloads
         fun <T> error(msg: String, code: Int = 0): ApiResult<T> {
             var ret = ApiResult<T>();
             ret.code = code;

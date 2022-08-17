@@ -162,6 +162,7 @@ abstract class FlywayVersionBaseService(val version: Int) {
         }
     }
 
+    @JvmOverloads
     fun initMongoIndex(callback: ((MongoBaseMetaCollection<Any>) -> Boolean)? = null, rebuild: Boolean = true) {
         db.mongo.groups.forEach {
             it.getEntities().forEach { ent ->

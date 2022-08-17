@@ -6,7 +6,7 @@ import java.io.Serializable
 
 //import nbcp.db.mongo.entity.Serializable
 
-
+@JvmOverloads
 fun <M : SqlBaseMetaTable<T>, T : Serializable> M.query(selectColumn: ((M) -> BaseAliasSqlSect)? = null): SqlQueryClip<M, T> {
     var ret = SqlQueryClip(this);
     if (selectColumn != null) {

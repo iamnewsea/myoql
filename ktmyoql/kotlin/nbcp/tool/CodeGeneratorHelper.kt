@@ -19,6 +19,7 @@ object CodeGeneratorHelper {
     /**
      * 获取表的中文注释及Cn注解
      */
+    @JvmOverloads
     fun getEntityComment(entType: Class<*>, remark: String = ""): String {
         var cn = entType.getAnnotation(Cn::class.java)?.value ?: "";
         if (cn.isNullOrEmpty()) return "";
@@ -126,7 +127,7 @@ object CodeGeneratorHelper {
         return FreemarkerUtil.process(fileName, mapDefine)
     }
 
-
+    @JvmOverloads
     fun getEntityUniqueIndexesDefine(entType: Class<*>, procedClasses: MutableSet<String> = mutableSetOf()): Set<String> {
         procedClasses.add(entType.name)
 
