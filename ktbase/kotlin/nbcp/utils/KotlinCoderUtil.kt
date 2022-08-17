@@ -10,6 +10,7 @@ class KotlinCoderUtil {
         /**
          * 如果存在， 就有隔行。 如果不存在就返回空。
          */
+        @JvmStatic
         fun getAnnotationCodes(annotations: Array<out Annotation>): List<String> {
             return annotations
                 .map { an ->
@@ -19,6 +20,7 @@ class KotlinCoderUtil {
 
         }
 
+        @JvmStatic
         fun getAnnotationCode(an: Annotation, isRoot: Boolean = true): String {
             if (an is Metadata) return "";
             if (an is Proxy == false) {

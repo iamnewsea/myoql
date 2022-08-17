@@ -42,6 +42,17 @@ import kotlin.reflect.KClass
 //    else FieldTypeJsonMapper.instance
 //}
 
+/**
+ * 仅为了Java规范
+ */
+object MyJson {
+    @JvmStatic
+    @JvmOverloads
+    fun <T> toJson(value: T, style: JsonSceneEnumScope? = null, vararg jsonScopes: JsonStyleEnumScope): String {
+        return this.ToJson(style, *jsonScopes);
+    }
+}
+
 @JvmOverloads
 fun <T> T.ToJson(style: JsonSceneEnumScope? = null): String {
     return this.ToJson(style, *arrayOf<JsonStyleEnumScope>())
@@ -180,9 +191,9 @@ fun <T> Any.ConvertJson(clazz: Class<out T>, style: JsonSceneEnumScope? = null):
                     var key = it.AsString();
                     return@filter key.contains(".") || key.contains("[]")
                 }
-                .forEach{it ->
+                .forEach { it ->
                     var key = it.AsString();
-                    MyUtil.setValueByWbsPath(this, key , value = this.get(key))
+                    MyUtil.setValueByWbsPath(this, key, value = this.get(key))
                 }
         }
     }

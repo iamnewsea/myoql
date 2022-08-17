@@ -22,6 +22,7 @@ object FreemarkerUtil {
     /**
      * 传入需要转义的字符串进行转义
      */
+    @JvmStatic
     fun escapeString(originStr: String): String {
         return originStr.replace("井".toRegex(), "\\#").replace("￥".toRegex(), "\\$")
     }
@@ -41,10 +42,10 @@ object FreemarkerUtil {
 
         ret.setClassForTemplateLoading(FreemarkerUtil::class.java, "/")
         ret.setTemplateLoader(
-                ClassTemplateLoader(
-                        FreemarkerUtil::class.java,
-                        "/"
-                )
+            ClassTemplateLoader(
+                FreemarkerUtil::class.java,
+                "/"
+            )
         )
 
         return ret;
@@ -91,10 +92,11 @@ object FreemarkerUtil {
     /**
      * 按模板的内容执行
      */
+    @JvmStatic
     fun processContent(
-            content: String,
-            params: JsonMap,
-            configCallback: ((Configuration) -> Unit)? = null
+        content: String,
+        params: JsonMap,
+        configCallback: ((Configuration) -> Unit)? = null
     ): String {
         val config = getFreemarkerConfig();
 
@@ -115,10 +117,11 @@ object FreemarkerUtil {
      * @throws IOException
      * @throws TemplateException
      */
+    @JvmStatic
     fun process(
-            templateName: String,
-            params: JsonMap,
-            configCallback: ((Configuration) -> Unit)? = null
+        templateName: String,
+        params: JsonMap,
+        configCallback: ((Configuration) -> Unit)? = null
     ): String {
         val config = getFreemarkerConfig();
 

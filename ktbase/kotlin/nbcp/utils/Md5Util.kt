@@ -22,6 +22,7 @@ object Md5Util {
     /**
      * 带有校验和, 返回 base64 格式的 md5
      */
+    @JvmStatic
     fun getBase64Md5(source: ByteArray): String {
         if (source.size == 0) return ""
         val result = DigestUtils.md5(source).toMutableList();
@@ -38,6 +39,7 @@ object Md5Util {
     /**
      * 计算校验和
      */
+    @JvmStatic
     fun getChksum(fileStream: FileInputStream): UShort {
         val buffer = ByteArray(1024);
 
@@ -58,6 +60,7 @@ object Md5Util {
         return checksum.toUShort();
     }
 
+    @JvmStatic
     fun getChksum(source: ByteArray): UShort {
         var checksum = 0;
         for (i in source) {
@@ -73,15 +76,18 @@ object Md5Util {
     /**
      * 建议使用 getBase64Md5
      */
+    @JvmStatic
     fun getMd5(source: String): String {
         return DigestUtils.md5Hex(source)
     }
 
+    @JvmStatic
     fun getMd5(source: ByteArray): String {
         if (source.size == 0) return ""
         return DigestUtils.md5Hex(source)
     }
 
+    @JvmStatic
     fun getFileMD5(file: File): String {
         FileInputStream(file).use { fileStream -> return DigestUtils.md5Hex(fileStream) }
     }
@@ -89,8 +95,8 @@ object Md5Util {
     /**
      * 计算文件的 md5 + chksum ，返回 base64格式
      */
+    @JvmStatic
     fun getFileBase64MD5(file: File): String {
-
         var result = mutableListOf<Byte>()
         var checksum = 0;
 

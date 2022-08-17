@@ -18,13 +18,16 @@ object dbEs {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     //所有的组。
+    @JvmStatic
     val groups = mutableSetOf<IDataGroup>()
 
     //     val sqlEvents = SpringUtil.getBean<SqlEventConfig>();
+    @JvmStatic
     val esEvents by lazy {
         return@lazy SpringUtil.getBean<EsEntityCollector>();
     }
 
+    @JvmStatic
     fun proc_es_value(value: Any?): Any? {
         if (value == null) {
             return null;
@@ -42,6 +45,8 @@ object dbEs {
         return value;
     }
 
+
+    @JvmStatic
     fun multi_match(vararg target: Any?): WhereData {
         var target = proc_es_value(target);
 
@@ -126,6 +131,7 @@ object dbEs {
         return retValue;
     }
 
+    @JvmStatic
     fun createPipeline(name: String, description: String, vararg processors: JsonMap) {
         var request = Request("PUT", "/_ingest/pipeline/${name}")
 
@@ -167,6 +173,7 @@ object dbEs {
     /**
      * 动态实体
      */
+    @JvmStatic
     fun dynamicEntity(collectionName: String): ElasticSearchDynamicMetaEntity {
         return ElasticSearchDynamicMetaEntity(collectionName);
     }

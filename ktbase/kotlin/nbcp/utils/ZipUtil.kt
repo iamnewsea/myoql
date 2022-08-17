@@ -94,10 +94,13 @@ class ZipCompressData(file: File) {
 
 
 object ZipUtil {
+
+    @JvmStatic
     fun beginCompress(target: File): ZipCompressData {
         return ZipCompressData(target)
     }
 
+    @JvmStatic
     fun deCompress(zipFile: String, destDir: String, passwd: String): String {
         return deCompress(File(zipFile), File(destDir), passwd);
     }
@@ -112,6 +115,7 @@ object ZipUtil {
      * @return 解压后的文件数组
      * @throws ZipException
      */
+    @JvmStatic
     fun deCompress(zipFile: File, destDir: File, passwd: String): String {
         //1.判断指定目录是否存在
         if (!destDir.exists()) {
@@ -135,6 +139,7 @@ object ZipUtil {
     /**
      * 获取zipFile的内容
      */
+    @JvmStatic
     fun listFile(zipFile: File, passwd: String): List<FileHeader> {
         val zFile = ZipFile(zipFile)
         zFile.charset = const.utf8

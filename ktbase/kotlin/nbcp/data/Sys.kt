@@ -1,6 +1,7 @@
 package nbcp.data
 
 object Sys {
+    @JvmStatic
     val devKeywords: Array<String> = arrayOf(
         "abstract",
         "annotation",

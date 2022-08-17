@@ -8,6 +8,7 @@ object WxPayGroup {
     /**
      * 企业付款给个人
      */
+    @JvmStatic
     fun corpPayToUser(
             spbill_create_ip: String,
             amount: Int = 0,
@@ -20,6 +21,7 @@ object WxPayGroup {
      * 退款
      */
     @JvmOverloads
+    @JvmStatic
     fun refundPay(
             out_trade_no: String,//是     商户订单号
             out_refund_no: String,   //商户退款单号
@@ -33,6 +35,7 @@ object WxPayGroup {
      * 填充 paySign 进行签名
      * https://pay.weixin.qq.com/wiki/doc/api/wxa/wxa_api.php?chapter=4_3
      */
+    @JvmStatic
     fun getPayClientSignData(mchSecret: String, prepay_id: String): WxRequestPaymentData {
         var signData = WxRequestPaymentServerSignData(prepay_id);
 
@@ -47,6 +50,7 @@ object WxPayGroup {
      * https://pay.weixin.qq.com/wiki/doc/api/H5.php?chapter=9_7&index=8
      * @param msg: 错误消息。
      */
+    @JvmStatic
     @JvmOverloads
     fun payReplyWeixin(msg: String = ""): String {
         val code = if (msg.HasValue) "FAIL" else "SUCCESS"
@@ -62,6 +66,7 @@ object WxPayGroup {
      * 预付
      */
     @JvmOverloads
+    @JvmStatic
     fun prepay(
             body:String,
             spbill_create_ip: String,

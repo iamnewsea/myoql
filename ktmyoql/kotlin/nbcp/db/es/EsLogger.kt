@@ -16,24 +16,24 @@ object EsLogger {
         return@lazy SpringUtil.getBean<EsTableLogProperties>()
     }
 
-    fun logGet(error: Exception?, esName: String, request: Request, response: String) {
+ @JvmStatic fun  logGet(error: Exception?, esName: String, request: Request, response: String) {
         log(error, esName, request, response, esLog::getQueryLog)
     }
 
-    fun logDelete(error: Exception?, esName: String, request: Request, response: String) {
+ @JvmStatic fun  logDelete(error: Exception?, esName: String, request: Request, response: String) {
         log(error, esName, request, response, esLog::getDeleteLog)
     }
 
-    fun logPost(error: Exception?, esName: String, request: Request, response: String) {
+ @JvmStatic fun  logPost(error: Exception?, esName: String, request: Request, response: String) {
         log(error, esName, request, response, esLog::getInsertLog)
     }
 
-    fun logPut(error: Exception?, esName: String, request: Request, response: String) {
+ @JvmStatic fun  logPut(error: Exception?, esName: String, request: Request, response: String) {
         log(error, esName, request, response, esLog::getUpdateLog)
     }
 
 
-    fun log(error: Exception?, esName: String, request: Request, response: String, op: (String) -> Boolean) {
+ @JvmStatic fun  log(error: Exception?, esName: String, request: Request, response: String, op: (String) -> Boolean) {
         val getMsg: () -> String = getMsg@{
             """[${request.method}] ${request.endpoint} 
 [body] ${request.entity.content.readContentString()} 

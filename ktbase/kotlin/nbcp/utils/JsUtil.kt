@@ -119,16 +119,17 @@ object JsUtil {
     }
 
 
-
+    @JvmStatic
     fun encodeURIComponent(value: String): String {
         return URLEncoder.encode(value, "utf-8");
     }
 
-
+    @JvmStatic
     fun decodeURIComponent(value: String): String {
         return URLDecoder.decode(value, "utf-8");
     }
 
+    @JvmStatic
     fun execScript(script: String): Any? {
         return ScriptLanguageEnum.js.execScript(script);
     }
@@ -136,10 +137,12 @@ object JsUtil {
     /**
      * url 需要提前 decodeURIComponent
      */
+    @JvmStatic
     fun parseUrlQueryJson(url: String): UrlQueryJsonData {
         return UrlQueryJsonData.of(url);
     }
 
+    @JvmStatic
     fun toUrlQuery(map: Map<String, *>): String {
         return map.toUrlQuery()
     }
@@ -164,6 +167,8 @@ data class UrlQueryJsonData @JvmOverloads constructor(
     }
 
     companion object {
+
+        @JvmStatic
         fun of(url: String): UrlQueryJsonData {
             var ret = UrlQueryJsonData();
             if (url.isEmpty()) return ret;

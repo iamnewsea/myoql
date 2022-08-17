@@ -27,7 +27,7 @@ enum class RecursionReturnEnum private constructor(val value: Int) {
  * 递归执行工具类。
  */
 object RecursionUtil {
-
+    @JvmStatic
     fun <T> filter(
         container: List<T>,
         producer: (T) -> MutableList<T>,
@@ -91,6 +91,7 @@ object RecursionUtil {
      * @param producer: 生产者，获取下级集合。
      * @param consumer: 消费者，参数：Wbs对象，当前对象的索引。
      */
+    @JvmStatic
     fun <T> execute(
         container: List<T>,
         producer: (T) -> MutableList<T>,
@@ -139,6 +140,7 @@ object RecursionUtil {
      * @param producer: 生产者，获取下级集合。
      * @param consumer: 生产者
      */
+    @JvmStatic
     fun <T> findOne(
         container: Collection<T>,
         producer: (T) -> Collection<T>,
@@ -159,6 +161,7 @@ object RecursionUtil {
      * 查找从节点到当前节点的路径
      */
     @JvmOverloads
+    @JvmStatic
     fun <T> getWbs(
         container: Collection<T>,
         producer: (T) -> Collection<T>,
@@ -203,6 +206,7 @@ object RecursionUtil {
      * @param root: 树节点的元素列表。上一级是空的根节点。
      * @param outcomer: 外来者，把它附加到树结构中去。 如果不匹配，则按新节点增加。
      */
+    @JvmStatic
     fun <T> unionTree(root: MutableList<T>, outcomer: T, producer: (T) -> MutableList<T>, compare: (T, T) -> Boolean) {
 
         for (rootItem in root) {
@@ -225,6 +229,7 @@ object RecursionUtil {
      * @param consumerObject 如果遍历到非 Map，调用该回调
      */
     @JvmOverloads
+    @JvmStatic
     fun recursionJson(
         json: Map<*, *>,
         consumerMap: (Map<*, *>) -> Boolean,
@@ -290,6 +295,7 @@ object RecursionUtil {
      * @param consumerObject: 发现一个 Object, 第一个参数是发现的Object,第二个参数是父key
      */
     @JvmOverloads
+    @JvmStatic
     fun recursionAny(
         value: Any,
         consumerMap: (Map<*, *>) -> Boolean,
@@ -368,6 +374,7 @@ object RecursionUtil {
     }
 
     @JvmOverloads
+    @JvmStatic
     fun recursionArray(
         array: Array<*>,
         consumerMap: (Map<*, *>) -> Boolean,
@@ -380,6 +387,7 @@ object RecursionUtil {
     }
 
     @JvmOverloads
+    @JvmStatic
     fun recursionList(
         array: Collection<*>,
         consumerMap: (Map<*, *>) -> Boolean,

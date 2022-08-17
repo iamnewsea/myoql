@@ -20,6 +20,7 @@ object CodeGeneratorHelper {
      * 获取表的中文注释及Cn注解
      */
     @JvmOverloads
+    @JvmStatic
     fun getEntityComment(entType: Class<*>, remark: String = ""): String {
         var cn = entType.getAnnotation(Cn::class.java)?.value ?: "";
         if (cn.isNullOrEmpty()) return "";
@@ -29,6 +30,7 @@ object CodeGeneratorHelper {
  */"""
     }
 
+    @JvmStatic
     fun getFieldComment(field: Field): String {
         var cn = field.getAnnotation(Cn::class.java)?.value ?: "";
         if (cn.isNullOrEmpty()) return "";
@@ -38,6 +40,7 @@ object CodeGeneratorHelper {
     }
 
 
+    @JvmStatic
     fun getEntityCommentValue(entType: Class<*>): String {
         var cn = entType.getAnnotation(Cn::class.java)?.value ?: "";
         if (cn.isNullOrEmpty()) return "";
@@ -45,18 +48,20 @@ object CodeGeneratorHelper {
         return cn;
     }
 
+    @JvmStatic
     fun getFieldCommentValue(field: Field): String {
         var cn = field.getAnnotation(Cn::class.java)?.value ?: "";
         if (cn.isNullOrEmpty()) return "";
         return cn;
     }
 
+    @JvmStatic
     fun IsListType(field: Field, clazz: String): Boolean {
 //        var clazz = T::class.java;
         return (
                 field.type.IsCollectionType &&
                         (field.genericType as ParameterizedType).GetActualClass(
-                                0
+                            0
                         ).IsType(clazz)
 
                 ) ||
@@ -67,6 +72,7 @@ object CodeGeneratorHelper {
     /**
      * 是否是 List枚举
      */
+    @JvmStatic
     fun IsListEnum(field: Field): Boolean {
         return (field.type.IsCollectionType && (field.genericType as ParameterizedType).GetActualClass(0).isEnum) ||
                 (field.type.isArray && field.type.componentType.javaClass.isEnum)
@@ -74,12 +80,13 @@ object CodeGeneratorHelper {
 
 
     class CodeTemplateData(
-            var group: String,
-            var entityClass: Class<*>,
-            var tableName: String,
-            var idKey: String
+        var group: String,
+        var entityClass: Class<*>,
+        var tableName: String,
+        var idKey: String
     )
 
+    @JvmStatic
     fun proc(fileName: String, jsonValue: CodeTemplateData): String {
         var entityClass = jsonValue.entityClass
         var group = jsonValue.group
@@ -88,9 +95,9 @@ object CodeGeneratorHelper {
 
 
         var entityFields = entityClass.AllFields
-                .MoveToFirst { it.name == "code" }
-                .MoveToFirst { it.name == "name" }
-                .MoveToFirst { it.name == "id" }
+            .MoveToFirst { it.name == "code" }
+            .MoveToFirst { it.name == "name" }
+            .MoveToFirst { it.name == "id" }
         //先处理${for:fields}
 
 
@@ -109,26 +116,30 @@ object CodeGeneratorHelper {
 
         val url = "/${MyUtil.getKebabCase(group)}/${MyUtil.getKebabCase(entityClass.simpleName)}"
         var mapDefine = JsonMap(
-                "url" to url,
-                "group" to group,
-                "entity_type" to entityClass,
-                "entity" to entityClass.simpleName,
-                "fields" to entityClass.AllFields,
-                "entityField" to MyUtil.getSmallCamelCase(entityClass.simpleName),
-                "title" to title,
-                "status_enum_class" to status_enum_class,
-                "idKey" to idKey,
+            "url" to url,
+            "group" to group,
+            "entity_type" to entityClass,
+            "entity" to entityClass.simpleName,
+            "fields" to entityClass.AllFields,
+            "entityField" to MyUtil.getSmallCamelCase(entityClass.simpleName),
+            "title" to title,
+            "status_enum_class" to status_enum_class,
+            "idKey" to idKey,
 
-                "kotlin_type" to Freemarker_GetKotlinType(),
-                "has" to Freemarker_Has(),
-                "has_dustbin" to Freemarker_HasDustbin()
+            "kotlin_type" to Freemarker_GetKotlinType(),
+            "has" to Freemarker_Has(),
+            "has_dustbin" to Freemarker_HasDustbin()
         )
 
         return FreemarkerUtil.process(fileName, mapDefine)
     }
 
     @JvmOverloads
-    fun getEntityUniqueIndexesDefine(entType: Class<*>, procedClasses: MutableSet<String> = mutableSetOf()): Set<String> {
+    @JvmStatic
+    fun getEntityUniqueIndexesDefine(
+        entType: Class<*>,
+        procedClasses: MutableSet<String> = mutableSetOf()
+    ): Set<String> {
         procedClasses.add(entType.name)
 
         val uks = mutableSetOf<String>()

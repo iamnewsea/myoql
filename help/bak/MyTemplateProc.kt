@@ -33,10 +33,12 @@ object MyTemplateProc {
     return@formatTemplateJson null
     })
      */
-    fun proc(){
+    @JvmStatic
+    fun proc() {
 
     }
 
+    @JvmStatic
     fun procFor(content: String, entityFields: List<Field>, idKey: String): String {
         var text = content;
         var times = 0;
@@ -82,6 +84,7 @@ object MyTemplateProc {
         return text;
     }
 
+    @JvmStatic
     fun procIf(content: String, startTag: String, entityFields: List<Field>, field: Field?): String {
         var times = 0;
         var text = content;
@@ -121,6 +124,7 @@ object MyTemplateProc {
         return text;
     }
 
+    @JvmStatic
     fun getIfExpression(context: String, startTag: String, entityFields: List<Field>, field: Field?): String {
         var text = context;
         var start = Regex("\\$\\{" + startTag + ":([^}]+)}").find(text, 0);
@@ -204,7 +208,7 @@ object MyTemplateProc {
             }
 
             if (name basicSame "IdUrlList") {
-                return CodeGeneratorHelper.IsListType(field!!,"IdUrl");
+                return CodeGeneratorHelper.IsListType(field!!, "IdUrl");
             }
         }
 

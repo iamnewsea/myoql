@@ -28,6 +28,7 @@ object WebUtil {
     multipart
     video
      */
+    @JvmStatic
     fun contentTypeIsOctetContent(contentType: String): Boolean {
         if (contentType.isEmpty()) return false;
         if (contentType.startsWith("text/")) return false
@@ -49,7 +50,8 @@ object WebUtil {
 
         return true;
     }
-
+    
+    @JvmStatic
     fun fillUrlWithUserPassword(url: String, userName: String, password: String): String {
         var index = url.indexOf("//")
         if (index < 0) {

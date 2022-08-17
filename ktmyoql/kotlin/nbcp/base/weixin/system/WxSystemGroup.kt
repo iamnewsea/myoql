@@ -22,6 +22,7 @@ object WxSystemGroup {
      * 忽略 @Ignore 字段， 一般是 sign 字段。
      * 如果 指定了 @Require ，则要求不能为空。
      */
+    @JvmStatic
     fun sign(mchSecret: String, wxModel: Any): String {
         var type = wxModel::class.java
         var list = type.AllFields
@@ -56,8 +57,8 @@ object WxSystemGroup {
         list.add("key=${mchSecret}");
         return Md5Util.getMd5(list.joinToString("&")).uppercase();
     }
-
-
+    
+    @JvmStatic
     fun toXml(mchSecret: String, wxModel: Any): String {
         var sign = sign(mchSecret, wxModel);
         if (sign.isEmpty()) return "";
@@ -95,6 +96,7 @@ object WxSystemGroup {
      * https://www.cnblogs.com/handsomejunhong/p/8670367.html
      * 解密用户的加密数据
      */
+    @JvmStatic
     fun decryptWxUserData(encryptedData: String, sessionKey: String, iv: String): String { // 被加密的数据
         val dataByte = MyUtil.getFromBase64(encryptedData)
         // 加密秘钥
@@ -130,6 +132,7 @@ object WxSystemGroup {
      * https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/qr-code/wxacode.getUnlimited.html
      */
     @JvmOverloads
+    @JvmStatic
     fun getMiniCode(appSecret: String, scene: String, page: String, width: Int = 0): ApiResult<HttpUtil> {
         require(appSecret.HasValue) { "缺少appSecret!" }
 
@@ -243,6 +246,7 @@ object WxSystemGroup {
     /**
      * 推送消息
      */
+    @JvmStatic
     fun pushMessage(data: wx_msg_data, appSecret: String): ApiResult<String> {
         require(appSecret.HasValue) { "缺少appSecret!" }
 
@@ -260,7 +264,7 @@ object WxSystemGroup {
 
         val ret = http.doPost(data.ToJson())
             .apply {
-                if( http.isError){
+                if (http.isError) {
                     return ApiResult.error("接口调用出错!")
                 }
             }

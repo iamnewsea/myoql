@@ -17,6 +17,7 @@ object CodeUtil {
     /**
      *  雪花算法生成Long型Id.
      */
+    @JvmStatic
     fun getNumberValue(): Long {
         return snowFlake.nextId();
     }
@@ -24,12 +25,14 @@ object CodeUtil {
     /**
      * 雪花算法 生成36进制字符串形式
      */
+    @JvmStatic
     fun getCode(): String {
         //使用 java.lang.Long.valueOf(36进制数,36) 转化为Long
         return snowFlake.nextId().toString(36);
     }
 
-    fun getDateTimeFromCode(code:String):LocalDateTime{
+    @JvmStatic
+    fun getDateTimeFromCode(code: String): LocalDateTime {
         return SnowFlake.getLocalDateTimeValue(code);
     }
 }

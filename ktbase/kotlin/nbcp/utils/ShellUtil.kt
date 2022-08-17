@@ -19,6 +19,7 @@ object ShellUtil {
      * 简单的方式是，传递3个参数： "sh","-c","复杂的命令字符串"
      */
     @JvmOverloads
+    @JvmStatic
     fun execRuntimeCommand(vararg cmds: String, waitSeconds: Int = 30): List<String> {
         logger.info(cmds.joinToString(" "));
         var p = Runtime.getRuntime().exec(cmds);

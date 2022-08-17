@@ -17,11 +17,12 @@ import javax.sql.DataSource
 object dbSql {
 
     //所有的组。
+    @JvmStatic
     val groups = mutableSetOf<IDataGroup>()
 
 //    var getSqlEntity: ((tableName: String) -> SqlBaseMetaTable<*>)? = null
 
-
+    @JvmStatic
     val sqlEvents by lazy {
         return@lazy SpringUtil.getBean<SqlEntityCollector>();
     }
@@ -50,6 +51,7 @@ object dbSql {
         return@lazy null;
     }
 
+    @JvmStatic
     fun getSqlQuoteName(value: String): String {
         if (sqlDatabaseType == DatabaseEnum.Mysql) {
             return "`${value}`"
@@ -60,6 +62,7 @@ object dbSql {
         }
     }
 
+    @JvmStatic
     fun mergeSqlData(vararg columns: BaseAliasSqlSect): SqlParameterData {
         var ret = SqlParameterData();
 
@@ -83,7 +86,7 @@ object dbSql {
     }
 
     private val dataSourceMap = mutableMapOf<String, DataSource>();
-
+    @JvmStatic
     fun getDataSource(uri: String, username: String, password: String): DataSource? {
         var key = "${uri}-${username}-${password}"
         var dataSource = dataSourceMap.get(key);
@@ -98,7 +101,7 @@ object dbSql {
         properties.password = password;
 
         dataSource =
-                properties.initializeDataSourceBuilder().type(HikariDataSource::class.java).build() as HikariDataSource
+            properties.initializeDataSourceBuilder().type(HikariDataSource::class.java).build() as HikariDataSource
         if (StringUtils.hasText(properties.name)) {
             dataSource.poolName = properties.name
         }

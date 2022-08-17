@@ -26,6 +26,7 @@ object NacosServiceUtil {
     /**
      * 查询配置列表
      */
+    @JvmStatic
     fun listConfigs(
         serverHost: String,
         ns: String,
@@ -69,6 +70,7 @@ object NacosServiceUtil {
     /**
      * 删除配置
      */
+    @JvmStatic
     fun deleteConfig(serverHost: String, ns: String, group: String, dataId: String): JsonResult {
         val groupLocal = group.AsString("DEFAULT_GROUP")
         val http =
@@ -81,6 +83,7 @@ object NacosServiceUtil {
         throw HttpInvokeException(http.status, "ns:$ns,dataId:$dataId,group:$groupLocal , 获取nacos配置错误 : $res")
     }
 
+    @JvmStatic
     fun existsConfig(serverHost: String, ns: String, group: String, dataId: String): ApiResult<Boolean> {
         try {
             getConfig(serverHost, ns, group, dataId)
@@ -101,6 +104,7 @@ object NacosServiceUtil {
     /**
      * 获取配置信息
      */
+    @JvmStatic
     fun getConfig(serverHost: String, ns: String, group: String, dataId: String): ApiResult<String> {
         val groupLocal = group.AsString("DEFAULT_GROUP")
         val http =
@@ -115,6 +119,7 @@ object NacosServiceUtil {
     /**
      * 写入配置信息
      */
+    @JvmStatic
     fun setConfig(
         serverHost: String,
         ns: String,
@@ -163,6 +168,7 @@ object NacosServiceUtil {
     /**
      * 写入网关信息
      */
+    @JvmStatic
     fun setGateway(
         serverHost: String,
         ns: String,
@@ -282,10 +288,12 @@ ${end_sign}
         var metadata: StringMap = StringMap()
     )
 
+    @JvmStatic
     fun getConfigServerHost(host: String = ""): String {
         return getDiscoveryServerHost(host);
     }
 
+    @JvmStatic
     fun getDiscoveryServerHost(host: String = ""): String {
         var ret = host;
         if (ret.isEmpty()) {
@@ -323,6 +331,7 @@ ${end_sign}
      * 获取Nacos实例列表。
      */
     @JvmOverloads
+    @JvmStatic
     fun getNacosInstances(
         serverHost: String,
         namespaceId: String,
@@ -362,6 +371,7 @@ ${end_sign}
      * 获取实例信息
      */
     @JvmOverloads
+    @JvmStatic
     fun getNacosInstanceInfo(
         serverHost: String,
         namespaceId: String,

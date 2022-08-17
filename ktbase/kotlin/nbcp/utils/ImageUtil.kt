@@ -22,7 +22,13 @@ object ImageUtil {
      * @param maxHeight: 新图高度
      * @return 返回文件类型。
      */
-    fun zoomImageScale(sourceImage:InputStream, target: OutputStream, maxWidth: Int, maxHeight: Int): ApiResult<String> {
+    @JvmStatic
+    fun zoomImageScale(
+        sourceImage: InputStream,
+        target: OutputStream,
+        maxWidth: Int,
+        maxHeight: Int
+    ): ApiResult<String> {
         if (maxWidth < 1) {
             return ApiResult.error("目标宽度参数不合法");
         }
@@ -62,7 +68,8 @@ object ImageUtil {
         // 处理 png 背景变黑的问题
         if (type.IsIn("png", "gif")) {
             var g2d = newImage.createGraphics()
-            newImage = g2d.deviceConfiguration.createCompatibleImage(maxWidthValue, maxHeightValue, Transparency.TRANSLUCENT)
+            newImage =
+                g2d.deviceConfiguration.createCompatibleImage(maxWidthValue, maxHeightValue, Transparency.TRANSLUCENT)
             g2d.dispose()
         }
 

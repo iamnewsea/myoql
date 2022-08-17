@@ -21,6 +21,7 @@ object VideoUtil {
     /**
      * @return 返回错误消息
      */
+    @JvmStatic
     fun getVideoInfo(videoFileStream: InputStream): ApiResult<VideoDataInfoModel> {
         FFmpegFrameGrabber(videoFileStream).use { fFmpegFrameGrabber ->
             fFmpegFrameGrabber.start();

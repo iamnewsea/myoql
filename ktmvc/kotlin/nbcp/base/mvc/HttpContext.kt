@@ -15,6 +15,7 @@ object HttpContext {
     private var _request = ThreadLocal.withInitial<HttpServletRequest?> { null }
     private var _response = ThreadLocal.withInitial<HttpServletResponse?> { null }
 
+    @JvmStatic
     fun init(request: HttpServletRequest, response: HttpServletResponse) {
         _request.set(request);
         _response.set(response);

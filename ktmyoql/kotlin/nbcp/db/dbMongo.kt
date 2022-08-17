@@ -23,13 +23,16 @@ import java.time.LocalDateTime
 object dbMongo {
 
     //所有的组。
+    @JvmStatic
     val groups = mutableSetOf<IDataGroup>()
 
     //     val sqlEvents = SpringUtil.getBean<SqlEventConfig>();
+    @JvmStatic
     val mongoEvents by lazy {
         return@lazy SpringUtil.getBean<MongoEntityCollector>();
     }
 
+    @JvmStatic
     fun hasOrClip(where: MongoWhereClip): Boolean {
         return where.any { map -> map.any { it.key == "\$or" } }
     }
@@ -59,6 +62,7 @@ object dbMongo {
 //    }
 
 
+    @JvmStatic
     fun getCriteriaFromDocument(document: Map<String, Any?>): Criteria {
         val c = Criteria()
 
@@ -77,10 +81,12 @@ object dbMongo {
         return c;
     }
 
+    @JvmStatic
     fun getMergedMongoCriteria(where: MongoWhereClip): Criteria {
         return getMergedMongoCriteria(*where.map { getCriteriaFromDocument(it) }.toTypedArray())
     }
 
+    @JvmStatic
     fun getMergedMongoCriteria(vararg where: Criteria): Criteria {
         if (where.size == 0) return Criteria();
         if (where.size == 1) return where[0];
@@ -96,6 +102,7 @@ object dbMongo {
      * 获取 MongoTemplate ,将会有一个连接的线程在等待，所以要避免 usingScope 而不释放。
      * @param uri: 格式 mongodb://dev:123@mongo:27017/cms ，用户名密码出现特殊字符，需要替换：@ -> %40 , : -> %3A
      */
+    @JvmStatic
     fun getMongoTemplateByUri(uri: String): MongoTemplate? {
         if (uri.isEmpty()) return null;
 
@@ -136,10 +143,12 @@ object dbMongo {
      *     }
      * }
      */
+    @JvmStatic
     fun cond(ifExpression: Criteria, trueExpression: String, falseExpression: String): MongoExpression {
         return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
 
+    @JvmStatic
     fun cond(
         ifExpression: Criteria,
         trueExpression: MongoExpression,
@@ -148,14 +157,17 @@ object dbMongo {
         return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
 
+    @JvmStatic
     fun cond(ifExpression: Criteria, trueExpression: String, falseExpression: MongoExpression): MongoExpression {
         return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
 
+    @JvmStatic
     fun cond(ifExpression: Criteria, trueExpression: MongoExpression, falseExpression: String): MongoExpression {
         return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
 
+    @JvmStatic
     fun cond(
         ifExpression: MongoExpression,
         trueExpression: MongoExpression,
@@ -181,6 +193,7 @@ object dbMongo {
      * }
      * @param condExpression: 不是 db.mongo.cond 方法结构。 如果使用 Criteria.toExpression 注意要少一个 $
      */
+    @JvmStatic
     fun filter(input: String, alias: String, condExpression: Map<String, Any?>): MongoExpression {
         var map = MongoExpression();
         map.put("input", input);
@@ -190,19 +203,22 @@ object dbMongo {
         return op(PipeLineOperatorEnum.filter, map);
     }
 
+    @JvmStatic
     fun op(operator: PipeLineOperatorEnum, rawValue: String): MongoExpression {
         return MongoExpression("$" + operator.toString() to rawValue)
     }
 
+    @JvmStatic
     fun op(operator: PipeLineOperatorEnum, rawValue: MongoExpression): MongoExpression {
         return MongoExpression("$" + operator.toString() to rawValue)
     }
 
+    @JvmStatic
     fun op(operator: PipeLineOperatorEnum, rawValue: Array<*>): MongoExpression {
         return MongoExpression("$" + operator.toString() to rawValue)
     }
 
-
+    @JvmStatic
     fun op(operator: PipeLineOperatorEnum, rawValue: JsonMap): MongoExpression {
         return MongoExpression("$" + operator.toString() to rawValue)
     }
@@ -210,14 +226,17 @@ object dbMongo {
     /**
      * 聚合
      */
+    @JvmStatic
     fun accumulate(operator: PipeLineAccumulatorOperatorEnum, rawValue: String): MongoExpression {
         return MongoExpression("$" + operator.toString() to rawValue)
     }
 
+    @JvmStatic
     fun accumulate(operator: PipeLineAccumulatorOperatorEnum, rawValue: Int): MongoExpression {
         return MongoExpression("$" + operator.toString() to rawValue)
     }
 
+    @JvmStatic
     fun accumulate(operator: PipeLineAccumulatorOperatorEnum, rawValue: Double): MongoExpression {
         return MongoExpression("$" + operator.toString() to rawValue)
     }
@@ -225,6 +244,7 @@ object dbMongo {
     /**
      * cond 中应用 ifNull
      */
+    @JvmStatic
     fun ifNull(vararg expression: String): MongoExpression {
 
         /*
@@ -253,6 +273,7 @@ db.getCollection("adminRole").aggregate(
     /**
      * 处理 ObjectId列，同时把列改为 _id 或 ._id
      */
+    @JvmStatic
     fun proc_mongo_key_value(key: MongoColumnName, value: Any?): Pair<String, Any?> {
         /**
          * 只有列 = id , _id , 以 .id , ._id 结尾时，才可能转化为 ObjectId
@@ -351,14 +372,14 @@ db.getCollection("adminRole").aggregate(
         return key.toString() to value;
     }
 
-
+    @JvmStatic
     fun getEntityColumnName(key: String): String {
         if (key == "_id") return "id"
         if (key.endsWith("._id")) return key.Slice(0, -4) + ".id"
         return key;
     }
 
-
+    @JvmStatic
     fun getMongoColumnName(key: String): String {
         if (key == "id") return "_id"
         if (key.endsWith(".id")) return key.Slice(0, -3) + "._id"
@@ -368,6 +389,7 @@ db.getCollection("adminRole").aggregate(
     /**
      * 查询到对象后，转实体。
      */
+    @JvmStatic
     fun <T> proc_mongo_doc_to_entity(
         it: Document,
         clazz: Class<T>,
@@ -404,6 +426,7 @@ db.getCollection("adminRole").aggregate(
     /**
      * 把 Document 推送到数据库，需要转换 id
      */
+    @JvmStatic
     fun transformDocumentIdTo_id(value: Any): Any {
         RecursionUtil.recursionAny(value, { json ->
 
@@ -467,6 +490,7 @@ db.getCollection("adminRole").aggregate(
     /**
      * 动态实体
      */
+    @JvmStatic
     fun dynamicEntity(collectionName: String): MongoDynamicMetaEntity {
         return MongoDynamicMetaEntity(collectionName);
     }

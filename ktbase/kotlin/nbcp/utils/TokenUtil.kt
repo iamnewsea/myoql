@@ -15,10 +15,12 @@ object TokenUtil {
     /**
      * 根据用户体系生成新的 token。
      */
+    @JvmStatic
     fun generateToken(): String {
         return tokenPrefix + CodeUtil.getCode();
     }
 
+    @JvmStatic
     fun getTokenCreateTime(token: String): LocalDateTime? {
         if (token.startsWith(tokenPrefix) == false) return null;
 

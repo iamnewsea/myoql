@@ -78,14 +78,19 @@ data class WxUserData @JvmOverloads constructor(
 
 
 object wx {
-
+    @JvmStatic
     val appId get() = config.wxAppId
+    @JvmStatic
     val mchId get() = config.wxMchId
 
-
+    @JvmStatic
     val h5 = WxH5Group
+    @JvmStatic
     val officeAccount = WxOfficeAccountGroup
+    @JvmStatic
     val miniProgram = WxMiniProgramGroup
+    @JvmStatic
     val pay = WxPayGroup
+    @JvmStatic
     val sys = WxSystemGroup
 }

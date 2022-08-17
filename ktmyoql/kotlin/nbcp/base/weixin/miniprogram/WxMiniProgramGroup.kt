@@ -23,6 +23,7 @@ object WxMiniProgramGroup {
     /**
      * https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/login/auth.code2Session.htm
      */
+    @JvmStatic
     fun getOpenId(appSecret: String, code: String): ApiResult<String> {
         require(appSecret.HasValue) { "缺少appSecret!" }
 

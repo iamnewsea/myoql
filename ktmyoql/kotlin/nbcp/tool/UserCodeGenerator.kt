@@ -17,14 +17,17 @@ object UserCodeGenerator {
     /**
      * 生成基础的CRUD接口
      */
+    @JvmStatic
     fun genMongoMvcCrud(group: String, pkg: String, entity: BaseMetaData): String {
         return gen(group, entity, "/myoql-template/kotlin_mvc_mongo_template_crud.ftl").replace("@pkg@", pkg);
     }
 
+    @JvmStatic
     fun genMySqlMvcCrud(group: String, pkg: String, entity: BaseMetaData): String {
         return gen(group, entity, "/myoql-template/kotlin_mvc_mysql_template_crud.ftl").replace("@pkg@", pkg);
     }
 
+    @JvmStatic
     fun genEsMvcCrud(group: String, pkg: String, entity: BaseMetaData): String {
         return gen(group, entity, "/myoql-template/kotlin_mvc_es_template_crud.ftl").replace("@pkg@", pkg);
     }
@@ -32,6 +35,7 @@ object UserCodeGenerator {
     /**
      * 生成Vue列表页面
      */
+    @JvmStatic
     fun genVueList(group: String, entity: BaseMetaData): String {
         return gen(group, entity, "/myoql-template/vue_list_template.ftl");
     }
@@ -39,6 +43,7 @@ object UserCodeGenerator {
     /**
      * 生成Vue卡片页面
      */
+    @JvmStatic
     fun genVueCard(group: String, entity: BaseMetaData): String {
         return gen(group, entity, "/myoql-template/vue_card_template.ftl");
     }
@@ -46,10 +51,12 @@ object UserCodeGenerator {
     /**
      * 生成Vue引用
      */
+    @JvmStatic
     fun genVueRef(group: String, entity: BaseMetaData): String {
         return gen(group, entity, "/myoql-template/vue_ref_template.ftl");
     }
 
+    @JvmStatic
     fun genVueCard(entityClass: Class<*>): String {
         return CodeGeneratorHelper.proc(
             "/myoql-template/vue_card_prop_template.ftl",

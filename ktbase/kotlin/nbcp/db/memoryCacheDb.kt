@@ -25,7 +25,10 @@ class MemoryCacheItem(var callback: Supplier<out Any>, var cacheSeconds: Int = 1
 object memoryCacheDb {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
+    @JvmStatic
     var warnEachCapacity: Int = 100
+
+    @JvmStatic
     var errorMaxCapacity: Int = 1000
 
     private val map = StringKeyMap<MemoryCacheItem>()
@@ -34,6 +37,7 @@ object memoryCacheDb {
     /**
      * 清除以 key 开头的 所有项
      */
+    @JvmStatic
     fun brokeStartsWithMemoryCache(key: String): Int {
         return map.keys
             .filter { it.startsWith(key) }
@@ -44,6 +48,7 @@ object memoryCacheDb {
             .count()
     }
 
+    @JvmStatic
     fun brokeMemoryCache(key: ((String) -> Boolean)): Int {
         return map.keys
             .filter(key)
@@ -54,6 +59,7 @@ object memoryCacheDb {
             .count()
     }
 
+    @JvmStatic
     fun brokeMemoryCache(key: String): Boolean {
         val value = map.get(key)
         if (value == null) return false;
@@ -66,6 +72,7 @@ object memoryCacheDb {
     /**
      * 添加数据缓存提供者, 不执行
      */
+    @JvmStatic
     fun addMemoryCacheSupplier(key: String, cacheSeconds: Int = 180, callback: Supplier<out Any>) {
         if (map.size > 0) {
             if (map.size >= errorMaxCapacity) {
@@ -83,6 +90,7 @@ object memoryCacheDb {
     /**
      * 获取缓存数据
      */
+    @JvmStatic
     inline fun <reified T : Any> getFromMemoryCache(key: String): T? {
         return getDataFromMemoryCache(key) as T?
     }
@@ -90,6 +98,7 @@ object memoryCacheDb {
     /**
      * 获取缓存数据
      */
+    @JvmStatic
     fun getDataFromMemoryCache(key: String): Any? {
         var value = map.get(key)
         if (value == null) {

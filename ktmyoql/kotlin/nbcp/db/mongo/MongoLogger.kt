@@ -17,18 +17,22 @@ object MongoLogger {
     }
 
 
+    @JvmStatic
     fun logFind(error: Exception?, collectionName: String, queryJson: String, result: Document?) {
         log(error, collectionName, queryJson, result?.ToJson() ?: "", mongoLog::getQueryLog)
     }
 
+    @JvmStatic
     fun logFind(error: Exception?, collectionName: String, queryJson: Query, result: JsonMap) {
         log(error, collectionName, queryJson.queryObject.ToJson(), result.ToJson(), mongoLog::getQueryLog)
     }
 
+    @JvmStatic
     fun logFind(error: Exception?, collectionName: String, getMsg: () -> String) {
         log(error, collectionName, mongoLog::getQueryLog, getMsg);
     }
 
+    @JvmStatic
     fun logInsert(error: java.lang.Exception?, collectionName: String, entities: MutableList<Any>) {
         log(error, collectionName, entities.ToJson(), "", mongoLog::getInsertLog)
     }
@@ -80,6 +84,7 @@ ${if (result.HasValue) ("[result] " + result + "\n") else ""}[耗时] ${db.execu
         }
     }
 
+    @JvmStatic
     fun logUpdate(error: Exception?, collectionName: String, query: Query, update: Update, result: UpdateResult?) {
         log(error, collectionName, mongoLog::getUpdateLog, {
             return@log """[update] ${collectionName}
@@ -90,6 +95,7 @@ ${if (result.HasValue) ("[result] " + result + "\n") else ""}[耗时] ${db.execu
         })
     }
 
+    @JvmStatic
     fun logDelete(error: Exception?, collectionName: String, query: Query, result: DeleteResult?) {
         log(error, collectionName, mongoLog::getDeleteLog, {
             return@log "delete:[" + collectionName + "] " + query.queryObject.ToJson() + ",result:${result?.ToJson()}"

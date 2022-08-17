@@ -32,7 +32,7 @@ object ClassUtil {
     /**
      * 是否存在类
      */
-    fun existsClass(className: String): Boolean {
+    @JvmStatic fun existsClass(className: String): Boolean {
         try {
             getDefaultClassLoader().loadClass(className);
             return true;
@@ -44,7 +44,7 @@ object ClassUtil {
     /**
      * 获取 AppClassLoader 。
      */
-//    private fun getLaunchedURLClassLoader(loader: ClassLoader? = null): ClassLoader {
+//    private @JvmStatic fun getLaunchedURLClassLoader(loader: ClassLoader? = null): ClassLoader {
 //        val loaderValue = loader ?: ClassUtils.getDefaultClassLoader()
 //        if (loaderValue == null) {
 //            throw RuntimeException("找不到默认的类加载器")
@@ -60,7 +60,7 @@ object ClassUtil {
 //        return getLaunchedURLClassLoader(loaderValue.parent);
 //    }
 //
-//    private fun getAppClassLoader(loader: ClassLoader? = null): ClassLoader {
+//    private @JvmStatic fun getAppClassLoader(loader: ClassLoader? = null): ClassLoader {
 //        val loaderValue = loader ?: ClassUtils.getDefaultClassLoader()
 //        if (loaderValue == null) {
 //            throw RuntimeException("找不到默认的类加载器")
@@ -76,11 +76,11 @@ object ClassUtil {
 //        return getAppClassLoader(loaderValue.parent);
 //    }
 
-    fun getDefaultClassLoader(): ClassLoader {
+    @JvmStatic fun getDefaultClassLoader(): ClassLoader {
         return ClassUtils.getDefaultClassLoader()
     }
 
-    fun getClasses(basePackage: String): Set<String> {
+    @JvmStatic fun getClasses(basePackage: String): Set<String> {
         return Reflections(
             ConfigurationBuilder()
                 .forPackages(basePackage)
@@ -88,7 +88,7 @@ object ClassUtil {
         ).allTypes
     }
 
-    fun getClassesWithBaseType(basePackage: String, baseType: Class<*>): Set<Class<*>> {
+    @JvmStatic fun getClassesWithBaseType(basePackage: String, baseType: Class<*>): Set<Class<*>> {
         return Reflections(
             ConfigurationBuilder()
                 .forPackages(basePackage)
@@ -96,7 +96,7 @@ object ClassUtil {
         ).getSubTypesOf(baseType)
     }
 
-    fun getClassesWithAnnotationType(basePackage: String, annotationType: Class<out Annotation>): Set<Class<*>> {
+    @JvmStatic fun getClassesWithAnnotationType(basePackage: String, annotationType: Class<out Annotation>): Set<Class<*>> {
         return Reflections(
             ConfigurationBuilder()
                 .forPackages(basePackage)
@@ -105,7 +105,7 @@ object ClassUtil {
     }
 
 
-    fun getMainApplicationLastModified(): LocalDateTime? {
+    @JvmStatic fun getMainApplicationLastModified(): LocalDateTime? {
         val list = ClasspathHelper.forResource("");
         if (list.any() == false) return null;
 
@@ -118,11 +118,11 @@ object ClassUtil {
     /**
      * 判断是否是 Jar包启动。
      */
-    fun isJarStarting(): Boolean {
+    @JvmStatic fun isJarStarting(): Boolean {
         return Thread.currentThread().contextClassLoader.getResource("/") != null;
     }
 
-    fun getStartingJarFile(url: URL): File? {
+    @JvmStatic fun getStartingJarFile(url: URL): File? {
         val path = JsUtil.decodeURIComponent(url.path)
         if (url.protocol == "jar") {
             //值是： file:/D:/code/sites/server/admin/target/admin-api-1.0.1.jar!/BOOT-INF/classes!/
@@ -157,7 +157,7 @@ object ClassUtil {
      * 获取启动Jar所的路径
      * 调试时，会返回 target/classes/nbcp/base/utils
      */
-    fun getStartingJarFile(): File? {
+    @JvmStatic fun getStartingJarFile(): File? {
 //        val stackTraceElements = RuntimeException().stackTrace
 //        for (stackTraceElement in stackTraceElements) {
 //            if ("main" == stackTraceElement.methodName) {
@@ -193,7 +193,7 @@ object ClassUtil {
     }
 
 
-//    fun getApplicationMainClass(): Class<*>? {
+//    @JvmStatic fun getApplicationMainClass(): Class<*>? {
 //        RuntimeException().getStackTrace().reversed().firstOrNull {
 //            if ("main" == it.methodName) {
 //                return@firstOrNull true
@@ -208,7 +208,7 @@ object ClassUtil {
     /**
      * 判断类是否是指定的Jar中
      */
-    fun classIsInJar(clazz: Class<*>, jarFileName: String): Boolean {
+    @JvmStatic fun classIsInJar(clazz: Class<*>, jarFileName: String): Boolean {
         var sects = clazz.protectionDomain.codeSource.location.path.split("/")
         return sects.contains(jarFileName) && sects.last().contains(jarFileName)
     }
@@ -218,7 +218,7 @@ object ClassUtil {
      * 查找类。
      */
     @JvmOverloads
-    fun findClasses(basePack: String, filter: ((String) -> Boolean)? = null): List<Class<*>> {
+    @JvmStatic fun findClasses(basePack: String, filter: ((String) -> Boolean)? = null): List<Class<*>> {
         val baseResourcePath = basePack.replace(".", "/").trim('/');
         val ret = mutableListOf<Class<*>>();
         val resource = ClassPathResource(baseResourcePath);
@@ -258,7 +258,7 @@ object ClassUtil {
     /**
      * 判断是否存在资源
      */
-    fun existsResource(path: String): Boolean {
+    @JvmStatic fun existsResource(path: String): Boolean {
         return ClassPathResource(path).exists()
     }
 
@@ -266,7 +266,7 @@ object ClassUtil {
      * @param basePath: 前后不带/
      */
     @JvmOverloads
-    fun findResources(basePath: String, filter: ((String) -> Boolean)? = null): List<String> {
+    @JvmStatic fun findResources(basePath: String, filter: ((String) -> Boolean)? = null): List<String> {
         val resource = ClassPathResource(basePath);
         if (resource.exists() == false) return listOf();
         return findResources(resource.url, basePath.trim('/'), filter)
@@ -290,7 +290,7 @@ object ClassUtil {
         return path2.Slice(0, -".class".length)
     }
 
-//    private fun getResourceFromJar(
+//    private @JvmStatic fun getResourceFromJar(
 //            fullPath: String,
 //            basePack: String,
 //            jarPath: String,
@@ -327,7 +327,7 @@ object ClassUtil {
 //    }
 
     @JvmOverloads
-    fun findResources(url: URL, basePath: String, filter: ((String) -> Boolean)? = null): List<String> {
+    @JvmStatic fun findResources(url: URL, basePath: String, filter: ((String) -> Boolean)? = null): List<String> {
         //转换为JarURLConnection
         val connection = url.openConnection()
         if (connection == null) {

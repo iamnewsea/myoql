@@ -12,6 +12,7 @@ object SqlLogger {
         return@lazy SpringUtil.getBean<SqlTableLogProperties>()
     }
 
+    @JvmStatic
     fun logQuery(error: Exception?, tableDbName: String, executeParameterData: SqlParameterData, result: Any) {
         var getMsg: () -> String = getMsg@{
             var msg_log = mutableListOf(
@@ -52,11 +53,12 @@ object SqlLogger {
 
         //如果指定了输出Sql
         if (sqlLog.getQueryLog(tableDbName)) {
-                logger.Important(getMsg())
+            logger.Important(getMsg())
         }
     }
 
 
+    @JvmStatic
     fun logExec(error: Exception?, tableDbName: String, executeParameterData: SqlParameterData, n: Int) {
         var getMsg: () -> String = getMsg@{
             var msg_log = mutableListOf(
@@ -90,11 +92,12 @@ object SqlLogger {
         }
     }
 
+    @JvmStatic
     fun logDelete(error: Exception?, tableDbName: String, executeParameterData: SqlParameterData, n: Int) {
         var getMsg: () -> String = getMsg@{
             var msg_log = mutableListOf(
                 "" +
-                "[delete] ${executeParameterData.expression}",
+                        "[delete] ${executeParameterData.expression}",
                 "[参数] ${executeParameterData.values.ToJson()}",
                 "[result] ${n}",
                 "[耗时] ${db.executeTime}"
@@ -119,10 +122,11 @@ object SqlLogger {
         //如果指定了输出Sql
         if (sqlLog.getDeleteLog(tableDbName)
         ) {
-                logger.Important(getMsg())
+            logger.Important(getMsg())
         }
     }
 
+    @JvmStatic
     fun logInsert(error: Exception?, tableDbName: String, getMsg: () -> String) {
         if (error != null) {
             logger.error(getMsg())
@@ -139,7 +143,7 @@ object SqlLogger {
         //如果指定了输出Sql
         if (sqlLog.getInsertLog(tableDbName)
         ) {
-                logger.Important(getMsg())
+            logger.Important(getMsg())
         }
     }
 
@@ -166,6 +170,7 @@ object SqlLogger {
 //        }
 //    }
 
+    @JvmStatic
     fun logUpdate(error: Exception?, tableName: String, executeParameterData: SqlParameterData, n: Int) {
 
         var getMsg: () -> String = getMsg@{
@@ -195,7 +200,7 @@ object SqlLogger {
         //如果指定了输出Sql
         if (sqlLog.getUpdateLog(tableName)
         ) {
-                logger.Important(getMsg())
+            logger.Important(getMsg())
         }
 
     }

@@ -13,6 +13,7 @@ object WxOfficeAccountGroup {
     /**
      * https://developers.weixin.qq.com/doc/offiaccount/WeChat_Invoice/Auto-print/API_Documentation.html#6.3%20%E8%8E%B7%E5%8F%96api_ticket
      */
+    @JvmStatic
     fun getJsapiTicket(appSecret: String): ApiResult<String> {
         require(appSecret.HasValue) { "缺少appSecret!" }
 
@@ -54,6 +55,7 @@ object WxOfficeAccountGroup {
     /**
      * https://developers.weixin.qq.com/doc/offiaccount/Basic_Information/Get_access_token.html
      */
+    @JvmStatic
     fun getAccessToken(appSecret: String): ApiResult<wx_access_token> {
         require(appSecret.HasValue) { "缺少appSecret!" }
 

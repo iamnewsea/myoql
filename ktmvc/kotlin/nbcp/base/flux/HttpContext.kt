@@ -11,6 +11,7 @@ import org.springframework.web.server.ServerWebExchange
 object HttpContext {
     private var _exchange = ThreadLocal.withInitial<ServerWebExchange?> { null }
 
+    @JvmStatic
     fun init(exchange: ServerWebExchange) {
         _exchange.set(exchange);
     }

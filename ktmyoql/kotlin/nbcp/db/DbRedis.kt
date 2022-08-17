@@ -24,6 +24,7 @@ object DbRedis {
      * 删除键，使键过期。
      * 如果参数为空，则删除group键
      */
+    @JvmStatic
     fun deleteKeys(vararg keys: String): Long {
         if (keys.any() == false) {
             return 0;
@@ -39,6 +40,7 @@ object DbRedis {
     }
 
     @JvmOverloads
+    @JvmStatic
     fun getStringRedisTemplate(group: String = ""): StringRedisTemplate {
         if (group.HasValue) {
             val config = SpringUtil.getBean<RedisDataSource>();
@@ -52,6 +54,7 @@ object DbRedis {
             ?: SpringUtil.getBean<StringRedisTemplate>()
     }
 
+    @JvmStatic
     fun scanKeys(pattern: String): List<String> {
         return scanKeys("", pattern);
     }
@@ -59,6 +62,7 @@ object DbRedis {
     /**
      * 扫描Redis key
      */
+    @JvmStatic
     fun scanKeys(group: String, pattern: String): List<String> {
         var list = mutableListOf<String>()
         getStringRedisTemplate(group).scanKeys(pattern, callback = {

@@ -12,6 +12,7 @@ object enumer {
     /**
      * 入口
      */
+    @JvmStatic
     fun work(basePackage: String): List<String> {
         var ret = mutableListOf<String>()
         val fileList = ClassUtil.getClassesWithBaseType(basePackage, Enum::class.java)
@@ -22,6 +23,7 @@ object enumer {
         return ret;
     }
 
+    @JvmStatic
     fun work(jsonEnumClass: Class<*>): String {
         if (jsonEnumClass.isEnum == false) {
             return "";

@@ -25,7 +25,10 @@ object MyUtil {
 
     //    val OneHourSeconds: Int = 3600000;
 //    val OneDayMilliseconds: Int = 86400000;
+    @JvmStatic
     val OneDaySeconds: Int = 86400;
+
+    @JvmStatic
     val SystemTimeZoneOffsetTotalSeconds =
         ZoneId.systemDefault().rules.getStandardOffset(Date().toInstant()).totalSeconds  //系统时区相差的秒数
 
@@ -35,16 +38,18 @@ object MyUtil {
     //    /**
 //     * 北京时间的今天凌晨。
 //     */
+    @JvmStatic
     val today: LocalDate
         get() {
             return LocalDate.now();
         }
 
+    @JvmStatic
     val availableCpuProcessors: Int by lazy {
         return@lazy Runtime.getRuntime().availableProcessors()
     }
 
-
+    @JvmStatic
     fun getHttpHostUrl(host: String): String {
         if (host.isEmpty()) return ""
 
@@ -59,6 +64,7 @@ object MyUtil {
         return "http://" + host;
     }
 
+    @JvmStatic
     fun getHostUrlWithoutHttp(host: String): String {
         if (host.isEmpty()) return ""
 
@@ -80,6 +86,7 @@ object MyUtil {
      * 通过 path 获取 value,每级返回的值必须是 Map<String,V> 否则返回 null
      * @param keys: 可以传多个key，也可以使用 . 分隔；如果查询数组，使用 products[],products[0], products.[] 或 products.[0] 或 "products","[]"
      */
+    @JvmStatic
     fun getValueByWbsPath(
         data: Any,
         vararg keys: String,
@@ -265,6 +272,7 @@ object MyUtil {
     /**
      * 多层级设置值
      */
+    @JvmStatic
     fun setValueByWbsPath(
         data: Any,
         vararg keys: String,
@@ -367,9 +375,11 @@ object MyUtil {
     /**
      * 获取正在执行的方法信息
      */
+    @JvmStatic
     fun getCurrentMethodInfo(): StackTraceElement {
         return Thread.currentThread().getStackTrace()[2]!!
     }
+    @JvmStatic
 
     fun getCenterEachLine(lines: List<String>): List<String> {
         var selector: (Char) -> Int = {
@@ -448,6 +458,7 @@ object MyUtil {
         "dll" to "application/x-msdownload"
     )
 
+    @JvmStatic
     fun getMimeType(extName: String): String {
         return mimeLists.getStringValue(extName.lowercase()).AsString()
     }
@@ -456,6 +467,7 @@ object MyUtil {
     /**
      * 最好传前8个字节，判断文件类型。
      */
+    @JvmStatic
     fun getFileTypeWithBom(byteArray8: ByteArray): String {
         //https://blog.csdn.net/hch15112345824/article/details/86640092
         //https://blog.csdn.net/gagapencil/article/details/40392363
@@ -503,6 +515,7 @@ object MyUtil {
         return map.filterKeys { value.startsWith(it) }.values.firstOrNull() ?: ""
     }
 
+    @JvmStatic
     fun isLocalIp(Ip: String): Boolean {
         return Ip.isEmpty() || Ip.startsWith("127.") || Ip.startsWith("0.") || Ip.startsWith("0:")
     }
@@ -510,6 +523,7 @@ object MyUtil {
     /**
      * 生成大于等于0，小于指定最大值的随机数,即 [0,max)
      */
+    @JvmStatic
     fun getRandomNumber(min: Int, max: Int): Int {
         var start = Math.min(min, max);
         var end = Math.max(min, max);
@@ -520,6 +534,7 @@ object MyUtil {
     /**
      * 生成指定长度的随机数
      */
+    @JvmStatic
     fun getRandomWithLength(length: Int, vararg withoutChars: Char): String {
         var ret = "";
         while (true) {
@@ -535,18 +550,22 @@ object MyUtil {
     /**
      * 获取 Base64
      */
+    @JvmStatic
     fun getBase64(target: String): String {
         return Base64.getEncoder().encodeToString(target.toByteArray(const.utf8));
     }
 
+    @JvmStatic
     fun getBase64(bytes: ByteArray): String {
         return Base64.getEncoder().encodeToString(bytes);
     }
 
+    @JvmStatic
     fun getFromBase64(base64: String): ByteArray {
         return Base64.getDecoder().decode(base64);
     }
 
+    @JvmStatic
     fun getStringContentFromBase64(base64: String): String {
         return String(getFromBase64(base64), const.utf8)
     }
@@ -555,10 +574,12 @@ object MyUtil {
     /**
      * 从 resource 读取内容
      */
+    @JvmStatic
     fun readResourceContentText(path: String): String {
         return ClassPathResource(path).inputStream.readContentString();
     }
 
+    @JvmStatic
     fun readResourceContentBytes(path: String): ByteArray {
         return ClassPathResource(path).inputStream.readBytes();
     }
@@ -581,6 +602,7 @@ object MyUtil {
 
 //----------------------
 
+    @JvmStatic
     inline fun <reified T> checkEmpty(obj: T, mapDefine: HashMap<String, String>): String {
         var type = T::class.java;
         for (key in mapDefine.keys) {
@@ -601,11 +623,13 @@ object MyUtil {
     }
 
 
+    @JvmStatic
     fun getPrivatePropertyValue(entity: Any, type: Field): Any? {
         type.isAccessible = true;
         return type.get(entity);
     }
 
+    @JvmStatic
     fun setPrivatePropertyValue(entity: Any, type: Field, value: Any?) {
         type.isAccessible = true;
         type.set(entity, value);
@@ -658,6 +682,7 @@ object MyUtil {
         return false;
     }
 
+    @JvmStatic
     fun setPrivatePropertyValue(entity: Any, property: String, value: Any?): Boolean {
         return setPrivatePropertyValue(entity, *arrayOf(property), ignoreCase = false, value = value);
     }
@@ -674,6 +699,7 @@ object MyUtil {
     /**
      * 通过反射把 源对象值传输到目标对象
      */
+    @JvmStatic
     fun transportValueWithReflect(src: Any, target: Any) {
         var srcFields = src::class.java.AllFields;
         target::class.java.AllFields.forEach { targetField ->
@@ -685,11 +711,13 @@ object MyUtil {
         }
     }
 
+    @JvmStatic
     fun <T : Any> getTypeDefaultValue(clazz: KClass<T>): Any? {
         return getTypeDefaultValue(clazz.java)
     }
 
     //简单类型，请参考 Class.IsSimpleType
+    @JvmStatic
     fun <T> getTypeDefaultValue(clazz: Class<T>): Any? {
 
 //        var className = clazz.name;
@@ -742,10 +770,12 @@ object MyUtil {
         return clazz.constructors.firstOrNull { it.parameters.size == 0 }?.newInstance()
     }
 
+    @JvmStatic
     fun allCharIsUpperCase(value: String): Boolean {
         return value.all { it.isUpperCase() }
     }
 
+    @JvmStatic
     fun allCharIsLowerCase(value: String): Boolean {
         return value.all { it.isLowerCase() }
     }
@@ -753,6 +783,7 @@ object MyUtil {
     /**
      * 是否全大小，或全小写。 有任意字符则返回false
      */
+    @JvmStatic
     fun allCharIsSameCase(value: String): Boolean {
         if (value.length <= 1) return true;
         if (value[0].isUpperCase()) return allCharIsUpperCase(value);
@@ -763,6 +794,7 @@ object MyUtil {
     /**
      * 判断是否存在不一样的字符，忽略特殊字符
      */
+    @JvmStatic
     fun noAnyOtherCase(value: String): Boolean {
         return allCharIsSameCase(value.replace(Regex("[\\W_]"), ""))
     }
@@ -770,6 +802,7 @@ object MyUtil {
     /**
      * 分隔为各个部分
      */
+    @JvmStatic
     fun splitWordParts(value: String): List<String> {
         var ret = value.split(Regex("""[\W_]+""")).map {
             if (allCharIsSameCase(it)) {
@@ -802,6 +835,7 @@ object MyUtil {
     /**
      * 大驼峰 ,仅保留字母，数字
      */
+    @JvmStatic
     fun getBigCamelCase(value: String): String {
         return splitWordParts(value).map { it[0].uppercaseChar() + it.substring(1).lowercase() }.joinToString("")
     }
@@ -809,6 +843,7 @@ object MyUtil {
     /**
      * 小驼峰
      */
+    @JvmStatic
     fun getSmallCamelCase(value: String): String {
         var ret = getBigCamelCase(value);
         if (ret.isEmpty()) return "";
@@ -818,11 +853,13 @@ object MyUtil {
     /**
      * 短横线格式，全小写
      */
+    @JvmStatic
     fun getKebabCase(value: String): String {
         return splitWordParts(value).map { it.lowercase() }.joinToString("-")
     }
 
     @JvmOverloads
+    @JvmStatic
     fun trimStart(value: String, trimPart: String, ignoreCase: Boolean = false): String {
         if (value.startsWith(trimPart, ignoreCase) == false) {
             return value;
@@ -831,6 +868,7 @@ object MyUtil {
     }
 
     @JvmOverloads
+    @JvmStatic
     fun trimEnd(value: String, trimPart: String, ignoreCase: Boolean = false): String {
         if (value.endsWith(trimPart, ignoreCase) == false) {
             return value;
@@ -839,6 +877,7 @@ object MyUtil {
     }
 
     @JvmOverloads
+    @JvmStatic
     fun trim(value: String, trimPart: String, ignoreCase: Boolean = false): String {
         return trimEnd(trimStart(value, trimPart, ignoreCase), trimPart, ignoreCase)
     }
@@ -846,6 +885,7 @@ object MyUtil {
     /**
      * 格式化模板
      */
+    @JvmStatic
     fun formatTemplateJson(
         /**
          * 如 dbr.${group|w}
@@ -957,6 +997,7 @@ object MyUtil {
      * @param publicSecret
      * @return
      */
+    @JvmStatic
     fun encryptWithPublicSecret(targetId: String, publicSecret: String?): String? {
         val dt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
         val text = """
@@ -983,6 +1024,7 @@ object MyUtil {
      * @param privateSecret
      * @return
      */
+    @JvmStatic
     fun decryptWithPrivateSecret(encryptWithPublicSecretValue: String, privateSecret: String?): String? {
         val dotIndex = encryptWithPublicSecretValue.indexOf(".")
         if (dotIndex <= 0) throw RuntimeException("非法值")
@@ -1012,6 +1054,7 @@ object MyUtil {
     /**
      * 把文件的各个部分组织在一起， 处理 . 和 .. 部分
      */
+    @JvmStatic
     fun joinFilePath(vararg path: String): String {
         if (path.any() == false) return "";
         var isRoot = path.first().let { it.startsWith('/') || it.startsWith('\\') }
@@ -1042,6 +1085,7 @@ object MyUtil {
     /**
      * 处理 Url，连接各个部分， 其中第一部分是 Host， 不处理。
      */
+    @JvmStatic
     fun joinUrl(host: String, vararg path: String): String {
         if (path.any() == false) return host;
 
@@ -1073,7 +1117,8 @@ object MyUtil {
      * 比较版本
      * @return 相等返回0, 大于返回1,小于返回 -1
      */
-    public fun compareVersion(v1: String, v2: String): Int {
+    @JvmStatic
+    fun compareVersion(v1: String, v2: String): Int {
         if (v1 == v2) return 0;
         if (v1.isEmpty()) return -1;
         if (v2.isEmpty()) return 1;

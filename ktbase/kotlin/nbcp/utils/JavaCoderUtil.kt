@@ -6,10 +6,11 @@ import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 
 class JavaCoderUtil {
-    companion object{
+    companion object {
         /**
          * 如果存在， 就有隔行。 如果不存在就返回空。
          */
+        @JvmStatic
         fun getAnnotationCodes(annotations: Array<out Annotation>): List<String> {
             return annotations
                 .map { an ->
@@ -19,6 +20,7 @@ class JavaCoderUtil {
 
         }
 
+        @JvmStatic
         fun getAnnotationCode(an: Annotation, isRoot: Boolean = true): String {
             if (an is Metadata) return "";
             if (an is Proxy == false) {
@@ -33,7 +35,7 @@ class JavaCoderUtil {
             var ret = "";
 
 //            if (isRoot) {
-                ret += "@"
+            ret += "@"
 //            }
 
             ret += an.annotationClass.qualifiedName
@@ -62,7 +64,7 @@ class JavaCoderUtil {
 
             var v_type = value::class.java;
             if (v_type.IsStringType) {
-                return """${"\""}${value.AsString().replace("\"","\\\"")}${"\""}"""
+                return """${"\""}${value.AsString().replace("\"", "\\\"")}${"\""}"""
             } else if (v_type.IsNumberType) {
                 return value.AsString()
             } else if (v_type.IsBooleanType) {
@@ -81,8 +83,6 @@ class JavaCoderUtil {
             return v_type.name + "(" + args + ")"
         }
     }
-
-
 
 
     var models: MutableSet<ClassCodeData> = mutableSetOf<ClassCodeData>()
@@ -107,8 +107,6 @@ ${clazz.AllFields.map { "lateinit var " + it.name + ":" + it.type }.joinToString
     }
 
 
-
-
     fun Method.getInterfaceMethodCode(): MethodCodeData {
         var ret = MethodCodeData();
         ret.content = """
@@ -131,7 +129,7 @@ fun ${this.name}(${
         var className: String = "",
         var packageName: String = "",
         var content: String = "",
-    ){
+    ) {
         override fun toString(): String {
             return content;
         }
@@ -140,7 +138,7 @@ fun ${this.name}(${
     data class MethodCodeData(
         var methodName: String = "",
         var content: String = ""
-    ){
+    ) {
         override fun toString(): String {
             return content;
         }

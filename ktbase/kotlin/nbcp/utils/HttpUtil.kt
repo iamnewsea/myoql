@@ -53,12 +53,14 @@ data class FileMessage @JvmOverloads constructor(
  * 封装了 HttpURLConnection 进行网络请求。
  */
 class HttpUtil @JvmOverloads constructor(var url: String = "") {
+    
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
         /**
          * http://tools.jb51.net/table/http_content_type/
          */
+        @JvmStatic
         fun getTextTypeFromContentType(contentType: String): Boolean {
             return contentType.contains("json", true) ||
                     contentType.contains("htm", true) ||
@@ -179,7 +181,6 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
     var msg: String = ""  //初始化失败的消息.用于对象传递
         private set;
 
-
     fun setPostBody(postBody: String): HttpUtil {
         this.request.postBody = postBody;
         return this
@@ -201,7 +202,6 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         }
         return doNet()
     }
-
 
     fun doPut(postJson: JsonMap): String {
         if (this.request.contentType.isEmpty()) {
@@ -301,7 +301,6 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         this.sslSocketFactory = sc.getSocketFactory();
 //        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory())
     }
-
 
     fun doNet(): String {
         var startAt = LocalDateTime.now();
@@ -463,7 +462,6 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
         }
     }
 
-
     fun toByteArray(input: InputStream): ByteArray {
         val output = ByteArrayOutputStream()
         val buffer = ByteArray(4096)
@@ -536,7 +534,6 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
     }
 
     private val CACHESIZE = 1024 * 1024;
-
     fun submitForm(form: Map<String, Any>): String {
         var items = form
             .filter { it.value::class.java.IsSimpleType() }

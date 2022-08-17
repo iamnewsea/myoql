@@ -41,6 +41,7 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
+        @JvmStatic
         var startAt: LocalDateTime? = null
 
         private var contextField: ApplicationContext? = null
@@ -211,6 +212,7 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
         /**
          * 动态创建Bean
          */
+        @JvmStatic
         fun getGenericBeanDefinition(
             instance: Any,
             callback: ((BeanDefinitionBuilder) -> Unit) = {}
