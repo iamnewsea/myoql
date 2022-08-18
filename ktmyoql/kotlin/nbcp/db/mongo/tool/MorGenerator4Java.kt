@@ -542,7 +542,7 @@ public ${v1_type} ${it.name} = new ${retValue};""".removeEmptyLine().ToTab(1)
             dbName = MyUtil.getSmallCamelCase(entType.simpleName)
         }
 
-        val idMethods = mutableSetOf<String>()
+        val idMethods = mutableSetOf<String>("id")
 
         //每一项是 用逗号分隔的主键组合
         val uks = mutableSetOf<String>();
