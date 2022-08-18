@@ -6,7 +6,7 @@ import nbcp.db.redis.BaseRedisProxy
 import java.time.Duration
 
 
-class RedisNumberProxy(
+class RedisNumberProxy @JvmOverloads constructor(
     key: String,
     defaultCacheSeconds: Int = 0,
     val autoRenewal: Boolean = false
@@ -40,7 +40,7 @@ class RedisNumberProxy(
     }
 
 
-    fun increment( value: Int = 1): Long {
+    fun increment(value: Int = 1): Long {
         var cacheKey = getFullKey(key)
         if (cacheKey.isEmpty()) return -1L
 
