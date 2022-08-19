@@ -11,7 +11,7 @@ import java.lang.RuntimeException
 /**
  * 普通的返回对象。
  */
-open class JsonResult  : Serializable {
+open class TypedMapResult() : Serializable {
     var code: Int = 0;
     var msg: String = ""
         get() {
@@ -28,8 +28,8 @@ open class JsonResult  : Serializable {
     companion object {
         @JvmStatic
         @JvmOverloads
-        fun error(msg: String, code: Int = 0): JsonResult {
-            var ret = JsonResult();
+        fun error(msg: String, code: Int = 0): TypedMapResult {
+            var ret = TypedMapResult();
             ret.code = code;
             ret.msg = msg;
 
