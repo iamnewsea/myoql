@@ -67,6 +67,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     /**
      * 核心功能，查询列表，原始数据对象是 Document
      */
+    @JvmOverloads
     fun <R> toList(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): MutableList<R> {
         db.affectRowCount = -1;
 
