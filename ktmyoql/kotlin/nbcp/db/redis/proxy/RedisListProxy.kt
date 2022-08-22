@@ -63,6 +63,8 @@ class RedisListProxy @JvmOverloads constructor(
      * @param start, 起始位置
      * @param end ,包含该索引的元素。-1表示包含最后一个索引。
      */
+
+    @JvmOverloads
     fun getListString(start: Int = 0, end: Int = -1): List<String> {
         var cacheKey = getFullKey(key)
         return stringCommand.opsForList().range(cacheKey, start.AsLong(), end.AsLong()).map { it.AsString() }

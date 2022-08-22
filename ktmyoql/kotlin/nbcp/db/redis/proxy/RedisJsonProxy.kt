@@ -17,20 +17,21 @@ class RedisJsonProxy<T> @JvmOverloads constructor(
     BaseRedisProxy(key, defaultCacheSeconds) {
 
 
-    fun get( ): T? {
+    fun get(): T? {
         var cacheKey = getFullKey(key)
         var value = stringCommand.opsForValue().get(cacheKey)
         if (value == null) return null;
 
         if (autoRenewal) {
-            renewalKey( )
+            renewalKey()
         }
         return value.FromJson(clazz)
     }
 
 //    fun setKey(value: String, cacheSecond: Int = defaultCacheSeconds) = setKey("", value, cacheSecond);
 
-    fun set(  value: T, cacheSecond: Int = defaultCacheSeconds) {
+    @JvmOverloads
+    fun set(value: T, cacheSecond: Int = defaultCacheSeconds) {
         var cacheKey = getFullKey(key)
 
         this.defaultCacheSeconds = cacheSecond;

@@ -28,6 +28,7 @@ class RedisNumberProxy @JvmOverloads constructor(
     /**
      * @param cacheSecond: 0=默认值 , -1为不设置缓存时间
      */
+    @JvmOverloads
     fun set(value: Long, cacheSecond: Int = defaultCacheSeconds) {
         var cacheKey = getFullKey(key)
         this.defaultCacheSeconds = cacheSecond;
@@ -40,6 +41,7 @@ class RedisNumberProxy @JvmOverloads constructor(
     }
 
 
+    @JvmOverloads
     fun increment(value: Int = 1): Long {
         var cacheKey = getFullKey(key)
         if (cacheKey.isEmpty()) return -1L
@@ -47,6 +49,7 @@ class RedisNumberProxy @JvmOverloads constructor(
         return stringCommand.opsForValue().increment(cacheKey, value.AsLong())
     }
 
+    @JvmOverloads
     fun decrement(value: Int = 1): Long {
         var cacheKey = getFullKey(key)
         if (cacheKey.isEmpty()) return -1L

@@ -29,6 +29,7 @@ class RedisHashProxy @JvmOverloads constructor(
     /**
      * 增加其中的某一项。
      */
+    @JvmOverloads
     fun increment(field: String, value: Long = 1): Long {
         var cacheKey = getFullKey(key);
         return stringCommand.opsForHash<String, Any>().increment(cacheKey, field, value)
