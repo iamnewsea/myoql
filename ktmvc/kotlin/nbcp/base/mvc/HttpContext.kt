@@ -1,3 +1,6 @@
+@file:JvmName("MyMvcHelper")
+@file:JvmMultifileClass
+
 package nbcp.base.mvc
 
 import org.springframework.web.context.request.RequestContextHolder

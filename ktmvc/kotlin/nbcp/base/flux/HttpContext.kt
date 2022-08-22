@@ -1,3 +1,6 @@
+@file:JvmName("MyFluxHelper")
+@file:JvmMultifileClass
+
 package nbcp.base.flux
 
 import java.lang.RuntimeException

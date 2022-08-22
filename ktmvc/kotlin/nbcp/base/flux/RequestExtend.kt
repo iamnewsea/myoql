@@ -1,3 +1,6 @@
+@file:JvmName("MyFluxHelper")
+@file:JvmMultifileClass
+
 package nbcp.base.flux
 
 import org.springframework.http.server.reactive.ServerHttpRequest
