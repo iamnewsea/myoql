@@ -27,6 +27,7 @@ enum class RecursionReturnEnum private constructor(val value: Int) {
  * 递归执行工具类。
  */
 object RecursionUtil {
+
     @JvmStatic
     fun <T> filter(
         container: List<T>,

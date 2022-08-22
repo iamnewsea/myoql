@@ -87,6 +87,7 @@ object MyUtil {
      * @param keys: 可以传多个key，也可以使用 . 分隔；如果查询数组，使用 products[],products[0], products.[] 或 products.[0] 或 "products","[]"
      */
     @JvmStatic
+    @JvmOverloads
     fun getValueByWbsPath(
         data: Any,
         vararg keys: String,
@@ -273,6 +274,7 @@ object MyUtil {
      * 多层级设置值
      */
     @JvmStatic
+    @JvmOverloads
     fun setValueByWbsPath(
         data: Any,
         vararg keys: String,
@@ -379,8 +381,8 @@ object MyUtil {
     fun getCurrentMethodInfo(): StackTraceElement {
         return Thread.currentThread().getStackTrace()[2]!!
     }
-    @JvmStatic
 
+    @JvmStatic
     fun getCenterEachLine(lines: List<String>): List<String> {
         var selector: (Char) -> Int = {
             if (it.code < 256) 1 else 2
@@ -886,6 +888,7 @@ object MyUtil {
      * 格式化模板
      */
     @JvmStatic
+    @JvmOverloads
     fun formatTemplateJson(
         /**
          * 如 dbr.${group|w}

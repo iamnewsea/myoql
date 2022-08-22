@@ -21,6 +21,7 @@ class KotlinCoderUtil {
         }
 
         @JvmStatic
+        @JvmOverloads
         fun getAnnotationCode(an: Annotation, isRoot: Boolean = true): String {
             if (an is Metadata) return "";
             if (an is Proxy == false) {
@@ -151,6 +152,7 @@ fun ${this.name}(${
     /**
      * 根据Mvc的类，自动生成 Feign风格的代码
      */
+    @JvmOverloads
     fun getFeignClientCode(clazz: Class<*>, name: String = ""): ClassCodeData {
         var beanName = name;
         if (beanName.isEmpty()) {
