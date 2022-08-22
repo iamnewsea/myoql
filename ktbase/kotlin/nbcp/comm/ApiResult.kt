@@ -33,7 +33,7 @@ open class ApiResult<T>  : JsonResult() {
     /** 设置额外value的值。
      * @param value value的值
      */
-    fun setValue(value: Any?): ApiResult<T> {
+    fun withValue(value: Any?): ApiResult<T> {
         this.value = value;
         return this;
     }

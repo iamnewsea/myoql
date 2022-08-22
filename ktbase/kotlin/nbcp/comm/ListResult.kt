@@ -50,7 +50,7 @@ open class ListResult<T>(
     /** 设置额外value的值。
      * @param value value的值
      */
-    fun setValue(value: Any?): ListResult<T> {
+    fun withValue(value: Any?): ListResult<T> {
         this.value = value;
         return this;
     }
