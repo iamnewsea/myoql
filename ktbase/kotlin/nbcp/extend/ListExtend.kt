@@ -31,7 +31,7 @@ fun <T> List<T>.SplitList(item: ((T) -> Boolean)): List<List<T>> {
     var list = mutableListOf<List<T>>();
 
     var group = mutableListOf<T>()
-    this.forEach {line ->
+    this.forEach { line ->
         if (item(line) == true) {
             if (group.any()) {
                 list.add(group);
@@ -63,9 +63,14 @@ fun <T> List<T>.SplitList(item: ((T) -> Boolean)): List<List<T>> {
 //}
 
 //把最里面的数据收集起来。
+@JvmName("UnwindT")
 inline fun <reified T> Collection<Collection<T>>.Unwind(): List<T> {
+    return Unwind(this);
+}
+
+fun <T> Unwind(colltion: Collection<Collection<T>>): List<T> {
     var list = mutableListOf<T>()
-    this.forEach {
+    colltion.forEach {
         it.forEach {
             list.add(it)
         }
