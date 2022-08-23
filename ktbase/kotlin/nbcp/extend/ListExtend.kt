@@ -355,9 +355,9 @@ fun <T> MutableList<T>.ModifyListMoveToFirst(itemCallback: (T) -> Boolean): List
 /**
  *
  */
-fun Collection<*>.getObject(index: Int): Any? {
-    return this.elementAt<Any?>(index)
-}
+//fun Collection<*>.getObject(index: Int): Any? {
+//    return this.elementAt<Any?>(index)
+//}
 
 fun List<*>.getListObject(): List<Any?> {
     return this
@@ -370,7 +370,7 @@ fun Array<*>.getArrayObject(): Array<Any?> {
 fun List<Any?>.resetListItemType(clazz: Class<*>) {
     var list = this as ArrayList<Any?>
     for (i in list.indices) {
-        val itemValue = list.getObject(i)
+        val itemValue = list.elementAt(i)
         if (itemValue == null) {
             continue;
         }

@@ -7,33 +7,7 @@ import nbcp.scope.*
 import org.springframework.data.mongodb.core.query.Criteria
 import java.lang.RuntimeException
 
-/**
- * 把 where 转换为表达式，会有feild的基础上额外添加一个 $ .如：
- * "field" : { "$gt" : 1}
- * -->
- * "$gt" : ["$field" , 1 ]
- */
-fun Criteria.toExpression(): JsonMap {
-    var ret = JsonMap()
-    this.criteriaObject.forEach { ent ->
-        var key = "$" + ent.key
-        var value = ent.value
 
-        if (value is Map<*, *>) {
-            if (value.size == 1) {
-                var first = value.entries.first()
-                ret.set(first.key.toString(), arrayOf(key, first.value))
-            } else {
-                throw RuntimeException("不识别的表达式: " + value.ToJson())
-            }
-        }
-        //简单类型
-        else {
-            ret.set("\$eq", arrayOf(key, value))
-        }
-    }
-    return ret
-}
 
 /** 从里往外写。
  * 例：
