@@ -4,6 +4,7 @@ import nbcp.TestBase
 import nbcp.comm.*
 import nbcp.utils.*
 import org.junit.jupiter.api.Test
+import java.io.File
 import java.util.regex.Pattern
 
 class TestKtExt_String : TestBase() {
@@ -23,6 +24,45 @@ class TestKtExt_String : TestBase() {
         ).forEachIndexed { index, s ->
             println("[" + index.toString() + "]:" + s)
         }
+    }
+
+
+
+    @Test
+    fun test_Tokenizer_Kotlin() {
+
+        var basePath = Thread.currentThread().contextClassLoader.getResource("./").path.split("/target/")[0];
+
+        var path = File( MyUtil.joinFilePath(basePath, "./kotlin"));
+
+        var _walk_all_path :((File) ->Boolean)? = null;
+        var walk_all_path :((File) ->Boolean) =  walk@ { file ->
+            if( file.isFile) {
+                println(file.FullName)
+                var txt = file.readText(const.utf8);
+
+                txt.Tokenizer(
+                    { it == ',' || it == '\n' }, arrayOf(
+                        TokenQuoteDefine('"', '"', '"')
+                    )
+                ).forEachIndexed { index, s ->
+                    println("[" + index.toString() + "]:" + s)
+                }
+
+                return@walk false;
+            }
+            else{
+                file.listFiles().all {  return@all _walk_all_path!!(it) }
+                return@walk true;
+            }
+            return@walk true;
+        }
+
+        _walk_all_path = walk_all_path;
+
+        _walk_all_path(path);
+
+
     }
 
     @Test
