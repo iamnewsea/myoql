@@ -19,7 +19,7 @@ import java.io.Serializable
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-object MyWebHelper {
+object MyWebUtil {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     /**
