@@ -115,7 +115,7 @@ object MyUtil {
         }
 
         var key = keys.first();
-        var left_keys = keys.Slice(1);
+        var left_keys = keys.ArraySlice(1);
 
         if (key.isEmpty()) {
             return null;
@@ -301,7 +301,7 @@ object MyUtil {
             return setValueByWbsPath(data, *unwindKeys, ignoreCase = ignoreCase, value = value);
         }
 
-        var beforeKeys = keys.Slice(0, -1);
+        var beforeKeys = keys.ArraySlice(0, -1);
         var lastKey = keys.last()
 
         var objValue: Any? = data;

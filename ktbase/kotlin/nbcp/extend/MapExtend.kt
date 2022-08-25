@@ -193,7 +193,7 @@ fun MutableMap<String, Any?>.removeByWbsPath(vararg keys: String): Boolean {
         return this.remove(unwindKeys.first()) != null
     }
 
-    var target = this.getValueByWbsPath(*unwindKeys.Slice(0, -1).toTypedArray())
+    var target = this.getValueByWbsPath(*unwindKeys.ArraySlice(0, -1).toTypedArray())
     if (target == null) return false;
     if (target is MutableMap<*, *> == false) {
         throw RuntimeException("移除的对象不是Map,是:${target::class.java.name} ,path: ${unwindKeys.joinToString(".")}")

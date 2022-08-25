@@ -516,7 +516,7 @@ fun SqlUpdateClip<${GroupName}Group.${entityTableMetaName}>.set_${MyUtil.getSmal
 
                 if (dbType != DbType.Other || it.type.IsCollectionType || Map::class.java.isAssignableFrom(it.type)) {
                     var varName = spreadColumnNames.take(varLen).joinToString("_")
-                    var subVarNameWithDot = spreadColumnNames.Slice(varLen).map { it + "." }.joinToString("");
+                    var subVarNameWithDot = spreadColumnNames.ArraySlice(varLen).map { it + "." }.joinToString("");
                     list.add(".set{ it." + spreadColumnNames.joinToString("_") + "_" + it.name + " to " + varName + "." + subVarNameWithDot + it.name + " }");
                     return@forEach
                 }

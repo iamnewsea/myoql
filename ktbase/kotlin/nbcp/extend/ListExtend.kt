@@ -3,6 +3,22 @@
 
 package nbcp.comm
 
+fun <T, R : Comparable<R>> Iterable<T>.maxByOrNull(selector: (T) -> R): T? {
+    val iterator = iterator()
+    if (!iterator.hasNext()) return null
+    var maxElem = iterator.next()
+    if (!iterator.hasNext()) return maxElem
+    var maxValue = selector(maxElem)
+    do {
+        val e = iterator.next()
+        val v = selector(e)
+        if (maxValue < v) {
+            maxElem = e
+            maxValue = v
+        }
+    } while (iterator.hasNext())
+    return maxElem
+}
 
 fun MutableList<*>.RemoveRange(startIndex: Int, endIndex: Int) {
     var startIndexValue = startIndex
@@ -87,7 +103,7 @@ fun <T> Unwind(colltion: Collection<Collection<T>>): List<T> {
  *  [].Slice(-1)   = 只取最后一个
  */
 @JvmOverloads
-fun <T> Array<out T>.Slice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): List<T> {
+fun <T> Array<out T>.ArraySlice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): List<T> {
     var endIndexValue = endIndex;
     if (endIndexValue == 0) return listOf()
     var startIndexValue = startIndex
@@ -123,13 +139,44 @@ fun <T> Array<out T>.Slice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): List
 /**
  * [startIndex,endIndex)
  */
+
 @JvmOverloads
-inline fun <reified T> Collection<T>.Slice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): List<T> {
-    return this.toTypedArray<T>().Slice(startIndex, endIndex)
+fun <T> Collection<T>.Slice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): List<T> {
+    var endIndexValue = endIndex;
+    if (endIndexValue == 0) return listOf()
+    var startIndexValue = startIndex
+
+    if (startIndexValue >= this.size) {
+        return listOf()
+    }
+    // -10 从右边取10位.
+    if (startIndexValue < 0) {
+        startIndexValue = this.size + startIndexValue
+    }
+    if (startIndexValue < 0) {
+        startIndexValue = 0
+    }
+
+    if (endIndexValue == Int.MIN_VALUE) {
+        return this.Slice(startIndexValue, this.size)
+    }
+
+    if (endIndexValue <= 0) {
+        endIndexValue = this.size + endIndexValue
+    }
+
+    if (endIndexValue < startIndexValue) return listOf()
+
+    if (endIndexValue > this.size) {
+        endIndexValue = this.size
+    }
+
+    return this.Slice(startIndexValue, endIndexValue)
 }
 
 
-inline fun <T> Iterator<T>.Filter(predicate: (T) -> Boolean): MutableList<T> {
+
+fun <T> Iterator<T>.Filter(predicate: (T) -> Boolean): MutableList<T> {
     var list = mutableListOf<T>()
 
     for (element in this) {

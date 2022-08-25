@@ -457,7 +457,7 @@ fun Class<*>.GetFieldPath(vararg fieldNames: String): Field? {
 
     if (fieldNames.size == 1) return field;
 
-    return field.type.GetFieldPath(*fieldNames.Slice(1).toTypedArray());
+    return field.type.GetFieldPath(*fieldNames.ArraySlice(1).toTypedArray());
 }
 
 /**
