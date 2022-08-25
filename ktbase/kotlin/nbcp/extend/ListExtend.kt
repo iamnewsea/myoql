@@ -3,23 +3,6 @@
 
 package nbcp.comm
 
-fun <T, R : Comparable<R>> Iterable<T>.maxByOrNull(selector: (T) -> R): T? {
-    val iterator = iterator()
-    if (!iterator.hasNext()) return null
-    var maxElem = iterator.next()
-    if (!iterator.hasNext()) return maxElem
-    var maxValue = selector(maxElem)
-    do {
-        val e = iterator.next()
-        val v = selector(e)
-        if (maxValue < v) {
-            maxElem = e
-            maxValue = v
-        }
-    } while (iterator.hasNext())
-    return maxElem
-}
-
 fun MutableList<*>.RemoveRange(startIndex: Int, endIndex: Int) {
     var startIndexValue = startIndex
     var endIndexValue = endIndex
