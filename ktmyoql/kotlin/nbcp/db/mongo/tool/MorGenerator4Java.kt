@@ -667,19 +667,19 @@ public class ${entityTypeName} extends MongoBaseMetaCollection<${entType.name.Ge
 ${props.map { const.line_break + it }.joinToString(const.line_break)}
 
     public MongoQueryClip<${entityTypeName}, ${entType.name}> query(){
-        return new MongoQueryClip(this);
+        return new MongoQueryClip<>(this);
     }
     
     public MongoUpdateClip<${entityTypeName}, ${entType.name}> update(){
-        return new MongoUpdateClip(this);
+        return new MongoUpdateClip<>(this);
     }
     
     public MongoDeleteClip<${entityTypeName}> delete(){
-        return new MongoDeleteClip(this);
+        return new MongoDeleteClip<>(this);
     }
     
     public MongoInsertClip<${entityTypeName}> batchInsert(){
-        return new MongoInsertClip(this);
+        return new MongoInsertClip<>(this);
     }    
 ${idMethods.joinToString(const.line_break)}
 }
