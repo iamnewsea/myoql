@@ -154,9 +154,11 @@ fun <T> Collection<T>.Slice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): Lis
         endIndexValue = this.size
     }
 
-    return this.Slice(startIndexValue, endIndexValue)
+    if (this is List) {
+        return this.subList(startIndexValue, endIndexValue)
+    }
+    return this.toList().subList(startIndexValue, endIndexValue)
 }
-
 
 
 fun <T> Iterator<T>.Filter(predicate: (T) -> Boolean): MutableList<T> {
