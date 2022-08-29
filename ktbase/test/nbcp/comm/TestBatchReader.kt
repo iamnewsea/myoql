@@ -23,9 +23,6 @@ class TestBatchReader : TestBase() {
             this.forEach {
                 println(it)
             }
-
-            println(this.fetchCount)
-            println(this.total)
         }
 
 
