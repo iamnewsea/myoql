@@ -12,6 +12,7 @@ import java.util.*
  * Created by udi on 17-4-12.
  */
 object Md5Util {
+    @JvmStatic
     fun getBase64Md5(value: String): String {
         return getBase64Md5(value.toByteArray())
     }
