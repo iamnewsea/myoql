@@ -3,6 +3,15 @@
 
 package nbcp.comm
 
+
+/**
+ * 给Java用。
+ */
+fun joinToString(list: Iterable<Any?>, separator: String): String {
+    return list.joinToString(separator);
+}
+
+
 fun MutableList<*>.RemoveRange(startIndex: Int, endIndex: Int) {
     var startIndexValue = startIndex
     var endIndexValue = endIndex
