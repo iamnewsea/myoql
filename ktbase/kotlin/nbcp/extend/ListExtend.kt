@@ -13,6 +13,9 @@ fun joinToString(list: Iterable<Any?>, separator: String): String {
     return list.joinToString(separator);
 }
 
+/**
+ * 给Java用。
+ */
 fun <T> toTypedArray(list: Collection<T>, clazz: Class<T>): Array<T> {
     var ret = java.lang.reflect.Array.newInstance(clazz, list.size) as Array<T>;
 
