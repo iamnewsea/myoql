@@ -3,12 +3,23 @@
 
 package nbcp.comm
 
+import nbcp.utils.ClassUtil
+
 
 /**
  * 给Java用。
  */
 fun joinToString(list: Iterable<Any?>, separator: String): String {
     return list.joinToString(separator);
+}
+
+fun <T> toTypedArray(list: Collection<T>, clazz: Class<T>): Array<T> {
+    var ret = java.lang.reflect.Array.newInstance(clazz, list.size) as Array<T>;
+
+    list.forEachIndexed { index, it ->
+        java.lang.reflect.Array.set(ret, index, it);
+    }
+    return ret;
 }
 
 
