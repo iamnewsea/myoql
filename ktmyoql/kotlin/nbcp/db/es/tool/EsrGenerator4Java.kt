@@ -555,7 +555,7 @@ public class ${entityTypeName} extends EsBaseMetaEntity<${entType.name}> {
         this("","");
     }
     
-        
+
 ${props.joinToString("\n")}
 ${idMethods.joinToString("\n")}
 
