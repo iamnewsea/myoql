@@ -12,7 +12,8 @@ import java.time.LocalDateTime
  * Created by yuxh on 2018/7/2
  */
 
-open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
+open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity: M) :
+    SqlBaseExecuteClip(mainEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -24,7 +25,10 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity:
     private var take = -1;
     private val joins = mutableListOf<JoinTableData<*, *>>()
 
-    fun <M2 : SqlBaseMetaTable<out T2>, T2 : Serializable> join(joinTable: M2, onWhere: (M, M2) -> WhereData): SqlUpdateClip<M> {
+    fun <M2 : SqlBaseMetaTable<out T2>, T2 : Serializable> join(
+        joinTable: M2,
+        onWhere: (M, M2) -> WhereData
+    ): SqlUpdateClip<M> {
         this.joins.add(JoinTableData("join", joinTable, onWhere(this.mainEntity, joinTable), SqlColumnNames()))
         return this
     }
@@ -149,7 +153,10 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity:
 //                    setValue = tab_converter.get(setKey.name)?.convert(setValue.toString()) ?: setValue
 //                }
 
-                ret += SqlParameterData(setKey.fullName + " = :${setKey.paramVarKeyName}", JsonMap(setKey.paramVarKeyName to setValue))
+                ret += SqlParameterData(
+                    setKey.fullName + " = :${setKey.paramVarKeyName}",
+                    JsonMap(setKey.paramVarKeyName to setValue)
+                )
             }
         }
 
@@ -167,7 +174,7 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity:
     override fun exec(): Int {
         db.affectRowCount = -1;
 
-        var settings = db.sql.sqlEvents.onUpdating(this);
+        var settings = db.sql.sqlEvents?.onUpdating(this) ?: arrayOf();
         if (settings.any { it.second.result == false }) {
             return 0;
         }

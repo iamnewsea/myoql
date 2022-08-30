@@ -47,8 +47,8 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
     protected fun toMapList(sqlParameter: SqlParameterData): MutableList<JsonMap> {
         db.affectRowCount = -1
 
-        var settings = db.sql.sqlEvents.onSelecting(this)
-        if (settings.any { it.second!!.result == false }) {
+        var settings = db.sql.sqlEvents?.onSelecting(this) ?: arrayOf()
+        if (settings.any { it.second.result == false }) {
             db.affectRowCount = 0;
             return mutableListOf();
         }

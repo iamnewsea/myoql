@@ -24,7 +24,7 @@ object dbSql {
 
     @JvmStatic
     val sqlEvents by lazy {
-        return@lazy SpringUtil.getBean<SqlEntityCollector>();
+        return@lazy SpringUtil.getBeanWithNull(SqlEntityCollector::class.java);
     }
 
     @JvmStatic
@@ -86,6 +86,7 @@ object dbSql {
     }
 
     private val dataSourceMap = mutableMapOf<String, DataSource>();
+
     @JvmStatic
     fun getDataSource(uri: String, username: String, password: String): DataSource? {
         var key = "${uri}-${username}-${password}"

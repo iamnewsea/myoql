@@ -58,7 +58,7 @@ class SqlDeleteClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity: M) :
 
     override fun exec(): Int {
         db.affectRowCount = -1;
-        var settings = db.sql.sqlEvents.onDeleting(this);
+        var settings = db.sql.sqlEvents?.onDeleting(this) ?: arrayOf();
         if( settings.any{it.second.result ==false}){
             return 0;
         }
