@@ -650,7 +650,7 @@ public ${v1_type} ${it.name} = new ${retValue};""".removeEmptyLine().ToTab(1)
                     varTableRemark
                 )
             }${JavaCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
-public class ${entityTypeName} extends MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}> {
+public static class ${entityTypeName} extends MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}> {
     public String collectionName;
     public String databaseId;
     public ${entityTypeName}(String collectionName,String databaseId){
