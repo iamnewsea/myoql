@@ -651,13 +651,9 @@ public ${v1_type} ${it.name} = new ${retValue};""".removeEmptyLine().ToTab(1)
                 )
             }${JavaCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
 public static class ${entityTypeName} extends MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}> {
-    public String collectionName;
-    public String databaseId;
+
     public ${entityTypeName}(String collectionName,String databaseId){
         super(${entType.name.GetSafeKotlinName()}.class, "${dbName}", MyHelper.AsString(collectionName,"${dbName}"), databaseId);
-    
-        this.collectionName = collectionName;
-        this.databaseId = databaseId;
     }
     
     public ${entityTypeName}(){

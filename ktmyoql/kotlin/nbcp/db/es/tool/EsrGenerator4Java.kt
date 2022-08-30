@@ -546,14 +546,9 @@ public ${entityTypeName} ${entityVarName}(String collectionName){
             )
         }${JavaCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
 public class ${entityTypeName} extends EsBaseMetaEntity<${entType.name}> {
-    public String collectionName;
-    public String databaseId;
 
     public ${entityTypeName}(String collectionName,String databaseId){
         super(${entType.name.GetSafeKotlinName()}.class, "${dbName}", MyHelper.AsString(collectionName,"${dbName}"), databaseId);
-    
-        this.collectionName = collectionName;
-        this.databaseId = databaseId;
     }
     
     public ${entityTypeName}(){
