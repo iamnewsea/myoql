@@ -91,7 +91,7 @@ public class ${MyUtil.getBigCamelCase(groupName)}Group implements IDataGroup{
 ${
                             group.value
                                 .map { "set.add(" + genVarName(it).GetSafeKotlinName() + ");" }
-                                .map { it.ToTab(3) }
+                                .map { it.ToTab(2) }
                                 .joinToString("\n")
                         }
         return set;
