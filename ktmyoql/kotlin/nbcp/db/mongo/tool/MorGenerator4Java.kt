@@ -91,14 +91,15 @@ ${packages.map { "import " + it + ";" }.joinToString(const.line_break)}
 public class ${MyUtil.getBigCamelCase(groupName)}Group implements IDataGroup {
     @Override
     public HashSet<BaseMetaData> getEntities(){
-        return new HashSet(){ { 
+        HashSet set = new HashSet();
+        
 ${
                             group.value
-                                .map { "add(" + genVarName(it).GetSafeKotlinName() + ");" }
+                                .map { "set.add(" + genVarName(it).GetSafeKotlinName() + ");" }
                                 .map { it.ToTab(3) }
                                 .joinToString("\n")
                         }
-        } };
+        return set;
     }
 """
             )
