@@ -86,7 +86,7 @@ ${packages.map { "import " + it + ";" }.joinToString(const.line_break)}
 public class ${MyUtil.getBigCamelCase(groupName)}Group implements IDataGroup{
     @Override
     public Set<BaseMetaData> getEntities(){
-        HashSet set = new HashSet();
+        var set = new HashSet<BaseMetaData>();
         
 ${
                             group.value

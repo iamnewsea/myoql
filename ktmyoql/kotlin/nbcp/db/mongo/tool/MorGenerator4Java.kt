@@ -90,8 +90,8 @@ ${packages.map { "import " + it + ";" }.joinToString(const.line_break)}
 @MetaDataGroup(dbType = DatabaseEnum.Mongo, value = "${groupName}")
 public class ${MyUtil.getBigCamelCase(groupName)}Group implements IDataGroup {
     @Override
-    public HashSet<BaseMetaData> getEntities(){
-        HashSet set = new HashSet();
+    public Set<BaseMetaData> getEntities(){
+        var set = new HashSet<BaseMetaData>();
         
 ${
                             group.value
