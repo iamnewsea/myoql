@@ -135,6 +135,10 @@ object JavaListUtil {
         return list.firstOrNull(predicate);
     }
 
+    @JvmStatic
+    fun <T> firstOrNull(list: Collection<T>): T? {
+        return list.firstOrNull();
+    }
 
     @JvmStatic
     fun <T> removeAll(list: MutableCollection<T>, predicate: (T) -> Boolean): Boolean {
@@ -180,5 +184,9 @@ object JavaListUtil {
     @JvmStatic
     fun <T, K> associateBy(list: Iterable<T>, keySelector: (T) -> K): Map<K, T> {
         return list.associateBy(keySelector);
+    }
+
+    fun <K, V> toMap(list: Iterable<Pair<K, V>>): Map<K, V> {
+        return list.toMap();
     }
 }
