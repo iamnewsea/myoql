@@ -53,7 +53,7 @@ pom.xml 中 profiles.release.profile.id == profiles.release.distributionManageme
 ## 发布到私服
 maven的 setting.xml 增加
 
-servers
+servers 节
 ```
 <server>
    <id>nancal-dev</id>
@@ -69,19 +69,19 @@ servers
 ```
 
 
+profile 节
+```
+<profiles>
+    <profile>
+        <id>nancal-snapshots</id>
+		<properties>
+			<repository.id>nancal-snapshots</repository.id> 
+			<repository.url>http://nexus.cloudnk.cn/repository/maven-snapshots/</repository.url>
+		</properties>
+    </profile>
+</profiles>
+```
 
-pom.xml 文件设置：(以后想办法把这一段移到 setting.xml 中)
-```
-<profile>
-    <id>nancal-dev</id>
-    <distributionManagement>
-        <repository>
-            <id>nancal-dev</id>
-            <url>http://nexus.nancal.com/repository/maven-releases/</url>
-        </repository>
-    </distributionManagement>
-</profile>
-```
 
 本地打包：python install_jar.py
 发布到私服：mvn clean deploy -Dmaven.test.skip=true -P nancal-dev
