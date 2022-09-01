@@ -126,8 +126,13 @@ if __name__ == '__main__':
         v_ary[-1] = str(int(v_ary[-1]) +1)
         tails[0] = ".".join(v_ary)
         newVersion = "-".join(tails)
-
-
+    elif newVersion == "-":
+        version = getVersionOnly()
+        tails = version.split("-")
+        v_ary = tails[0].split(".")
+        v_ary[-1] = str(int(v_ary[-1]) -1)
+        tails[0] = ".".join(v_ary)
+        newVersion = "-".join(tails)
 
 
     print("-----------------------------------------------")
