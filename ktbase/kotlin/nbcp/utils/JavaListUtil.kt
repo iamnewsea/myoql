@@ -7,6 +7,11 @@ package nbcp.utils
 
 object JavaListUtil {
     @JvmStatic
+    fun <T> toMutableList(list: Iterable<T>): MutableList<T> {
+        return list.toMutableList();
+    }
+
+    @JvmStatic
     fun <T> mutableListOf(vararg elements: T): MutableList<T> = kotlin.collections.mutableListOf(*elements)
 
     @JvmStatic
