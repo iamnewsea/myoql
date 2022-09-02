@@ -191,7 +191,13 @@ object JavaListUtil {
         return list.associateBy(keySelector);
     }
 
+    @JvmStatic
     fun <K, V> toMap(list: Iterable<Pair<K, V>>): Map<K, V> {
         return list.toMap();
+    }
+
+    @JvmStatic
+    fun <K, V> toList(map: Map<K, V>): List<Pair<K, V>> {
+        return map.toList()
     }
 }

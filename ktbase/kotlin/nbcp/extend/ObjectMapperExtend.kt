@@ -46,14 +46,16 @@ fun ObjectMapper.initObjectMapper() {
     )
     addObjectMapperTypeModule(Timestamp::class.java, TimestampJsonSerializer(), TimestampJsonDeserializer())
     addObjectMapperTypeModule(MyRawString::class.java, MyRawStringSerializer(), MyRawStringDeserializer())
+    addObjectMapperTypeModule(IDbStringValue::class.java, MyDbValueSerializer(), MyDbValueDeserializer())
 }
 
 fun <T> ObjectMapper.addObjectMapperTypeModule(type: Class<T>, ser: JsonSerializer<T>, deser: JsonDeserializer<T>) {
     var item = SimpleModule(type.name)
     item.addSerializer(type, ser)
+    item.addDeserializer(type,deser);
     this.registerModule(item);
 
-    var item2 = SimpleModule(type.name)
-    item2.addDeserializer(type, deser)
-    this.registerModule(item2)
+//    var item2 = SimpleModule(type.name)
+//    item2.addDeserializer(type, deser)
+//    this.registerModule(item2)
 }
