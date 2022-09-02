@@ -36,6 +36,11 @@ object JavaListUtil {
     }
 
     @JvmStatic
+    fun <M, N> to(o1: M, o2: N): Pair<M, N> {
+        return o1 to o2;
+    }
+
+    @JvmStatic
     fun <T, R> map(list: Collection<T>, transform: (T) -> R): List<R> {
         return list.map(transform);
     }
@@ -143,6 +148,7 @@ object JavaListUtil {
     fun <T> firstOrNull(list: Array<T>, predicate: (T) -> Boolean): T? {
         return list.firstOrNull(predicate);
     }
+
     @JvmStatic
     fun <T> firstOrNull(list: Collection<T>, predicate: (T) -> Boolean): T? {
         return list.firstOrNull(predicate);
