@@ -18,10 +18,10 @@ class TestKtExt_List_Java extends TestBase {
         list.add("a");
         list.add("b");
         list.add("c");
-        System.out.println(MyHelper.joinToString(list, "-"));
+        System.out.println(JavaListUtil.joinToString(list, "-"));
 
 
-        String[] x = MyHelper.toTypedArray(list, String.class);
+        String[] x = JavaListUtil.toTypedArray(list, String.class);
         System.out.println(MyJsonUtil.toJson(x));
     }
 

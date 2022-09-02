@@ -65,10 +65,10 @@ class TestKtExt_Json : TestBase() {
 
     class b{
         var c = ""
-    }
+        }
     class a{
         var b = b();
-    }
+        }
     class ccc{
         var a = a()
     }
