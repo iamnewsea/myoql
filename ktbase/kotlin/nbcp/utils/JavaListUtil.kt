@@ -188,11 +188,14 @@ object JavaListUtil {
     fun <T> minus(list1: Set<T>, list2: Set<T>): Set<T> {
         return list1 - list2;
     }
-
-
     @JvmStatic
     fun <T> joinToString(list: Iterable<T>, separator: String): String {
         return list.joinToString(separator);
+    }
+
+    @JvmStatic
+    fun <T> split(value:String, separator: String): List<String> {
+        return value.split(separator);
     }
 
     @JvmStatic
