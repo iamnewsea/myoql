@@ -26,6 +26,11 @@ object JavaListUtil {
     }
 
     @JvmStatic
+    fun <T> toSet(list: Array<T>): Set<T> {
+        return list.toSet();
+    }
+
+    @JvmStatic
     fun <T> toMutableSet(list: Iterable<T>): MutableSet<T> {
         return list.toMutableSet()
     }
@@ -134,7 +139,10 @@ object JavaListUtil {
         return list.first(predicate);
     }
 
-
+    @JvmStatic
+    fun <T> firstOrNull(list: Array<T>, predicate: (T) -> Boolean): T? {
+        return list.firstOrNull(predicate);
+    }
     @JvmStatic
     fun <T> firstOrNull(list: Collection<T>, predicate: (T) -> Boolean): T? {
         return list.firstOrNull(predicate);
