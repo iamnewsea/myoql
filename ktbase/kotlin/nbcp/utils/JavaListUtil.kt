@@ -104,6 +104,11 @@ object JavaListUtil {
     }
 
     @JvmStatic
+    fun <T> take(value: String, n: Int): String {
+        return value.take(n);
+    }
+
+    @JvmStatic
     fun <T, R : Comparable<R>> maxByOrNull(list: Collection<T>, selector: (T) -> R): T? {
         return list.maxByOrNull(selector);
     }
@@ -188,15 +193,23 @@ object JavaListUtil {
     fun <T> minus(list1: Set<T>, list2: Set<T>): Set<T> {
         return list1 - list2;
     }
+
     @JvmStatic
     fun <T> joinToString(list: Iterable<T>, separator: String): String {
         return list.joinToString(separator);
     }
 
     @JvmStatic
-    fun <T> split(value:String, separator: String): List<String> {
+    fun <T> split(value: String, separator: String): List<String> {
         return value.split(separator);
     }
+
+
+    @JvmStatic
+    fun <T> trim(value: String, predicate: (Char) -> Boolean): String {
+        return value.trim(predicate);
+    }
+
 
     @JvmStatic
     fun <T> toTypedArray(list: Collection<T>, clazz: Class<T>): Array<T> {
