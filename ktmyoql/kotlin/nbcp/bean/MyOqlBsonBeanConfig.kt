@@ -6,7 +6,7 @@ import nbcp.component.AppJsonMapper
 import nbcp.component.DbJsonMapper
 import nbcp.component.WebJsonMapper
 import nbcp.db.mongo.*
-import nbcp.extend.addObjectMapperTypeModule
+import nbcp.comm.addObjectMapperTypeModule
 import nbcp.utils.SpringUtil
 import org.bson.Document
 import org.bson.types.ObjectId

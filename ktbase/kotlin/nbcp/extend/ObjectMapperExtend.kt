@@ -1,4 +1,7 @@
-package nbcp.extend
+@file:JvmName("MyJson")
+@file:JvmMultifileClass
+
+package nbcp.comm
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.JsonParser
@@ -48,6 +51,7 @@ fun ObjectMapper.initObjectMapper() {
     addObjectMapperTypeModule(MyRawString::class.java, MyRawStringSerializer(), MyRawStringDeserializer())
 //    addObjectMapperTypeModule(IDbStringValue::class.java, MyDbValueSerializer(), MyDbValueDeserializer())
 }
+
 
 fun <T> ObjectMapper.addObjectMapperTypeModule(type: Class<T>, ser: JsonSerializer<T>, deser: JsonDeserializer<T>) {
     var item = SimpleModule(type.name)

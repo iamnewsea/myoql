@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
-import nbcp.extend.initObjectMapper
+import nbcp.comm.initObjectMapper
 
 
 import org.springframework.beans.factory.InitializingBean
