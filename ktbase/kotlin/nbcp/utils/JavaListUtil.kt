@@ -150,6 +150,11 @@ object JavaListUtil {
     }
 
     @JvmStatic
+    fun <T> firstOrNull(list: Array<T>): T? {
+        return list.firstOrNull();
+    }
+
+    @JvmStatic
     fun <T> firstOrNull(list: Collection<T>, predicate: (T) -> Boolean): T? {
         return list.firstOrNull(predicate);
     }
