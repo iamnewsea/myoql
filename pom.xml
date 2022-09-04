@@ -47,7 +47,7 @@
         <mybatis-spring.version>2.0.6</mybatis-spring.version>
         <elasticsearch.version>7.15.0</elasticsearch.version>
         <!-- jackson.version 设置为 2.13.0 会有错误 -->
-        <jackson.version>2.12.5</jackson.version>
+        <jackson.version>2.12.6.1</jackson.version>
         <reflections.version>0.10.2</reflections.version>
         <bcprov.version>1.69</bcprov.version>
         <asm.version>9.2</asm.version>
