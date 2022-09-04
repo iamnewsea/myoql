@@ -41,7 +41,7 @@
         <dokka.version>1.6.0</dokka.version>
         <aspectj.version>1.9.8.RC3</aspectj.version>
         <cglib.version>3.3.0</cglib.version>
-        <zip4j.version>2.9.1</zip4j.version>
+        <zip4j.version>2.10.0</zip4j.version>
         <mybatis.version>3.5.8</mybatis.version>
         <mybatis-plus.version>3.4.3.4</mybatis-plus.version>
         <mybatis-spring.version>2.0.6</mybatis-spring.version>
