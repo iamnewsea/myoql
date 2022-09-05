@@ -572,6 +572,13 @@ object MyUtil {
         return String(getFromBase64(base64), const.utf8)
     }
 
+    /**
+     * 判断是否存在资源
+     */
+    @JvmStatic
+    fun existsResource(path: String): Boolean {
+        return ClassPathResource(path).exists()
+    }
 
     /**
      * 从 resource 读取内容

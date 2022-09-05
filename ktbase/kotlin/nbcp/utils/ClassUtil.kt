@@ -266,13 +266,6 @@ object ClassUtil {
         return ret;
     }
 
-    /**
-     * 判断是否存在资源
-     */
-    @JvmStatic
-    fun existsResource(path: String): Boolean {
-        return ClassPathResource(path).exists()
-    }
 
     /**
      * @param basePath: 前后不带/
