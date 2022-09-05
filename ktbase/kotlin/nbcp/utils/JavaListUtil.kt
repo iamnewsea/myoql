@@ -14,6 +14,10 @@ object JavaListUtil {
     @JvmStatic
     fun <T> mutableListOf(vararg elements: T): MutableList<T> = kotlin.collections.mutableListOf(*elements)
 
+
+    @JvmStatic
+    fun <T> arrayListOf(vararg elements: T): ArrayList<T> = kotlin.collections.arrayListOf(*elements)
+
     @JvmStatic
     fun <T> listOf(vararg elements: T): List<T> = kotlin.collections.listOf(*elements)
 
