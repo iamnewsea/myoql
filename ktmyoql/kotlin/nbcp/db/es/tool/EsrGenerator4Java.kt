@@ -65,7 +65,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.*;
 ${packages.map { "import " + it + ";" }.joinToString(const.line_break)}
 
-//generate auto @${LocalDateTime.now().AsString()}
 """
 
         embClasses.forEach {
@@ -152,14 +151,22 @@ public class EsrMetaMap {
 """
         )
 
-        println("生成 mor 完成!")
+        writeToFile(
+            "readme.md",
+
+            """
+实体生成时间: ${LocalDateTime.now().AsString()}
+"""
+        )
+        println("生成 esr 完成!")
     }
 
     var maxLevel = 9;
 
 
     fun writeToFile(className: String, content: String) {
-        FileWriter(MyUtil.joinFilePath(targetEntityPathName, className + ".java"), true).use { moer_File ->
+
+        FileWriter(MyUtil.joinFilePath(targetEntityPathName, if( className.contains(".") ) className else (  className + ".java") ), true).use { moer_File ->
             moer_File.appendLine(content)
             moer_File.flush()
         }

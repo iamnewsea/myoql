@@ -66,8 +66,6 @@ import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 ${packages.map { "import " + it }.joinToString(const.line_break)}
-
-//generate auto @${LocalDateTime.now().AsString()}
 """
 
 
@@ -132,6 +130,14 @@ data class MoerMetaMap(val parentPropertyName: String) {
 """
         )
 
+
+        writeToFile(
+            "readme.md",
+
+                    """
+实体生成时间: ${LocalDateTime.now().AsString()}
+"""
+        )
         println("生成 mor 完成!")
     }
 
@@ -139,7 +145,8 @@ data class MoerMetaMap(val parentPropertyName: String) {
 
 
     fun writeToFile(className: String, content: String) {
-        FileWriter(MyUtil.joinFilePath(targetEntityPathName, className + ".kt"), true).use { moer_File ->
+
+        FileWriter(MyUtil.joinFilePath(targetEntityPathName, if( className.contains(".") ) className else (  className + ".kt") ), true).use { moer_File ->
             moer_File.appendLine(content)
             moer_File.flush()
         }

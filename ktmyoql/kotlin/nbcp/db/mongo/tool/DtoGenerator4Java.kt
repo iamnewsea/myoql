@@ -50,7 +50,6 @@ import java.util.stream.*;
 
 ${packages.map { "import " + it + ";" }.joinToString(const.line_break)}
 
-//generate auto @${LocalDateTime.now().AsString()}
 """
         var count = 0;
         groups.forEach { group ->
@@ -81,6 +80,15 @@ public class ${it.simpleName}DTO extends ${it.simpleName} {
             }
 
         }
+
+
+        writeToFile(
+            "readme.md",
+
+            """
+实体生成时间: ${LocalDateTime.now().AsString()}
+"""
+        )
         println("生成 mor dto 完成!")
     }
 
@@ -88,10 +96,11 @@ public class ${it.simpleName}DTO extends ${it.simpleName} {
 
 
     fun writeToFile(className: String, content: String) {
-        var moer_File = FileWriter(MyUtil.joinFilePath(targetEntityPathName, className + ".java"), true);
-        moer_File.appendLine(content)
-        moer_File.flush()
-        moer_File.close();
+
+        FileWriter(MyUtil.joinFilePath(targetEntityPathName, if( className.contains(".") ) className else (  className + ".java") ), true).use { moer_File ->
+            moer_File.appendLine(content)
+            moer_File.flush()
+        }
     }
 
 
