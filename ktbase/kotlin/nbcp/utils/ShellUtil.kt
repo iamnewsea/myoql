@@ -21,7 +21,6 @@ object ShellUtil {
     @JvmOverloads
     @JvmStatic
     fun execRuntimeCommand(vararg cmds: String, waitSeconds: Int = 30): List<String> {
-        logger.info(cmds.joinToString(" "));
         var p = Runtime.getRuntime().exec(cmds);
 
         var t1 = InputStreamTextReaderThread(p.inputStream)
@@ -48,13 +47,20 @@ object ShellUtil {
             t2.done()
 
             if (t1.error != null) {
+                logger.error(cmds.joinToString(" "));
                 throw RuntimeException(t1.error);
             }
+
+
+            logger.info(cmds.joinToString(" "));
             return t1.results
         } else {
             t1.done()
             t2.done()
 
+
+            logger.error(cmds.joinToString(" "));
+            
             if (t2.error != null) {
                 throw RuntimeException(t2.error);
             }
