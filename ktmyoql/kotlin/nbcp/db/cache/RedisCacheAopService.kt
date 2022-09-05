@@ -9,6 +9,8 @@ import org.aspectj.lang.reflect.MethodSignature
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.scheduling.support.CronExpression
 import org.springframework.stereotype.Component
 import java.lang.reflect.Method
 import java.time.Duration
@@ -151,24 +153,24 @@ open class RedisCacheAopService {
             .joinToString(":")
 
         val now = LocalDateTime.now();
-//        var cacheTime = 0;
-//        var scheduled = method.getAnnotationsByType(Scheduled::class.java).first()
-//        if (scheduled.cron.HasValue) {
-//            var cornExp = CronExpression.parse(scheduled.cron)
-//            var timeSpan = cornExp.next(now)!! - now;
-//            cacheTime = timeSpan.seconds.AsInt();
-//        } else if (scheduled.fixedDelay > 0) {
-//            cacheTime = (scheduled.fixedDelay / 1000).AsInt();
-//        } else if (scheduled.fixedRate > 0) {
-//            cacheTime = (scheduled.fixedRate / 1000).AsInt();
-//        }
+        var cacheTime = 0;
+        var scheduled = method.getAnnotationsByType(Scheduled::class.java).first()
+        if (scheduled.cron.HasValue) {
+            var cornExp = CronExpression.parse(scheduled.cron)
+            var timeSpan = cornExp.next(now)!! - now;
+            cacheTime = timeSpan.seconds.AsInt();
+        } else if (scheduled.fixedDelay > 0) {
+            cacheTime = (scheduled.fixedDelay / 1000).AsInt();
+        } else if (scheduled.fixedRate > 0) {
+            cacheTime = (scheduled.fixedRate / 1000).AsInt();
+        }
 
-//
-//        if (cacheTime < 3) {
-//            cacheTime = 3;
-//        }
-//
-//        cacheTime = cacheTime * 1000;
+
+        if (cacheTime < 1) {
+            cacheTime = 1;
+        }
+
+        cacheTime = cacheTime * 1000;
 
         var setted = false;
         try {
@@ -183,7 +185,7 @@ open class RedisCacheAopService {
             }
 
             setted = db.rerBase.taskLock(key)
-                .setIfAbsent(now.toNumberString(), 3600);
+                .setIfAbsent(now.toNumberString(), cacheTime);
         } catch (e: Exception) {
             logger.error(e.message, e);
             return null;
