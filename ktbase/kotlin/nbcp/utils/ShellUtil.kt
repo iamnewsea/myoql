@@ -58,6 +58,11 @@ object ShellUtil {
             if (t2.error != null) {
                 throw RuntimeException(t2.error);
             }
+
+            if (t1.results.any()) {
+                throw RuntimeException(t1.results.joinToString("\n"))
+            }
+
             throw RuntimeException(t2.results.joinToString("\n"))
         }
     }
