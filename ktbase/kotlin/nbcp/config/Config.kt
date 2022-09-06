@@ -97,6 +97,14 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
             }
 
 
+        /**
+         * 产品线编码
+         */
+        @JvmStatic
+        val videoLogo
+            get() = getConfig("app.video-logo").AsBoolean();
+
+
         @JvmStatic
         private val cache: JsonMap = JsonMap();
 

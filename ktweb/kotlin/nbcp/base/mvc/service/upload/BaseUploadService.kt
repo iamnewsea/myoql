@@ -73,24 +73,26 @@ abstract class BaseUploadService {
                 return ApiResult.error("不识别的图片格式!")
             }
         } else if (extInfo.extType == FileExtensionTypeEnum.Video) {
-            VideoUtil.getVideoInfo(file.inputStream).data.apply {
-                if (this != null) {
-                    annexInfo.imgWidth = this.width;
-                    annexInfo.imgHeight = this.height;
-                    annexInfo.videoTime = this.time;
+            if (config.videoLogo) {
+                VideoUtil.getVideoInfo(file.inputStream).data
+                    .apply {
+                        if (this != null) {
+                            annexInfo.imgWidth = this.width;
+                            annexInfo.imgHeight = this.height;
+                            annexInfo.videoTime = this.time;
 
 
-                    var logoFile = UploadFileNameData();
-                    logoFile.corpId = fileData.corpId;
-                    logoFile.extName = "png";
-                    logoFile.extType = FileExtensionTypeEnum.Image;
-                    logoFile.fileName = CodeUtil.getCode() + ".png";
+                            var logoFile = UploadFileNameData();
+                            logoFile.corpId = fileData.corpId;
+                            logoFile.extName = "png";
+                            logoFile.extType = FileExtensionTypeEnum.Image;
+                            logoFile.fileName = CodeUtil.getCode() + ".png";
 
-                    var logoUrl = saveFile(storageType, logoStream, annexInfo.group, logoFile);
-                    annexInfo.videoLogoUrl = logoUrl
-                }
+                            var logoUrl = saveFile(storageType, logoStream, annexInfo.group, logoFile);
+                            annexInfo.videoLogoUrl = logoUrl
+                        }
+                    }
             }
-
         }
 
 //        fileData.imgWidth = annexInfo.imgWidth;
