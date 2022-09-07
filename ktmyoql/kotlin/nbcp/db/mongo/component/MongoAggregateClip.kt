@@ -282,7 +282,7 @@ cursor: {} } """
             error = e;
             throw e;
         } finally {
-            MongoLogger.logFind(error, actualTableName, queryJson, result);
+            logger.logFind(error, actualTableName, queryJson, result);
 //            logger.InfoError(result == null) {
 //                """[aggregate] ${this.moerEntity.tableName}
 //[语句] ${queryJson}

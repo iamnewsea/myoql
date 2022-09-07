@@ -94,7 +94,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
             error = e
             throw e;
         } finally {
-            MongoLogger.logDelete(error, actualTableName, query, result);
+            logger.logDelete(error, actualTableName, query, result);
         }
 
         return ret;

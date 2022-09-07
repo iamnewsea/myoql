@@ -16,6 +16,11 @@ import java.lang.Exception
 import java.time.LocalDateTime
 
 open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMongoWhere {
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    }
+
+
     override val whereData = MongoWhereClip()
 
     var skip: Int = 0;
@@ -201,7 +206,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                 return msgs.joinToString(const.line_break);
             }
 
-            MongoLogger.logFind(error, actualTableName, ::getMsgs);
+            logger.logFind(error, actualTableName, ::getMsgs);
         }
 
         return ret
@@ -306,7 +311,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             error = e;
             throw e;
         } finally {
-            MongoLogger.logFind(error, actualTableName, query, JsonMap("result" to ret))
+            logger.logFind(error, actualTableName, query, JsonMap("result" to ret))
 //            logger.InfoError(ret < 0) {
 //                return@InfoError """[count] ${this.collectionName}
 //[query] ${query.queryObject.ToJson()}
@@ -348,7 +353,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             error = e
             throw e;
         } finally {
-            MongoLogger.logFind(error, actualTableName, query, JsonMap("result" to ret))
+            logger.logFind(error, actualTableName, query, JsonMap("result" to ret))
 //            logger.InfoError(ret == null) {
 //                return@InfoError """[exists] ${this.collectionName}
 //[query] ${query.queryObject.ToJson()}
@@ -384,7 +389,6 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
 
     fun toMapList(): List<Document> {
         return toList(Document::class.java);
-
     }
 
     fun toMapListResult(): ListResult<Document> {

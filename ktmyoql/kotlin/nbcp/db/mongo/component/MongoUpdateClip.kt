@@ -258,7 +258,7 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
             error = e;
             throw e;
         } finally {
-            MongoLogger.logUpdate(error, actualTableName, query, update, null)
+            logger.logUpdate(error, actualTableName, query, update, null)
         }
 
         return result;

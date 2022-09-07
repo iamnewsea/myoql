@@ -161,7 +161,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             error = e;
             throw e;
         } finally {
-            MongoLogger.logUpdate(error, actualTableName, query, update, result)
+            logger.logUpdate(error, actualTableName, query, update, result)
         }
 
 

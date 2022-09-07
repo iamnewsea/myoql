@@ -55,7 +55,7 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName) {
             error = e;
             throw e;
         } finally {
-            MongoLogger.logInsert(error, actualTableName, entities)
+            logger.logInsert(error, actualTableName, entities)
 //            logger.InfoError(ret < 0) {
 //                """[insert] ${this.collectionName}
 //${

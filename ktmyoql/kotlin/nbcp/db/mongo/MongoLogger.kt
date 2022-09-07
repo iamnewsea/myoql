@@ -6,38 +6,33 @@ import nbcp.comm.*
 import nbcp.db.db
 import nbcp.utils.SpringUtil
 import org.bson.Document
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 
-object MongoLogger {
-    private val logger = LoggerFactory.getLogger(this::class.java)
+
     private val mongoLog by lazy {
         return@lazy SpringUtil.getBean<MongoCollectionLogProperties>()
     }
 
-
-    @JvmStatic
-    fun logFind(error: Exception?, collectionName: String, queryJson: String, result: Document?) {
-        log(error, collectionName, queryJson, result?.ToJson() ?: "", mongoLog::getQueryLog)
+    fun Logger.logFind( error: Exception?, collectionName: String, queryJson: String, result: Document?) {
+        this.log(error, collectionName, queryJson, result?.ToJson() ?: "", mongoLog::getQueryLog)
     }
 
-    @JvmStatic
-    fun logFind(error: Exception?, collectionName: String, queryJson: Query, result: JsonMap) {
-        log(error, collectionName, queryJson.queryObject.ToJson(), result.ToJson(), mongoLog::getQueryLog)
+    fun Logger.logFind(error: Exception?, collectionName: String, queryJson: Query, result: JsonMap) {
+        this.log(error, collectionName, queryJson.queryObject.ToJson(), result.ToJson(), mongoLog::getQueryLog)
     }
 
-    @JvmStatic
-    fun logFind(error: Exception?, collectionName: String, getMsg: () -> String) {
-        log(error, collectionName, mongoLog::getQueryLog, getMsg);
+    fun Logger.logFind(error: Exception?, collectionName: String, getMsg: () -> String) {
+        this.log(error, collectionName, mongoLog::getQueryLog, getMsg);
     }
 
-    @JvmStatic
-    fun logInsert(error: java.lang.Exception?, collectionName: String, entities: MutableList<Any>) {
-        log(error, collectionName, entities.ToJson(), "", mongoLog::getInsertLog)
+    fun Logger.logInsert(error: java.lang.Exception?, collectionName: String, entities: MutableList<Any>) {
+        this.log(error, collectionName, entities.ToJson(), "", mongoLog::getInsertLog)
     }
 
-    private fun log(
+    private fun Logger.log(
         error: Exception?, collectionName: String, queryJson: String, result: String, op: (String) -> Boolean
     ) {
         var getMsg: () -> String = getMsg@{
@@ -46,47 +41,46 @@ ${if (result.HasValue) ("[result] " + result + "\n") else ""}[耗时] ${db.execu
         }
 
         if (error != null) {
-            logger.error(getMsg())
-            logger.error(error.message, error);
+            this.error(getMsg())
+            this.error(error.message, error);
             return;
         }
 
-        if (logger.scopeInfoLevel) {
-            logger.info(getMsg())
+        if (this.scopeInfoLevel) {
+            this.info(getMsg())
             return;
         }
 
         //如果指定了输出Sql
         if (op(collectionName)) {
-            logger.Important(getMsg())
+            this.Important(getMsg())
         }
     }
 
 
-    private fun log(
+    private fun Logger.log(
         error: Exception?, collectionName: String, op: (String) -> Boolean,
         getMsg: (() -> String)
     ) {
         if (error != null) {
-            logger.error(getMsg())
-            logger.error(error.message, error);
+            this.error(getMsg())
+            this.error(error.message, error);
             return;
         }
 
-        if (logger.scopeInfoLevel) {
-            logger.info(getMsg())
+        if (this.scopeInfoLevel) {
+            this.info(getMsg())
             return;
         }
 
         //如果指定了输出Sql
         if (op(collectionName)) {
-            logger.Important(getMsg())
+            this.Important(getMsg())
         }
     }
 
-    @JvmStatic
-    fun logUpdate(error: Exception?, collectionName: String, query: Query, update: Update, result: UpdateResult?) {
-        log(error, collectionName, mongoLog::getUpdateLog, {
+    fun Logger.logUpdate(error: Exception?, collectionName: String, query: Query, update: Update, result: UpdateResult?) {
+        this.log(error, collectionName, mongoLog::getUpdateLog, {
             return@log """[update] ${collectionName}
 [where] ${query.queryObject.ToJson()}
 [set] ${update.ToJson()}
@@ -95,11 +89,9 @@ ${if (result.HasValue) ("[result] " + result + "\n") else ""}[耗时] ${db.execu
         })
     }
 
-    @JvmStatic
-    fun logDelete(error: Exception?, collectionName: String, query: Query, result: DeleteResult?) {
-        log(error, collectionName, mongoLog::getDeleteLog, {
+    fun Logger.logDelete(error: Exception?, collectionName: String, query: Query, result: DeleteResult?) {
+        this.log(error, collectionName, mongoLog::getDeleteLog, {
             return@log "delete:[" + collectionName + "] " + query.queryObject.ToJson() + ",result:${result?.ToJson()}"
         })
 
     }
-}
