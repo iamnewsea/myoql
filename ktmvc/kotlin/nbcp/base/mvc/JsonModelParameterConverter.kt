@@ -187,7 +187,11 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
     private fun translateAliasParam(webRequest: HttpServletRequest, parameter: MethodParameter): Any? {
 
         if (parameter.parameterName == "skip") {
-            val pageNumber = getValueFromRequest(webRequest, parameter, "pageNumber").AsInt(-1)
+            val pageNumber = (getValueFromRequest(webRequest, parameter, "pageNumber") ?: getValueFromRequest(
+                webRequest,
+                parameter,
+                "pageNo"
+            )).AsInt(-1)
             val pageSize = getValueFromRequest(webRequest, parameter, "pageSize").AsInt(-1)
 
             if (pageNumber > 0 && pageSize > 0) {
