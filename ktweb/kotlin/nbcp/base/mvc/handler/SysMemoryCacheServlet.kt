@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController
 @AdminSysOpsAction
 @RestController
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnClass(MongoTemplate::class)
 open class SysMemoryCacheServlet {
     @RequestMapping("/sys/memory-cache/broke", method = arrayOf(RequestMethod.GET, RequestMethod.POST))
     fun doGet(key: String): ApiResult<Boolean> {

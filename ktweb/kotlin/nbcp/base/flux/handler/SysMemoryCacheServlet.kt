@@ -17,7 +17,6 @@ import reactor.core.publisher.Mono
 @AdminSysOpsAction
 @RestController
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-@ConditionalOnClass(MongoTemplate::class)
 open class SysMemoryCacheServlet {
 
     @RequestMapping("/sys/memory-cache/broke", method = arrayOf(RequestMethod.GET, RequestMethod.POST))
