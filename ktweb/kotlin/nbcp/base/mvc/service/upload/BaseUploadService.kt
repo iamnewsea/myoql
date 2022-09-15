@@ -8,6 +8,7 @@ import nbcp.model.IUploadFileDbService
 import nbcp.scope.JsonSceneEnumScope
 import nbcp.utils.CodeUtil
 import nbcp.base.mvc.*
+import nbcp.db.IdUrl
 import nbcp.web.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -178,6 +179,9 @@ abstract class BaseUploadService {
         return
     }
 
+    class AnnexResult(id: String = "", var name: String = "", url: String = "", var videoLogUrl: String = "") :
+        IdUrl(id, url)
+
     /**
      * 文件上传
      */
@@ -187,7 +191,7 @@ abstract class BaseUploadService {
         group: String,
         user: IdName,
         corpId: String,
-    ): ListResult<SysAnnex> {
+    ): ListResult<AnnexResult> {
         var list = mutableListOf<SysAnnex>()
 
         var msg = ""
@@ -223,7 +227,7 @@ abstract class BaseUploadService {
             return ListResult.error(msg);
         }
 
-        return ListResult.of(list)
+        return ListResult.of(list.map { AnnexResult(it.id, it.name, it.url, it.videoLogoUrl) })
     }
 
     /**
