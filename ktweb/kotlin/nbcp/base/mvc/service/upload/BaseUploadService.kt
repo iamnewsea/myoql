@@ -179,7 +179,7 @@ abstract class BaseUploadService {
         return
     }
 
-    class AnnexResult(id: String = "", var name: String = "", url: String = "", var videoLogUrl: String = "") :
+    class AnnexResult(id: String = "", var name: String = "", url: String = "", var videoLogUrl: String? = null) :
         IdUrl(id, url)
 
     /**
@@ -227,7 +227,14 @@ abstract class BaseUploadService {
             return ListResult.error(msg);
         }
 
-        return ListResult.of(list.map { AnnexResult(it.id, it.name, it.url, it.videoLogoUrl) })
+        return ListResult.of(list.map {
+            AnnexResult(
+                it.id,
+                it.name,
+                it.url,
+                if (it.videoLogoUrl.HasValue) it.videoLogoUrl else null
+            )
+        })
     }
 
     /**
