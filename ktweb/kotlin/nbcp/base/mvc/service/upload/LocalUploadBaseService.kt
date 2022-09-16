@@ -3,6 +3,7 @@ package nbcp.base.mvc.service.upload
 import nbcp.comm.FullName
 import nbcp.comm.HasValue
 import nbcp.comm.JsonResult
+import nbcp.utils.MyUtil
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.io.File
@@ -23,7 +24,7 @@ class LocalUploadBaseService : ISaveFileService {
     @Value("\${app.upload.local.path:}")
     var UPLOAD_LOCAL_PATH: String = ""
 
-      fun check(): Boolean {
+    fun check(): Boolean {
         return UPLOAD_LOCAL_HOST.HasValue && UPLOAD_LOCAL_PATH.HasValue
     }
 
@@ -32,7 +33,7 @@ class LocalUploadBaseService : ISaveFileService {
             return "";
         }
 
-        val targetFileName = UPLOAD_LOCAL_HOST + fileData.getTargetFileName(File.separatorChar)
+        val targetFileName = MyUtil.joinFilePath(UPLOAD_LOCAL_PATH, fileData.getTargetFileName(File.separatorChar))
 
         val targetFile = File(targetFileName);
 
@@ -47,7 +48,8 @@ class LocalUploadBaseService : ISaveFileService {
                 throw java.lang.RuntimeException("保存文件失败： ${targetFile.parentFile.FullName}")
             }
         }
-        return targetFileName;
+
+        return MyUtil.joinUrl(UPLOAD_LOCAL_HOST, fileData.getTargetFileName('/'));
     }
 
     override fun delete(url: String): JsonResult {

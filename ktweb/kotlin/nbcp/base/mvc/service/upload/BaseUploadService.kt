@@ -101,7 +101,11 @@ abstract class BaseUploadService {
 //        fileData.imgHeight = annexInfo.imgHeight;
         annexInfo.corpId = corpId
 
-        annexInfo.url = saveFile(storageType, fileStream, annexInfo.group, fileData).replace("\\", "/")
+        annexInfo.url = saveFile(storageType, fileStream, annexInfo.group, fileData)
+
+        if (annexInfo.url.isEmpty()) {
+            return ApiResult.error("保存文件出错")
+        }
 
 
         if (dbService.insert(annexInfo) == 0) {
@@ -124,6 +128,7 @@ abstract class BaseUploadService {
      *      2.2.如果是商城用户,企业Id = shop
      * 3. 第三级目录,是 后缀名
      * 4. 如果是图片，第四级目录是原图片的像素数/万 ，如 800*600 = 480000,则文件夹名为 48 。 忽略小数部分。这样对大部分图片大体归类。
+     * @return 返回网络可访问地址。
      */
     abstract fun saveFile(
         storageType: String,
