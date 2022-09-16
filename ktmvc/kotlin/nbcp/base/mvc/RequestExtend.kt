@@ -238,55 +238,79 @@ fun HttpServletRequest.findParameterIntValue(key: String): Int {
     return this.findParameterValue(key).AsInt()
 }
 
-
-/**
- * 从request属性，Path变量， URL ， Form表单，Header 中查找参数
- */
-fun HttpServletRequest.findParameterValue(key: String): Any? {
-    var ret = this.getAttribute(key)
+private fun doFindParameterValue(request: HttpServletRequest, key: String): Any? {
+    var ret = request.getAttribute(key)
     if (ret != null) {
         return ret;
     }
 
-    ret = (this.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as Map<String, Any?>?)?.get(key)
+    ret = (request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as Map<String, Any?>?)?.get(key)
     if (ret != null) {
         return ret;
     }
 
-    ret = this.queryJson.get(key)
+    ret = request.queryJson.get(key)
     if (ret != null) {
         return ret;
     }
 
 
-    var ret2 = this.parameterMap.get(key)
+    var ret2 = request.parameterMap.get(key)
     if (ret2 != null && ret2.any()) {
         return ret2.joinToString(",");
     }
 
-    ret = this.getPostJson().get(key)
+    ret = request.getPostJson().get(key)
     if (ret != null) {
         return ret;
     }
 
 
     //读取表单内容
-    if (this.contentType != null &&
-        (this.contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                || this.contentType.startsWith("application/x-www-form-urlencode"))
+    if (request.contentType != null &&
+        (request.contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                || request.contentType.startsWith("application/x-www-form-urlencode"))
     ) {
-        ret = this.getParameter(key)
+        ret = request.getParameter(key)
         if (ret != null) {
             return ret;
         }
     }
 
-    ret = this.getHeader(key)
+    ret = request.getHeader(key)
     if (ret != null) {
         return ret;
     }
 
     return null;
+}
+
+
+/**
+ * 从request属性，Path变量， URL ， Form表单，Header 中查找参数
+ */
+fun HttpServletRequest.findParameterValue(key: String): Any? {
+    var ret = doFindParameterValue(this, key);
+    if (ret != null) {
+        return ret;
+    }
+
+    //兼容查询
+    if (MyUtil.isKebabCase(key)) {
+        var key2 = MyUtil.getSmallCamelCase(key);
+        if (key != key2) {
+            ret = doFindParameterValue(this, key2);
+        }
+
+        return ret;
+    }
+    
+    var kKey = MyUtil.getKebabCase(key);
+    if (kKey != key) {
+        ret = doFindParameterValue(this, kKey);
+    }
+
+    return ret;
 }
 
 /**

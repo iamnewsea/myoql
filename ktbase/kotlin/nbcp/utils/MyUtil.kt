@@ -860,6 +860,14 @@ object MyUtil {
     }
 
     /**
+     * 是否是短横线格式
+     */
+    @JvmStatic
+    fun isKebabCase(value: String): Boolean {
+        return value.split("-").any { allCharIsLowerCase(it) }
+    }
+
+    /**
      * 短横线格式，全小写
      */
     @JvmStatic
