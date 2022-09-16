@@ -2,6 +2,7 @@ package nbcp.utils
 
 import nbcp.comm.AsString
 import nbcp.comm.StringMap
+import nbcp.comm.getByIgnoreCaseKey
 import org.apache.http.HttpHeaders
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
