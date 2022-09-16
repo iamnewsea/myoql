@@ -33,13 +33,14 @@ abstract class BaseUploadService {
      * @param vTempFile , 相对于 uploadPath 的相对路径.
      */
     fun uploadRequestFile(
-        storageType: String,
         file: MultipartFile,
         group: String,
         fileName: String,
         user: IdName,
         corpId: String
     ): ApiResult<SysAnnex> {
+        var storageType = config.getConfig("app.upload.storageType").AsString("")
+
         var fileStream = file.inputStream;
 
         var extInfo = FileExtensionInfo.ofFileName(fileName)
@@ -143,7 +144,6 @@ abstract class BaseUploadService {
     protected open fun upload(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        storageType: String,
         group: String
     ) {
 
@@ -152,7 +152,6 @@ abstract class BaseUploadService {
         }
 
         val ret = uploadRequest(
-            storageType.AsString { request.findParameterStringValue("storageType") },
             request,
             group.AsString { request.findParameterStringValue("group") },
             IdName(request.UserId, request.UserName),
@@ -186,7 +185,6 @@ abstract class BaseUploadService {
      * 文件上传
      */
     private fun uploadRequest(
-        storageType: String,
         request: StandardMultipartHttpServletRequest,
         group: String,
         user: IdName,
@@ -210,7 +208,7 @@ abstract class BaseUploadService {
 
                 files.ForEachExt for2@{ file, _ ->
                     fileName = getBestFileName(file.originalFilename, fileName)
-                    var ret1 = uploadRequestFile(storageType, file, group, fileName, user, corpId);
+                    var ret1 = uploadRequestFile(file, group, fileName, user, corpId);
                     if (ret1.msg.HasValue) {
                         msg = ret1.msg;
                         return@ForEachExt false

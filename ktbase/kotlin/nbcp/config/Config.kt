@@ -1,5 +1,6 @@
 package nbcp.comm
 
+import nbcp.utils.MyUtil
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
@@ -125,8 +126,7 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
             return cacheValue.AsString()
         }
 
-        @JvmStatic
-        fun getConfig(key: String): String? {
+        private fun doGetConfig(key: String): String? {
             if (contextField == null) {
                 return env?.getProperty(key)
             }
@@ -139,6 +139,32 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
                 cache.set(key, cacheValue);
             }
             return cacheValue
+        }
+
+        @JvmStatic
+        fun getConfig(key: String): String? {
+            var ret = doGetConfig(key);
+            if (ret != null) {
+                return ret;
+            }
+
+            var key2 = key.split(".").map { MyUtil.getKebabCase(it) }.joinToString(".")
+            if (key != key2) {
+                ret = doGetConfig(key2);
+                if (ret != null) {
+                    return ret;
+                }
+            }
+
+            key2 = key.split(".").map { MyUtil.getSmallCamelCase(it) }.joinToString(".")
+            if (key != key2) {
+                ret = doGetConfig(key2);
+                if (ret != null) {
+                    return ret;
+                }
+            }
+
+            return ret;
         }
 
 
