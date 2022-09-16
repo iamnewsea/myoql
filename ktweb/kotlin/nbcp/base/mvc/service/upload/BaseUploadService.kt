@@ -152,7 +152,7 @@ abstract class BaseUploadService {
         }
 
         val ret = uploadRequest(
-            storageType.AsString { request.findParameterStringValue("storage-type") },
+            storageType.AsString { request.findParameterStringValue("storageType") },
             request,
             group.AsString { request.findParameterStringValue("group") },
             IdName(request.UserId, request.UserName),

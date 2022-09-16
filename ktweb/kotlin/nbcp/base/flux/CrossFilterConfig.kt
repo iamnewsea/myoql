@@ -87,7 +87,14 @@ class CrossFilterConfig {
                 errorInfo.add("(" + exchange.response.statusCode + ") " + exchange.request.uri.toString() + ", token:" + token)
 
 
-                for (key in exchange.request.headers.keys.filter { it.IsIn("token", "api-token", ignoreCase = true) }) {
+                for (key in exchange.request.headers.keys.filter {
+                    it.IsIn(
+                        "token",
+                        "api-token",
+                        "apiToken",
+                        ignoreCase = true
+                    )
+                }) {
                     errorInfo.add("\t${key}: ${exchange.request.headers.get(key)?.joinToString()}")
                 }
 
@@ -111,9 +118,9 @@ class CrossFilterConfig {
     private fun getLogLevel(httpRequest: ServerHttpRequest): LogLevelScope? {
         var logLevel: Level? = null;
 
-        var logLevelString = httpRequest.queryJson.get("log-level").AsString();
+        var logLevelString = httpRequest.queryJson.findParameterKey("logLevel").AsString();
         if (logLevelString.HasValue &&
-            config.adminToken == httpRequest.queryJson.get("admin-token")
+            config.adminToken == httpRequest.queryJson.findParameterKey("adminToken")
         ) {
             if (logLevelString.IsNumberic()) {
                 var logLevelInt = logLevelString.AsInt()

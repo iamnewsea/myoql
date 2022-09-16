@@ -108,9 +108,9 @@ open class MyAllFilter : Filter {
     private fun getLogLevel(httpRequest: HttpServletRequest): LogLevelScope? {
         var logLevel: Level? = null;
 
-        var logLevelString = httpRequest.queryJson.get("log-level").AsString();
+        var logLevelString = httpRequest.queryJson.findParameterKey("logLevel").AsString();
         if (logLevelString.HasValue &&
-            config.adminToken == httpRequest.findParameterStringValue("admin-token")
+            config.adminToken == httpRequest.findParameterStringValue("adminToken")
         ) {
             if (logLevelString.IsNumberic()) {
                 var logLevelInt = logLevelString.AsInt()
@@ -294,7 +294,11 @@ open class MyAllFilter : Filter {
 
             if (resStringValue.HasValue) {
                 msgs.add("[response body]:")
-                val logResLength = request.queryJson.get("-log-res-length-").AsInt(1024);
+                var logResLength = request.getParameterValue("res-log-length").AsInt();
+                if (logResLength <= 0) {
+                    logResLength = config.getConfig("app.res-log-length").AsInt(1024);
+                }
+
                 var subLen = logResLength / 2;
 
                 if (resStringValue.length > logResLength) {

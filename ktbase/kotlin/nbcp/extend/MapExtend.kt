@@ -22,6 +22,46 @@ import kotlin.collections.LinkedHashMap
 //    this.put(newKey, value);
 //}
 
+
+/**
+ * 1. 不区分大小写。
+ * 2. 兼容 KebabCase
+ */
+fun Map<*, *>.findParameterKey(key: String): Any? {
+    var ret = this.getByIgnoreCaseKey(key);
+    if (ret != null) {
+        return ret;
+    }
+
+    //兼容查询
+    if (MyUtil.isKebabCase(key)) {
+        var key2 = MyUtil.getSmallCamelCase(key);
+        if (key != key2) {
+            ret = this.getByIgnoreCaseKey(key2);
+        }
+
+        return ret;
+    }
+
+    var kKey = MyUtil.getKebabCase(key);
+    if (kKey != key) {
+        ret = this.getByIgnoreCaseKey(kKey);
+    }
+    return ret;
+}
+
+/**
+ * 忽略大小写获取键值
+ */
+fun Map<*, *>.getByIgnoreCaseKey(key: String): Any? {
+    var key2 = this.keys.firstOrNull { it basicSame key };
+    if (key2 == null) {
+        return null
+    }
+    return this[key2];
+}
+
+
 inline fun <reified K, reified V, reified RK, reified RV> Map<K, V>.ToMap(
     keyAct: ((Map.Entry<K, V>) -> RK),
     valueAct: ((Map.Entry<K, V>) -> RV)

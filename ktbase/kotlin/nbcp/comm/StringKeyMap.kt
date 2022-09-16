@@ -3,6 +3,7 @@ package nbcp.comm
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
 import org.slf4j.LoggerFactory
 import nbcp.comm.*
+import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
 import java.io.Serializable
 
@@ -39,17 +40,6 @@ open class StringKeyMap<T> : LinkedHashMap<String, T> {
         for (p in pairs) {
             this.put(p.first, p.second);
         }
-    }
-
-    /**
-     * 忽略大小写获取键值
-     */
-    fun getByIgnoreCaseKey(key: String): T? {
-        var key2 = this.keys.firstOrNull { it basicSame key };
-        if (key2 == null) {
-            return null
-        }
-        return this[key2];
     }
 
 

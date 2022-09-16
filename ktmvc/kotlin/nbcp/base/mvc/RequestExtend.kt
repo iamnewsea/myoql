@@ -238,7 +238,11 @@ fun HttpServletRequest.findParameterIntValue(key: String): Int {
     return this.findParameterValue(key).AsInt()
 }
 
-private fun doFindParameterValue(request: HttpServletRequest, key: String): Any? {
+/**
+ * 不转换Key，直接获取。
+ */
+fun HttpServletRequest.getParameterValue(key: String): Any? {
+    var request = this;
     var ret = request.getAttribute(key)
     if (ret != null) {
         return ret;
@@ -290,7 +294,7 @@ private fun doFindParameterValue(request: HttpServletRequest, key: String): Any?
  * 从request属性，Path变量， URL ， Form表单，Header 中查找参数
  */
 fun HttpServletRequest.findParameterValue(key: String): Any? {
-    var ret = doFindParameterValue(this, key);
+    var ret = this.getParameterValue(key);
     if (ret != null) {
         return ret;
     }
@@ -299,15 +303,15 @@ fun HttpServletRequest.findParameterValue(key: String): Any? {
     if (MyUtil.isKebabCase(key)) {
         var key2 = MyUtil.getSmallCamelCase(key);
         if (key != key2) {
-            ret = doFindParameterValue(this, key2);
+            ret = this.getParameterValue(key2);
         }
 
         return ret;
     }
-    
+
     var kKey = MyUtil.getKebabCase(key);
     if (kKey != key) {
-        ret = doFindParameterValue(this, kKey);
+        ret = this.getParameterValue(kKey);
     }
 
     return ret;

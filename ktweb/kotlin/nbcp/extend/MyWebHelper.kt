@@ -123,14 +123,7 @@ fun getJwtUserId(value: String): String {
         .parseClaimsJws(value)
         .getBody();
 
-
-    var userIdKey = claims.keys.firstOrNull { it basicSame "userId" } ?: claims.keys.first { it basicSame "user-id" }
-
-    if (userIdKey.HasValue) {
-        return claims.getStringValue(userIdKey!!) ?: "";
-    }
-
-    return "";
+    return claims.findParameterKey("userId").AsString()
 }
 
 /**
