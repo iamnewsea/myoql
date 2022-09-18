@@ -27,13 +27,22 @@ class LocalUploadBaseService : ISaveFileService {
     @Value("\${app.upload.local.path:}")
     var UPLOAD_LOCAL_PATH: String = ""
 
-    fun check(): Boolean {
-        return UPLOAD_LOCAL_HOST.HasValue && UPLOAD_LOCAL_PATH.HasValue
+    fun check(): String {
+        if (UPLOAD_LOCAL_HOST.isEmpty()) {
+            return "app.upload.local.host 配置为空!"
+        }
+        if (UPLOAD_LOCAL_PATH.isEmpty()) {
+            return "app.upload.local.path 配置为空!"
+        }
+
+        return "";
     }
 
     override fun save(fileStream: InputStream, group: String, fileData: UploadFileNameData): String {
-        if (check() == false) {
-            return "";
+        check().apply {
+            if (this.HasValue) {
+                return this;
+            }
         }
 
         val targetFileName =
