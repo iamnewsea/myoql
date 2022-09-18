@@ -1,9 +1,8 @@
 package nbcp.base.mvc.service.upload
 
-import nbcp.comm.FullName
-import nbcp.comm.HasValue
-import nbcp.comm.JsonResult
+import nbcp.comm.*
 import nbcp.utils.MyUtil
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.io.File
@@ -12,6 +11,10 @@ import java.io.InputStream
 
 @Service
 class LocalUploadBaseService : ISaveFileService {
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    }
+
     /**
      * 上传到本地时使用该配置,最后不带 "/"
      */
@@ -33,7 +36,8 @@ class LocalUploadBaseService : ISaveFileService {
             return "";
         }
 
-        val targetFileName = MyUtil.joinFilePath(UPLOAD_LOCAL_PATH, fileData.getTargetFileName(File.separatorChar))
+        val targetFileName =
+            MyUtil.joinFilePath(UPLOAD_LOCAL_PATH, group, fileData.getTargetFileName(File.separatorChar))
 
         val targetFile = File(targetFileName);
 
@@ -45,14 +49,24 @@ class LocalUploadBaseService : ISaveFileService {
 
         FileOutputStream(targetFile).use {
             if (fileStream.copyTo(it) <= 0) {
-                throw java.lang.RuntimeException("保存文件失败： ${targetFile.parentFile.FullName}")
+                throw java.lang.RuntimeException("保存文件失败： ${targetFile.FullName}")
             }
+
+            logger.Important("文件保存成功: ${targetFile.FullName}")
         }
 
-        return MyUtil.joinUrl(UPLOAD_LOCAL_HOST, fileData.getTargetFileName('/'));
+        return MyUtil.joinUrl(UPLOAD_LOCAL_HOST, group, fileData.getTargetFileName('/'));
     }
 
     override fun delete(url: String): JsonResult {
-        throw NotImplementedError("未实现!")
+        var index = url.indexOf("//");
+        if (index < 0) return JsonResult.error("url非法")
+
+        var sects = url.Slice(index + 2).split("/");
+        var path = MyUtil.joinFilePath(UPLOAD_LOCAL_PATH, sects.Skip(1).joinToString(File.separator))
+
+        File(path).delete()
+
+        return JsonResult()
     }
 }
