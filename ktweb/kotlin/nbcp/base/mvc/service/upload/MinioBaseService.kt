@@ -98,7 +98,7 @@ class MinioBaseService : ISaveFileService {
 //            )
 //        }
 
-        val fileName = fileData.getTargetFileName('/')
+        val fileName = fileData.getTargetFileName().joinToString("/")
 
         //类型
         val contentType = MyUtil.getMimeType(fileData.extName).AsString("application/octet-stream")

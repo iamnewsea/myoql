@@ -43,7 +43,7 @@ class UploadFileNameData @JvmOverloads constructor(var msg: String = "") {
     /**
      * 保存全路径
      */
-    fun getTargetFileName(separator: Char): String {
+    fun getTargetFileName(): List<String> {
         val targetFileName = mutableListOf<String>()
 
         if (corpId.HasValue) {
@@ -56,6 +56,6 @@ class UploadFileNameData @JvmOverloads constructor(var msg: String = "") {
             targetFileName.add(fileName)
         }
 
-        return targetFileName.map { separator + it }.joinToString("")
+        return targetFileName
     }
 }

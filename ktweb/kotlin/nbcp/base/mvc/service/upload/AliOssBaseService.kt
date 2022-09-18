@@ -53,7 +53,7 @@ class AliOssBaseService : ISaveFileService {
         metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString())
         metadata.setContentLength(contentLength.toLong())
 
-        val fileName = fileData.getTargetFileName('/')
+        val fileName = fileData.getTargetFileName().joinToString("/")
 
         ossClient.putObject(group, fileName, fileStream, metadata);
 

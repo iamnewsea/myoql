@@ -45,8 +45,10 @@ class LocalUploadBaseService : ISaveFileService {
             }
         }
 
+        var fileNames = fileData.getTargetFileName()
+
         val targetFileName =
-            MyUtil.joinFilePath(UPLOAD_LOCAL_PATH, group, fileData.getTargetFileName(File.separatorChar))
+            MyUtil.joinFilePath(UPLOAD_LOCAL_PATH, group, fileNames.joinToString(File.separator))
 
         val targetFile = File(targetFileName);
 
@@ -64,7 +66,7 @@ class LocalUploadBaseService : ISaveFileService {
             logger.Important("文件保存成功: ${targetFile.FullName}")
         }
 
-        return MyUtil.joinUrl(UPLOAD_LOCAL_HOST, group, fileData.getTargetFileName('/'));
+        return MyUtil.joinUrl(UPLOAD_LOCAL_HOST, group, fileNames.joinToString("/"));
     }
 
     override fun delete(url: String): JsonResult {
