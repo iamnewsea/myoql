@@ -141,6 +141,18 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
                 return null;
             }
 
+            if (value is String) {
+                var strValue = value.AsString();
+
+                if (genType.isEnum) {
+                    value = strValue.split(",").filter { it.HasValue }.map { it.ToEnum(genType) }
+                } else if (genType.IsStringType) {
+                    value = strValue.split(",")
+                } else if (genType.IsNumberType) {
+                    value = strValue.split(",").map { it.ConvertType(genType) }
+                }
+            }
+
             try {
                 value = value.ConvertType(parameter.parameterType, genType)
             } catch (e: Exception) {
@@ -156,6 +168,19 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
                 return null;
             }
 
+            var genType = parameter.parameterType.componentType;
+            if (value is String) {
+                var strValue = value.AsString();
+
+                if (genType.isEnum) {
+                    value = strValue.split(",").filter { it.HasValue }.map { it.ToEnum(genType) }
+                } else if (genType.IsStringType) {
+                    value = strValue.split(",")
+                } else if (genType.IsNumberType) {
+                    value = strValue.split(",").map { it.ConvertType(genType) }
+                }
+            }
+
             try {
                 value = value.ConvertType(parameter.parameterType)
             } catch (e: Exception) {
@@ -169,7 +194,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
             return value;
         }
 
-        //转换枚举、Map之类的。
+        //转换枚举Map之类的。
         if (value == null) {
             return null;
         }
