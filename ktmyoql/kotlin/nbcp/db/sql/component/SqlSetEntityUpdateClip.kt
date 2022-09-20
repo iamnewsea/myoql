@@ -155,7 +155,7 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEnt
             setValues.put(it.key, it.value)
         }
         setValues.forEach {
-            this.sqlUpdate.sets.put(it.key, it.value);
+            this.sqlUpdate.setData.put(it.key, it.value);
         }
 
         this.sqlUpdate.whereDatas.and(where);

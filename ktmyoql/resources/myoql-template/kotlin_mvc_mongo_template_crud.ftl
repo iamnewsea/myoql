@@ -109,7 +109,6 @@ class ${entity}AutoController {
 
         mor.${w(group)}.${entityField}.updateById(id)
             .set { it.status to status }
-            .set { it.updateAt to LocalDateTime.now() }
             .exec()
             .apply {
                 if (this == 0) {

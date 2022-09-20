@@ -11,4 +11,8 @@ class SqlColumnNames() : ArrayList<SqlColumnName>(), Serializable {
     fun containsColumn(name: String): Boolean {
         return this.any { it.name == name }
     }
+
+    fun getColumn(name: String): SqlColumnName? {
+        return this.firstOrNull { it.name == name }
+    }
 }

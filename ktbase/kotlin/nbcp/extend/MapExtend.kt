@@ -85,6 +85,14 @@ inline fun <reified T, reified RK, reified RV> Collection<T>.ToMap(
 }
 
 
+/**
+ * 移除项
+ */
+fun <K, V> MutableMap<K, V>.removeAll(key: (K) -> Boolean): MutableMap<K, V> {
+    this.keys.filter(key).forEach { this.remove(it) }
+    return this;
+}
+
 fun <V> MutableMap<String, V>.onlyHoldKeys(keys: Set<String>) {
     this.keys.minus(keys.toTypedArray()).forEach {
         this.remove(it)

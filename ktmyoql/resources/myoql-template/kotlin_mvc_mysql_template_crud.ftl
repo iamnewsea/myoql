@@ -108,7 +108,6 @@ class ${entity}AutoController {
 
         dbr.${w(group)}.${entity}.updateBy${W(idKey)}(${idKey})
             .set { it.status to status }
-            .set { it.updateAt to LocalDateTime.now() }
             .exec()
             .apply {
                 if (this == 0) {

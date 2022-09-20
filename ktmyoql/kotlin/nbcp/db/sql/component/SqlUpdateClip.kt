@@ -19,7 +19,7 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity:
     }
 
     val whereDatas = WhereData()
-    val sets = linkedMapOf<SqlColumnName, Any?>()
+    val setData = mutableMapOf<SqlColumnName, Any?>()
 
     //默认是-1
     private var take = -1;
@@ -41,20 +41,20 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity:
     fun set(set: (M) -> Pair<SqlColumnName, Any?>): SqlUpdateClip<M> {
         var p = set(this.mainEntity)
         if (p.second == null) {
-            this.sets.put(p.first, null);
+            this.setData.put(p.first, null);
         } else {
             var value = p.second!!;
             if (value is Collection<*>) {
                 value = JsonList(value)
             }
-            this.sets.put(p.first, proc_value(value))
+            this.setData.put(p.first, proc_value(value))
         }
         return this
     }
 
     fun unset(set: (M) -> SqlColumnName): SqlUpdateClip<M> {
         var p = set(this.mainEntity)
-        this.sets.remove(p)
+        this.setData.remove(p)
         return this
     }
 
@@ -101,7 +101,7 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity:
             throw RuntimeException("不允许执行没有 where 条件的 update ${mainEntity.tableName} 语句")
         }
 
-        if (sets.any() == false) {
+        if (setData.any() == false) {
             throw RuntimeException("update ${mainEntity.tableName}  where 需要 set 语句")
         }
 
@@ -130,8 +130,8 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity:
 //        var tab_converter = dbr.converter.filter { it.key.tableName == this.mainEntity.tableName }
 //                .mapKeys { it.key.name }
 
-        sets.keys.forEachIndexed { index, setKey ->
-            var setValue = sets.filterKeys { it.name == setKey.name }.values.firstOrNull()
+        setData.keys.forEachIndexed { index, setKey ->
+            var setValue = setData.filterKeys { it.name == setKey.name }.values.firstOrNull()
 
             if (index > 0) {
                 ret.expression += " , "
