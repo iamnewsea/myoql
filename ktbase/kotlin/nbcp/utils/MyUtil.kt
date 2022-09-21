@@ -64,6 +64,22 @@ object MyUtil {
         return "http://" + host;
     }
 
+    /**
+     * @sample  \\344\\270\\212\\347\\272\\277  --> 上线
+     */
+    @JvmStatic
+    fun getStringFromFanOctalCode(fanHex: String): String {
+        if (fanHex.startsWith("\\") == false) {
+            throw RuntimeException("必须以反斜线开头")
+        }
+
+        return fanHex.substring(1)
+            .split("\\")
+            .map { it.toInt(8).toByte() }
+            .toByteArray()
+            .toUtf8String()
+    }
+
     @JvmStatic
     fun getHostUrlWithoutHttp(host: String): String {
         if (host.isEmpty()) return ""

@@ -39,9 +39,9 @@ class testa : TestBase() {
     }
 
     data class abc(
-            var t: LocalDateTime = LocalDateTime.now(),
-            var i: Date = Date(),
-            var l: LocalDate = LocalDate.now()
+        var t: LocalDateTime = LocalDateTime.now(),
+        var i: Date = Date(),
+        var l: LocalDate = LocalDate.now()
     )
 
     @Test
@@ -63,18 +63,15 @@ class testa : TestBase() {
     fun abcd() {
         for (i in 1 until 1000) {
             var now = LocalDateTime.now();
-            println( now.AsString() + "  " +  System.nanoTime())
+            println(now.AsString() + "  " + System.nanoTime())
         }
     }
 
     @Test
     fun abcd2() {
-        println(65.toChar())
-    }
-
-    @Test
-    fun rou() {
-
+//        var a = const.utf8.encode("上").toByteArray().map { it.toUByte().toString(16) }
+//        println(a)
+        println(MyUtil.getStringFromFanOctalCode("\\344\\270\\212\\347\\272\\277"))
     }
 
     fun execCmd(vararg cmds: String): ListResult<String> {
