@@ -4,16 +4,19 @@ import nbcp.TestBase
 import nbcp.comm.*
 import nbcp.db.db
 import nbcp.db.mongo.*
+import nbcp.scope.JsonStyleEnumScope
 import org.junit.jupiter.api.Test
+import org.springframework.data.mongodb.core.query.Criteria
 import java.time.LocalDateTime
 
 class Test_Mongo_Query : TestBase() {
 
     @Test
     fun clone() {
-        var d = MongoColumnName("ok")
-        var d2 = d.CloneObject();
-        println(d2.toString())
+        var query = db.morBase.sysLog.query()
+            .where{ it.id.match_hasValue()}
+
+        println(query.whereData.ToJson(JsonStyleEnumScope.WithNull))
     }
 
     @Test
