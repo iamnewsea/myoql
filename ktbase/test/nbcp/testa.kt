@@ -71,7 +71,7 @@ class testa : TestBase() {
     fun abcd2() {
 //        var a = const.utf8.encode("上").toByteArray().map { it.toUByte().toString(16) }
 //        println(a)
-        println(MyUtil.getStringFromFanOctalCode("\\344\\270\\212\\347\\272\\277"))
+        println(MyUtil.decodeStringFromFanOctalCode("\\344\\270\\212\\347\\272\\277"))
     }
 
     fun execCmd(vararg cmds: String): ListResult<String> {

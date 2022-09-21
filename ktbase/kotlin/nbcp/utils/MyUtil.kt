@@ -68,7 +68,7 @@ object MyUtil {
      * @sample  \\344\\270\\212\\347\\272\\277  --> 上线
      */
     @JvmStatic
-    fun getStringFromFanOctalCode(fanHex: String): String {
+    fun decodeStringFromFanOctalCode(fanHex: String): String {
         if (fanHex.startsWith("\\") == false) {
             throw RuntimeException("必须以反斜线开头")
         }
