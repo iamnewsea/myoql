@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 
 
 //@Component("DbJson")
-class DbJsonMapper private constructor() : ObjectMapper() {
+class DbJsonMapper () : ObjectMapper() {
     companion object {
         val INSTANCE: DbJsonMapper by lazy {
             return@lazy DbJsonMapper();

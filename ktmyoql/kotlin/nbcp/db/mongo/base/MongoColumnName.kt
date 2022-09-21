@@ -127,7 +127,6 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
     }
 
 
-
     infix fun match_size(value: Int): Criteria {
         return Criteria.where(this.toString()).size(value);
     }
@@ -208,17 +207,19 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
      * field match_hasValue  => field exists  and field != null and field != ""
      */
     fun match_hasValue(): Criteria {
-        return this.match_exists().match_and(this.match_not_equal(null).match_or(this.match_not_equal("")));
+        var where = Criteria();
+
+        where.andOperator(this.match_exists(), this.match_not_equal(null), this.match_not_equal(""))
+        return where;
     }
 
     /**
      * field match_isNull => field not exists  or field == null  or field == ""
      */
     fun match_isNullOrEmpty(): Criteria {
-        return this.match_exists(false).match_or(this.match(null).match_or(this.match("")));
+        return match_hasValue().not()
+//        return this.match_exists(false).match_or(this.match(null).match_or(this.match("")));
     }
-
-
 
 
     /**
@@ -227,7 +228,7 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
     /**
      * 另一种形式的条件。值可以是字段。
      */
-    fun match_expr (op:String, to: MongoColumnName): Criteria {
+    fun match_expr(op: String, to: MongoColumnName): Criteria {
         var d2 = BasicDBList();
         d2.add("$" + this.toString())
         d2.add("$" + to)
@@ -239,39 +240,34 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
     }
 
     infix fun match_expr_equal(to: MongoColumnName): Criteria {
-        return this.match_expr("eq",to);
+        return this.match_expr("eq", to);
     }
 
 
     infix fun match_expr_not_equal(to: MongoColumnName): Criteria {
-        return this.match_expr("ne",to);
+        return this.match_expr("ne", to);
     }
 
     infix fun match_expr_gte(to: MongoColumnName): Criteria {
-        return this.match_expr("gte",to);
+        return this.match_expr("gte", to);
     }
 
     infix fun match_expr_lte(to: MongoColumnName): Criteria {
-        return this.match_expr("lte",to);
+        return this.match_expr("lte", to);
     }
 
 
     infix fun match_expr_greaterThan(to: MongoColumnName): Criteria {
-        return this.match_expr("gt",to);
+        return this.match_expr("gt", to);
     }
 
     infix fun match_expr_lessThan(to: MongoColumnName): Criteria {
-        return this.match_expr("lt",to);
+        return this.match_expr("lt", to);
     }
 
     infix fun match_expr_between(to: MongoColumnName): Criteria {
-        return this.match_expr("between",to);
+        return this.match_expr("between", to);
     }
-
-
-
-
-
 
 
     operator fun plus(value: String): MongoColumnName {

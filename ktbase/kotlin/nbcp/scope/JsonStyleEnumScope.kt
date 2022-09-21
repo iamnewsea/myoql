@@ -1,6 +1,8 @@
 package nbcp.scope
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
+import nbcp.comm.initObjectMapper
 import nbcp.comm.scopes
 import nbcp.component.AppJsonMapper
 import nbcp.component.DbJsonMapper
@@ -19,23 +21,32 @@ enum class JsonSceneEnumScope : IScopeData {
 
 
 fun JsonSceneEnumScope?.getJsonMapper(): ObjectMapper {
-    var style: JsonSceneEnumScope? = this;
-    if (style == null) {
-        style = scopes.getLatest<JsonSceneEnumScope>()
+    var scene: JsonSceneEnumScope? = this;
+    if (scene == null) {
+        scene = scopes.getLatest<JsonSceneEnumScope>()
+    }
+    var styles = scopes.getScopeTypes<JsonStyleEnumScope>()
+    var withNull = styles.contains(JsonStyleEnumScope.WithNull)
+    if (withNull) {
+        var ret: ObjectMapper;
+        if (scene == JsonSceneEnumScope.Db) {
+            ret = DbJsonMapper()
+        } else if (scene == JsonSceneEnumScope.Web) {
+            ret = WebJsonMapper()
+        } else {
+            ret = AppJsonMapper();
+        }
+
+        ret.setSerializationInclusion(JsonInclude.Include.ALWAYS)
+        return ret;
     }
 
-    if (style == null) {
-        return SpringUtil.getBean<ObjectMapper>()
+    if (scene == JsonSceneEnumScope.Db) {
+        return DbJsonMapper.INSTANCE
+    } else if (scene == JsonSceneEnumScope.Web) {
+        return WebJsonMapper.INSTANCE
     }
-
-    if (style == JsonSceneEnumScope.App) {
-        return SpringUtil.getBean<AppJsonMapper>()
-    } else if (style == JsonSceneEnumScope.Db) {
-        return  DbJsonMapper.INSTANCE
-    } else if (style == JsonSceneEnumScope.Web) {
-        return  WebJsonMapper.INSTANCE
-    }
-    return SpringUtil.getBean<ObjectMapper>()
+    return SpringUtil.getBean<AppJsonMapper>()
 }
 
 enum class JsonStyleEnumScope private constructor(val mutexGroup: String) : IScopeData {

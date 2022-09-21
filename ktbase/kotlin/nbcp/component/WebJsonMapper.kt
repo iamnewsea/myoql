@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 
 
 //@Component("WebJson")
-class WebJsonMapper private constructor(): ObjectMapper() {
+class WebJsonMapper  (): ObjectMapper() {
     companion object {
         val INSTANCE: WebJsonMapper by lazy {
             return@lazy WebJsonMapper();

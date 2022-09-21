@@ -53,7 +53,8 @@ class MyOqlBsonBeanConfig : BeanPostProcessor {
         if (objectMapperProced) {
             objectMapperProced = true;
 
-            AppJsonMapper.extendObjectMappers.forEach { mapper ->
+            SpringUtil.context.getBeanNamesForType(ObjectMapper::class.java).forEach { name ->
+                var mapper = SpringUtil.context.getBean(name) as ObjectMapper;
                 mapper.addObjectMapperTypeModule(
                     ObjectId::class.java,
                     ObjectIdJsonSerializer(),

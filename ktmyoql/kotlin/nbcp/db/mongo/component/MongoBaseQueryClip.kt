@@ -45,7 +45,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
 
     /**
      * TODO 需要将 jsCallback 转化为Mongo的函数对象！
-     */
+    */
     fun where(jsCallback: String) {
         this.whereData.add(JsonMap("${'$'}where" to jsCallback));
     }

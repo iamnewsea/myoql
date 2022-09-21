@@ -57,9 +57,9 @@ fun <T> T.ToJson(vararg jsonScopes: JsonStyleEnumScope): String {
 fun <T> T.ToJson(style: JsonSceneEnumScope?, vararg jsonScopes: JsonStyleEnumScope): String {
     if (this is String) return this;
 
-    var mapper = style.getJsonMapper();
-
     usingScope(jsonScopes) {
+        var mapper = style.getJsonMapper();
+
         var styles = scopes.getScopeTypes<JsonStyleEnumScope>()
         if (styles.contains(JsonStyleEnumScope.Pretty)) {
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this) ?: ""

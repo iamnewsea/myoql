@@ -79,4 +79,11 @@ class TestKtExt_Json : TestBase() {
         var e = map.ConvertJson(ccc::class.java)
         println(e.a.b.c)
     }
+
+    @Test
+    fun withNul(){
+        var map = JsonMap("a" to null )
+        var e = map.ToJson(JsonStyleEnumScope.WithNull)
+        println(e)
+    }
 }
