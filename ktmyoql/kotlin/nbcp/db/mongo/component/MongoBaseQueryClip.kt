@@ -7,6 +7,7 @@ import nbcp.db.cache.FromRedisCache
 import nbcp.db.cache.getList
 import nbcp.db.cache.onlyGetFromCache
 import nbcp.db.cache.onlySetToCache
+import nbcp.scope.JsonStyleEnumScope
 import org.bson.Document
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.BasicQuery
@@ -45,9 +46,28 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
 
     /**
      * TODO 需要将 jsCallback 转化为Mongo的函数对象！
-    */
+     */
     fun where(jsCallback: String) {
         this.whereData.add(JsonMap("${'$'}where" to jsCallback));
+    }
+
+
+
+    fun whereOr(vararg wheres: Criteria) {
+        if (wheres.any() == false) return  ;
+        val where = Criteria();
+        where.orOperator(*wheres)
+        this.whereData.putAll(where.criteriaObject);
+    }
+
+    /**
+     * 对同一个字段多个条件时使用。
+     */
+    fun whereAnd(vararg wheres: Criteria)  {
+        if (wheres.any() == false) return  ;
+        var where = Criteria();
+        where.andOperator(*wheres)
+        this.whereData.putAll(where.criteriaObject);
     }
 
     /**
@@ -254,25 +274,27 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
 
     private fun getQueryScript(criteria: Criteria): String {
         var msgs = mutableListOf<String>()
-        msgs.add("[query] " + this.actualTableName);
-        msgs.add("[where] " + criteria.criteriaObject.ToJson())
-        if (selectColumns.any() || selectProjections.any()) {
-            msgs.add(
-                "[select] " + arrayOf(
-                    selectColumns.joinToString(","),
-                    selectProjections.ToJson()
-                ).joinToString(",")
-            )
-        }
+        usingScope(JsonStyleEnumScope.WithNull) {
+            msgs.add("[query] " + this.actualTableName);
+            msgs.add("[where] " + criteria.criteriaObject.ToJson())
+            if (selectColumns.any() || selectProjections.any()) {
+                msgs.add(
+                    "[select] " + arrayOf(
+                        selectColumns.joinToString(","),
+                        selectProjections.ToJson()
+                    ).joinToString(",")
+                )
+            }
 
-        if (unSelectColumns.any()) {
-            msgs.add("[unselect] " + unSelectColumns.joinToString(","))
-        }
-        if (sort.any()) {
-            msgs.add("[sort] " + sort.ToJson())
-        }
-        if (skip > 0 || take > 0) {
-            msgs.add("[limit] ${skip},${take}")
+            if (unSelectColumns.any()) {
+                msgs.add("[unselect] " + unSelectColumns.joinToString(","))
+            }
+            if (sort.any()) {
+                msgs.add("[sort] " + sort.ToJson())
+            }
+            if (skip > 0 || take > 0) {
+                msgs.add("[limit] ${skip},${take}")
+            }
         }
         return msgs.joinToString(const.line_break)
     }

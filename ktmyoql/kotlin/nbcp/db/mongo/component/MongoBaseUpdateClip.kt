@@ -4,6 +4,7 @@ import com.mongodb.client.result.UpdateResult
 import nbcp.comm.*
 import nbcp.db.MyOqlOrmScope
 import nbcp.db.db
+import nbcp.scope.JsonStyleEnumScope
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.CriteriaDefinition
@@ -45,6 +46,22 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         return ret;
     }
 
+    fun whereOr(vararg wheres: Criteria)  {
+        if (wheres.any() == false) return  ;
+        var where = Criteria();
+        where.orOperator(*wheres)
+        this.whereData.putAll(where.criteriaObject);
+    }
+
+    /**
+     * 对同一个字段多个条件时使用。
+     */
+    fun whereAnd(vararg wheres: Criteria)  {
+        if (wheres.any() == false) return  ;
+        var where = Criteria();
+        where.andOperator(*wheres)
+        this.whereData.putAll(where.criteriaObject);
+    }
 
     /**
      * 更新条件不能为空。
@@ -133,11 +150,12 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         var result: UpdateResult? = null;
         try {
             this.script = getUpdateScript(criteria, update)
-            result = getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).updateMulti(
-                query,
-                update,
-                actualTableName
-            );
+            result =
+                getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).updateMulti(
+                    query,
+                    update,
+                    actualTableName
+                );
 
             this.executeTime = LocalDateTime.now() - startAt
 
@@ -174,10 +192,11 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         update: org.springframework.data.mongodb.core.query.Update
     ): String {
         var msgs = mutableListOf<String>()
-        msgs.add("[update] " + this.actualTableName);
-        msgs.add("[where] " + where.criteriaObject.ToJson())
-        msgs.add("[update] " + update.updateObject.ToJson())
-
+        usingScope(JsonStyleEnumScope.WithNull) {
+            msgs.add("[update] " + this.actualTableName);
+            msgs.add("[where] " + where.criteriaObject.ToJson())
+            msgs.add("[update] " + update.updateObject.ToJson())
+        }
         return msgs.joinToString(const.line_break)
     }
 

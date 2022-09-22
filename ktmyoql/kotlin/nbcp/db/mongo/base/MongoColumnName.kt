@@ -25,6 +25,10 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
         return Criteria.where(key.AsString("\$eq")).`is`(toValue);// Pair<String, T>(this, to);
     }
 
+    /**
+     * 非。
+     * 注意，在数组中判断非，表示的是 全部非   not_equals "" 《===》  ! ( equals "" )
+     */
     infix fun match_not_equal(value: Any?): Criteria {
         val (key, toValue) = db.mongo.proc_mongo_key_value(this, value);
         return Criteria.where(key).`ne`(toValue)
@@ -127,11 +131,16 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
     }
 
 
+    /**
+     * 数组长度
+     */
     infix fun match_size(value: Int): Criteria {
         return Criteria.where(this.toString()).size(value);
     }
 
-    //array_all
+    /**
+     * 数组中所有项要满足, 没有对应的 any!
+     */
     infix fun match_all(to: Array<*>): Criteria {
         val (key, tos) = db.mongo.proc_mongo_key_value(this, to.toSet())
 
@@ -140,6 +149,7 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
         }
         return Criteria.where(key).`all`(*(tos as Collection<*>).toTypedArray());
     }
+
 
     infix fun match_type(to: MongoTypeEnum): Criteria {
         val (key, _) = db.mongo.proc_mongo_key_value(this, to);
@@ -208,7 +218,6 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
      */
     fun match_hasValue(): Criteria {
         var where = Criteria();
-
         where.andOperator(this.match_exists(), this.match_not_equal(null), this.match_not_equal(""))
         return where;
     }
@@ -217,8 +226,9 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
      * field match_isNull => field not exists  or field == null  or field == ""
      */
     fun match_isNullOrEmpty(): Criteria {
-        return match_hasValue().not()
-//        return this.match_exists(false).match_or(this.match(null).match_or(this.match("")));
+        var where = Criteria();
+        where.orOperator(this.match_exists(false), this.match(null), this.match(""))
+        return where;
     }
 
 
@@ -237,6 +247,17 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
         dict.put("$" + op, d2)
 
         return Criteria.where("$" + "expr").`is`(dict);
+    }
+
+    /**
+     * 慎用，拦截器可能部分失效
+     * @sample
+     *         db.getCollection('gitData').find({
+     *          "$where":  "this.folders.some(it=> it.config && it .config.docker._id.toString().length > 0 )"
+     *         })
+     */
+    fun match_where_script(script:String):Criteria{
+        return Criteria.where("$" + "where").`is`(script);
     }
 
     infix fun match_expr_equal(to: MongoColumnName): Criteria {

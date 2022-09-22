@@ -6,6 +6,7 @@ import nbcp.comm.*
 import nbcp.db.LogicalDelete
 import nbcp.db.MyOqlOrmScope
 import nbcp.db.db
+import nbcp.scope.JsonStyleEnumScope
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.slf4j.LoggerFactory
@@ -20,7 +21,7 @@ import java.time.LocalDateTime
  * MongoDelete
  */
 class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
-        MongoClipBase(moerEntity.tableName), IMongoWhere {
+    MongoClipBase(moerEntity.tableName), IMongoWhere {
 
     override val whereData = MongoWhereClip()
 
@@ -46,6 +47,23 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
         if (wheres.any() == false) return this;
         var where = Criteria();
         where.orOperator(*wheres)
+        this.whereData.putAll(where.criteriaObject);
+        return this;
+    }
+
+    /**
+     * 对同一个字段多个条件时使用。
+     */
+    fun whereAnd(vararg wheres: (M) -> Criteria): MongoDeleteClip<M> {
+        return whereAnd(*wheres.map { it(moerEntity) }.toTypedArray())
+    }
+    /**
+     * 对同一个字段多个条件时使用。
+     */
+    fun whereAnd(vararg wheres: Criteria): MongoDeleteClip<M> {
+        if (wheres.any() == false) return this;
+        var where = Criteria();
+        where.andOperator(*wheres)
         this.whereData.putAll(where.criteriaObject);
         return this;
     }
@@ -78,7 +96,11 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
         var query = Query.query(criteria)
         try {
             this.script = getDeleteScript(criteria);
-            result = getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).remove(query, actualTableName);
+            result =
+                getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).remove(
+                    query,
+                    actualTableName
+                );
             this.executeTime = LocalDateTime.now() - startAt
             ret = result.deletedCount.toInt()
             this.affectRowCount = ret;
@@ -102,9 +124,10 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
 
     private fun getDeleteScript(where: Criteria): String {
         var msgs = mutableListOf<String>()
-        msgs.add("[delete] " + this.actualTableName);
-        msgs.add("[where] " + where.criteriaObject.ToJson())
-
+        usingScope(JsonStyleEnumScope.WithNull) {
+            msgs.add("[delete] " + this.actualTableName);
+            msgs.add("[where] " + where.criteriaObject.ToJson())
+        }
         return msgs.joinToString(const.line_break)
     }
 }

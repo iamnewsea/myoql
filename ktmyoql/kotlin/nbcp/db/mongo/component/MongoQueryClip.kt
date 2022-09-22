@@ -114,14 +114,15 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
     }
 
     fun whereOr(vararg wheres: (M) -> Criteria): MongoQueryClip<M, E> {
-        return whereOr(*wheres.map { it(moerEntity) }.toTypedArray())
+        whereOr(*wheres.map { it(moerEntity) }.toTypedArray())
+        return this;
     }
 
-    fun whereOr(vararg wheres: Criteria): MongoQueryClip<M, E> {
-        if (wheres.any() == false) return this;
-        val where = Criteria();
-        where.orOperator(*wheres)
-        this.whereData.putAll(where.criteriaObject);
+    /**
+     * 对同一个字段多个条件时使用。
+     */
+    fun whereAnd(vararg wheres: (M) -> Criteria): MongoQueryClip<M, E> {
+        whereAnd(*wheres.map { it(moerEntity) }.toTypedArray())
         return this;
     }
 
