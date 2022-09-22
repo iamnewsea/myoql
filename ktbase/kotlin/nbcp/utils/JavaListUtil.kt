@@ -19,19 +19,19 @@ object JavaListUtil {
     fun <T> arrayListOf(vararg elements: T): ArrayList<T> = kotlin.collections.arrayListOf(*elements)
 
     @JvmStatic
-    fun <T> listOf(vararg elements: T): List<T> = kotlin.collections.listOf(*elements)
+    fun <T> listOf(vararg elements: T): MutableList<T> = kotlin.collections.mutableListOf(*elements)
 
     @JvmStatic
-    fun <T> setOf(vararg elements: T): Set<T> = kotlin.collections.setOf(*elements)
+    fun <T> setOf(vararg elements: T): MutableSet<T> = kotlin.collections.mutableSetOf(*elements)
 
     @JvmStatic
-    fun <T> toSet(list: Iterable<T>): Set<T> {
-        return list.toSet();
+    fun <T> toSet(list: Iterable<T>): MutableSet<T> {
+        return list.toMutableSet();
     }
 
     @JvmStatic
-    fun <T> toSet(list: Array<T>): Set<T> {
-        return list.toSet();
+    fun <T> toSet(list: Array<T>): MutableSet<T> {
+        return list.toMutableSet();
     }
 
     @JvmStatic
@@ -45,19 +45,19 @@ object JavaListUtil {
     }
 
     @JvmStatic
-    fun <T, R> map(list: Collection<T>, transform: (T) -> R): List<R> {
-        return list.map(transform);
+    fun <T, R> map(list: Collection<T>, transform: (T) -> R): MutableList<R> {
+        return list.map(transform).toMutableList();
     }
 
 
     @JvmStatic
-    fun <T> filter(list: Collection<T>, predicate: (T) -> Boolean): List<T> {
-        return list.filter(predicate);
+    fun <T> filter(list: Collection<T>, predicate: (T) -> Boolean): MutableList<T> {
+        return list.filter(predicate).toMutableList();
     }
 
     @JvmStatic
-    fun <T> filterNot(list: Collection<T>, predicate: (T) -> Boolean): List<T> {
-        return list.filterNot(predicate);
+    fun <T> filterNot(list: Collection<T>, predicate: (T) -> Boolean): MutableList<T> {
+        return list.filterNot(predicate).toMutableList();
     }
 
     @JvmStatic
@@ -103,8 +103,8 @@ object JavaListUtil {
 
 
     @JvmStatic
-    fun <T> take(list: Collection<T>, n: Int): List<T> {
-        return list.take(n);
+    fun <T> take(list: Collection<T>, n: Int): MutableList<T> {
+        return list.take(n).toMutableList();
     }
 
     @JvmStatic
@@ -118,29 +118,29 @@ object JavaListUtil {
     }
 
     @JvmStatic
-    fun <T, K> distinctBy(list: Collection<T>, selector: (T) -> K): List<T> {
-        return list.distinctBy(selector);
+    fun <T, K> distinctBy(list: Collection<T>, selector: (T) -> K): MutableList<T> {
+        return list.distinctBy(selector).toMutableList();
     }
 
     @JvmStatic
-    fun <T> distinct(list: Collection<T>): List<T> {
-        return list.distinct();
+    fun <T> distinct(list: Collection<T>): MutableList<T> {
+        return list.distinct().toMutableList();
     }
 
     @JvmStatic
-    fun <T> reversed(list: Collection<T>): List<T> {
-        return list.reversed();
+    fun <T> reversed(list: Collection<T>): MutableList<T> {
+        return list.reversed().toMutableList();
     }
 
     @JvmStatic
-    fun <T> intersect(list1: Collection<T>, list2: Collection<T>): Set<T> {
-        return list1.intersect(list2);
+    fun <T> intersect(list1: Collection<T>, list2: Collection<T>): MutableSet<T> {
+        return list1.intersect(list2).toMutableSet();
     }
 
 
     @JvmStatic
-    fun <T> union(list1: Collection<T>, list2: Collection<T>): Set<T> {
-        return list1.union(list2);
+    fun <T> union(list1: Collection<T>, list2: Collection<T>): MutableSet<T> {
+        return list1.union(list2).toMutableSet();
     }
 
     @JvmStatic
@@ -179,23 +179,23 @@ object JavaListUtil {
     }
 
     @JvmStatic
-    fun <T> plus(list1: List<T>, list2: List<T>): List<T> {
-        return list1 + list2;
+    fun <T> plus(list1: List<T>, list2: List<T>): MutableList<T> {
+        return (list1 + list2).toMutableList();
     }
 
     @JvmStatic
-    fun <T> minus(list1: List<T>, list2: List<T>): List<T> {
-        return list1 - list2;
+    fun <T> minus(list1: List<T>, list2: List<T>): MutableList<T> {
+        return (list1 - list2).toMutableList()
     }
 
     @JvmStatic
-    fun <T> plus(list1: Set<T>, list2: Set<T>): Set<T> {
-        return list1 + list2;
+    fun <T> plus(list1: Set<T>, list2: Set<T>): MutableSet<T> {
+        return (list1 + list2).toMutableSet()
     }
 
     @JvmStatic
-    fun <T> minus(list1: Set<T>, list2: Set<T>): Set<T> {
-        return list1 - list2;
+    fun <T> minus(list1: Set<T>, list2: Set<T>): MutableSet<T> {
+        return (list1 - list2).toMutableSet()
     }
 
     @JvmStatic
@@ -204,8 +204,8 @@ object JavaListUtil {
     }
 
     @JvmStatic
-    fun <T> split(value: String, separator: String): List<String> {
-        return value.split(separator);
+    fun <T> split(value: String, separator: String): MutableList<String> {
+        return value.split(separator).toMutableList();
     }
 
 
@@ -226,17 +226,17 @@ object JavaListUtil {
     }
 
     @JvmStatic
-    fun <T, K> associateBy(list: Iterable<T>, keySelector: (T) -> K): Map<K, T> {
-        return list.associateBy(keySelector);
+    fun <T, K> associateBy(list: Iterable<T>, keySelector: (T) -> K): MutableMap<K, T> {
+        return list.associateBy(keySelector).toMutableMap();
     }
 
     @JvmStatic
-    fun <K, V> toMap(list: Iterable<Pair<K, V>>): Map<K, V> {
-        return list.toMap();
+    fun <K, V> toMap(list: Iterable<Pair<K, V>>): MutableMap<K, V> {
+        return list.toMap().toMutableMap();
     }
 
     @JvmStatic
-    fun <K, V> toList(map: Map<K, V>): List<Pair<K, V>> {
-        return map.toList()
+    fun <K, V> toList(map: Map<K, V>): MutableList<Pair<K, V>> {
+        return map.toList().toMutableList()
     }
 }
