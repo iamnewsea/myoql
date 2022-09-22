@@ -53,7 +53,7 @@ data class FileMessage @JvmOverloads constructor(
  * 封装了 HttpURLConnection 进行网络请求。
  */
 class HttpUtil @JvmOverloads constructor(var url: String = "") {
-    
+
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
@@ -138,6 +138,20 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
             return baos.toByteArray();
         }
     }
+
+    private var maxRetryTimes = 0;
+    private var currentRetryTimes = 0;
+    private var retrySleepMs = 1000; //重试时间隔一秒。
+    private var retryEnabled = true;
+
+    fun withMaxTryTimes(maxRetryTimes: Int, retrySleepMs: Int = 1000): HttpUtil {
+        this.maxRetryTimes = maxRetryTimes;
+        this.currentRetryTimes = 0;
+        this.retrySleepMs = retrySleepMs;
+        this.retryEnabled = true;
+        return this;
+    }
+
 
     var request = HttpRequestData()
     var response = HttpResponseData()
@@ -338,6 +352,7 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
 
 
             if (conn.requestMethod.isNullOrEmpty()) {
+                this.retryEnabled = false;
                 throw RuntimeException("没有设置 method！");
             }
 
@@ -459,6 +474,18 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
             }
 
             conn.disconnect();
+
+
+            this.currentRetryTimes++;
+            if (this.retryEnabled && this.status == 0 && this.currentRetryTimes < this.maxRetryTimes) {
+                this.retrySleepMs.AsLongWithNull().apply {
+                    if (this != null) {
+                        Thread.sleep(this)
+                    }
+                }
+
+                this.doNet();
+            }
         }
     }
 
