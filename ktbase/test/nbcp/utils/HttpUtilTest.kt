@@ -28,7 +28,7 @@ class HttpUtilTest : TestBase() {
     @Test
     fun abfc2() {
         usingScope(LogLevelScope.info) {
-            var http = HttpUtil("http://saas-demo.nancal.com:7003/c/login")
+            var http = HttpUtil("http://saas-demo.nancal.com:8003/c/login").withMaxTryTimes(3)
             http.request.headers["Content-Type"] = "application/x-www-form-urlencoded"
 
             println(http.request.contentType)
@@ -39,5 +39,8 @@ class HttpUtilTest : TestBase() {
 
             http.doPost("principal=@loginName&password=@password".formatWithJson(authInfoMap, "@"))
         }
+
+
+        println("done")
     }
 }
