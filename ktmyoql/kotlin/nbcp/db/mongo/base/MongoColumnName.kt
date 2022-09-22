@@ -252,9 +252,14 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
     /**
      * 慎用，拦截器可能部分失效
      * @sample
+     *
      *         db.getCollection('gitData').find({
      *          "$where":  "this.folders.some(it=> it.config && it .config.docker._id.toString().length > 0 )"
      *         })
+     *  ===>
+     *         db.getCollection('gitData').find(
+     *          "this.folders.some(it=> it.config && it .config.docker._id.toString().length > 0 )"
+     *         )
      */
     fun match_where_script(script:String):Criteria{
         return Criteria.where("$" + "where").`is`(script);
