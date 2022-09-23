@@ -478,13 +478,13 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
 
             this.currentRetryTimes++;
             if (this.retryEnabled && this.status == 0 && this.currentRetryTimes < this.maxRetryTimes) {
-                this.retrySleepMs.AsLongWithNull()
-                    .apply {
-                        if (this != null) {
-                            Thread.sleep(this)
-                        }
-                    }
-                logger.info("连接超时,将重试:${this.url}")
+                var sleep = this.retrySleepMs.AsLong();
+                logger.Important("连接超时,${sleep}毫秒后将重试:${this.url}")
+
+                if (sleep > 0) {
+                    Thread.sleep(sleep)
+                }
+
                 this.doNet();
             }
         }
