@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletResponse
  */
 @OpenAction
 @RestController
-@AutoConfigureAfter(IUserAuthenticationService::class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 //@ConditionalOnBean(IUserAuthenticationService::class)
 open class AuthImageServlet {
