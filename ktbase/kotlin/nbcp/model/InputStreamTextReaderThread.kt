@@ -12,8 +12,8 @@ class InputStreamTextReaderThread(var inputStream: InputStream, var bufferTime: 
     override fun run() {
         while (true) {
             try {
-                var line = br.readLine()
-                if (line == null) {
+                var line = br.readText()
+                if (line.isEmpty()) {
                     break;
                 }
 
@@ -21,7 +21,7 @@ class InputStreamTextReaderThread(var inputStream: InputStream, var bufferTime: 
                     continue;
                 }
 
-                this.results.add(line)
+                this.results += line
 
                 if (done) {
                     break;
@@ -32,7 +32,6 @@ class InputStreamTextReaderThread(var inputStream: InputStream, var bufferTime: 
             } finally {
                 if (done) {
                     br.close();
-                    break;
                 }
             }
         }

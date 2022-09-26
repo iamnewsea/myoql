@@ -189,7 +189,13 @@ class DevDockerServlet {
     }
 
     fun execCmd(vararg cmds: String): ListResult<String> {
-        return ListResult.of(ShellUtil.execRuntimeCommand(*cmds))
+        ShellUtil.execRuntimeCommand(cmds.joinToString(" ")).apply {
+            if (this.msg.HasValue) {
+                return ListResult.error(this.msg)
+            }
+
+            return ListResult.of(this.data!!.split("\n"))
+        }
 //        logger.warn(cmds.joinToString(" "));
 //        var p = Runtime.getRuntime().exec(cmds);
 //        var lines = listOf<String>()
