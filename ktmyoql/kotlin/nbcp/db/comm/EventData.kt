@@ -1,6 +1,6 @@
 package nbcp.db
 
-import nbcp.comm.AsString
+import nbcp.comm.*
 
 
 /**
@@ -16,30 +16,27 @@ import nbcp.comm.AsString
  *  .exec()
  */
 data class DbEntityFieldRefData(
-        /**
-         * 实体类，主类
-         */
-        var entityClass: Class<*>,
-        //实体的引用Id， 如 "corp._id"
-        var idField: String,
-        //实体的冗余字段, 如： "corp.name"
-        var nameField: String,
-        /**
-         * 实体类，引用类
-         */
-        var refEntityClass: Class<*>,
-        //引用实体的Id字段， corp 表的 , "id"
-        var refIdField: String,
-        //冗余字段对应的引用实体字段， corp表的 , "name"
-        var refNameField: String
+    /**
+     * 实体类，主类
+     */
+    var entityClass: Class<*>,
+    //实体的引用Id， 如 "corp._id"
+    var idField: String,
+    //实体的冗余字段, 如： "corp"
+    var field: String,
+    /**
+     * 实体类，引用类
+     */
+    var refEntityClass: Class<*>,
+    //引用实体的Id字段， corp 表的 , "id"
+    var refIdField: String
 ) {
     constructor(entityClass: Class<*>, annRef: DbEntityFieldRef) : this(
-            entityClass, //moer class
-            "",
-            "",
-            annRef.refEntityClass.java,
-            "",
-            ""
+        entityClass, //moer class
+        "",
+        "",
+        annRef.refEntityClass.java,
+        ""
     ) {
 
 //        var idFields = annRef.idFieldMap.split(":").toMutableList();
@@ -55,7 +52,24 @@ data class DbEntityFieldRefData(
 //            nameFields.add(nameFields.first().split(".").last())
 //        }
 
-        this.nameField = annRef.nameField
-        this.refNameField = annRef.refNameField.AsString(this.nameField.split(".").last())
+        this.field = annRef.field
+//        this.refNameField = annRef.refNameField.AsString(this.nameField.split(".").last())
     }
+
+    val refNameFields: List<String>
+        get() {
+            var f = entityClass.GetFieldPath(this.field)
+            if (f == null) {
+                return listOf()
+            }
+
+            var com_type = f.type
+            if (f.type.isArray) {
+                com_type = f.type.componentType
+            } else if (f.type.IsCollectionType) {
+                com_type = f.type.GetFirstTypeArguments().first() as Class<*>
+            }
+
+            return com_type.AllFields.map { it.name }.filter { it != this.idField }
+        }
 }
