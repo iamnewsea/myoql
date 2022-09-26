@@ -8,6 +8,7 @@ import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.time.LocalDateTime
+import nbcp.db.mongo.logger.*
 
 open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName) {
     companion object {

@@ -9,6 +9,7 @@ import org.elasticsearch.client.Response
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.time.LocalDateTime
+import nbcp.db.es.logger.*
 
 open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWhereable {
 
@@ -67,7 +68,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
             error = e;
             throw e;
         } finally {
-            EsLogger.logGet(
+            logger.logGet(
                 error,
                 collectionName,
                 request,

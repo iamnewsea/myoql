@@ -55,6 +55,15 @@ data class DbEntityFieldRefData(
         this.field = annRef.field
 //        this.refNameField = annRef.refNameField.AsString(this.nameField.split(".").last())
     }
+    val fieldIsArray:Boolean
+        get(){
+            var f = entityClass.GetFieldPath(this.field)
+            if (f == null) {
+                return false
+            }
+
+            return f.type.isArray || f.type.IsCollectionType
+        }
 
     val refNameFields: List<String>
         get() {

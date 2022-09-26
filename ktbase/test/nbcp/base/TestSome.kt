@@ -4,6 +4,7 @@ import nbcp.TestBase
 import nbcp.comm.GroupLog
 import nbcp.comm.*
 import org.junit.jupiter.api.Test
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.time.LocalDateTime
@@ -17,16 +18,12 @@ class TestSome : TestBase() {
 
     @Test
     fun Test_Duration() {
-        println(Boolean::class.java.kotlinTypeName)
-
-        var i = 0;
-        thread(start = true, isDaemon = false) {
-            i++;
-        }
-
-        Thread.sleep(300);
-
-        println(i)
+        logger.error("III")
+        logger.abcv("OK")
     }
 
+}
+
+inline fun Logger.abcv(msg: String) {
+    this.error(msg)
 }

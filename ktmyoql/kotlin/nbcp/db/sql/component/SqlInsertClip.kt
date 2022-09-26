@@ -7,6 +7,7 @@ import nbcp.db.BaseEntity
 
 import nbcp.utils.*
 import nbcp.db.db
+import nbcp.db.sql.logger.logInsert
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import java.lang.RuntimeException
 import java.time.LocalDateTime
@@ -290,7 +291,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
         } finally {
             msg_log.add("[耗时] ${db.executeTime}")
 
-            SqlLogger.logInsert(error, tableName, { msg_log.joinToString(const.line_break) });
+            logger.logInsert(error, tableName, { msg_log.joinToString(const.line_break) });
         }
 
         return result
@@ -322,7 +323,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
                 error = e
                 throw e;
             } finally {
-                SqlLogger.logInsert(error, tableName, {
+                logger.logInsert(error, tableName, {
                     var msg_log = mutableListOf("[sql] ${sql.expression}")
                     msg_log.add("[参数] ${sql.values.ToJson()}")
                     msg_log.add("[id] ${db.lastAutoId}")
@@ -355,7 +356,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
                 error = e
                 throw e;
             } finally {
-                SqlLogger.logInsert(error, tableName, {
+                logger.logInsert(error, tableName, {
                     var msg_log = mutableListOf("[sql] ${sql.expression}")
                     msg_log.add("[参数] ${sql.values.ToJson()}")
                     msg_log.add("[result] ${n}")

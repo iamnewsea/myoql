@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
 import java.time.LocalDateTime
 import nbcp.scope.*
-
+import nbcp.db.es.logger.*
 open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhereable {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -101,7 +101,7 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
         }
 
         var request = Request("POST", "/_bulk" +
-            search.toUrlQuery().IfHasValue { "?" + it }
+                search.toUrlQuery().IfHasValue { "?" + it }
         )
 
         var data = mutableListOf<Any>()
@@ -158,7 +158,7 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
             error = e;
             throw e;
         } finally {
-            EsLogger.logPut(
+            logger.logPut(
                 error, collectionName, request,
                 response?.statusLine?.statusCode.AsString() + "," + entities.size
             );

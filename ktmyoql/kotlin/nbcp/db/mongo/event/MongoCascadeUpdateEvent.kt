@@ -156,21 +156,34 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
                 val targetCollection = MyUtil.getSmallCamelCase(cu.ref.entityClass.simpleName)
 
                 val update2 = MongoBaseUpdateClip(targetCollection)
-                update2.whereData.putAll((MongoColumnName(cu.ref.idField) match_in cu.masterIdValues).criteriaObject)
+                update2.whereData.putAll((MongoColumnName(cu.ref.field + "." + cu.ref.idField) match_in cu.masterIdValues).criteriaObject)
 
-                cu.ref.refNameFields.forEach { column ->
-                    var setV = updateSetFields.getValue(column)
-                    update2.setValue(column, setV)
+                if (cu.ref.fieldIsArray) {
+                    cu.ref.refNameFields.forEach { column ->
+                        var setV = updateSetFields.get(column)
+                        if (setV == null) {
+                            return@forEach
+                        }
+                        update2.setValue(cu.ref.field + ".$." + column, setV)
+                    }
+                } else {
+                    cu.ref.refNameFields.forEach { column ->
+                        var setV = updateSetFields.get(column)
+                        if (setV == null) {
+                            return@forEach
+                        }
+                        update2.setValue(cu.ref.field + "." + column, setV)
+                    }
                 }
 
                 update2.exec();
 
                 logger.Important(
-                    "mongo级联更新${update2.affectRowCount}条记录,${update.actualTableName}-->${targetCollection},${
+                    "mongo级联更新${update2.affectRowCount}条记录,${update.actualTableName}.${cu.ref.field}(${cu.ref.idField})-->${targetCollection}(${cu.ref.refIdField}),${
                         cu.masterIdValues.joinToString(
                             ","
                         )
-                    }-->(${cu.ref.field})"
+                    }"
                 )
             }
     }

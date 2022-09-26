@@ -1,151 +1,155 @@
-package nbcp.db.sql
+package nbcp.db.sql.logger
 
 import nbcp.comm.*
 import nbcp.db.db
+import nbcp.db.sql.*
 import nbcp.utils.SpringUtil
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-object SqlLogger {
-    private val logger = LoggerFactory.getLogger(this::class.java)
 
-    private val sqlLog by lazy {
-        return@lazy SpringUtil.getBean<SqlTableLogProperties>()
-    }
+val sqlLog by lazy {
+    return@lazy SpringUtil.getBean<SqlTableLogProperties>()
+}
 
-    @JvmStatic
-    fun logQuery(error: Exception?, tableDbName: String, executeParameterData: SqlParameterData, result: Any) {
-        var getMsg: () -> String = getMsg@{
-            var msg_log = mutableListOf(
-                "[select] ${executeParameterData.expression}",
-                "[参数] ${executeParameterData.values.ToJson()}"
-            )
 
-            if (config.debug) {
-                msg_log.add("[result] ${result.ToJson()}")
-            } else {
-                if (result is List<*>) {
-                    msg_log.add("[result.size] ${result.size}")
-                } else if (result is Array<*>) {
-                    msg_log.add("[result.size] ${result.size}")
-                } else if (result is Number) {
-                    msg_log.add("[result] ${result}")
-                } else if (result is String) {
-                    msg_log.add("[result] ${result}")
-                }
+inline fun Logger.logQuery(
+    error: Exception?,
+    tableDbName: String,
+    executeParameterData: SqlParameterData,
+    result: Any
+) {
+    var getMsg: () -> String = getMsg@{
+        var msg_log = mutableListOf(
+            "[select] ${executeParameterData.expression}",
+            "[参数] ${executeParameterData.values.ToJson()}"
+        )
+
+        if (config.debug) {
+            msg_log.add("[result] ${result.ToJson()}")
+        } else {
+            if (result is List<*>) {
+                msg_log.add("[result.size] ${result.size}")
+            } else if (result is Array<*>) {
+                msg_log.add("[result.size] ${result.size}")
+            } else if (result is Number) {
+                msg_log.add("[result] ${result}")
+            } else if (result is String) {
+                msg_log.add("[result] ${result}")
             }
-
-            msg_log.add("[耗时] ${db.executeTime}")
-            return@getMsg msg_log.joinToString(const.line_break)
         }
 
-        if (error != null) {
-            logger.error(getMsg())
-            logger.error(error.message, error);
-            return;
-        }
+        msg_log.add("[耗时] ${db.executeTime}")
+        return@getMsg msg_log.joinToString(const.line_break)
+    }
 
-
-        if (logger.scopeInfoLevel) {
-            logger.info(getMsg())
-            return;
-        }
-
-
-        //如果指定了输出Sql
-        if (sqlLog.getQueryLog(tableDbName)) {
-            logger.Important(getMsg())
-        }
+    if (error != null) {
+        this.error(getMsg())
+        this.error(error.message, error);
+        return;
     }
 
 
-    @JvmStatic
-    fun logExec(error: Exception?, tableDbName: String, executeParameterData: SqlParameterData, n: Int) {
-        var getMsg: () -> String = getMsg@{
-            var msg_log = mutableListOf(
-                "[sql] ${executeParameterData.expression}",
-                "[参数] ${executeParameterData.values.ToJson()}",
-                "[result] ${n}",
-                "[耗时] ${db.executeTime}"
-            )
-
-            return@getMsg msg_log.joinToString(const.line_break)
-        }
-
-        if (error != null) {
-            logger.error(getMsg())
-            logger.error(error.message, error);
-            return;
-        }
-
-        if (logger.scopeInfoLevel) {
-            logger.info(getMsg())
-            return;
-        }
-
-
-        //如果指定了输出Sql
-        if (sqlLog.getInsertLog(tableDbName) ||
-            sqlLog.getUpdateLog(tableDbName) ||
-            sqlLog.getDeleteLog(tableDbName)
-        ) {
-            logger.Important(getMsg())
-        }
+    if (this.scopeInfoLevel) {
+        this.info(getMsg())
+        return;
     }
 
-    @JvmStatic
-    fun logDelete(error: Exception?, tableDbName: String, executeParameterData: SqlParameterData, n: Int) {
-        var getMsg: () -> String = getMsg@{
-            var msg_log = mutableListOf(
-                "" +
-                        "[delete] ${executeParameterData.expression}",
-                "[参数] ${executeParameterData.values.ToJson()}",
-                "[result] ${n}",
-                "[耗时] ${db.executeTime}"
-            )
 
-            return@getMsg msg_log.joinToString(const.line_break)
-        }
+    //如果指定了输出Sql
+    if (sqlLog.getQueryLog(tableDbName)) {
+        this.Important(getMsg())
+    }
+}
 
 
-        if (error != null) {
-            logger.error(getMsg())
-            logger.error(error.message, error);
-            return;
-        }
+inline fun Logger.logExec(error: Exception?, tableDbName: String, executeParameterData: SqlParameterData, n: Int) {
+    var getMsg: () -> String = getMsg@{
+        var msg_log = mutableListOf(
+            "[sql] ${executeParameterData.expression}",
+            "[参数] ${executeParameterData.values.ToJson()}",
+            "[result] ${n}",
+            "[耗时] ${db.executeTime}"
+        )
 
-        if (logger.scopeInfoLevel) {
-            logger.info(getMsg())
-            return;
-        }
-
-
-        //如果指定了输出Sql
-        if (sqlLog.getDeleteLog(tableDbName)
-        ) {
-            logger.Important(getMsg())
-        }
+        return@getMsg msg_log.joinToString(const.line_break)
     }
 
-    @JvmStatic
-    fun logInsert(error: Exception?, tableDbName: String, getMsg: () -> String) {
-        if (error != null) {
-            logger.error(getMsg())
-            logger.error(error.message, error);
-            return;
-        }
-
-        if (logger.scopeInfoLevel) {
-            logger.info(getMsg())
-            return;
-        }
-
-
-        //如果指定了输出Sql
-        if (sqlLog.getInsertLog(tableDbName)
-        ) {
-            logger.Important(getMsg())
-        }
+    if (error != null) {
+        this.error(getMsg())
+        this.error(error.message, error);
+        return;
     }
+
+    if (this.scopeInfoLevel) {
+        this.info(getMsg())
+        return;
+    }
+
+
+    //如果指定了输出Sql
+    if (sqlLog.getInsertLog(tableDbName) ||
+        sqlLog.getUpdateLog(tableDbName) ||
+        sqlLog.getDeleteLog(tableDbName)
+    ) {
+        this.Important(getMsg())
+    }
+}
+
+
+inline fun Logger.logDelete(error: Exception?, tableDbName: String, executeParameterData: SqlParameterData, n: Int) {
+    var getMsg: () -> String = getMsg@{
+        var msg_log = mutableListOf(
+            "" +
+                    "[delete] ${executeParameterData.expression}",
+            "[参数] ${executeParameterData.values.ToJson()}",
+            "[result] ${n}",
+            "[耗时] ${db.executeTime}"
+        )
+
+        return@getMsg msg_log.joinToString(const.line_break)
+    }
+
+
+    if (error != null) {
+        this.error(getMsg())
+        this.error(error.message, error);
+        return;
+    }
+
+    if (this.scopeInfoLevel) {
+        this.info(getMsg())
+        return;
+    }
+
+
+    //如果指定了输出Sql
+    if (sqlLog.getDeleteLog(tableDbName)
+    ) {
+        this.Important(getMsg())
+    }
+}
+
+
+inline fun Logger.logInsert(error: Exception?, tableDbName: String, getMsg: () -> String) {
+    if (error != null) {
+        this.error(getMsg())
+        this.error(error.message, error);
+        return;
+    }
+
+    if (this.scopeInfoLevel) {
+        this.info(getMsg())
+        return;
+    }
+
+
+    //如果指定了输出Sql
+    if (sqlLog.getInsertLog(tableDbName)
+    ) {
+        this.Important(getMsg())
+    }
+}
 
 //    fun logInsert(error: Exception?, tableDbName: String, msg: String ) {
 //
@@ -170,38 +174,37 @@ object SqlLogger {
 //        }
 //    }
 
-    @JvmStatic
-    fun logUpdate(error: Exception?, tableName: String, executeParameterData: SqlParameterData, n: Int) {
 
-        var getMsg: () -> String = getMsg@{
-            var msg_log = mutableListOf(
-                "[update] ${executeParameterData.expression}",
-                "[参数] ${executeParameterData.values.ToJson()}",
-                "[result] ${n}",
-                "[耗时] ${db.executeTime}"
-            )
+inline fun Logger.logUpdate(error: Exception?, tableName: String, executeParameterData: SqlParameterData, n: Int) {
 
-            return@getMsg msg_log.joinToString(const.line_break)
-        }
+    var getMsg: () -> String = getMsg@{
+        var msg_log = mutableListOf(
+            "[update] ${executeParameterData.expression}",
+            "[参数] ${executeParameterData.values.ToJson()}",
+            "[result] ${n}",
+            "[耗时] ${db.executeTime}"
+        )
 
-
-        if (error != null) {
-            logger.error(getMsg())
-            logger.error(error.message, error);
-            return;
-        }
-
-        if (logger.scopeInfoLevel) {
-            logger.info(getMsg())
-            return;
-        }
-
-
-        //如果指定了输出Sql
-        if (sqlLog.getUpdateLog(tableName)
-        ) {
-            logger.Important(getMsg())
-        }
-
+        return@getMsg msg_log.joinToString(const.line_break)
     }
+
+
+    if (error != null) {
+        this.error(getMsg())
+        this.error(error.message, error);
+        return;
+    }
+
+    if (this.scopeInfoLevel) {
+        this.info(getMsg())
+        return;
+    }
+
+
+    //如果指定了输出Sql
+    if (sqlLog.getUpdateLog(tableName)
+    ) {
+        this.Important(getMsg())
+    }
+
 }

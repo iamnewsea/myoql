@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.FindAndModifyOptions
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import java.time.LocalDateTime
-
+import nbcp.db.mongo.logger.*
 /**
  * Created by udi on 17-4-7.
  */

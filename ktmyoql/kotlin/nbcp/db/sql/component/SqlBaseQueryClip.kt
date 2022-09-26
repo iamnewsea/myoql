@@ -11,6 +11,7 @@ import nbcp.utils.Md5Util
 import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
+import nbcp.db.sql.logger.*
 
 abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
     protected var skip = 0;
@@ -84,7 +85,7 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
             error = e;
             throw e;
         } finally {
-            SqlLogger.logQuery(error, this.tableName, sqlParameter, retJsons)
+            logger.logQuery(error, this.tableName, sqlParameter, retJsons)
         }
 
 

@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory
 import nbcp.comm.*
 
 import nbcp.db.db
+import nbcp.db.sql.logger.logDelete
 import java.time.LocalDateTime
 import java.io.Serializable
 
@@ -80,7 +81,7 @@ class SqlDeleteClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity: M) :
             error = e;
             throw e;
         } finally {
-            SqlLogger.logDelete(error,tableName,sql, n);
+            logger.logDelete(error,tableName,sql, n);
         }
 
         settings.forEach {

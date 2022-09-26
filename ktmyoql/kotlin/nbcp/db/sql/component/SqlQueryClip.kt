@@ -7,6 +7,7 @@ import nbcp.db.cache.FromRedisCache
 import nbcp.db.cache.onlyGetFromCache
 import nbcp.db.cache.onlySetToCache
 import nbcp.db.mongo.MongoEntityCollector
+import nbcp.db.sql.logger.logQuery
 import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 import java.io.Serializable
@@ -514,7 +515,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
             error = e;
             throw e;
         } finally {
-            SqlLogger.logQuery(error, tableName, sql, n);
+            logger.logQuery(error, tableName, sql, n);
         }
 
         db.affectRowCount = n

@@ -4,6 +4,7 @@ import nbcp.scope.*
 import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.es.*
+import nbcp.db.es.logger.*
 import org.apache.http.HttpHost
 import org.elasticsearch.client.*
 import org.slf4j.LoggerFactory
@@ -162,7 +163,7 @@ object dbEs {
             error = e;
             throw e;
         } finally {
-            EsLogger.logGet(
+            logger.logGet(
                 error, name, request,
                 response?.statusLine?.statusCode.AsString()
             );

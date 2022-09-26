@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
 import java.time.LocalDateTime
 import nbcp.scope.*
-
+import nbcp.db.es.logger.*
 open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhereable {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -118,7 +118,7 @@ open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhere
             throw e;
         } finally {
 //            response.entity.content.readContentString()
-            EsLogger.logDelete(
+            logger.logDelete(
                 error, collectionName, request,
                 response?.statusLine?.statusCode.AsString() + "," + ids.size
             )

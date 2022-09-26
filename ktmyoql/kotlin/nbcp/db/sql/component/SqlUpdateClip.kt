@@ -3,6 +3,7 @@ package nbcp.db.sql
 import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import nbcp.db.*
+import nbcp.db.sql.logger.logUpdate
 
 import java.io.Serializable
 import java.time.LocalDateTime
@@ -196,7 +197,7 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity:
             error = e;
             throw e;
         } finally {
-            SqlLogger.logUpdate(error, tableName, sql, n);
+            logger.logUpdate(error, tableName, sql, n);
         }
 
         settings.forEach {

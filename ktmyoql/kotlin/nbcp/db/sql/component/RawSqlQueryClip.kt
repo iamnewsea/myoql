@@ -5,6 +5,7 @@ import nbcp.comm.*
 
 import nbcp.db.db
 import java.time.LocalDateTime
+import nbcp.db.sql.logger.*
 
 //查询原生表。
 class RawQuerySqlClip(var sqlParameter: SqlParameterData, tableName: String) : SqlBaseQueryClip(tableName) {
@@ -53,7 +54,7 @@ class RawExecuteSqlClip(var sqlParameter: SqlParameterData, tableName: String) :
             error = e;
             throw e;
         } finally {
-            SqlLogger.logExec(error  ,tableName,sql, n );
+            logger.logExec(error  ,tableName,sql, n );
         }
 
 
