@@ -52,7 +52,7 @@ data class FileMessage @JvmOverloads constructor(
  * 尽量使用 RestTemplate.
  * 封装了 HttpURLConnection 进行网络请求。
  */
-class HttpUtil @JvmOverloads constructor(url: String) {
+class HttpUtil @JvmOverloads constructor(url: String = "") {
 
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
