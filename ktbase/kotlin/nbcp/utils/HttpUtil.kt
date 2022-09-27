@@ -52,7 +52,7 @@ data class FileMessage @JvmOverloads constructor(
  * 尽量使用 RestTemplate.
  * 封装了 HttpURLConnection 进行网络请求。
  */
-class HttpUtil @JvmOverloads constructor(var url: String = "") {
+class HttpUtil @JvmOverloads constructor(url: String) {
 
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -143,6 +143,16 @@ class HttpUtil @JvmOverloads constructor(var url: String = "") {
     private var currentRetryTimes = 0;
     private var retrySleepMs = 1000; //重试时间隔一秒。
     private var retryEnabled = true;
+
+    var url: String = ""
+        get
+        set(value) {
+            field = MyUtil.getHttpHostUrl(value)
+        }
+
+    init {
+        this.url = url
+    }
 
     fun withMaxTryTimes(maxRetryTimes: Int, retrySleepMs: Int = 1000): HttpUtil {
         this.maxRetryTimes = maxRetryTimes;

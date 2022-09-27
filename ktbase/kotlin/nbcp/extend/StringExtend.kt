@@ -600,7 +600,7 @@ fun String.PadStepEnViewWidth(stepWidth: Int, padChar: Char = ' '): String {
 
 class MatchPatternTokenItem(value: String) : MyString(value) {
     var isToken: Boolean = false
-        get() = field
+        get
         private set
 
     init {

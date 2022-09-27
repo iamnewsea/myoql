@@ -66,8 +66,8 @@
     <!-- 设定主仓库，按设定顺序进行查找。 -->
     <repositories>
         <repository>
-            <id>main-repos</id>
-            <name>main Repository</name>
+            <id>public</id>
+            <name>public</name>
             <url>http://maven.aliyun.com/nexus/content/groups/public</url>
         </repository>
         <repository>
@@ -83,8 +83,8 @@
     <!-- 设定插件仓库 -->
     <pluginRepositories>
         <pluginRepository>
-            <id>main-repos</id>
-            <name>main Repository</name>
+            <id>public</id>
+            <name>public</name>
             <url>http://maven.aliyun.com/nexus/content/groups/public</url>
         </pluginRepository>
         <pluginRepository>
