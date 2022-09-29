@@ -170,7 +170,6 @@ open class RedisCacheAopService {
             cacheTime = 1;
         }
 
-        cacheTime = cacheTime * 1000;
 
         var setted = false;
         try {
@@ -178,14 +177,19 @@ open class RedisCacheAopService {
             var v = db.rerBase.taskLock(key).get();
 
             if (v.HasValue) {
-                if (Duration.between(v.AsLocalDateTime(), now).toHours() < 1) {
-                    logger.debug("Redis锁 ${key} 被占用,跳过任务")
-                    return null;
+                if (Duration.between(v.AsLocalDateTime(), now).seconds > 2 * cacheTime) {
+                    logger.debug("Redis锁 ${key} 超时,将执行新的任务.")
+
+                    try {
+                        db.rerBase.taskLock(key).deleteKey();
+                    } catch (e: Exception) {
+                        logger.error(e.message, e);
+                    }
                 }
             }
 
             setted = db.rerBase.taskLock(key)
-                .setIfAbsent(now.toNumberString(), cacheTime);
+                .setIfAbsent(now.toNumberString(), cacheTime * 1000);
         } catch (e: Exception) {
             logger.error(e.message, e);
             return null;
