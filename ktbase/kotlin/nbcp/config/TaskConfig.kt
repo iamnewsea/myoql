@@ -19,7 +19,4 @@ import java.util.concurrent.Executor
 @EnableScheduling
 @ConditionalOnProperty(name = ["app.scheduler"], havingValue = "true", matchIfMissing = true)
 class TaskConfig {
-    init {
-
-    }
 }
