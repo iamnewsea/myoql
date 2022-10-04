@@ -1,6 +1,5 @@
 package nbcp.comm
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException
 import java.io.NotSerializableException
 
 /**
@@ -57,7 +56,7 @@ private fun String.contains_words(vararg words: String): Boolean {
 
 
 private fun getFixError(error: Throwable): ExceptionGeneralCodeMessage? {
-    if (error is NotImplementedException) {
+    if (error is NotImplementedError) {
         return ExceptionGeneralCodeMessage(-1000, "方法未实现!")
     }
     if (error is ClassNotFoundException) {

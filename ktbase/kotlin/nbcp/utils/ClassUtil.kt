@@ -10,7 +10,6 @@ import org.reflections.util.ClasspathHelper
 import org.reflections.util.ConfigurationBuilder
 import org.springframework.core.io.ClassPathResource
 import org.springframework.util.ClassUtils
-import sun.net.www.protocol.file.FileURLConnection
 import java.io.File
 import java.net.JarURLConnection
 import java.net.URL
@@ -364,11 +363,11 @@ object ClassUtil {
                 }
             }
             return list;
-        } else if (connection is FileURLConnection) {
+        } else {
             var list = mutableListOf<String>()
             var base = url.file.split("/target/classes/")[1]
 
-            url.openConnection().inputStream.readContentString()
+            connection.inputStream.readContentString()
                 .split("\n")
                 .filter { it.HasValue }
                 .forEach { it ->
@@ -381,7 +380,7 @@ object ClassUtil {
             return list;
         }
 
-        throw java.lang.RuntimeException("不识别的类型:${connection::class.java.name}!")
+        //throw java.lang.RuntimeException("不识别的类型:${connection::class.java.name}!")
     }
 
 

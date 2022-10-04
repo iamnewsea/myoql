@@ -11,7 +11,7 @@ import java.util.regex.Pattern
 /**
  * Mongo列
  */
-open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") : MyString(_mongo_value) {
+open class MongoColumnName @JvmOverloads constructor(private var _mongo_value: String = "") : java.io.Serializable {
 
 //    val asc: MongoOrderBy
 //        get() = MongoOrderBy(true, this)
@@ -19,6 +19,13 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
 //    val desc: MongoOrderBy
 //        get() = MongoOrderBy(false, this)
 
+    override fun hashCode(): Int {
+        return _mongo_value.hashCode()
+    }
+
+    override fun toString(): String {
+        return _mongo_value.toString()
+    }
 
     infix fun match(to: Any?): Criteria {
         val (key, toValue) = db.mongo.proc_mongo_key_value(this, to);
@@ -261,7 +268,7 @@ open class MongoColumnName @JvmOverloads constructor(_mongo_value: String = "") 
      *          "this.folders.some(it=> it.config && it .config.docker._id.toString().length > 0 )"
      *         )
      */
-    fun match_where_script(script:String):Criteria{
+    fun match_where_script(script: String): Criteria {
         return Criteria.where("$" + "where").`is`(script);
     }
 
