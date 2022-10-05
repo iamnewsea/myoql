@@ -9,9 +9,9 @@ import java.time.Duration
 class RedisNumberProxy @JvmOverloads constructor(
     key: String,
     defaultCacheSeconds: Int = 0,
-    val autoRenewal: Boolean = false
+    autoRenewal: Boolean = false
 ) :
-    BaseRedisProxy(key, defaultCacheSeconds) {
+    BaseRedisProxy(key, defaultCacheSeconds,autoRenewal) {
 
     fun get(): Long {
         var cacheKey = getFullKey(key)
@@ -46,6 +46,9 @@ class RedisNumberProxy @JvmOverloads constructor(
         var cacheKey = getFullKey(key)
         if (cacheKey.isEmpty()) return -1L
 
+        if(autoRenewal){
+            renewalKey()
+        }
         return stringCommand.opsForValue().increment(cacheKey, value.AsLong())
     }
 
@@ -54,6 +57,9 @@ class RedisNumberProxy @JvmOverloads constructor(
         var cacheKey = getFullKey(key)
         if (cacheKey.isEmpty()) return -1L
 
+        if(autoRenewal){
+            renewalKey()
+        }
         return stringCommand.opsForValue().decrement(cacheKey, value.AsLong())
     }
 }

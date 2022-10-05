@@ -20,7 +20,7 @@ class RedisRenewalDynamicService : InitializingBean {
          * 定时任务，使键续期。
          */
         fun setDelayRenewalKey(key: String, cacheSecond: Int) {
-            renewal_cache.openPool.put(key, cacheSecond);
+            renewal_cache.inputPool.put(key, cacheSecond);
         }
 
         fun clearDelayRenewalKeys(vararg keys: String) {

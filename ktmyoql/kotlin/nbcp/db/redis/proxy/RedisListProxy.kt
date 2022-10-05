@@ -8,8 +8,9 @@ import nbcp.db.redis.BaseRedisProxy
  */
 class RedisListProxy @JvmOverloads constructor(
     key: String,
-    defaultCacheSeconds: Int = 0
-) : BaseRedisProxy(key, defaultCacheSeconds) {
+    defaultCacheSeconds: Int = 0,
+    autoRenewal:Boolean = false
+) : BaseRedisProxy(key, defaultCacheSeconds, autoRenewal) {
 
     /**
      * 成员数量
@@ -30,6 +31,9 @@ class RedisListProxy @JvmOverloads constructor(
      */
     fun removeItems(member: String): Int {
         var cacheKey = getFullKey(key);
+        if(autoRenewal){
+            renewalKey()
+        }
         return stringCommand.opsForList().remove(cacheKey, 0, member).AsInt()
     }
 
@@ -38,6 +42,10 @@ class RedisListProxy @JvmOverloads constructor(
      */
     fun push(vararg members: String): Int {
         var cacheKey = getFullKey(key);
+
+        if(autoRenewal){
+            renewalKey()
+        }
         return stringCommand.opsForList().rightPushAll(cacheKey, *members).AsInt()
     }
 
@@ -46,6 +54,10 @@ class RedisListProxy @JvmOverloads constructor(
      */
     fun pop(): String {
         var cacheKey = getFullKey(key);
+
+        if(autoRenewal){
+            renewalKey()
+        }
         return stringCommand.opsForList().rightPop(cacheKey).AsString()
     }
 
@@ -55,6 +67,10 @@ class RedisListProxy @JvmOverloads constructor(
      */
     fun popPush(targetKey: String): String {
         var cacheKey = getFullKey(key);
+
+        if(autoRenewal){
+            renewalKey()
+        }
         return stringCommand.opsForList().rightPopAndLeftPush(cacheKey, targetKey).AsString()
     }
 
@@ -67,6 +83,10 @@ class RedisListProxy @JvmOverloads constructor(
     @JvmOverloads
     fun getListString(start: Int = 0, end: Int = -1): List<String> {
         var cacheKey = getFullKey(key)
+
+        if(autoRenewal){
+            renewalKey()
+        }
         return stringCommand.opsForList().range(cacheKey, start.AsLong(), end.AsLong()).map { it.AsString() }
     }
 }

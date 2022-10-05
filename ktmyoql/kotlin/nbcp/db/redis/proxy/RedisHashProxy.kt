@@ -11,8 +11,9 @@ import java.io.Serializable
 
 class RedisHashProxy @JvmOverloads constructor(
     key: String,
-    defaultCacheSeconds: Int = 0
-) : BaseRedisProxy(key, defaultCacheSeconds) {
+    defaultCacheSeconds: Int = 0,
+    autoRenewal:Boolean = false
+) : BaseRedisProxy(key, defaultCacheSeconds,autoRenewal) {
 
 
     fun keys(): Set<String> {
@@ -22,6 +23,9 @@ class RedisHashProxy @JvmOverloads constructor(
 
     fun getMap(): Map<String, Any> {
         var cacheKey = getFullKey(key)
+        if(autoRenewal){
+            renewalKey()
+        }
         return stringCommand.opsForHash<String, Any>().entries(cacheKey)
     }
 
@@ -32,6 +36,9 @@ class RedisHashProxy @JvmOverloads constructor(
     @JvmOverloads
     fun increment(field: String, value: Long = 1): Long {
         var cacheKey = getFullKey(key);
+        if(autoRenewal){
+            renewalKey()
+        }
         return stringCommand.opsForHash<String, Any>().increment(cacheKey, field, value)
     }
 
@@ -53,7 +60,9 @@ class RedisHashProxy @JvmOverloads constructor(
 
     fun getItem(field: String): Any? {
         var cacheKey = getFullKey(key)
-
+        if(autoRenewal){
+            renewalKey()
+        }
         return stringCommand.opsForHash<String, Any>().get(cacheKey, field)
     }
 
@@ -75,7 +84,9 @@ class RedisHashProxy @JvmOverloads constructor(
         if (value.any() == false) return
 
         var cacheKey = getFullKey(key)
-
+        if(autoRenewal){
+            renewalKey()
+        }
         stringCommand.opsForHash<String, Any>().putAll(cacheKey, value)
     }
 
@@ -95,7 +106,9 @@ class RedisHashProxy @JvmOverloads constructor(
      */
     fun setItem(field: String, value: Any) {
         var cacheKey = getFullKey(key)
-
+        if(autoRenewal){
+            renewalKey()
+        }
         stringCommand.opsForHash<String, Any>().put(cacheKey, field, value)
     }
 
@@ -103,7 +116,9 @@ class RedisHashProxy @JvmOverloads constructor(
         if (members.any() == false) return;
 
         var cacheKey = getFullKey(key)
-
+        if(autoRenewal){
+            renewalKey()
+        }
         stringCommand.opsForHash<String, Any>().delete(cacheKey, *members)
     }
 }

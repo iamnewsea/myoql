@@ -11,9 +11,10 @@ import org.springframework.data.redis.core.ScanOptions
 
 open class RedisSetProxy @JvmOverloads constructor(
     key: String,
-    defaultCacheSeconds: Int = 0
+    defaultCacheSeconds: Int = 0,
+    autoRenewal:Boolean = false
 ) :
-    BaseRedisProxy(key, defaultCacheSeconds) {
+    BaseRedisProxy(key, defaultCacheSeconds,autoRenewal) {
 
 
     /**
@@ -26,6 +27,9 @@ open class RedisSetProxy @JvmOverloads constructor(
 
     fun isMember(member: String): Boolean {
         val cacheKey = getFullKey(key);
+        if(autoRenewal){
+            renewalKey()
+        }
         return stringCommand.opsForSet().isMember(cacheKey, member)
     }
 
@@ -36,6 +40,9 @@ open class RedisSetProxy @JvmOverloads constructor(
     fun removeItems(vararg members: String): Long {
         if (!members.any()) return 0;
         val cacheKey = getFullKey(key);
+        if(autoRenewal){
+            renewalKey()
+        }
         return stringCommand.opsForSet().remove(cacheKey, *members);
     }
 
@@ -46,6 +53,9 @@ open class RedisSetProxy @JvmOverloads constructor(
     fun add(vararg value: String) {
         if (value.any() == false) return
         var cacheKey = getFullKey(key);
+        if(autoRenewal){
+            renewalKey()
+        }
         stringCommand.opsForSet().add(cacheKey, *value)
     }
 
@@ -54,6 +64,9 @@ open class RedisSetProxy @JvmOverloads constructor(
      */
     fun getListString(): List<String> {
         var cacheKey = getFullKey(key);
+        if(autoRenewal){
+            renewalKey()
+        }
         return stringCommand.opsForSet().members(cacheKey).map { it.toString() }
     }
 
@@ -62,6 +75,9 @@ open class RedisSetProxy @JvmOverloads constructor(
      */
     fun spop(): String? {
         var cacheKey = getFullKey(key);
+        if(autoRenewal){
+            renewalKey()
+        }
         return stringCommand.opsForSet().pop(cacheKey)?.toString()
     }
 

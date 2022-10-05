@@ -11,12 +11,11 @@ import java.util.concurrent.TimeUnit
  * http://redisdoc.com/index.html
  * @param group: 系统推荐所有的Redis键，都要分组，带前缀！
  */
-abstract class BaseRedisProxy(var key: String, var defaultCacheSeconds: Int) {
-    companion object {
-//        @JvmStatic
-//        fun getFullKey(group: String, key: String): String {
-//            if (key.startsWith(group + ":")) return key;
-//            return arrayOf(group, key).filter { it.isNotEmpty() }.joinToString(":");
+abstract class BaseRedisProxy(var key: String, var defaultCacheSeconds: Int, var autoRenewal: Boolean) {
+
+    init {
+//        if (autoRenewal) {
+//            renewalKey()
 //        }
     }
 

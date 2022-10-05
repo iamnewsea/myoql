@@ -10,11 +10,16 @@ import org.springframework.data.redis.core.DefaultTypedTuple
  */
 open class RedisSortedSetProxy @JvmOverloads constructor(
         key: String,
-        defaultCacheSeconds: Int = 0) :
-        BaseRedisProxy(key, defaultCacheSeconds) {
+        defaultCacheSeconds: Int = 0,
+        autoRenewal:Boolean = false
+) :  BaseRedisProxy(key, defaultCacheSeconds,autoRenewal) {
 
     fun add(  member: String, score: Double) {
         val cacheKey = getFullKey(key);
+
+        if(autoRenewal){
+            renewalKey()
+        }
         stringCommand.opsForZSet().add(cacheKey, member, score)
     }
 
@@ -22,12 +27,16 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
         if (value.any() == false) return
         val cacheKey = getFullKey(key);
 
+        if(autoRenewal){
+            renewalKey()
+        }
         val set = value.map { DefaultTypedTuple(it.first, it.second)  }.toSet()
         stringCommand.opsForZSet().add(cacheKey, set)
     }
 
     fun size(): Int {
         val cacheKey = getFullKey(key);
+
         return stringCommand.opsForZSet().size(cacheKey).AsInt();
     }
 
@@ -41,6 +50,10 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
      */
     fun getItem(minScore: Double, maxScore: Double): String {
         var cacheKey = getFullKey(key);
+
+        if(autoRenewal){
+            renewalKey()
+        }
         return stringCommand.opsForZSet().rangeByScore(cacheKey, minScore, maxScore, 0L, 1L).firstOrNull().AsString()
 
     }
@@ -50,6 +63,10 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
      */
     fun getListByScore(minScore: Double, maxScore: Double): List<String> {
         val cacheKey = getFullKey(key);
+
+        if(autoRenewal){
+            renewalKey()
+        }
         return stringCommand.opsForZSet().rangeByScore(cacheKey, minScore, maxScore).map { it.AsString() }
     }
 
@@ -58,6 +75,10 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
      */
     fun getListByIndex(start: Int, end: Int): List<String> {
         val cacheKey = getFullKey(key);
+
+        if(autoRenewal){
+            renewalKey()
+        }
         return stringCommand.opsForZSet().range(cacheKey, start.toLong(), end.toLong()).map { it.AsString() }
     }
 
@@ -66,6 +87,10 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
      */
     fun getItem(): String {
         val cacheKey = getFullKey(key);
+
+        if(autoRenewal){
+            renewalKey()
+        }
         return stringCommand.opsForZSet().range(cacheKey, 0L, 0L).firstOrNull().AsString()
     }
 
@@ -74,6 +99,10 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
      */
     fun getScore(member: String): Double {
         val cacheKey = getFullKey(key);
+
+        if(autoRenewal){
+            renewalKey()
+        }
         return stringCommand.opsForZSet().score(cacheKey, member)
     }
 
@@ -93,6 +122,10 @@ open class RedisSortedSetProxy @JvmOverloads constructor(
      */
     fun removeItems(vararg members: String): Long {
         val cacheKey = getFullKey(key);
+
+        if(autoRenewal){
+            renewalKey()
+        }
         return  stringCommand.opsForZSet().remove(cacheKey, *members)
     }
 }

@@ -1,15 +1,21 @@
 package nbcp.model
 
 /**
- * 主备两个存储对象。可以想像是两个蓄水池。流出池，蓄水池。
- * 当 masterOpen 时，masterMap 可读,可清空，但不允许写入. 只允许写入alternateMap
+ * 主备两个存储对象。可以想像是两个逻辑蓄水池: 进水池, 流出池
+ * 进水时:
+ *   masterOpen ===> masterPool
+ *              else alternatePool
  *
+ * 流出时:
+ *   masterOpen ===> alternatePool
+ *              else masterPool
  *
  */
 
 abstract class DualPoolData<T>(protected val masterPool: T, protected val alternatePool: T) {
+
     protected var masterOpen = false;
-    val openPool: T
+    val inputPool: T
         get() {
             if (masterOpen) return masterPool;
             else return alternatePool;
@@ -20,18 +26,19 @@ abstract class DualPoolData<T>(protected val masterPool: T, protected val altern
         masterOpen = !masterOpen;
     }
 
-    protected fun getCloseMap(): T {
-        if (masterOpen) return alternatePool;
-        else return masterPool;
-    }
+    val outputPool : T
+        get() {
+            if (masterOpen) return alternatePool;
+            else return masterPool;
+        }
 
     abstract fun consumePool(pool: T);
 
 
     fun consumeTask() {
-        consumePool(getCloseMap());
+        consumePool(outputPool);
         this.shift()
-        consumePool(getCloseMap());
+        consumePool(outputPool);
         this.shift()
     }
 }

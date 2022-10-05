@@ -12,9 +12,9 @@ class RedisJsonProxy<T> @JvmOverloads constructor(
     key: String,
     val clazz: Class<T>,
     defaultCacheSeconds: Int = 0,
-    val autoRenewal: Boolean = false
+    autoRenewal: Boolean = false
 ) :
-    BaseRedisProxy(key, defaultCacheSeconds) {
+    BaseRedisProxy(key, defaultCacheSeconds,autoRenewal) {
 
 
     fun get(): T? {
