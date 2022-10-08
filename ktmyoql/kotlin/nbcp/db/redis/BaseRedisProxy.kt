@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
  * http://redisdoc.com/index.html
  * @param group: 系统推荐所有的Redis键，都要分组，带前缀！
  */
-abstract class BaseRedisProxy(var key: String, var defaultCacheSeconds: Int, var autoRenewal: Boolean) {
+abstract class BaseRedisProxy(var key: String, val defaultCacheSeconds: Int, val autoRenewal: Boolean) {
 
     init {
 //        if (autoRenewal) {

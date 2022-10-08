@@ -26,17 +26,15 @@ class RedisNumberProxy @JvmOverloads constructor(
 //    fun set(value: Long, cacheSecond: Int = defaultCacheSeconds) = setKey("",value,cacheSecond)
 
     /**
-     * @param cacheSecond: 0=默认值 , -1为不设置缓存时间
      */
     @JvmOverloads
-    fun set(value: Long, cacheSecond: Int = defaultCacheSeconds) {
+    fun set(value: Long) {
         var cacheKey = getFullKey(key)
-        this.defaultCacheSeconds = cacheSecond;
 
-        if (cacheSecond <= 0) {
+        if (this.defaultCacheSeconds <= 0) {
             stringCommand.opsForValue().set(cacheKey, value.toString())
         } else {
-            stringCommand.opsForValue().set(cacheKey, value.toString(), Duration.ofSeconds(cacheSecond.AsLong()))
+            stringCommand.opsForValue().set(cacheKey, value.toString(), Duration.ofSeconds(this.defaultCacheSeconds.AsLong()))
         }
     }
 
