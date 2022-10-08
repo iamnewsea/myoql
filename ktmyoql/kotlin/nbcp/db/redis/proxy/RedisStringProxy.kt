@@ -48,19 +48,20 @@ class RedisStringProxy @JvmOverloads constructor(
 
 
     /**
-     * @param cacheSecond: 0=默认值 , -1为不设置缓存时间
      */
     @JvmOverloads
-    fun setIfAbsent(value: String, cacheSecond: Int = defaultCacheSeconds): Boolean {
+    fun setIfAbsent(value: String): Boolean {
         var cacheKey = getFullKey(key)
-
-        this.defaultCacheSeconds = cacheSecond;
-
-        if (cacheSecond < 0) {
+        
+        if (this.defaultCacheSeconds < 0) {
             return stringCommand.opsForValue().setIfAbsent(cacheKey, value)
         } else {
             return stringCommand.opsForValue()
-                .setIfAbsent(cacheKey, value, Duration.ofSeconds(cacheSecond.AsLong(defaultCacheSeconds.AsLong())))
+                .setIfAbsent(
+                    cacheKey,
+                    value,
+                    Duration.ofSeconds(this.defaultCacheSeconds.AsLong(defaultCacheSeconds.AsLong()))
+                )
         }
     }
 }
