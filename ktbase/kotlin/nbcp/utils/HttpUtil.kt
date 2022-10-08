@@ -422,6 +422,9 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
 
             this.totalTime = LocalDateTime.now() - startAt
             return this.response.resultBody
+        } catch (e: Exception) {
+            logger.error("[" + this.request.requestMethod + "] " + this.url + "\n" + e.message, e);
+            throw e
         } finally {
             // 断开连接
             if (this.totalTime.seconds == 0L) {
