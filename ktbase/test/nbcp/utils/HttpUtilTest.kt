@@ -28,9 +28,9 @@ class HttpUtilTest : TestBase() {
     @Test
     fun abfc2() {
         usingScope(LogLevelScope.info) {
-            var http = HttpUtil("http://saas-demo.nancal.com:8003/c/login").withMaxTryTimes(3)
+            var http = HttpUtil("http://saas-demo.nancal3.com:8003/c/login").withMaxTryTimes(3)
             http.request.headers["Content-Type"] = "application/x-www-form-urlencoded"
-
+            http.withMaxTryTimes(3)
             println(http.request.contentType)
             var authInfoMap = StringMap(
                 "loginName" to "admin",

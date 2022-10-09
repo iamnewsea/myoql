@@ -141,7 +141,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
 
     private var maxRetryTimes = 0;
     private var currentRetryTimes = 0;
-    private var retrySleepMs = 1000; //重试时间隔一秒。
+    private var retrySleepSeconds: ((Int) -> Int) = { it * 3 } //重试时间隔一秒。
     private var retryEnabled = true;
 
     var url: String = ""
@@ -154,10 +154,15 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
         this.url = url
     }
 
-    fun withMaxTryTimes(maxRetryTimes: Int, retrySleepMs: Int = 1000): HttpUtil {
+    /**
+     * retrySleepSeconds: 默认= maxRetryTimes * 3
+     */
+    fun withMaxTryTimes(maxRetryTimes: Int, retrySleepSeconds: ((Int) -> Int)? = null): HttpUtil {
         this.maxRetryTimes = maxRetryTimes;
         this.currentRetryTimes = 0;
-        this.retrySleepMs = retrySleepMs;
+        if (retrySleepSeconds != null) {
+            this.retrySleepSeconds = retrySleepSeconds;
+        }
         this.retryEnabled = true;
         return this;
     }
@@ -326,7 +331,15 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
 //        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory())
     }
 
+    private fun clearData() {
+        this.status = 0
+        this.response = HttpResponseData()
+        this.totalTime = Duration.ZERO
+        this.msg = ""
+    }
+
     fun doNet(): String {
+        clearData()
         var startAt = LocalDateTime.now();
 
         var conn = URL(url).openConnection() as HttpURLConnection;
@@ -373,6 +386,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
             if (conn.requestMethod.lowercase().IsIn("post", "put")) {
                 conn.doOutput = true
 
+                //调用 conn.outputStream ，会进行连接。
 
                 //如果是 post 小数据
                 if (this.request.postBody.any()) {
@@ -422,10 +436,12 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
 
             this.totalTime = LocalDateTime.now() - startAt
             return this.response.resultBody
-        } catch (e: Exception) {
-            logger.error("[" + this.request.requestMethod + "] " + this.url + "\n" + e.message, e);
-            throw e
-        } finally {
+        }
+//        catch (e: Exception) {
+//            logger.error("[" + this.request.requestMethod + "] " + this.url + "\n" + e.message, e);
+//            throw e
+//        }
+        finally {
             // 断开连接
             if (this.totalTime.seconds == 0L) {
                 this.totalTime = LocalDateTime.now() - startAt
@@ -434,6 +450,9 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
 
             logger.InfoError(!this.status.Between(200, 399)) {
                 var msgs = mutableListOf<String>();
+                if (this.currentRetryTimes > 0) {
+                    msgs.add("第 ${this.currentRetryTimes} 次重试");
+                }
                 msgs.add("${conn.requestMethod} ${url}\t[status:${this.status}]");
 
                 msgs.add(this.request.headers.map {
@@ -481,6 +500,10 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
                     }
                 }
 
+                if (this.maxRetryTimes > 0 && this.currentRetryTimes <= this.maxRetryTimes) {
+                    msgs.add("[重试 ${this.maxRetryTimes} 次失败!]");
+                }
+
                 val content = msgs.joinToString(const.line_break);
                 msgs.clear();
                 return@InfoError content;
@@ -488,14 +511,13 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
 
             conn.disconnect();
 
-
             this.currentRetryTimes++;
-            if (this.retryEnabled && this.status == 0 && this.currentRetryTimes < this.maxRetryTimes) {
-                var sleep = this.retrySleepMs.AsLong();
-                logger.Important("连接超时,${sleep}毫秒后将重试:${this.url}")
+            if (this.retryEnabled && this.status == 0 && this.currentRetryTimes <= this.maxRetryTimes) {
+                var sleep = this.retrySleepSeconds.invoke(this.currentRetryTimes)
+                logger.Important("连接超时,${sleep} 秒后将进行第 ${this.currentRetryTimes} 次重试,重试 ${this.url}")
 
                 if (sleep > 0) {
-                    Thread.sleep(sleep)
+                    Thread.sleep(sleep.AsLong() * 1000)
                 }
 
                 this.doNet();
