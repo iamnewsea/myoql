@@ -189,7 +189,7 @@ open class RedisCacheAopService {
             }
 
             setted = db.rerBase.taskLock(key)
-                .setIfAbsent(now.toNumberString(), cacheTime * 1000);
+                .setIfAbsent(now.toNumberString());
         } catch (e: Exception) {
             logger.error(e.message, e);
             return null;
