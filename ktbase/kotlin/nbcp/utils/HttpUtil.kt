@@ -331,11 +331,13 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
 //        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory())
     }
 
+    private var error: Exception? = null
     private fun clearData() {
         this.status = 0
         this.response = HttpResponseData()
         this.totalTime = Duration.ZERO
         this.msg = ""
+        this.error = null;
     }
 
     fun doNet(): String {
@@ -435,94 +437,93 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
             }
 
             this.totalTime = LocalDateTime.now() - startAt
+
+            logger.Info { this.getLogMessage() }
             return this.response.resultBody
-        }
-//        catch (e: Exception) {
-//            logger.error("[" + this.request.requestMethod + "] " + this.url + "\n" + e.message, e);
-//            throw e
-//        }
-        finally {
+        } catch (e: Exception) {
+            this.error = e;
+        } finally {
             // 断开连接
             if (this.totalTime.seconds == 0L) {
                 this.totalTime = LocalDateTime.now() - startAt
             }
 
+            conn.disconnect();
+        }
 
-            logger.InfoError(!this.status.Between(200, 399)) {
-                var msgs = mutableListOf<String>();
-                if (this.currentRetryTimes > 0) {
-                    msgs.add("第 ${this.currentRetryTimes} 次重试");
-                }
-                msgs.add("${conn.requestMethod} ${url}\t[status:${this.status}]");
 
-                msgs.add(this.request.headers.map {
-                    return@map "\t${it.key}:${it.value}"
-                }.joinToString(const.line_break))
+        this.currentRetryTimes++;
+        if (this.retryEnabled && this.status == 0 && this.currentRetryTimes <= this.maxRetryTimes) {
+            var sleep = this.retrySleepSeconds.invoke(this.currentRetryTimes)
+            logger.Important("连接超时,${sleep} 秒后将进行第 ${this.currentRetryTimes} 次重试,重试 ${this.url}")
 
-                if (this.status == 0) {
-                    msgs.add("[Timeout]");
-                } else {
-                    var subLen = logResponseLength / 2;
-                    //小于 1K
-                    if (this.request.postIsText && this.request.postBody.any()) {
-                        msgs.add("---")
-                        if (this.request.postBody.length < logResponseLength) {
-                            msgs.add(this.request.postBody)
-                        } else {
-                            msgs.add(
-                                this.request.postBody.substring(
-                                    0,
-                                    subLen
-                                ) + "\n〘…〙\n" + this.request.postBody.Slice(-subLen)
-                            )
-                        }
-                    }
-
-                    msgs.add("---")
-
-                    msgs.add(this.response.headers.map {
-                        return@map "\t${it.key}:${it.value}"
-                    }.joinToString(const.line_break))
-
-                    //小于1K
-                    if (this.response.resultIsText && this.response.resultBody.any()) {
-
-                        if (this.response.resultBody.length < logResponseLength) {
-                            msgs.add(this.response.resultBody)
-                        } else {
-                            msgs.add(
-                                this.response.resultBody.substring(
-                                    0,
-                                    subLen
-                                ) + "\n〘…〙\n" + this.response.resultBody.Slice(-subLen)
-                            )
-                        }
-                    }
-                }
-
-                if (this.maxRetryTimes > 0 && this.currentRetryTimes <= this.maxRetryTimes) {
-                    msgs.add("[重试 ${this.maxRetryTimes} 次失败!]");
-                }
-
-                val content = msgs.joinToString(const.line_break);
-                msgs.clear();
-                return@InfoError content;
+            if (sleep > 0) {
+                Thread.sleep(sleep.AsLong() * 1000)
             }
 
-            conn.disconnect();
+            return this.doNet();
+        } else {
+            logger.error(this.getLogMessage())
+        }
+        throw this.error!!;
+    }
 
-            this.currentRetryTimes++;
-            if (this.retryEnabled && this.status == 0 && this.currentRetryTimes <= this.maxRetryTimes) {
-                var sleep = this.retrySleepSeconds.invoke(this.currentRetryTimes)
-                logger.Important("连接超时,${sleep} 秒后将进行第 ${this.currentRetryTimes} 次重试,重试 ${this.url}")
+    private fun getLogMessage(): String {
+        var msgs = mutableListOf<String>();
+        msgs.add("${this.request.requestMethod} ${url}\t[status:${this.status}]");
 
-                if (sleep > 0) {
-                    Thread.sleep(sleep.AsLong() * 1000)
+        msgs.add(this.request.headers.map {
+            return@map "\t${it.key}:${it.value}"
+        }.joinToString(const.line_break))
+
+        if (this.status == 0) {
+            msgs.add("[Timeout]");
+        } else {
+            var subLen = logResponseLength / 2;
+            //小于 1K
+            if (this.request.postIsText && this.request.postBody.any()) {
+                msgs.add("---")
+                if (this.request.postBody.length < logResponseLength) {
+                    msgs.add(this.request.postBody)
+                } else {
+                    msgs.add(
+                        this.request.postBody.substring(
+                            0,
+                            subLen
+                        ) + "\n〘…〙\n" + this.request.postBody.Slice(-subLen)
+                    )
                 }
+            }
 
-                this.doNet();
+            msgs.add("---")
+
+            msgs.add(this.response.headers.map {
+                return@map "\t${it.key}:${it.value}"
+            }.joinToString(const.line_break))
+
+            //小于1K
+            if (this.response.resultIsText && this.response.resultBody.any()) {
+
+                if (this.response.resultBody.length < logResponseLength) {
+                    msgs.add(this.response.resultBody)
+                } else {
+                    msgs.add(
+                        this.response.resultBody.substring(
+                            0,
+                            subLen
+                        ) + "\n〘…〙\n" + this.response.resultBody.Slice(-subLen)
+                    )
+                }
             }
         }
+
+        if (this.maxRetryTimes > 0 && this.currentRetryTimes <= this.maxRetryTimes) {
+            msgs.add("[重试 ${this.maxRetryTimes} 次失败!]");
+        }
+
+        val content = msgs.joinToString(const.line_break);
+        msgs.clear();
+        return content;
     }
 
     fun toByteArray(input: InputStream): ByteArray {
