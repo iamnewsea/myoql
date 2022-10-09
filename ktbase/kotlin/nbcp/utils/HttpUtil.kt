@@ -455,7 +455,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
         this.currentRetryTimes++;
         if (this.retryEnabled && this.status == 0 && this.currentRetryTimes <= this.maxRetryTimes) {
             var sleep = this.retrySleepSeconds.invoke(this.currentRetryTimes)
-            logger.Important("连接超时,${sleep} 秒后将进行第 ${this.currentRetryTimes} 次重试,重试 ${this.url}")
+            logger.Important("连接超时,${sleep} 秒后将进行第 ${this.currentRetryTimes} 次重试 ${this.url}")
 
             if (sleep > 0) {
                 Thread.sleep(sleep.AsLong() * 1000)
