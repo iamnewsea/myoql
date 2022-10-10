@@ -183,8 +183,8 @@ abstract class BaseUploadService {
         return
     }
 
-    class AnnexResult(id: String = "", var name: String = "", url: String = "", var videoLogUrl: String? = null) :
-        IdUrl(id, url)
+//    class AnnexResult(id: String = "", var name: String = "", url: String = "", var videoLogUrl: String? = null) :
+//        IdUrl(id, url)
 
     /**
      * 文件上传
@@ -194,7 +194,7 @@ abstract class BaseUploadService {
         group: String,
         user: IdName,
         corpId: String,
-    ): ListResult<AnnexResult> {
+    ): ListResult<SysAnnex> {
         var list = mutableListOf<SysAnnex>()
 
         var msg = ""
@@ -230,14 +230,7 @@ abstract class BaseUploadService {
             return ListResult.error(msg);
         }
 
-        return ListResult.of(list.map {
-            AnnexResult(
-                it.id,
-                it.name,
-                it.url,
-                if (it.videoLogoUrl.HasValue) it.videoLogoUrl else null
-            )
-        })
+        return ListResult.of(list)
     }
 
     /**
