@@ -4,6 +4,7 @@ package nbcp.db.mongo.event;
 import nbcp.db.mongo.*;
 import nbcp.db.EventResult
 import org.springframework.data.mongodb.core.MongoTemplate
+import java.io.Serializable
 import javax.sql.DataSource
 
 

@@ -14,6 +14,8 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import java.time.LocalDateTime
 import nbcp.db.mongo.logger.*
+import java.io.Serializable
+
 /**
  * Created by udi on 17-4-7.
  */

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 class SqlDefaultSysDustbinEvent : ISqlEntityDelete {
 
     override fun beforeDelete(delete: SqlDeleteClip<*>): EventResult {
-        var dust = delete.mainEntity.tableClass.getAnnotation(RemoveToSysDustbin::class.java)
+        var dust = delete.mainEntity.entityClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dust != null) {
             //找出数据
             var where = delete.whereDatas.toSingleData()

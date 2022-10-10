@@ -51,6 +51,7 @@ import nbcp.utils.*
 import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.*
+import java.io.*
 ${packages.map { "import " + it }.joinToString(const.line_break)}
 
 """
@@ -71,7 +72,7 @@ ${packages.map { "import " + it }.joinToString(const.line_break)}
 @Component("es.${groupName}")
 @MetaDataGroup(DatabaseEnum.ElasticSearch, "${groupName}")
 class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup{
-    override fun getEntities():Set<BaseMetaData> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
+    override fun getEntities():Set<BaseMetaData<out Any>> = setOf(${group.value.map { genVarName(it) }.joinToString(",")})
 """
             )
             println("${groupName}:")
@@ -473,7 +474,7 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
             )
         }${KotlinCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
 class ${entityTypeName}(collectionName:String="")
-    :EsBaseMetaEntity<${entType.name}>(${entType.name}::class.java, "${dbName}", collectionName.AsString("${dbName}")) {
+    :EsBaseMetaEntity<${entType.name}>(${entType.name}::class.java, "${dbName}") {
 ${props.joinToString("\n")}
 ${idMethods.joinToString("\n")}
 }

@@ -6,9 +6,8 @@ import nbcp.utils.*
 import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import java.io.*
 
-
-//generate auto @2022-08-10 14:32:54
 /**
  * 回发数据
  */

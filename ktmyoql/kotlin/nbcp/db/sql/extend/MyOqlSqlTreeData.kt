@@ -30,7 +30,7 @@ class MyOqlSqlTreeData<M : SqlBaseMetaTable<T>, T : Serializable>(
     }
 
     fun toList(): List<T> {
-        var clazz = baseQuery.mainEntity.tableClass;
+        var clazz = baseQuery.mainEntity.entityClass;
         return list.map { it.ConvertType(clazz) as T }
     }
 

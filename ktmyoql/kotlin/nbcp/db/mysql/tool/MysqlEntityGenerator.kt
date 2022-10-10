@@ -290,6 +290,17 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
         }
     }
 
+    private fun getVarcharLen(columnName: String): Int {
+        if (columnName basicSame "id") return 48;
+        if (columnName basicSame "code") return 64;
+        return 0
+    }
+
+    private fun getEnumItems(column: Class<*>): String {
+        if (column.isEnum == false) return ""
+
+        return column.enumConstants.map { it.toString() }.joinToString(",")
+    }
 
     /**
      * 生成实体的 sql 代码
@@ -298,55 +309,58 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
     fun entity2Sql(entity: Class<*>): String {
         var list = mutableListOf<String>();
 
-        entity.AllFields
+        var fields = entity.AllFields
             .sortedBy {
                 if (it.name basicSame "id") return@sortedBy -9;
                 if (it.name basicSame "name") return@sortedBy -8;
                 if (it.name basicSame "code") return@sortedBy -7;
                 return@sortedBy it.name.length;
             }
-            .forEach { property ->
-                var columnName = property.name;
-                var propertyType = property.type as Class<*>
-                var dbType = DbType.of(propertyType)
-                var type = dbType.toMySqlTypeString()
 
-                if (type.isEmpty()) {
+        fields.forEach { property ->
+            var columnName = property.name;
+            var propertyType = property.type as Class<*>
+            var dbType = DbType.of(propertyType)
+            var type = dbType.toMySqlTypeString(getVarcharLen(columnName), getEnumItems(propertyType))
+
+            if (type.isEmpty()) {
 
 //                    var item =
 //                            """`${columnName}` JSON not null  "default '[]'" comment ''"""
 //                    list.add(item);
-                    //生成关系表
-                    if (propertyType.IsCollectionType || Map::class.java.isAssignableFrom(propertyType)) {
+                //生成关系表
+                if (propertyType.IsCollectionType || Map::class.java.isAssignableFrom(propertyType)) {
+                    var item =
+                        """`${columnName}` LongText not null  default '[]' comment ''"""
+                    list.add(item);
+                } else {
+                    propertyType.AllFields.forEach {
+                        var columnNameValue = columnName + "_" + it.name;
+                        var dbTypeValue = DbType.of(it.type);
+                        var sqlTypeString = dbTypeValue
+                            .toMySqlTypeString(getVarcharLen(columnName), getEnumItems(propertyType))
+                            .AsString(dbTypeValue.toString())
+
+
                         var item =
-                            """`${columnName}` LongText not null  default '[]' comment ''"""
+                            """`${columnNameValue}` ${sqlTypeString} not null ${if (dbTypeValue.isNumberic()) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment ''"""
                         list.add(item);
-                    } else {
-                        propertyType.AllFields.forEach {
-                            var columnNameValue = columnName + "_" + it.name;
-                            var dbTypeValue = DbType.of(it.type);
-                            var sqlTypeString = dbTypeValue.toMySqlTypeString().AsString(dbTypeValue.toString())
-
-
-                            var item =
-                                """`${columnNameValue}` ${sqlTypeString} not null ${if (dbTypeValue.isNumberic()) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment ''"""
-                            list.add(item);
-                        }
                     }
-
-                    return@forEach
                 }
 
-                var item =
-                    """`${columnName}` ${type} not null ${if (propertyType.IsNumberType) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment ''"""
-                list.add(item);
+                return@forEach
             }
+
+            var item =
+                """`${columnName}` ${type} not null ${if (propertyType.IsNumberType) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment ''"""
+            list.add(item);
+        }
 
         return """
 DROP TABLE IF EXISTS `${entity.simpleName}`;
 CREATE TABLE IF NOT EXISTS `${entity.simpleName}` (
 ${list.joinToString(const.line_break + ",")}
-,PRIMARY KEY (`id`)
+,PRIMARY KEY (`${fields.first()}` /*不准*/)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 COMMENT='';
 """
     }

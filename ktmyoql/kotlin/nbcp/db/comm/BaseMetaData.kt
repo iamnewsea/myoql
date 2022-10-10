@@ -5,14 +5,15 @@ import nbcp.db.mongo.MongoEntityCollector
 import java.io.Serializable
 
 
-abstract class BaseMetaData @JvmOverloads constructor(
-        var defEntityName: String,
-        var tableName: String = "",
-        var databaseId: String = ""
+abstract class BaseMetaData<T> @JvmOverloads constructor(
+
+    val entityClass: Class<T>,
+    var tableName: String = "",
+    var databaseId: String = ""
 ) : Serializable {
     init {
         if (this.tableName.isEmpty()) {
-            this.tableName = defEntityName;
+            this.tableName = entityClass.simpleName;
         }
     }
 

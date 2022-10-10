@@ -7,6 +7,7 @@ import nbcp.db.mysql.*
 import nbcp.comm.*
 import nbcp.utils.*
 import org.springframework.stereotype.*
+import java.io.Serializable
 
 
 //generate auto @2022-08-10 14:29:07
@@ -14,7 +15,7 @@ import org.springframework.stereotype.*
 @Component("sql.SqlBase")
 @MetaDataGroup(DatabaseEnum.Sql, "SqlBase")
 class SqlBaseGroup : IDataGroup{
-    override fun getEntities():Set<BaseMetaData> = setOf(s_annex,s_city,s_dustbin,s_log)
+    override fun getEntities():Set<BaseMetaData<out Any>> = setOf(s_annex,s_city,s_dustbin,s_log)
 
     val s_annex get() = s_annex_table();
     val s_city get() = s_city_table();
@@ -25,7 +26,7 @@ class SqlBaseGroup : IDataGroup{
 
     @nbcp.db.DbEntityGroup(value = """SqlBase""")
     class s_annex_table(collectionName: String = "", datasource:String="")
-        :SqlBaseMetaTable<nbcp.db.sql.entity.s_annex>(nbcp.db.sql.entity.s_annex::class.java, "s_annex", collectionName.AsString("s_annex")) {
+        :SqlBaseMetaTable<nbcp.db.sql.entity.s_annex>(nbcp.db.sql.entity.s_annex::class.java, "s_annex") {
         val name = SqlColumnName(DbType.String, this.getAliaTableName(),"name")
         val tags = SqlColumnName(DbType.String, this.getAliaTableName(),"tags")
         val ext = SqlColumnName(DbType.String, this.getAliaTableName(),"ext")
@@ -65,7 +66,7 @@ class SqlBaseGroup : IDataGroup{
     @nbcp.db.DbEntityGroup(value = """SqlBase""")
     @nbcp.db.DbEntityIndex(cacheable = false, unique = true, value = arrayOf("""code"""))
     class s_city_table(collectionName: String = "", datasource:String="")
-        :SqlBaseMetaTable<nbcp.db.sql.entity.s_city>(nbcp.db.sql.entity.s_city::class.java, "s_city", collectionName.AsString("s_city")) {
+        :SqlBaseMetaTable<nbcp.db.sql.entity.s_city>(nbcp.db.sql.entity.s_city::class.java, "s_city") {
         val code = SqlColumnName(DbType.Int, this.getAliaTableName(),"code")
         val shortName = SqlColumnName(DbType.String, this.getAliaTableName(),"shortName")
         val name = SqlColumnName(DbType.String, this.getAliaTableName(),"name")
@@ -100,7 +101,7 @@ class SqlBaseGroup : IDataGroup{
 
     @nbcp.db.DbEntityGroup(value = """SqlBase""")
     class s_dustbin_table(collectionName: String = "", datasource:String="")
-        :SqlBaseMetaTable<nbcp.db.sql.entity.s_dustbin>(nbcp.db.sql.entity.s_dustbin::class.java, "s_dustbin", collectionName.AsString("s_dustbin")) {
+        :SqlBaseMetaTable<nbcp.db.sql.entity.s_dustbin>(nbcp.db.sql.entity.s_dustbin::class.java, "s_dustbin") {
         val table = SqlColumnName(DbType.String, this.getAliaTableName(),"table")
         val remark = SqlColumnName(DbType.String, this.getAliaTableName(),"remark")
         val creator_id = SqlColumnName(DbType.String, this.getAliaTableName(),"creator_id")
@@ -132,7 +133,7 @@ class SqlBaseGroup : IDataGroup{
 
     @nbcp.db.DbEntityGroup(value = """SqlBase""")
     class s_log_table(collectionName: String = "", datasource:String="")
-        :SqlBaseMetaTable<nbcp.db.sql.entity.s_log>(nbcp.db.sql.entity.s_log::class.java, "s_log", collectionName.AsString("s_log")) {
+        :SqlBaseMetaTable<nbcp.db.sql.entity.s_log>(nbcp.db.sql.entity.s_log::class.java, "s_log") {
         val module = SqlColumnName(DbType.String, this.getAliaTableName(),"module")
         val type = SqlColumnName(DbType.String, this.getAliaTableName(),"type")
         val tags = SqlColumnName(DbType.String, this.getAliaTableName(),"tags")

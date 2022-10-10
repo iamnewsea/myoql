@@ -6,14 +6,13 @@ import nbcp.utils.*
 import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import java.io.*
 
-
-//generate auto @2022-08-10 14:32:54
 
 @Component("mongo.MongoBase")
 @MetaDataGroup(DatabaseEnum.Mongo, "MongoBase")
 class MongoBaseGroup : IDataGroup {
-    override fun getEntities(): Set<BaseMetaData> = setOf(sysAnnex, sysCity, sysDictionary, sysDustbin, sysFlywayVersion, sysLastSortNumber, sysLog, sysOrganization)
+    override fun getEntities(): Set<BaseMetaData<out Any>> = setOf(sysAnnex, sysCity, sysDictionary, sysDustbin, sysFlywayVersion, sysLastSortNumber, sysLog, sysOrganization)
 
 
     /**
@@ -64,7 +63,7 @@ class MongoBaseGroup : IDataGroup {
     @nbcp.db.DbEntityGroup(value = """MongoBase""")
     @nbcp.db.Cn(value = """系统附件""")
     class SysAnnexEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysAnnex>(nbcp.db.mongo.entity.SysAnnex::class.java, "sysAnnex", collectionName.AsString("sysAnnex"), databaseId) {
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysAnnex>(nbcp.db.mongo.entity.SysAnnex::class.java, "sysAnnex", databaseId) {
 
         val id = MongoColumnName("_id")
 
@@ -174,7 +173,7 @@ class MongoBaseGroup : IDataGroup {
     @nbcp.db.Cn(value = """城市令牌""")
     @nbcp.db.DbEntityIndex(cacheable = false, unique = true, value = arrayOf("""code"""))
     class SysCityEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysCity>(nbcp.db.mongo.entity.SysCity::class.java, "sysCity", collectionName.AsString("sysCity"), databaseId) {
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysCity>(nbcp.db.mongo.entity.SysCity::class.java, "sysCity", databaseId) {
 
         val id = MongoColumnName("_id")
 
@@ -272,7 +271,7 @@ class MongoBaseGroup : IDataGroup {
     @nbcp.db.Cn(value = """字典""")
     @nbcp.db.SortNumber(step = 10, field = """sort""", groupBy = """""")
     class SysDictionaryEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysDictionary>(nbcp.db.mongo.entity.SysDictionary::class.java, "sysDictionary", collectionName.AsString("sysDictionary"), databaseId) {
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysDictionary>(nbcp.db.mongo.entity.SysDictionary::class.java, "sysDictionary", databaseId) {
 
         val id = MongoColumnName("_id")
 
@@ -333,7 +332,7 @@ class MongoBaseGroup : IDataGroup {
     @nbcp.db.DbEntityGroup(value = """MongoBase""")
     @nbcp.db.Cn(value = """数据垃圾箱""")
     class SysDustbinEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysDustbin>(nbcp.db.mongo.entity.SysDustbin::class.java, "sysDustbin", collectionName.AsString("sysDustbin"), databaseId) {
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysDustbin>(nbcp.db.mongo.entity.SysDustbin::class.java, "sysDustbin", databaseId) {
 
         val id = MongoColumnName("_id")
 
@@ -382,7 +381,7 @@ class MongoBaseGroup : IDataGroup {
     @nbcp.db.DbEntityGroup(value = """MongoBase""")
     @nbcp.db.Cn(value = """数据版本""")
     class SysFlywayVersionEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysFlywayVersion>(nbcp.db.mongo.entity.SysFlywayVersion::class.java, "sysFlywayVersion", collectionName.AsString("sysFlywayVersion"), databaseId) {
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysFlywayVersion>(nbcp.db.mongo.entity.SysFlywayVersion::class.java, "sysFlywayVersion", databaseId) {
 
         val id = MongoColumnName("_id")
 
@@ -443,7 +442,7 @@ class MongoBaseGroup : IDataGroup {
     @nbcp.db.DbEntityGroup(value = """MongoBase""")
     @nbcp.db.Cn(value = """排序记录号""")
     class SysLastSortNumberEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysLastSortNumber>(nbcp.db.mongo.entity.SysLastSortNumber::class.java, "sysLastSortNumber", collectionName.AsString("sysLastSortNumber"), databaseId) {
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysLastSortNumber>(nbcp.db.mongo.entity.SysLastSortNumber::class.java, "sysLastSortNumber", databaseId) {
 
         val id = MongoColumnName("_id")
 
@@ -486,7 +485,7 @@ class MongoBaseGroup : IDataGroup {
     @nbcp.db.DbEntityGroup(value = """MongoBase""")
     @nbcp.db.Cn(value = """系统日志""")
     class SysLogEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysLog>(nbcp.db.mongo.entity.SysLog::class.java, "sysLog", collectionName.AsString("sysLog"), databaseId) {
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysLog>(nbcp.db.mongo.entity.SysLog::class.java, "sysLog", databaseId) {
 
         val id = MongoColumnName("_id")
 
@@ -554,7 +553,7 @@ class MongoBaseGroup : IDataGroup {
     @nbcp.db.RemoveToSysDustbin
     @nbcp.db.Cn(value = """组织信息""")
     class SysOrganizationEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysOrganization>(nbcp.db.mongo.entity.SysOrganization::class.java, "sysOrganization", collectionName.AsString("sysOrganization"), databaseId) {
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysOrganization>(nbcp.db.mongo.entity.SysOrganization::class.java, "sysOrganization", databaseId) {
 
         val id = MongoColumnName("_id")
 

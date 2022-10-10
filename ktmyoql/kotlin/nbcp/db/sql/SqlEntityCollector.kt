@@ -65,7 +65,7 @@ class SqlEntityCollector : BeanPostProcessor {
 
                 bean.getEntities().forEach { moer ->
                     if (moer is SqlBaseMetaTable<*>) {
-                        var entityClass = moer.tableClass
+                        var entityClass = moer.entityClass
 
                         addDustbin(moer)
                         addRedisCache(moer);

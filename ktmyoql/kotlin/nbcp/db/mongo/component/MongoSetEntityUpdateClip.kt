@@ -3,6 +3,7 @@ package nbcp.db.mongo
 
 import nbcp.comm.*
 import nbcp.db.db
+import java.io.Serializable
 
 /**
  * Created by udi on 17-4-7.

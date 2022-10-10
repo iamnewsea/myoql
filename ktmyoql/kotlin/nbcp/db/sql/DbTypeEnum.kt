@@ -72,11 +72,11 @@ public enum class DbType {
     /**
      * 代码生成器用。
      */
-    fun toMySqlTypeString(): kotlin.String {
+    fun toMySqlTypeString(varcharLength: kotlin.Int = 0, enumItems: kotlin.String = ""): kotlin.String {
         return when (this) {
-            String -> "varchar(800)"
+            String -> "varchar(${varcharLength.AsInt(200)})"
             Text -> "text(65535)"
-            Enum -> "varchar(800)"
+            Enum -> "Enum(${enumItems})"
             Int -> "int"
             Float -> "float"
             Long -> "bigint"

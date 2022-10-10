@@ -63,6 +63,7 @@ import java.util.*;
 import java.util.stream.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.*;
+import java.io.*;
 ${packages.map { "import " + it + ";" }.joinToString(const.line_break)}
 
 """

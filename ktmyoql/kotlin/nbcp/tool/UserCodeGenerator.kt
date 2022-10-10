@@ -7,6 +7,7 @@ import nbcp.db.es.EsBaseMetaEntity
 import nbcp.db.mongo.MongoBaseMetaCollection
 import nbcp.db.sql.SqlBaseMetaTable
 import nbcp.utils.MyUtil
+import java.io.Serializable
 import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.time.LocalDateTime
@@ -18,17 +19,17 @@ object UserCodeGenerator {
      * 生成基础的CRUD接口
      */
     @JvmStatic
-    fun genMongoMvcCrud(group: String, pkg: String, entity: BaseMetaData): String {
+    fun genMongoMvcCrud(group: String, pkg: String, entity: BaseMetaData<out Any>): String {
         return gen(group, entity, "/myoql-template/kotlin_mvc_mongo_template_crud.ftl").replace("@pkg@", pkg);
     }
 
     @JvmStatic
-    fun genMySqlMvcCrud(group: String, pkg: String, entity: BaseMetaData): String {
+    fun genMySqlMvcCrud(group: String, pkg: String, entity: BaseMetaData<out Any>): String {
         return gen(group, entity, "/myoql-template/kotlin_mvc_mysql_template_crud.ftl").replace("@pkg@", pkg);
     }
 
     @JvmStatic
-    fun genEsMvcCrud(group: String, pkg: String, entity: BaseMetaData): String {
+    fun genEsMvcCrud(group: String, pkg: String, entity: BaseMetaData<out Any>): String {
         return gen(group, entity, "/myoql-template/kotlin_mvc_es_template_crud.ftl").replace("@pkg@", pkg);
     }
 
@@ -36,7 +37,7 @@ object UserCodeGenerator {
      * 生成Vue列表页面
      */
     @JvmStatic
-    fun genVueList(group: String, entity: BaseMetaData): String {
+    fun genVueList(group: String, entity: BaseMetaData<out Any>): String {
         return gen(group, entity, "/myoql-template/vue_list_template.ftl");
     }
 
@@ -44,7 +45,7 @@ object UserCodeGenerator {
      * 生成Vue卡片页面
      */
     @JvmStatic
-    fun genVueCard(group: String, entity: BaseMetaData): String {
+    fun genVueCard(group: String, entity: BaseMetaData<out Any>): String {
         return gen(group, entity, "/myoql-template/vue_card_template.ftl");
     }
 
@@ -52,7 +53,7 @@ object UserCodeGenerator {
      * 生成Vue引用
      */
     @JvmStatic
-    fun genVueRef(group: String, entity: BaseMetaData): String {
+    fun genVueRef(group: String, entity: BaseMetaData<out Any>): String {
         return gen(group, entity, "/myoql-template/vue_ref_template.ftl");
     }
 
@@ -69,19 +70,16 @@ object UserCodeGenerator {
         )
     }
 
-    private fun gen(group: String, metaEntity: BaseMetaData, fileName: String): String {
+    private fun gen(group: String, metaEntity: BaseMetaData<out Any>, fileName: String): String {
 
         var idKey = ""
-        lateinit var entityClass: Class<*>
+        var entityClass = metaEntity.entityClass
 
         if (metaEntity is MongoBaseMetaCollection<*>) {
-            entityClass = metaEntity.entityClass
             idKey = "id"
         } else if (metaEntity is SqlBaseMetaTable<*>) {
-            entityClass = metaEntity.tableClass
-            idKey = metaEntity.getAutoIncrementKey().AsString(metaEntity.getUks().first { it.size == 1 }[0])
+            idKey = metaEntity.getAutoIncrementKey().AsString {metaEntity.getUks().firstOrNull { it.size == 1 }?.firstOrNull().AsString("id") }
         } else if (metaEntity is EsBaseMetaEntity<*>) {
-            entityClass = metaEntity.entityClass
             idKey = "id"
         }
 

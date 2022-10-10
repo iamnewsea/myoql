@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
 import java.time.LocalDateTime
 import nbcp.scope.*
+import java.io.Serializable
 
 /** https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline/ */
 

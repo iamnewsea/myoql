@@ -175,7 +175,7 @@ val Class<*>.IsNumberType: Boolean
 fun <T> Class<T>.GetEnumList(values: String = ""): List<T> {
     if (this.isEnum == false) return listOf()
 
-    var list = this.getEnumConstants()
+    var list = this.enumConstants
 
     if (values.HasValue) {
         return values.split(",")

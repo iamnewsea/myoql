@@ -65,6 +65,7 @@ import nbcp.utils.*
 import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import java.io.*
 ${packages.map { "import " + it }.joinToString(const.line_break)}
 """
 
@@ -86,7 +87,7 @@ ${packages.map { "import " + it }.joinToString(const.line_break)}
 @Component("mongo.${groupName}")
 @MetaDataGroup(DatabaseEnum.Mongo, "${groupName}")
 class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup {
-    override fun getEntities(): Set<BaseMetaData> = setOf(${
+    override fun getEntities(): Set<BaseMetaData<out Any>> = setOf(${
                             group.value.map { genVarName(it).GetSafeKotlinName() }.joinToString(", ")
                         })
 """
@@ -588,7 +589,7 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
                 )
             }${KotlinCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
 class ${entityTypeName}(collectionName: String = "", databaseId: String = "")
-    : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, "${dbName}", collectionName.AsString("${dbName}"), databaseId) {
+    : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, "${dbName}", databaseId) {
 ${props.map { const.line_break + it }.joinToString(const.line_break)}
 ${idMethods.joinToString(const.line_break)}
 }

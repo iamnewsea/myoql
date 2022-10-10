@@ -79,6 +79,7 @@ import nbcp.utils.*;
 import java.util.*;
 import java.util.stream.*;
 import org.springframework.stereotype.*;
+import java.io.*;
 ${packages.map { "import " + it + ";"}.joinToString(const.line_break)}
 
 """
@@ -379,7 +380,7 @@ public class ${entityTableMetaName} extends SqlBaseMetaTable<${entType.name.GetS
         this("","");
     }
     public ${entityTableMetaName}(String collectionName, String datasource){
-        super(${entType.name.GetSafeKotlinName()}.class, "${dbName}", MyHelper.AsString(collectionName,"${dbName}"), datasource);
+        super(${entType.name.GetSafeKotlinName()}.class, "${dbName}", datasource);
         this.collectionName = collectionName;
         this.datasource = datasource;
     }

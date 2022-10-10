@@ -1,6 +1,7 @@
 package nbcp.db.mongo
 
 import org.springframework.data.mongodb.core.query.Criteria
+import java.io.Serializable
 
 
 class MongoAggregateBeginMatch<M : MongoBaseMetaCollection<E>, E : Any>(var aggregate: MongoAggregateClip<M, E>) {

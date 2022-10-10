@@ -49,7 +49,7 @@ class EsEntityCollector : BeanPostProcessor {
          */
         @JvmStatic
         fun getCollection(collectionName: String): EsBaseMetaEntity<Serializable>? {
-            var ret: BaseMetaData? = null
+            var ret: BaseMetaData<out Any>? = null
             db.es.groups.any { group ->
                 ret = group.getEntities().firstOrNull() { it.tableName == collectionName }
 
@@ -107,7 +107,7 @@ class EsEntityCollector : BeanPostProcessor {
         return super.postProcessAfterInitialization(bean, beanName)
     }
 
-    private fun addLogHistory(entityClass: Class<out Serializable>) {
+    private fun addLogHistory(entityClass: Class<out Any>) {
         var logHistory = entityClass.getAnnotation(DbEntityLogHistory::class.java)
         if (logHistory != null) {
             logHistoryMap.put(entityClass, logHistory.value.map { it }.toTypedArray());
@@ -127,7 +127,7 @@ class EsEntityCollector : BeanPostProcessor {
         }
     }
 
-    private fun addDustbin(entityClass: Class<out Serializable>) {
+    private fun addDustbin(entityClass: Class<out Any>) {
         var dustbin = entityClass.getAnnotation(RemoveToSysDustbin::class.java)
         if (dustbin != null) {
             dustbinEntities.add(entityClass)

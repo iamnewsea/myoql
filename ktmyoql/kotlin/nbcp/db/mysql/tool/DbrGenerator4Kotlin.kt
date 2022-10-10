@@ -77,6 +77,7 @@ import nbcp.db.mysql.*
 import nbcp.comm.*
 import nbcp.utils.*
 import org.springframework.stereotype.*
+import java.io.*
 ${packages.map { "import " + it }.joinToString(const.line_break)}
 
 """
@@ -95,7 +96,7 @@ ${packages.map { "import " + it }.joinToString(const.line_break)}
 @Component("sql.${group.key}")
 @MetaDataGroup(DatabaseEnum.Sql, "${group.key}")
 class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
-    override fun getEntities():Set<BaseMetaData> = setOf(${
+    override fun getEntities():Set<BaseMetaData<out Any>> = setOf(${
                     groupEntities.map { genVarName(it).GetSafeKotlinName() }.joinToString(",")
                 })
 """
@@ -360,7 +361,7 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
             )
         }${KotlinCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
 class ${entityTableMetaName}(collectionName: String = "", datasource:String="")
-    :SqlBaseMetaTable<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, "${dbName}", collectionName.AsString("${dbName}")) {
+    :SqlBaseMetaTable<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, "${dbName}") {
 ${columnMetaDefines.props.joinToString("\n")}
 
     override fun getSpreadColumns(): Array<String> { return arrayOf<String>(${

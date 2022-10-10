@@ -9,6 +9,7 @@ import nbcp.utils.ClassUtil
 import org.bson.Document
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.ClassPathResource
+import java.io.Serializable
 
 abstract class FlywayVersionBaseService(val version: Int) {
     companion object {

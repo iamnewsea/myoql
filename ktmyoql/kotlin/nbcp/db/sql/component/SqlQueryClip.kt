@@ -360,7 +360,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
 
     @JvmOverloads
     fun toList(itemFunc: ((JsonMap) -> Unit)? = null): List<T> {
-        return toList(this.mainEntity.tableClass, itemFunc);
+        return toList(this.mainEntity.entityClass, itemFunc);
     }
 
     @JvmOverloads
@@ -449,7 +449,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
 
     @JvmOverloads
     fun toEntity(mapFunc: ((JsonMap) -> Unit)? = null): T? {
-        return toEntity(this.mainEntity.tableClass, mapFunc)
+        return toEntity(this.mainEntity.entityClass, mapFunc)
     }
 
     @JvmOverloads
@@ -524,7 +524,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
 
     @JvmOverloads
     fun toListResult(mapFunc: ((JsonMap) -> Unit)? = null): ListResult<T> {
-        return toListResult(this.mainEntity.tableClass, mapFunc);
+        return toListResult(this.mainEntity.entityClass, mapFunc);
     }
 
     /**

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
+import java.io.Serializable
 
 
 @Component
@@ -59,7 +60,7 @@ class MongoEntityCollector : BeanPostProcessor {
      * 根据名称查找定义的集合。
      */
     fun getCollection(collectionName: String): MongoBaseMetaCollection<Any>? {
-        var ret: BaseMetaData? = null
+        var ret: BaseMetaData<out Any>? = null
         dbMongo.groups.any { group ->
             ret = group.getEntities().firstOrNull() { it.tableName == collectionName }
 
