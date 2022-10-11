@@ -13,12 +13,6 @@ class HttpResponseData {
     var resultBody: String = ""
 
     /**
-     * 回发回调，处理下载大文件。
-     */
-    var resultAction: ((DataInputStream) -> Unit)? = null
-
-
-    /**
      * 回发内容是否是文字
      */
     val resultIsText: Boolean

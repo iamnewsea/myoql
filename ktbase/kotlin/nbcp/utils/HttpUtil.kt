@@ -155,6 +155,12 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
     }
 
     /**
+     * 回发回调，处理下载大文件。
+     */
+    var resultAction: ((DataInputStream) -> Unit)? = null
+
+
+    /**
      * retrySleepSeconds: 默认= maxRetryTimes * 3
      */
     fun withMaxTryTimes(maxRetryTimes: Int, retrySleepSeconds: ((Int) -> Int)? = null): HttpUtil {
@@ -426,8 +432,8 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
             }
 
             if (responseStream != null) {
-                if (this.response.resultAction != null) {
-                    DataInputStream(responseStream).use { input -> this.response.resultAction?.invoke(input) }
+                if (this.resultAction != null) {
+                    DataInputStream(responseStream).use { input -> this.resultAction?.invoke(input) }
                 } else if (this.response.resultIsText) {
                     DataInputStream(responseStream).use { input ->
                         this.response.resultBody =
@@ -579,7 +585,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
         }
 
         this.request.requestMethod = "GET"
-        this.response.resultAction = { input ->
+        this.resultAction = { input ->
             val bytes = ByteArray(CACHESIZE);
 
             while (true) {
