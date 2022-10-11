@@ -3,6 +3,7 @@ package nbcp.utils
 import nbcp.comm.*
 import java.lang.RuntimeException
 import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 import java.lang.reflect.Proxy
 
 class JavaCoderUtil {
@@ -28,9 +29,11 @@ class JavaCoderUtil {
                 throw RuntimeException("非 Proxy!")
             }
 
-            var h = Proxy.getInvocationHandler(an);
-            var members = MyUtil.getValueByWbsPath(h, "memberValues") as Map<String, Any?>?;
-            if (members == null) return "";
+            var members = an.getMemberValues()
+
+//            var h = Proxy.getInvocationHandler(an);
+//            var members = MyUtil.getValueByWbsPath(h, "memberValues") as Map<String, Any?>?;
+//            if (members == null) return "";
 
 
             var ret = "";

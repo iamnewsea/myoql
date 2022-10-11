@@ -396,6 +396,7 @@ val Class<*>.AllFields: List<Field>
 
 /**
  * 一直向父类查找。
+ * Jdk17,在反射非导出包的时候，要添加 --add-opens java.base/sun.reflect.annotation=ALL-UNNAMED
  */
 fun Class<*>.FindField(fieldName: String, ignoreCase: Boolean = false): Field? {
     val ret = this.declaredFields.find { it.name.compareTo(fieldName, ignoreCase) == 0 };

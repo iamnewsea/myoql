@@ -3,10 +3,11 @@ package nbcp.utils
 import nbcp.comm.*
 import java.lang.RuntimeException
 import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 import java.lang.reflect.Proxy
 
 class KotlinCoderUtil {
-    companion object{
+    companion object {
         /**
          * 如果存在， 就有隔行。 如果不存在就返回空。
          */
@@ -28,9 +29,10 @@ class KotlinCoderUtil {
                 throw RuntimeException("非 Proxy!")
             }
 
-            var h = Proxy.getInvocationHandler(an);
-            var members = MyUtil.getValueByWbsPath(h, "memberValues") as Map<String, Any?>?;
-            if (members == null) return "";
+            var members = an.getMemberValues()
+//            var h = Proxy.getInvocationHandler(an);
+//            var members = MyUtil.getValueByWbsPath(h, "memberValues") as Map<String, Any?>?;
+//            if (members == null) return "";
 
 
             var ret = "";
@@ -86,8 +88,6 @@ class KotlinCoderUtil {
     }
 
 
-
-
     var models: MutableSet<ClassCodeData> = mutableSetOf<ClassCodeData>()
 
     fun addModelCode(clazz: Class<*>) {
@@ -108,8 +108,6 @@ ${clazz.AllFields.map { "lateinit var " + it.name + ":" + it.type }.joinToString
         models.add(ret);
         clazz.AllFields.forEach { addModelCode(it.type) }
     }
-
-
 
 
     fun Method.getInterfaceMethodCode(): MethodCodeData {
@@ -134,7 +132,7 @@ fun ${this.name}(${
         var className: String = "",
         var packageName: String = "",
         var content: String = "",
-    ){
+    ) {
         override fun toString(): String {
             return content;
         }
@@ -143,7 +141,7 @@ fun ${this.name}(${
     data class MethodCodeData(
         var methodName: String = "",
         var content: String = ""
-    ){
+    ) {
         override fun toString(): String {
             return content;
         }
