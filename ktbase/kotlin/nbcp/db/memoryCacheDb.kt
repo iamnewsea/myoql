@@ -113,7 +113,7 @@ object memoryCacheDb {
         /**
          * 如果过期
          */
-        if (value.addAt.plusSeconds(value.cacheSeconds) > LocalDateTime.now()) {
+        if (value.addAt.plusSeconds(value.cacheSeconds) < LocalDateTime.now()) {
             value.reloadData();
 
             return value.data;
