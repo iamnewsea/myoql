@@ -135,7 +135,7 @@ data class MoerMetaMap(val parentPropertyName: String) {
         writeToFile(
             "readme.md",
 
-                    """
+            """
 实体生成时间: ${LocalDateTime.now().AsString()}
 """
         )
@@ -147,7 +147,12 @@ data class MoerMetaMap(val parentPropertyName: String) {
 
     fun writeToFile(className: String, content: String) {
 
-        FileWriter(MyUtil.joinFilePath(targetEntityPathName, if( className.contains(".") ) className else (  className + ".kt") ), true).use { moer_File ->
+        FileWriter(
+            MyUtil.joinFilePath(
+                targetEntityPathName,
+                if (className.contains(".")) className else (className + ".kt")
+            ), true
+        ).use { moer_File ->
             moer_File.appendLine(content)
             moer_File.flush()
         }
@@ -588,7 +593,7 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
                     varTableRemark
                 )
             }${KotlinCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
-class ${entityTypeName}(collectionName: String = "", databaseId: String = "")
+class ${entityTypeName}(collectionName: String = "${dbName}", databaseId: String = "")
     : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, collectionName, databaseId) {
 ${props.map { const.line_break + it }.joinToString(const.line_break)}
 ${idMethods.joinToString(const.line_break)}

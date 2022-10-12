@@ -59,11 +59,11 @@ class MongoBaseGroup : IDataGroup {
     /**
      * 系统附件
      */
-    @org.springframework.data.mongodb.core.mapping.Document(language = """""", collection = """""", collation = """""", value = """""")
+    @org.springframework.data.mongodb.core.mapping.Document(value = """""", language = """""", collection = """""", collation = """""")
     @nbcp.db.DbEntityGroup(value = """MongoBase""")
     @nbcp.db.Cn(value = """系统附件""")
-    class SysAnnexEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysAnnex>(nbcp.db.mongo.entity.SysAnnex::class.java, "sysAnnex", databaseId) {
+    class SysAnnexEntity(collectionName: String = "sysAnnex", databaseId: String = "")
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysAnnex>(nbcp.db.mongo.entity.SysAnnex::class.java, collectionName, databaseId) {
 
         val id = MongoColumnName("_id")
 
@@ -168,12 +168,12 @@ class MongoBaseGroup : IDataGroup {
     /**
      * 城市令牌
      */
-    @org.springframework.data.mongodb.core.mapping.Document(language = """""", collection = """""", collation = """""", value = """""")
+    @org.springframework.data.mongodb.core.mapping.Document(value = """""", language = """""", collection = """""", collation = """""")
     @nbcp.db.DbEntityGroup(value = """MongoBase""")
     @nbcp.db.Cn(value = """城市令牌""")
-    @nbcp.db.DbEntityIndex(cacheable = false, unique = true, value = arrayOf("""code"""))
-    class SysCityEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysCity>(nbcp.db.mongo.entity.SysCity::class.java, "sysCity", databaseId) {
+    @nbcp.db.DbEntityIndex(value = arrayOf("""code"""), unique = true, cacheable = false)
+    class SysCityEntity(collectionName: String = "sysCity", databaseId: String = "")
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysCity>(nbcp.db.mongo.entity.SysCity::class.java, collectionName, databaseId) {
 
         val id = MongoColumnName("_id")
 
@@ -266,12 +266,12 @@ class MongoBaseGroup : IDataGroup {
     /**
      * 字典
      */
-    @org.springframework.data.mongodb.core.mapping.Document(language = """""", collection = """""", collation = """""", value = """""")
+    @org.springframework.data.mongodb.core.mapping.Document(value = """""", language = """""", collection = """""", collation = """""")
     @nbcp.db.DbEntityGroup(value = """MongoBase""")
     @nbcp.db.Cn(value = """字典""")
-    @nbcp.db.SortNumber(step = 10, field = """sort""", groupBy = """""")
-    class SysDictionaryEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysDictionary>(nbcp.db.mongo.entity.SysDictionary::class.java, "sysDictionary", databaseId) {
+    @nbcp.db.SortNumber(field = """sort""", step = 10, groupBy = """""")
+    class SysDictionaryEntity(collectionName: String = "sysDictionary", databaseId: String = "")
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysDictionary>(nbcp.db.mongo.entity.SysDictionary::class.java, collectionName, databaseId) {
 
         val id = MongoColumnName("_id")
 
@@ -328,11 +328,11 @@ class MongoBaseGroup : IDataGroup {
     /**
      * 数据垃圾箱
      */
-    @org.springframework.data.mongodb.core.mapping.Document(language = """""", collection = """""", collation = """""", value = """""")
+    @org.springframework.data.mongodb.core.mapping.Document(value = """""", language = """""", collection = """""", collation = """""")
     @nbcp.db.DbEntityGroup(value = """MongoBase""")
     @nbcp.db.Cn(value = """数据垃圾箱""")
-    class SysDustbinEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysDustbin>(nbcp.db.mongo.entity.SysDustbin::class.java, "sysDustbin", databaseId) {
+    class SysDustbinEntity(collectionName: String = "sysDustbin", databaseId: String = "")
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysDustbin>(nbcp.db.mongo.entity.SysDustbin::class.java, collectionName, databaseId) {
 
         val id = MongoColumnName("_id")
 
@@ -377,11 +377,11 @@ class MongoBaseGroup : IDataGroup {
     /**
      * 数据版本
      */
-    @org.springframework.data.mongodb.core.mapping.Document(language = """""", collection = """""", collation = """""", value = """""")
+    @org.springframework.data.mongodb.core.mapping.Document(value = """""", language = """""", collection = """""", collation = """""")
     @nbcp.db.DbEntityGroup(value = """MongoBase""")
     @nbcp.db.Cn(value = """数据版本""")
-    class SysFlywayVersionEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysFlywayVersion>(nbcp.db.mongo.entity.SysFlywayVersion::class.java, "sysFlywayVersion", databaseId) {
+    class SysFlywayVersionEntity(collectionName: String = "sysFlywayVersion", databaseId: String = "")
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysFlywayVersion>(nbcp.db.mongo.entity.SysFlywayVersion::class.java, collectionName, databaseId) {
 
         val id = MongoColumnName("_id")
 
@@ -438,11 +438,11 @@ class MongoBaseGroup : IDataGroup {
     /**
      * 排序记录号
      */
-    @org.springframework.data.mongodb.core.mapping.Document(language = """""", collection = """""", collation = """""", value = """""")
+    @org.springframework.data.mongodb.core.mapping.Document(value = """""", language = """""", collection = """""", collation = """""")
     @nbcp.db.DbEntityGroup(value = """MongoBase""")
     @nbcp.db.Cn(value = """排序记录号""")
-    class SysLastSortNumberEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysLastSortNumber>(nbcp.db.mongo.entity.SysLastSortNumber::class.java, "sysLastSortNumber", databaseId) {
+    class SysLastSortNumberEntity(collectionName: String = "sysLastSortNumber", databaseId: String = "")
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysLastSortNumber>(nbcp.db.mongo.entity.SysLastSortNumber::class.java, collectionName, databaseId) {
 
         val id = MongoColumnName("_id")
 
@@ -481,11 +481,11 @@ class MongoBaseGroup : IDataGroup {
     /**
      * 系统日志
      */
-    @org.springframework.data.mongodb.core.mapping.Document(language = """""", collection = """""", collation = """""", value = """""")
+    @org.springframework.data.mongodb.core.mapping.Document(value = """""", language = """""", collection = """""", collation = """""")
     @nbcp.db.DbEntityGroup(value = """MongoBase""")
     @nbcp.db.Cn(value = """系统日志""")
-    class SysLogEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysLog>(nbcp.db.mongo.entity.SysLog::class.java, "sysLog", databaseId) {
+    class SysLogEntity(collectionName: String = "sysLog", databaseId: String = "")
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysLog>(nbcp.db.mongo.entity.SysLog::class.java, collectionName, databaseId) {
 
         val id = MongoColumnName("_id")
 
@@ -548,12 +548,12 @@ class MongoBaseGroup : IDataGroup {
     /**
      * 组织信息
      */
-    @org.springframework.data.mongodb.core.mapping.Document(language = """""", collection = """""", collation = """""", value = """""")
+    @org.springframework.data.mongodb.core.mapping.Document(value = """""", language = """""", collection = """""", collation = """""")
     @nbcp.db.DbEntityGroup(value = """MongoBase""")
     @nbcp.db.RemoveToSysDustbin
     @nbcp.db.Cn(value = """组织信息""")
-    class SysOrganizationEntity(collectionName: String = "", databaseId: String = "")
-        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysOrganization>(nbcp.db.mongo.entity.SysOrganization::class.java, "sysOrganization", databaseId) {
+    class SysOrganizationEntity(collectionName: String = "sysOrganization", databaseId: String = "")
+        : MongoBaseMetaCollection<nbcp.db.mongo.entity.SysOrganization>(nbcp.db.mongo.entity.SysOrganization::class.java, collectionName, databaseId) {
 
         val id = MongoColumnName("_id")
 
