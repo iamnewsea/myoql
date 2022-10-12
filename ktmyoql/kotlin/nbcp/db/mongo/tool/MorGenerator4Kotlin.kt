@@ -589,7 +589,7 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
                 )
             }${KotlinCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
 class ${entityTypeName}(collectionName: String = "", databaseId: String = "")
-    : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, "${dbName}", databaseId) {
+    : MongoBaseMetaCollection<${entType.name.GetSafeKotlinName()}>(${entType.name.GetSafeKotlinName()}::class.java, collectionName, databaseId) {
 ${props.map { const.line_break + it }.joinToString(const.line_break)}
 ${idMethods.joinToString(const.line_break)}
 }
