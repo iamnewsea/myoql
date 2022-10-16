@@ -11,7 +11,14 @@ class AntMatcherTest : TestBase() {
     @Test
     fun test() {
         var matcher = AntPathMatcher()
-        println(matcher.match("/a/{type}/c", "/a/b/c"))
-        println(matcher.matchStart("/a/{type}/c", "/a/b/c/d"))
+        println(matcher.match("/a/{type}/c", "/a/b/c"))  // true
+        println(matcher.matchStart("/a/{type}/c", "/a/b/c"))  //true
+        println(matcher.matchStart("/a/*/c", "/a/b/c"))  // true
+
+
+        matcher = AntPathMatcher(".")
+        println(matcher.match(".a.{type}.c", ".a.b.c"))  // true
+        println(matcher.matchStart(".a.{type}.c", ".a.b.c"))  // true
+        println(matcher.matchStart(".a.*.c", ".a.b.c"))   // true
     }
 }

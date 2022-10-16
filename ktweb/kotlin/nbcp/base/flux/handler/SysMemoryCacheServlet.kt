@@ -19,11 +19,14 @@ import reactor.core.publisher.Mono
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 open class SysMemoryCacheServlet {
 
+    /**
+     * @param key 用 AntPathMatcher 匹配,用 点 分隔每个部分
+     */
     @RequestMapping("/sys/memory-cache/broke", method = arrayOf(RequestMethod.GET, RequestMethod.POST))
-    fun doGet(key: String): Mono<ApiResult<Boolean>> {
-        memoryCacheDb.brokeMemoryCache(key)
+    fun doGet(key: String): Mono<ListResult<String>> {
+        memoryCacheDb.brokeMemoryMatchCache(key)
             .apply {
-                return Mono.just(ApiResult.of(this))
+                return Mono.just(ListResult.of(this))
             }
     }
 }

@@ -4,6 +4,7 @@ import nbcp.comm.JsonMap
 import nbcp.comm.StringKeyMap
 import nbcp.comm.plusSeconds
 import org.slf4j.LoggerFactory
+import org.springframework.util.AntPathMatcher
 import java.time.LocalDateTime
 import java.util.function.Supplier
 
@@ -48,15 +49,31 @@ object memoryCacheDb {
             .count()
     }
 
+    /**
+     * @return 返回删除的Key
+     */
     @JvmStatic
-    fun brokeMemoryCache(key: ((String) -> Boolean)): Int {
-        return map.keys
+    fun brokeMemoryCache(key: ((String) -> Boolean)): List<String> {
+        var list = mutableListOf<String>()
+        map.keys
             .filter(key)
-            .map {
-                this.brokeMemoryCache(it)
+            .forEach {
+                if (this.brokeMemoryCache(it)) {
+                    list.add(it);
+                }
             }
-            .filter { it }
-            .count()
+
+        return list;
+    }
+
+    /**
+     * @param key:  用 AntPathMatcher 匹配,用 点 分隔每个部分
+     * @return 返回删除的Key
+     */
+    @JvmStatic
+    fun brokeMemoryMatchCache(key: String): List<String> {
+        var pather = AntPathMatcher(".")
+        return brokeMemoryCache { pather.match(key, it) }
     }
 
     @JvmStatic

@@ -17,11 +17,15 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 open class SysMemoryCacheServlet {
+    /**
+     * @param key 用 AntPathMatcher 匹配,用 点 分隔每个部分
+     */
     @RequestMapping("/sys/memory-cache/broke", method = arrayOf(RequestMethod.GET, RequestMethod.POST))
-    fun doGet(key: String): ApiResult<Boolean> {
-        memoryCacheDb.brokeMemoryCache(key)
+    fun doGet(@Require key: String): ListResult<String> {
+
+        memoryCacheDb.brokeMemoryMatchCache(key)
             .apply {
-                return ApiResult.of(this)
+                return ListResult.of(this)
             }
     }
 }
