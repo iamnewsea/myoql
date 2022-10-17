@@ -1,6 +1,8 @@
 package nbcp.comm
 
 import nbcp.utils.MyUtil
+import nbcp.utils.SpringUtil
+import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
@@ -12,17 +14,31 @@ import org.springframework.core.env.ConfigurableEnvironment
  */
 class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, ApplicationContextAware {
     override fun onApplicationEvent(event: ApplicationEnvironmentPreparedEvent) {
-        env = event.environment
+        if (logoLoaded == false) {
+            logoLoaded = true;
+            logger.warn(
+                """
+﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎
+    ┌┬┐┬ ┬┌┐ ┌─┐┌─┐┌─┐
+    │││└┬┘├┴┐├─┤└─┐├┤ 
+    ┴ ┴ ┴ └─┘┴ ┴└─┘└─┘
+﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊ 
+"""
+            )
+        }
 
+        env = event.environment
         init_callbacks.forEach {
             it.invoke(env!!);
         }
     }
 
     companion object {
+        var logoLoaded = false;
         private var contextField: ApplicationContext? = null
         private var env: ConfigurableEnvironment? = null;
 
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
         private var _debug: Boolean? = null;
 
         @JvmStatic

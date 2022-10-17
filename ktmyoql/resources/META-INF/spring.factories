@@ -1,1 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=nbcp.KotlinMyOqlExtendConfig
+
+org.springframework.context.ApplicationListener=nbcp.MyOqlStartEvent

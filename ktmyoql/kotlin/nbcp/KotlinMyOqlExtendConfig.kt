@@ -50,5 +50,8 @@ class KotlinMyOqlExtendConfig : BaseImportBeanDefinitionRegistrar(
         AnnotationTypeFilter(Component::class.java),
         AnnotationTypeFilter(Configuration::class.java)
     )
-)
+){
+
+
+}
 

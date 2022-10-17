@@ -3,3 +3,4 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=nbcp.KotlinWebExt
 ,nbcp.base.mvc.filter.MyAllFilter\
 ,nbcp.base.flux.filter.CrossFilterConfig
 
+org.springframework.context.ApplicationListener=nbcp.MyMebStartEvent
