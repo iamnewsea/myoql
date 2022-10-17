@@ -18,10 +18,10 @@ class MyOqlStartEvent : ApplicationListener<ApplicationEnvironmentPreparedEvent>
     }
 
     override fun onApplicationEvent(event: ApplicationEnvironmentPreparedEvent) {
+        val env = event.environment
+
         if (logoLoaded == false) {
             logoLoaded = true;
-
-            val env = event.environment
 
             logger.warn(
                 """

@@ -14,6 +14,8 @@ import org.springframework.core.env.ConfigurableEnvironment
  */
 class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, ApplicationContextAware {
     override fun onApplicationEvent(event: ApplicationEnvironmentPreparedEvent) {
+        env = event.environment
+
         if (logoLoaded == false) {
             logoLoaded = true;
             logger.warn(
@@ -22,12 +24,12 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
     ┌┬┐┬ ┬┌┐ ┌─┐┌─┐┌─┐
     │││└┬┘├┴┐├─┤└─┐├┤ 
     ┴ ┴ ┴ └─┘┴ ┴└─┘└─┘
-﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊ 
+﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊
+${env.getProperty("spring.application.name")}  ${env.activeProfiles.joinToString()}
 """
             )
         }
 
-        env = event.environment
         init_callbacks.forEach {
             it.invoke(env!!);
         }
