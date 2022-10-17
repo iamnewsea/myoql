@@ -36,7 +36,7 @@ open class HiServlet {
             val env = SpringUtil.context.environment;
             var value = env.getProperty(key)
             if (value != null) {
-                response.WriteHtmlBodyValue(value)
+                response.WriteHtmlValue(value)
                 return;
             }
         }
