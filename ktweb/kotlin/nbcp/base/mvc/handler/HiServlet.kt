@@ -31,6 +31,15 @@ import javax.servlet.http.HttpServletResponse
 open class HiServlet {
     @GetMapping("/hi")
     fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
+        var key = request.getParameter("key")
+        if (key.HasValue) {
+            val env = SpringUtil.context.environment;
+            var value = env.getProperty(key)
+            if (value != null) {
+                response.WriteHtmlBodyValue(value)
+                return;
+            }
+        }
         proc(request, response)
     }
 
