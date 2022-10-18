@@ -25,18 +25,19 @@ class MyLogBackFilter : TurboFilter() {
 
     override fun decide(
         marker: Marker?,
-        logger: Logger?,
-        level: Level?,
+        logger: Logger, // .level = 运行时指定的日志级别.
+        level: Level?, //指 logger 指定的日志级别
         format: String?,
         params: Array<out Any>?,
         t: Throwable?
     ): FilterReply {
+        //level
         if (level == null) {
             return FilterReply.NEUTRAL
         }
 
         //如果指定了关闭
-        if (level == Level.OFF) {
+        if (logger.level == Level.OFF) {
             return FilterReply.DENY;
         }
 
@@ -49,6 +50,8 @@ class MyLogBackFilter : TurboFilter() {
         }
 
         usingScope(LogLevelScope.off) {
+
+
             //config.debug 本身也会调用 decide.
             if (config.debug) {
                 return FilterReply.ACCEPT

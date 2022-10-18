@@ -95,7 +95,7 @@ class CrossFilterConfig {
                         ignoreCase = true
                     )
                 }) {
-                    errorInfo.add("\t${key}: ${exchange.request.headers.get(key)?.joinToString()}")
+                    errorInfo.add("\t${key}: ${exchange.request.headers.get(key)?.joinToString(",")}")
                 }
 
                 errorInfo.add(

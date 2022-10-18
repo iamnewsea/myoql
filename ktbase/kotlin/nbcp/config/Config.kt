@@ -18,14 +18,14 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
 
         if (logoLoaded == false) {
             logoLoaded = true;
-            logger.warn(
+            logger.Important(
                 """
     ﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹎﹎
     ╔╦╗┬ ┬┌─┐┌─┐ ┬    ╔╗ ┌─┐┌─┐┌─┐
     ║║║└┬┘│ ││─┼┐│    ╠╩╗├─┤└─┐├┤ 
     ╩ ╩ ┴ └─┘└─┘└┴─┘  ╚═╝┴ ┴└─┘└─┘
     ﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹊﹊
-${env!!.getProperty("spring.application.name")}  ${env!!.activeProfiles.joinToString()}
+${env!!.getProperty("spring.application.name")}  ${env!!.activeProfiles.joinToString(",")}
 """
             )
         }

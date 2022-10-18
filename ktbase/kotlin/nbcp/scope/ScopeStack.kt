@@ -87,6 +87,9 @@ class ScopeStack : Stack<IScopeData>() {
         return getLatest(clazz.java, *enumValues)
     }
 
+    /**
+     * @exception: 不能做日志,因为在 MyLogBackFilter 中会调用它!
+     */
     fun <R : IScopeData> getLatest(clazz: Class<R>, vararg enumValues: R): R? {
         if (this.size == 0) return null
 
