@@ -34,6 +34,28 @@ open class HiServlet {
     @GetMapping("/hi")
     fun doGet(swe: ServerWebExchange): Mono<String> {
 
+        var key = swe.request.queryParams.getStringValue("key").AsString()
+        if (key.HasValue) {
+            val env = SpringUtil.context.environment;
+            var value = env.getProperty(key)
+            if (value != null) {
+                return Mono.just(value)
+            } else {
+                return Mono.empty()
+            }
+        }
+
+        getHiContent().apply {
+            if (this.HasValue) {
+                return Mono.just(this);
+            } else {
+                return Mono.empty()
+            }
+        }
+    }
+
+
+    private fun getHiContent(): String {
         val json = mutableMapOf<String, String?>();
         val env = SpringUtil.context.environment;
 
@@ -50,6 +72,7 @@ open class HiServlet {
             json["启动文件"] = jarFile.name;
             json["启动文件时间"] = Date(jarFile.lastModified()).AsString();
         }
+
 //        json["登录用户Id"] = request.UserId;
 //        json["登录用户名称"] = request.UserName;
         json["JAVA_VERSION"] = System.getProperty("java.version");
@@ -61,8 +84,7 @@ open class HiServlet {
         json["Git提交时间"] = env.getProperty("app.git-commit-time");
 
 
-
-        return Mono.just("""<style>
+        return """<style>
 body{padding:16px;} 
 div{margin-top:10px;} 
 div>span:first-child{font-size:14px;color:gray} 
@@ -74,7 +96,7 @@ hr{height: 1px;border: none;border-top: 1px dashed gray;}
                 "<h1>" + SpringUtil.context.environment.getProperty("spring.application.name") + "</h1><hr />" +
                 json.filter { it.value.HasValue }
                     .map { "<div><span>${it.key}</span><span>${it.value}</span></div>" }
-                    .joinToString(""));
+                    .joinToString("");
     }
 }
 

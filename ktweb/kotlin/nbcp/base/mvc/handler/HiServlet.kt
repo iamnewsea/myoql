@@ -31,6 +31,19 @@ import javax.servlet.http.HttpServletResponse
 open class HiServlet {
     @GetMapping("/hi")
     fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
+
+        val sleep = (request.findParameterValue("sleep").AsFloat() * 1000).toLong();
+        if (sleep > 0 && sleep <= 3600_000) {
+            Thread.sleep(sleep);
+        }
+
+        val status = request.findParameterValue("status").AsInt()
+        if (status.HasValue) {
+            response.status = status
+            return;
+        }
+
+
         var key = request.getParameter("key")
         if (key.HasValue) {
             val env = SpringUtil.context.environment;
@@ -38,12 +51,20 @@ open class HiServlet {
             if (value != null) {
                 response.WriteHtmlValue(value)
                 return;
+            } else {
+                return;
             }
         }
-        proc(request, response)
+
+
+        getHiContent().apply {
+            if (this.HasValue) {
+                response.WriteHtmlBodyValue(this);
+            }
+        }
     }
 
-    private fun proc(request: HttpServletRequest, response: HttpServletResponse) {
+    private fun getHiContent(): String {
         val json = mutableMapOf<String, String?>();
         val env = SpringUtil.context.environment;
 
@@ -72,18 +93,7 @@ open class HiServlet {
         json["Git提交时间"] = env.getProperty("app.git-commit-time");
 
 
-        val sleep = (request.findParameterValue("sleep").AsFloat() * 1000).toLong();
-        if (sleep > 0 && sleep <= 3600_000) {
-            Thread.sleep(sleep);
-        }
-
-        val status = request.findParameterValue("status").AsInt()
-        if (status.HasValue) {
-            response.status = status
-        }
-
-
-        response.WriteHtmlBodyValue("""<style>
+        return """<style>
 body{padding:16px;} 
 div{margin-top:10px;} 
 div>span:first-child{font-size:14px;color:gray} 
@@ -95,7 +105,7 @@ hr{height: 1px;border: none;border-top: 1px dashed gray;}
                 "<h1>" + SpringUtil.context.environment.getProperty("spring.application.name") + "</h1><hr />" +
                 json.filter { it.value.HasValue }
                     .map { "<div><span>${it.key}</span><span>${it.value}</span></div>" }
-                    .joinToString(""));
+                    .joinToString("");
     }
 }
 
