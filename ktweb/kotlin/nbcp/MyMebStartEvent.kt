@@ -23,6 +23,9 @@ class MyMebStartEvent : ApplicationListener<ApplicationEnvironmentPreparedEvent>
         if (logoLoaded == false) {
             logoLoaded = true;
 
+            /**
+             * 如果要关闭这个日志,日志级别的设定,只能在 bootstrap.yaml 或 application.yaml 中, 在最高的时机设置!
+             */
             logger.Important(
                 """
     ﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎
