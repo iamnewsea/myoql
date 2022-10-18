@@ -50,8 +50,6 @@ class MyLogBackFilter : TurboFilter() {
         }
 
         usingScope(LogLevelScope.off) {
-
-
             //config.debug 本身也会调用 decide.
             if (config.debug) {
                 return FilterReply.ACCEPT
