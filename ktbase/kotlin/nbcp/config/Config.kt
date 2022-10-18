@@ -20,11 +20,11 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
             logoLoaded = true;
             logger.warn(
                 """
-﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎
-    ┌┬┐┬ ┬┌┐ ┌─┐┌─┐┌─┐
-    │││└┬┘├┴┐├─┤└─┐├┤ 
-    ┴ ┴ ┴ └─┘┴ ┴└─┘└─┘
-﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊
+    ﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹎﹎
+    ╔╦╗┬ ┬┌─┐┌─┐ ┬    ╔╗ ┌─┐┌─┐┌─┐
+    ║║║└┬┘│ ││─┼┐│    ╠╩╗├─┤└─┐├┤ 
+    ╩ ╩ ┴ └─┘└─┘└┴─┘  ╚═╝┴ ┴└─┘└─┘
+    ﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹊﹊
 ${env!!.getProperty("spring.application.name")}  ${env!!.activeProfiles.joinToString()}
 """
             )

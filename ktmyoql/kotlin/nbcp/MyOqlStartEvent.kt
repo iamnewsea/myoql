@@ -25,11 +25,11 @@ class MyOqlStartEvent : ApplicationListener<ApplicationEnvironmentPreparedEvent>
 
             logger.warn(
                 """
-﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎
-   ┌┬┐ ┬ ┬ ┌─┐ ┌─┐  ┬
-   │││ └┬┘ │ │ │─┼┐ │
-   ┴ ┴  ┴  └─┘ └─┘└ ┴─┘
-﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊
+﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎
+    ╔╦╗┬ ┬┌─┐┌─┐ ┬  
+    ║║║└┬┘│ ││─┼┐│  
+    ╩ ╩ ┴ └─┘└─┘└┴─┘
+﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊
 ${env.getProperty("spring.application.name")}  ${env.activeProfiles.joinToString()}
 """
             )
