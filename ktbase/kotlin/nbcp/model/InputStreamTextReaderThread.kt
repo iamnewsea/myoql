@@ -1,6 +1,5 @@
 package nbcp.model
 
-import okhttp3.internal.wait
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader

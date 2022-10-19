@@ -30,13 +30,13 @@ class MyOqlInitConfig {
 
         db.mongo.groups.map { it::class.java.simpleName }.apply {
             if (this.any()) {
-                logger.Important("mongo groups:" + this.joinToString(","))
+                logger.Important("mongo groups: " + this.joinToString(","))
             }
         }
 
         db.sql.groups.map { it::class.java.simpleName }.apply {
             if (this.any()) {
-                logger.Important("sql groups:" + this.joinToString(","))
+                logger.Important("sql groups: " + this.joinToString(","))
             }
         }
     }

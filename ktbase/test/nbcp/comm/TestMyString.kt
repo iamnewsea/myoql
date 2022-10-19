@@ -1,14 +1,8 @@
 package nbcp.comm
 
 import nbcp.TestBase
-import nbcp.db.IdName
-import nbcp.scope.JsonSceneEnumScope
-import nbcp.utils.RecursionUtil
-import okio.internal.commonToUtf8String
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayOutputStream
-import java.io.Serializable
-import java.time.LocalDateTime
 
 class TestMyString : TestBase() {
 
