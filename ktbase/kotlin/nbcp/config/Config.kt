@@ -25,7 +25,14 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
     ║║║└┬┘│ ││─┼┐│    ╠╩╗├─┤└─┐├┤ 
     ╩ ╩ ┴ └─┘└─┘└┴─┘  ╚═╝┴ ┴└─┘└─┘
     ﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹊﹊
-${env!!.getProperty("spring.application.name")}  ${env!!.activeProfiles.joinToString(",")}
+${env!!.getProperty("spring.application.name")}  ${env!!.activeProfiles.joinToString(",")}${
+                    env!!.getProperty("app.scheduler").AsBooleanWithNull()
+                        .apply {
+                            if (this === null || this) {
+                                " @EnableScheduling"
+                            }
+                        }
+                }
 """
             )
         }
