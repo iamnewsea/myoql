@@ -9,6 +9,7 @@ import nbcp.db.mongo.MongoBaseMetaCollection
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
+import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.web.bind.annotation.RequestMapping
 import javax.servlet.http.HttpServletRequest
 import kotlin.reflect.full.memberProperties
@@ -22,6 +23,7 @@ import kotlin.reflect.jvm.javaType
 @AdminSysOpsAction
 @RequestMapping("/dev/mongo")
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+@ConditionalOnClass(value = arrayOf(MongoTemplate::class, nbcp.db.db::class))
 class DevMongoServlet {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

@@ -3,7 +3,9 @@ package nbcp.base.mvc.handler
 import nbcp.comm.*
 import nbcp.db.db
 import nbcp.db.mongo.*
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
+import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import javax.servlet.http.HttpServletResponse
@@ -16,6 +18,7 @@ data class cn_city_model(var c: Int, var n: String)
 @OpenAction
 @RestController
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+@ConditionalOnClass(value = arrayOf(MongoTemplate::class, nbcp.db.db::class))
 open class CityServlet {
     @PostMapping("/open/child-cities")
     fun child(@Require pcode: Int, response: HttpServletResponse): ListResult<cn_city_model> {

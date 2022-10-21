@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse
 @AdminSysOpsAction
 @RestController
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnClass(MongoTemplate::class)
+@ConditionalOnClass(value = arrayOf(MongoTemplate::class, nbcp.db.db::class))
 open class BaseMongoFlywayServlet {
     /**
      * 清除 sysFlywayVersion.version 中 非0 的记录，并重新执行！

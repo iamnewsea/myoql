@@ -23,7 +23,8 @@ import javax.servlet.http.HttpServletResponse
 @OpenAction
 @RestController
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-open class ImageGetServlet   {
+@ConditionalOnClass(nbcp.db.db::class)
+open class ImageGetServlet {
 
     private val dbService by lazy {
         return@lazy SpringUtil.getBean<IUploadFileDbService>()

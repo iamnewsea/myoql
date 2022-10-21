@@ -7,6 +7,7 @@ import nbcp.db.mongo.*
 import nbcp.base.mvc.*
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
+import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletResponse
 
 @RestController
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+@ConditionalOnClass(value = arrayOf(MongoTemplate::class, nbcp.db.db::class))
 open class ImageServlet {
     @PostMapping("/image/set")
     fun doPost(request: HttpServletRequest, resp: HttpServletResponse) {

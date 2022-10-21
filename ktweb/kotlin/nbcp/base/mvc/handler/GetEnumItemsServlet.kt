@@ -29,7 +29,10 @@ open class GetEnumItemsServlet {
     data class ValueLabelData(var value: String, var label: String)
 
     @GetMapping("/open/enum-items/list")
-    fun doGet(enum: String): ListResult<ValueLabelData> {
+    fun doGet(@Require enum: String): ListResult<ValueLabelData> {
+        if( enum.isEmpty()){
+            return ListResult.error("找不到 enum 参数")
+        }
         var clazz = Class.forName(enum);
         var nameField = clazz.GetEnumNumberField();
 
