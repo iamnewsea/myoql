@@ -169,12 +169,10 @@ export default {
             //[axios拦截器中已处理了异常]。
             jv.info(this.action_name + " 成功");
             let id = res.data.data || this.info.id;
-            if (id) {
-                this.$router.push("/dev/app-deploy-setting/edit/" + id);
+            if (!id) {
+                return jv.error("找不到 id");
             }
-            else{
-                jv.error("找不到 id");
-            }
+            this.$router.push("/dev/app-deploy-setting/edit/" + id);
         }
     }
 }
