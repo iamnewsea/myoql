@@ -173,7 +173,7 @@ export default {
                 this.$router.push("/dev/app-deploy-setting/edit/" + id);
             }
             else{
-                jv.error("找不到 id")
+                jv.error("找不到 id");
             }
         }
     }
