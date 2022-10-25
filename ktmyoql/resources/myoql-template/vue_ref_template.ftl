@@ -94,7 +94,7 @@ export default {
     },
     methods: {
       procData(res, op) {
-        var json = res.data.data;
+        let json = res.data.data;
         json.forEach(it => {
             //如果是组合实体，设置 it.id=...
 <#list fields as field>

@@ -116,20 +116,20 @@ export default {
         },
         edit_click(row) {
             //记录上次点击行
-            var rowId = row.id;
+            let rowId = row.id;
             this.$refs.list.setLastRow(row);
             this.$router.push("${url}/edit/" + rowId)
         },
         async delete_click(row) {
-            var rowId = row.id,rowName = row.name;
+            let rowId = row.id,rowName = row.name;
             await jv.confirm('确认删除 ' + rowName + ' 吗？');
 
-            var res = await this.$http.post("${url}/delete/" + rowId)
+            let res = await this.$http.post("${url}/delete/" + rowId)
             this.loadData();
         }<#if has("status")>,
         set_click(row) {
             //设置事件
-            var rowId = row.id;
+            let rowId = row.id;
         }</#if>
     }
 }

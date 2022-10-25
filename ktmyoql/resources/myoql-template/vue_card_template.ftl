@@ -156,7 +156,7 @@ export default {
     methods: {
         async loadData() {
             if (!this.id) return;
-            var res = await this.$http.post("${url}/detail/" + this.id)
+            let res = await this.$http.post("${url}/detail/" + this.id)
             this.info = res.data.data;
         },
         async save_click() {
@@ -165,14 +165,15 @@ export default {
                 return;
             }
 
-            var res =await this.$http.post("${url}/save", this.info)
+            let res =await this.$http.post("${url}/save", this.info)
             //[axios拦截器中已处理了异常]。
             jv.info(this.action_name + " 成功");
-            if (this.action == "add") {
-                var id = res.data.data
-                this.$router.push("${url}/edit/" + id)
-            } else if (this.action == "edit") {
-                this.$router.push("${url}/list")
+            let id = res.data.data || this.info.id;
+            if (id) {
+                this.$router.push("/dev/app-deploy-setting/edit/" + id);
+            }
+            else{
+                jv.error("找不到 id")
             }
         }
     }
