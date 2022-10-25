@@ -37,7 +37,7 @@ ENV JAVA_OPTS -xx:178
 aaa
 """
 
-        var t = txt.regexMultiLineEdit(Regex("^ENV\\s+(JAVA_OPTS)\\s+",RegexOption.MULTILINE),"0,2","+=>"," -XX:256 \$1");
+        var t = txt.regexMultiLineEdit(Regex("^ENV\\s+(JAVA_OPTS)\\s+",RegexOption.MULTILINE),"0,-1","+=>"," -XX:256 \$1");
 
         println(t)
 

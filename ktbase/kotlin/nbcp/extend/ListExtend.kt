@@ -148,7 +148,7 @@ fun <T> Collection<T>.Slice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): Lis
     }
 
     if (endIndexValue <= 0) {
-        endIndexValue = this.size + endIndexValue
+        endIndexValue = this.size + (endIndexValue % this.size)
     }
 
     if (endIndexValue < startIndexValue) return listOf()

@@ -36,8 +36,21 @@ ENV JAVA_OPTS -XX:MaxMetaspaceSize=256m
 */
     var startIndex = 0;
     var list = mutableListOf<String>()
-    var rangeList = range.split(",").filter { it.HasValue }.map { it.AsInt() }
-    regex.findAll(this).forEachIndexed { index, matchResult ->
+
+    var results = regex.findAll(this).toList();
+
+    var rangeList = range
+        .split(",")
+        .filter { it.HasValue }
+        .map { it.AsInt() }
+        .map {
+            if (it < 0) {
+                return@map results.size + (it % results.size)
+            }
+            return@map it;
+        }
+
+    results.forEachIndexed { index, matchResult ->
 
         list.add(this.Slice(startIndex, matchResult.range.first))
 
