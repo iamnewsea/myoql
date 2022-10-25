@@ -26,7 +26,24 @@ class TestKtExt_String : TestBase() {
         }
     }
 
+    @Test
+    fun testRegEdit() {
 
+        var txt = """
+ENV JAVA_OPTS -xx:178
+ENV JAVA_OPTS -xx:178
+ENV JAVA_OPTS -xx:178
+
+aaa
+"""
+
+        var t = txt.regexMultiLineEdit(Regex("^ENV\\s+(JAVA_OPTS)\\s+",RegexOption.MULTILINE),"0,2","+=>"," -XX:256 \$1");
+
+        println(t)
+
+        println("!!!!!!!!!!!!!!!!!!!!")
+        println("!!!!!!!!!!!!!!!!!!!!")
+    }
 
     @Test
     fun test_Tokenizer_Kotlin() {

@@ -13,13 +13,61 @@ private val logger = LoggerFactory.getLogger("MyHelper.StringExtend")
 /**
  * 判断是否有内容：非空且有长度
  */
-
 val String?.HasValue: Boolean
     @JvmName("hasValue")
     get() {
         return !this.isNullOrEmpty()
     }
 
+/**
+ * 对多行文本进行修改。
+ * @param regex:  匹配的正则
+ * @param range: 匹配的范围, 默认表示所有, (0)第一个， (-1)最后一个, (-2)倒数第2个, (5,7,8)表示，第5个第7个及第8个
+ * @param opSign： +=> 在后面追加。 +=< 在前面添加。 => 替换为新内容。
+ */
+fun String.regexMultiLineEdit(regex: Regex, range: String, opSign: String, value: String): String {
+    if (regex.options.contains(RegexOption.MULTILINE) == false) {
+        throw RuntimeException("regex.options 必须是 MULTILINE")
+    }
+/*
+^ENV\s+JAVA_OPTS\s+
+(-1) +=>
+ENV JAVA_OPTS -XX:MaxMetaspaceSize=256m
+*/
+    var startIndex = 0;
+    var list = mutableListOf<String>()
+    var rangeList = range.split(",").filter { it.HasValue }.map { it.AsInt() }
+    regex.findAll(this).forEachIndexed { index, matchResult ->
+
+        list.add(this.Slice(startIndex, matchResult.range.first))
+
+        startIndex = matchResult.range.last;
+        if (rangeList.any() && !rangeList.contains(index)) {
+            list.add(matchResult.value)
+            return@forEachIndexed
+        }
+
+        var newValue = value;
+        matchResult.groups.forEachIndexed { gIndex, groupMatch ->
+            newValue = newValue.replace("\$${gIndex}", groupMatch!!.value)
+        }
+
+        if (opSign == "+=>") {
+            list.add(matchResult.value)
+            list.add(newValue)
+        } else if (opSign == "+=<") {
+            list.add(newValue)
+            list.add(matchResult.value)
+        } else if (opSign == "=>") {
+            list.add(newValue)
+        } else {
+            throw RuntimeException("不识别的符号: ${opSign}")
+        }
+    }
+
+    list.add(this.Slice(startIndex))
+    return list.joinToString("")
+}
 
 fun String.insertAt(index: Int, value: String): String {
     return this.substring(0, index) + value + this.substring(index);
