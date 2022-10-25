@@ -165,7 +165,7 @@ export default {
                 return;
             }
 
-            let res =await this.$http.post("${url}/save", this.info)
+            let res = await this.$http.post("${url}/save", this.info)
             //[axios拦截器中已处理了异常]。
             jv.info(this.action_name + " 成功");
             let id = res.data.data || this.info.id;
