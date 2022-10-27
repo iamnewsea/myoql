@@ -18,20 +18,20 @@ annotation class DbName(val value: String)
 annotation class Cn(val value: String)
 
 
-///**
-// * 之后移除，使用 DbEntityIndex注解
-// */
-//@Target(AnnotationTarget.FIELD)
-//@Retention(AnnotationRetention.RUNTIME)
-//annotation class DbKey()
+/**
+ * 插入时填充
+ */
+@Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class InsertFill
 
-///**
-// * 之后移除，使用 DbEntityIndex注解
-// */
-//@Repeatable
-//@Target(AnnotationTarget.CLASS)
-//@Retention(AnnotationRetention.RUNTIME)
-//annotation class DbUks(vararg val value: String)
+/**
+ * 更新时填充
+ */
+@Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class UpdateFill
+
 
 /**
  * 实体的组

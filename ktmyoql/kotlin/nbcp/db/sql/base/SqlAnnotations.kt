@@ -6,20 +6,33 @@ import kotlin.reflect.KClass
 /**
  * 实体字段上定义自增列，一个实体只能有一个自增列
  *
- * 以下情况不需要定义 Uks：
- * 1. 实体表中字段定义了 @SqlAutoIncrementKey
- * 2. 实体表中字段定义了 @DbKey ,多个字段定义认为是组合主键。
- *
  * 所以框架识别主键的顺序是：
  * 1. @SqlAutoIncrementKey
- * 2. @DbKey
- * 3. @DbUks
+ * 2. DbEntityIndexes 中的唯一索引 中，键个数最少的。
+ * 3. DbEntityIndex  唯一索引
  *
  * 如果没有 Pk，则生成实体报错。
+ * 作用： insert 时会忽略该键
  */
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class SqlAutoIncrementKey()
+
+
+/**
+ * Sql中的 varchar长度
+ */
+@Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class DataLength(val value: Int)
+
+
+/**
+ * 定义Sql的数据类型
+ */
+@Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class SqlColumnType(val value: String)
 
 /**
  * 实体上定义的外键关系，如： @SqlFks(SqlFk("s_user", "id"))

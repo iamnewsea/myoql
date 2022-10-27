@@ -3,11 +3,15 @@ package nbcp.db.mysql.tool
 import freemarker.cache.ClassTemplateLoader
 import freemarker.template.TemplateMethodModelEx
 import nbcp.comm.*
+import nbcp.db.Cn
+import nbcp.db.DbEntityIndex
+import nbcp.db.DbEntityIndexes
 import nbcp.db.IdName
 import nbcp.db.sql.*
 import nbcp.tool.*
 import nbcp.utils.MyUtil
 import nbcp.utils.SpringUtil
+import java.lang.reflect.Field
 import java.time.LocalDateTime
 import java.util.*
 import javax.sql.DataSource
@@ -290,10 +294,17 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
         }
     }
 
-    private fun getVarcharLen(columnName: String): Int {
-        if (columnName basicSame "id") return 48;
-        if (columnName basicSame "code") return 64;
-        return 0
+    private fun getVarcharLen(field: Field): Int {
+        var len = field.getAnnotation(DataLength::class.java);
+        if (len != null) {
+            return len.value
+        }
+
+        if (field.name.contains("id")) return 48;
+        if (field.name.contains("code")) return 48;
+        if (field.name.contains("name")) return 64;
+        if (field.name.contains("data")) return 256;
+        return 64
     }
 
     private fun getEnumItems(column: Class<*>): String {
@@ -312,16 +323,21 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
         var fields = entity.AllFields
             .sortedBy {
                 if (it.name basicSame "id") return@sortedBy -9;
-                if (it.name basicSame "name") return@sortedBy -8;
-                if (it.name basicSame "code") return@sortedBy -7;
+                if (it.name basicSame "code") return@sortedBy -8;
+                if (it.name basicSame "name") return@sortedBy -7;
                 return@sortedBy it.name.length;
             }
 
         fields.forEach { property ->
             var columnName = property.name;
             var propertyType = property.type as Class<*>
-            var dbType = DbType.of(propertyType)
-            var type = dbType.toMySqlTypeString(getVarcharLen(columnName), getEnumItems(propertyType))
+
+            var type = property.getAnnotation(SqlColumnType::class.java)?.value
+                .AsString {
+                    DbType.of(propertyType).toMySqlTypeString(getVarcharLen(property), getEnumItems(propertyType))
+                }
+
+            var comment = property.getAnnotation(Cn::class.java)?.value.AsString()
 
             if (type.isEmpty()) {
 
@@ -336,14 +352,19 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                 } else {
                     propertyType.AllFields.forEach {
                         var columnNameValue = columnName + "_" + it.name;
-                        var dbTypeValue = DbType.of(it.type);
-                        var sqlTypeString = dbTypeValue
-                            .toMySqlTypeString(getVarcharLen(columnName), getEnumItems(propertyType))
-                            .AsString(dbTypeValue.toString())
+
+                        var sqlTypeString = it.getAnnotation(SqlColumnType::class.java)?.value
+                            .AsString {
+                                DbType.of(it.type)
+                                    .toMySqlTypeString(getVarcharLen(it), getEnumItems(propertyType))
+                            }
+
+
+                        var comment = it.getAnnotation(Cn::class.java)?.value.AsString()
 
 
                         var item =
-                            """`${columnNameValue}` ${sqlTypeString} not null ${if (dbTypeValue.isNumberic()) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment ''"""
+                            """`${columnNameValue}` ${sqlTypeString} not null ${if (it.type.IsNumberType) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment '${comment}'"""
                         list.add(item);
                     }
                 }
@@ -352,7 +373,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
             }
 
             var item =
-                """`${columnName}` ${type} not null ${if (propertyType.IsNumberType) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment ''"""
+                """`${columnName}` ${type} not null ${if (propertyType.IsNumberType) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment '${comment}'"""
             list.add(item);
         }
 
@@ -360,11 +381,51 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
 DROP TABLE IF EXISTS `${entity.simpleName}`;
 CREATE TABLE IF NOT EXISTS `${entity.simpleName}` (
 ${list.joinToString(const.line_break + ",")}
-,PRIMARY KEY (`${fields.first()}` /*不准*/)
+,PRIMARY KEY ( ${getPk(entity).map { "`${it}`" }.joinToString(", ").AsString("!没有主键!")} )
 ) ENGINE=InnoDB AUTO_INCREMENT=0 COMMENT='';
 """
     }
 
+    /**
+     * 从众多唯一索引中确定唯一索引。
+     */
+    fun getPk(entity: Class<*>): Set<String> {
+        val id = entity.AllFields.firstOrNull { field ->
+            var auto = field.getAnnotation(SqlAutoIncrementKey::class.java);
+            if (auto != null) {
+                return@firstOrNull true
+            }
+            return@firstOrNull false
+        }
+
+        if (id != null) {
+            return setOf(id.name)
+        }
+
+        val indexes = entity.getAnnotation(DbEntityIndexes::class.java)
+        if (indexes != null) {
+            var ids = indexes.value.filter { it.unique };
+            if (ids.any()) {
+                return getPk(ids);
+            }
+        }
+
+        val index = entity.getAnnotationsByType(DbEntityIndex::class.java)
+        if (index != null && index.any()) {
+            var ids = index.filter { it.unique }
+            return getPk(ids)
+        }
+
+        return setOf()
+    }
+
+    private fun getPk(ids: List<DbEntityIndex>): Set<String> {
+        return ids
+            .sortedBy { it.value.size * 1000 + it.value.map { it.length }.count() }
+            .first()
+            .value
+            .toSet()
+    }
 
     class field_name : TemplateMethodModelEx {
         override fun exec(p0: MutableList<Any?>?): String {

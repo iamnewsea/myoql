@@ -134,6 +134,9 @@ object CodeGeneratorHelper {
         return FreemarkerUtil.process(fileName, mapDefine)
     }
 
+    /**
+     * 查找所有唯一索引，每组用逗号分隔。
+     */
     @JvmOverloads
     @JvmStatic
     fun getEntityUniqueIndexesDefine(
@@ -145,10 +148,10 @@ object CodeGeneratorHelper {
         val uks = mutableSetOf<String>()
 
         entType.getAnnotationsByType(DbEntityIndex::class.java).forEach {
-            if (it.unique) {
-                uks.add(it.value.joinToString(","))
+                if (it.unique) {
+                    uks.add(it.value.joinToString(","))
+                }
             }
-        }
 
         if (entType.superclass != null && !procedClasses.contains(entType.superclass.name)) {
             uks.addAll(getEntityUniqueIndexesDefine(entType.superclass, procedClasses))
