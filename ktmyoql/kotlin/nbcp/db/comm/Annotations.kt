@@ -21,6 +21,7 @@ annotation class MetaDataGroup(val dbType: DatabaseEnum, val value: String)
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class RemoveToSysDustbin()
 
 /**
@@ -29,6 +30,7 @@ annotation class RemoveToSysDustbin()
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class LogicalDelete(val value: String = "isDeleted")
 
 /**
@@ -37,6 +39,7 @@ annotation class LogicalDelete(val value: String = "isDeleted")
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @Repeatable
+@Inherited
 annotation class SortNumber(val field: String, val groupBy: String, val step: Int = 1)
 
 /**
@@ -44,6 +47,7 @@ annotation class SortNumber(val field: String, val groupBy: String, val step: In
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class VarTable(val value: String)
 
 
@@ -52,6 +56,7 @@ annotation class VarTable(val value: String)
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class VarDatabase(val value: String)
 
 
@@ -68,6 +73,7 @@ annotation class VarDatabase(val value: String)
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class DbEntityLogHistory(vararg val value: String)
 
 /**
@@ -75,6 +81,7 @@ annotation class DbEntityLogHistory(vararg val value: String)
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
+@Inherited
 annotation class DbEntityFieldRefs(vararg val value: DbEntityFieldRef)
 
 /**
@@ -88,6 +95,7 @@ annotation class DbEntityFieldRefs(vararg val value: DbEntityFieldRef)
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @Repeatable
+@Inherited
 @java.lang.annotation.Repeatable(DbEntityFieldRefs::class)
 annotation class DbEntityFieldRef(
     val field:String ,
@@ -114,7 +122,7 @@ annotation class DbEntityFieldRef(
 
 
 //--------------------
-
+@Inherited
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class DbDefines(vararg val value: DbDefine)
@@ -123,6 +131,7 @@ annotation class DbDefines(vararg val value: DbDefine)
  * 字段定义，用于 Es实体 生成 Mapping
  */
 @Repeatable
+@Inherited
 @java.lang.annotation.Repeatable(DbDefines::class)
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
@@ -134,5 +143,6 @@ annotation class DbDefine(val fieldName: String, val define: String)
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class IkFieldDefine(vararg val fieldNames: String)
 //--------------------

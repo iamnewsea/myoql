@@ -17,6 +17,7 @@ import kotlin.reflect.KClass
 public enum class DbType {
     String("字符串", kotlin.String::class.java, Types.VARCHAR),
     Enum("枚举", kotlin.String::class.java, Types.VARCHAR),
+    Set("枚举", kotlin.String::class.java, Types.VARCHAR),
     Int("整数", kotlin.Int::class.java, Types.INTEGER, java.lang.Integer::class.java),
     Float("浮点数", kotlin.Float::class.java, Types.FLOAT, java.lang.Float::class.java),
     Long("长整数", kotlin.Long::class.java, Types.BIGINT, java.lang.Long::class.java),
@@ -52,7 +53,7 @@ public enum class DbType {
     //是否是Text类型. 需要 单引号包裹
     //Other 是复合列。
     fun needTextWrap(): kotlin.Boolean {
-        return this == DbType.String || this == DbType.Text || this == DbType.Enum || this.isDateOrTime();//|| this == DbType.Other;
+        return this == DbType.String || this == DbType.Text || this == DbType.Enum || this == DbType.Set || this.isDateOrTime();//|| this == DbType.Other;
     }
 
     //是否是数字格式.
@@ -77,6 +78,7 @@ public enum class DbType {
             String -> "varchar(${varcharLength.AsInt(200)})"
             Text -> "text(65535)"
             Enum -> "Enum(${enumItems})"
+            Set -> "Set(${enumItems})"
             Int -> "int"
             Float -> "float"
             Long -> "bigint"
@@ -109,11 +111,16 @@ public enum class DbType {
         if (this == DbType.DateTime) {
             return "LocalDateTime?"
         }
-        if (this == DbType.Other) {
+        if (this == DbType.Other || this == DbType.Json) {
             return "Any?"
         }
-        if (this == DbType.Text || this == DbType.Enum || this == DbType.Json) {
+
+        if (this == DbType.Text || this == DbType.Enum) {
             return "String"
+        }
+
+        if (this == DbType.Set) {
+            return "Set?"
         }
         return this.javaType.kotlinTypeName;
     }
@@ -123,7 +130,7 @@ public enum class DbType {
      */
     fun toKotlinDefaultValue(): kotlin.String {
         return when (this) {
-            String, Text, Json, Enum -> "\"\""
+            String, Text, Enum -> "\"\""
             Float -> "0F"
             Long -> "0L"
             Double -> "0.0"
@@ -131,6 +138,8 @@ public enum class DbType {
             Decimal -> "BigDecimal.ZERO"
             Boolean, Date, Time, DateTime, Other -> "null"
             Binary -> "byteArrayOf()"
+            Set -> "[]"
+            Json -> "{}"
             else -> "null"
         }
     }
@@ -161,6 +170,13 @@ public enum class DbType {
 
             if (clazz == Date::class.java) {
                 return DbType.DateTime
+            }
+
+            if (Map::class.java.isAssignableFrom(clazz)) {
+                return DbType.Json
+            }
+            if (clazz.IsCollectionType) {
+                return DbType.Json
             }
 
             return DbType.Other

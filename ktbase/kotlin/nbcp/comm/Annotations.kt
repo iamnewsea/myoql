@@ -13,6 +13,7 @@ import kotlin.reflect.KClass
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class MyLogLevel(val value: LogLevelScope)
 
 /**
@@ -28,6 +29,7 @@ annotation class MyLogLevel(val value: LogLevelScope)
  */
 @kotlin.annotation.Target(AnnotationTarget.FIELD, AnnotationTarget.TYPE_PARAMETER, AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class Require(val value: String = "")
 
 /**
@@ -35,6 +37,7 @@ annotation class Require(val value: String = "")
  */
 @kotlin.annotation.Target(AnnotationTarget.FIELD, AnnotationTarget.TYPE_PARAMETER, AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class DefaultNumberValue(val value: Int = 0)
 
 /**
@@ -42,6 +45,7 @@ annotation class DefaultNumberValue(val value: Int = 0)
  */
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class Ignore(val value: String = "")
 
 

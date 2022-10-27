@@ -5,12 +5,14 @@ import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.reflect.MethodSignature
 import org.slf4j.MDC
+import java.lang.annotation.Inherited
 
 /**
  * 定时任务组件注解
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class GroupLog(val value: String = "")
 
 

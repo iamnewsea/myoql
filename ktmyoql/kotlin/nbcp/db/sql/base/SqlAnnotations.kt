@@ -1,5 +1,6 @@
 package nbcp.db.sql
 
+import java.lang.annotation.Inherited
 import java.lang.reflect.Field
 import kotlin.reflect.KClass
 
@@ -16,6 +17,7 @@ import kotlin.reflect.KClass
  */
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class SqlAutoIncrementKey()
 
 
@@ -24,6 +26,7 @@ annotation class SqlAutoIncrementKey()
  */
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class DataLength(val value: Int)
 
 
@@ -32,6 +35,7 @@ annotation class DataLength(val value: Int)
  */
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class SqlColumnType(val value: String)
 
 /**
@@ -40,13 +44,33 @@ annotation class SqlColumnType(val value: String)
 @Repeatable
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class SqlFk(val fieldName:String, val refTable: String, val refTableColumn: String)
+@Inherited
+annotation class SqlFk(val fieldName: String, val refTable: String, val refTableColumn: String)
 
 
 /**
  * 实体字段上定义，表示该复杂对象字段在数据库默认上对应多个列。使用下划线展开对象的每个字段列。
  */
-//@Repeatable
+@Repeatable
+@Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class SqlSpreadColumn(val value: String = "_")
+
+///**
+// * 数据表检查项，注解可以继承
+// */
 //@Target(AnnotationTarget.FIELD)
 //@Retention(AnnotationRetention.RUNTIME)
-//annotation class SqlSpreadColumn()
+//@Inherited
+//annotation class DbEntityChecks(vararg val value: DbEntityCheck)
+//
+///**
+// * 数据表检查项，注解可以继承, 形如：  CHECK ( atr_len < stock )
+// */
+//@Target(AnnotationTarget.FIELD)
+//@Retention(AnnotationRetention.RUNTIME)
+//@java.lang.annotation.Repeatable(DbEntityChecks::class)
+//@Repeatable
+//@Inherited
+//annotation class DbEntityCheck(val expression: String)
+

@@ -8,8 +8,7 @@ import java.io.Serializable
 @DbEntityGroup("SqlBase")
 open class s_annex @JvmOverloads constructor(
     var name: String = "",          //显示的名字,友好的名称
-    @SqlColumnType("json")
-    var tags: String = "",
+    var tags: List<String> = listOf(),
     @SqlColumnType("varchar(8)")
     var ext: String = "",           //后缀名。
     var size: Int = 0,              //大小
@@ -20,7 +19,7 @@ open class s_annex @JvmOverloads constructor(
     @SqlColumnType("varchar(255)")
     var url: String = "",           //下载的路径。有 host
 
-//    @SqlSpreadColumn()
+    @SqlSpreadColumn()
     var creator: IdName = IdName(), //创建者
     var group: String = "",
     var corpId: String = "", //企业Id
@@ -37,19 +36,19 @@ open class s_annex @JvmOverloads constructor(
 open class s_log @JvmOverloads constructor(
     var module: String = "", //模块
     var type: String = "",  //类型
-    @SqlColumnType("json")
-    var tags: String = "",   //实体标志, 查询用： module + key
+    var tags: List<String> = listOf(),   //实体标志, 查询用： module + key
     @SqlColumnType("varchar(255)")
     var msg: String = "",   //消息
 
-    @SqlColumnType("512")
+    @SqlColumnType("varchar(512)")
     var request: String = "",
-    @SqlColumnType("512")
+    @SqlColumnType("varchar(512)")
     var data: String = "",
-    @SqlColumnType("512")
+    @SqlColumnType("varchar(512)")
     var response: String = "",
 
-    var creatorId: String = ""
+    @SqlSpreadColumn()
+    var creator: IdName = IdName()
 ) : AutoIdSqlDbEntity()
 
 
@@ -81,7 +80,7 @@ open class s_city @JvmOverloads constructor(
 open class s_dustbin @JvmOverloads constructor(
     var table: String = "",
     var remark: String = "",
-//    @SqlSpreadColumn()
+    @SqlSpreadColumn()
     var creator: IdName = IdName(),
     @SqlColumnType("varchar(255)")
     var data: String = "",  //保存 JSON 数据

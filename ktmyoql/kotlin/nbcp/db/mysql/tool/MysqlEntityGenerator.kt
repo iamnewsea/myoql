@@ -313,6 +313,70 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
         return column.enumConstants.map { it.toString() }.joinToString(",")
     }
 
+    fun getColumnDefine(property: Field, pFieldName: String = "", pCn: String = ""): Pair<List<String>, List<String>> {
+        var list = mutableListOf<String>()
+        var checks = mutableListOf<String>()
+        var columnName = pFieldName + property.name;
+        var propertyType = property.type as Class<*>
+
+        var dbType = DbType.of(propertyType);
+        var type = property.getAnnotation(SqlColumnType::class.java)?.value
+            .AsString {
+                dbType.toMySqlTypeString(getVarcharLen(property), getEnumItems(propertyType))
+            }
+
+        var comment = arrayOf(pCn, property.getAnnotation(Cn::class.java)?.value.AsString()).filter { it.HasValue }
+            .joinToString(" ")
+        var spreadColumn = property.getAnnotation(SqlSpreadColumn::class.java);
+        if (spreadColumn != null) {
+            propertyType.AllFields.forEach {
+                getColumnDefine(it, columnName + spreadColumn.value, comment)
+                    .apply {
+                        list.addAll(this.first)
+                        checks.addAll(this.second)
+                    }
+//                var columnNameValue = columnName + spreadColumn.value + it.name;
+//
+//                var sqlTypeString = it.getAnnotation(SqlColumnType::class.java)?.value
+//                    .AsString {
+//                        DbType.of(it.type)
+//                            .toMySqlTypeString(getVarcharLen(it), getEnumItems(propertyType))
+//                    }
+//
+//
+//                var comment = it.getAnnotation(Cn::class.java)?.value.AsString()
+//
+//
+//                var item =
+//                    """`${columnNameValue}` ${sqlTypeString} not null ${if (it.type.IsNumberType) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment '${comment}'"""
+//                list.add(item);
+            }
+
+            return list to checks;
+        } else if (dbType == DbType.Json || dbType == DbType.Other) {
+            //生成关系表
+            if (propertyType.IsCollectionType) {
+                var item =
+                    """`${columnName}` Json not null  default '[]' comment '${comment}'"""
+                list.add(item);
+
+                checks.add("CHECK ( json_valid(`${columnName}`) )")
+            } else {
+                var item =
+                    """`${columnName}` Json not null  default '{}' comment '${comment}'"""
+                list.add(item);
+
+                checks.add("CHECK ( json_valid(`${columnName}`) )")
+            }
+        } else {
+            var item =
+                """`${columnName}` ${type} not null ${if (propertyType.IsNumberType) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment '${comment}'"""
+            list.add(item);
+        }
+
+        return list to checks;
+    }
+
     /**
      * 生成实体的 sql 代码
      */
@@ -328,61 +392,23 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                 return@sortedBy it.name.length;
             }
 
-        fields.forEach { property ->
-            var columnName = property.name;
-            var propertyType = property.type as Class<*>
+        var checks = mutableListOf<String>();
 
-            var type = property.getAnnotation(SqlColumnType::class.java)?.value
-                .AsString {
-                    DbType.of(propertyType).toMySqlTypeString(getVarcharLen(property), getEnumItems(propertyType))
+        fields.forEach {
+            getColumnDefine(it)
+                .apply {
+                    list.addAll(this.first);
+                    checks.addAll(this.second);
                 }
-
-            var comment = property.getAnnotation(Cn::class.java)?.value.AsString()
-
-            if (type.isEmpty()) {
-
-//                    var item =
-//                            """`${columnName}` JSON not null  "default '[]'" comment ''"""
-//                    list.add(item);
-                //生成关系表
-                if (propertyType.IsCollectionType || Map::class.java.isAssignableFrom(propertyType)) {
-                    var item =
-                        """`${columnName}` LongText not null  default '[]' comment ''"""
-                    list.add(item);
-                } else {
-                    propertyType.AllFields.forEach {
-                        var columnNameValue = columnName + "_" + it.name;
-
-                        var sqlTypeString = it.getAnnotation(SqlColumnType::class.java)?.value
-                            .AsString {
-                                DbType.of(it.type)
-                                    .toMySqlTypeString(getVarcharLen(it), getEnumItems(propertyType))
-                            }
-
-
-                        var comment = it.getAnnotation(Cn::class.java)?.value.AsString()
-
-
-                        var item =
-                            """`${columnNameValue}` ${sqlTypeString} not null ${if (it.type.IsNumberType) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment '${comment}'"""
-                        list.add(item);
-                    }
-                }
-
-                return@forEach
-            }
-
-            var item =
-                """`${columnName}` ${type} not null ${if (propertyType.IsNumberType) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment '${comment}'"""
-            list.add(item);
         }
 
         return """
 DROP TABLE IF EXISTS `${entity.simpleName}`;
 CREATE TABLE IF NOT EXISTS `${entity.simpleName}` (
 ${list.joinToString(const.line_break + ",")}
-,PRIMARY KEY ( ${getPk(entity).map { "`${it}`" }.joinToString(", ").AsString("!没有主键!")} )
-) ENGINE=InnoDB AUTO_INCREMENT=0 COMMENT='';
+, PRIMARY KEY ( ${getPk(entity).map { "`${it}`" }.joinToString(", ").AsString("!没有主键!")} )
+${checks.map { ", " + it }.joinToString("\n")}
+) ENGINE=InnoDB  COMMENT='${entity.getAnnotation(Cn::class.java)?.value.AsString()}';
 """
     }
 

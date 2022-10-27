@@ -1,6 +1,7 @@
 package nbcp.comm
 
 import org.springframework.boot.logging.LogLevel
+import java.lang.annotation.Inherited
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import kotlin.reflect.KClass
@@ -15,10 +16,12 @@ import kotlin.reflect.KClass
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class OpenAction
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class AdminSysOpsAction
 /**
  * 把客户Post的Json,整体映射到Model上.如:
@@ -28,6 +31,7 @@ annotation class AdminSysOpsAction
 //AnnotationTarget.TYPE 表示返回值，但是无法被反射到。
 @Target(AnnotationTarget.VALUE_PARAMETER, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class JsonModel()
 
 
@@ -42,4 +46,5 @@ annotation class JsonModel()
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class RoleAction(vararg val roleNames: String)

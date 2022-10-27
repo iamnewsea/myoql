@@ -23,6 +23,7 @@ annotation class Cn(val value: String)
  */
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class InsertFill
 
 /**
@@ -30,6 +31,7 @@ annotation class InsertFill
  */
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class UpdateFill
 
 
@@ -38,15 +40,23 @@ annotation class UpdateFill
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class DbEntityGroup(val value: String)
 
+/**
+ * 数据表索引，注解可以继承
+ */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @Inherited
 annotation class DbEntityIndexes(vararg val value: DbEntityIndex)
 
+/**
+ * 数据表索引，注解可以继承
+ */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @java.lang.annotation.Repeatable(DbEntityIndexes::class)
 @Repeatable
+@Inherited
 annotation class DbEntityIndex(vararg val value: String, val unique: Boolean = false, val cacheable: Boolean = false)
