@@ -6,6 +6,7 @@ import nbcp.comm.*
 import nbcp.db.db
 import java.time.LocalDateTime
 import nbcp.db.sql.logger.*
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 
 //查询原生表。
 class RawQuerySqlClip(var sqlParameter: SqlParameterData, tableName: String) : SqlBaseQueryClip(tableName) {
@@ -48,7 +49,7 @@ class RawExecuteSqlClip(var sqlParameter: SqlParameterData, tableName: String) :
         var n = -1;
         var error:Exception? = null;
         try {
-            n = jdbcTemplate.update(sql.expression, sql.values)
+            n = jdbcTemplate.update(sql.expression, MapSqlParameterSource(sql.values))
             db.executeTime = LocalDateTime.now() - startAt
         } catch (e: Exception) {
             error = e;

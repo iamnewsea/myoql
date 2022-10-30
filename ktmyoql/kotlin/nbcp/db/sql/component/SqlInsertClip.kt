@@ -9,6 +9,7 @@ import nbcp.utils.*
 import nbcp.db.db
 import nbcp.db.sql.logger.logInsert
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
+import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils
 import java.lang.RuntimeException
 import java.time.LocalDateTime
 import java.io.Serializable
@@ -18,13 +19,13 @@ import java.io.Serializable
  * @param mainEntity 是元数据类型。 实体类型= mainEntity.entityClass
  */
 class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntity: M) :
-        SqlBaseExecuteClip(mainEntity.tableName) {
+    SqlBaseExecuteClip(mainEntity.tableName) {
 
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    private val columns = SqlColumnNames()
+    private val ignore_columns = SqlColumnNames()
     val entities = mutableListOf<JsonMap>()
 
     //    private var transaction = false;
@@ -32,6 +33,13 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
 
     //回写自增Id用。
     val ori_entities = mutableListOf<T>()
+
+    init {
+        var id = this.mainEntity.getAutoIncrementKey();
+        if (id.HasValue) {
+            this.ignore_columns.add(this.mainEntity.getColumns().first { it.name == id })
+        }
+    }
 
     /**
      * 批量插入时， 指定是否使用事务。
@@ -50,9 +58,8 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
         return this;
     }
 
-    fun resetColumns(selectColumn: (M) -> SqlColumnNames): SqlInsertClip<M, T> {
-        columns.clear()
-        columns.addAll(selectColumn(this.mainEntity).filter { it.name != this.mainEntity.getAutoIncrementKey() })
+    fun ignoreColumns(selectColumn: (M) -> SqlColumnNames): SqlInsertClip<M, T> {
+        ignore_columns.addAll(selectColumn(this.mainEntity))
         return this
     }
 
@@ -74,16 +81,16 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
 
         //把 布尔值 改为 1,0
         entity::class.java.AllFields
-                .forEach {
-                    var key = it.name;
-                    var value = ent.get(key);
-                    if (value == null) {
-                        ent.remove(key);
-                        return@forEach
-                    }
-
-                    ent.set(key, proc_value(value));
+            .forEach {
+                var key = it.name;
+                var value = ent.get(key);
+                if (value == null) {
+                    ent.remove(key);
+                    return@forEach
                 }
+
+                ent.set(key, proc_value(value));
+            }
 
         this.entities.add(ent)
         return this
@@ -108,27 +115,24 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
 
             var keys = entity.keys;
 
-            var insertColumns = this.mainEntity.getColumns().filter { it.name != autoIncrmentKey }
-                    .filter {
-                        if (it.name.IsIn(keys) == false) return@filter false;
+            var insertColumns = getInsertColumns()
+                .filter {
+                    if (it.name.IsIn(keys) == false) return@filter false;
 
-                        var v = entity.get(it.name);
-                        if (v == null) {
-                            return@filter false;
-                        }
-
-                        //如果是时间，且为空字符串， 则不插入
-                        if (it.dbType.isDateOrTime()) {
-                            if (v is String && v.isEmpty()) {
-                                return@filter false;
-                            }
-                        }
-                        return@filter true;
+                    var v = entity.get(it.name);
+                    if (v == null) {
+                        return@filter false;
                     }
 
-            if (columns.any()) {
-                insertColumns = insertColumns.Intersect(columns, { a, b -> a.name == b.name })
-            }
+                    //如果是时间，且为空字符串， 则不插入
+                    if (it.dbType.isDateOrTime()) {
+                        if (v is String && v.isEmpty()) {
+                            return@filter false;
+                        }
+                    }
+                    return@filter true;
+                }
+
 
             var exp = "insert into ${mainEntity.quoteTableName} (${
                 insertColumns.map { "${db.sql.getSqlQuoteName(it.name)}" }.joinToString(",")
@@ -249,16 +253,15 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
 //        return n;
 //    }
 
+    private fun getInsertColumns(): List<SqlColumnName> {
+        var ignore_column_names = ignore_columns.map { it.name }
+        return this.mainEntity.getColumns().filterNot { it.name.IsIn(ignore_column_names) }
+    }
+
     private fun insertMany(skip: Int, take: Int): Int {
         if (take <= 0) return 0;
 
-        var autoIncrmentKey = this.mainEntity.getAutoIncrementKey();
-
-        var insertColumns = this.mainEntity.getColumns().filter { it.name != autoIncrmentKey }
-
-        if (columns.any()) {
-            insertColumns = insertColumns.Intersect(columns, { a, b -> a.name == b.name })
-        }
+        var insertColumns = getInsertColumns()
 
         logger.Info { "预计批量插入 ${this.mainEntity.tableName} 总数：${entities.size} 条,skip: ${skip}, take: ${take} !" }
 
@@ -267,13 +270,25 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
 //        if (take < 0) {
 //            result = doBatch_EachItem(insertColumns).size;
 //        } else {
+
+        var list = mutableListOf<JsonMap>()
+        var v_sql = mutableListOf<String>()
+        entities.Skip(skip).take(take)
+            .forEachIndexed { index, jsonMap ->
+                var rowMap = JsonMap();
+                insertColumns.forEach { column ->
+                    rowMap.put("${column}", jsonMap.get(column.name))
+                }
+
+
+                list.add(rowMap)
+                v_sql.add("(" + rowMap.keys.joinToString(",") + ")")
+            }
+
+
         var executeSql = "insert into ${mainEntity.quoteTableName} (${
             insertColumns.map { "${db.sql.getSqlQuoteName(it.name)}" }.joinToString(",")
-        }) values " +
-
-                IntRange(1, take).map each_entity@{
-                    return@each_entity "(" + insertColumns.map { "?" }.joinToString(",") + ")"
-                }.joinToString(",")
+        }) values (" + insertColumns.map { ":" + it.name }.joinToString(",") + ")"
 
         var msg_log = mutableListOf("[sql] ${executeSql}")
         var startAt = LocalDateTime.now();
@@ -281,7 +296,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
         var error: Exception? = null;
         var index = 1;
         try {
-            result = jdbcTemplate.batchUpdate(executeSql, entities.Skip(skip).take(take).toTypedArray()).size
+            result = jdbcTemplate.batchUpdate(executeSql, SqlParameterSourceUtils.createBatch(list)).size
 
             db.executeTime = LocalDateTime.now() - startAt
 
@@ -350,7 +365,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
         } else {
             //没有自增Id的情况
             try {
-                n = jdbcTemplate.update(sql.expression, sql.values)
+                n = jdbcTemplate.update(sql.expression, MapSqlParameterSource(sql.values))
                 db.executeTime = LocalDateTime.now() - startAt
 
             } catch (e: Exception) {

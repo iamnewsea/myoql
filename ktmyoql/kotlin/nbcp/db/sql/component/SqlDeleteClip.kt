@@ -5,6 +5,7 @@ import nbcp.comm.*
 
 import nbcp.db.db
 import nbcp.db.sql.logger.logDelete
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import java.time.LocalDateTime
 import java.io.Serializable
 
@@ -12,12 +13,13 @@ import java.io.Serializable
  * Created by yuxh on 2018/7/2
  */
 
-class SqlDeleteClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity: M) : SqlBaseExecuteClip(mainEntity.tableName) {
+class SqlDeleteClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity: M) :
+    SqlBaseExecuteClip(mainEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    private var take =-1;
+    private var take = -1;
 
     val whereDatas = WhereData()
 
@@ -29,7 +31,7 @@ class SqlDeleteClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity: M) :
     /**
      * delete from table where id=1 limit n;
      */
-    fun limit(take:Int):SqlDeleteClip<M>{
+    fun limit(take: Int): SqlDeleteClip<M> {
         this.take = take;
         return this;
     }
@@ -43,7 +45,7 @@ class SqlDeleteClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity: M) :
         var exp = "delete from ${mainEntity.quoteTableName} where ${where.expression}";
         var values = where.values
 
-        if( this.take >=0){
+        if (this.take >= 0) {
             exp += " limit ${take}"
         }
 
@@ -60,7 +62,7 @@ class SqlDeleteClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity: M) :
     override fun exec(): Int {
         db.affectRowCount = -1;
         var settings = db.sql.sqlEvents?.onDeleting(this) ?: arrayOf();
-        if( settings.any{it.second.result ==false}){
+        if (settings.any { it.second.result == false }) {
             return 0;
         }
 
@@ -69,9 +71,9 @@ class SqlDeleteClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity: M) :
         val startAt = LocalDateTime.now();
 
         var n = -1;
-        var error:Exception? = null;
+        var error: Exception? = null;
         try {
-            n = jdbcTemplate.update(sql.expression, sql.values)
+            n = jdbcTemplate.update(sql.expression, MapSqlParameterSource(sql.values))
             db.executeTime = LocalDateTime.now() - startAt
 
 //            if (n > 0) {
@@ -81,11 +83,11 @@ class SqlDeleteClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity: M) :
             error = e;
             throw e;
         } finally {
-            logger.logDelete(error,tableName,sql, n);
+            logger.logDelete(error, tableName, sql, n);
         }
 
         settings.forEach {
-            it.first.delete(this,it.second)
+            it.first.delete(this, it.second)
         }
 
         db.affectRowCount = n

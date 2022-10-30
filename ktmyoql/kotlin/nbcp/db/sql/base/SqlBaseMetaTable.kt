@@ -1,7 +1,6 @@
 package nbcp.db.sql
 
-import nbcp.comm.AllFields
-import nbcp.comm.AsString
+import nbcp.comm.*
 import nbcp.db.*
 import java.lang.reflect.Modifier
 import java.io.Serializable
@@ -11,6 +10,14 @@ abstract class SqlBaseMetaTable<T : Serializable>(
     tableName: String = "",
     databaseId: String = ""
 ) : BaseMetaData<T>(entityClass, tableName, databaseId) {
+    companion object {
+        @Transient
+        private var table_columns = mutableMapOf<String, SqlColumnNames>()
+
+        @Transient
+        private var table_json_columns = mutableMapOf<String, SqlColumnNames>()
+    }
+
     abstract fun getUks(): Array<Array<String>>
     abstract fun getFks(): Array<FkDefine>
 
@@ -21,10 +28,10 @@ abstract class SqlBaseMetaTable<T : Serializable>(
     abstract fun getSpreadColumns(): Array<String>
 //    abstract fun getConvertValueColumns(): Array<String>
 
-    @Transient
-    private var _columns = SqlColumnNames()
     fun getColumns(): SqlColumnNames {
-        if (_columns.isNotEmpty()) {
+        var tableMetaName = this::class.java.simpleName
+        var _columns = table_columns.get(tableMetaName)
+        if (_columns != null) {
             return _columns;
         }
 
@@ -34,6 +41,30 @@ abstract class SqlBaseMetaTable<T : Serializable>(
             .toTypedArray()
         )
 
+        table_columns.put(tableMetaName, _columns)
+        return _columns;
+    }
+
+    fun getJsonColumns(): SqlColumnNames {
+        var tableMetaName = this::class.java.simpleName
+        var _columns = table_json_columns.get(tableMetaName)
+        if (_columns != null) {
+            return _columns;
+        }
+
+        var all_columns = getColumns();
+        _columns = SqlColumnNames(*this.entityClass.AllFields
+            .filter { it.type.IsCollectionType || it.type.IsMapType || !it.type.IsSimpleType() }
+            .filter {
+                return@filter it.getAnnotation(SqlSpreadColumn::class.java) == null
+            }
+            .map { field -> all_columns.firstOrNull { it.name == field.name } }
+            .filter { it != null }
+            .map { it!! }
+            .toTypedArray()
+        )
+
+        table_json_columns.put(tableMetaName, _columns)
         return _columns;
     }
 

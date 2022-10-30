@@ -12,6 +12,7 @@ import nbcp.utils.SpringUtil
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import nbcp.db.sql.logger.*
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 
 abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
     protected var skip = 0;
@@ -123,7 +124,7 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
 
         return jdbcTemplate.query(
             sqlParameter.expression,
-            sqlParameter.values,
+            MapSqlParameterSource(sqlParameter.values) ,
             rowMapper
         ) as List<MutableMap<String, Any?>>
     }

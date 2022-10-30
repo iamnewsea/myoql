@@ -1,10 +1,7 @@
 package nbcp.db.sql.event;
 
-import nbcp.comm.AsString
-import nbcp.comm.FindField
-import nbcp.comm.HasValue
+import nbcp.comm.*
 import nbcp.db.sql.*;
-import nbcp.comm.ToJson
 import nbcp.utils.*
 import nbcp.db.*
 import nbcp.db.mongo.MongoEntityCollector
@@ -35,7 +32,7 @@ class SqlDefaultInsertEvent : ISqlEntityInsert {
             .forEach { converterClass ->
                 var converter = converterClass.value.java.getConstructor().newInstance()
                 var field = insert.mainEntity.entityClass.FindField(converterClass.field);
-                if( field == null){
+                if (field == null) {
                     throw java.lang.RuntimeException("实体:${insert.mainEntity.entityClass.simpleName} 定义的 ConverterValueToDb 找不到字段: ${converterClass.field} !")
                 }
                 field.isAccessible = true;
@@ -47,6 +44,20 @@ class SqlDefaultInsertEvent : ISqlEntityInsert {
                     }
                 }
             }
+
+
+        //处理 Json 类型的数据
+        insert.mainEntity.getJsonColumns().forEach { column ->
+            insert.entities.forEach { ent ->
+                val v = ent.get(column.name)
+                if (v != null) {
+                    var v_type = v::class.java
+                    if (v_type.IsStringType == false) {
+                        ent.put(column.name, v.ToJson())
+                    }
+                }
+            }
+        }
 
         return EventResult(true)
     }
