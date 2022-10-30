@@ -35,7 +35,7 @@ object dbSql {
 
         var conn = config.getConfig("spring.datasource.url").AsString();
 
-        if (conn.startsWith("jdbc:mysql://")) {
+        if (conn.startsWith("jdbc:mysql://") || conn.startsWith("jdbc:mariadb://")) {
             return@lazy DatabaseEnum.Mysql
         }
 

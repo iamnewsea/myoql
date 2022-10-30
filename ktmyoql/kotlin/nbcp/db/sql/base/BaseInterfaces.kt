@@ -3,6 +3,7 @@ package nbcp.db.sql
 import nbcp.db.*
 import java.io.Serializable
 import java.time.LocalDateTime
+
 /**
  * 仅留接口
  */
@@ -20,6 +21,7 @@ interface ISqlDbEntity : Serializable {
 //}
 
 @DbEntityIndex("id", unique = true)
+@ConverterValueToDb("id", AutoIdConverter::class)
 abstract class AutoIdSqlDbEntity : Serializable {
     var id: String = ""
 

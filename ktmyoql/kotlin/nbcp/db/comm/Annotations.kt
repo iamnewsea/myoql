@@ -34,7 +34,7 @@ annotation class RemoveToSysDustbin()
 annotation class LogicalDelete(val value: String = "isDeleted")
 
 /**
- * 排序的步长
+ * 可以按 groupBy 字段，自动设置排序的步长
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
@@ -146,3 +146,5 @@ annotation class DbDefine(val fieldName: String, val define: String)
 @Inherited
 annotation class IkFieldDefine(vararg val fieldNames: String)
 //--------------------
+
+

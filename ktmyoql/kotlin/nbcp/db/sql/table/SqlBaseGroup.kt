@@ -7,10 +7,9 @@ import nbcp.db.mysql.*
 import nbcp.comm.*
 import nbcp.utils.*
 import org.springframework.stereotype.*
-import java.io.Serializable
+import java.io.*
 
 
-//generate auto @2022-08-10 14:29:07
 
 @Component("sql.SqlBase")
 @MetaDataGroup(DatabaseEnum.Sql, "SqlBase")
@@ -24,11 +23,13 @@ class SqlBaseGroup : IDataGroup{
 
 
 
+    @nbcp.db.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
+    @nbcp.db.sql.ConverterValueToDb(value = nbcp.db.sql.AutoIdConverter::class, field = """id""")
     @nbcp.db.DbEntityGroup(value = """SqlBase""")
     class s_annex_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.db.sql.entity.s_annex>(nbcp.db.sql.entity.s_annex::class.java, "s_annex") {
         val name = SqlColumnName(DbType.String, this.getAliaTableName(),"name")
-        val tags = SqlColumnName(DbType.String, this.getAliaTableName(),"tags")
+        val tags = SqlColumnName(DbType.Json, this.getAliaTableName(),"tags")
         val ext = SqlColumnName(DbType.String, this.getAliaTableName(),"ext")
         val size = SqlColumnName(DbType.Int, this.getAliaTableName(),"size")
         val imgWidth = SqlColumnName(DbType.Int, this.getAliaTableName(),"imgWidth")
@@ -64,7 +65,7 @@ class SqlBaseGroup : IDataGroup{
     }
 
     @nbcp.db.DbEntityGroup(value = """SqlBase""")
-    @nbcp.db.DbEntityIndex(cacheable = false, unique = true, value = arrayOf("""code"""))
+    @nbcp.db.DbEntityIndex(value = arrayOf("""code"""), unique = true, cacheable = false)
     class s_city_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.db.sql.entity.s_city>(nbcp.db.sql.entity.s_city::class.java, "s_city") {
         val code = SqlColumnName(DbType.Int, this.getAliaTableName(),"code")
@@ -99,6 +100,8 @@ class SqlBaseGroup : IDataGroup{
 
     }
 
+    @nbcp.db.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
+    @nbcp.db.sql.ConverterValueToDb(value = nbcp.db.sql.AutoIdConverter::class, field = """id""")
     @nbcp.db.DbEntityGroup(value = """SqlBase""")
     class s_dustbin_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.db.sql.entity.s_dustbin>(nbcp.db.sql.entity.s_dustbin::class.java, "s_dustbin") {
@@ -131,21 +134,24 @@ class SqlBaseGroup : IDataGroup{
 
     }
 
+    @nbcp.db.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
+    @nbcp.db.sql.ConverterValueToDb(value = nbcp.db.sql.AutoIdConverter::class, field = """id""")
     @nbcp.db.DbEntityGroup(value = """SqlBase""")
     class s_log_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.db.sql.entity.s_log>(nbcp.db.sql.entity.s_log::class.java, "s_log") {
         val module = SqlColumnName(DbType.String, this.getAliaTableName(),"module")
         val type = SqlColumnName(DbType.String, this.getAliaTableName(),"type")
-        val tags = SqlColumnName(DbType.String, this.getAliaTableName(),"tags")
+        val tags = SqlColumnName(DbType.Json, this.getAliaTableName(),"tags")
         val msg = SqlColumnName(DbType.String, this.getAliaTableName(),"msg")
         val request = SqlColumnName(DbType.String, this.getAliaTableName(),"request")
         val data = SqlColumnName(DbType.String, this.getAliaTableName(),"data")
         val response = SqlColumnName(DbType.String, this.getAliaTableName(),"response")
-        val creatorId = SqlColumnName(DbType.String, this.getAliaTableName(),"creatorId")
+        val creator_id = SqlColumnName(DbType.String, this.getAliaTableName(),"creator_id")
+        val creator_name = SqlColumnName(DbType.String, this.getAliaTableName(),"creator_name")
         val id = SqlColumnName(DbType.String, this.getAliaTableName(),"id")
         val createAt = SqlColumnName(DbType.DateTime, this.getAliaTableName(),"createAt")
 
-        override fun getSpreadColumns(): Array<String> { return arrayOf<String>()}
+        override fun getSpreadColumns(): Array<String> { return arrayOf<String>("creator")}
 
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}
@@ -174,6 +180,12 @@ fun SqlUpdateClip<SqlBaseGroup.s_annex_table>.set_sAnnex_creator(creator:nbcp.db
 
 
 fun SqlUpdateClip<SqlBaseGroup.s_dustbin_table>.set_sDustbin_creator(creator:nbcp.db.IdName):SqlUpdateClip<SqlBaseGroup.s_dustbin_table>{
+    return this.set{ it.creator_id to creator.id }
+		.set{ it.creator_name to creator.name }
+}
+
+
+fun SqlUpdateClip<SqlBaseGroup.s_log_table>.set_sLog_creator(creator:nbcp.db.IdName):SqlUpdateClip<SqlBaseGroup.s_log_table>{
     return this.set{ it.creator_id to creator.id }
 		.set{ it.creator_name to creator.name }
 }

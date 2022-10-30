@@ -1,6 +1,7 @@
 package nbcp.db.sql.event;
 
 import nbcp.comm.AsString
+import nbcp.comm.FindField
 import nbcp.comm.HasValue
 import nbcp.db.sql.*;
 import nbcp.comm.ToJson
@@ -18,6 +19,35 @@ class SqlDefaultInsertEvent : ISqlEntityInsert {
 
 
     override fun beforeInsert(insert: nbcp.db.sql.SqlInsertClip<*, *>): nbcp.db.EventResult {
+        //先处理 SqlAutoIncrementKey
+        insert.mainEntity.getAutoIncrementKey()
+            .apply {
+                if (this.HasValue) {
+                    insert.entities
+                        .forEach { ent ->
+                            ent.remove(this);
+                        }
+                }
+            }
+
+        //再处理 AutoId
+        insert.mainEntity::class.java.getAnnotationsByType(ConverterValueToDb::class.java)
+            .forEach { converterClass ->
+                var converter = converterClass.value.java.getConstructor().newInstance()
+                var field = insert.mainEntity.entityClass.FindField(converterClass.field);
+                if( field == null){
+                    throw java.lang.RuntimeException("实体:${insert.mainEntity.entityClass.simpleName} 定义的 ConverterValueToDb 找不到字段: ${converterClass.field} !")
+                }
+                field.isAccessible = true;
+
+                insert.entities.forEach { ent ->
+                    val v = ent.get(converterClass.field)
+                    if (v == null || v == "" || v == 0) {
+                        ent.put(converterClass.field, converter.convert(field, null))
+                    }
+                }
+            }
+
         return EventResult(true)
     }
 

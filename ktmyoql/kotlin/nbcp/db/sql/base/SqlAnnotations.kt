@@ -54,23 +54,17 @@ annotation class SqlFk(val fieldName: String, val refTable: String, val refTable
 @Repeatable
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
+@Inherited
 annotation class SqlSpreadColumn(val value: String = "_")
 
-///**
-// * 数据表检查项，注解可以继承
-// */
-//@Target(AnnotationTarget.FIELD)
-//@Retention(AnnotationRetention.RUNTIME)
-//@Inherited
-//annotation class DbEntityChecks(vararg val value: DbEntityCheck)
-//
-///**
-// * 数据表检查项，注解可以继承, 形如：  CHECK ( atr_len < stock )
-// */
-//@Target(AnnotationTarget.FIELD)
-//@Retention(AnnotationRetention.RUNTIME)
-//@java.lang.annotation.Repeatable(DbEntityChecks::class)
-//@Repeatable
-//@Inherited
-//annotation class DbEntityCheck(val expression: String)
+
+/**
+ * 插入，或更新某个字段前，进行数据转换。
+ * 使用方式，如在实体字段上定义 @ConverterValueToDb(TrimUppercaseConverter::class)
+ */
+@Repeatable
+@Inherited
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class ConverterValueToDb(val field:String, val value: KClass<out IFieldValueConverter>)
 

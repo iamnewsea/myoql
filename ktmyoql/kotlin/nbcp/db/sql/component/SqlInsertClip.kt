@@ -15,6 +15,7 @@ import java.io.Serializable
 
 /**
  * Created by yuxh on 2018/7/2
+ * @param mainEntity 是元数据类型。 实体类型= mainEntity.entityClass
  */
 class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntity: M) :
         SqlBaseExecuteClip(mainEntity.tableName) {
