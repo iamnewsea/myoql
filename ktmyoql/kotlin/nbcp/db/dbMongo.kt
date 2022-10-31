@@ -219,7 +219,7 @@ object dbMongo {
     }
 
     @JvmStatic
-    fun op(operator: PipeLineOperatorEnum, rawValue: JsonMap): MongoExpression {
+    fun op(operator: PipeLineOperatorEnum, rawValue: Map<String,Any?>): MongoExpression {
         return MongoExpression("$" + operator.toString() to rawValue)
     }
 

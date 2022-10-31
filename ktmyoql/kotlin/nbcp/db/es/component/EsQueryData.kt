@@ -64,7 +64,7 @@ class EsQueryData : JsonMap() {
     }
 
     companion object {
-        private fun <T> JsonMap.touchMap(fieldName: String, callback: () -> T): T {
+        private fun <T> MutableMap<String,Any?>.touchMap(fieldName: String, callback: () -> T): T {
             var b = this.get(fieldName);
             if (b != null) {
                 return b as T;

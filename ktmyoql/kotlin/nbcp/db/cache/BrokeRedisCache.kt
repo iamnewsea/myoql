@@ -61,7 +61,7 @@ private val redisTemplate by lazy {
     return@lazy SpringUtil.getBean<StringRedisTemplate>()
 }
 
-fun BrokeRedisCache.resolveWithVariable(variableMap: JsonMap): BrokeRedisCache {
+fun BrokeRedisCache.resolveWithVariable(variableMap: Map<String,Any?>): BrokeRedisCache {
     val spelExecutor = CacheKeySpelExecutor(variableMap);
     return BrokeRedisCache(
         table = spelExecutor.getVariableValue(this.getTableName()),

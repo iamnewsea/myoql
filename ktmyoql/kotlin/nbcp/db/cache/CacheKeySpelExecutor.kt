@@ -8,7 +8,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser
 import org.springframework.expression.spel.support.StandardEvaluationContext
 
 
-class CacheKeySpelExecutor(val variableMap: JsonMap) {
+class CacheKeySpelExecutor(val variableMap: Map<String, Any?>) {
     var spelExpressionParser = SpelExpressionParser();
     var context = StandardEvaluationContext()
 

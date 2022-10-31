@@ -21,7 +21,7 @@ inline fun Logger.logFind(error: Exception?, collectionName: String, queryJson: 
     this.myoqlLog(error, collectionName, queryJson, result?.ToJson() ?: "", mongoLog::getQueryLog)
 }
 
-inline fun Logger.logFind(error: Exception?, collectionName: String, queryJson: Query, result: JsonMap) {
+inline fun Logger.logFind(error: Exception?, collectionName: String, queryJson: Query, result: Map<String,Any?>) {
     this.myoqlLog(error, collectionName, queryJson.queryObject.ToJson(), result.ToJson(), mongoLog::getQueryLog)
 }
 

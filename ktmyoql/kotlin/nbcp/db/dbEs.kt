@@ -133,7 +133,7 @@ object dbEs {
     }
 
     @JvmStatic
-    fun createPipeline(name: String, description: String, vararg processors: JsonMap) {
+    fun createPipeline(name: String, description: String, vararg processors: Map<String,Any?>) {
         var request = Request("PUT", "/_ingest/pipeline/${name}")
 
         var json = JsonMap("description" to description, "processors" to processors)

@@ -162,7 +162,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
     }
 
     @JvmOverloads
-    fun group(_id: JsonMap?, vararg eachItems: Map<String,*>): MongoAggregateClip<M, E> {
+    fun group(_id: Map<String,Any?>?, vararg eachItems: Map<String,*>): MongoAggregateClip<M, E> {
         var raw = JsonMap();
         raw.put("_id", _id)
 

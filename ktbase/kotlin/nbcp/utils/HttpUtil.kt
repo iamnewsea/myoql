@@ -238,7 +238,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
         return doNet()
     }
 
-    fun doPut(postJson: JsonMap): String {
+    fun doPut(postJson: Map<String,Any?>): String {
         if (this.request.contentType.isEmpty()) {
             this.request.contentType = "application/json;charset=UTF-8"
         }
@@ -257,7 +257,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
     /**
      * Post请求
      */
-    fun doPost(postJson: JsonMap): String {
+    fun doPost(postJson: Map<String,Any?>): String {
         if (this.request.contentType.isEmpty()) {
             this.request.contentType = "application/json;charset=UTF-8"
         }

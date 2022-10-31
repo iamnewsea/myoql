@@ -79,7 +79,7 @@ fun FromRedisCache.getJoinTableNames(): Array<String> {
 /**
  * 解析变量
  */
-fun FromRedisCache.resolveWithVariable(variableMap: JsonMap, sql: String = ""): FromRedisCache {
+fun FromRedisCache.resolveWithVariable(variableMap: Map<String, Any?>, sql: String = ""): FromRedisCache {
     val spelExecutor = CacheKeySpelExecutor(variableMap);
     return FromRedisCache(
         Void::class,
@@ -160,7 +160,7 @@ fun <T> FromRedisCache.onlyGetFromCache(converter: java.util.function.Function<S
 
 fun FromRedisCache.onlySetToCache(ret: Any) {
     val cacheKey = this.getCacheKey()
-    
+
     if (cacheSeconds >= 0 && cacheKey.HasValue) {
         var cacheSeconds = this.cacheSeconds
         //默认3分钟

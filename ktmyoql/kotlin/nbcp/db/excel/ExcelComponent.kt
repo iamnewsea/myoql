@@ -265,7 +265,7 @@ SXSSF：是在XSSF基础上，POI3.8版本开始提供的支持低内存占用�
         /**回写数据 按 data.tableName == sheetName
          * @param getRowData: 返回 null 停止。
          */
-        fun writeData(outputStream: OutputStream, getRowData: (Int) -> JsonMap?) {
+        fun writeData(outputStream: OutputStream, getRowData: (Int) -> Map<String,Any?>?) {
             OPCPackage.open(getStream()).use { xlsxPackage ->
                 var book = SXSSFWorkbook(XSSFWorkbook(xlsxPackage), 1000)
 

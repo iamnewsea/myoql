@@ -147,7 +147,7 @@ val HttpServletRequest.postBody: ByteArray?
         return postBodyValue;
     }
 
-private fun setValue(jm: JsonMap, prop: String, arykey: String, value: String) {
+private fun setValue(jm: MutableMap<String,Any?>, prop: String, arykey: String, value: String) {
     if (arykey.isEmpty()) {
         jm[prop] = value;
         return;

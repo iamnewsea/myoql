@@ -30,7 +30,7 @@ object JsUtil {
             .toTypedArray()
     }
 
-    private fun set_key_value(ret: JsonMap, keys: List<String>, value: String) {
+    private fun set_key_value(ret: MutableMap<String,Any?>, keys: List<String>, value: String) {
         if (keys.any() == false) return;
 
         var key = keys.first();
