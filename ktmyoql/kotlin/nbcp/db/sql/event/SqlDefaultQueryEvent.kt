@@ -1,11 +1,10 @@
 package nbcp.db.sql.event
 
-import nbcp.comm.ConvertType
-import nbcp.comm.FindField
+import nbcp.comm.*
 import nbcp.db.sql.*;
-import nbcp.comm.ToMap
 import nbcp.db.*
 import org.springframework.stereotype.Component
+import java.lang.reflect.ParameterizedType
 
 /**
  *
@@ -29,6 +28,32 @@ class SqlDefaultQueryEvent : ISqlEntitySelect {
             return
         }
 
+
+        //先转Json
+        select.mainEntity.getJsonColumns()
+            .forEach { column ->
+                var key = column.getAliasName();
+                var field = select.mainEntity.entityClass.FindField(key)
+                if (field == null) {
+                    return@forEach
+                }
+
+                var genericType = (field.genericType as ParameterizedType?)?.GetActualClass(0)
+                result.forEach { row ->
+                    var value = row.get(key).AsString();
+                    if (value.HasValue) {
+                        if (field.type.isArray) {
+                            row.put(key, value.FromListJson(field.type.componentType).toTypedArray());
+                        } else if (field.type.IsCollectionType) {
+                            row.put(key, value.FromListJson(genericType!!));
+                        } else {
+                            row.put(key, value.FromJson(field.type));
+                        }
+                    }
+                }
+            }
+
+
         val spreads = select.mainEntity.getSpreadColumns();
         spreads.forEach { spread ->
             val entField = select.mainEntity.entityClass.FindField(spread.column)
@@ -36,6 +61,7 @@ class SqlDefaultQueryEvent : ISqlEntitySelect {
                 return@forEach
             }
 
+            //SpreadColumn
             result.forEach { row ->
                 val spreadRowData = row.filter { it.key.startsWith(spread.getPrefixName()) }
                     .ToMap({ it.key.substring(spread.getPrefixName().length) }, { it.value })
