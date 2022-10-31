@@ -81,14 +81,16 @@ class SqlDefaultInsertEvent : ISqlEntityInsert {
         insert.mainEntity.getSpreadColumns()
             .forEach { spread ->
                 insert.entities.forEach { entity ->
-                    val value = entity.get(spread.column)?.ConvertType(Map::class.java) as Map<String, Any?>;
+                    val value = entity.get(spread.column)?.ConvertType(Map::class.java) as Map<String, Any?>?;
                     if (value == null) {
                         return@forEach
                     }
 
                     value.keys.forEach { key ->
-                        entity.set(spread.column + spread.split + key, value.get(key))
+                        entity.set(spread.getPrefixName() + key, value.get(key))
                     }
+
+                    entity.remove(spread.column)
                 }
             }
 

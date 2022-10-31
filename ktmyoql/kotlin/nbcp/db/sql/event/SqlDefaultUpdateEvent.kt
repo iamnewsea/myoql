@@ -1,9 +1,6 @@
 package nbcp.db.sql.event;
 
-import nbcp.comm.AsString
-import nbcp.comm.HasValue
-import nbcp.comm.removeAll
-import nbcp.comm.scopes
+import nbcp.comm.*
 import nbcp.db.sql.*;
 import nbcp.db.*
 import nbcp.db.mongo.MongoEntityCollector
@@ -33,6 +30,48 @@ class SqlDefaultUpdateEvent : ISqlEntityUpdate {
                 update.setData.put(updateAtColumn, LocalDateTime.now())
             }
         }
+
+        //处理 Json
+        update.mainEntity.getJsonColumns()
+            .forEach { column ->
+                var key = update.setData.keys.firstOrNull { it.name == column.getAliasName() }
+                if (key == null) {
+                    return@forEach
+                }
+
+                var value = update.setData.get(key).AsString()
+                if (value.isEmpty()) {
+                    return@forEach
+                }
+
+                update.setData.put(key, value.ToJson())
+            }
+
+
+        //处理 SpreadColumn
+        update.mainEntity.getSpreadColumns()
+            .forEach { spread ->
+                var key = update.setData.keys.firstOrNull { it.name == spread.column }
+                if (key == null) {
+                    return@forEach
+                }
+                var value = update.setData.get(key)?.ConvertType(Map::class.java) as Map<String, Any?>?;
+                if (value == null) {
+                    return@forEach
+                }
+
+                var all_columns = update.mainEntity.getColumns()
+                value.keys.forEach { key ->
+                    var column = all_columns.getColumn(spread.getPrefixName() + key);
+                    if (column == null) {
+                        return@forEach
+                    }
+                    //仅支持简单一级Json！
+                    update.setData.set(column, value.get(key))
+                }
+
+                update.setData.removeAll { it.name == spread.column }
+            }
     }
 
     private fun brokeCache(update: SqlUpdateClip<*>) {
