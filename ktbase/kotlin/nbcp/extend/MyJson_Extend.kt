@@ -172,7 +172,7 @@ fun <T> Any.ConvertJson(clazz: Class<out T>, style: JsonSceneEnumScope? = null):
     //如果是 String，转
     if (this is String) {
         return this.FromJson(clazz, style) ?: throw RuntimeException("转换Json出错")
-    } else if (this is MutableMap<*, *>) {
+    } else if (this is Map<*, *>) {
         if (Map::class.java.isAssignableFrom(clazz) == false) {
             //处理 a.b.c = "10
             this.keys

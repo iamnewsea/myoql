@@ -16,6 +16,10 @@ abstract class SqlBaseMetaTable<T : Serializable>(
 
         @Transient
         private var table_json_columns = mutableMapOf<String, SqlColumnNames>()
+
+
+//        @Transient
+//        private var table_spread_columns = mutableMapOf<String, SqlColumnNames>()
     }
 
     abstract fun getUks(): Array<Array<String>>
@@ -25,7 +29,7 @@ abstract class SqlBaseMetaTable<T : Serializable>(
     abstract fun getAutoIncrementKey(): String
 
     //    abstract fun getColumns(): SqlColumnNames
-    abstract fun getSpreadColumns(): Array<String>
+    abstract fun getSpreadColumns(): Array<SqlSpreadColumnData>
 //    abstract fun getConvertValueColumns(): Array<String>
 
     fun getColumns(): SqlColumnNames {
@@ -68,6 +72,24 @@ abstract class SqlBaseMetaTable<T : Serializable>(
         return _columns;
     }
 
+//    fun getSpreadColumns(): SqlColumnNames {
+//        var tableMetaName = this::class.java.simpleName
+//        var _columns = table_spread_columns.get(tableMetaName)
+//        if (_columns != null) {
+//            return _columns;
+//        }
+//
+//        _columns = SqlColumnNames(*this::class.java.AllFields
+//            .filter {
+//                return@filter it.getAnnotation(SqlSpreadColumn::class.java) != null
+//            }
+//            .map { it.get(this) as SqlColumnName }
+//            .toTypedArray()
+//        )
+//
+//        table_spread_columns.put(tableMetaName, _columns)
+//        return _columns;
+//    }
 
     protected var tableAliaValue: String = ""
 

@@ -47,17 +47,50 @@ class SqlDefaultInsertEvent : ISqlEntityInsert {
 
 
         //处理 Json 类型的数据
-        insert.mainEntity.getJsonColumns().forEach { column ->
-            insert.entities.forEach { ent ->
-                val v = ent.get(column.name)
-                if (v != null) {
-                    var v_type = v::class.java
-                    if (v_type.IsStringType == false) {
-                        ent.put(column.name, v.ToJson())
+        insert.mainEntity.getJsonColumns()
+            .forEach { column ->
+                insert.entities.forEach { ent ->
+                    val v = ent.get(column.name)
+                    if (v != null) {
+                        var v_type = v::class.java
+                        if (v_type.IsStringType == false) {
+                            ent.put(column.name, v.ToJson())
+                        }
                     }
                 }
             }
-        }
+
+
+        //把 布尔值 改为 1,0
+        insert.mainEntity.entityClass.AllFields
+            .forEach { field ->
+                insert.entities.forEach { ent ->
+                    var key = field.name;
+                    var value = ent.get(key);
+                    if (value == null) {
+                        ent.remove(key);
+                        return@forEach
+                    }
+
+                    ent.set(key, proc_value(value));
+                }
+            }
+
+
+        // 处理 SpreadColumn
+        insert.mainEntity.getSpreadColumns()
+            .forEach { spread ->
+                insert.entities.forEach { entity ->
+                    val value = entity.get(spread.column)?.ConvertType(Map::class.java) as Map<String, Any?>;
+                    if (value == null) {
+                        return@forEach
+                    }
+
+                    value.keys.forEach { key ->
+                        entity.set(spread.column + spread.split + key, value.get(key))
+                    }
+                }
+            }
 
         return EventResult(true)
     }

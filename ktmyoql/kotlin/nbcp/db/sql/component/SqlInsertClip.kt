@@ -79,19 +79,6 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
 
         var ent = entity.ConvertJson(JsonMap::class.java)
 
-        //把 布尔值 改为 1,0
-        entity::class.java.AllFields
-            .forEach {
-                var key = it.name;
-                var value = ent.get(key);
-                if (value == null) {
-                    ent.remove(key);
-                    return@forEach
-                }
-
-                ent.set(key, proc_value(value));
-            }
-
         this.entities.add(ent)
         return this
     }

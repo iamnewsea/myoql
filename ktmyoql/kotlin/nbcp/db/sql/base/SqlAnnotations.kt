@@ -49,7 +49,7 @@ annotation class SqlFk(val fieldName: String, val refTable: String, val refTable
 
 
 /**
- * 实体字段上定义，表示该复杂对象字段在数据库默认上对应多个列。使用下划线展开对象的每个字段列。
+ * 实体字段上定义，表示该复杂对象字段在数据库默认上对应多个列。默认使用下划线展开对象的每个字段列。(该注解不能省略)
  */
 @Repeatable
 @Target(AnnotationTarget.FIELD)
@@ -66,5 +66,5 @@ annotation class SqlSpreadColumn(val value: String = "_")
 @Inherited
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class ConverterValueToDb(val field:String, val value: KClass<out IFieldValueConverter>)
+annotation class ConverterValueToDb(val field: String, val value: KClass<out IFieldValueConverter>)
 

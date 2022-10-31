@@ -5,6 +5,7 @@ import nbcp.comm.*
 import nbcp.utils.*
 import nbcp.db.db
 import java.io.Serializable
+
 /**
  * Created by udi on 17-4-7.
  */
@@ -87,11 +88,12 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEnt
 //                }
 //            }
 
-            if (this.mainEntity.getSpreadColumns().contains(field.name)) {
+            var spread = this.mainEntity.getSpreadColumns().firstOrNull { it.column == field.name }
+            if (spread != null) {
                 var ent_field_value = field.get(entity);
                 field.type.AllFields.forEach { subField ->
                     var value = subField.get(ent_field_value);
-                    setValues.put(columns.first { it.name == field.name + "_" + subField.name }, value)
+                    setValues.put(columns.first { it.name == spread.getPrefixName() + subField.name }, value)
                 }
             }
 
@@ -121,7 +123,12 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEnt
         whereColumns2.forEach { column ->
             var value = MyUtil.getValueByWbsPath(entity, column.name)
 
-            where.and(WhereData("${column.fullName} = :${column.paramVarKeyName}", JsonMap(column.paramVarKeyName to value)))
+            where.and(
+                WhereData(
+                    "${column.fullName} = :${column.paramVarKeyName}",
+                    JsonMap(column.paramVarKeyName to value)
+                )
+            )
         }
 
 

@@ -23,7 +23,7 @@ class SqlBaseGroup : IDataGroup{
 
 
 
-    @nbcp.db.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
+    @nbcp.db.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
     @nbcp.db.sql.ConverterValueToDb(value = nbcp.db.sql.AutoIdConverter::class, field = """id""")
     @nbcp.db.DbEntityGroup(value = """SqlBase""")
     class s_annex_table(collectionName: String = "", datasource:String="")
@@ -43,7 +43,7 @@ class SqlBaseGroup : IDataGroup{
         val id = SqlColumnName(DbType.String, this.getAliaTableName(),"id")
         val createAt = SqlColumnName(DbType.DateTime, this.getAliaTableName(),"createAt")
 
-        override fun getSpreadColumns(): Array<String> { return arrayOf<String>("creator")}
+        override fun getSpreadColumns(): Array<SqlSpreadColumnData> { return arrayOf<SqlSpreadColumnData>(SqlSpreadColumnData("creator","_"))}
 
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}
@@ -65,7 +65,7 @@ class SqlBaseGroup : IDataGroup{
     }
 
     @nbcp.db.DbEntityGroup(value = """SqlBase""")
-    @nbcp.db.DbEntityIndex(value = arrayOf("""code"""), unique = true, cacheable = false)
+    @nbcp.db.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""code"""))
     class s_city_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.db.sql.entity.s_city>(nbcp.db.sql.entity.s_city::class.java, "s_city") {
         val code = SqlColumnName(DbType.Int, this.getAliaTableName(),"code")
@@ -79,7 +79,7 @@ class SqlBaseGroup : IDataGroup{
         val postCode = SqlColumnName(DbType.String, this.getAliaTableName(),"postCode")
         val pcode = SqlColumnName(DbType.Int, this.getAliaTableName(),"pcode")
 
-        override fun getSpreadColumns(): Array<String> { return arrayOf<String>()}
+        override fun getSpreadColumns(): Array<SqlSpreadColumnData> { return arrayOf<SqlSpreadColumnData>()}
 
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("code")  )}
@@ -100,7 +100,7 @@ class SqlBaseGroup : IDataGroup{
 
     }
 
-    @nbcp.db.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
+    @nbcp.db.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
     @nbcp.db.sql.ConverterValueToDb(value = nbcp.db.sql.AutoIdConverter::class, field = """id""")
     @nbcp.db.DbEntityGroup(value = """SqlBase""")
     class s_dustbin_table(collectionName: String = "", datasource:String="")
@@ -113,7 +113,7 @@ class SqlBaseGroup : IDataGroup{
         val id = SqlColumnName(DbType.String, this.getAliaTableName(),"id")
         val createAt = SqlColumnName(DbType.DateTime, this.getAliaTableName(),"createAt")
 
-        override fun getSpreadColumns(): Array<String> { return arrayOf<String>("creator")}
+        override fun getSpreadColumns(): Array<SqlSpreadColumnData> { return arrayOf<SqlSpreadColumnData>(SqlSpreadColumnData("creator","_"))}
 
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}
@@ -134,7 +134,7 @@ class SqlBaseGroup : IDataGroup{
 
     }
 
-    @nbcp.db.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
+    @nbcp.db.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
     @nbcp.db.sql.ConverterValueToDb(value = nbcp.db.sql.AutoIdConverter::class, field = """id""")
     @nbcp.db.DbEntityGroup(value = """SqlBase""")
     class s_log_table(collectionName: String = "", datasource:String="")
@@ -151,7 +151,7 @@ class SqlBaseGroup : IDataGroup{
         val id = SqlColumnName(DbType.String, this.getAliaTableName(),"id")
         val createAt = SqlColumnName(DbType.DateTime, this.getAliaTableName(),"createAt")
 
-        override fun getSpreadColumns(): Array<String> { return arrayOf<String>("creator")}
+        override fun getSpreadColumns(): Array<SqlSpreadColumnData> { return arrayOf<SqlSpreadColumnData>(SqlSpreadColumnData("creator","_"))}
 
         override fun getAutoIncrementKey(): String { return ""}
         override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}

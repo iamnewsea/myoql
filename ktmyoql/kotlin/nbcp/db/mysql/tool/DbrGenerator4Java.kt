@@ -42,12 +42,13 @@ class DbrGenerator4Java {
             return@map it;
         }.joinToString(".")
     }
+
     private var targetEntityPathName: String = ""
 
     fun work(
         targetPath: String, //目标文件
         basePackage: String,    //实体的包名
-        packageName:String = "nbcp.db.sql.table",
+        packageName: String = "nbcp.db.sql.table",
         packages: Array<String> = arrayOf(),   //import 包名
         entityFilter: ((Class<*>) -> Boolean) = { true },
         nameMapping: StringMap = StringMap(), // 名称转换
@@ -80,7 +81,7 @@ import java.util.*;
 import java.util.stream.*;
 import org.springframework.stereotype.*;
 import java.io.*;
-${packages.map { "import " + it + ";"}.joinToString(const.line_break)}
+${packages.map { "import " + it + ";" }.joinToString(const.line_break)}
 
 """
 
@@ -94,7 +95,7 @@ ${packages.map { "import " + it + ";"}.joinToString(const.line_break)}
 
             writeToFile("${MyUtil.getBigCamelCase(group.key)}Group",
                 fileHeader +
-                """
+                        """
 @Component("sql.${group.key}")
 @MetaDataGroup(dbType = DatabaseEnum.Sql, value = "${group.key}")
 public class ${MyUtil.getBigCamelCase(group.key)}Group implements IDataGroup{
@@ -103,11 +104,11 @@ public class ${MyUtil.getBigCamelCase(group.key)}Group implements IDataGroup{
         var set = new HashSet<BaseMetaData>();
         
 ${
-                    groupEntities
-                        .map { "set.add(" + genVarName(it).GetSafeKotlinName() + ");" }
-                        .map { it.ToTab(2) }
-                        .joinToString("\n")
-                }
+                            groupEntities
+                                .map { "set.add(" + genVarName(it).GetSafeKotlinName() + ");" }
+                                .map { it.ToTab(2) }
+                                .joinToString("\n")
+                        }
         return set;
     }
 """
@@ -151,7 +152,12 @@ ${
 
     fun writeToFile(className: String, content: String) {
 
-        FileWriter(MyUtil.joinFilePath(targetEntityPathName, if( className.contains(".") ) className else (  className + ".java") ), true).use { moer_File ->
+        FileWriter(
+            MyUtil.joinFilePath(
+                targetEntityPathName,
+                if (className.contains(".")) className else (className + ".java")
+            ), true
+        ).use { moer_File ->
             moer_File.appendLine(content)
             moer_File.flush()
         }
@@ -231,12 +237,12 @@ ${
 
     fun getEmbClasses(groups: HashMap<String, MutableList<Class<*>>>): List<Class<*>> {
         return groups.values.Unwind()
-                .map {
-                    return@map findEmbClasses(it)
-                }
-                .Unwind()
-                .distinctBy { it.name }
-                .sortedBy { it.name }
+            .map {
+                return@map findEmbClasses(it)
+            }
+            .Unwind()
+            .distinctBy { it.name }
+            .sortedBy { it.name }
     }
 
     fun getEntityClassName(entTypeName: String): String {
@@ -264,7 +270,11 @@ ${
 
         var entityVarName = getEntityName(entTypeName);
 
-        return """public ${getEntityClassName(entTypeName)} ${entityVarName.GetSafeKotlinName()} = new ${getEntityClassName(entTypeName)}();""";
+        return """public ${getEntityClassName(entTypeName)} ${entityVarName.GetSafeKotlinName()} = new ${
+            getEntityClassName(
+                entTypeName
+            )
+        }();""";
     }
 
     class EntityResult {
@@ -286,7 +296,11 @@ ${
 
 
         var uks2 =
-            columnMetaDefines.uks.map { """ new String[]{ ${it.split(",").map { "\"" + it + "\"" }.joinToString(",")} } """ }
+            columnMetaDefines.uks.map {
+                """ new String[]{ ${
+                    it.split(",").map { "\"" + it + "\"" }.joinToString(",")
+                } } """
+            }
 //        var rks2 = rks.map { """ arrayOf(${it.split(",").map { "\"" + it + "\"" }.joinToString(",")}) """ }
         var fks_exp_string =
             columnMetaDefines.fks.map { """FkDefine("${it.table}","${it.column}","${it.refTable}","${it.refColumn}") """ }
@@ -390,8 +404,9 @@ ${columnMetaDefines.props.joinToString("\n")}
 
     @Override
     public String[] getSpreadColumns() {
-        return new String[] { ${
-            columnMetaDefines.columns_spread.map { "\"" + it + "\"" }.joinToString(",")
+        return new SqlSpreadColumnData[] { ${
+            columnMetaDefines.columns_spread.map { "new SqlSpreadColumnData( \"" + it + "\",\"" + it.split + "\" )" }
+                .joinToString(",")
         }
         };
     }
@@ -428,7 +443,7 @@ ${idMethods.joinToString("\n")}
         var autoIncrementKey: String = "",
         var uks: MutableSet<String> = mutableSetOf(),
         var columns: MutableSet<String> = mutableSetOf(),
-        var columns_spread: MutableSet<String> = mutableSetOf(),
+        var columns_spread: MutableSet<SqlSpreadColumnData> = mutableSetOf(),
         var props: MutableSet<String> = mutableSetOf(),
         var extMethods: MutableSet<String> = mutableSetOf(),
         var fks: MutableSet<FkDefine> = mutableSetOf()
@@ -483,10 +498,36 @@ ${idMethods.joinToString("\n")}
                 }
 
 
-                val fieldDbType = DbType.of(field.type)
-                if (fieldDbType == DbType.Other) {
+                val spread = field.getAnnotation(SqlSpreadColumn::class.java)
 
+                if (spread != null) {
                     //看是否是展开列。
+                    ret.columns_spread.add(SqlSpreadColumnData(parentEntityPrefix + field.name, spread.value))
+                    ret.extMethods.add(
+                        getExtMethod(
+                            groupName,
+                            entityName,
+                            parentEntityPrefixs + field.name,
+                            field.type
+                        )
+                    )
+
+                    var spreadResult =
+                        getColumnMetaDefines(groupName, entityName, field.type, parentEntityPrefixs + field.name);
+
+                    ret.uks.addAll(spreadResult.uks)
+//                            ret.columns_convertValue.addAll(spreadResult.columns_convertValue)
+                    ret.columns.addAll(spreadResult.columns)
+                    ret.columns_spread.addAll(spreadResult.columns_spread)
+                    ret.props.addAll(spreadResult.props)
+                    ret.extMethods.addAll(spreadResult.extMethods)
+                    ret.fks.addAll(spreadResult.fks)
+
+                    return@forEach
+
+                } else {
+
+                    //Json
                     if (field.type.IsCollectionType || Map::class.java.isAssignableFrom(field.type)) {
                         ret.columns.add(db_column_name);
 
@@ -497,35 +538,13 @@ ${idMethods.joinToString("\n")}
                         ret.props.add(item);
 
                         return@forEach
-                    } else {
-                        ret.columns_spread.add(parentEntityPrefix + field.name)
-                        ret.extMethods.add(
-                            getExtMethod(
-                                groupName,
-                                entityName,
-                                parentEntityPrefixs + field.name,
-                                field.type
-                            )
-                        )
-
-                        var spreadResult =
-                            getColumnMetaDefines(groupName, entityName, field.type, parentEntityPrefixs + field.name);
-
-                        ret.uks.addAll(spreadResult.uks)
-//                            ret.columns_convertValue.addAll(spreadResult.columns_convertValue)
-                        ret.columns.addAll(spreadResult.columns)
-                        ret.columns_spread.addAll(spreadResult.columns_spread)
-                        ret.props.addAll(spreadResult.props)
-                        ret.extMethods.addAll(spreadResult.extMethods)
-                        ret.fks.addAll(spreadResult.fks)
-
-                        return@forEach
                     }
 
-                } else {
                     ret.columns.add(db_column_name);
                 }
 
+
+                val fieldDbType = DbType.of(field.type)
                 var item =
                     """public SqlColumnName ${parentEntityPrefix + field.name} = new SqlColumnName(DbType.${fieldDbType.name}, this.getAliaTableName(),"${db_column_name}");""".ToTab(
                         1
@@ -551,7 +570,11 @@ ${idMethods.joinToString("\n")}
         val entityTableMetaName = getEntityClassName(entityName)
 
         return """
-public SqlUpdateClip<${GroupName}Group.${entityTableMetaName}> SqlUpdateClip<${GroupName}Group.${entityTableMetaName}>.set_${MyUtil.getSmallCamelCase(entityName)}_${paramName}(${paramName}:${spreadColumnType.name}) {
+public SqlUpdateClip<${GroupName}Group.${entityTableMetaName}> SqlUpdateClip<${GroupName}Group.${entityTableMetaName}>.set_${
+            MyUtil.getSmallCamelCase(
+                entityName
+            )
+        }_${paramName}(${paramName}:${spreadColumnType.name}) {
     return this${getSpreadFields(spreadColumnNames, spreadColumnType).joinToString("\n\t\t")}
 }
 """

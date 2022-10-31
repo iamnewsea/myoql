@@ -1,15 +1,17 @@
 package nbcp.db.sql.event
 
+import nbcp.comm.ConvertType
+import nbcp.comm.FindField
 import nbcp.db.sql.*;
 import nbcp.comm.ToMap
 import nbcp.db.*
 import org.springframework.stereotype.Component
-import java.io.Serializable
+
 /**
  *
  */
 @Component
-class SqlSpreadColumnEventForSelect : ISqlEntitySelect {
+class SqlDefaultQueryEvent : ISqlEntitySelect {
     override fun beforeSelect(select: SqlBaseQueryClip): EventResult {
 //        var select  = select as SqlQueryClip< SqlBaseMetaTable<out Serializable>, Serializable>
 //        var spreads = select.mainEntity.getSpreadColumns();
@@ -26,12 +28,19 @@ class SqlSpreadColumnEventForSelect : ISqlEntitySelect {
         if (select is SqlQueryClip<*, *> == false) {
             return
         }
+
         val spreads = select.mainEntity.getSpreadColumns();
         spreads.forEach { spread ->
+            val entField = select.mainEntity.entityClass.FindField(spread.column)
+            if (entField == null) {
+                return@forEach
+            }
+
             result.forEach { row ->
-                val spreadRowData = row.filter { it.key.startsWith(spread + "_") }
-                    .ToMap({ it.key.substring(spread.length + 1) }, { it.value })
-                row.put(spread, spreadRowData);
+                val spreadRowData = row.filter { it.key.startsWith(spread.getPrefixName()) }
+                    .ToMap({ it.key.substring(spread.getPrefixName().length) }, { it.value })
+                    .ConvertType(entField.type)
+                row.put(spread.column, spreadRowData);
             }
         }
     }
