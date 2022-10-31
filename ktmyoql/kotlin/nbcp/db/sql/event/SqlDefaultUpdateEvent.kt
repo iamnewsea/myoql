@@ -14,22 +14,6 @@ import java.time.LocalDateTime
 class SqlDefaultUpdateEvent : ISqlEntityUpdate {
 
     override fun beforeUpdate(update: SqlUpdateClip<*>): EventResult {
-        return EventResult(true)
-    }
-
-    override fun update(update: SqlUpdateClip<*>, eventData: EventResult) {
-        setUpdateAt(update)
-        brokeCache(update)
-    }
-
-    private fun setUpdateAt(update: SqlUpdateClip<*>) {
-        update.setData.removeAll { it.toString() == "createAt" }
-        if (scopes.getLatest(MyOqlOrmScope.IgnoreUpdateAt) == null) {
-            var updateAtColumn = update.mainEntity.getColumns().getColumn("updateAt")
-            if (updateAtColumn != null) {
-                update.setData.put(updateAtColumn, LocalDateTime.now())
-            }
-        }
 
         //处理 Json
         update.mainEntity.getJsonColumns()
@@ -39,13 +23,19 @@ class SqlDefaultUpdateEvent : ISqlEntityUpdate {
                     return@forEach
                 }
 
-                var value = update.setData.get(key).AsString()
-                if (value.isEmpty()) {
+                var value = update.setData.get(key)
+                if (value == null) {
                     return@forEach
                 }
 
-                update.setData.put(key, value.ToJson())
+
+                var v_type = value::class.java
+                if (v_type.IsStringType == false) {
+                    update.setData.put(key, value.ToJson())
+                }
             }
+
+        //还要处理Where条件里的Json
 
 
         //处理 SpreadColumn
@@ -72,6 +62,26 @@ class SqlDefaultUpdateEvent : ISqlEntityUpdate {
 
                 update.setData.removeAll { it.name == spread.column }
             }
+
+
+        //还要处理Where条件里的SpreadColumn
+
+        return EventResult(true)
+    }
+
+    override fun update(update: SqlUpdateClip<*>, eventData: EventResult) {
+        setUpdateAt(update)
+        brokeCache(update)
+    }
+
+    private fun setUpdateAt(update: SqlUpdateClip<*>) {
+        update.setData.removeAll { it.toString() == "createAt" }
+        if (scopes.getLatest(MyOqlOrmScope.IgnoreUpdateAt) == null) {
+            var updateAtColumn = update.mainEntity.getColumns().getColumn("updateAt")
+            if (updateAtColumn != null) {
+                update.setData.put(updateAtColumn, LocalDateTime.now())
+            }
+        }
     }
 
     private fun brokeCache(update: SqlUpdateClip<*>) {

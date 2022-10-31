@@ -45,9 +45,6 @@ open class SqlUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEntity:
             this.setData.put(p.first, null);
         } else {
             var value = p.second!!;
-            if (value is Collection<*>) {
-                value = JsonList(value)
-            }
             this.setData.put(p.first, proc_value(value))
         }
         return this
