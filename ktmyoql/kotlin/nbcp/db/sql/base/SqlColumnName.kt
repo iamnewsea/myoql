@@ -53,14 +53,27 @@ open class SqlColumnName(
         //仅支持 数组相等。
         if (this.dbType == DbType.Json) {
             val v_type = value::class.java
+            val json_length = this.json_length()
             if (v_type.isArray) {
                 var ary = value as Array<Any?>;
-                return WhereData("${this.json_length()} = ${ary.size} and ${this.json_contains(db.sql.json_array(ary.toList()))} = 1")
+                val json_contains = this.json_contains(db.sql.json_array(ary.toList()))
+                return WhereData(
+                    "${json_length.expression} = ${ary.size} and ${json_contains.expression} = 1",
+                    json_length.values + json_contains.values
+                )
             } else if (v_type.IsCollectionType) {
                 var ary = value as Collection<Any?>;
-                return WhereData("${this.json_length()} = ${ary.size} and ${this.json_contains(db.sql.json_array(ary))} = 1")
+                val json_contains = this.json_contains(db.sql.json_array(ary))
+                return WhereData(
+                    "${json_length.expression} = ${ary.size} and ${json_contains.expression} = 1",
+                    json_length.values + json_contains.values
+                )
             } else {
-                return WhereData("${this.json_length()} = 1 or ${this.json_contains(db.sql.json_array(listOf(value)))} = 1")
+                val json_contains = this.json_contains(db.sql.json_array(listOf(value)))
+                return WhereData(
+                    "${json_length.expression} = 1 or ${json_contains.expression} = 1",
+                    json_length.values + json_contains.values
+                )
             }
         }
         return this.column_match_value("=", value);
@@ -81,14 +94,27 @@ open class SqlColumnName(
         //仅支持 数组相等。
         if (this.dbType == DbType.Json) {
             val v_type = value::class.java
+            val json_length = this.json_length()
             if (v_type.isArray) {
-                var ary = value as Array<Any?>;
-                return WhereData("(${this.json_length()} != ${ary.size} or ${this.json_overlaps(db.sql.json_array(ary.toList()))} = 0)")
+                val ary = value as Array<Any?>;
+                val json_overlaps = this.json_overlaps(db.sql.json_array(ary.toList()))
+                return WhereData(
+                    "(${this.json_length()} != ${ary.size} or ${json_overlaps.expression} = 0)",
+                    json_length.values + json_overlaps.values
+                )
             } else if (v_type.IsCollectionType) {
-                var ary = value as Collection<Any?>;
-                return WhereData("${this.json_length()} != ${ary.size} or ${this.json_overlaps(db.sql.json_array(ary))} = 0")
+                val ary = value as Collection<Any?>;
+                val json_overlaps = this.json_overlaps(db.sql.json_array(ary))
+                return WhereData(
+                    "${this.json_length()} != ${ary.size} or ${json_overlaps.expression} = 0",
+                    json_length.values + json_overlaps.values
+                )
             } else {
-                return WhereData("${this.json_length()} != 1 or ${this.json_overlaps(db.sql.json_array(listOf(value)))} = 0")
+                val json_overlaps = this.json_overlaps(db.sql.json_array(listOf(value)))
+                return WhereData(
+                    "${this.json_length()} != 1 or ${json_overlaps.expression} = 0",
+                    json_length.values + json_overlaps.values
+                )
             }
         }
         return this.column_match_value("!=", value);
@@ -102,14 +128,18 @@ open class SqlColumnName(
         //仅支持 数组相等。
         if (this.dbType == DbType.Json) {
             val v_type = value::class.java
+
             if (v_type.isArray) {
-                var ary = value as Array<Any?>;
-                return WhereData("${this.json_contains(db.sql.json_array(ary.toList()))} = 1")
+                val ary = value as Array<Any?>;
+                val json_contains = this.json_contains(db.sql.json_array(ary.toList()))
+                return WhereData("${json_contains.expression} = 1", json_contains.values)
             } else if (v_type.IsCollectionType) {
-                var ary = value as Collection<Any?>;
-                return WhereData("${this.json_contains(db.sql.json_array(ary))} = 1")
+                val ary = value as Collection<Any?>;
+                val json_contains = this.json_contains(db.sql.json_array(ary))
+                return WhereData("${json_contains.expression} = 1", json_contains.values)
             } else {
-                return WhereData("${this.json_contains(db.sql.json_array(listOf(value)))} = 1")
+                val json_contains = this.json_contains(db.sql.json_array(listOf(value)))
+                return WhereData("${json_contains.expression} = 1", json_contains.values)
             }
         }
 
@@ -125,13 +155,16 @@ open class SqlColumnName(
         if (this.dbType == DbType.Json) {
             val v_type = value::class.java
             if (v_type.isArray) {
-                var ary = value as Array<Any?>;
-                return WhereData("${this.json_contains(db.sql.json_array(ary.toList()))} = 0")
+                val ary = value as Array<Any?>;
+                val json_contains = this.json_contains(db.sql.json_array(ary.toList()))
+                return WhereData("${json_contains.expression} = 0")
             } else if (v_type.IsCollectionType) {
-                var ary = value as Collection<Any?>;
-                return WhereData("${this.json_contains(db.sql.json_array(ary))} = 0")
+                val ary = value as Collection<Any?>;
+                val json_contains = this.json_contains(db.sql.json_array(ary))
+                return WhereData("${json_contains.expression} = 0")
             } else {
-                return WhereData("${this.json_contains(db.sql.json_array(listOf(value)))} = 0")
+                val json_contains = this.json_contains(db.sql.json_array(listOf(value)))
+                return WhereData("${json_contains.expression} = 0")
             }
         }
 
