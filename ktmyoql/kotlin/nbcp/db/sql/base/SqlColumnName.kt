@@ -2,14 +2,16 @@ package nbcp.db.sql
 
 import nbcp.comm.AsString
 import nbcp.comm.HasValue
+import nbcp.comm.IsCollectionType
 import nbcp.comm.JsonMap
+import nbcp.db.db
 import java.io.Serializable
 
 
 open class SqlColumnName(
-        val dbType: DbType,
-        tableName: String,
-        name: String
+    val dbType: DbType,
+    tableName: String,
+    name: String
 ) : BaseAliasSqlSect() {
     /**
      * 表名
@@ -41,11 +43,25 @@ open class SqlColumnName(
 
 
     /**
-     * 相等操作
+     * 相等操作, 也可以比较 Json 数组的相等。
      */
     infix fun match(value: Serializable): WhereData {
         if (value is SqlColumnName) {
             return WhereData("${this.fullName} = ${value.fullName}")
+        }
+
+        //仅支持 数组相等。
+        if (this.dbType == DbType.Json) {
+            val v_type = value::class.java
+            if (v_type.isArray) {
+                var ary = value as Array<Any?>;
+                return WhereData("${this.json_length()} = ${ary.size} and ${this.json_contains(db.sql.json_array(ary.toList()))} = 1")
+            } else if (v_type.IsCollectionType) {
+                var ary = value as Collection<Any?>;
+                return WhereData("${this.json_length()} = ${ary.size} and ${this.json_contains(db.sql.json_array(ary))} = 1")
+            } else {
+                return WhereData("${this.json_length()} = 1 or ${this.json_contains(db.sql.json_array(listOf(value)))} = 1")
+            }
         }
         return this.column_match_value("=", value);
     }
@@ -61,7 +77,65 @@ open class SqlColumnName(
         if (value is SqlColumnName) {
             return WhereData("${this.fullName} != ${value.fullName}")
         }
+
+        //仅支持 数组相等。
+        if (this.dbType == DbType.Json) {
+            val v_type = value::class.java
+            if (v_type.isArray) {
+                var ary = value as Array<Any?>;
+                return WhereData("(${this.json_length()} != ${ary.size} or ${this.json_overlaps(db.sql.json_array(ary.toList()))} = 0)")
+            } else if (v_type.IsCollectionType) {
+                var ary = value as Collection<Any?>;
+                return WhereData("${this.json_length()} != ${ary.size} or ${this.json_overlaps(db.sql.json_array(ary))} = 0")
+            } else {
+                return WhereData("${this.json_length()} != 1 or ${this.json_overlaps(db.sql.json_array(listOf(value)))} = 0")
+            }
+        }
         return this.column_match_value("!=", value);
+    }
+
+    infix fun match_json_contains(value: Serializable): WhereData {
+        if (value is SqlColumnName) {
+            return WhereData("${this.json_contains(value)} = 1")
+        }
+
+        //仅支持 数组相等。
+        if (this.dbType == DbType.Json) {
+            val v_type = value::class.java
+            if (v_type.isArray) {
+                var ary = value as Array<Any?>;
+                return WhereData("${this.json_contains(db.sql.json_array(ary.toList()))} = 1")
+            } else if (v_type.IsCollectionType) {
+                var ary = value as Collection<Any?>;
+                return WhereData("${this.json_contains(db.sql.json_array(ary))} = 1")
+            } else {
+                return WhereData("${this.json_contains(db.sql.json_array(listOf(value)))} = 1")
+            }
+        }
+
+        throw java.lang.RuntimeException("json_contains要求列必须是JSON类型！")
+    }
+
+    infix fun match_json_not_contains(value: Serializable): WhereData {
+        if (value is SqlColumnName) {
+            return WhereData("${this.json_contains(value)} = 0")
+        }
+
+        //仅支持 数组相等。
+        if (this.dbType == DbType.Json) {
+            val v_type = value::class.java
+            if (v_type.isArray) {
+                var ary = value as Array<Any?>;
+                return WhereData("${this.json_contains(db.sql.json_array(ary.toList()))} = 0")
+            } else if (v_type.IsCollectionType) {
+                var ary = value as Collection<Any?>;
+                return WhereData("${this.json_contains(db.sql.json_array(ary))} = 0")
+            } else {
+                return WhereData("${this.json_contains(db.sql.json_array(listOf(value)))} = 0")
+            }
+        }
+
+        throw java.lang.RuntimeException("json_contains要求列必须是JSON类型！")
     }
 
     /**
@@ -110,7 +184,10 @@ open class SqlColumnName(
         var minValue = proc_value(min);
         var maxValue = proc_value(max);
 
-        return WhereData("${this.fullName} >= :${this.paramVarKeyName}_min and ${this.fullName} < :${this.paramVarKeyName}_max", JsonMap("${this.paramVarKeyName}_min" to minValue, "${this.paramVarKeyName}_max" to maxValue));
+        return WhereData(
+            "${this.fullName} >= :${this.paramVarKeyName}_min and ${this.fullName} < :${this.paramVarKeyName}_max",
+            JsonMap("${this.paramVarKeyName}_min" to minValue, "${this.paramVarKeyName}_max" to maxValue)
+        );
     }
 
     /**
@@ -129,7 +206,11 @@ open class SqlColumnName(
      */
     infix inline fun <reified T : Serializable> match_in(values: Array<T>): WhereData {
         if (T::class.java == SqlColumnName::class.java) {
-            return WhereData("${this.fullName} in (${values.map { (it as SqlColumnName).fullName }.joinToString(",").AsString("null")} )")
+            return WhereData(
+                "${this.fullName} in (${
+                    values.map { (it as SqlColumnName).fullName }.joinToString(",").AsString("null")
+                } )"
+            )
         }
 
 
@@ -149,7 +230,6 @@ open class SqlColumnName(
     }
 
 
-
     /**
      * in 子查询
      */
@@ -165,7 +245,11 @@ open class SqlColumnName(
      */
     infix inline fun <reified T : Serializable> match_not_in(values: Array<T>): WhereData {
         if (T::class.java == SqlColumnName::class.java) {
-            return WhereData("${this.fullName} not in (${values.map { (it as SqlColumnName).fullName }.joinToString(",").AsString("null")} )")
+            return WhereData(
+                "${this.fullName} not in (${
+                    values.map { (it as SqlColumnName).fullName }.joinToString(",").AsString("null")
+                } )"
+            )
         }
 
 
@@ -208,7 +292,6 @@ open class SqlColumnName(
 
         return WhereData("(${this.fullName} is null ${emptyValue})")
     }
-
 
 
     companion object {

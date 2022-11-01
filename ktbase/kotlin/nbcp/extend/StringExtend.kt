@@ -19,6 +19,16 @@ val String?.HasValue: Boolean
         return !this.isNullOrEmpty()
     }
 
+
+fun String.WrapWith(tag: String, endTag: String = ""): String {
+    var endTag = endTag;
+    if (endTag.isEmpty()) {
+        endTag = tag;
+    }
+
+    return tag + this + endTag;
+}
+
 /**
  * 对多行文本进行修改。
  * @param regex:  匹配的正则

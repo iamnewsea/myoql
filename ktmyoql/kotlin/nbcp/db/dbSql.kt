@@ -2,6 +2,7 @@ package nbcp.db
 
 import com.zaxxer.hikari.HikariDataSource
 import nbcp.comm.AsString
+import nbcp.comm.WrapWith
 import nbcp.comm.config
 import nbcp.db.sql.*
 import nbcp.utils.*
@@ -111,6 +112,15 @@ object dbSql {
         return dataSource
     }
 
+
+    @JvmStatic
+    fun json_array(list: Collection<Any?>): SqlParameterData {
+        return SqlParameterData(
+            "json_array(${
+                list.filter { it != null }.map { it.AsString().WrapWith("'") }.joinToString(",")
+            })"
+        )
+    }
 //    /**
 //     * 根据表名，以及是不是读取操作，动态返回DataSource
 //     */
