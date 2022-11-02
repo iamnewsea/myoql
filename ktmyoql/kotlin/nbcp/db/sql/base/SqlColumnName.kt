@@ -1,9 +1,6 @@
 package nbcp.db.sql
 
-import nbcp.comm.AsString
-import nbcp.comm.HasValue
-import nbcp.comm.IsCollectionType
-import nbcp.comm.JsonMap
+import nbcp.comm.*
 import nbcp.db.db
 import java.io.Serializable
 
@@ -52,6 +49,26 @@ open class SqlColumnName(
 
         //仅支持 数组相等。
         if (this.dbType == DbType.Json) {
+            val json_equals = this.json_equals(value.ToJson())
+
+            return WhereData(
+                "${json_equals.expression} = 1",
+                json_equals.values
+            )
+        }
+        return this.column_match_value("=", value);
+    }
+
+    /**
+     * 相等操作, 也可以比较 Json 数组内容的相等。
+     */
+    infix fun match_array_content(value: Serializable): WhereData {
+        if (value is SqlColumnName) {
+            return WhereData("${this.fullName} = ${value.fullName}")
+        }
+
+        //仅支持 数组相等。
+        if (this.dbType == DbType.Json) {
             val v_type = value::class.java
             val json_length = this.json_length()
             if (v_type.isArray) {
@@ -93,34 +110,17 @@ open class SqlColumnName(
 
         //仅支持 数组相等。
         if (this.dbType == DbType.Json) {
-            val v_type = value::class.java
-            val json_length = this.json_length()
-            if (v_type.isArray) {
-                val ary = value as Array<Any?>;
-                val json_overlaps = this.json_overlaps(db.sql.json_array(ary.toList()))
-                return WhereData(
-                    "(${this.json_length()} != ${ary.size} or ${json_overlaps.expression} = 0)",
-                    json_length.values + json_overlaps.values
-                )
-            } else if (v_type.IsCollectionType) {
-                val ary = value as Collection<Any?>;
-                val json_overlaps = this.json_overlaps(db.sql.json_array(ary))
-                return WhereData(
-                    "${this.json_length()} != ${ary.size} or ${json_overlaps.expression} = 0",
-                    json_length.values + json_overlaps.values
-                )
-            } else {
-                val json_overlaps = this.json_overlaps(db.sql.json_array(listOf(value)))
-                return WhereData(
-                    "${this.json_length()} != 1 or ${json_overlaps.expression} = 0",
-                    json_length.values + json_overlaps.values
-                )
-            }
+            val json_equals = this.json_equals(value.ToJson())
+
+            return WhereData(
+                "${json_equals.expression} = 0",
+                json_equals.values
+            )
         }
         return this.column_match_value("!=", value);
     }
 
-    infix fun match_json_contains(value: Serializable): WhereData {
+    infix fun match_json_array_contains(value: Serializable): WhereData {
         if (value is SqlColumnName) {
             return WhereData("${this.json_contains(value)} = 1")
         }
@@ -146,7 +146,7 @@ open class SqlColumnName(
         throw java.lang.RuntimeException("json_contains要求列必须是JSON类型！")
     }
 
-    infix fun match_json_not_contains(value: Serializable): WhereData {
+    infix fun match_json_array_not_contains(value: Serializable): WhereData {
         if (value is SqlColumnName) {
             return WhereData("${this.json_contains(value)} = 0")
         }
@@ -166,6 +166,36 @@ open class SqlColumnName(
                 val json_contains = this.json_contains(db.sql.json_array(listOf(value)))
                 return WhereData("${json_contains.expression} = 0")
             }
+        }
+
+        throw java.lang.RuntimeException("json_contains要求列必须是JSON类型！")
+    }
+
+
+    infix fun match_json_object_contains(value: Serializable): WhereData {
+        if (value is SqlColumnName) {
+            return WhereData("${this.json_contains(value)} = 1")
+        }
+
+        //仅支持 数组相等。
+        if (this.dbType == DbType.Json) {
+            val json_contains = this.json_contains(value.ToJson())
+            return WhereData("${json_contains.expression} = 1", json_contains.values)
+
+        }
+
+        throw java.lang.RuntimeException("json_contains要求列必须是JSON类型！")
+    }
+
+    infix fun match_json_object_not_contains(value: Serializable): WhereData {
+        if (value is SqlColumnName) {
+            return WhereData("${this.json_contains(value)} = 0")
+        }
+
+        //仅支持 数组相等。
+        if (this.dbType == DbType.Json) {
+            val json_contains = this.json_contains(value.ToJson())
+            return WhereData("${json_contains.expression} = 0")
         }
 
         throw java.lang.RuntimeException("json_contains要求列必须是JSON类型！")
