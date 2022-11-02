@@ -1,8 +1,6 @@
 package nbcp
 
-import nbcp.comm.AsString
-import nbcp.comm.Important
-import nbcp.comm.config
+import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent
 import org.springframework.boot.context.event.ApplicationStartingEvent
@@ -23,6 +21,17 @@ class MyMebStartEvent : ApplicationListener<ApplicationEnvironmentPreparedEvent>
         if (logoLoaded == false) {
             logoLoaded = true;
 
+            val list = mutableListOf<String>()
+            list.add(env.getProperty("spring.application.name").AsString())
+            list.add(env.activeProfiles?.joinToString(",").AsString())
+
+            env.getProperty("app.scheduler").AsBooleanWithNull()
+                .apply {
+                    if (this === null || this) {
+                        list.add("@EnableScheduling")
+                    }
+                }
+
             /**
              * 如果要关闭这个日志,日志级别的设定,只能在 bootstrap.yaml 或 application.yaml 中, 在最高的时机设置!
              */
@@ -33,7 +42,7 @@ class MyMebStartEvent : ApplicationListener<ApplicationEnvironmentPreparedEvent>
     ║║║└┬┘│ ││─┼┐│    ║║║├┤ ├┴┐
     ╩ ╩ ┴ └─┘└─┘└┴─┘  ╚╩╝└─┘└─┘
     ﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊
-${env.getProperty("spring.application.name")}  ${env.activeProfiles.joinToString(",")}
+${list.filter { it.HasValue }.joinToString("  ")}
 """
             )
         }

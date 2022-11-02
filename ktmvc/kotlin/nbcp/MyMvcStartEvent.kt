@@ -1,8 +1,6 @@
 package nbcp
 
-import nbcp.comm.AsString
-import nbcp.comm.Important
-import nbcp.comm.config
+import nbcp.comm.*
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent
 import org.springframework.boot.context.event.ApplicationStartingEvent
@@ -21,6 +19,17 @@ class MyMvcStartEvent : ApplicationListener<ApplicationEnvironmentPreparedEvent>
 
         if (logoLoaded == false) {
             logoLoaded = true;
+            val list = mutableListOf<String>()
+            list.add(env.getProperty("spring.application.name").AsString())
+            list.add(env.activeProfiles?.joinToString(",").AsString())
+
+            env.getProperty("app.scheduler").AsBooleanWithNull()
+                .apply {
+                    if (this === null || this) {
+                        list.add("@EnableScheduling")
+                    }
+                }
+
 
             logger.Important(
                 """
@@ -29,7 +38,7 @@ class MyMvcStartEvent : ApplicationListener<ApplicationEnvironmentPreparedEvent>
     ║║║└┬┘│ ││─┼┐│    ║║║└┐┌┘│  
     ╩ ╩ ┴ └─┘└─┘└┴─┘  ╚╩╝ └┘ └─┘
     ﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹊
-${env.getProperty("spring.application.name")}  ${env.activeProfiles.joinToString(",")}
+${list.filter { it.HasValue }.joinToString("  ")}
 """
             )
         }

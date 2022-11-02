@@ -18,6 +18,20 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
 
         if (logoLoaded == false) {
             logoLoaded = true;
+
+            val env = env!!
+            val list = mutableListOf<String>()
+            list.add(env.getProperty("spring.application.name").AsString())
+            list.add(env.activeProfiles?.joinToString(",").AsString())
+
+            env.getProperty("app.scheduler").AsBooleanWithNull()
+                .apply {
+                    if (this === null || this) {
+                        list.add("@EnableScheduling")
+                    }
+                }
+
+
             logger.Important(
                 """
     ﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹎﹎
@@ -25,14 +39,7 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
     ║║║└┬┘│ ││─┼┐│    ╠╩╗├─┤└─┐├┤ 
     ╩ ╩ ┴ └─┘└─┘└┴─┘  ╚═╝┴ ┴└─┘└─┘
     ﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹊﹊
-${env!!.getProperty("spring.application.name")}  ${env!!.activeProfiles.joinToString(",")}${
-                    env!!.getProperty("app.scheduler").AsBooleanWithNull()
-                        .apply {
-                            if (this === null || this) {
-                                " @EnableScheduling"
-                            }
-                        }
-                }
+${list.filter { it.HasValue }.joinToString("  ")}
 """
             )
         }
