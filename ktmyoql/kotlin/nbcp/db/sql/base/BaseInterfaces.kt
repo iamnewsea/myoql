@@ -22,9 +22,13 @@ interface ISqlDbEntity : Serializable {
 
 @DbEntityIndex("id", unique = true)
 @ConverterValueToDb("id", AutoIdConverter::class)
-abstract class AutoIdSqlDbEntity : Serializable {
+abstract class AutoIdSqlBaseEntity : Serializable {
     var id: String = ""
 
     @Cn("创建时间")
     var createAt: LocalDateTime = LocalDateTime.now()
+
+    //最后更新时间
+    @Cn("最后更新时间")
+    var updateAt: LocalDateTime = LocalDateTime.now()
 }

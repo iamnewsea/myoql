@@ -22,10 +22,13 @@ class SqlBaseGroup : IDataGroup{
     val s_log get() = s_log_table();
 
 
-
+    /**
+     * 附件
+     */
     @nbcp.db.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
     @nbcp.db.sql.ConverterValueToDb(value = nbcp.db.sql.AutoIdConverter::class, field = """id""")
     @nbcp.db.DbEntityGroup(value = """SqlBase""")
+    @nbcp.db.Cn(value = """附件""")
     class s_annex_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.db.sql.entity.s_annex>(nbcp.db.sql.entity.s_annex::class.java, "s_annex") {
         val name = SqlColumnName(DbType.String, this.getAliaTableName(),"name")
@@ -42,6 +45,7 @@ class SqlBaseGroup : IDataGroup{
         val errorMsg = SqlColumnName(DbType.String, this.getAliaTableName(),"errorMsg")
         val id = SqlColumnName(DbType.String, this.getAliaTableName(),"id")
         val createAt = SqlColumnName(DbType.DateTime, this.getAliaTableName(),"createAt")
+        val updateAt = SqlColumnName(DbType.DateTime, this.getAliaTableName(),"updateAt")
 
         override fun getSpreadColumns(): Array<SqlSpreadColumnData> { return arrayOf<SqlSpreadColumnData>(SqlSpreadColumnData("creator","_"))}
 
@@ -63,9 +67,12 @@ class SqlBaseGroup : IDataGroup{
         }
 
     }
-
+    /**
+     * 城市
+     */
     @nbcp.db.DbEntityGroup(value = """SqlBase""")
     @nbcp.db.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""code"""))
+    @nbcp.db.Cn(value = """城市""")
     class s_city_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.db.sql.entity.s_city>(nbcp.db.sql.entity.s_city::class.java, "s_city") {
         val code = SqlColumnName(DbType.Int, this.getAliaTableName(),"code")
@@ -99,10 +106,13 @@ class SqlBaseGroup : IDataGroup{
         }
 
     }
-
+    /**
+     * 数据垃圾箱
+     */
     @nbcp.db.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
     @nbcp.db.sql.ConverterValueToDb(value = nbcp.db.sql.AutoIdConverter::class, field = """id""")
     @nbcp.db.DbEntityGroup(value = """SqlBase""")
+    @nbcp.db.Cn(value = """数据垃圾箱""")
     class s_dustbin_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.db.sql.entity.s_dustbin>(nbcp.db.sql.entity.s_dustbin::class.java, "s_dustbin") {
         val table = SqlColumnName(DbType.String, this.getAliaTableName(),"table")
@@ -112,6 +122,7 @@ class SqlBaseGroup : IDataGroup{
         val data = SqlColumnName(DbType.String, this.getAliaTableName(),"data")
         val id = SqlColumnName(DbType.String, this.getAliaTableName(),"id")
         val createAt = SqlColumnName(DbType.DateTime, this.getAliaTableName(),"createAt")
+        val updateAt = SqlColumnName(DbType.DateTime, this.getAliaTableName(),"updateAt")
 
         override fun getSpreadColumns(): Array<SqlSpreadColumnData> { return arrayOf<SqlSpreadColumnData>(SqlSpreadColumnData("creator","_"))}
 
@@ -133,10 +144,13 @@ class SqlBaseGroup : IDataGroup{
         }
 
     }
-
+    /**
+     * 日志
+     */
     @nbcp.db.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
     @nbcp.db.sql.ConverterValueToDb(value = nbcp.db.sql.AutoIdConverter::class, field = """id""")
     @nbcp.db.DbEntityGroup(value = """SqlBase""")
+    @nbcp.db.Cn(value = """日志""")
     class s_log_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.db.sql.entity.s_log>(nbcp.db.sql.entity.s_log::class.java, "s_log") {
         val module = SqlColumnName(DbType.String, this.getAliaTableName(),"module")
@@ -150,6 +164,7 @@ class SqlBaseGroup : IDataGroup{
         val creator_name = SqlColumnName(DbType.String, this.getAliaTableName(),"creator_name")
         val id = SqlColumnName(DbType.String, this.getAliaTableName(),"id")
         val createAt = SqlColumnName(DbType.DateTime, this.getAliaTableName(),"createAt")
+        val updateAt = SqlColumnName(DbType.DateTime, this.getAliaTableName(),"updateAt")
 
         override fun getSpreadColumns(): Array<SqlSpreadColumnData> { return arrayOf<SqlSpreadColumnData>(SqlSpreadColumnData("creator","_"))}
 

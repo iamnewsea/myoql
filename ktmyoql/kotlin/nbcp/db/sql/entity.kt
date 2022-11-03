@@ -1,7 +1,6 @@
 package nbcp.db.sql.entity
 
 import nbcp.db.*
-import java.time.LocalDateTime
 import nbcp.db.sql.*
 import java.io.Serializable
 
@@ -44,7 +43,7 @@ open class s_annex @JvmOverloads constructor(
     @SqlColumnType("varchar(255)")
     var errorMsg: String = ""       //文件处理时的错误消息
 
-) : AutoIdSqlDbEntity() {
+) : AutoIdSqlBaseEntity() {
 }
 
 
@@ -79,7 +78,7 @@ open class s_log @JvmOverloads constructor(
     @Cn("创建者")
     @SqlSpreadColumn()
     var creator: IdName = IdName()
-) : AutoIdSqlDbEntity()
+) : AutoIdSqlBaseEntity()
 
 
 @DbEntityGroup("SqlBase")
@@ -129,4 +128,4 @@ open class s_dustbin @JvmOverloads constructor(
     @Cn("数据")
     @SqlColumnType("varchar(255)")
     var data: String = "",  //保存 JSON 数据
-) : AutoIdSqlDbEntity()
+) : AutoIdSqlBaseEntity()
