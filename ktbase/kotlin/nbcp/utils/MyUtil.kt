@@ -891,6 +891,14 @@ object MyUtil {
         return splitWordParts(value).map { it.lowercase() }.joinToString("-")
     }
 
+    /**
+     * 下划线格式，全小写
+     */
+    @JvmStatic
+    fun getUnderlineCase(value: String): String {
+        return splitWordParts(value).map { it.lowercase() }.joinToString("_")
+    }
+
     @JvmOverloads
     @JvmStatic
     fun trimStart(value: String, trimPart: String, ignoreCase: Boolean = false): String {

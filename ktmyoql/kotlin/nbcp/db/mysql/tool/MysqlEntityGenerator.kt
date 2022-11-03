@@ -2,6 +2,7 @@ package nbcp.db.mysql.tool
 
 import freemarker.cache.ClassTemplateLoader
 import freemarker.template.TemplateMethodModelEx
+import nbcp.base.enums.NameMappingTypeEnum
 import nbcp.comm.*
 import nbcp.db.Cn
 import nbcp.db.DbEntityIndex
@@ -313,10 +314,15 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
         return column.enumConstants.map { it.toString() }.joinToString(",")
     }
 
-    fun getColumnDefine(property: Field, pFieldName: String = "", pCn: String = ""): Pair<List<String>, List<String>> {
+    fun getColumnDefine(
+        property: Field,
+        nameType: NameMappingTypeEnum = NameMappingTypeEnum.Origin,
+        pFieldName: String = "",
+        pCn: String = ""
+    ): Pair<List<String>, List<String>> {
         var list = mutableListOf<String>()
         var checks = mutableListOf<String>()
-        var columnName = pFieldName + property.name;
+        var columnName = pFieldName + nameType.getResult(property.name);
         var propertyType = property.type as Class<*>
 
         var dbType = DbType.of(propertyType);
@@ -330,7 +336,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
         var spreadColumn = property.getAnnotation(SqlSpreadColumn::class.java);
         if (spreadColumn != null) {
             propertyType.AllFields.forEach {
-                getColumnDefine(it, columnName + spreadColumn.value, comment)
+                getColumnDefine(it, nameType, columnName + spreadColumn.value, comment)
                     .apply {
                         list.addAll(this.first)
                         checks.addAll(this.second)
@@ -381,30 +387,40 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
      * 生成实体的 sql 代码
      */
     @JvmStatic
-    fun entity2Sql(entity: Class<*>): String {
+    fun entity2Sql(entity: Class<*>, nameType: NameMappingTypeEnum = NameMappingTypeEnum.Origin): String {
         var list = mutableListOf<String>();
 
         var fields = entity.AllFields
             .sortedBy {
+                // id,code,name 这三个字段提前。
                 if (it.name basicSame "id") return@sortedBy -9;
                 if (it.name basicSame "code") return@sortedBy -8;
                 if (it.name basicSame "name") return@sortedBy -7;
+
+
+                // 其它系统字段最后
+                if (it.name basicSame "remark") return@sortedBy 1000 + it.name.length;
+                if (it.name.contains("delete", true)) return@sortedBy 1000 + it.name.length;
+                if (it.name.contains("create", true)) return@sortedBy 1000 + it.name.length;
+                if (it.name.contains("update", true)) return@sortedBy 1000 + it.name.length;
                 return@sortedBy it.name.length;
             }
 
         var checks = mutableListOf<String>();
 
         fields.forEach {
-            getColumnDefine(it)
+            getColumnDefine(it, nameType)
                 .apply {
                     list.addAll(this.first);
                     checks.addAll(this.second);
                 }
         }
 
+        var tableName = nameType.getResult(entity.simpleName)
+
         return """
-DROP TABLE IF EXISTS `${entity.simpleName}`;
-CREATE TABLE IF NOT EXISTS `${entity.simpleName}` (
+DROP TABLE IF EXISTS `${tableName}`;
+CREATE TABLE IF NOT EXISTS `${tableName}` (
 ${list.joinToString(const.line_break + ",")}
 , PRIMARY KEY ( ${getPk(entity).map { "`${it}`" }.joinToString(", ").AsString("!没有主键!")} )
 ${checks.map { ", " + it }.joinToString("\n")}

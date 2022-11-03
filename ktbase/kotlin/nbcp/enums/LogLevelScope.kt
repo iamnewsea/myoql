@@ -1,10 +1,10 @@
 package nbcp.comm
 
+
 import ch.qos.logback.classic.Level
 import nbcp.scope.IScopeData
 import org.springframework.boot.logging.LogLevel
 import java.io.Closeable
-
 
 /**
  * value = Level.toLevel识别的参数，不区分大小写，如：all|trace|debug|info|warn|error|off
@@ -18,6 +18,3 @@ enum class LogLevelScope(val value: Int) : IScopeData {
     error(Level.ERROR_INT),
     off(Level.OFF_INT);
 }
-
-
-

@@ -6,11 +6,7 @@ import nbcp.db.db
 import org.bson.Document
 import java.io.Serializable
 
-enum class MongoImageActionEnum {
-    remove,
-    add,
-    swap
-}
+
 
 /**
  * 删除数组中的一项。

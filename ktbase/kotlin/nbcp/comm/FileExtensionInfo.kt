@@ -1,14 +1,6 @@
 package nbcp.comm
 
 
-enum class FileExtensionTypeEnum {
-    Image,
-    Video,
-    Html,
-    Office,
-    Other
-}
-
 open class FileExtensionInfo() {
     var name: String = "";  //不带扩展名
     var extName: String = ""; //不带.的扩展名

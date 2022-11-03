@@ -15,11 +15,6 @@ open class BaseEntity : Serializable {
 }
 
 
-enum class UserSexEnum(var remark: String) {
-    Male("男"),
-    Female("女")
-}
-
 /**
  * 身份证内容
  */

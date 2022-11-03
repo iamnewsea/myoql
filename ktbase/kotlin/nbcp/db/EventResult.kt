@@ -4,12 +4,7 @@ package nbcp.db
 /**
  * 一般业务含义的Crud
  */
-enum class CrudEnum(val remark: String) {
-    create("创建"),
-    read("读取"),
-    update("更新"),
-    delete("删除"),
-}
+
 
 //enum class HttpCrudEnum(val remark: String) {
 //    post("创建"),
