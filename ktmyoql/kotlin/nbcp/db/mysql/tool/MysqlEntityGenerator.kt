@@ -422,7 +422,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
 DROP TABLE IF EXISTS `${tableName}`;
 CREATE TABLE IF NOT EXISTS `${tableName}` (
 ${list.joinToString(const.line_break + ",")}
-, PRIMARY KEY ( ${getPk(entity).map { "`${it}`" }.joinToString(", ").AsString("!没有主键!")} )
+, PRIMARY KEY ( ${getPk(entity, nameType).map { "`${it}`" }.joinToString(", ").AsString("!没有主键!")} )
 ${checks.map { ", " + it }.joinToString("\n")}
 ) ENGINE=InnoDB  COMMENT='${entity.getAnnotation(Cn::class.java)?.value.AsString()}';
 """
@@ -431,7 +431,7 @@ ${checks.map { ", " + it }.joinToString("\n")}
     /**
      * 从众多唯一索引中确定唯一索引。
      */
-    fun getPk(entity: Class<*>): Set<String> {
+    fun getPk(entity: Class<*>, nameType: NameMappingTypeEnum = NameMappingTypeEnum.Origin): Set<String> {
         val id = entity.AllFields.firstOrNull { field ->
             var auto = field.getAnnotation(SqlAutoIncrementKey::class.java);
             if (auto != null) {
@@ -441,31 +441,35 @@ ${checks.map { ", " + it }.joinToString("\n")}
         }
 
         if (id != null) {
-            return setOf(id.name)
+            return setOf(nameType.getResult(id.name))
         }
 
         val indexes = entity.getAnnotation(DbEntityIndexes::class.java)
         if (indexes != null) {
             var ids = indexes.value.filter { it.unique };
             if (ids.any()) {
-                return getPk(ids);
+                return getPk(ids, nameType);
             }
         }
 
         val index = entity.getAnnotationsByType(DbEntityIndex::class.java)
         if (index != null && index.any()) {
             var ids = index.filter { it.unique }
-            return getPk(ids)
+            return getPk(ids, nameType)
         }
 
         return setOf()
     }
 
-    private fun getPk(ids: List<DbEntityIndex>): Set<String> {
+    private fun getPk(
+        ids: List<DbEntityIndex>,
+        nameType: NameMappingTypeEnum = NameMappingTypeEnum.Origin
+    ): Set<String> {
         return ids
             .sortedBy { it.value.size * 1000 + it.value.map { it.length }.count() }
             .first()
             .value
+            .map { nameType.getResult(it) }
             .toSet()
     }
 
