@@ -366,13 +366,13 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                     """`${columnName}` Json not null  default '[]' comment '${comment}'"""
                 list.add(item);
 
-                checks.add("CHECK ( json_valid(`${columnName}`) )")
+                checks.add("CONSTRAINT `c_${columnName}` CHECK ( json_valid(`${columnName}`) )")
             } else {
                 var item =
                     """`${columnName}` Json not null  default '{}' comment '${comment}'"""
                 list.add(item);
 
-                checks.add("CHECK ( json_valid(`${columnName}`) )")
+                checks.add("CONSTRAINT `c_${columnName}` CHECK ( json_valid(`${columnName}`) )")
             }
         } else {
             var item =
