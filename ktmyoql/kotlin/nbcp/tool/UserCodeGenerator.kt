@@ -2,17 +2,9 @@ package nbcp.tool
 
 import nbcp.comm.*
 import nbcp.db.BaseMetaData
-import nbcp.db.IdUrl
 import nbcp.db.es.EsBaseMetaEntity
 import nbcp.db.mongo.MongoBaseMetaCollection
 import nbcp.db.sql.SqlBaseMetaTable
-import nbcp.utils.MyUtil
-import java.io.Serializable
-import java.lang.RuntimeException
-import java.lang.reflect.Field
-import java.time.LocalDateTime
-import java.util.*
-import kotlin.reflect.jvm.kotlinProperty
 
 object UserCodeGenerator {
     /**
@@ -20,17 +12,17 @@ object UserCodeGenerator {
      */
     @JvmStatic
     fun genMongoMvcCrud(group: String, pkg: String, entity: BaseMetaData<out Any>): String {
-        return gen(group, entity, "/myoql-template/kotlin_mvc_mongo_template_crud.ftl").replace("@pkg@", pkg);
+        return gen(group, entity, "/myoql-template/mongo/kotlin_mvc_mongo_template_crud.ftl").replace("@pkg@", pkg);
     }
 
     @JvmStatic
     fun genMySqlMvcCrud(group: String, pkg: String, entity: BaseMetaData<out Any>): String {
-        return gen(group, entity, "/myoql-template/kotlin_mvc_mysql_template_crud.ftl").replace("@pkg@", pkg);
+        return gen(group, entity, "/myoql-template/mysql/kotlin_mvc_mysql_template_crud.ftl").replace("@pkg@", pkg);
     }
 
     @JvmStatic
     fun genEsMvcCrud(group: String, pkg: String, entity: BaseMetaData<out Any>): String {
-        return gen(group, entity, "/myoql-template/kotlin_mvc_es_template_crud.ftl").replace("@pkg@", pkg);
+        return gen(group, entity, "/myoql-template/es/kotlin_mvc_es_template_crud.ftl").replace("@pkg@", pkg);
     }
 
     /**
@@ -38,7 +30,7 @@ object UserCodeGenerator {
      */
     @JvmStatic
     fun genVueList(group: String, entity: BaseMetaData<out Any>): String {
-        return gen(group, entity, "/myoql-template/vue_list_template.ftl");
+        return gen(group, entity, "/vue-template/vue_list_template.ftl");
     }
 
     /**
@@ -46,7 +38,7 @@ object UserCodeGenerator {
      */
     @JvmStatic
     fun genVueCard(group: String, entity: BaseMetaData<out Any>): String {
-        return gen(group, entity, "/myoql-template/vue_card_template.ftl");
+        return gen(group, entity, "/vue-template/vue_card_template.ftl");
     }
 
     /**
@@ -54,13 +46,13 @@ object UserCodeGenerator {
      */
     @JvmStatic
     fun genVueRef(group: String, entity: BaseMetaData<out Any>): String {
-        return gen(group, entity, "/myoql-template/vue_ref_template.ftl");
+        return gen(group, entity, "/vue-template/vue_ref_template.ftl");
     }
 
     @JvmStatic
     fun genVueCard(entityClass: Class<*>): String {
         return CodeGeneratorHelper.proc(
-            "/myoql-template/vue_card_prop_template.ftl",
+            "/vue-template/vue_card_prop_template.ftl",
             CodeGeneratorHelper.CodeTemplateData(
                 "",
                 entityClass,

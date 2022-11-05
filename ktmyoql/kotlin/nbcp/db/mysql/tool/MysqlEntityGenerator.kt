@@ -1,6 +1,5 @@
 package nbcp.db.mysql.tool
 
-import freemarker.cache.ClassTemplateLoader
 import freemarker.template.TemplateMethodModelEx
 import nbcp.base.enums.NameMappingTypeEnum
 import nbcp.comm.*
@@ -57,7 +56,7 @@ object MysqlEntityGenerator {
                         "entitys" to entitys
                     )
 
-                    var code = FreemarkerUtil.process("/myoql-template/mysql_markdown.ftl", map);
+                    var code = FreemarkerUtil.process("/markdown-template/mysql_markdown.ftl", map);
                     ret.add(IdName(group, code));
                 }
 
@@ -81,7 +80,7 @@ object MysqlEntityGenerator {
                         "entitys" to entitys
                     )
 
-                    var code = FreemarkerUtil.process("\"/myoql-template\"/mysql_myoql_entity.ftl", map);
+                    var code = FreemarkerUtil.process("/myoql-template/mysql/mysql_myoql_entity.ftl", map);
                     ret.add(IdName(group, code));
                 }
 
