@@ -1,8 +1,8 @@
 package nbcp.bean
 
 import com.mongodb.MongoClientSettings
-import nbcp.comm.HasValue
-import nbcp.comm.getStringValue
+import nbcp.comm.*
+import nbcp.db.db
 import nbcp.db.mongo.*
 import nbcp.utils.JsUtil
 import org.bson.UuidRepresentation
@@ -45,40 +45,16 @@ class MyOqlMongoBeanConfig : BeanPostProcessor {
              */
 
             if (bean.uri.HasValue) {
-                var urlJson = JsUtil.parseUrlQueryJson(bean.uri);
-                urlJson.queryJson.put("uuidRepresentation", "STANDARD")
+                var url = db.mongo.getMongoStandardUri(bean.uri);
+                bean.uri = url.toUrl();
 
-                if (bean.uri.startsWith("mongodb://") && bean.uri.contains('@')) {
-                    var userName = "";
 
-                    try {
-                        userName = bean.uri.split('@')
-                            .first()
-                            .split("mongodb://")
-                            .last()
-                            .split(':')
-                            .first()
-                    } finally {
-                    }
-
-                    if (userName == "root" && !urlJson.queryJson.containsKey("authSource")) {
-                        urlJson.queryJson.put("authSource", "admin")
-                    }
+                val uuidRepresentation = url.queryJson.get("uuidRepresentation").AsString()
+                if (uuidRepresentation.HasValue && !(bean.uuidRepresentation.toString() basicSame uuidRepresentation)) {
+                    bean.uuidRepresentation = uuidRepresentation.FromJson()
                 }
-
-                var maxIdleTimeMS = urlJson.queryJson.getStringValue("maxIdleTimeMS", ignoreCase = true)
-                if (maxIdleTimeMS.isNullOrEmpty()) {
-                    urlJson.queryJson.put("maxIdleTimeMS", "30000")
-                }
-
-                var connectTimeoutMS = urlJson.queryJson.getStringValue("connectTimeoutMS", ignoreCase = true)
-                if (connectTimeoutMS.isNullOrEmpty()) {
-                    urlJson.queryJson.put("connectTimeoutMS", "10000")
-                }
-
-                bean.uri = urlJson.toUrl();
             }
-            bean.uuidRepresentation = UuidRepresentation.STANDARD
+
         } else if (bean is MongoDatabaseFactory) {
             //系统默认会有一个 MongoTransactionManager。 不必自定义。如果自定义，必须是Primary
             //SpringUtil.registerBeanDefinition("mongoTransactionManager",MongoTransactionManager(bean)){ it.setPrimary(true)}

@@ -98,25 +98,67 @@ object dbMongo {
      */
     private val mongo_template_map = linkedMapOf<String, MongoTemplate>()
 
+
+    /**
+     * 变成更标准的连接字符串。动态添加authSource，uuidRepresentation，maxIdleTimeMS，connectTimeoutMS
+     */
+    @JvmStatic
+    fun getMongoStandardUri(mongoURI: String): UrlQueryJsonData {
+        /**
+         * https://docs.mongodb.com/manual/reference/connection-string/#std-label-connections-connection-options
+         */
+        var uri = mongoURI;
+        var urlJson = JsUtil.parseUrlQueryJson(uri);
+
+        if (urlJson.queryJson.get("uuidRepresentation").AsString().isEmpty()) {
+            urlJson.queryJson.put("uuidRepresentation", "STANDARD")
+        }
+
+        if (uri.startsWith("mongodb://") && uri.contains('@')) {
+            var userName = "";
+
+            /*
+            * 如果使用 root 用户连接，连接字符串须要额外添加  ?authSource=admin
+            * mongodb://root:1234.5678@192.168.5.211:26757/cms?authSource=admin
+            */
+            try {
+                userName = uri.split('@')
+                    .first()
+                    .split("mongodb://")
+                    .last()
+                    .split(':')
+                    .first()
+            } finally {
+            }
+
+            if (userName == "root" && !urlJson.queryJson.containsKey("authSource")) {
+                urlJson.queryJson.put("authSource", "admin")
+            }
+        }
+
+        var maxIdleTimeMS = urlJson.queryJson.getStringValue("maxIdleTimeMS", ignoreCase = true)
+        if (maxIdleTimeMS.isNullOrEmpty()) {
+            urlJson.queryJson.put("maxIdleTimeMS", "30000")
+        }
+
+        var connectTimeoutMS = urlJson.queryJson.getStringValue("connectTimeoutMS", ignoreCase = true)
+        if (connectTimeoutMS.isNullOrEmpty()) {
+            urlJson.queryJson.put("connectTimeoutMS", "10000")
+        }
+
+        return urlJson
+    }
+
     /**
      * 获取 MongoTemplate ,将会有一个连接的线程在等待，所以要避免 usingScope 而不释放。
      * @param uri: 格式 mongodb://dev:123@mongo:27017/cms ，用户名密码出现特殊字符，需要替换：@ -> %40 , : -> %3A
      */
     @JvmStatic
-    fun getMongoTemplateByUri(uri: String): MongoTemplate? {
-        if (uri.isEmpty()) return null;
+    fun getMongoTemplateByUri(mongoURI: String): MongoTemplate? {
+        if (mongoURI.isEmpty()) return null;
 
-        /**
-         * https://docs.mongodb.com/manual/reference/connection-string/#std-label-connections-connection-options
-         */
-        var uri = uri;
-        var urlJson = JsUtil.parseUrlQueryJson(uri);
-        var maxIdleTimeMS = urlJson.queryJson.getStringValue("maxIdleTimeMS", ignoreCase = true)
-        urlJson.queryJson.put("uuidRepresentation", "STANDARD")
-        if (maxIdleTimeMS.isNullOrEmpty()) {
-            urlJson.queryJson.put("maxIdleTimeMS", "30000")
-            uri = urlJson.toUrl();
-        }
+
+        var uri = getMongoStandardUri(mongoURI).toUrl()
 
         var ret = mongo_template_map.get(uri);
         if (ret != null) {
@@ -219,7 +261,7 @@ object dbMongo {
     }
 
     @JvmStatic
-    fun op(operator: PipeLineOperatorEnum, rawValue: Map<String,Any?>): MongoExpression {
+    fun op(operator: PipeLineOperatorEnum, rawValue: Map<String, Any?>): MongoExpression {
         return MongoExpression("$" + operator.toString() to rawValue)
     }
 
