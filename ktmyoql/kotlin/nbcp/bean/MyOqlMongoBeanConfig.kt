@@ -51,7 +51,7 @@ class MyOqlMongoBeanConfig : BeanPostProcessor {
 
                 val uuidRepresentation = url.queryJson.get("uuidRepresentation").AsString()
                 if (uuidRepresentation.HasValue && !(bean.uuidRepresentation.toString() basicSame uuidRepresentation)) {
-                    bean.uuidRepresentation = uuidRepresentation.FromJson()
+                    bean.uuidRepresentation = uuidRepresentation.ToEnum<UuidRepresentation>()!!
                 }
             }
 
