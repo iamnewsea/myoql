@@ -51,7 +51,7 @@ class TestKtExt_Json : TestBase() {
             var r2 = str.FromJson<ListResult<bc>>()!!;
             println(r2.data!!.first()::class.java.name)
 
-            var r3 = str.FromGenericJson(ListResult::class.java,IdName::class.java)!!
+            var r3 = str.FromGenericJson(ListResult::class.java, IdName::class.java)!!
             println(r3.data.first()!!::class.java.name)
         }
 
@@ -59,31 +59,42 @@ class TestKtExt_Json : TestBase() {
         var list = listOf(b)
         str = list.ToJson()
 
-        var d = str.FromGenericJson(List::class.java,bc::class.java)!!;
+        var d = str.FromGenericJson(List::class.java, bc::class.java)!!;
         println(d.first()!!::class.java.name)
     }
 
-    class b{
+    class b {
         var c = ""
-        }
-    class a{
+    }
+
+    class a {
         var b = b();
-        }
-    class ccc{
+    }
+
+    class ccc {
         var a = a()
     }
 
     @Test
-    fun abc(){
+    fun abc() {
         var map = JsonMap("a.b.c" to "ok")
         var e = map.ConvertJson(ccc::class.java)
         println(e.a.b.c)
     }
 
     @Test
-    fun withNul(){
-        var map = JsonMap("a" to null )
+    fun withNul() {
+        var map = JsonMap("a" to null)
         var e = map.ToJson(JsonStyleEnumScope.WithNull)
         println(e)
+    }
+
+
+    @Test
+    fun Any() {
+        var obj1 = JsonMap("a" to 1).ToJson().FromJson<Any>()!!
+        var obj2 = listOf(JsonMap("a" to 1)).ToJson().FromJson<Any>()!!
+        println(obj1.javaClass.simpleName)
+        println(obj2::class.java.simpleName)
     }
 }
