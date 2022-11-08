@@ -1,6 +1,6 @@
 nbcp.utils.SpringUtil
 nbcp.KotlinExtendInitConfig
-nbcp.comm.LogLevelAopService
-nbcp.comm.GroupLogAopService
+nbcp.base.aop.LogLevelAopService
+nbcp.base.aop.GroupLogAopService
 nbcp.component.AppJsonMapper
 nbcp.comm.config

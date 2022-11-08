@@ -6,8 +6,10 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.classic.turbo.TurboFilter
 import ch.qos.logback.core.filter.Filter
 import ch.qos.logback.core.spi.FilterReply
-import nbcp.comm.GroupLogScope
-import nbcp.comm.*
+import nbcp.base.comm.*
+import nbcp.base.enums.*
+import nbcp.base.extend.*
+import nbcp.base.utils.*
 import org.slf4j.Marker
 
 
@@ -41,7 +43,7 @@ class MyLogBackFilter : TurboFilter() {
             return FilterReply.DENY;
         }
 
-        val log = scopes.getLatest<LogLevelScope>()
+        val log = scopes.getLatest<LogLevelScopeEnum>()
         if (log != null) {
             if (level.levelInt >= log.value) {
                 return FilterReply.ACCEPT
@@ -49,7 +51,7 @@ class MyLogBackFilter : TurboFilter() {
             return FilterReply.DENY;
         }
 
-        usingScope(LogLevelScope.off) {
+        usingScope(LogLevelScopeEnum.off) {
             //config.debug 本身也会调用 decide.
             if (config.debug) {
                 return FilterReply.ACCEPT

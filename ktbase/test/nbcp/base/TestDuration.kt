@@ -1,14 +1,19 @@
 package nbcp.base
 
-import nbcp.TestBase
-import nbcp.comm.GroupLog
-import nbcp.comm.*
+import nbcp.base.aop.GroupLog
+import nbcp.base.comm.*
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.springframework.boot.logging.LogLevel
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoField
+import nbcp.base.comm.*;
+import nbcp.base.db.*;
+import nbcp.base.enums.*;
+import nbcp.base.extend.*;
+import nbcp.base.utils.*;
+
 
 @GroupLog("main")
 class TestDuration : TestBase() {
@@ -20,7 +25,7 @@ class TestDuration : TestBase() {
     fun Test_Duration() {
         var d = Duration.parse("PT20M");
         println(d.seconds)
-        usingScope(LogLevelScope.info) {
+        usingScope(LogLevelScopeEnum.info) {
             logger.info(d.seconds.toString())
         }
 
