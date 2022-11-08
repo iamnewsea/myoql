@@ -1,11 +1,10 @@
 package nbcp.excel
 
-import nbcp.TestBase
+import nbcp.base.TestBase
 import nbcp.comm.AsString
 import nbcp.comm.JsonMap
 import nbcp.comm.ToJson
 import nbcp.db.excel.ExcelComponent
-import nbcp.db.mongo.MongoColumnName
 import org.junit.jupiter.api.Test
 import java.io.FileInputStream
 import java.io.FileOutputStream

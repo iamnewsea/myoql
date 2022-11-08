@@ -1,5 +1,6 @@
 package nbcp
 
+import nbcp.base.TestBase
 import org.junit.jupiter.api.Test
 import java.io.File
 

@@ -1,12 +1,12 @@
 package nbcp.mongo
 
-import nbcp.TestBase
-import nbcp.comm.*
+import nbcp.base.TestBase
+import nbcp.base.comm.*
 import nbcp.db.db
-import nbcp.db.mongo.*
-import nbcp.scope.JsonStyleEnumScope
+import nbcp.myoql.db.mongo.*
+import nbcp.myoql.db.mongo.enums.PipeLineEnum
+import nbcp.scope.JsonStyleScopeEnum
 import org.junit.jupiter.api.Test
-import org.springframework.data.mongodb.core.query.Criteria
 import java.time.LocalDateTime
 
 class Test_Mongo_Query : TestBase() {
@@ -16,12 +16,12 @@ class Test_Mongo_Query : TestBase() {
         var query = db.morBase.sysLog.query()
             .where{ it.id.match_hasValue()}
 
-        println(query.whereData.ToJson(JsonStyleEnumScope.WithNull))
+        println(query.whereData.ToJson(JsonStyleScopeEnum.WithNull))
     }
 
     @Test
     fun test_query_where() {
-        usingScope(LogLevelScope.debug) {
+        usingScope(LogLevelScopeEnum.debug) {
             db.morBase.sysLog.query()
                 .apply {
                     this.where(
@@ -55,7 +55,7 @@ return  this.tags && this.tags.some(function(it) { return it == v } )
 
     @Test
     fun testCond() {
-        usingScope(LogLevelScope.info) {
+        usingScope(LogLevelScopeEnum.info) {
             db.morBase.sysAnnex.aggregate()
                 .addPipeLine(
                     PipeLineEnum.addFields,
@@ -76,7 +76,7 @@ return  this.tags && this.tags.some(function(it) { return it == v } )
 
     @Test
     fun testElemMatch() {
-        usingScope(LogLevelScope.info) {
+        usingScope(LogLevelScopeEnum.info) {
             var where1 = JsonMap("\$gte" to 1, "\$lte" to 9)
 
             db.morBase.sysAnnex.query()

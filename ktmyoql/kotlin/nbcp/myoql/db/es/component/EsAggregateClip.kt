@@ -1,0 +1,316 @@
+package nbcp.myoql.db.es.component
+
+import org.slf4j.LoggerFactory
+import java.io.Serializable
+/**
+ * EsAggregate
+ */
+class EsAggregateClip<M : EsBaseMetaEntity<E>, E : Serializable>(var moerEntity: M) : EsClipBase(moerEntity.tableName) {
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass);
+    }
+
+//    private var pipeLines = mutableListOf<Pair<String, Any>>();
+//    private var skip: Int = 0;
+//    private var take: Int = -1;
+//
+//    /**
+//     * 通用函数
+//     */
+//    fun addPipeLine(key: PipeLineEnum, json: JsonMap): EsAggregateClip<M, E> {
+//        this.pipeLines.add("\$${key}" to json);
+//        return this;
+//    }
+//
+//    fun addPipeLine(key: PipeLineEnum, json: String): EsAggregateClip<M, E> {
+//        this.pipeLines.add("\$${key}" to json);
+//        return this;
+//    }
+//
+//    fun skip(skip: Int): EsAggregateClip<M, E> {
+//        this.skip = skip;
+//        this.pipeLines.add("\$skip" to skip);
+//        return this;
+//    }
+//
+//    fun take(take: Int): EsAggregateClip<M, E> {
+//        this.take = take;
+//        this.pipeLines.add("\$limit" to take);
+//        return this;
+//    }
+//
+//    fun limit(skip: Int, take: Int): EsAggregateClip<M, E> {
+//        return this.skip(skip).take(take)
+//    }
+//
+//    fun wheres(vararg whereDatas: Criteria): EsAggregateClip<M, E> {
+//        if (whereDatas.any() == false) return this;
+//        pipeLines.add("\$match" to this.moerEntity.getEsCriteria(*whereDatas))
+//        return this;
+//    }
+//
+//    fun wheres(vararg wheres: (M) -> Criteria): EsAggregateClip<M, E> {
+//        return wheres(*wheres.map { it(moerEntity) }.toTypedArray());
+//    }
+//
+//    /**开始收集where条件
+//     */
+//    fun beginMatch(): BeginMatchClip<M, E> {
+//        return BeginMatchClip<M, E>(this)
+//    }
+//
+//    fun select(vararg columns: String): EsAggregateClip<M, E> {
+//        pipeLines.add("\$project" to columns.map { it to "\$${it}" }.toMap());
+//        return this;
+//    }
+//
+//    fun select(column: (M) -> EsColumnName): EsAggregateClip<M, E> {
+//        return select(column(moerEntity).toString());
+//    }
+//
+//    fun count(columnName: String): EsAggregateClip<M, E> {
+//        pipeLines.add("\$count" to columnName)
+//        return this;
+//    }
+//
+//    fun unset(vararg columns: String): EsAggregateClip<M, E> {
+//        pipeLines.add("\$unset" to columns)
+//        return this;
+//    }
+//
+//    /**
+//     * @param _id: 如果要设置列，前面加$.
+//     * @param eachItems: 每一个聚合的表达式。
+//     * @see EsExpression
+//     * .group("$level",db.es..)
+//     */
+//    fun group(_id: String, eachItems: JsonMap): EsAggregateClip<M, E> {
+//        var raw = JsonMap();
+//        raw.put("_id", _id)
+//        raw.putAll(eachItems)
+//
+//
+//        pipeLines.add("\$group" to raw)
+//        return this;
+//    }
+//
+//    fun group(_id: JsonMap?, eachItems: JsonMap? = null): EsAggregateClip<M, E> {
+//        var raw = JsonMap();
+//        raw.put("_id", _id)
+//
+//        if (eachItems != null) {
+//            raw.putAll(eachItems)
+//        }
+//
+//        pipeLines.add("\$group" to raw)
+//        return this;
+//    }
+//
+//    /**
+//     * @param sortFuncs: true:正序， false,逆序。
+//     */
+//    fun orderBy(vararg sortFuncs: Pair<String, Boolean>): EsAggregateClip<M, E> {
+//        var sorts = sortFuncs.map {
+//            var sortName = it.first
+//            if (sortName == "id") {
+//                sortName = "_id"
+//            } else if (sortName.endsWith(".id")) {
+//                sortName = sortName.slice(0..sortName.length - 3) + "._id";
+//            }
+//
+//            return@map sortName to (if (it.second) 1 else -1)
+//        }
+//
+//        pipeLines.add("\$sort" to JsonMap(sorts.toList()))
+//        return this;
+//    }
+//
+////    fun orderBy(vararg sortFuncs: (M) -> EsOrderBy): EsAggregateClip<M, E> {
+////        return orderBy(*sortFuncs.map {
+////            var order = it(moerEntity);
+////            return@map order.orderBy.toString() to order.Asc
+////        }.toTypedArray());
+////    }
+//
+//    fun toExpression(): String {
+//        var pipeLines = mutableListOf<Pair<String, Any>>();
+//        pipeLines.addAll(this.pipeLines);
+//
+//        var pipeLineExpression = "[" + pipeLines.map {
+//            var key = it.first;
+//            var value = it.second;
+//            if (value is ObjectId) {
+//                return@map """{$key:${value.toString().toOIdJson().ToJsonValue()}}"""
+//            } else if (value is Criteria) {
+//
+//                var c_value = value.criteriaObject.procWithEsScript();
+//
+//                return@map """{$key:${c_value.ToJsonWithNull()}}"""
+//            } else if (value is Number) {
+//                return@map "{$key:$value}";
+//            } else if (value is String) {
+////                if( key == "_id" || key.endsWith("._id")){
+////                    return@map """{$key:{##oid:"${value}"}}""".replace("##","$")
+////                }
+//                return@map """{$key:"${value}"}"""
+//            } else if (value is Map<*, *>) {
+//                return@map "{$key:${value.procWithEsScript().ToJsonWithNull()}}"
+//            }
+//
+//            logger.warn("不识别的类型：${value::class.java.name}")
+//            return@map "{$key:${value.ToJsonWithNull()}}"
+//        }.joinToString(",") + "]"
+//
+//        var exp = """{
+//aggregate: "${this.moerEntity.tableName}",
+//pipeline: ${pipeLineExpression} ,
+//cursor: {} } """
+//        return exp;
+//    }
+//
+//    /**
+//     * 返回该对象的 Md5。
+//     */
+//    private fun getCacheKey(): String {
+//        var exp = toExpression();
+//        return Md5Util.getBase64Md5(exp);
+//    }
+//
+//    fun toList(itemFunc: ((Document) -> Unit)? = null): MutableList<E> {
+//        return toList(this.moerEntity.entityClass, itemFunc);
+//    }
+//
+//    fun <R : Any> toList(clazz: Class<R>, itemFunc: ((Document) -> Unit)? = null): MutableList<R> {
+//        return toMapList(itemFunc).map { it.ConvertJson(clazz) }.toMutableList()
+//    }
+//
+//    /**
+//     * 核心函数
+//     */
+//    fun toMapList(itemFunc: ((Document) -> Unit)? = null): MutableList<Document> {
+//        db.affectRowCount = -1;
+//        var queryJson = toExpression();
+//        var result: Document? = null
+//        var startAt = LocalDateTime.now();
+//        try {
+//            result = esTemplate.executeCommand(queryJson)
+//            db.executeTime = LocalDateTime.now() - startAt
+//        } catch (e: Exception) {
+//            throw e;
+//        } finally {
+//            logger.InfoError(result == null) {
+//                """[aggregate] ${this.moerEntity.tableName}
+//[语句] ${queryJson}
+//${if (db.debug) "[result] ${result?.ToJson()}" else "[result.size] ${result?.size}"}
+//[耗时] ${db.executeTime}"""
+//            }
+//        }
+//
+//        if (result == null) {
+//            throw RuntimeException("es aggregate执行错误!")
+//        }
+//        if (result.containsKey("ok") == false) {
+//            throw RuntimeException("es aggregate执行错误!" + result.ToJson())
+//        }
+//
+//        var ret = mutableListOf<Document>()
+//        if (result.getDouble("ok") != 1.0) {
+//            db.affectRowCount = result.getDouble("ok").AsInt()
+//            return ret
+//        }
+//
+//        var list = ((result.get("cursor") as Document).get("firstBatch") as ArrayList<Document>);
+//
+//        db.affectRowCount = list.size;
+//
+//        list.forEach {
+//            //            db.change_id2Id(it);
+//            //value 可能会是： Document{{answerRole=Patriarch}}
+//            db.es.procResultDocumentJsonData(it);
+//            if (itemFunc != null) {
+//                itemFunc(it);
+//            }
+//            ret.add(it)
+//        }
+//
+//        return ret
+//    }
+//
+//
+//    fun toMap(itemFunc: ((Document) -> Unit)? = null): Document {
+//        this.take(1);
+//        var ret = toMapList(itemFunc);
+//        if (ret.any() == false) return Document();
+//        return ret.first();
+//    }
+//
+//    fun toScalar(): Any? {
+//        var doc = toMap();
+//        if (doc.keys.any() == false) return null
+//        return doc.get(doc.keys.last())
+//    }
+//
+//    /**
+//     * 将忽略 skip , take
+//     */
+//    fun count(): Int {
+//        this.pipeLines.add("\$count" to "count");
+//        return toScalar()?.AsInt() ?: 0
+//    }
+//
+//    fun exists(): Boolean {
+//        this.select("_id");
+//        return toScalar()?.AsString().HasValue;
+//    }
+//
+//    fun toList(): MutableList<E> {
+//        return toList(moerEntity.entityClass)
+//    }
+//
+//    fun toListResult(itemFunc: ((Document) -> Unit)? = null): ListResult<E> {
+//        return toListResult(moerEntity.entityClass, itemFunc);
+//    }
+//
+//    fun <R : Any> toListResult(entityClass: Class<R>, itemFunc: ((Document) -> Unit)? = null): ListResult<R> {
+//        var ret = ListResult<R>()
+//        var data = toList(entityClass, itemFunc)
+//
+//        if (this.skip == 0 && this.take > 0) {
+//            if (data.size < this.take) {
+//                ret.total = data.size;
+//            } else {
+//                ret.total = count()
+//            }
+//        }
+//
+//        ret.data = data;
+//        return ret
+//    }
+//
+//    fun toEntity(): E? {
+//        this.take(1)
+//        return toList(moerEntity.entityClass).firstOrNull();
+//    }
+//
+//    inline fun <reified R : Any> toEntity(): R? {
+//        return toEntity(R::class.java);
+//    }
+//
+//    fun <R : Any> toEntity(clazz: Class<R>, itemFunc: ((Document) -> Unit)? = null): R? {
+//        this.take(1);
+//        return toList(clazz, itemFunc).firstOrNull();
+//    }
+}
+
+
+class BeginMatchClip<M : EsBaseMetaEntity<E>, E : Serializable>(var aggregate: EsAggregateClip<M, E>) {
+//    private var wheres = mutableListOf<Criteria>()
+//    fun where(where: (M) -> Criteria): BeginMatchClip<M, E> {
+//        wheres.add(where(this.aggregate.moerEntity))
+//        return this;
+//    }
+//
+//    fun endMatch(): EsAggregateClip<M, E> {
+//        return this.aggregate.wheres(*this.wheres.toTypedArray())
+//    }
+}

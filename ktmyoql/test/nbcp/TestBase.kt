@@ -10,8 +10,8 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.test.web.servlet.MockMvc
-import nbcp.comm.*
-import nbcp.utils.*
+import nbcp.base.comm.*
+import nbcp.base.utils.*
 import org.springframework.boot.Banner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -52,7 +52,7 @@ open class KtMyoqlTestApplication {
 @WebAppConfiguration
 @SpringBootTest(classes = [KtMyoqlTestApplication::class])
 @TestPropertySource(locations = ["classpath:application.yml"])
-@MyLogLevel(LogLevelScope.info)
+@nbcp.base.comm.MyLogLevel(LogLevelScopeEnum.info)
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
 //@ActiveProfiles("unittest","productprofile")
 //注释 pom.xml 中的  project.build.resources.resource 中的 excludes

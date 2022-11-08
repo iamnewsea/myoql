@@ -5,9 +5,9 @@ import org.springframework.data.mongodb.core.query.*
 import org.springframework.web.bind.annotation.*
 import @pkg@.db.mongo.*
 import @pkg@.db.mongo.entity.*
-import nbcp.comm.*
-import nbcp.db.*
-import nbcp.db.mongo.*
+import nbcp.base.comm.*
+import nbcp.myoql.db.*
+import nbcp.myoql.db.mongo.*
 import nbcp.db.mongo.entity.*
 import nbcp.base.mvc.*
 import javax.servlet.http.*

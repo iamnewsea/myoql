@@ -1,10 +1,10 @@
 package nbcp.mongo
 
-import nbcp.TestBase
-import nbcp.comm.*
+import nbcp.base.TestBase
+import nbcp.base.comm.*
 import nbcp.db.IdName
 import nbcp.db.db
-import nbcp.db.mongo.*
+import nbcp.myoql.db.mongo.*
 import nbcp.db.mongo.entity.SysAnnex
 import nbcp.db.op_inc
 import nbcp.utils.CodeUtil

@@ -1,6 +1,6 @@
 package @pkg@.db.mysql.entity
 
-import nbcp.db.*
+import nbcp.myoql.db.*
 import nbcp.db.sql.*
 import nbcp.db.mysql.*
 import java.time.*

@@ -1,8 +1,7 @@
 package nbcp.base
 
-import nbcp.TestBase
-import nbcp.comm.*
-import nbcp.model.DataTable
+import nbcp.base.comm.*
+import nbcp.myoql.model.DataTable
 import org.junit.jupiter.api.Test
 
 class TestKtExt_DataTable : TestBase() {

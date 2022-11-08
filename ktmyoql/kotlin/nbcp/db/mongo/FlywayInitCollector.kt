@@ -1,3 +1,0 @@
-package nbcp.db.mongo
-
-

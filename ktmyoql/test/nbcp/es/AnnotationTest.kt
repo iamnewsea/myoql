@@ -1,9 +1,8 @@
 package nbcp.es
 
-import nbcp.TestBase
-import nbcp.comm.*
-import nbcp.db.DbEntityIndex
-import nbcp.db.DbEntityIndexes
+import nbcp.base.TestBase
+import nbcp.base.db.DbEntityIndex
+import nbcp.base.db.DbEntityIndexes
 import org.junit.jupiter.api.Test
 
 @DbEntityIndexes(

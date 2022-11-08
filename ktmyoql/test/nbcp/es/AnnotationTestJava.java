@@ -2,7 +2,6 @@ package nbcp.es;
 
 
 import nbcp.TestBase;
-import nbcp.db.DbEntityIndex;
 import org.junit.jupiter.api.Test;
 
 

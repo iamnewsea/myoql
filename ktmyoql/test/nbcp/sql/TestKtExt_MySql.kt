@@ -1,15 +1,15 @@
-package nbcp.sql
+package nbcp.myoql.sql
 
 import com.zaxxer.hikari.HikariDataSource
-import nbcp.TestBase
-import nbcp.comm.*
+import nbcp.base.TestBase
+import nbcp.base.comm.*
 import nbcp.db.IdName
 import nbcp.db.db
 import nbcp.db.mysql.tool.MysqlEntityGenerator
 import nbcp.db.sql.*
-import nbcp.db.sql.entity.s_annex
-import nbcp.tool.UserCodeGenerator
-import nbcp.utils.MyUtil
+import nbcp.myoql.db.sql.s_annex
+import nbcp.myoql.tool.UserCodeGenerator
+import nbcp.base.utils.MyUtil
 import nbcp.utils.SpringUtil
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
@@ -44,7 +44,7 @@ class TestKtExt_MySql : TestBase() {
 
     @Test
     fun test_update_spread() {
-        usingScope(LogLevelScope.debug) {
+        usingScope(LogLevelScopeEnum.debug) {
             var ent = db.sqlBase.s_annex.queryById("56Fgk7UEAm0Z").toEntity()!!;
             ent.creator = IdName("2", "rr")
             db.sqlBase.s_annex.updateWithEntity(ent)

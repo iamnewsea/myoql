@@ -1,13 +1,11 @@
 package nbcp.es
 
 
-import nbcp.TestBase
-import nbcp.db.*
+import nbcp.base.TestBase
+import nbcp.base.db.DbEntityGroup
+import nbcp.myoql.db.*
 import nbcp.db.es.tool.generator_mapping
-import nbcp.db.sql.entity.s_city
-import nbcp.tool.UserCodeGenerator
 import org.junit.jupiter.api.Test
-import java.time.LocalDateTime
 
 @DbEntityGroup("sys")
 

@@ -4,8 +4,8 @@ import io.swagger.annotations.*
 import org.springframework.web.bind.annotation.*
 import @pkg@.db.sql.*
 import @pkg@.db.sql.entity.*
-import nbcp.comm.*
-import nbcp.db.*
+import nbcp.base.comm.*
+import nbcp.myoql.db.*
 import nbcp.db.sql.*
 import nbcp.db.sql.entity.*
 import nbcp.base.mvc.*
