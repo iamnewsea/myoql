@@ -34,6 +34,8 @@ class LoginUserParameterConverter() : HandlerMethodArgumentResolver {
         binderFactory: WebDataBinderFactory?
     ): Any? {
         if (mavContainer == null || binderFactory == null) return null
+
+        //现在只支持ServletWebRequest
         val webRequest = (nativeRequest as ServletWebRequest).request
 
         return webRequest.LoginUser;
