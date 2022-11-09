@@ -1,11 +1,8 @@
-package nbcp.base
+package nbcp.myoql.base
 
-import nbcp.base.comm.*
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
+import nbcp.myoql.TestBase
 import nbcp.base.enums.*;
 import nbcp.base.extend.*;
-import nbcp.base.utils.*;
 import nbcp.myoql.db.CityCodeName
 import org.junit.jupiter.api.Test
 

@@ -11,7 +11,7 @@ import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-private val logger = LoggerFactory.getLogger("nbcp.comm.MyHelper")
+private val logger = LoggerFactory.getLogger("nbcp.base.comm.MyHelper")
 
 /**
  * 转为Int。

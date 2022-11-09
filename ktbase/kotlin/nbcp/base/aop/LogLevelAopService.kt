@@ -21,7 +21,7 @@ open class LogLevelAopService {
     /**
      * 日志拦截
      */
-    @Around("@within(nbcp.comm.MyLogLevel) || @annotation(nbcp.comm.MyLogLevel)")
+    @Around("@within(nbcp.base.comm.MyLogLevel) || @annotation(nbcp.base.comm.MyLogLevel)")
     fun logPoint(joinPoint: ProceedingJoinPoint): Any? {
         val signature = joinPoint.signature as MethodSignature;
         val method = signature.method

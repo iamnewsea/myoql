@@ -16,7 +16,7 @@ import org.slf4j.Marker
 /**
  * 前置过滤器，排除定时任务
  * logback-spring.xml 文件中，
- * configuration 下面添加 <turboFilter class="nbcp.filter.MyLogBackFilter"></turboFilter>
+ * configuration 下面添加 <turboFilter class="nbcp.base.filter.MyLogBackFilter"></turboFilter>
  * Filter<ILoggingEvent> 是后置过滤器
  *
  * isInfoEnabled, 也会走前置处理器进行判断
@@ -110,7 +110,7 @@ class MyLogBackFilter : TurboFilter() {
  * 主要业务日志分组,使用 GroupLog("main") 进行注解
  * logback-spring.xml 文件中，
  * configuration.appender 下面添加
- * <filter class="nbcp.filter.MyMainGroupLogBackFilter">
+ * <filter class="nbcp.base.filter.MyMainGroupLogBackFilter">
  *     <group>main</group>
  * </filter>
  *

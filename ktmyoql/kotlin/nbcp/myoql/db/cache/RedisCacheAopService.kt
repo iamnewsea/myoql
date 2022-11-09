@@ -55,7 +55,7 @@ open class RedisCacheAopService {
      * 使用 scan 遍历key.
      * insert破坏: 所有 join_tabls，主表
      */
-    @Around("@annotation(nbcp.db.cache.FromRedisCache)")
+    @Around("@annotation(nbcp.myoql.db.cache.FromRedisCache)")
     fun cacheSelect(joinPoint: ProceedingJoinPoint): Any? {
         val signature = joinPoint.signature as MethodSignature;
         val method = signature.method

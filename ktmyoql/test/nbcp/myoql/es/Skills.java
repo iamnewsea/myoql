@@ -1,4 +1,4 @@
-package nbcp.es;
+package nbcp.myoql.es;
 
 import java.lang.annotation.*;
 

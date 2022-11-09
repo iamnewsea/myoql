@@ -1,6 +1,6 @@
-package nbcp.redis
+package nbcp.myoql.redis
 
-import nbcp.base.TestBase
+import nbcp.myoql.TestBase
 import nbcp.myoql.db.db
 import nbcp.myoql.db.redis.scanKeys
 import org.junit.jupiter.api.Test

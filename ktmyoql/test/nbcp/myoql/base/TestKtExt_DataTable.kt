@@ -1,10 +1,8 @@
-package nbcp.base
+package nbcp.myoql.base
 
+import nbcp.myoql.TestBase
 import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
 import nbcp.base.extend.*;
-import nbcp.base.utils.*;
 import nbcp.myoql.model.DataTable
 import org.junit.jupiter.api.Test
 

@@ -1,10 +1,8 @@
-package nbcp.mongo
+package nbcp.myoql.mongo
 
-import nbcp.base.TestBase
+import nbcp.myoql.TestBase
 import nbcp.base.comm.*;
 import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
 import nbcp.base.utils.*;
 import nbcp.db.mongo.entity.SysAnnex
 import nbcp.myoql.db.db

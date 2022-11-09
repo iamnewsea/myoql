@@ -1,7 +1,7 @@
-package nbcp.es
+package nbcp.myoql.es
 
 
-import nbcp.base.TestBase
+import nbcp.myoql.TestBase
 import nbcp.base.db.DbEntityGroup
 import nbcp.base.db.IdName
 import nbcp.myoql.db.*
@@ -44,6 +44,6 @@ class testa : TestBase() {
     @Test
     fun abc() {
         var m = generator_mapping();
-        m.work("mapping", "nbcp.es")
+        m.work("mapping", "nbcp.myoql.es")
     }
 }

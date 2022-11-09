@@ -1,6 +1,6 @@
-package nbcp.mongo
+package nbcp.myoql.mongo
 
-import nbcp.base.TestBase
+import nbcp.myoql.TestBase
 import nbcp.base.comm.*
 import nbcp.myoql.db.db
 

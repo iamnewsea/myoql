@@ -1,7 +1,7 @@
-package nbcp.es;
+package nbcp.myoql.es;
 
 
-import nbcp.TestBase;
+import nbcp.myoql.TestBase;
 import org.junit.jupiter.api.Test;
 
 

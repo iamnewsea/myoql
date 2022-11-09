@@ -1,6 +1,6 @@
-package nbcp
+package nbcp.myoql
 
-import nbcp.base.TestBase
+import nbcp.myoql.TestBase
 import nbcp.myoql.db.mongo.tool.MorGenerator4Kotlin
 import nbcp.myoql.db.mysql.tool.DbrGenerator4Kotlin
 import org.junit.jupiter.api.Test

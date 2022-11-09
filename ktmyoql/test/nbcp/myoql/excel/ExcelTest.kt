@@ -1,11 +1,8 @@
-package nbcp.excel
+package nbcp.myoql.excel
 
-import nbcp.TestBase
+import nbcp.myoql.TestBase
 import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
 import nbcp.base.extend.*;
-import nbcp.base.utils.*;
 import nbcp.myoql.db.excel.ExcelComponent
 import org.junit.jupiter.api.Test
 import java.io.FileInputStream

@@ -1,7 +1,7 @@
 package nbcp.myoql.sql
 
 import com.zaxxer.hikari.HikariDataSource
-import nbcp.base.TestBase
+import nbcp.myoql.TestBase
 import nbcp.base.comm.*;
 import nbcp.base.db.*;
 import nbcp.base.enums.*;

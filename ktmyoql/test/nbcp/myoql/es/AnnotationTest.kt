@@ -1,6 +1,6 @@
-package nbcp.es
+package nbcp.myoql.es
 
-import nbcp.base.TestBase
+import nbcp.myoql.TestBase
 import nbcp.base.db.DbEntityIndex
 import nbcp.base.db.DbEntityIndexes
 import org.junit.jupiter.api.Test
