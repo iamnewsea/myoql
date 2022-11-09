@@ -1,6 +1,7 @@
 package nbcp.myoql.db.mybatis
 
-import nbcp.base.utils.*
+import nbcp.base.utils.MyUtil
+import nbcp.base.utils.SpringUtil
 import org.apache.ibatis.cache.CacheKey
 import org.apache.ibatis.executor.Executor
 import org.apache.ibatis.executor.keygen.SelectKeyGenerator

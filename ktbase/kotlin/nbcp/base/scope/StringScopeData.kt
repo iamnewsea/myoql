@@ -6,5 +6,5 @@ package nbcp.base.scope
  *  scopes.getLatestStringScope("key")
  * }
  */
-data class StringScopeData(var key: String, var value: String): IScopeData
+data class StringScopeData(var key: String, var value: String) : IScopeData
 

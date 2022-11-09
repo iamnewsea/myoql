@@ -1,12 +1,15 @@
 package nbcp.myoql.db.sql.event;
 
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
-import nbcp.myoql.db.sql.component.*
-import nbcp.myoql.db.sql.extend.*
-import nbcp.myoql.db.sql.entity.*
+import nbcp.base.extend.ToJson
+import nbcp.base.utils.CodeUtil
+import nbcp.myoql.db.comm.EventResult
+import nbcp.myoql.db.comm.RemoveToSysDustbin
+import nbcp.myoql.db.db
+import nbcp.myoql.db.sql.component.RawQuerySqlClip
+import nbcp.myoql.db.sql.component.SqlDeleteClip
+import nbcp.myoql.db.sql.component.doInsert
+import nbcp.myoql.db.sql.entity.s_dustbin
+import nbcp.myoql.db.sql.extend.fromTableName
 import org.springframework.stereotype.Component
 
 /**

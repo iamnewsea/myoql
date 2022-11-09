@@ -3,10 +3,10 @@ package nbcp.base.comm
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
-import nbcp.base.comm.*
-import nbcp.base.enums.*
-import nbcp.base.extend.*
-import nbcp.base.utils.*
+import nbcp.base.enums.JsonStyleScopeEnum
+import nbcp.base.extend.Format
+import nbcp.base.extend.getDateFormat
+import nbcp.base.extend.scopes
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime

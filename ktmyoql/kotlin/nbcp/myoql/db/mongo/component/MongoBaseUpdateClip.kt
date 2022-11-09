@@ -1,21 +1,19 @@
 package nbcp.myoql.db.mongo.component
 
 import com.mongodb.client.result.UpdateResult
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
+import nbcp.base.comm.const
+import nbcp.base.enums.JsonStyleScopeEnum
+import nbcp.base.extend.*
+import nbcp.myoql.db.db
+import nbcp.myoql.db.enums.MyOqlDbScopeEnum
+import nbcp.myoql.db.mongo.MongoWhereClip
+import nbcp.myoql.db.mongo.logger.logUpdate
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.CriteriaDefinition
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 import java.time.LocalDateTime
-import nbcp.myoql.db.mongo.logger.*
-import nbcp.myoql.db.mongo.MongoWhereClip
 
 open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IMongoWhere {
     companion object {

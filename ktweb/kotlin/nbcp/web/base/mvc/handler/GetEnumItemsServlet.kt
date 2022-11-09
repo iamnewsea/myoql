@@ -1,23 +1,13 @@
 package nbcp.web.base.mvc.handler
 
-import ch.qos.logback.classic.Level
-import com.wf.captcha.ArithmeticCaptcha
-import com.wf.captcha.utils.CaptchaUtil
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.comm.ListResult
+import nbcp.base.extend.AsString
+import nbcp.base.extend.GetEnumList
+import nbcp.base.extend.GetEnumNumberField
 import nbcp.mvc.comm.OpenAction
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
-import java.lang.RuntimeException
-
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 
 /**

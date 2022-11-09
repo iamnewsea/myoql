@@ -2,17 +2,13 @@ package nbcp.myoql.db.mongo.component
 
 
 
-import org.springframework.data.mongodb.core.MongoTemplate
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
+import nbcp.base.extend.HasValue
+import nbcp.base.extend.scopes
+import nbcp.base.utils.SpringUtil
+import nbcp.myoql.db.db
 import nbcp.myoql.db.mongo.*
+import org.springframework.data.mongodb.core.MongoTemplate
 import java.io.Serializable
-import java.lang.RuntimeException
 import java.time.Duration
 
 /**

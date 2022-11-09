@@ -1,7 +1,6 @@
 package nbcp.base.comm
 
 
-
 import java.nio.charset.Charset
 
 object const {

@@ -1,15 +1,13 @@
 package nbcp.myoql.db.es.component
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.extend.AsInt
+import nbcp.base.extend.AsString
+import nbcp.base.extend.HasValue
+import nbcp.base.extend.scopes
+import nbcp.base.utils.SpringUtil
 import nbcp.myoql.db.db
 import nbcp.myoql.db.es.EsIndexDataSource
 import nbcp.myoql.db.es.RestClientScope
-import nbcp.myoql.db.es.component.EsAggregateClip
-import nbcp.myoql.db.es.component.EsBaseQueryClip
 import org.elasticsearch.client.RestHighLevelClient
 import java.io.Serializable
 

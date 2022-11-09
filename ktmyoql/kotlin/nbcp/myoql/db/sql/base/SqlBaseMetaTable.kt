@@ -1,11 +1,11 @@
 package nbcp.myoql.db.sql.base
 
 
+import nbcp.base.extend.*
+import nbcp.myoql.db.comm.BaseMetaData
 import nbcp.myoql.db.sql.define.FkDefine
-import nbcp.base.extend.*;
-import nbcp.myoql.db.comm.*
-import java.lang.reflect.Modifier
 import java.io.Serializable
+import java.lang.reflect.Modifier
 
 abstract class SqlBaseMetaTable<T : Serializable>(
     entityClass: Class<T>,

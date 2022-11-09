@@ -1,6 +1,6 @@
 package nbcp.myoql.db.mongo
 
-import nbcp.base.comm.*
+import nbcp.base.comm.StringMap
 import nbcp.base.extend.IsStringType
 import nbcp.base.extend.Slice
 import nbcp.base.utils.RecursionUtil

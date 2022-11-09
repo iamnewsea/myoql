@@ -1,9 +1,9 @@
 package nbcp.base.extend;
 
 import nbcp.base.TestBase;
+import nbcp.base.comm.BatchReader;
 import nbcp.base.comm.MyJsonUtil;
-import nbcp.base.comm.*;
-import nbcp.base.utils.*;
+import nbcp.base.utils.JavaListUtil;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
@@ -26,17 +26,16 @@ class TestKtExt_List_Java extends TestBase {
 
     @Test
     public void abc() {
-        BatchReader<String> reader = BatchReader.init(5,(skip, take) -> {
+        BatchReader<String> reader = BatchReader.init(5, (skip, take) -> {
             LinkedList list = new LinkedList<String>();
-            if( skip == 0){
+            if (skip == 0) {
                 list.add("a1");
                 list.add("b2");
                 list.add("c3");
                 list.add("c4");
                 list.add("c5");
                 return list;
-            }
-            else {
+            } else {
                 list.add("a6");
                 list.add("b7");
                 list.add("c8");

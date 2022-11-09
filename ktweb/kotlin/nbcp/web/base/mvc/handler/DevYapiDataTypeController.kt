@@ -1,10 +1,10 @@
 package nbcp.web.base.mvc.handler
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.comm.*
+import nbcp.base.db.*
+import nbcp.base.enums.*
+import nbcp.base.extend.*
+import nbcp.base.utils.*
 import nbcp.mvc.base.mvc.findParameterValue
 import nbcp.mvc.comm.OpenAction
 import nbcp.myoql.db.db
@@ -17,7 +17,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
-import java.lang.RuntimeException
 import javax.servlet.http.HttpServletRequest
 
 @OpenAction

@@ -1,6 +1,6 @@
 package nbcp.myoql.model
 
-import nbcp.myoql.db.mongo.entity.*
+import nbcp.myoql.db.mongo.entity.SysAnnex
 
 /**
  * 上传服务接口， 以Mongo为准

@@ -1,12 +1,9 @@
 package nbcp.myoql.db.mongo.base
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
+import nbcp.base.extend.AsLocalDate
+import nbcp.base.extend.AsLocalDateTime
+import nbcp.base.extend.AsLocalTime
+import nbcp.base.extend.AsString
 import org.springframework.core.convert.TypeDescriptor
 import org.springframework.core.convert.converter.GenericConverter
 import java.time.LocalDate

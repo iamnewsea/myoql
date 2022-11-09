@@ -3,7 +3,6 @@
 
 package nbcp.myoql.db.sql.extend
 
-import nbcp.base.comm.*
 import nbcp.base.extend.AsBoolean
 import java.util.*
 

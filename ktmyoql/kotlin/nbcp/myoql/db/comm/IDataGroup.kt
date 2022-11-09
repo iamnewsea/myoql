@@ -1,7 +1,5 @@
 package nbcp.myoql.db.comm
 
-import java.io.Serializable
-
 
 interface IDataGroup {
     /**

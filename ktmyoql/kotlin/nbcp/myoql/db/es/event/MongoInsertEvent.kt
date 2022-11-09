@@ -1,14 +1,10 @@
 package nbcp.myoql.db.es.event;
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.*
-import nbcp.myoql.db.es.*
+import nbcp.base.extend.AllFields
+import nbcp.base.extend.AsString
+import nbcp.base.extend.IsStringType
+import nbcp.base.utils.CodeUtil
+import nbcp.myoql.db.BaseEntity
 import nbcp.myoql.db.comm.EventResult
 import nbcp.myoql.db.es.component.EsBaseInsertClip
 import org.springframework.stereotype.Component

@@ -3,9 +3,9 @@ package nbcp.myoql.db
 import nbcp.base.db.Cn
 import nbcp.base.db.IdUrl
 import nbcp.myoql.db.enums.UserSexEnum
+import java.io.Serializable
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.io.Serializable
 
 open class BaseEntity : Serializable {
     var id: String = "";

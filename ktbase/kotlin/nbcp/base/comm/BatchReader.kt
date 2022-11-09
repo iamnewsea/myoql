@@ -25,7 +25,7 @@ class BatchReader<T> private constructor(
     private val producer: (Int, Int) -> List<T>
 ) : Iterable<T> {
     override fun iterator(): Iterator<T> {
-        return  BatchReaderIterator(startIndex, batchSize, producer);
+        return BatchReaderIterator(startIndex, batchSize, producer);
     }
 
     companion object {
@@ -51,8 +51,8 @@ class BatchReader<T> private constructor(
             startIndex: Int = 0,
             batchSize: Int = 20,
             producer: (Int, Int) -> List<T>
-        ):  BatchReader<T> {
-            return  BatchReader(startIndex, batchSize, producer)
+        ): BatchReader<T> {
+            return BatchReader(startIndex, batchSize, producer)
         }
     }
 

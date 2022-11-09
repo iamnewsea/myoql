@@ -1,21 +1,16 @@
 package nbcp.myoql.db.mongo.entity
 
-import nbcp.base.db.Cn
-import nbcp.base.db.DbEntityGroup
-import nbcp.base.db.DbEntityIndex
-import nbcp.base.db.IdUrl
-import nbcp.myoql.db.*
+import nbcp.base.comm.StringMap
+import nbcp.base.db.*
+import nbcp.myoql.db.BaseEntity
+import nbcp.myoql.db.BusinessLicenseData
+import nbcp.myoql.db.CityCodeName
+import nbcp.myoql.db.IdentityCardData
+import nbcp.myoql.db.comm.RemoveToSysDustbin
+import nbcp.myoql.db.comm.SortNumber
 import org.springframework.data.mongodb.core.mapping.Document
-import java.time.LocalDateTime
 import java.io.Serializable
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
+import java.time.LocalDateTime
 
 
 //--------------------------------------------------------

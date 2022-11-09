@@ -1,14 +1,13 @@
 package nbcp.myoql.bean
 
-import nbcp.base.comm.*
-import nbcp.base.enums.*
-import nbcp.base.extend.*
-import nbcp.base.utils.*
-
-import nbcp.myoql.db.*
-import nbcp.myoql.db.mongo.*
+import nbcp.base.comm.config
+import nbcp.base.extend.AsBoolean
+import nbcp.base.extend.Important
+import nbcp.base.utils.SpringUtil
+import nbcp.myoql.db.FlywayVersionBaseService
+import nbcp.myoql.db.db
 import nbcp.myoql.db.mongo.entity.SysFlywayVersion
-
+import nbcp.myoql.db.mongo.query
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.data.mongodb.core.MongoTemplate

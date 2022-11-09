@@ -1,10 +1,8 @@
 package nbcp.base.comm
 
 import nbcp.base.extend.IntersectIndexes
+import nbcp.base.utils.JsUtil
 import org.slf4j.LoggerFactory
-import nbcp.base.utils.*
-import java.lang.RuntimeException
-import java.util.ArrayList
 
 open class JsonMap : StringKeyMap<Any?> {
     companion object {
@@ -51,14 +49,13 @@ open class JsonMap : StringKeyMap<Any?> {
 //        }
 
 
-
         /**
          * 忽略
          */
         @JvmStatic
         @JvmOverloads
         fun loadFromUrl(urlQueryString: String, soloIsTrue: Boolean = false): JsonMap {
-            return JsUtil.urlQueryToJson(urlQueryString,soloIsTrue)
+            return JsUtil.urlQueryToJson(urlQueryString, soloIsTrue)
         }
     }
 

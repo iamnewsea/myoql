@@ -1,8 +1,11 @@
 package nbcp.myoql.db.mongo.event;
 
 
-import nbcp.myoql.db.mongo.*;
 import nbcp.myoql.db.comm.EventResult
+import nbcp.myoql.db.mongo.MongoAggregateClip
+import nbcp.myoql.db.mongo.MongoBaseInsertClip
+import nbcp.myoql.db.mongo.MongoBaseQueryClip
+import nbcp.myoql.db.mongo.MongoDeleteClip
 import nbcp.myoql.db.mongo.component.MongoBaseUpdateClip
 
 

@@ -1,17 +1,12 @@
 package nbcp.base.utils;
 
 import nbcp.base.TestBase;
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
 import org.junit.jupiter.api.Test;
 
-public class MyUtilJavaTest extends    TestBase  {
+public class MyUtilJavaTest extends TestBase {
     @Test
     public void test1() {
-         MyUtil.getRandomWithLength(4);
+        MyUtil.getRandomWithLength(4);
     }
 
 

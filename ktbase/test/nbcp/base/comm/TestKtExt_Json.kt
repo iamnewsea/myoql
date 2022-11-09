@@ -1,13 +1,12 @@
 package nbcp.base.comm
 
-import nbcp.*
 import nbcp.base.TestBase
+import nbcp.base.comm.*
+import nbcp.base.db.IdName
+import nbcp.base.enums.JsonSceneScopeEnum
+import nbcp.base.enums.JsonStyleScopeEnum
+import nbcp.base.extend.*
 import org.junit.jupiter.api.Test
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
 
 class TestKtExt_Json : TestBase() {
 

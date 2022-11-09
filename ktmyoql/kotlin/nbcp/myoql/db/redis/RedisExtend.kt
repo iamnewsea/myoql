@@ -5,7 +5,6 @@ package nbcp.myoql.db.redis
  */
 
 import nbcp.myoql.db.comm.MyOqlMultipleDataSourceDefine
-import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 
 //

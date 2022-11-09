@@ -1,12 +1,11 @@
 package nbcp.web
 
+import nbcp.base.extend.AsBooleanWithNull
+import nbcp.base.extend.AsString
+import nbcp.base.extend.HasValue
+import nbcp.base.extend.Important
 import nbcp.mvc.MyMvcStartEvent
 import nbcp.myoql.MyOqlStartEvent
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent
 import org.springframework.context.ApplicationListener

@@ -1,18 +1,18 @@
 package nbcp.base
 
 import nbcp.base.aop.GroupLog
-import nbcp.base.comm.*
+import nbcp.base.comm.JsonMap
+import nbcp.base.enums.LogLevelScopeEnum
+import nbcp.base.extend.AsLocalDateTime
+import nbcp.base.extend.AsString
+import nbcp.base.extend.minus
+import nbcp.base.extend.usingScope
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.springframework.boot.logging.LogLevel
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoField
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
 
 
 @GroupLog("main")

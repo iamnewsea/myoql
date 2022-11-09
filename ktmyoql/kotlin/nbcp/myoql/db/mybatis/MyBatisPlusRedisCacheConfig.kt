@@ -2,15 +2,7 @@ package nbcp.myoql.db.mybatis
 
 import com.baomidou.mybatisplus.core.conditions.ISqlSegment
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
-import nbcp.base.comm.*
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
+import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
 import nbcp.myoql.db.cache.*
 import org.aopalliance.intercept.MethodInterceptor
@@ -22,7 +14,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.lang.reflect.Proxy
-import java.time.Duration
 
 
 @ConditionalOnClass(BaseMapper::class)

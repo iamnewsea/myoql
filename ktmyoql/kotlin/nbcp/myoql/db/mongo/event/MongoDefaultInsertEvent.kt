@@ -1,16 +1,15 @@
 package nbcp.myoql.db.mongo.event;
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.mongo.*;
-import nbcp.myoql.db.*
+import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
-import nbcp.myoql.db.comm.*
+import nbcp.myoql.db.BaseEntity
+import nbcp.myoql.db.comm.EventResult
+import nbcp.myoql.db.comm.SortNumber
+import nbcp.myoql.db.comm.op_inc
+import nbcp.myoql.db.db
+import nbcp.myoql.db.mongo.MongoBaseInsertClip
+import nbcp.myoql.db.mongo.MongoEntityCollector
+import nbcp.myoql.db.mongo.update
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime

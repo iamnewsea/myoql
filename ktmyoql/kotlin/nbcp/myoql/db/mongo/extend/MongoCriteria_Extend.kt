@@ -5,14 +5,11 @@ package nbcp.myoql.db.mongo.extend
 
 
 //import com.mongodb.DBObject
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
+import nbcp.base.db.IdName
+import nbcp.base.extend.AsString
+import nbcp.base.extend.ConvertType
+import nbcp.base.extend.GetActualClass
+import nbcp.base.extend.IsSimpleType
 import org.bson.BSONObject
 import org.bson.Document
 import org.springframework.data.mongodb.core.query.Criteria

@@ -1,7 +1,6 @@
 package nbcp.base.aop
 
-import nbcp.base.comm.*
-import nbcp.base.extend.*
+import nbcp.base.extend.usingScope
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
@@ -28,7 +27,8 @@ open class LogLevelAopService {
         var level = method.getAnnotationsByType(nbcp.base.comm.MyLogLevel::class.java).firstOrNull()
         if (level == null) {
             val targetType = signature.declaringType
-            level = targetType.getAnnotationsByType<nbcp.base.comm.MyLogLevel>(nbcp.base.comm.MyLogLevel::class.java).firstOrNull() as nbcp.base.comm.MyLogLevel?
+            level = targetType.getAnnotationsByType<nbcp.base.comm.MyLogLevel>(nbcp.base.comm.MyLogLevel::class.java)
+                .firstOrNull() as nbcp.base.comm.MyLogLevel?
         }
 
         if (level == null) {

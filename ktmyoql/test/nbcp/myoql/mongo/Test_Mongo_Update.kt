@@ -1,17 +1,18 @@
 package nbcp.myoql.mongo
 
+import nbcp.base.comm.JsonMap
+import nbcp.base.db.IdName
+import nbcp.base.extend.ToJson
+import nbcp.base.utils.CodeUtil
 import nbcp.myoql.TestBase
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.mongo.*
-import nbcp.myoql.db.mongo.entity.SysAnnex
 import nbcp.myoql.db.comm.op_inc
 import nbcp.myoql.db.db
+import nbcp.myoql.db.mongo.entity.SysAnnex
+import nbcp.myoql.db.mongo.update
+import nbcp.myoql.db.mongo.updateWithEntity
 import org.bson.Document
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class Test_Mongo_Update : TestBase() {
     @BeforeEach

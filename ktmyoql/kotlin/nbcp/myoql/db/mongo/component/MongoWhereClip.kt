@@ -1,10 +1,9 @@
 package nbcp.myoql.db.mongo
 
-import nbcp.base.comm.*
+import nbcp.base.comm.JsonMap
 import nbcp.base.extend.IsCollectionType
 import nbcp.base.extend.IsMapType
 import nbcp.base.extend.IsSimpleType
-import org.apache.commons.collections4.map.LinkedMap
 import java.util.*
 
 class MongoWhereClip() : LinkedList<JsonMap>() {

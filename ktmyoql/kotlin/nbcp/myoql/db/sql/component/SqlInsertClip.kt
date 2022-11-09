@@ -1,30 +1,25 @@
 package nbcp.myoql.db.sql.component
 
 
-import org.slf4j.LoggerFactory
-import org.springframework.jdbc.support.GeneratedKeyHolder
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.cache.*
-import nbcp.myoql.db.comm.*
-import nbcp.myoql.db.sql.*
-import nbcp.myoql.db.sql.base.*
-import nbcp.myoql.db.sql.enums.*
-import nbcp.myoql.db.sql.extend.*
-import nbcp.myoql.db.sql.logInsert
+import nbcp.base.comm.JsonMap
+import nbcp.base.comm.const
+import nbcp.base.extend.*
+import nbcp.base.utils.CodeUtil
+import nbcp.base.utils.MyUtil
+import nbcp.myoql.db.BaseEntity
+import nbcp.myoql.db.db
 import nbcp.myoql.db.sql.base.SqlBaseMetaTable
 import nbcp.myoql.db.sql.base.SqlColumnName
+import nbcp.myoql.db.sql.base.SqlColumnNames
 import nbcp.myoql.db.sql.base.SqlParameterData
+import nbcp.myoql.db.sql.extend.quoteTableName
+import nbcp.myoql.db.sql.logInsert
+import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils
-import java.lang.RuntimeException
-import java.time.LocalDateTime
+import org.springframework.jdbc.support.GeneratedKeyHolder
 import java.io.Serializable
+import java.time.LocalDateTime
 
 /**
  * Created by yuxh on 2018/7/2

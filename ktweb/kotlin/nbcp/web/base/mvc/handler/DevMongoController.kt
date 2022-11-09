@@ -1,22 +1,18 @@
 package nbcp.web.base.mvc.handler
 
-import org.slf4j.LoggerFactory
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RestController
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.comm.ListResult
+import nbcp.base.extend.IsSimpleType
+import nbcp.base.extend.Slice
 import nbcp.mvc.comm.AdminSysOpsAction
 import nbcp.myoql.db.db
 import nbcp.myoql.db.mongo.component.MongoBaseMetaCollection
+import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
-import javax.servlet.http.HttpServletRequest
+import org.springframework.web.bind.annotation.RestController
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaType
 

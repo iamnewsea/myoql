@@ -1,8 +1,7 @@
 package nbcp.base.comm
 
+import nbcp.base.extend.HasValue
 import java.io.Serializable
-import java.lang.RuntimeException
-import nbcp.base.extend.*
 
 
 /**
@@ -12,7 +11,7 @@ import nbcp.base.extend.*
 /**
  * 普通的返回对象。
  */
-open class JsonResult  : Serializable {
+open class JsonResult : Serializable {
     var code: Int = 0;
     var msg: String = ""
         get() {

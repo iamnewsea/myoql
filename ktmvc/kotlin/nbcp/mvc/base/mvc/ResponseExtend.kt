@@ -3,13 +3,12 @@
 
 package nbcp.mvc.base.mvc
 
-import nbcp.base.comm.*
+import nbcp.base.comm.const
 import nbcp.base.extend.AsString
+import nbcp.base.utils.JsUtil
+import nbcp.base.utils.WebUtil
 import org.springframework.http.MediaType
-import nbcp.base.utils.*
-import org.springframework.web.servlet.HandlerMapping
 import javax.servlet.ServletResponse
-import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 

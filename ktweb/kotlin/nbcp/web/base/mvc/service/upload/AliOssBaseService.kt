@@ -4,11 +4,9 @@ import com.aliyun.oss.OSSClientBuilder
 import com.aliyun.oss.internal.OSSHeaders
 import com.aliyun.oss.model.ObjectMetadata
 import com.aliyun.oss.model.StorageClass
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.comm.JsonResult
+import nbcp.base.extend.AsString
+import nbcp.base.extend.HasValue
 import nbcp.base.utils.MyUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value

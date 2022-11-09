@@ -1,8 +1,8 @@
 package nbcp.mvc
 
 
-import nbcp.base.enums.*
-import nbcp.base.utils.*
+import nbcp.base.enums.LogLevelScopeEnum
+import nbcp.base.utils.SpringUtil
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component

@@ -1,8 +1,9 @@
 package nbcp.myoql.base
 
+import nbcp.base.enums.JsonSceneScopeEnum
+import nbcp.base.extend.FromJson
+import nbcp.base.extend.usingScope
 import nbcp.myoql.TestBase
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
 import nbcp.myoql.db.CityCodeName
 import org.junit.jupiter.api.Test
 

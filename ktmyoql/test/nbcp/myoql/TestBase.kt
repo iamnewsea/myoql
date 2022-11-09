@@ -1,18 +1,18 @@
 package nbcp.myoql
 
+import nbcp.base.enums.LogLevelScopeEnum
+import nbcp.base.extend.minus
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.TestPropertySource
-import org.springframework.test.context.web.WebAppConfiguration
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
 import org.springframework.boot.Banner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.EnableAspectJAutoProxy
+import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.test.context.web.WebAppConfiguration
 import java.time.LocalDateTime
 
 /**

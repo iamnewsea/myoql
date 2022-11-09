@@ -1,10 +1,10 @@
 package nbcp.myoql.es
 
 
-import nbcp.myoql.TestBase
 import nbcp.base.db.DbEntityGroup
 import nbcp.base.db.IdName
-import nbcp.myoql.db.*
+import nbcp.myoql.TestBase
+import nbcp.myoql.db.BaseEntity
 import nbcp.myoql.db.comm.DbDefine
 import nbcp.myoql.db.es.tool.EsMappingGenerator
 import org.junit.jupiter.api.Test

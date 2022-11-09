@@ -1,8 +1,6 @@
 package nbcp.myoql.db.es.component
 
-import nbcp.base.comm.*
-import nbcp.myoql.db.*
-import java.io.Serializable
+import nbcp.base.comm.JsonMap
 
 
 /**

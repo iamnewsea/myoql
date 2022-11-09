@@ -1,10 +1,10 @@
 package nbcp.web.base.mvc.service
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.comm.*
+import nbcp.base.extend.*
+import nbcp.base.utils.HttpUtil
+import nbcp.base.utils.JsUtil
+import nbcp.base.utils.SpringUtil
 import java.time.LocalDateTime
 
 object NacosServiceUtil {

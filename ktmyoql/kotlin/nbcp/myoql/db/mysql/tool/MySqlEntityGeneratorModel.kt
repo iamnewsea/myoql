@@ -1,9 +1,9 @@
 package nbcp.myoql.db.mysql.tool
 
-import nbcp.base.comm.*;
-import nbcp.base.extend.*;
-import nbcp.myoql.db.sql.enums.DbType
+import nbcp.base.comm.config
+import nbcp.base.extend.HasValue
 import nbcp.base.utils.MyUtil
+import nbcp.myoql.db.sql.enums.DbType
 
 
 class EntityDbItemFieldData {

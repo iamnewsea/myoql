@@ -4,7 +4,7 @@
     <springProperty scope="context" name="logPath" source="logging.file.path"/>
     <springProperty scope="context" name="name" source="spring.application.name"/>
 
-    <property name="pattern" value="[%d{yyyy-MM-dd HH:mm:ss}] %-5level %X{group} %X{request_id} [%class:%line]:%n%m%n" />
+    <property name="pattern" value="[%d{yyyy-MM-dd HH:mm:ss}] %-5level %X{group} %X{request_id} [%class:%line]:%n%m%n"/>
 
     <turboFilter class="nbcp.base.filter.MyLogBackFilter"></turboFilter>
 
@@ -30,7 +30,7 @@
     </appender>
 
     <root level="${logLevel}">
-        <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE-OUT" />
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE-OUT"/>
     </root>
 </configuration>

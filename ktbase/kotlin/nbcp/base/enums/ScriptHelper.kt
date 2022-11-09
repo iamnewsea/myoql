@@ -1,8 +1,8 @@
 package nbcp.base.enums
 
-import nbcp.base.comm.*
-import nbcp.base.extend.*
-import java.lang.RuntimeException
+import nbcp.base.comm.StringMap
+import nbcp.base.comm.const
+import nbcp.base.extend.formatWithJson
 import javax.script.Compilable
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager

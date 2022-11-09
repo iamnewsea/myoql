@@ -1,23 +1,22 @@
 package nbcp.web.base.mvc.handler
 
-import nbcp.base.comm.*
+
+import nbcp.base.comm.NoDataException
+import nbcp.base.comm.ParameterInvalidException
+import nbcp.base.comm.const
 import nbcp.base.extend.HasValue
 import nbcp.base.extend.ToJson
 import nbcp.base.utils.*
-import nbcp.myoql.db.mongo.*
-import nbcp.myoql.model.IUploadFileDbService
 import nbcp.mvc.base.mvc.WriteTextValue
 import nbcp.mvc.base.mvc.findParameterIntValue
 import nbcp.mvc.base.mvc.findParameterStringValue
 import nbcp.mvc.comm.OpenAction
 import nbcp.myoql.db.db
+import nbcp.myoql.model.IUploadFileDbService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
-
-
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 

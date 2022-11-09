@@ -1,10 +1,7 @@
 package nbcp.myoql.db.es.component
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.comm.JsonMap
+import nbcp.base.comm.ListResult
 import nbcp.myoql.db.es.base.EsColumnName
 import java.io.Serializable
 

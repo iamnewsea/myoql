@@ -1,11 +1,10 @@
 package nbcp.base.utils
 
 import nbcp.base.TestBase
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.comm.JsonMap
+import nbcp.base.db.IdName
+import nbcp.base.extend.AllGetPropertyMethods
+import nbcp.base.extend.GetActualClass
 import org.junit.jupiter.api.Test
 import java.lang.reflect.ParameterizedType
 

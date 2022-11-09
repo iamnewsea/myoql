@@ -1,14 +1,11 @@
 package nbcp.base.comm
 
-import java.io.Serializable
-import java.lang.RuntimeException
-
 
 /**
  * Created by jin on 2017/3/16.
  */
 
-open class ApiResult<T>  : nbcp.base.comm.JsonResult() {
+open class ApiResult<T> : nbcp.base.comm.JsonResult() {
     var data: T? = null
     var value: Any? = null
 

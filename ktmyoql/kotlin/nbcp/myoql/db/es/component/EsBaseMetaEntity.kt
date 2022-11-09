@@ -1,14 +1,10 @@
 package nbcp.myoql.db.es.component
 
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.*;
+import nbcp.base.extend.AsString
+import nbcp.base.extend.FindField
+import nbcp.myoql.db.BaseEntity
 import nbcp.myoql.db.comm.BaseMetaData
-import java.lang.RuntimeException
 
 /**
  * es 元数据实体的基类

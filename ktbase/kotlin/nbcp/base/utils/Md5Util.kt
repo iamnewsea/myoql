@@ -2,10 +2,7 @@ package nbcp.base.utils
 
 import org.apache.commons.codec.digest.DigestUtils
 import java.io.File
-import java.math.BigInteger
 import java.io.FileInputStream
-import java.security.MessageDigest
-import java.util.*
 
 
 /**
@@ -16,8 +13,6 @@ object Md5Util {
     fun getBase64Md5(value: String): String {
         return getBase64Md5(value.toByteArray())
     }
-
-
 
 
     /**
@@ -34,7 +29,7 @@ object Md5Util {
         result.add((checksum ushr 8).toByte())
         result.add((checksum % 255).toByte())
 
-        return nbcp.base.utils.Base64Util.getUrlSafeValue( MyUtil.getBase64(result.toByteArray()) )
+        return nbcp.base.utils.Base64Util.getUrlSafeValue(MyUtil.getBase64(result.toByteArray()))
     }
 
     /**
@@ -111,6 +106,6 @@ object Md5Util {
         result.add((checksum ushr 8).toByte())
         result.add((checksum % 255).toByte())
 
-        return  nbcp.base.utils.Base64Util.getUrlSafeValue( MyUtil.getBase64(result.toByteArray()))
+        return nbcp.base.utils.Base64Util.getUrlSafeValue(MyUtil.getBase64(result.toByteArray()))
     }
 }

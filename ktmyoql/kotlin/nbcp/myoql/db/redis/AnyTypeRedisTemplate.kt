@@ -1,13 +1,8 @@
 package nbcp.myoql.db.redis
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
+import nbcp.base.comm.config
+import nbcp.base.extend.AsLong
+import nbcp.base.extend.HasValue
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ScanOptions
 

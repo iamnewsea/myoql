@@ -4,7 +4,7 @@
     <springProperty scope="context" name="logPath" source="logging.file.path"/>
     <springProperty scope="context" name="name" source="spring.application.name"/>
 
-    <property name="pattern" value="%d{yyyy-MM-dd HH:mm:ss} [%X{tid}] %-5level [%class:%line] -%msg%n" />
+    <property name="pattern" value="%d{yyyy-MM-dd HH:mm:ss} [%X{tid}] %-5level [%class:%line] -%msg%n"/>
 
     <turboFilter class="nbcp.base.filter.MyLogBackFilter"></turboFilter>
 

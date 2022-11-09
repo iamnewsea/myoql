@@ -1,9 +1,7 @@
 package nbcp.base.comm
 
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
-import org.slf4j.LoggerFactory
-import nbcp.base.comm.*
 import nbcp.base.extend.*
+import org.slf4j.LoggerFactory
 
 /**
  * 尽量使用 JsonMap

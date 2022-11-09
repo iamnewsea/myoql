@@ -1,12 +1,9 @@
 package nbcp.myoql.bean
 
 import org.elasticsearch.client.RestClientBuilder
-import org.elasticsearch.client.RestHighLevelClient
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientProperties
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
 import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 

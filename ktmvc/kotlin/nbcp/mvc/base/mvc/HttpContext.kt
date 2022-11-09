@@ -3,11 +3,9 @@
 
 package nbcp.mvc.base.mvc
 
+
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
-
-
-import java.lang.RuntimeException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 

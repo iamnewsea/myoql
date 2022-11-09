@@ -6,10 +6,12 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.classic.turbo.TurboFilter
 import ch.qos.logback.core.filter.Filter
 import ch.qos.logback.core.spi.FilterReply
-import nbcp.base.comm.*
-import nbcp.base.enums.*
-import nbcp.base.extend.*
-import nbcp.base.utils.*
+import nbcp.base.comm.GroupLogScope
+import nbcp.base.comm.config
+import nbcp.base.enums.LogLevelScopeEnum
+import nbcp.base.extend.HasValue
+import nbcp.base.extend.scopes
+import nbcp.base.extend.usingScope
 import org.slf4j.Marker
 
 

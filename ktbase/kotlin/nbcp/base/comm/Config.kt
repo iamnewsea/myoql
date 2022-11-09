@@ -1,6 +1,7 @@
 package nbcp.base.comm
 
 
+import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent
@@ -8,8 +9,6 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.context.ApplicationListener
 import org.springframework.core.env.ConfigurableEnvironment
-import nbcp.base.comm.*
-import nbcp.base.extend.*
 
 /**
  * 配置项, 不能用Component 或Bean，因为它的时机，比Spring容器还要早。

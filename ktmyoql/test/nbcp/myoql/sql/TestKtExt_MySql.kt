@@ -1,22 +1,22 @@
 package nbcp.myoql.sql
 
 import com.zaxxer.hikari.HikariDataSource
-import nbcp.myoql.TestBase
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.sql.entity.*
-import nbcp.myoql.tool.UserCodeGenerator
+import nbcp.base.db.IdName
+import nbcp.base.enums.LogLevelScopeEnum
+import nbcp.base.extend.ToJson
+import nbcp.base.extend.usingScope
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.SpringUtil
+import nbcp.myoql.TestBase
 import nbcp.myoql.db.db
 import nbcp.myoql.db.mysql.tool.MysqlEntityGenerator
 import nbcp.myoql.db.sql.component.WhereData
 import nbcp.myoql.db.sql.component.doInsert
 import nbcp.myoql.db.sql.component.updateWithEntity
-import org.junit.jupiter.api.Test
+import nbcp.myoql.db.sql.entity.s_annex
+import nbcp.myoql.tool.UserCodeGenerator
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.io.FileWriter
 import javax.sql.DataSource
 

@@ -1,21 +1,11 @@
 package nbcp.myoql.tool
 
-import freemarker.ext.beans.StringModel
-import freemarker.template.*
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
+import freemarker.template.TemplateMethodModelEx
+import nbcp.base.extend.kotlinTypeName
+import nbcp.base.extend.scopes
 import nbcp.base.scope.ContextMapScope
-import nbcp.base.utils.MyUtil
-import java.lang.RuntimeException
+import nbcp.myoql.db.comm.RemoveToSysDustbin
 import java.lang.reflect.Field
-import java.lang.reflect.ParameterizedType
-
 
 
 // --------私有------

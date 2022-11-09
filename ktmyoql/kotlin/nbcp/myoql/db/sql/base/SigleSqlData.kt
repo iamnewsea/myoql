@@ -1,6 +1,6 @@
 package nbcp.myoql.db.sql.base
 
-import nbcp.base.comm.*
+import nbcp.base.comm.JsonMap
 import nbcp.base.extend.CloneObject
 import nbcp.base.extend.HasValue
 import nbcp.base.utils.CodeUtil

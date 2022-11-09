@@ -5,11 +5,10 @@ package nbcp.base.utils
  */
 
 import nbcp.base.comm.*
-import nbcp.base.extend.*
 import nbcp.base.db.*
 import nbcp.base.enums.FileExtensionTypeEnum
+import nbcp.base.extend.*
 import org.slf4j.LoggerFactory
-import org.springframework.core.io.Resource
 import java.awt.image.BufferedImage
 import java.io.*
 import java.net.HttpURLConnection
@@ -239,7 +238,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
         return doNet()
     }
 
-    fun doPut(postJson: Map<String,Any?>): String {
+    fun doPut(postJson: Map<String, Any?>): String {
         if (this.request.contentType.isEmpty()) {
             this.request.contentType = "application/json;charset=UTF-8"
         }
@@ -258,7 +257,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
     /**
      * Post请求
      */
-    fun doPost(postJson: Map<String,Any?>): String {
+    fun doPost(postJson: Map<String, Any?>): String {
         if (this.request.contentType.isEmpty()) {
             this.request.contentType = "application/json;charset=UTF-8"
         }

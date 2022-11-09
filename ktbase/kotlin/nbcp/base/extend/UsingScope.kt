@@ -4,16 +4,11 @@
 package nbcp.base.extend
 
 import ch.qos.logback.classic.Level
+import nbcp.base.enums.LogLevelScopeEnum
 import nbcp.base.scope.IScopeData
 import nbcp.base.scope.ScopeStack
-import nbcp.base.comm.*
-import nbcp.base.enums.*
-import nbcp.base.extend.*
-import nbcp.base.utils.*
 import org.slf4j.Logger
-import org.springframework.boot.logging.LogLevel
 import java.io.Flushable
-import java.util.*
 
 
 private val _scopes = ThreadLocal.withInitial { ScopeStack() }

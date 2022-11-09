@@ -1,14 +1,9 @@
 package nbcp.myoql.db.redis
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
+import nbcp.base.extend.AsLong
+import nbcp.base.extend.Important
 import nbcp.base.model.DualPoolMap
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
+import nbcp.base.utils.SpringUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass

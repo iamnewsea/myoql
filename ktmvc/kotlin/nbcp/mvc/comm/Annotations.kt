@@ -1,10 +1,6 @@
 package nbcp.mvc.comm
 
-import org.springframework.boot.logging.LogLevel
 import java.lang.annotation.Inherited
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
-import kotlin.reflect.KClass
 
 /**
  * Created by udi on 17-3-30.

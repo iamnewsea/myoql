@@ -1,15 +1,10 @@
 package nbcp.myoql.db.sql.define
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
+import nbcp.base.extend.AsLong
+import nbcp.base.extend.IsNumberType
+import nbcp.base.extend.IsStringType
+import nbcp.base.utils.CodeUtil
 import nbcp.myoql.db.sql.base.IFieldValueConverter
-import java.lang.RuntimeException
 import java.lang.reflect.Field
 
 /**

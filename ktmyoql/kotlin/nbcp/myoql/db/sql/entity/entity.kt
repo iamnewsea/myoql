@@ -4,7 +4,6 @@ import nbcp.base.db.Cn
 import nbcp.base.db.DbEntityGroup
 import nbcp.base.db.DbEntityIndex
 import nbcp.base.db.IdName
-import nbcp.myoql.db.*
 import nbcp.myoql.db.sql.base.AutoIdSqlBaseEntity
 import nbcp.myoql.db.sql.base.SqlColumnType
 import nbcp.myoql.db.sql.base.SqlSpreadColumn

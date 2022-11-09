@@ -1,25 +1,22 @@
 package nbcp.myoql.db.mongo
 
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.cache.*
-import nbcp.myoql.db.comm.*
+import nbcp.base.extend.HasValue
+import nbcp.base.extend.minus
+import nbcp.base.extend.usingScope
+import nbcp.myoql.db.comm.DbIncData
+import nbcp.myoql.db.db
+import nbcp.myoql.db.enums.MyOqlDbScopeEnum
+import nbcp.myoql.db.mongo.base.MongoColumnName
+import nbcp.myoql.db.mongo.component.MongoBaseMetaCollection
+import nbcp.myoql.db.mongo.component.MongoBaseUpdateClip
+import nbcp.myoql.db.mongo.logger.logUpdate
 import org.bson.Document
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.FindAndModifyOptions
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import java.time.LocalDateTime
-import nbcp.myoql.db.mongo.logger.*
-import nbcp.myoql.db.mongo.base.MongoColumnName
-import nbcp.myoql.db.mongo.component.MongoBaseMetaCollection
-import nbcp.myoql.db.mongo.component.MongoBaseUpdateClip
 
 /**
  * Created by udi on 17-4-7.

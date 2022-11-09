@@ -1,16 +1,17 @@
 package nbcp.myoql.db.es.component
 
-import nbcp.base.comm.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.comm.JsonMap
+import nbcp.base.comm.ListResult
+import nbcp.base.enums.JsonStyleScopeEnum
+import nbcp.base.extend.*
+import nbcp.base.utils.Md5Util
+import nbcp.base.utils.MyUtil
+import nbcp.myoql.db.db
+import nbcp.myoql.db.es.logger.logGet
 import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.slf4j.LoggerFactory
-import java.lang.Exception
 import java.time.LocalDateTime
-import nbcp.myoql.db.es.logger.*
-import nbcp.myoql.db.db
 
 open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWhereable {
 

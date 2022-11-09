@@ -1,5 +1,4 @@
 package nbcp.myoql.db.sql.base
-import nbcp.myoql.db.sql.base.SqlParameterData
 import java.io.Serializable
 
 

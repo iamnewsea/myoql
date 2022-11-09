@@ -2,11 +2,10 @@ package nbcp.base.component
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
-import com.fasterxml.jackson.databind.*
-import nbcp.base.comm.*
-import nbcp.base.extend.*
+import com.fasterxml.jackson.databind.ObjectMapper
+import nbcp.base.extend.initObjectMapper
 
-class AppJsonMapper : ObjectMapper()  {
+class AppJsonMapper : ObjectMapper() {
 
 
     init {

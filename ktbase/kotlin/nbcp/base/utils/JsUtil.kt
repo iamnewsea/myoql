@@ -1,13 +1,14 @@
 package nbcp.base.utils
 
-import nbcp.base.comm.*
-import nbcp.base.enums.*
-import nbcp.base.extend.*
-import nbcp.base.utils.*
-import java.lang.RuntimeException
+import nbcp.base.comm.JsonMap
+import nbcp.base.comm.StringMap
+import nbcp.base.enums.ScriptLanguageEnum
+import nbcp.base.extend.AsString
+import nbcp.base.extend.HasValue
+import nbcp.base.extend.Slice
+import nbcp.base.extend.toUrlQuery
 import java.net.URLDecoder
 import java.net.URLEncoder
-import java.util.ArrayList
 
 /**
  * Created by udi on 17-4-21.
@@ -29,7 +30,7 @@ object JsUtil {
             .toTypedArray()
     }
 
-    private fun set_key_value(ret: MutableMap<String,Any?>, keys: List<String>, value: String) {
+    private fun set_key_value(ret: MutableMap<String, Any?>, keys: List<String>, value: String) {
         if (keys.any() == false) return;
 
         var key = keys.first();
@@ -76,7 +77,6 @@ object JsUtil {
 
         set_key_value(subObj, keys.Slice(1), value);
     }
-
 
 
     /**

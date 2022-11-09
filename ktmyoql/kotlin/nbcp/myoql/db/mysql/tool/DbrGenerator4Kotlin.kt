@@ -1,11 +1,14 @@
 package nbcp.myoql.db.mysql.tool
 
-import nbcp.base.comm.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.comm.StringMap
+import nbcp.base.comm.const
 import nbcp.base.data.Sys
 import nbcp.base.db.DbEntityGroup
 import nbcp.base.db.DbName
+import nbcp.base.extend.*
+import nbcp.base.utils.ClassUtil
+import nbcp.base.utils.KotlinCoderUtil
+import nbcp.base.utils.MyUtil
 import nbcp.myoql.db.sql.base.SqlAutoIncrementKey
 import nbcp.myoql.db.sql.base.SqlFk
 import nbcp.myoql.db.sql.base.SqlSpreadColumn
@@ -15,7 +18,6 @@ import nbcp.myoql.db.sql.enums.DbType
 import nbcp.myoql.tool.CodeGeneratorHelper
 import java.io.File
 import java.io.FileWriter
-import java.lang.RuntimeException
 import java.lang.reflect.ParameterizedType
 import java.time.LocalDateTime
 

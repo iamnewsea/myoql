@@ -2,14 +2,11 @@ package nbcp.base.comm;
 
 import kotlin.collections.CollectionsKt;
 import nbcp.base.TestBase;
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.extend.MyHelper;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
 class Test4Java extends TestBase {
 

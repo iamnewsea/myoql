@@ -2,21 +2,15 @@ package nbcp.myoql.db.mongo.logger
 
 import com.mongodb.client.result.DeleteResult
 import com.mongodb.client.result.UpdateResult
-import nbcp.base.comm.*
+import nbcp.base.enums.JsonStyleScopeEnum
+import nbcp.base.extend.*
 import nbcp.base.utils.SpringUtil
-import nbcp.myoql.db.mongo.*
+import nbcp.myoql.db.db
+import nbcp.myoql.db.mongo.MongoCollectionLogProperties
 import org.bson.Document
 import org.slf4j.Logger
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
 
 
 val mongoLog by lazy {

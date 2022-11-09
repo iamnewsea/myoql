@@ -80,7 +80,7 @@ inline fun <reified T> Int.ToEnum(): T? {
     return this.ToEnum(T::class.java)
 }
 
-fun <T:Any> Int.ToEnum(enumClazz: KClass<T>): T? {
+fun <T : Any> Int.ToEnum(enumClazz: KClass<T>): T? {
     return this.ToEnum(enumClazz.java)
 }
 
@@ -100,8 +100,8 @@ fun <T> Int.ToEnum(enumClazz: Class<T>): T? {
  * 百分数（不带小数）： ##%
  */
 @JvmOverloads
-fun Number.Format(format:String = ""):String{
-    if( format.isEmpty()){
+fun Number.Format(format: String = ""): String {
+    if (format.isEmpty()) {
         return this.toString();
     }
     //https://www.cnblogs.com/Small-sunshine/p/11648652.html

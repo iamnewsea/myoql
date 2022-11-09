@@ -1,11 +1,8 @@
 package nbcp.base.utils
 
 import nbcp.base.TestBase
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.comm.JsonMap
+import nbcp.base.enums.RecursionReturnEnum
 import org.junit.jupiter.api.Test
 
 class RecursionUtilTest : TestBase() {
@@ -45,7 +42,7 @@ class RecursionUtilTest : TestBase() {
 
 
         RecursionUtil.execute(
-            listOf(item1, item2) ,
+            listOf(item1, item2),
             { it.get("items") as MutableList<JsonMap> }, { pwbs, index ->
                 println(pwbs)
                 return@execute RecursionReturnEnum.Go

@@ -1,11 +1,10 @@
 package nbcp.web.base.flux.filter
 
 import ch.qos.logback.classic.Level
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.comm.config
+import nbcp.base.comm.const
+import nbcp.base.enums.LogLevelScopeEnum
+import nbcp.base.extend.*
 import nbcp.mvc.base.flux.HttpContext
 import nbcp.mvc.base.flux.findParameterValue
 import nbcp.mvc.base.flux.getCorsResponseMap

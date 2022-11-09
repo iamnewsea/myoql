@@ -3,8 +3,7 @@ package nbcp.base
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import nbcp.base.comm.*
-import nbcp.base.extend.*
+import nbcp.base.extend.initObjectMapper
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.stereotype.Component

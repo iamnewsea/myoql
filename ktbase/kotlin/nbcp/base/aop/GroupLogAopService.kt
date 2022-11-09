@@ -2,8 +2,6 @@ package nbcp.base.aop
 
 import nbcp.base.comm.GroupLogScope
 import nbcp.base.extend.usingScope
-import nbcp.base.comm.*
-import nbcp.base.extend.*
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
@@ -18,7 +16,6 @@ import java.lang.annotation.Inherited
 @Retention(AnnotationRetention.RUNTIME)
 @Inherited
 annotation class GroupLog(val value: String = "")
-
 
 
 @Aspect

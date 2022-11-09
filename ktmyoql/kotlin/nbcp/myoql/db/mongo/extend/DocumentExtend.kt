@@ -8,7 +8,6 @@ import nbcp.base.extend.ToJson
 import nbcp.base.utils.*
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
-import java.lang.RuntimeException
 
 /**
  * 把 where 转换为表达式，会有feild的基础上额外添加一个 $ .如：

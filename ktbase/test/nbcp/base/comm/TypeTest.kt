@@ -1,11 +1,8 @@
 package nbcp.base.comm
 
 import nbcp.base.TestBase
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.extend.ToJson
+import nbcp.base.extend.must
 import org.junit.jupiter.api.Test
 import java.time.Duration
 

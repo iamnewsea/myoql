@@ -1,10 +1,12 @@
 package nbcp.web.base.mvc.handler
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+
+import nbcp.base.comm.JsonResult
+import nbcp.base.comm.const
+import nbcp.base.db.IdUrl
+import nbcp.base.extend.ConvertType
+import nbcp.base.extend.Skip
+import nbcp.base.extend.ToJson
 import nbcp.mvc.base.mvc.findParameterStringValue
 import nbcp.mvc.base.mvc.findParameterValue
 import nbcp.myoql.db.db
@@ -14,8 +16,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
-
-
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 

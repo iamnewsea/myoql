@@ -1,22 +1,12 @@
 package nbcp.myoql.tool
 
-import com.fasterxml.jackson.module.kotlin.isKotlinClass
-import freemarker.cache.ClassTemplateLoader
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
+import nbcp.base.comm.JsonMap
+import nbcp.base.db.Cn
+import nbcp.base.db.DbEntityIndex
+import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
-import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
-import java.lang.reflect.Proxy
-import java.time.LocalDateTime
-import kotlin.reflect.KClass
 
 object CodeGeneratorHelper {
 

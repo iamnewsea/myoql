@@ -1,10 +1,10 @@
 package nbcp.web.base.mvc.handler
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.comm.JsonResult
+import nbcp.base.extend.AsInt
+import nbcp.base.extend.AsIntWithNull
+import nbcp.base.extend.HasValue
+import nbcp.base.utils.SpringUtil
 import nbcp.mvc.comm.AdminSysOpsAction
 import nbcp.myoql.bean.MongoFlywayBeanProcessor
 import nbcp.myoql.db.db
@@ -15,7 +15,6 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
-
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 

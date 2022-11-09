@@ -2,9 +2,13 @@ package nbcp.base.utils
 
 import nbcp.base.comm.const
 import nbcp.base.extend.toUtf8String
-import java.util.*
-import javax.crypto.*
-import javax.crypto.spec.*
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+import javax.crypto.SecretKey
+import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.DESKeySpec
+import javax.crypto.spec.DESedeKeySpec
+import javax.crypto.spec.SecretKeySpec
 
 /**
  * 加密解密工具
@@ -13,21 +17,24 @@ object CipherUtil {
     /**
      * 返回 3des key base64格式的文本
      */
-    @JvmStatic fun get3desKey(): String {
+    @JvmStatic
+    fun get3desKey(): String {
         return Des3Util.generateKey()
     }
 
     /**
      * 加密
      */
-    @JvmStatic fun encrypt3des(text: String, key: String): String {
+    @JvmStatic
+    fun encrypt3des(text: String, key: String): String {
         return MyUtil.getBase64(Des3Util.encrypt(text.toByteArray(), MyUtil.getFromBase64(key)))
     }
 
     /**
      * 解密
      */
-    @JvmStatic fun decrypt3des(text: String, key: String): String {
+    @JvmStatic
+    fun decrypt3des(text: String, key: String): String {
         return String(Des3Util.decrypt(MyUtil.getFromBase64(text), MyUtil.getFromBase64(key)))
     }
 
@@ -35,7 +42,8 @@ object CipherUtil {
     object AESUtil {
         private const val CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding"
         private const val KEY_ALGORITHM = "AES"
-        @JvmStatic fun generateKey(): String {
+        @JvmStatic
+        fun generateKey(): String {
             val kg: KeyGenerator = KeyGenerator.getInstance(KEY_ALGORITHM)
 
             val secretKey: SecretKey = kg.generateKey()
@@ -43,7 +51,8 @@ object CipherUtil {
         }
 
         // 加密
-        @JvmStatic fun encrypt(sSrc: String, sKey: String): String {
+        @JvmStatic
+        fun encrypt(sSrc: String, sKey: String): String {
             val raw = sKey.toByteArray(const.utf8)
             val skeySpec = SecretKeySpec(raw, KEY_ALGORITHM)
             val cipher = Cipher.getInstance(CIPHER_ALGORITHM)//"算法/模式/补码方式"
@@ -55,7 +64,8 @@ object CipherUtil {
 
         // 解密
         @Throws(Exception::class)
-        @JvmStatic fun decrypt(sSrc: String, sKey: String): String {
+        @JvmStatic
+        fun decrypt(sSrc: String, sKey: String): String {
             val raw = sKey.toByteArray(const.utf8)
             val skeySpec = SecretKeySpec(raw, KEY_ALGORITHM)
             val cipher = Cipher.getInstance(CIPHER_ALGORITHM)
@@ -79,7 +89,8 @@ object CipherUtil {
         /**
          * 产生符合要求的Key,如果不用KeyGenerator随机性不好,而且要求自己对算法比较熟悉,能产生符合要求的Key
          */
-        @JvmStatic fun generateKey(): String {
+        @JvmStatic
+        fun generateKey(): String {
             val kg: KeyGenerator = KeyGenerator.getInstance(KEY_ALGORITHM)
             // 3DES要求使用112或者168位密钥
             // kg.init(112);
@@ -91,7 +102,8 @@ object CipherUtil {
         /**
          * 获取算法需要的安全密钥
          */
-        private @JvmStatic fun getSecretKey(key: ByteArray): SecretKey {
+        private @JvmStatic
+        fun getSecretKey(key: ByteArray): SecretKey {
             val keySpec = DESKeySpec(key)
             // 3DES使用的密钥
             // DESedeKeySpec keySpec = new DESedeKeySpec(key);
@@ -102,7 +114,8 @@ object CipherUtil {
         /**
          * 加密数据
          */
-        @JvmStatic fun encrypt(text: ByteArray, key: ByteArray): ByteArray {
+        @JvmStatic
+        fun encrypt(text: ByteArray, key: ByteArray): ByteArray {
             val cipher = Cipher.getInstance(CIPHER_ALGORITHM)
             cipher.init(Cipher.ENCRYPT_MODE, getSecretKey(key))
             return cipher.doFinal(text)
@@ -111,7 +124,8 @@ object CipherUtil {
         /**
          * 解密数据
          */
-        @JvmStatic fun decrypt(text: ByteArray, key: ByteArray): ByteArray {
+        @JvmStatic
+        fun decrypt(text: ByteArray, key: ByteArray): ByteArray {
             val cipher = Cipher.getInstance(CIPHER_ALGORITHM)
             cipher.init(Cipher.DECRYPT_MODE, getSecretKey(key))
             return cipher.doFinal(text)
@@ -129,7 +143,8 @@ object CipherUtil {
         /**
          * 产生符合要求的Key,如果不用KeyGenerator随机性不好,而且要求自己对算法比较熟悉,能产生符合要求的Key
          */
-        @JvmStatic fun generateKey(): String {
+        @JvmStatic
+        fun generateKey(): String {
             val kg: KeyGenerator = KeyGenerator.getInstance(KEY_ALGORITHM)
             // 3DES要求使用112或者168位密钥
             // kg.init(112);
@@ -141,7 +156,8 @@ object CipherUtil {
         /**
          * 获取算法需要的安全密钥
          */
-        private @JvmStatic fun getSecretKey(key: ByteArray): SecretKey {
+        private @JvmStatic
+        fun getSecretKey(key: ByteArray): SecretKey {
             // 3DES使用的密钥
             var keySpec = DESedeKeySpec(key);
             val kf = SecretKeyFactory.getInstance(KEY_ALGORITHM)
@@ -151,7 +167,8 @@ object CipherUtil {
         /**
          * 加密数据
          */
-        @JvmStatic fun encrypt(text: ByteArray, key: ByteArray): ByteArray {
+        @JvmStatic
+        fun encrypt(text: ByteArray, key: ByteArray): ByteArray {
             val cipher = Cipher.getInstance(CIPHER_ALGORITHM)
             cipher.init(Cipher.ENCRYPT_MODE, getSecretKey(key))
             return cipher.doFinal(text)
@@ -160,7 +177,8 @@ object CipherUtil {
         /**
          * 解密数据
          */
-        @JvmStatic fun decrypt(text: ByteArray, key: ByteArray): ByteArray {
+        @JvmStatic
+        fun decrypt(text: ByteArray, key: ByteArray): ByteArray {
             val cipher = Cipher.getInstance(CIPHER_ALGORITHM)
             cipher.init(Cipher.DECRYPT_MODE, getSecretKey(key))
             return cipher.doFinal(text)

@@ -1,9 +1,9 @@
 package nbcp.myoql.db.mongo.service
 
 
-import nbcp.myoql.db.mongo.entity.*
 import nbcp.myoql.db.db
-import nbcp.myoql.db.mongo.*
+import nbcp.myoql.db.mongo.entity.SysAnnex
+import nbcp.myoql.db.mongo.queryById
 import nbcp.myoql.model.IUploadFileDbService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.context.annotation.Primary

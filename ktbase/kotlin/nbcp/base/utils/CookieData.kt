@@ -1,7 +1,9 @@
 package nbcp.base.utils
 
-import nbcp.base.comm.*
-import nbcp.base.extend.*
+import nbcp.base.extend.AsInt
+import nbcp.base.extend.AsLocalDateTime
+import nbcp.base.extend.basicSame
+import nbcp.base.extend.cutWith
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter

@@ -1,19 +1,18 @@
 package nbcp.base
 
-import nbcp.base.comm.*
-import nbcp.base.extend.*
-import nbcp.base.utils.*
+import nbcp.base.comm.ListResult
+import nbcp.base.db.IdUrl
+import nbcp.base.enums.JsonSceneScopeEnum
+import nbcp.base.extend.AsString
+import nbcp.base.extend.ToJson
+import nbcp.base.extend.Xml2Json
+import nbcp.base.extend.usingScope
+import nbcp.base.utils.MyUtil
 import org.junit.jupiter.api.Test
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.time.LocalDate
 import java.time.LocalDateTime
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.base.utils.MyUtil
 import java.util.*
 
 class testa : TestBase() {

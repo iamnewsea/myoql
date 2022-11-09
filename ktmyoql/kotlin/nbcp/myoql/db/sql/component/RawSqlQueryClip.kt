@@ -1,14 +1,13 @@
 package nbcp.myoql.db.sql.component
 
-import org.slf4j.LoggerFactory
-import nbcp.base.comm.*;
-import nbcp.base.extend.*;
-import nbcp.myoql.db.*;
-
-import java.time.LocalDateTime
+import nbcp.base.comm.JsonMap
+import nbcp.base.extend.minus
+import nbcp.myoql.db.db
 import nbcp.myoql.db.sql.base.SqlParameterData
 import nbcp.myoql.db.sql.logExec
+import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
+import java.time.LocalDateTime
 
 //查询原生表。
 class RawQuerySqlClip(var sqlParameter: SqlParameterData, tableName: String) : SqlBaseQueryClip(tableName) {

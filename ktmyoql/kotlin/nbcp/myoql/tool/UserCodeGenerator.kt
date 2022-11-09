@@ -1,15 +1,8 @@
 package nbcp.myoql.tool
 
-import nbcp.base.comm.*
+import nbcp.base.extend.AsString
+import nbcp.myoql.db.comm.BaseMetaData
 import nbcp.myoql.db.es.component.EsBaseMetaEntity
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
 import nbcp.myoql.db.mongo.component.MongoBaseMetaCollection
 import nbcp.myoql.db.sql.base.SqlBaseMetaTable
 

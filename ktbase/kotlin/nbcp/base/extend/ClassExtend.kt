@@ -3,14 +3,12 @@
 
 package nbcp.base.extend
 
-import java.lang.RuntimeException
 import java.lang.reflect.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.temporal.Temporal
 import java.util.*
-import kotlin.collections.LinkedHashMap
 
 
 val clazzesIsSimpleDefine = mutableSetOf<Class<*>>()

@@ -1,15 +1,9 @@
 package nbcp.myoql.db
 
-import nbcp.base.comm.*
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.extend.scopes
 import nbcp.myoql.db.cache.*
 import nbcp.myoql.db.enums.MyOqlDbScopeEnum
-import nbcp.myoql.db.mongo.*
-import nbcp.myoql.db.mongo.table.*
+import nbcp.myoql.db.mongo.table.MongoBaseGroup
 import nbcp.myoql.db.redis.RedisBaseGroup
 import nbcp.myoql.db.sql.table.SqlBaseGroup
 import java.time.Duration

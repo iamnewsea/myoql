@@ -1,12 +1,8 @@
 package nbcp.myoql.db.es
 
-import nbcp.base.comm.*
-import nbcp.myoql.db.*
-import nbcp.base.utils.*
 import nbcp.myoql.db.comm.MyOqlBaseActionLogDefine
 import nbcp.myoql.db.comm.MyOqlMultipleDataSourceDefine
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.context.annotation.*
 import org.springframework.stereotype.Component
 
 

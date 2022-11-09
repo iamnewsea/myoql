@@ -56,7 +56,7 @@ fun ObjectMapper.initObjectMapper() {
 fun <T> ObjectMapper.addObjectMapperTypeModule(type: Class<T>, ser: JsonSerializer<T>, deser: JsonDeserializer<T>) {
     var item = SimpleModule(type.name)
     item.addSerializer(type, ser)
-    item.addDeserializer(type,deser);
+    item.addDeserializer(type, deser);
     this.registerModule(item);
 
 //    var item2 = SimpleModule(type.name)

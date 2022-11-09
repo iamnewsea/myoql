@@ -1,8 +1,6 @@
 package nbcp.myoql.db.redis.proxy
 
-import nbcp.base.comm.*
 import nbcp.base.extend.AsLong
-import nbcp.base.utils.*
 import nbcp.myoql.db.redis.BaseRedisProxy
 import java.time.Duration
 

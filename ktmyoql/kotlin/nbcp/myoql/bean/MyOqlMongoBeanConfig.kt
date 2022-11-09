@@ -1,9 +1,12 @@
 package nbcp.myoql.bean
 
 import com.mongodb.MongoClientSettings
-import nbcp.base.extend.*;
-import nbcp.myoql.db.mongo.base.Date2LocalDateTimeConverter
+import nbcp.base.extend.AsString
+import nbcp.base.extend.HasValue
+import nbcp.base.extend.ToEnum
+import nbcp.base.extend.basicSame
 import nbcp.myoql.db.db
+import nbcp.myoql.db.mongo.base.Date2LocalDateTimeConverter
 import org.bson.UuidRepresentation
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor

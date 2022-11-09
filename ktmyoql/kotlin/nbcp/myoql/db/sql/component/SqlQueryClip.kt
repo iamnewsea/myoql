@@ -1,23 +1,27 @@
 package nbcp.myoql.db.sql.component
 
-import org.slf4j.LoggerFactory
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.cache.*
-import nbcp.myoql.db.comm.*
-import nbcp.myoql.db.sql.*
-import nbcp.myoql.db.sql.base.*
-import nbcp.myoql.db.sql.enums.*
-import nbcp.myoql.db.sql.extend.*
+import nbcp.base.comm.JsonMap
+import nbcp.base.comm.ListResult
+import nbcp.base.comm.StringMap
+import nbcp.base.comm.config
+import nbcp.base.extend.*
+import nbcp.myoql.db.cache.FromRedisCache
+import nbcp.myoql.db.cache.onlyGetFromCache
+import nbcp.myoql.db.cache.onlySetToCache
+import nbcp.myoql.db.db
+import nbcp.myoql.db.enums.MyOqlDbScopeEnum
 import nbcp.myoql.db.mongo.MongoEntityCollector
+import nbcp.myoql.db.sql.base.*
+import nbcp.myoql.db.sql.enums.DbType
+import nbcp.myoql.db.sql.enums.SqlLockType
+import nbcp.myoql.db.sql.extend.MyOqlSqlTreeData
+import nbcp.myoql.db.sql.extend.fromTableName
+import nbcp.myoql.db.sql.extend.quoteTableName
+import nbcp.myoql.db.sql.logQuery
+import org.slf4j.LoggerFactory
+import java.io.Serializable
 import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
-import java.io.Serializable
 
 class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M) :
     SqlBaseQueryClip(mainEntity.tableName) {

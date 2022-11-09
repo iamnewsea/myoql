@@ -1,19 +1,22 @@
 package nbcp.myoql.db.mongo.tool
 
-import nbcp.base.comm.*
+import nbcp.base.comm.StringMap
+import nbcp.base.comm.const
 import nbcp.base.data.Sys
 import nbcp.base.db.DbEntityGroup
 import nbcp.base.db.DbName
-import nbcp.base.utils.*
+import nbcp.base.extend.*
+import nbcp.base.utils.ClassUtil
+import nbcp.base.utils.KotlinCoderUtil
+import nbcp.base.utils.MyUtil
+import nbcp.myoql.db.comm.VarDatabase
+import nbcp.myoql.db.comm.VarTable
 import nbcp.myoql.tool.CodeGeneratorHelper
 import java.io.File
 import java.io.FileWriter
-import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 import java.time.LocalDateTime
-import nbcp.base.extend.*;
-import nbcp.myoql.db.comm.*
 
 
 /**

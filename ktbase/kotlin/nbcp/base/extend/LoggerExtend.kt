@@ -3,11 +3,10 @@
 
 package nbcp.base.extend
 
-import nbcp.base.comm.*
 import nbcp.base.enums.LogLevelScopeEnum
-import nbcp.base.utils.*
+import nbcp.base.utils.MyUtil
 import org.slf4j.Logger
-import java.io.*
+import java.io.File
 
 
 /**

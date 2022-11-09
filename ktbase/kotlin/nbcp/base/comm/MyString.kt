@@ -1,4 +1,3 @@
-
 package nbcp.base.comm
 
 import java.io.ObjectInputStream
@@ -13,13 +12,13 @@ import java.io.Serializable
  * 自定义字符串
  */
 open class MyString @JvmOverloads constructor(private var _str_value: String = "") : Comparable<String>, CharSequence,
-        Serializable {
+    Serializable {
     override val length: Int = this._str_value.length
 
     override fun get(index: Int): Char = this._str_value.get(index)
 
     override fun subSequence(startIndex: Int, endIndex: Int): CharSequence =
-            this._str_value.subSequence(startIndex, endIndex)
+        this._str_value.subSequence(startIndex, endIndex)
 
     override fun compareTo(other: String): Int = this._str_value.compareTo(other)
 

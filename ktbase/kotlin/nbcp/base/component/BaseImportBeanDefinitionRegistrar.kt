@@ -4,14 +4,10 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ResourceLoaderAware
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner
-import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.type.AnnotationMetadata
-import org.springframework.core.type.filter.AnnotationTypeFilter
 import org.springframework.core.type.filter.TypeFilter
-import org.springframework.stereotype.Component
-import org.springframework.stereotype.Service
 
 abstract class BaseImportBeanDefinitionRegistrar(
     var basePackage: String,

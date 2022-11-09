@@ -2,17 +2,12 @@ package nbcp.base.utils
 
 import nbcp.base.comm.*
 import nbcp.base.extend.*
-import nbcp.base.comm.const
 import net.lingala.zip4j.ZipFile
-import java.io.File;
-
-import org.springframework.util.StringUtils;
-
-import net.lingala.zip4j.exception.ZipException;
-import net.lingala.zip4j.model.*;
-import net.lingala.zip4j.model.enums.*;
+import net.lingala.zip4j.exception.ZipException
+import net.lingala.zip4j.model.*
+import net.lingala.zip4j.model.enums.*
+import java.io.File
 import java.io.InputStream
-import java.lang.RuntimeException
 
 class ZipCompressData(file: File) {
     private var password = ""

@@ -1,13 +1,14 @@
 package nbcp.embed
 
-import nbcp.base.comm.*
-import nbcp.base.extend.*
+import nbcp.base.extend.AsString
+import nbcp.base.extend.HasValue
+import nbcp.base.extend.ifTrue
 import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.MyUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.context.event.ApplicationReadyEvent
-import org.springframework.context.annotation.*
+import org.springframework.context.annotation.Configuration
 import org.springframework.context.event.EventListener
 
 @Configuration

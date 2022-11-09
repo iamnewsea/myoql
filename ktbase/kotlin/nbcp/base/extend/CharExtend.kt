@@ -3,15 +3,6 @@
 
 package nbcp.base.extend
 
-import org.w3c.dom.Element
-import org.w3c.dom.Node
-import org.w3c.dom.NodeList
-import java.io.ByteArrayInputStream
-import java.lang.StringBuilder
-import javax.xml.parsers.DocumentBuilderFactory
-import javax.xml.transform.TransformerFactory
-import kotlin.reflect.KClass
-
 /**
  * 使用指定字符，初始化字符串
  */

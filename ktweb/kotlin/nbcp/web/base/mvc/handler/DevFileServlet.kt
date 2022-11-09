@@ -1,15 +1,14 @@
 package nbcp.web.base.mvc.handler
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.comm.FileExtensionInfo
+import nbcp.base.comm.JsonResult
+import nbcp.base.comm.ListResult
+import nbcp.base.extend.AsString
+import nbcp.base.extend.FullName
+import nbcp.base.utils.MyUtil
 import nbcp.mvc.base.mvc.setDownloadFileName
 import nbcp.mvc.comm.AdminSysOpsAction
 import org.slf4j.LoggerFactory
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -19,7 +18,6 @@ import org.springframework.web.multipart.support.StandardMultipartHttpServletReq
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
-import java.lang.RuntimeException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 

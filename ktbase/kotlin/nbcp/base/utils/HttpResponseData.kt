@@ -1,8 +1,8 @@
 package nbcp.base.utils
 
-import nbcp.base.comm.*
-import nbcp.base.extend.*
-import java.io.DataInputStream
+import nbcp.base.comm.StringMap
+import nbcp.base.extend.AsString
+import nbcp.base.extend.basicSame
 
 class HttpResponseData {
 

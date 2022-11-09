@@ -1,6 +1,6 @@
 package nbcp.myoql.db.es.component
 
-import nbcp.base.comm.*
+import nbcp.base.comm.JsonMap
 import nbcp.base.extend.ToJson
 
 /**

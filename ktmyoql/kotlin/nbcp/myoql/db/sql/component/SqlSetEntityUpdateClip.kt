@@ -1,14 +1,14 @@
 package nbcp.myoql.db.sql.component
 
 
-import nbcp.base.comm.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.sql.extend.proc_value
-import nbcp.myoql.db.*;
+import nbcp.base.comm.JsonMap
+import nbcp.base.extend.AllFields
+import nbcp.base.utils.MyUtil
+import nbcp.myoql.db.db
 import nbcp.myoql.db.sql.base.SqlBaseMetaTable
 import nbcp.myoql.db.sql.base.SqlColumnName
 import nbcp.myoql.db.sql.base.SqlParameterData
+import nbcp.myoql.db.sql.extend.proc_value
 import java.io.Serializable
 
 /**

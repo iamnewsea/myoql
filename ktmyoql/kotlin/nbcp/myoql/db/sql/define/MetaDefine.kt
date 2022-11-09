@@ -1,7 +1,5 @@
 package nbcp.myoql.db.sql.define
 
-import java.util.*
-
 /**
  * Created by yuxh on 2018/6/12
  */

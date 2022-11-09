@@ -1,8 +1,7 @@
 package nbcp.base.utils
 
 
-import nbcp.base.comm.*
-import nbcp.base.extend.*
+import nbcp.base.extend.insertAt
 
 /**
  * Created by udi on 17-4-21.
@@ -46,7 +45,7 @@ object WebUtil {
 
         return true;
     }
-    
+
     @JvmStatic
     fun fillUrlWithUserPassword(url: String, userName: String, password: String): String {
         var index = url.indexOf("//")

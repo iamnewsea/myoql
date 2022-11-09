@@ -1,12 +1,8 @@
 package nbcp.base.utils
 
 import nbcp.base.TestBase
-import nbcp.base.comm.*
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.enums.ScriptLanguageEnum
+import nbcp.base.extend.Slice
 import org.junit.jupiter.api.Test
 
 class TestUtils : TestBase() {

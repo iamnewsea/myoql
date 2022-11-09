@@ -1,10 +1,10 @@
 package nbcp.web.base.mvc.service
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.comm.config
+import nbcp.base.db.LoginUserModel
+import nbcp.base.extend.FromJson
+import nbcp.base.extend.HasValue
+import nbcp.base.extend.ToJson
 import nbcp.myoql.db.redis.proxy.RedisStringProxy
 import nbcp.web.tokenValue
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -12,7 +12,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.core.StringRedisTemplate
-import org.springframework.stereotype.Component
 import javax.servlet.http.HttpServletRequest
 
 interface IUserAuthenticationService {

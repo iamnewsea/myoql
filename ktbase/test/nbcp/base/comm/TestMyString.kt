@@ -1,13 +1,10 @@
 package nbcp.base.comm
 
 import nbcp.base.TestBase
+import nbcp.base.extend.ToJson
+import nbcp.base.extend.toUtf8String
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayOutputStream
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
 
 class TestMyString : TestBase() {
 

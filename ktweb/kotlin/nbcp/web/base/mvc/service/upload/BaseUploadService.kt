@@ -1,13 +1,13 @@
 package nbcp.web.base.mvc.service.upload
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.mongo.entity.SysAnnex
+import nbcp.base.comm.*
+import nbcp.base.db.*
+import nbcp.base.enums.*
+import nbcp.base.extend.*
+import nbcp.base.utils.*
 import nbcp.mvc.base.mvc.WriteJsonRawValue
 import nbcp.mvc.base.mvc.findParameterStringValue
+import nbcp.myoql.db.mongo.entity.SysAnnex
 import nbcp.myoql.model.IUploadFileDbService
 import nbcp.web.*
 import nbcp.web.base.util.VideoUtil
@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
 import java.io.InputStream
-import java.lang.RuntimeException
 import javax.imageio.ImageIO
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse

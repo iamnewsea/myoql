@@ -1,12 +1,13 @@
 package nbcp.base.utils
 
-import nbcp.base.comm.*
-import nbcp.base.extend.*
-import javax.imageio.ImageIO
-import java.awt.image.BufferedImage
-import java.awt.Transparency
+import nbcp.base.extend.AsString
+import nbcp.base.extend.IsIn
 import java.awt.Image
-import java.io.*
+import java.awt.Transparency
+import java.awt.image.BufferedImage
+import java.io.InputStream
+import java.io.OutputStream
+import javax.imageio.ImageIO
 
 
 /**

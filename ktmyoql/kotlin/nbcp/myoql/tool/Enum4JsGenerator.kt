@@ -1,7 +1,8 @@
 package nbcp.myoql.tool
 
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.extend.GetEnumList
+import nbcp.base.extend.GetEnumStringField
+import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.MyUtil
 
 /**

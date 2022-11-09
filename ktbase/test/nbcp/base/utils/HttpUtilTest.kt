@@ -1,11 +1,10 @@
 package nbcp.base.utils
 
 import nbcp.base.TestBase
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.comm.StringMap
+import nbcp.base.enums.LogLevelScopeEnum
+import nbcp.base.extend.formatWithJson
+import nbcp.base.extend.usingScope
 import org.junit.jupiter.api.Test
 import java.io.File
 

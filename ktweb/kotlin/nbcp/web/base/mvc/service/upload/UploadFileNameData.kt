@@ -1,10 +1,9 @@
 package nbcp.web.base.mvc.service.upload
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.enums.FileExtensionTypeEnum
+import nbcp.base.extend.Format
+import nbcp.base.extend.HasValue
+import nbcp.base.utils.CodeUtil
 import java.time.LocalDate
 
 class UploadFileNameData @JvmOverloads constructor(var msg: String = "") {

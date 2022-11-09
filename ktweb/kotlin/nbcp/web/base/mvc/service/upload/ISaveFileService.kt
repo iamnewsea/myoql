@@ -1,10 +1,6 @@
 package nbcp.web.base.mvc.service.upload
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.comm.JsonResult
 import java.io.InputStream
 
 interface ISaveFileService {

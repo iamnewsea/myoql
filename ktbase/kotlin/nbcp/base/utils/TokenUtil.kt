@@ -1,8 +1,5 @@
 package nbcp.base.utils
 
-import nbcp.base.comm.*
-import nbcp.base.extend.*
-import java.lang.RuntimeException
 import java.time.LocalDateTime
 
 object TokenUtil {

@@ -1,10 +1,10 @@
 package nbcp.base.utils
 
-import nbcp.base.comm.*
-import nbcp.base.extend.*
+import nbcp.base.comm.StringMap
+import nbcp.base.extend.AsString
+import nbcp.base.extend.getByIgnoreCaseKey
 import org.apache.http.HttpHeaders
 import java.io.ByteArrayOutputStream
-import java.io.DataOutputStream
 
 data class HttpRequestData @JvmOverloads constructor(
     var instanceFollowRedirects: Boolean = false,

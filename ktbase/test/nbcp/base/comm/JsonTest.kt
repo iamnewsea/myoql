@@ -1,11 +1,12 @@
 package nbcp.base.comm
 
 import nbcp.base.TestBase
-import nbcp.base.comm.*
-import nbcp.base.db.*
-import nbcp.base.enums.*
+import nbcp.base.db.IdName
+import nbcp.base.db.LoginUserModel
+import nbcp.base.enums.JsonSceneScopeEnum
 import nbcp.base.extend.*
-import nbcp.base.utils.*
+import nbcp.base.utils.RecursionUtil
+import nbcp.base.utils.SpringUtil
 import org.junit.jupiter.api.Test
 import java.io.Serializable
 import java.time.LocalDateTime

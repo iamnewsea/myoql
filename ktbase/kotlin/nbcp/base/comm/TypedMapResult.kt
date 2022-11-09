@@ -1,10 +1,7 @@
 package nbcp.base.comm
 
+import nbcp.base.extend.HasValue
 import java.io.Serializable
-import nbcp.base.comm.*
-import nbcp.base.enums.*
-import nbcp.base.extend.*
-import nbcp.base.utils.*
 
 
 /**

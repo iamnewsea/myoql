@@ -1,25 +1,25 @@
 package nbcp.myoql.db.mongo
 
-import nbcp.base.comm.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
+import nbcp.base.comm.*
+import nbcp.base.enums.JsonStyleScopeEnum
+import nbcp.base.extend.*
+import nbcp.base.utils.Md5Util
+import nbcp.base.utils.MyUtil
+import nbcp.myoql.db.cache.FromRedisCache
+import nbcp.myoql.db.cache.onlyGetFromCache
+import nbcp.myoql.db.cache.onlySetToCache
+import nbcp.myoql.db.db
+import nbcp.myoql.db.enums.MyOqlDbScopeEnum
+import nbcp.myoql.db.mongo.component.IMongoWhere
+import nbcp.myoql.db.mongo.component.MongoClipBase
+import nbcp.myoql.db.mongo.extend.toDocument
+import nbcp.myoql.db.mongo.logger.logFind
 import org.bson.Document
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.query.BasicQuery
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
-import java.lang.Exception
 import java.time.LocalDateTime
-import nbcp.myoql.db.mongo.logger.*
-import nbcp.myoql.db.cache.FromRedisCache
-import nbcp.myoql.db.cache.onlyGetFromCache
-import nbcp.myoql.db.cache.onlySetToCache
-import nbcp.myoql.db.mongo.component.IMongoWhere
-import nbcp.myoql.db.mongo.component.MongoClipBase
-import nbcp.myoql.db.mongo.extend.toDocument
 
 open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMongoWhere {
     companion object {

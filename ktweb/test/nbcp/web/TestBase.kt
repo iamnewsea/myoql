@@ -1,17 +1,13 @@
 package nbcp.web
 
 
+import nbcp.base.extend.minus
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.context.web.WebAppConfiguration
 import java.time.LocalDateTime
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
 
 /**
  * Created by udi on 17-3-27.

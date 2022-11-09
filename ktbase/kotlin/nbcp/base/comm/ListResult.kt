@@ -1,8 +1,5 @@
 package nbcp.base.comm
 
-import java.io.Serializable
-import java.lang.RuntimeException
-
 
 /**
  * Created by jin on 2017/3/16.

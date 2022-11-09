@@ -1,10 +1,9 @@
 package nbcp.myoql.db.sql.component
 
-import nbcp.base.comm.*
-import nbcp.base.extend.*
-import org.slf4j.LoggerFactory
-import nbcp.myoql.db.*
-import nbcp.myoql.db.sql.logUpdate
+import nbcp.base.comm.JsonMap
+import nbcp.base.extend.HasValue
+import nbcp.base.extend.minus
+import nbcp.myoql.db.db
 import nbcp.myoql.db.sql.base.SqlBaseMetaTable
 import nbcp.myoql.db.sql.base.SqlColumnName
 import nbcp.myoql.db.sql.base.SqlColumnNames
@@ -12,7 +11,8 @@ import nbcp.myoql.db.sql.base.SqlParameterData
 import nbcp.myoql.db.sql.extend.fromTableName
 import nbcp.myoql.db.sql.extend.proc_value
 import nbcp.myoql.db.sql.extend.quoteTableName
-
+import nbcp.myoql.db.sql.logUpdate
+import org.slf4j.LoggerFactory
 import java.io.Serializable
 import java.time.LocalDateTime
 

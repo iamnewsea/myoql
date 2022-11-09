@@ -1,12 +1,10 @@
 package nbcp.myoql.db.mybatis
 
 
-import nbcp.base.utils.*
-import org.springframework.context.annotation.*
+import nbcp.base.utils.SpringUtil
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.TransactionManagementConfigurer
-import java.util.*
 import javax.sql.DataSource
 
 

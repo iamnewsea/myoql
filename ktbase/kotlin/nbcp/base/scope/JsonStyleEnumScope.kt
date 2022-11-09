@@ -2,15 +2,13 @@ package nbcp.base.scope
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
-
 import nbcp.base.component.AppJsonMapper
 import nbcp.base.component.DbJsonMapper
 import nbcp.base.component.WebJsonMapper
-import nbcp.base.comm.*
-import nbcp.base.enums.*
-import nbcp.base.extend.*
-import nbcp.base.utils.*
-
+import nbcp.base.enums.JsonSceneScopeEnum
+import nbcp.base.enums.JsonStyleScopeEnum
+import nbcp.base.extend.scopes
+import nbcp.base.utils.SpringUtil
 
 
 fun JsonSceneScopeEnum?.getJsonMapper(): ObjectMapper {

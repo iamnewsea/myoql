@@ -3,7 +3,6 @@ package nbcp.base.comm
 import java.io.Closeable
 import java.io.File
 import java.io.RandomAccessFile
-import java.io.Reader
 import java.nio.charset.Charset
 
 /**

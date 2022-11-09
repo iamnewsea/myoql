@@ -3,21 +3,18 @@
 
 package nbcp.myoql.db.sql.extend
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
+import nbcp.base.comm.*
+import nbcp.base.db.*
+import nbcp.base.enums.*
+import nbcp.base.extend.*
+import nbcp.base.utils.*
+import nbcp.myoql.db.*
 import nbcp.myoql.db.comm.*
+import nbcp.myoql.db.enums.*
+import nbcp.myoql.db.sql.base.*
 import nbcp.myoql.db.sql.component.*
 import nbcp.myoql.db.sql.extend.*
-import nbcp.myoql.db.db
-import nbcp.myoql.db.sql.base.*
-import nbcp.myoql.db.sql.component.WhereData
 import java.io.Serializable
-import java.lang.RuntimeException
 
 
 fun SqlParameterData.toWhereData(): WhereData {

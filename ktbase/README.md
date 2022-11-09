@@ -2,9 +2,10 @@
 
 ## skywalking 日志
 
->https://skywalking.apache.org/docs/main/v8.5.0/en/setup/service-agent/java-agent/application-toolkit-logback-1.x/#logback-plugin
+> https://skywalking.apache.org/docs/main/v8.5.0/en/setup/service-agent/java-agent/application-toolkit-logback-1.x/#logback-plugin
 
 在启动类上添加依赖
+
 ```
 <dependency>
     <groupId>org.springframework.boot</groupId>
@@ -29,12 +30,15 @@ logging:
   level:
     root: WARN
 ```
+
 以上 classpath:logback-skywalking.xml 会被解析为：
+
 ```
 jar:file:/home/udi/.m2/repository/cn/dev8/ktbase/1.0.6-SNAPSHOT/ktbase-1.0.6-SNAPSHOT.jar!/logback-skywalking.xml
 ```
 
 skywalking/agent/conf/agent.conf 文件内容追加:
+
 ```
 plugin.toolkit.log.grpc.reporter.server_host=${SW_GRPC_LOG_SERVER_HOST:192.168.5.213}
 plugin.toolkit.log.grpc.reporter.server_port=${SW_GRPC_LOG_SERVER_PORT:11800}
@@ -47,6 +51,7 @@ plugin.toolkit.log.grpc.reporter.upstream_timeout=${SW_GRPC_LOG_GRPC_UPSTREAM_TI
 扩展了基础的用法，包括以下对象：
 
 表述：
+
 - data:? 表示 data字段 是任意类型，可空。
 - data: Any 表示 data字段 是任意类型，不可空。
 - data: []  表示 data字段 是Array类型。
@@ -55,6 +60,7 @@ plugin.toolkit.log.grpc.reporter.upstream_timeout=${SW_GRPC_LOG_GRPC_UPSTREAM_TI
 - data:String? 表示 data 字段是 可空字符串
 
 ## 结构
+
 - JsonMap , key是String的Map
 - JsonResult ，普通接口返回对象。 msg , cause
 - ApiResult<> ： JsonResult, 普通接口返回对象。 添加 data:<?>
@@ -67,7 +73,7 @@ plugin.toolkit.log.grpc.reporter.upstream_timeout=${SW_GRPC_LOG_GRPC_UPSTREAM_TI
 ## Util
 
 - JarClassUtil ，解析Jar包内的Class
-- CodeUtil , 雪花算法生成 code 
+- CodeUtil , 雪花算法生成 code
 - HttpUtil , Ajax
 - ImageUtil , 缩放图片
 - JsUtil , Js编码，解码
@@ -79,9 +85,10 @@ plugin.toolkit.log.grpc.reporter.upstream_timeout=${SW_GRPC_LOG_GRPC_UPSTREAM_TI
 - VerifyCodeUtil 验证码
 
 ## 扩展
+
 扩展方法尽量使用 大驼峰， 避免与主类方法冲突。
 
-- Any 
+- Any
     - IsIn
     - ToJson
     - FromJson
@@ -89,12 +96,12 @@ plugin.toolkit.log.grpc.reporter.upstream_timeout=${SW_GRPC_LOG_GRPC_UPSTREAM_TI
     - CloneObject 克隆 对象。
     - ToSerializableByteArray
     - ToSerializableObject
-    - 
+    -
 
 - Class
     - AllFields 所有字段，包括父类的。
     - FindField 查找字段，包括父类的。
-    - IsSimpleType 
+    - IsSimpleType
     - IsBooleanType
     - IsListType
     - IsStringType
@@ -105,7 +112,7 @@ plugin.toolkit.log.grpc.reporter.upstream_timeout=${SW_GRPC_LOG_GRPC_UPSTREAM_TI
 - String
     - basicSame
     - NewString
-    - Repeat 
+    - Repeat
     - HasValue
     - IfHasValue
     - IsNumberic
@@ -118,13 +125,13 @@ plugin.toolkit.log.grpc.reporter.upstream_timeout=${SW_GRPC_LOG_GRPC_UPSTREAM_TI
     - ToTab
     - Xml2Json
     - MatchPattern
-    - 
+    -
 
 - Number
     - ToReadableAmountValue 转为可读性金额。
     - ToBitPowerValue 转为每个2个幂集合。
-    - 
- 
+    -
+
 - Map
     - RenameKey
     - ToMap
@@ -135,7 +142,7 @@ plugin.toolkit.log.grpc.reporter.upstream_timeout=${SW_GRPC_LOG_GRPC_UPSTREAM_TI
     - Filter
     - EqualArrayContent 数组去除，比较内容是否相同。忽略位置
     - Unwind
-    - Skip 
+    - Skip
     - ForEachExt
     - InsertAfter
     - IntersectIndexes
@@ -151,17 +158,19 @@ plugin.toolkit.log.grpc.reporter.upstream_timeout=${SW_GRPC_LOG_GRPC_UPSTREAM_TI
 - Stream
     - GetHtmlString
     -
+
 ## 注解
+
 - JsonModel，表示Request参数是整个RequestBody的Json。
 - Require ，必填字段
 - OpenAction ，不需要权限的Action
 
 ## 其它
+
 - usingScope ，在每个作用域里控制变量。
 
-
-
 # 使用
+
 ```
 <!-- https://mvnrepository.com/artifact/cn.dev8/ktbase -->
 <dependency>

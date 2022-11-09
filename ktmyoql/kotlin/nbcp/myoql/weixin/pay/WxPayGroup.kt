@@ -1,13 +1,7 @@
 package nbcp.myoql.weixin.pay
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
+import nbcp.base.extend.AsString
+import nbcp.base.extend.HasValue
 import nbcp.myoql.weixin.wx
 
 object WxPayGroup {

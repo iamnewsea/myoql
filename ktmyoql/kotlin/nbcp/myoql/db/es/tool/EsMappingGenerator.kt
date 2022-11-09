@@ -1,12 +1,15 @@
 package nbcp.myoql.db.es.tool
 
+import nbcp.base.comm.JsonMap
+import nbcp.base.comm.StringMap
 import nbcp.base.db.DbEntityGroup
 import nbcp.base.db.DbName
-import nbcp.base.comm.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.comm.*
+import nbcp.base.enums.JsonStyleScopeEnum
+import nbcp.base.extend.*
+import nbcp.base.utils.ClassUtil
+import nbcp.base.utils.MyUtil
+import nbcp.myoql.db.comm.DbDefine
+import nbcp.myoql.db.comm.IkFieldDefine
 import java.io.File
 import java.io.FileWriter
 import java.lang.reflect.Field
@@ -15,7 +18,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
-import kotlin.collections.HashMap
 
 
 /**

@@ -1,21 +1,14 @@
 package nbcp.myoql.db.mongo
 
-import nbcp.base.comm.*
+import nbcp.base.extend.HasValue
+import nbcp.base.extend.minus
 import nbcp.base.extend.usingScope
-import org.slf4j.LoggerFactory
-import java.lang.Exception
-import java.time.LocalDateTime
-import nbcp.myoql.db.mongo.logger.*
 import nbcp.myoql.db.db
 import nbcp.myoql.db.enums.MyOqlDbScopeEnum
-
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
 import nbcp.myoql.db.mongo.component.MongoClipBase
+import nbcp.myoql.db.mongo.logger.logInsert
+import org.slf4j.LoggerFactory
+import java.time.LocalDateTime
 
 
 open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName) {

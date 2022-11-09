@@ -1,17 +1,17 @@
 package nbcp.myoql.db.mongo
 
 import nbcp.base.db.DbEntityIndex
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
+import nbcp.base.extend.ForEachExt
+import nbcp.base.extend.HasValue
+import nbcp.base.extend.usingScope
 import nbcp.myoql.db.cache.RedisCacheColumns
 import nbcp.myoql.db.cache.RedisCacheDefine
 import nbcp.myoql.db.comm.*
-import nbcp.myoql.db.mongo.component.*
+import nbcp.myoql.db.dbMongo
+import nbcp.myoql.db.enums.DatabaseEnum
+import nbcp.myoql.db.enums.MyOqlDbScopeEnum
+import nbcp.myoql.db.mongo.component.MongoBaseMetaCollection
+import nbcp.myoql.db.mongo.component.MongoBaseUpdateClip
 import nbcp.myoql.db.mongo.event.*
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass

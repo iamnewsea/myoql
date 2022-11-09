@@ -1,22 +1,13 @@
 package nbcp.myoql.bean
 
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.cache.*
-import nbcp.myoql.db.comm.*
+import nbcp.base.utils.SpringUtil
 import nbcp.myoql.db.redis.MyRedisKeySerializerWithProductLine
 import nbcp.myoql.db.redis.RedisRenewalDynamicService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.context.event.ApplicationStartedEvent
-import org.springframework.context.annotation.Import
 import org.springframework.context.event.EventListener
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.serializer.RedisSerializer

@@ -1,12 +1,10 @@
 package nbcp.myoql.db.excel
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
+import nbcp.base.extend.AsDouble
+import nbcp.base.extend.AsInt
+import nbcp.base.extend.AsLocalDateTime
+import nbcp.base.extend.AsString
+import nbcp.base.utils.MyUtil
 import org.apache.poi.ss.util.CellReference
 import org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler
 import org.apache.poi.xssf.usermodel.XSSFComment

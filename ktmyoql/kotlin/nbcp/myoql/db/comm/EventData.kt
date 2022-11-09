@@ -1,6 +1,5 @@
 package nbcp.myoql.db.comm
 
-import nbcp.base.comm.*
 import nbcp.base.extend.*
 
 

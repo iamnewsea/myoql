@@ -1,8 +1,9 @@
 package nbcp.base.comm
 
-import nbcp.base.comm.*
-import nbcp.base.enums.*
-import nbcp.base.extend.*
+import nbcp.base.enums.FileExtensionTypeEnum
+import nbcp.base.extend.HasValue
+import nbcp.base.extend.IsIn
+import nbcp.base.extend.remove
 
 
 open class FileExtensionInfo() {

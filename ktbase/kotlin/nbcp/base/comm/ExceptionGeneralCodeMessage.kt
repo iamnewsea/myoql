@@ -1,8 +1,9 @@
 package nbcp.base.comm
 
+import nbcp.base.extend.AsInt
+import nbcp.base.extend.AsString
+import nbcp.base.extend.IsSpecialChar
 import java.io.NotSerializableException
-import nbcp.base.comm.*
-import nbcp.base.extend.*
 
 
 /**

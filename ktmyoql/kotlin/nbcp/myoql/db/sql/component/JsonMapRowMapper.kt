@@ -1,14 +1,10 @@
 package nbcp.myoql.db.sql.component
 
+import nbcp.base.comm.JsonMap
+import nbcp.myoql.db.mysql.ExistsSqlSourceConfigCondition
+import org.springframework.context.annotation.Conditional
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Component
-import nbcp.base.comm.*
-import nbcp.myoql.db.mysql.ExistsSqlSourceConfigCondition
-import org.mariadb.jdbc.MariaDbDataSource
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.context.annotation.Conditional
-import org.springframework.jdbc.core.JdbcTemplate
 import java.sql.ResultSet
 
 /**

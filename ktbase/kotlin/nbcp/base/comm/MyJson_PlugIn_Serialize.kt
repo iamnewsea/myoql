@@ -1,17 +1,18 @@
 package nbcp.base.comm
 
-import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
+import nbcp.base.extend.AsDate
+import nbcp.base.extend.AsLocalDate
+import nbcp.base.extend.AsLocalDateTime
+import nbcp.base.extend.AsLocalTime
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
-import nbcp.base.extend.*
-
 
 
 class DateJsonDeserializer : JsonDeserializer<Date>() {
@@ -24,7 +25,7 @@ class DateJsonDeserializer : JsonDeserializer<Date>() {
             return null;
         }
 
-        if( json.valueAsString == null){
+        if (json.valueAsString == null) {
             return null;
         }
 
@@ -48,7 +49,7 @@ class LocalDateJsonDeserializer : JsonDeserializer<LocalDate>() {
             return null;
         }
 
-        if( json.valueAsString == null){
+        if (json.valueAsString == null) {
             return null;
         }
 
@@ -71,7 +72,7 @@ class LocalTimeJsonDeserializer : JsonDeserializer<LocalTime>() {
             return null;
         }
 
-        if( json.valueAsString == null){
+        if (json.valueAsString == null) {
             return null;
         }
 
@@ -90,7 +91,7 @@ class LocalDateTimeJsonDeserializer : JsonDeserializer<LocalDateTime>() {
             return null;
         }
 
-        if( json.valueAsString == null){
+        if (json.valueAsString == null) {
             return null;
         }
 
@@ -114,7 +115,7 @@ class TimestampJsonDeserializer : JsonDeserializer<Timestamp>() {
             return null;
         }
 
-        if( json.valueAsString == null){
+        if (json.valueAsString == null) {
             return null;
         }
 
@@ -136,7 +137,7 @@ class MyStringDeserializer : JsonDeserializer<MyString>() {
             return null;
         }
 
-        if( json.valueAsString == null){
+        if (json.valueAsString == null) {
             return MyString();
         }
         return MyString(json.valueAsString)
@@ -153,7 +154,7 @@ class MyRawStringDeserializer : JsonDeserializer<MyRawString>() {
             return null;
         }
 
-        if( json.valueAsString == null){
+        if (json.valueAsString == null) {
             return MyRawString();
         }
         return MyRawString(json.valueAsString)

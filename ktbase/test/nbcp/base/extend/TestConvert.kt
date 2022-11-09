@@ -1,13 +1,11 @@
 package nbcp.base.extend
 
 import nbcp.base.TestBase
+import nbcp.base.comm.JsonMap
+import nbcp.base.enums.JsonStyleScopeEnum
+import nbcp.base.utils.CookieData
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
 import java.time.format.DateTimeFormatter
 
 class TestConvert : TestBase() {

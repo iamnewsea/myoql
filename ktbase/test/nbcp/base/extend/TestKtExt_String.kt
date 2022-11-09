@@ -1,8 +1,9 @@
 package nbcp.base.extend
 
 import nbcp.base.TestBase
-import nbcp.base.comm.*
-import nbcp.base.utils.*
+import nbcp.base.comm.const
+import nbcp.base.utils.CipherUtil
+import nbcp.base.utils.MyUtil
 import org.junit.jupiter.api.Test
 import java.io.File
 
@@ -36,7 +37,12 @@ ENV JAVA_OPTS -xx:178
 aaa
 """
 
-        var t = txt.regexMultiLineEdit(Regex("^ENV\\s+(JAVA_OPTS)\\s+",RegexOption.MULTILINE),"0,-1","+=>"," -XX:256 \$1");
+        var t = txt.regexMultiLineEdit(
+            Regex("^ENV\\s+(JAVA_OPTS)\\s+", RegexOption.MULTILINE),
+            "0,-1",
+            "+=>",
+            " -XX:256 \$1"
+        );
 
         println(t)
 
@@ -49,11 +55,11 @@ aaa
 
         var basePath = Thread.currentThread().contextClassLoader.getResource("./").path.split("/target/")[0];
 
-        var path = File( MyUtil.joinFilePath(basePath, "./kotlin"));
+        var path = File(MyUtil.joinFilePath(basePath, "./kotlin"));
 
-        var _walk_all_path :((File) ->Boolean)? = null;
-        var walk_all_path :((File) ->Boolean) =  walk@ { file ->
-            if( file.isFile) {
+        var _walk_all_path: ((File) -> Boolean)? = null;
+        var walk_all_path: ((File) -> Boolean) = walk@{ file ->
+            if (file.isFile) {
                 println(file.FullName)
                 var txt = file.readText(const.utf8);
 
@@ -66,9 +72,8 @@ aaa
                 }
 
                 return@walk false;
-            }
-            else{
-                file.listFiles().all {  return@all _walk_all_path!!(it) }
+            } else {
+                file.listFiles().all { return@all _walk_all_path!!(it) }
                 return@walk true;
             }
             return@walk true;

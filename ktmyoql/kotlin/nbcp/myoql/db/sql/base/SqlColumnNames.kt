@@ -1,6 +1,5 @@
 package nbcp.myoql.db.sql.base
 
-import nbcp.myoql.db.sql.base.SqlColumnName
 import java.io.Serializable
 
 

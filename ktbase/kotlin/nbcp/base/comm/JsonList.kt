@@ -1,10 +1,7 @@
 package nbcp.base.comm
 
 import org.slf4j.LoggerFactory
-import nbcp.base.comm.*
-import nbcp.base.utils.*
 import java.io.Serializable
-import java.lang.RuntimeException
 
 open class JsonList<T> : ArrayList<T>, Serializable {
     companion object {

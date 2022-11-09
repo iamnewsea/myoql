@@ -3,16 +3,12 @@
 
 package nbcp.base.extend
 
-import nbcp.base.comm.*
-import nbcp.base.scope.IScopeData
-import nbcp.base.utils.*
-import org.slf4j.Logger
+import nbcp.base.comm.JsonMap
+import nbcp.base.utils.MyUtil
 import org.slf4j.LoggerFactory
-import java.time.*
-import java.time.temporal.Temporal
 import java.io.*
-import java.lang.RuntimeException
-import java.util.*
+import java.time.Duration
+import java.time.temporal.Temporal
 
 /**
  * Created by udi on 17-4-3.

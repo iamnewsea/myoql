@@ -1,7 +1,7 @@
 package nbcp.base.utils
 
-import nbcp.base.comm.*
-import nbcp.base.extend.*
+import nbcp.base.extend.AsLong
+import nbcp.base.extend.HasValue
 import nbcp.base.model.InputStreamTextReaderThread
 import org.slf4j.LoggerFactory
 import java.io.File

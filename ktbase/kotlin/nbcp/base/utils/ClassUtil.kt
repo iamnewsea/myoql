@@ -1,6 +1,5 @@
 package nbcp.base.utils
 
-import nbcp.base.comm.*
 import nbcp.base.extend.*
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner

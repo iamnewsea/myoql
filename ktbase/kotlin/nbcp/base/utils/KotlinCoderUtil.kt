@@ -1,10 +1,9 @@
 package nbcp.base.utils
 
-import nbcp.base.comm.*
+import nbcp.base.comm.config
+import nbcp.base.comm.const
 import nbcp.base.extend.*
-import java.lang.RuntimeException
 import java.lang.reflect.Method
-import java.lang.reflect.Modifier
 import java.lang.reflect.Proxy
 
 class KotlinCoderUtil {

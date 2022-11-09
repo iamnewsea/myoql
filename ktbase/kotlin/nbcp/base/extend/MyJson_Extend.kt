@@ -3,12 +3,10 @@
 
 package nbcp.base.extend
 
+import nbcp.base.enums.JsonSceneScopeEnum
+import nbcp.base.enums.JsonStyleScopeEnum
 import nbcp.base.scope.getJsonMapper
-import nbcp.base.comm.*
-import nbcp.base.enums.*
-import nbcp.base.extend.*
-import nbcp.base.utils.*
-import kotlin.RuntimeException
+import nbcp.base.utils.MyUtil
 import kotlin.reflect.KClass
 
 /**
@@ -219,6 +217,7 @@ inline fun <reified T> String.FromJsonWithDefaultValue(): T {
 
 
 fun Array<out JsonStyleScopeEnum>.getDateFormat(): String = this.toList().getDateFormat()
+
 /**
  */
 fun Collection<JsonStyleScopeEnum>.getDateFormat(): String {

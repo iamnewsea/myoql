@@ -1,9 +1,7 @@
 package nbcp.base.db
 
-import nbcp.base.db.Cn
-import nbcp.base.comm.*
-import nbcp.base.extend.*
-import nbcp.base.utils.*
+import nbcp.base.extend.Slice
+import nbcp.base.extend.ToJson
 import java.io.InputStream
 import java.io.Serializable
 

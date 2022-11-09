@@ -1,9 +1,8 @@
 package nbcp.base.comm;
 
-import nbcp.base.comm.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.enums.JsonSceneScopeEnum;
+import nbcp.base.enums.JsonStyleScopeEnum;
+import nbcp.base.extend.MyJson;
 
 
 /**

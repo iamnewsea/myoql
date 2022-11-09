@@ -1,10 +1,7 @@
 package nbcp.base.aop
 
 import nbcp.base.TestBase
-import nbcp.base.comm.*
-import nbcp.base.enums.*
-import nbcp.base.extend.*
-import nbcp.base.utils.*
+import nbcp.base.utils.ProxyUtil
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import java.lang.reflect.InvocationHandler

@@ -1,14 +1,16 @@
 package nbcp.myoql.db.sql.component
 
-import nbcp.base.comm.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.*;
-import org.slf4j.LoggerFactory
-import java.time.LocalDateTime
+import nbcp.base.comm.JsonMap
+import nbcp.base.extend.ToJson
+import nbcp.base.extend.minus
+import nbcp.base.utils.Md5Util
+import nbcp.base.utils.SpringUtil
+import nbcp.myoql.db.db
 import nbcp.myoql.db.sql.base.SqlParameterData
 import nbcp.myoql.db.sql.logQuery
+import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
+import java.time.LocalDateTime
 
 abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
     protected var skip = 0;

@@ -1,6 +1,5 @@
 package nbcp.myoql.db.sql.base
 
-import nbcp.myoql.db.sql.base.IFieldValueConverter
 import java.lang.annotation.Inherited
 import kotlin.reflect.KClass
 

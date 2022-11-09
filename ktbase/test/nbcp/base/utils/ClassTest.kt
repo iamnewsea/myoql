@@ -1,11 +1,7 @@
 package nbcp.base.utils
 
 import nbcp.base.TestBase
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.extend.IsType
 import org.junit.jupiter.api.Test
 
 class ClassTest : TestBase() {

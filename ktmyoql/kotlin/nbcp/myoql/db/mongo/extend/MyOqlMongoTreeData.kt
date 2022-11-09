@@ -1,13 +1,8 @@
 package nbcp.myoql.db.mongo.extend
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
+import nbcp.base.extend.CloneObject
+import nbcp.base.extend.getValueByWbsPath
+import nbcp.myoql.db.db
 import nbcp.myoql.db.mongo.MongoQueryClip
 import nbcp.myoql.db.mongo.base.MongoColumnName
 import nbcp.myoql.db.mongo.component.MongoBaseMetaCollection

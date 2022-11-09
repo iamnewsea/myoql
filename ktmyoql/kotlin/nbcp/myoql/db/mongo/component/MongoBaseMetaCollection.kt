@@ -1,21 +1,18 @@
 package nbcp.myoql.db.mongo.component
 
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import org.slf4j.LoggerFactory
-import nbcp.myoql.db.*;
+import nbcp.base.extend.AllFields
+import nbcp.base.extend.AsString
+import nbcp.base.extend.FindField
+import nbcp.base.extend.HasValue
+import nbcp.myoql.db.BaseEntity
 import nbcp.myoql.db.comm.BaseMetaData
+import nbcp.myoql.db.db
 import nbcp.myoql.db.mongo.MongoBaseInsertClip
 import nbcp.myoql.db.mongo.base.MongoColumnName
 import nbcp.myoql.db.mongo.query
+import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.MongoTemplate
-import java.lang.RuntimeException
 
 typealias mongoQuery = org.springframework.data.mongodb.core.query.Query
 

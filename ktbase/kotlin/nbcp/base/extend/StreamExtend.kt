@@ -4,7 +4,9 @@
 package nbcp.base.extend
 
 import nbcp.base.comm.const
-import java.io.*
+import java.io.BufferedInputStream
+import java.io.ByteArrayInputStream
+import java.io.InputStream
 import java.nio.ByteBuffer
 
 

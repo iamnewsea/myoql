@@ -1,13 +1,12 @@
 package nbcp.myoql.weixin.pay
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
+import nbcp.base.comm.JsonResult
+import nbcp.base.extend.AsString
+import nbcp.base.extend.ConvertJson
+import nbcp.base.extend.Slice
+import nbcp.base.extend.Xml2Json
+import nbcp.base.utils.CodeUtil
+import nbcp.base.utils.HttpUtil
 import nbcp.myoql.weixin.wx
 import org.apache.http.ssl.SSLContexts
 import java.io.InputStream

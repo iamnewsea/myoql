@@ -1,19 +1,15 @@
 package nbcp.base.component
 
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
-import com.fasterxml.jackson.databind.*
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
-import nbcp.base.comm.*
-import nbcp.base.extend.*
-
-
-import org.springframework.beans.factory.InitializingBean
-import org.springframework.stereotype.Component
+import nbcp.base.extend.initObjectMapper
 
 
 //@Component("DbJson")
-class DbJsonMapper () : ObjectMapper() {
+class DbJsonMapper() : ObjectMapper() {
     companion object {
         val INSTANCE: DbJsonMapper by lazy {
             return@lazy DbJsonMapper();
@@ -31,7 +27,7 @@ class DbJsonMapper () : ObjectMapper() {
 }
 
 //@Component("YamlObjectMapper")
-class YamlObjectMapper private constructor(): YAMLMapper() {
+class YamlObjectMapper private constructor() : YAMLMapper() {
     companion object {
         val INSTANCE: YamlObjectMapper by lazy {
             return@lazy YamlObjectMapper();

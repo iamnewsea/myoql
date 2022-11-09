@@ -1,25 +1,21 @@
 package nbcp.myoql.tool
 
-import java.io.IOException
-import java.io.StringWriter
-import java.lang.Exception
-import java.util.*
 import freemarker.cache.ClassTemplateLoader
-import freemarker.ext.beans.StringModel
 import freemarker.template.*
+import nbcp.base.comm.*
+import nbcp.base.db.*
+import nbcp.base.enums.*
+import nbcp.base.extend.*
 import nbcp.base.scope.ContextMapScope
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
+import nbcp.base.utils.*
+import nbcp.myoql.db.*
 import nbcp.myoql.db.comm.*
+import nbcp.myoql.db.enums.*
+import java.io.IOException
 import java.io.StringReader
-import java.lang.RuntimeException
-import java.lang.reflect.Field
+import java.io.StringWriter
 import java.time.LocalDateTime
+import java.util.*
 
 object FreemarkerUtil {
     /**

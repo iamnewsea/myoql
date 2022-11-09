@@ -1,11 +1,13 @@
 package nbcp.myoql.db.mongo.event;
 
-import nbcp.myoql.db.mongo.*;
-import nbcp.base.utils.*
-import nbcp.myoql.db.*
-import nbcp.myoql.db.mongo.entity.*
+import nbcp.base.utils.MyUtil
 import nbcp.myoql.db.comm.EventResult
+import nbcp.myoql.db.db
+import nbcp.myoql.db.mongo.MongoBaseQueryClip
+import nbcp.myoql.db.mongo.MongoEntityCollector
+import nbcp.myoql.db.mongo.batchInsert
 import nbcp.myoql.db.mongo.component.MongoBaseUpdateClip
+import nbcp.myoql.db.mongo.entity.SysLog
 import org.bson.Document
 import org.springframework.stereotype.Component
 

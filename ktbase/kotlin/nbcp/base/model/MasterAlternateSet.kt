@@ -1,9 +1,5 @@
 package nbcp.base.model
 
-import java.util.*
-import java.util.function.Consumer
-import kotlin.concurrent.thread
-
 /**
  * 主备两个存储对象。可以想像是两个蓄水池。流出池，蓄水池。
  * 当 masterOpen 时，masterMap 可读,可清空，但不允许写入. 只允许写入alternateMap

@@ -1,11 +1,11 @@
 package nbcp.base.tool
 
 import nbcp.base.TestBase
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.comm.StringMap
+import nbcp.base.extend.AsString
+import nbcp.base.extend.FromListJson
+import nbcp.base.extend.formatWithJson
+import nbcp.base.utils.HttpUtil
 import org.junit.jupiter.api.Test
 
 
@@ -20,10 +20,10 @@ class Docker : TestBase() {
         var list = http.doGet().FromListJson(StringMap::class.java).map { it.get("name").AsString() }
 
         var ret = list
-                .filter { !it.contains("windows") }
-                .filter { !it.contains("alpine") }
-                .filter { !it.contains("buster") && !it.contains("stretch") && !it.contains("jessie") }
-                .filter { it.contains("jre") }
+            .filter { !it.contains("windows") }
+            .filter { !it.contains("alpine") }
+            .filter { !it.contains("buster") && !it.contains("stretch") && !it.contains("jessie") }
+            .filter { it.contains("jre") }
 
         println("结果:")
         println("==================================")

@@ -1,16 +1,12 @@
 package nbcp.web.base.util
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.extend.AsInt
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.Java2DFrameConverter
-import java.io.*
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import javax.imageio.ImageIO
-import javax.imageio.stream.ImageOutputStream
-import javax.imageio.stream.MemoryCacheImageOutputStream
 
 object VideoUtil {
 

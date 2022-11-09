@@ -2,25 +2,21 @@ package nbcp.myoql.db.mongo
 
 
 import com.mongodb.client.result.DeleteResult
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.cache.*
-import nbcp.myoql.db.comm.*
-import org.springframework.data.mongodb.core.query.Criteria
-import org.springframework.data.mongodb.core.query.Query
-import org.slf4j.LoggerFactory
-import java.lang.Exception
-import java.time.LocalDateTime
-import nbcp.myoql.db.mongo.logger.*
+import nbcp.base.comm.const
+import nbcp.base.enums.JsonStyleScopeEnum
+import nbcp.base.extend.*
+import nbcp.myoql.db.comm.LogicalDelete
+import nbcp.myoql.db.db
+import nbcp.myoql.db.enums.MyOqlDbScopeEnum
 import nbcp.myoql.db.mongo.component.IMongoWhere
 import nbcp.myoql.db.mongo.component.MongoBaseMetaCollection
 import nbcp.myoql.db.mongo.component.MongoBaseUpdateClip
 import nbcp.myoql.db.mongo.component.MongoClipBase
+import nbcp.myoql.db.mongo.logger.logDelete
+import org.slf4j.LoggerFactory
+import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.Query
+import java.time.LocalDateTime
 
 /**
  * Created by udi on 17-4-17.

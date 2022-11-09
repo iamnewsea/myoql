@@ -1,13 +1,10 @@
 package nbcp.myoql.db.sql.component
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
+import nbcp.base.comm.JsonMap
+import nbcp.base.extend.AsString
+import nbcp.base.extend.CloneObject
+import nbcp.base.extend.HasValue
+import nbcp.base.extend.basicSame
 import nbcp.myoql.db.sql.base.SqlParameterData
 import java.io.Serializable
 

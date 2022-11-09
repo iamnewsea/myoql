@@ -1,22 +1,19 @@
 package nbcp.myoql.db.es.component
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.es.*
+import nbcp.base.comm.JsonMap
+import nbcp.base.comm.config
+import nbcp.base.comm.const
+import nbcp.base.enums.JsonStyleScopeEnum
+import nbcp.base.extend.*
+import nbcp.myoql.db.db
+import nbcp.myoql.db.enums.MyOqlDbScopeEnum
 import nbcp.myoql.db.es.base.EsResultMsg
-import nbcp.myoql.db.es.enums.*
+import nbcp.myoql.db.es.enums.EsPutRefreshEnum
 import nbcp.myoql.db.es.extend.getResultMsg
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
 import org.elasticsearch.client.Request
 import org.slf4j.LoggerFactory
-import java.lang.Exception
-import java.lang.RuntimeException
 import java.time.LocalDateTime
 
 

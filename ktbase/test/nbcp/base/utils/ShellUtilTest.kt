@@ -1,15 +1,11 @@
 package nbcp.base.utils
 
 import nbcp.base.TestBase
-import nbcp.base.comm.*
+import nbcp.base.extend.AsLong
+import nbcp.base.extend.HasValue
 import nbcp.base.model.InputStreamTextReaderThread
 import org.junit.jupiter.api.Test
 import java.io.File
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
 import java.util.*
 import java.util.concurrent.TimeUnit
 

@@ -1,11 +1,12 @@
 package nbcp.base.utils
 
 import nbcp.base.TestBase
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
+import nbcp.base.comm.JsonMap
+import nbcp.base.comm.StringMap
+import nbcp.base.db.IdName
+import nbcp.base.extend.ToJson
+import nbcp.base.extend.splitBoundary
+import nbcp.base.extend.takeNumber
 import org.junit.jupiter.api.Test
 
 class MyUtilTest : TestBase() {

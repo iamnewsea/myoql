@@ -1,10 +1,6 @@
 package nbcp.base.comm
 
-import java.lang.RuntimeException
-import nbcp.base.comm.*
-import nbcp.base.enums.*
-import nbcp.base.extend.*
-import nbcp.base.utils.*
+import nbcp.base.extend.AsString
 
 /**
  * Created by jin on 2017/3/16.

@@ -26,7 +26,7 @@ abstract class DualPoolData<T>(protected val masterPool: T, protected val altern
         masterOpen = !masterOpen;
     }
 
-    val outputPool : T
+    val outputPool: T
         get() {
             if (masterOpen) return alternatePool;
             else return masterPool;

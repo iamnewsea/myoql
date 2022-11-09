@@ -1,15 +1,9 @@
 package nbcp.myoql.model
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
+import nbcp.base.comm.JsonMap
+import nbcp.base.comm.const
+import nbcp.base.extend.*
 import java.io.Serializable
-import java.lang.reflect.ParameterizedType
 
 /**
  * ExcelComponent 返回的数据类

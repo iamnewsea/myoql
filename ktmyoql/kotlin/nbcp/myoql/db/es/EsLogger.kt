@@ -1,19 +1,13 @@
 package nbcp.myoql.db.es.logger
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.cache.*
-import nbcp.myoql.db.comm.*
+import nbcp.base.extend.Important
+import nbcp.base.extend.readContentString
+import nbcp.base.extend.scopeInfoLevel
+import nbcp.base.utils.SpringUtil
+import nbcp.myoql.db.db
 import nbcp.myoql.db.es.EsTableLogProperties
 import org.elasticsearch.client.Request
-import org.elasticsearch.client.Response
 import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 
 val esLog by lazy {

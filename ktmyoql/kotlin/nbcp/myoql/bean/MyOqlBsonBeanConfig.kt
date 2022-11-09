@@ -1,14 +1,14 @@
 package nbcp.myoql.bean
 
 import com.fasterxml.jackson.databind.ObjectMapper
-
-import nbcp.base.comm.*;
 import nbcp.base.component.DbJsonMapper
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.mongo.*
+import nbcp.base.extend.addObjectMapperTypeModule
+import nbcp.base.extend.clazzesIsSimpleDefine
+import nbcp.base.utils.SpringUtil
+import nbcp.myoql.db.mongo.DocumentJsonDeserializer
+import nbcp.myoql.db.mongo.DocumentJsonSerializer
+import nbcp.myoql.db.mongo.ObjectIdJsonDeserializer
+import nbcp.myoql.db.mongo.ObjectIdJsonSerializer
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.config.BeanPostProcessor

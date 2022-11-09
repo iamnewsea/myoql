@@ -1,30 +1,17 @@
 package nbcp
 
-import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.support.FileSystemXmlApplicationContext
-import org.springframework.context.support.GenericXmlApplicationContext
-import org.springframework.test.context.TestPropertySource
-import org.springframework.test.context.junit4.SpringRunner
-import org.springframework.test.context.web.WebAppConfiguration
-import org.springframework.test.web.servlet.MockMvc
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
 import nbcp.base.enums.LogLevelScopeEnum
+import nbcp.base.extend.minus
+import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.Banner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
-import org.springframework.context.annotation.Import
-import java.time.Duration
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.test.context.web.WebAppConfiguration
 import java.time.LocalDateTime
 
 /**

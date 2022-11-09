@@ -1,23 +1,20 @@
 package nbcp.myoql.db.es.component
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.es.*
+import nbcp.base.comm.JsonMap
+import nbcp.base.comm.const
+import nbcp.base.enums.JsonStyleScopeEnum
+import nbcp.base.extend.*
+import nbcp.myoql.db.BaseEntity
+import nbcp.myoql.db.db
+import nbcp.myoql.db.enums.MyOqlDbScopeEnum
+import nbcp.myoql.db.es.enums.EsPutRefreshEnum
+import nbcp.myoql.db.es.logger.logPut
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
 import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.slf4j.LoggerFactory
-import java.lang.RuntimeException
 import java.time.LocalDateTime
-import nbcp.myoql.db.es.logger.*
-import nbcp.myoql.db.BaseEntity
-import nbcp.myoql.db.db
-import nbcp.myoql.db.enums.MyOqlDbScopeEnum
-import nbcp.myoql.db.es.enums.EsPutRefreshEnum
 
 open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhereable {
     companion object {

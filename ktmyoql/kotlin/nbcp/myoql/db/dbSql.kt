@@ -1,15 +1,14 @@
 package nbcp.myoql.db
 
 import com.zaxxer.hikari.HikariDataSource
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
+import nbcp.base.comm.*
+import nbcp.base.db.*
+import nbcp.base.enums.*
+import nbcp.base.extend.*
 import nbcp.base.utils.*
+import nbcp.myoql.db.*
+import nbcp.myoql.db.comm.*
+import nbcp.myoql.db.enums.*
 import nbcp.myoql.db.sql.SqlEntityCollector
 import nbcp.myoql.db.sql.base.BaseAliasSqlSect
 import nbcp.myoql.db.sql.base.SqlColumnName
@@ -17,7 +16,6 @@ import nbcp.myoql.db.sql.base.SqlParameterData
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
 import org.springframework.util.StringUtils
-import java.lang.RuntimeException
 import javax.sql.DataSource
 
 /**

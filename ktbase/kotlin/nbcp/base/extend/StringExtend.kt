@@ -3,14 +3,13 @@
 
 package nbcp.base.extend
 
-import nbcp.base.component.YamlObjectMapper
-import org.slf4j.LoggerFactory
-import java.util.ArrayList
-import kotlin.reflect.KClass
 import nbcp.base.comm.*
+import nbcp.base.component.YamlObjectMapper
 import nbcp.base.enums.*
 import nbcp.base.extend.*
 import nbcp.base.utils.*
+import org.slf4j.LoggerFactory
+import kotlin.reflect.KClass
 
 
 private val logger = LoggerFactory.getLogger("MyHelper.StringExtend")

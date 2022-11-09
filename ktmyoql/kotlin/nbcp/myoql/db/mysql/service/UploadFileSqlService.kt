@@ -1,18 +1,12 @@
 package nbcp.myoql.db.mysql.service
 
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
-import nbcp.myoql.db.mongo.entity.*
-import nbcp.myoql.db.sql.entity.*
+import nbcp.base.extend.ConvertJson
+import nbcp.myoql.db.db
+import nbcp.myoql.db.mongo.entity.SysAnnex
 import nbcp.myoql.db.mysql.ExistsSqlSourceConfigCondition
 import nbcp.myoql.db.sql.component.doInsert
+import nbcp.myoql.db.sql.entity.s_annex
 import nbcp.myoql.model.IUploadFileDbService
 import org.springframework.context.annotation.Conditional
 import org.springframework.stereotype.Component

@@ -1,13 +1,11 @@
 package nbcp.myoql.db.es.extend
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.es.*
+import nbcp.base.comm.JsonMap
+import nbcp.base.comm.const
+import nbcp.base.extend.AsBoolean
+import nbcp.base.extend.AsInt
+import nbcp.base.extend.AsString
+import nbcp.base.extend.FromJson
 import nbcp.myoql.db.es.base.EsResultMsg
 import org.elasticsearch.client.Response
 

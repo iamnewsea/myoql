@@ -1,15 +1,13 @@
 package nbcp.myoql.db.sql.enums
 
-import nbcp.base.comm.*
 import nbcp.base.extend.AsInt
 import nbcp.base.extend.IsCollectionType
 import nbcp.base.extend.kotlinTypeName
 import java.math.BigDecimal
+import java.sql.Types
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.util.*
-import java.sql.Types;
 import kotlin.reflect.KClass
 
 /**

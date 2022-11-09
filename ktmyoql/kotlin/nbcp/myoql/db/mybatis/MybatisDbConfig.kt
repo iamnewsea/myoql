@@ -1,20 +1,11 @@
 package nbcp.myoql.db.mybatis
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
-import org.mybatis.spring.SqlSessionFactoryBean
-import org.mybatis.spring.SqlSessionTemplate
+import nbcp.base.comm.config
+import nbcp.base.utils.SpringUtil
 import org.mybatis.spring.mapper.MapperScannerConfigurer
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.context.event.ApplicationPreparedEvent
-import org.springframework.context.annotation.Import
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.EnableTransactionManagement

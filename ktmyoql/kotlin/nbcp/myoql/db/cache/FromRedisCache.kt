@@ -1,12 +1,9 @@
 package nbcp.myoql.db.cache
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
+import nbcp.base.comm.config
+import nbcp.base.extend.*
+import nbcp.base.utils.Md5Util
+import nbcp.base.utils.SpringUtil
 import org.slf4j.LoggerFactory
 import org.springframework.data.redis.core.StringRedisTemplate
 import java.lang.annotation.Inherited

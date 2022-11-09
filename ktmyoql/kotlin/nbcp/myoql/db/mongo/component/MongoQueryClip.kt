@@ -1,6 +1,10 @@
 package nbcp.myoql.db.mongo
 
-import nbcp.base.comm.*
+//import nbcp.base.comm.*
+
+
+import nbcp.base.comm.DataInvalidateException
+import nbcp.base.comm.ListResult
 import nbcp.myoql.db.db
 import nbcp.myoql.db.mongo.base.MongoColumnName
 import nbcp.myoql.db.mongo.component.MongoBaseMetaCollection
@@ -8,9 +12,6 @@ import nbcp.myoql.db.mongo.extend.MyOqlMongoTreeData
 import nbcp.myoql.db.mongo.extend.toDocument
 import org.bson.Document
 import org.springframework.data.mongodb.core.query.Criteria
-//import nbcp.base.comm.*
-
-
 import java.io.Serializable
 
 /**

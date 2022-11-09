@@ -1,6 +1,9 @@
 package nbcp.base.utils
 
-import nbcp.base.comm.*
+import nbcp.base.comm.JsonMap
+import nbcp.base.comm.StringKeyMap
+import nbcp.base.comm.StringMap
+import nbcp.base.comm.const
 import nbcp.base.extend.*
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.ClassPathResource
@@ -1049,7 +1052,8 @@ object MyUtil {
              ${MyUtil.getRandomWithLength(6)}
              """.trimIndent()
         val secretByte = Base64.getDecoder().decode(publicSecret)
-        val encrypt = nbcp.base.utils.RSARawUtil.encryptByPublicKey(text.toByteArray(StandardCharsets.UTF_8), secretByte)
+        val encrypt =
+            nbcp.base.utils.RSARawUtil.encryptByPublicKey(text.toByteArray(StandardCharsets.UTF_8), secretByte)
 
         // + / = 替换为： - * ~
         return Base64.getEncoder()
@@ -1080,7 +1084,10 @@ object MyUtil {
         val dtStringValue = encryptWithPublicSecretValue.substring(dotIndex + 1)
         val secretByte = Base64.getDecoder().decode(privateSecret)
         val oriStrings =
-            String(nbcp.base.utils.RSARawUtil.decryptByPrivateKey(oriValue, secretByte), StandardCharsets.UTF_8).split("\n")
+            String(
+                nbcp.base.utils.RSARawUtil.decryptByPrivateKey(oriValue, secretByte),
+                StandardCharsets.UTF_8
+            ).split("\n")
                 .toTypedArray()
         if (oriStrings.size < 3) throw RuntimeException("非法值")
         if (dtStringValue != oriStrings[1]) {

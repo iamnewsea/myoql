@@ -1,16 +1,12 @@
 package nbcp.myoql.db.sql
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
-import nbcp.myoql.db.sql.component.*
-import nbcp.myoql.db.sql.extend.*
+import nbcp.base.comm.config
+import nbcp.base.comm.const
+import nbcp.base.extend.Important
+import nbcp.base.extend.ToJson
+import nbcp.base.extend.scopeInfoLevel
 import nbcp.base.utils.SpringUtil
+import nbcp.myoql.db.db
 import nbcp.myoql.db.sql.base.SqlParameterData
 import org.slf4j.Logger
 

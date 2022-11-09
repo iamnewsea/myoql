@@ -1,12 +1,10 @@
 package nbcp.web.base.mvc.service
 
-import nbcp.base.comm.*;
 import nbcp.base.component.SnowFlake
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
-import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.base.utils.*
+import nbcp.base.extend.AsInt
+import nbcp.base.utils.HttpUtil
+import nbcp.base.utils.MyUtil
+import nbcp.base.utils.SpringUtil
 import nbcp.myoql.db.db
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
