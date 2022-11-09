@@ -1,6 +1,6 @@
-package nbcp
+package nbcp.web
 
-import nbcp.base.TestBase
+import nbcp.web.TestBase
 import org.junit.jupiter.api.Test
 import org.springframework.util.AntPathMatcher
 

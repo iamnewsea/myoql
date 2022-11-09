@@ -1,6 +1,6 @@
-package nbcp
+package nbcp.mvc
 
-import nbcp.base.TestBase
+
 import nbcp.base.enums.*
 import nbcp.base.utils.*
 import org.junit.jupiter.api.Test

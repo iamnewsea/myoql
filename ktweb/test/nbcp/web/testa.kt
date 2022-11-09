@@ -1,10 +1,6 @@
-package nbcp
+package nbcp.web
 
 
-import nbcp.base.TestBase
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
 import nbcp.base.extend.*;
 import nbcp.base.utils.*;
 import nbcp.web.base.mvc.handler.DevDockerServlet

@@ -1,6 +1,6 @@
-package nbcp
+package nbcp.mvc
 
-import nbcp.base.PzxEntityTestApplication
+import nbcp.mvc.PzxEntityTestApplication
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.boot.test.context.SpringBootTest
