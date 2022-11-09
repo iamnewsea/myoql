@@ -1,4 +1,4 @@
-package nbcp.db.es
+package nbcp.myoql.db.es
 
 import nbcp.myoql.db.es.component.EsBaseMetaEntity
 import nbcp.myoql.db.es.component.EsBaseUpdateClip

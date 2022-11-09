@@ -8,7 +8,7 @@ import nbcp.base.utils.*;
 import nbcp.myoql.db.enums.*
 import nbcp.myoql.db.*;
 import nbcp.myoql.db.*
-import nbcp.db.es.*
+import nbcp.myoql.db.es.*
 import nbcp.myoql.db.comm.EventResult
 import nbcp.myoql.db.es.component.EsBaseInsertClip
 import org.springframework.stereotype.Component

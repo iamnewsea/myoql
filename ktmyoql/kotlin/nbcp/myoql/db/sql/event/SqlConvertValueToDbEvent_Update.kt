@@ -1,6 +1,6 @@
 //package nbcp.db.sql.event;
 //
-//import nbcp.db.sql.*;
+//import nbcp.myoql.db.sql.*;
 //import nbcp.comm.AllFields
 //import nbcp.myoql.db.*
 //import org.springframework.stereotype.Component

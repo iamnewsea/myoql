@@ -83,9 +83,9 @@ class DbrGenerator4Java {
         var fileHeader = """package ${packageName};
 
 import nbcp.myoql.db.*;
-import nbcp.db.sql.*;
-import nbcp.db.sql.entity.*;
-import nbcp.db.mysql.*;
+import nbcp.myoql.db.sql.*;
+import nbcp.myoql.db.sql.entity.*;
+import nbcp.myoql.db.mysql.*;
 import nbcp.base.comm.*;
 import nbcp.base.utils.*;
 import java.util.*;

@@ -7,7 +7,7 @@ import nbcp.base.utils.*
 
 import nbcp.myoql.db.*
 import nbcp.myoql.db.mongo.*
-import nbcp.db.mongo.entity.SysFlywayVersion
+import nbcp.myoql.db.mongo.entity.SysFlywayVersion
 
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass

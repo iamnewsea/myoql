@@ -5,7 +5,7 @@ import nbcp.base.extend.usingScope
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.time.LocalDateTime
-import nbcp.db.mongo.logger.*
+import nbcp.myoql.db.mongo.logger.*
 import nbcp.myoql.db.db
 import nbcp.myoql.db.enums.MyOqlDbScopeEnum
 

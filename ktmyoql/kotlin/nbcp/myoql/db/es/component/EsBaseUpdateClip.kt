@@ -5,7 +5,7 @@ import nbcp.base.db.*;
 import nbcp.base.enums.*;
 import nbcp.base.extend.*;
 import nbcp.base.utils.*;
-import nbcp.db.es.*
+import nbcp.myoql.db.es.*
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
 import org.elasticsearch.client.Request
@@ -13,7 +13,7 @@ import org.elasticsearch.client.Response
 import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
 import java.time.LocalDateTime
-import nbcp.db.es.logger.*
+import nbcp.myoql.db.es.logger.*
 import nbcp.myoql.db.BaseEntity
 import nbcp.myoql.db.db
 import nbcp.myoql.db.enums.MyOqlDbScopeEnum

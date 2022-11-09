@@ -1,10 +1,10 @@
 //package nbcp.db.es
 //
 //import nbcp.base.utils.*
-//import nbcp.db.DbEntityEventResult
-//import nbcp.db.db
-//import nbcp.db.es.*
-//import nbcp.db.mongo.entity.*
+//import nbcp.myoql.db.DbEntityEventResult
+//import nbcp.myoql.db.db
+//import nbcp.myoql.db.es.*
+//import nbcp.myoql.db.mongo.entity.*
 //import org.springframework.stereotype.Component
 //
 ///**

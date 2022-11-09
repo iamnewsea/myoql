@@ -1,8 +1,8 @@
 //package nbcp.db.cache
 //
 //import nbcp.base.comm.*
-//import nbcp.db.db
-//import nbcp.db.redis.scanKeys
+//import nbcp.myoql.db.db
+//import nbcp.myoql.db.redis.scanKeys
 //import nbcp.utils.CodeUtil
 //import org.slf4j.LoggerFactory
 //import org.springframework.beans.factory.InitializingBean

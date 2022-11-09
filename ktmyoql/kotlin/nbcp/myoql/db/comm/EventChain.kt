@@ -1,6 +1,6 @@
 //package nbcp.db
 //
-//import nbcp.db.mongo.MongoBaseQueryClip
+//import nbcp.myoql.db.mongo.MongoBaseQueryClip
 //import org.bson.Document
 //
 //

@@ -5,7 +5,6 @@ import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
 
-import nbcp.db.mongo.logger.logFind
 import nbcp.myoql.db.mongo.component.MongoAggregateBeginMatch
 import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
@@ -23,6 +22,7 @@ import nbcp.myoql.db.mongo.component.MongoClipBase
 import nbcp.myoql.db.mongo.enums.PipeLineEnum
 import nbcp.myoql.db.mongo.extend.procWithMongoScript
 import nbcp.myoql.db.mongo.extend.toOIdJson
+import nbcp.myoql.db.mongo.logger.logFind
 
 /** https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline/ */
 

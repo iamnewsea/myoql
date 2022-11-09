@@ -8,6 +8,7 @@ import nbcp.base.enums.*
 import nbcp.base.utils.*
 import nbcp.myoql.db.*
 import nbcp.myoql.db.sql.*
+
 import nbcp.myoql.db.comm.*
 import nbcp.myoql.db.enums.*
 import nbcp.myoql.db.sql.base.*
@@ -32,7 +33,7 @@ class SqlBaseGroup : IDataGroup{
     /**
      * 附件
      */
-    @nbcp.base.db.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
+    @nbcp.base.db.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
     @nbcp.myoql.db.sql.base.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
     @nbcp.base.db.DbEntityGroup(value = """SqlBase""")
     @nbcp.base.db.Cn(value = """附件""")
@@ -78,7 +79,7 @@ class SqlBaseGroup : IDataGroup{
      * 城市
      */
     @nbcp.base.db.DbEntityGroup(value = """SqlBase""")
-    @nbcp.base.db.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""code"""))
+    @nbcp.base.db.DbEntityIndex(value = arrayOf("""code"""), unique = true, cacheable = false)
     @nbcp.base.db.Cn(value = """城市""")
     class s_city_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.myoql.db.sql.entity.s_city>(nbcp.myoql.db.sql.entity.s_city::class.java, "s_city") {
@@ -116,7 +117,7 @@ class SqlBaseGroup : IDataGroup{
     /**
      * 数据垃圾箱
      */
-    @nbcp.base.db.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
+    @nbcp.base.db.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
     @nbcp.myoql.db.sql.base.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
     @nbcp.base.db.DbEntityGroup(value = """SqlBase""")
     @nbcp.base.db.Cn(value = """数据垃圾箱""")
@@ -154,7 +155,7 @@ class SqlBaseGroup : IDataGroup{
     /**
      * 日志
      */
-    @nbcp.base.db.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
+    @nbcp.base.db.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
     @nbcp.myoql.db.sql.base.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
     @nbcp.base.db.DbEntityGroup(value = """SqlBase""")
     @nbcp.base.db.Cn(value = """日志""")

@@ -2,10 +2,10 @@
 //
 //import nbcp.base.comm.*
 //import nbcp.comm.AsString
-//import nbcp.db.mysql.*
+//import nbcp.myoql.db.mysql.*
 //import java.util.concurrent.Executors
 //import java.util.concurrent.Future
-//import nbcp.db.sql.*
+//import nbcp.myoql.db.sql.*
 ///**
 // * Created by yuxh on 2019/4/16
 // */

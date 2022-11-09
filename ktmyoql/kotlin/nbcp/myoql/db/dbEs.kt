@@ -6,8 +6,8 @@ import nbcp.base.db.*;
 import nbcp.base.enums.*;
 import nbcp.base.extend.*;
 import nbcp.base.utils.*;
-import nbcp.db.es.*
-import nbcp.db.es.logger.*
+import nbcp.myoql.db.es.*
+import nbcp.myoql.db.es.logger.*
 import nbcp.myoql.db.comm.IDataGroup
 import nbcp.myoql.db.es.EsEntityCollector
 import nbcp.myoql.db.es.component.EsBaseMetaEntity

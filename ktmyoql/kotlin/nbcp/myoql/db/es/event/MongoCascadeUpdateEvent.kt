@@ -2,8 +2,8 @@
 //
 //import nbcp.comm.getStringValue
 //import nbcp.base.utils.*
-//import nbcp.db.DbEntityEventResult
-//import nbcp.db.DbEntityFieldRefData
+//import nbcp.myoql.db.DbEntityEventResult
+//import nbcp.myoql.db.DbEntityFieldRefData
 //import org.springframework.stereotype.Component
 //
 ///**

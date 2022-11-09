@@ -3,7 +3,7 @@ package nbcp.myoql.db.mongo.event;
 import nbcp.myoql.db.mongo.*;
 import nbcp.base.utils.*
 import nbcp.myoql.db.*
-import nbcp.db.mongo.entity.*
+import nbcp.myoql.db.mongo.entity.*
 import nbcp.myoql.db.comm.EventResult
 import nbcp.myoql.db.mongo.component.MongoBaseUpdateClip
 import org.bson.Document

@@ -9,7 +9,7 @@ import nbcp.myoql.db.sql.base.SqlBaseMetaTable
 import nbcp.myoql.db.sql.base.SqlColumnNames
 import java.io.Serializable
 
-//import nbcp.db.mongo.entity.Serializable
+//import nbcp.myoql.db.mongo.entity.Serializable
 
 @JvmOverloads
 fun <M : SqlBaseMetaTable<T>, T : Serializable> M.query(selectColumn: ((M) -> BaseAliasSqlSect)? = null): SqlQueryClip<M, T> {

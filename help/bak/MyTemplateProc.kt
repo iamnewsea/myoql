@@ -1,7 +1,7 @@
 package nbcp.tool
 
 import nbcp.base.comm.*
-import nbcp.db.IdUrl
+import nbcp.myoql.db.IdUrl
 import nbcp.base.utils.MyUtil
 import java.lang.RuntimeException
 import java.lang.reflect.Field

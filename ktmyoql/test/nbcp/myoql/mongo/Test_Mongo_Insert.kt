@@ -4,7 +4,7 @@ import nbcp.myoql.TestBase
 import nbcp.base.comm.*;
 import nbcp.base.db.*;
 import nbcp.base.utils.*;
-import nbcp.db.mongo.entity.SysAnnex
+import nbcp.myoql.db.mongo.entity.SysAnnex
 import nbcp.myoql.db.db
 import org.bson.Document
 import org.bson.types.ObjectId

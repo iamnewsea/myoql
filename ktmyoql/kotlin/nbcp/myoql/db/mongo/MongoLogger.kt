@@ -1,4 +1,4 @@
-package nbcp.db.mongo.logger
+package nbcp.myoql.db.mongo.logger
 
 import com.mongodb.client.result.DeleteResult
 import com.mongodb.client.result.UpdateResult

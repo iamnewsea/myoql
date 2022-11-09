@@ -16,7 +16,7 @@ import org.springframework.data.mongodb.core.query.Query
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.time.LocalDateTime
-import nbcp.db.mongo.logger.*
+import nbcp.myoql.db.mongo.logger.*
 import nbcp.myoql.db.mongo.component.IMongoWhere
 import nbcp.myoql.db.mongo.component.MongoBaseMetaCollection
 import nbcp.myoql.db.mongo.component.MongoBaseUpdateClip

@@ -1,4 +1,4 @@
-package nbcp.db.mongo.entity
+package nbcp.myoql.db.mongo.entity
 
 import nbcp.base.db.Cn
 import nbcp.base.db.DbEntityGroup

@@ -1,8 +1,8 @@
 //package nbcp.db.es
 //
-//import nbcp.db.DbEntityEventResult
-//import nbcp.db.db
-//import nbcp.db.es.entity.*
+//import nbcp.myoql.db.DbEntityEventResult
+//import nbcp.myoql.db.db
+//import nbcp.myoql.db.es.entity.*
 //import org.springframework.stereotype.Component
 //
 //

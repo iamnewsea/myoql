@@ -14,7 +14,7 @@ import org.springframework.data.mongodb.core.query.CriteriaDefinition
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 import java.time.LocalDateTime
-import nbcp.db.mongo.logger.*
+import nbcp.myoql.db.mongo.logger.*
 import nbcp.myoql.db.mongo.MongoWhereClip
 
 open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IMongoWhere {

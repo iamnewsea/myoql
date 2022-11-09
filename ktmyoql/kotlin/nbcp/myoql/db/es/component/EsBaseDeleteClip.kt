@@ -7,7 +7,7 @@ import nbcp.base.extend.*;
 import nbcp.base.utils.*;
 import nbcp.myoql.db.enums.*
 import nbcp.myoql.db.*;
-import nbcp.db.es.*
+import nbcp.myoql.db.es.*
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
 import org.elasticsearch.client.Request
@@ -15,7 +15,7 @@ import org.elasticsearch.client.Response
 import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
 import java.time.LocalDateTime
-import nbcp.db.es.logger.*
+import nbcp.myoql.db.es.logger.*
 import nbcp.myoql.db.es.enums.EsPutRefreshEnum
 
 open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhereable {

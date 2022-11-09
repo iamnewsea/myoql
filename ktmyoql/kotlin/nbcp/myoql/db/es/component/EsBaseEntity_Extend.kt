@@ -1,6 +1,6 @@
 package nbcp.myoql.db.es.component
 
-import nbcp.db.es.*
+import nbcp.myoql.db.es.*
 import nbcp.myoql.db.es.base.EsColumnName
 import java.io.Serializable
 

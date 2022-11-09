@@ -3,7 +3,7 @@
 //
 //import nbcp.base.comm.*
 //import nbcp.base.utils.*
-//import nbcp.db.db
+//import nbcp.myoql.db.db
 //import org.slf4j.LoggerFactory
 //
 ///**

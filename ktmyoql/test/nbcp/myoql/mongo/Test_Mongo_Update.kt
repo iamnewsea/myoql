@@ -6,7 +6,7 @@ import nbcp.base.db.*;
 import nbcp.base.extend.*;
 import nbcp.base.utils.*;
 import nbcp.myoql.db.mongo.*
-import nbcp.db.mongo.entity.SysAnnex
+import nbcp.myoql.db.mongo.entity.SysAnnex
 import nbcp.myoql.db.comm.op_inc
 import nbcp.myoql.db.db
 import org.bson.Document

@@ -1,7 +1,7 @@
 package nbcp.myoql.db.mongo.service
 
 
-import nbcp.db.mongo.entity.*
+import nbcp.myoql.db.mongo.entity.*
 import nbcp.myoql.db.db
 import nbcp.myoql.db.mongo.*
 import nbcp.myoql.model.IUploadFileDbService

@@ -9,7 +9,7 @@ import org.elasticsearch.client.Response
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.time.LocalDateTime
-import nbcp.db.es.logger.*
+import nbcp.myoql.db.es.logger.*
 import nbcp.myoql.db.db
 
 open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWhereable {

@@ -7,7 +7,7 @@ import nbcp.base.extend.*;
 import nbcp.base.utils.*;
 import nbcp.myoql.db.enums.*
 import nbcp.myoql.db.*;
-import nbcp.db.es.*
+import nbcp.myoql.db.es.*
 import nbcp.myoql.db.es.base.EsResultMsg
 import org.elasticsearch.client.Response
 

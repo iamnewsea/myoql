@@ -1,4 +1,4 @@
-package nbcp.db.es.logger
+package nbcp.myoql.db.es.logger
 
 import nbcp.base.comm.*;
 import nbcp.base.db.*;

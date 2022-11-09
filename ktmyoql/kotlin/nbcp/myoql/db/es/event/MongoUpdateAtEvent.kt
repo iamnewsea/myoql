@@ -1,7 +1,7 @@
 //package nbcp.db.es
 //
-//import nbcp.db.DbEntityEventResult
-//import nbcp.db.es.*
+//import nbcp.myoql.db.DbEntityEventResult
+//import nbcp.myoql.db.es.*
 //import org.springframework.stereotype.Component
 //import java.time.LocalDateTime
 //

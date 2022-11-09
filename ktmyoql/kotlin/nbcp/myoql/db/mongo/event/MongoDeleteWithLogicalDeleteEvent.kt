@@ -3,8 +3,8 @@
 //import nbcp.comm.AsString
 //import nbcp.comm.scopes
 //import nbcp.myoql.db.*
-//import nbcp.db.mongo.entity.*
-//import nbcp.db.mongo.event.*
+//import nbcp.myoql.db.mongo.entity.*
+//import nbcp.myoql.db.mongo.event.*
 //import org.bson.Document
 //import org.slf4j.LoggerFactory
 //import org.springframework.stereotype.Component

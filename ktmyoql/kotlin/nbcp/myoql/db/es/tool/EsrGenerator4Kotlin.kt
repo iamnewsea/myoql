@@ -54,7 +54,7 @@ class EsrGenerator4Kotlin {
         var fileHeader =  """package ${packageName}
 
 import nbcp.myoql.db.*
-import nbcp.db.es.*
+import nbcp.myoql.db.es.*
 import nbcp.base.utils.*
 import nbcp.base.comm.*
 import org.slf4j.LoggerFactory
