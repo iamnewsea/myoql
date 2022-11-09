@@ -73,6 +73,8 @@ import nbcp.myoql.db.*
 import nbcp.myoql.db.comm.*
 import nbcp.myoql.db.enums.*
 import nbcp.myoql.db.mongo.*
+import nbcp.myoql.db.mongo.base.*
+import nbcp.myoql.db.mongo.component.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.*
 ${importPackages.map { "import " + it }.joinToString(const.line_break)}
