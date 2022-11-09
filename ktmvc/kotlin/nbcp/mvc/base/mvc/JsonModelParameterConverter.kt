@@ -21,7 +21,6 @@ import javax.servlet.ServletRequest
 import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpSession
-import kotlin.reflect.full.isSuperclassOf
 
 
 /**
@@ -37,10 +36,11 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
     }
 
     override fun supportsParameter(parameter: MethodParameter): Boolean {
-        if (ServletRequest::class.java.isAssignableFrom(parameter.parameterType)) return false
-        if (ServletResponse::class.java.isAssignableFrom(parameter.parameterType)) return false
-        if (HttpSession::class.java.isAssignableFrom(parameter.parameterType)) return false
-        if (InputStreamSource::class.isSuperclassOf(parameter.parameterType.kotlin)) return false
+        val parameterType = parameter.parameterType;
+        if (ServletRequest::class.java.isAssignableFrom(parameterType)) return false
+        if (ServletResponse::class.java.isAssignableFrom(parameterType)) return false
+        if (HttpSession::class.java.isAssignableFrom(parameterType)) return false
+        if (InputStreamSource::class.java.isAssignableFrom(parameterType)) return false
 
         if (parameter.hasParameterAnnotation(PathVariable::class.java)) return false;
         if (parameter.hasParameterAnnotation(CookieValue::class.java)) return false;
@@ -52,12 +52,14 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         if (parameter.hasParameterAnnotation(RequestPart::class.java)) return false;
 
 
+        //复杂对象，必须用 JsonModel！
         if (parameter.hasParameterAnnotation(JsonModel::class.java)) return true;
 
 //        var className = parameter.containingClass.name
 //        if (packages.any()) {
 //            return packages.any { return@any className.startsWith(it) }
 //        }
+        if (parameterType.IsSimpleType() == false) return false;
         return true
     }
 

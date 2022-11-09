@@ -14,10 +14,13 @@ class ServletBeanWebProcessor : BeanPostProcessor {
         if (bean is RequestMappingHandlerAdapter) {
             var handlerAdapter = bean;
 
-            var listResolvers = mutableListOf<HandlerMethodArgumentResolver>()
-            listResolvers.add(LoginUserParameterConverter());
-            listResolvers.addAll(handlerAdapter.argumentResolvers ?: listOf())
-            handlerAdapter.argumentResolvers = listResolvers;
+            val resolvers = handlerAdapter.argumentResolvers ?: listOf()
+            if (resolvers.any { it is LoginUserParameterConverter } == false) {
+                var listResolvers = mutableListOf<HandlerMethodArgumentResolver>()
+                listResolvers.add(LoginUserParameterConverter());
+                listResolvers.addAll(resolvers)
+                handlerAdapter.argumentResolvers = listResolvers;
+            }
         }
         return super.postProcessAfterInitialization(bean, beanName)
     }
