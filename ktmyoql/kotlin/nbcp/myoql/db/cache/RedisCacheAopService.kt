@@ -112,7 +112,7 @@ open class RedisCacheAopService {
     /**
      * MasterAlternateMap
      */
-    @Around("@annotation(nbcp.db.cache.BrokeRedisCache)")
+    @Around("@annotation(nbcp.myoql.db.cache.BrokeRedisCache)")
     fun cacheBroke(joinPoint: ProceedingJoinPoint): Any? {
         val signature = joinPoint.signature as MethodSignature;
         val method = signature.method

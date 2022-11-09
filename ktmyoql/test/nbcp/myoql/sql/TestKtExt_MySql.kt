@@ -7,7 +7,7 @@ import nbcp.base.db.*;
 import nbcp.base.enums.*;
 import nbcp.base.extend.*;
 import nbcp.base.utils.*;
-import nbcp.myoql.db.sql.s_annex
+import nbcp.myoql.db.sql.entity.*
 import nbcp.myoql.tool.UserCodeGenerator
 import nbcp.base.utils.MyUtil
 import nbcp.myoql.db.db

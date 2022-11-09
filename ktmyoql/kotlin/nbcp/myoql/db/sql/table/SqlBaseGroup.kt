@@ -1,24 +1,21 @@
 package nbcp.myoql.db.sql.table
 
-import nbcp.base.db.Cn
-import nbcp.base.db.DbEntityGroup
-import nbcp.base.db.DbEntityIndex
-import nbcp.myoql.db.sql.base.ConverterValueToDb
-import nbcp.myoql.db.sql.base.SqlBaseMetaTable
-import nbcp.myoql.db.sql.base.SqlColumnName
-import nbcp.myoql.db.sql.define.AutoIdConverter
-import nbcp.myoql.db.sql.define.FkDefine
-import nbcp.myoql.db.sql.enums.DbType
-import org.springframework.stereotype.*
-import nbcp.base.db.*;
-import nbcp.myoql.db.enums.*
+import java.io.*
+import nbcp.base.db.*
+import nbcp.base.comm.*
+import nbcp.base.extend.*
+import nbcp.base.enums.*
+import nbcp.base.utils.*
+import nbcp.myoql.db.*
+import nbcp.myoql.db.sql.*
 import nbcp.myoql.db.comm.*
-import nbcp.myoql.db.sql.base.SqlSpreadColumnData
+import nbcp.myoql.db.enums.*
+import nbcp.myoql.db.sql.base.*
+import nbcp.myoql.db.sql.enums.*
+import nbcp.myoql.db.sql.define.*
 import nbcp.myoql.db.sql.component.*
-import nbcp.myoql.db.sql.s_annex
-import nbcp.myoql.db.sql.s_city
-import nbcp.myoql.db.sql.s_dustbin
-import nbcp.myoql.db.sql.s_log
+import org.springframework.stereotype.*
+
 
 
 @Component("sql.SqlBase")
@@ -35,12 +32,12 @@ class SqlBaseGroup : IDataGroup{
     /**
      * 附件
      */
-    @DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
-    @ConverterValueToDb(value = AutoIdConverter::class, field = """id""")
-    @DbEntityGroup(value = """SqlBase""")
-    @Cn(value = """附件""")
+    @nbcp.base.db.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
+    @nbcp.myoql.db.sql.base.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
+    @nbcp.base.db.DbEntityGroup(value = """SqlBase""")
+    @nbcp.base.db.Cn(value = """附件""")
     class s_annex_table(collectionName: String = "", datasource:String="")
-        : SqlBaseMetaTable<s_annex>(s_annex::class.java, "s_annex") {
+        :SqlBaseMetaTable<nbcp.myoql.db.sql.entity.s_annex>(nbcp.myoql.db.sql.entity.s_annex::class.java, "s_annex") {
         val name = SqlColumnName(DbType.String, this.getAliaTableName(),"name")
         val tags = SqlColumnName(DbType.Json, this.getAliaTableName(),"tags")
         val ext = SqlColumnName(DbType.String, this.getAliaTableName(),"ext")
@@ -64,7 +61,7 @@ class SqlBaseGroup : IDataGroup{
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
 
 
-        fun queryById (id: String): SqlQueryClip<s_annex_table, s_annex> {
+        fun queryById (id: String): SqlQueryClip<s_annex_table, nbcp.myoql.db.sql.entity.s_annex> {
             return this.query().where{ it.id match id }
         }
 
@@ -80,11 +77,11 @@ class SqlBaseGroup : IDataGroup{
     /**
      * 城市
      */
-    @DbEntityGroup(value = """SqlBase""")
-    @DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""code"""))
-    @Cn(value = """城市""")
+    @nbcp.base.db.DbEntityGroup(value = """SqlBase""")
+    @nbcp.base.db.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""code"""))
+    @nbcp.base.db.Cn(value = """城市""")
     class s_city_table(collectionName: String = "", datasource:String="")
-        : SqlBaseMetaTable<s_city>(s_city::class.java, "s_city") {
+        :SqlBaseMetaTable<nbcp.myoql.db.sql.entity.s_city>(nbcp.myoql.db.sql.entity.s_city::class.java, "s_city") {
         val code = SqlColumnName(DbType.Int, this.getAliaTableName(),"code")
         val shortName = SqlColumnName(DbType.String, this.getAliaTableName(),"shortName")
         val name = SqlColumnName(DbType.String, this.getAliaTableName(),"name")
@@ -103,7 +100,7 @@ class SqlBaseGroup : IDataGroup{
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
 
 
-        fun queryByCode (code: Int): SqlQueryClip<s_city_table, s_city> {
+        fun queryByCode (code: Int): SqlQueryClip<s_city_table, nbcp.myoql.db.sql.entity.s_city> {
             return this.query().where{ it.code match code }
         }
 
@@ -119,12 +116,12 @@ class SqlBaseGroup : IDataGroup{
     /**
      * 数据垃圾箱
      */
-    @DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
-    @ConverterValueToDb(value = AutoIdConverter::class, field = """id""")
-    @DbEntityGroup(value = """SqlBase""")
-    @Cn(value = """数据垃圾箱""")
+    @nbcp.base.db.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
+    @nbcp.myoql.db.sql.base.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
+    @nbcp.base.db.DbEntityGroup(value = """SqlBase""")
+    @nbcp.base.db.Cn(value = """数据垃圾箱""")
     class s_dustbin_table(collectionName: String = "", datasource:String="")
-        : SqlBaseMetaTable<s_dustbin>(s_dustbin::class.java, "s_dustbin") {
+        :SqlBaseMetaTable<nbcp.myoql.db.sql.entity.s_dustbin>(nbcp.myoql.db.sql.entity.s_dustbin::class.java, "s_dustbin") {
         val table = SqlColumnName(DbType.String, this.getAliaTableName(),"table")
         val remark = SqlColumnName(DbType.String, this.getAliaTableName(),"remark")
         val creator_id = SqlColumnName(DbType.String, this.getAliaTableName(),"creator_id")
@@ -141,7 +138,7 @@ class SqlBaseGroup : IDataGroup{
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
 
 
-        fun queryById (id: String): SqlQueryClip<s_dustbin_table, s_dustbin> {
+        fun queryById (id: String): SqlQueryClip<s_dustbin_table, nbcp.myoql.db.sql.entity.s_dustbin> {
             return this.query().where{ it.id match id }
         }
 
@@ -157,12 +154,12 @@ class SqlBaseGroup : IDataGroup{
     /**
      * 日志
      */
-    @DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
-    @ConverterValueToDb(value = AutoIdConverter::class, field = """id""")
-    @DbEntityGroup(value = """SqlBase""")
-    @Cn(value = """日志""")
+    @nbcp.base.db.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
+    @nbcp.myoql.db.sql.base.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
+    @nbcp.base.db.DbEntityGroup(value = """SqlBase""")
+    @nbcp.base.db.Cn(value = """日志""")
     class s_log_table(collectionName: String = "", datasource:String="")
-        : SqlBaseMetaTable<s_log>(s_log::class.java, "s_log") {
+        :SqlBaseMetaTable<nbcp.myoql.db.sql.entity.s_log>(nbcp.myoql.db.sql.entity.s_log::class.java, "s_log") {
         val module = SqlColumnName(DbType.String, this.getAliaTableName(),"module")
         val type = SqlColumnName(DbType.String, this.getAliaTableName(),"type")
         val tags = SqlColumnName(DbType.Json, this.getAliaTableName(),"tags")
@@ -183,7 +180,7 @@ class SqlBaseGroup : IDataGroup{
         override fun getFks(): Array<FkDefine>{ return arrayOf()}
 
 
-        fun queryById (id: String): SqlQueryClip<s_log_table, s_log> {
+        fun queryById (id: String): SqlQueryClip<s_log_table, nbcp.myoql.db.sql.entity.s_log> {
             return this.query().where{ it.id match id }
         }
 
@@ -198,19 +195,19 @@ class SqlBaseGroup : IDataGroup{
     }
 }
 
-fun SqlUpdateClip<SqlBaseGroup.s_annex_table>.set_sAnnex_creator(creator: IdName):SqlUpdateClip<SqlBaseGroup.s_annex_table>{
+fun SqlUpdateClip<SqlBaseGroup.s_annex_table>.set_sAnnex_creator(creator:nbcp.base.db.IdName):SqlUpdateClip<SqlBaseGroup.s_annex_table>{
     return this.set{ it.creator_id to creator.id }
 		.set{ it.creator_name to creator.name }
 }
 
 
-fun SqlUpdateClip<SqlBaseGroup.s_dustbin_table>.set_sDustbin_creator(creator: IdName):SqlUpdateClip<SqlBaseGroup.s_dustbin_table>{
+fun SqlUpdateClip<SqlBaseGroup.s_dustbin_table>.set_sDustbin_creator(creator:nbcp.base.db.IdName):SqlUpdateClip<SqlBaseGroup.s_dustbin_table>{
     return this.set{ it.creator_id to creator.id }
 		.set{ it.creator_name to creator.name }
 }
 
 
-fun SqlUpdateClip<SqlBaseGroup.s_log_table>.set_sLog_creator(creator: IdName):SqlUpdateClip<SqlBaseGroup.s_log_table>{
+fun SqlUpdateClip<SqlBaseGroup.s_log_table>.set_sLog_creator(creator:nbcp.base.db.IdName):SqlUpdateClip<SqlBaseGroup.s_log_table>{
     return this.set{ it.creator_id to creator.id }
 		.set{ it.creator_name to creator.name }
 }

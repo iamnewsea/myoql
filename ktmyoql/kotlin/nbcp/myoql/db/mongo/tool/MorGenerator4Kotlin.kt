@@ -5,7 +5,6 @@ import nbcp.base.data.Sys
 import nbcp.base.db.DbEntityGroup
 import nbcp.base.db.DbName
 import nbcp.base.utils.*
-import nbcp.myoql.db.*
 import nbcp.myoql.tool.CodeGeneratorHelper
 import java.io.File
 import java.io.FileWriter
@@ -13,13 +12,7 @@ import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 import java.time.LocalDateTime
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
 import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
 import nbcp.myoql.db.comm.*
 
 
@@ -45,13 +38,13 @@ class MorGenerator4Kotlin {
     fun work(
         targetPath: String,  //目标文件
         basePackage: String,   //实体的包名
-        packageName: String = "nbcp.db.mongo.table",
-        packages: Array<String> = arrayOf(),   //import 包名
+        tablePackageName: String = "nbcp.myoql.db.mongo.table",
+        importPackages: Array<String> = arrayOf(),   //import 包名
         entityFilter: ((Class<*>) -> Boolean) = { true },
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
     ) {
-        targetEntityPathName = MyUtil.joinFilePath(targetPath, packageName.split(".").joinToString("/"))
+        targetEntityPathName = MyUtil.joinFilePath(targetPath, tablePackageName.split(".").joinToString("/"))
         this.nameMapping = nameMapping;
 
         var p = File.separator;
@@ -68,16 +61,21 @@ class MorGenerator4Kotlin {
         var embClasses = getEmbClasses(groups);
 
         println("开始生成 mor...")
-        var fileHeader = """package ${packageName}
+        var fileHeader = """package ${tablePackageName}
 
-import nbcp.myoql.db.*
-import nbcp.myoql.db.mongo.*
-import nbcp.base.utils.*
-import nbcp.base.comm.*
-import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Component
 import java.io.*
-${packages.map { "import " + it }.joinToString(const.line_break)}
+import nbcp.base.db.*
+import nbcp.base.comm.*
+import nbcp.base.extend.*
+import nbcp.base.enums.*
+import nbcp.base.utils.*
+import nbcp.myoql.db.*
+import nbcp.myoql.db.comm.*
+import nbcp.myoql.db.enums.*
+import nbcp.myoql.db.mongo.*
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.*
+${importPackages.map { "import " + it }.joinToString(const.line_break)}
 """
 
 

@@ -1,4 +1,4 @@
-package nbcp.myoql.db.sql
+package nbcp.myoql.db.sql.entity
 
 import nbcp.base.db.Cn
 import nbcp.base.db.DbEntityGroup

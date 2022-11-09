@@ -10,7 +10,7 @@ import nbcp.myoql.db.enums.*
 import nbcp.myoql.db.*;
 import nbcp.myoql.db.comm.*
 import nbcp.db.mongo.entity.*
-import nbcp.myoql.db.sql.s_annex
+import nbcp.myoql.db.sql.entity.*
 import nbcp.myoql.db.mysql.ExistsSqlSourceConfigCondition
 import nbcp.myoql.db.sql.component.doInsert
 import nbcp.myoql.model.IUploadFileDbService

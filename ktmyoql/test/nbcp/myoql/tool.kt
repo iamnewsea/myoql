@@ -13,21 +13,25 @@ class tool : TestBase() {
     fun gen_dbr() {
         var path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0];
 
-        DbrGenerator4Kotlin().work(
-            File(path).parentFile.path + "/ktmyoql/kotlin",
-            "nbcp.db.sql.entity."
-        )
+        DbrGenerator4Kotlin()
+            .work(
+                File(path).parentFile.path + "/ktmyoql/kotlin",
+                "nbcp.myoql.db.sql.entity.",
+                "nbcp.myoql.db.sql.table"
+            )
     }
 
     @Test
     fun gen_mor() {
         val path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0]
 
-        MorGenerator4Kotlin().work(
-            File(path).parentFile.path + "/ktmyoql/kotlin",
-            "nbcp.db.mongo.entity.",
-            ignoreGroups = listOf()
-        )
+        MorGenerator4Kotlin()
+            .work(
+                File(path).parentFile.path + "/ktmyoql/kotlin",
+                "nbcp.myoql.db.mongo.entity.",
+                "nbcp.myoql.db.mongo.table",
+                ignoreGroups = listOf()
+            )
     }
 
 

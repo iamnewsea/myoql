@@ -6,7 +6,7 @@ import nbcp.myoql.db.*;
 import nbcp.myoql.db.comm.*
 import nbcp.myoql.db.sql.component.*
 import nbcp.myoql.db.sql.extend.*
-import nbcp.myoql.db.sql.s_dustbin
+import nbcp.myoql.db.sql.entity.*
 import org.springframework.stereotype.Component
 
 /**

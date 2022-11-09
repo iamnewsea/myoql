@@ -55,13 +55,13 @@ class DbrGenerator4Kotlin {
     fun work(
         targetPath: String, //目标文件
         basePackage: String,    //实体的包名
-        packageName: String = "nbcp.db.sql.table",
-        packages: Array<String> = arrayOf(),   //import 包名
+        tablePackageName: String,
+        importPackages: Array<String> = arrayOf(),   //import 包名
         entityFilter: ((Class<*>) -> Boolean) = { true },
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
     ) {
-        targetEntityPathName = MyUtil.joinFilePath(targetPath, packageName.split(".").joinToString("/"))
+        targetEntityPathName = MyUtil.joinFilePath(targetPath, tablePackageName.split(".").joinToString("/"))
         this.nameMapping = nameMapping
         var p = File.separator;
 
@@ -76,17 +76,25 @@ class DbrGenerator4Kotlin {
 
 
         println("---------------生成 dbr---------------")
-        var fileHeader = """package ${packageName}
+        var fileHeader = """package ${tablePackageName}
 
-import nbcp.myoql.db.*
-import nbcp.db.sql.*
-import nbcp.db.sql.entity.*
-import nbcp.db.mysql.*
-import nbcp.base.comm.*
-import nbcp.base.utils.*
-import org.springframework.stereotype.*
 import java.io.*
-${packages.map { "import " + it }.joinToString(const.line_break)}
+import nbcp.base.db.*
+import nbcp.base.comm.*
+import nbcp.base.extend.*
+import nbcp.base.enums.*
+import nbcp.base.utils.*
+import nbcp.myoql.db.*
+import nbcp.myoql.db.sql.*
+
+import nbcp.myoql.db.comm.*
+import nbcp.myoql.db.enums.*
+import nbcp.myoql.db.sql.base.*
+import nbcp.myoql.db.sql.enums.*
+import nbcp.myoql.db.sql.define.*
+import nbcp.myoql.db.sql.component.*
+import org.springframework.stereotype.*
+${importPackages.map { "import " + it }.joinToString(const.line_break)}
 
 """
 
