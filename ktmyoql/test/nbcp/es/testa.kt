@@ -3,8 +3,10 @@ package nbcp.es
 
 import nbcp.base.TestBase
 import nbcp.base.db.DbEntityGroup
+import nbcp.base.db.IdName
 import nbcp.myoql.db.*
-import nbcp.db.es.tool.generator_mapping
+import nbcp.myoql.db.comm.DbDefine
+import nbcp.myoql.db.es.tool.generator_mapping
 import org.junit.jupiter.api.Test
 
 @DbEntityGroup("sys")
@@ -22,11 +24,11 @@ import org.junit.jupiter.api.Test
         """{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}"""
 )
 class e_test(
-        var module: String = "", //模块
-        var type: String = "",  //类型
-        var key: String = "",   //实体标志, 查询用： module + key
-        var msg: String = "",   //消息
-        var data: IdName = IdName(),
+    var module: String = "", //模块
+    var type: String = "",  //类型
+    var key: String = "",   //实体标志, 查询用： module + key
+    var msg: String = "",   //消息
+    var data: IdName = IdName(),
 ) : BaseEntity()
 
 class testa : TestBase() {

@@ -1,10 +1,9 @@
 package nbcp.embed
 
-import nbcp.comm.AsString
-import nbcp.comm.HasValue
-import nbcp.comm.ifTrue
-import nbcp.utils.ClassUtil
-import nbcp.utils.MyUtil
+import nbcp.base.comm.*
+import nbcp.base.extend.*
+import nbcp.base.utils.ClassUtil
+import nbcp.base.utils.MyUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.context.event.ApplicationReadyEvent

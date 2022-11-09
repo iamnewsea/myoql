@@ -9,7 +9,6 @@ import nbcp.base.utils.*;
 import nbcp.myoql.db.enums.*
 import nbcp.myoql.db.*;
 import nbcp.myoql.db.comm.*
-import nbcp.db.sql.*
 import nbcp.base.utils.*
 import nbcp.myoql.db.sql.SqlEntityCollector
 import nbcp.myoql.db.sql.base.BaseAliasSqlSect

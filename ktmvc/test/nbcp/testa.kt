@@ -1,12 +1,10 @@
 package nbcp
 
-import nbcp.comm.LogLevelScope
-import nbcp.comm.MyLogLevel
-import nbcp.comm.usingScope
-import nbcp.utils.SpringUtil
+import nbcp.base.TestBase
+import nbcp.base.enums.*
+import nbcp.base.utils.*
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
-import org.springframework.boot.logging.LogLevel
 import org.springframework.stereotype.Component
 
 @Component
@@ -15,7 +13,7 @@ class ff {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass);
     }
 
-    @MyLogLevel(LogLevelScope.trace)
+    @nbcp.base.comm.MyLogLevel(LogLevelScopeEnum.trace)
     fun abc(a: String) {
         logger.trace("OK:${a}")
     }

@@ -1,7 +1,14 @@
 package nbcp.myoql.db.cache
 
-import nbcp.base.comm.*
-import nbcp.db.db
+import nbcp.base.comm.*;
+import nbcp.base.db.*;
+import nbcp.base.enums.*;
+import nbcp.base.extend.*;
+import nbcp.base.utils.*;
+import nbcp.myoql.db.enums.*
+import nbcp.myoql.db.*;
+import nbcp.myoql.db.cache.*
+import nbcp.myoql.db.comm.*
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect

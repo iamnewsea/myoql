@@ -1,11 +1,21 @@
 package nbcp.myoql.db.sql.component
+
+
 import org.slf4j.LoggerFactory
 import org.springframework.jdbc.support.GeneratedKeyHolder
-import nbcp.base.comm.*
-import nbcp.db.BaseEntity
-
-import nbcp.base.utils.*
-import nbcp.db.db
+import nbcp.base.comm.*;
+import nbcp.base.db.*;
+import nbcp.base.enums.*;
+import nbcp.base.extend.*;
+import nbcp.base.utils.*;
+import nbcp.myoql.db.enums.*
+import nbcp.myoql.db.*;
+import nbcp.myoql.db.cache.*
+import nbcp.myoql.db.comm.*
+import nbcp.myoql.db.sql.*
+import nbcp.myoql.db.sql.base.*
+import nbcp.myoql.db.sql.enums.*
+import nbcp.myoql.db.sql.extend.*
 import nbcp.myoql.db.sql.logInsert
 import nbcp.myoql.db.sql.base.SqlBaseMetaTable
 import nbcp.myoql.db.sql.base.SqlColumnName

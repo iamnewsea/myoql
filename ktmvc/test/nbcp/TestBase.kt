@@ -1,18 +1,10 @@
 package nbcp
 
+import nbcp.base.PzxEntityTestApplication
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.support.FileSystemXmlApplicationContext
-import org.springframework.context.support.GenericXmlApplicationContext
-import org.springframework.test.context.TestPropertySource
-import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.context.web.WebAppConfiguration
-import org.springframework.test.web.servlet.MockMvc
-import nbcp.comm.*
-import nbcp.utils.*
-import java.time.Duration
 import java.time.LocalDateTime
 
 /**

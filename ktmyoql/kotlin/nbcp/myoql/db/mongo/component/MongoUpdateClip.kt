@@ -1,10 +1,15 @@
 package nbcp.myoql.db.mongo
 
-import nbcp.comm.HasValue
-import nbcp.comm.usingScope
-import nbcp.db.DbIncData
-import nbcp.db.MyOqlDbScopeEnum
-import nbcp.db.db
+
+import nbcp.base.comm.*;
+import nbcp.base.db.*;
+import nbcp.base.enums.*;
+import nbcp.base.extend.*;
+import nbcp.base.utils.*;
+import nbcp.myoql.db.enums.*
+import nbcp.myoql.db.*;
+import nbcp.myoql.db.cache.*
+import nbcp.myoql.db.comm.*
 import org.bson.Document
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.FindAndModifyOptions
@@ -12,6 +17,7 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import java.time.LocalDateTime
 import nbcp.db.mongo.logger.*
+import nbcp.myoql.db.mongo.base.MongoColumnName
 import nbcp.myoql.db.mongo.component.MongoBaseMetaCollection
 import nbcp.myoql.db.mongo.component.MongoBaseUpdateClip
 

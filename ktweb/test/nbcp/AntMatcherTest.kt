@@ -1,8 +1,7 @@
 package nbcp
 
-import nbcp.base.mvc.service.upload.MinioBaseService
+import nbcp.base.TestBase
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.util.AntPathMatcher
 
 class AntMatcherTest : TestBase() {

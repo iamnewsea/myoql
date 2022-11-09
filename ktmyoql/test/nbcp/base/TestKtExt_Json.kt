@@ -1,8 +1,12 @@
 package nbcp.base
 
 import nbcp.base.comm.*
-import nbcp.db.CityCodeName
-import nbcp.scope.JsonSceneScopeEnum
+import nbcp.base.comm.*;
+import nbcp.base.db.*;
+import nbcp.base.enums.*;
+import nbcp.base.extend.*;
+import nbcp.base.utils.*;
+import nbcp.myoql.db.CityCodeName
 import org.junit.jupiter.api.Test
 
 class TestKtExt_Json : TestBase() {

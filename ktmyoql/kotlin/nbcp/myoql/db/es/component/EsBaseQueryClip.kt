@@ -1,11 +1,9 @@
 package nbcp.myoql.db.es.component
 
 import nbcp.base.comm.*;
-import nbcp.base.db.*;
 import nbcp.base.enums.*;
 import nbcp.base.extend.*;
 import nbcp.base.utils.*;
-import nbcp.db.es.SearchBodyClip
 import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.slf4j.LoggerFactory

@@ -1,8 +1,8 @@
 package nbcp.redis
 
 import nbcp.base.TestBase
-import nbcp.db.db
-import nbcp.db.redis.scanKeys
+import nbcp.myoql.db.db
+import nbcp.myoql.db.redis.scanKeys
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.redis.core.StringRedisTemplate

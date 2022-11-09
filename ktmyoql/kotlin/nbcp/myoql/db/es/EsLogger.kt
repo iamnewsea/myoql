@@ -1,11 +1,15 @@
 package nbcp.db.es.logger
 
-
-import nbcp.base.comm.*
-import nbcp.db.db
-import nbcp.db.es.*
-import nbcp.db.es.tool.EsTableLogProperties
-import nbcp.utils.SpringUtil
+import nbcp.base.comm.*;
+import nbcp.base.db.*;
+import nbcp.base.enums.*;
+import nbcp.base.extend.*;
+import nbcp.base.utils.*;
+import nbcp.myoql.db.enums.*
+import nbcp.myoql.db.*;
+import nbcp.myoql.db.cache.*
+import nbcp.myoql.db.comm.*
+import nbcp.myoql.db.es.EsTableLogProperties
 import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.slf4j.Logger

@@ -2,9 +2,15 @@ package nbcp.myoql.db.es.tool
 
 import nbcp.base.db.DbEntityGroup
 import nbcp.base.db.DbName
-import nbcp.base.comm.*
-import nbcp.base.utils.*
-import nbcp.myoql.db.*
+import nbcp.base.comm.*;
+import nbcp.base.db.*;
+import nbcp.base.enums.*;
+import nbcp.base.extend.*;
+import nbcp.base.utils.*;
+import nbcp.myoql.db.enums.*
+import nbcp.myoql.db.*;
+import nbcp.myoql.db.cache.*
+import nbcp.myoql.db.comm.*
 import java.io.File
 import java.io.FileWriter
 import java.lang.RuntimeException
@@ -15,7 +21,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
 import kotlin.collections.HashMap
-import nbcp.scope.*
+
 
 /**
  * es mapping 代码生成器

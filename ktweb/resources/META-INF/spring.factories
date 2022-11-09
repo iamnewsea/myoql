@@ -1,6 +1,6 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=nbcp.KotlinWebExtendConfig\
-,nbcp.base.mvc.filter.MyOqlCrossFilter\
-,nbcp.base.mvc.filter.MyAllFilter\
-,nbcp.base.flux.filter.CrossFilterConfig
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=nbcp.web.KotlinWebExtendConfig\
+,nbcp.web.base.mvc.filter.MyOqlCrossFilter\
+,nbcp.web.base.mvc.filter.MyAllFilter\
+,nbcp.web.base.flux.filter.CrossFilterConfig
 
-org.springframework.context.ApplicationListener=nbcp.MyMebStartEvent
+org.springframework.context.ApplicationListener=nbcp.web.MyMebStartEvent

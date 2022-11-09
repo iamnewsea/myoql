@@ -5,9 +5,9 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.web.bind.annotation.RestController
 import nbcp.base.extend.*
-import nbcp.comm.*
-import nbcp.db.*
-import nbcp.db.mongo.*
+import nbcp.base.comm.*
+import nbcp.myoql.db.*
+import nbcp.myoql.db.mongo.*
 import nbcp.db.mongo.entity.*
 import nbcp.base.mvc.*
 import javax.servlet.http.HttpServletRequest

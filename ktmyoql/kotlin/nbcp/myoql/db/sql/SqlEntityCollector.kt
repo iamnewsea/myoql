@@ -1,7 +1,6 @@
 package nbcp.myoql.db.sql
 
 import nbcp.base.db.DbEntityIndex
-import nbcp.db.sql.*;import nbcp.db.sql.*;
 import nbcp.base.comm.*;
 import nbcp.base.db.*;
 import nbcp.base.enums.*;
@@ -9,6 +8,12 @@ import nbcp.base.extend.*;
 import nbcp.base.utils.*;
 import nbcp.myoql.db.enums.*
 import nbcp.myoql.db.*;
+import nbcp.myoql.db.cache.*
+import nbcp.myoql.db.comm.*
+import nbcp.myoql.db.sql.*
+import nbcp.myoql.db.sql.base.*
+import nbcp.myoql.db.sql.enums.*
+import nbcp.myoql.db.sql.extend.*
 import nbcp.myoql.db.cache.RedisCacheColumns
 import nbcp.myoql.db.cache.RedisCacheDefine
 import nbcp.myoql.db.comm.*

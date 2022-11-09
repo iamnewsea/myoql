@@ -2,15 +2,19 @@ package nbcp.myoql.sql
 
 import com.zaxxer.hikari.HikariDataSource
 import nbcp.base.TestBase
-import nbcp.base.comm.*
-import nbcp.db.IdName
-import nbcp.db.db
-import nbcp.db.mysql.tool.MysqlEntityGenerator
-import nbcp.db.sql.*
+import nbcp.base.comm.*;
+import nbcp.base.db.*;
+import nbcp.base.enums.*;
+import nbcp.base.extend.*;
+import nbcp.base.utils.*;
 import nbcp.myoql.db.sql.s_annex
 import nbcp.myoql.tool.UserCodeGenerator
 import nbcp.base.utils.MyUtil
-import nbcp.utils.SpringUtil
+import nbcp.myoql.db.db
+import nbcp.myoql.db.mysql.tool.MysqlEntityGenerator
+import nbcp.myoql.db.sql.component.WhereData
+import nbcp.myoql.db.sql.component.doInsert
+import nbcp.myoql.db.sql.component.updateWithEntity
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
 import java.io.FileWriter

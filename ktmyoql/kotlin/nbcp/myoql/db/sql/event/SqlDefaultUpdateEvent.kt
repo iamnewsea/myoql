@@ -1,6 +1,6 @@
 package nbcp.myoql.db.sql.event;
 
-import nbcp.db.sql.*;
+
 import nbcp.base.comm.*;
 import nbcp.base.db.*;
 import nbcp.base.enums.*;

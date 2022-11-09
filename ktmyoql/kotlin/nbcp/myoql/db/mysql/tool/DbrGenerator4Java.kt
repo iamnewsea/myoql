@@ -1,18 +1,21 @@
 package nbcp.myoql.db.mysql.tool
 
 
-import nbcp.base.data.Sys
-import nbcp.base.db.DbEntityGroup
-import nbcp.base.db.DbName
 import nbcp.base.comm.*;
+import nbcp.base.data.Sys
+import nbcp.base.db.*;
+import nbcp.base.enums.*;
 import nbcp.base.extend.*;
 import nbcp.base.utils.*;
-import nbcp.db.sql.*
-import nbcp.myoql.db.sql.base.SqlAutoIncrementKey
-import nbcp.myoql.db.sql.base.SqlFk
-import nbcp.myoql.db.sql.base.SqlSpreadColumn
+import nbcp.myoql.db.enums.*
+import nbcp.myoql.db.*;
+import nbcp.myoql.db.cache.*
+import nbcp.myoql.db.comm.*
+import nbcp.myoql.db.sql.*
+import nbcp.myoql.db.sql.base.*
 import nbcp.myoql.db.sql.define.FkDefine
-import nbcp.myoql.db.sql.enums.DbType
+import nbcp.myoql.db.sql.enums.*
+import nbcp.myoql.db.sql.extend.*
 import nbcp.myoql.tool.CodeGeneratorHelper
 import java.io.File
 import java.io.FileWriter

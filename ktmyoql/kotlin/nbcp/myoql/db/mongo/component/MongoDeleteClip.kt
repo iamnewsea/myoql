@@ -2,11 +2,15 @@ package nbcp.myoql.db.mongo
 
 
 import com.mongodb.client.result.DeleteResult
-import nbcp.base.comm.*
-import nbcp.db.LogicalDelete
-import nbcp.db.MyOqlDbScopeEnum
-import nbcp.db.db
-import nbcp.scope.JsonStyleScopeEnum
+import nbcp.base.comm.*;
+import nbcp.base.db.*;
+import nbcp.base.enums.*;
+import nbcp.base.extend.*;
+import nbcp.base.utils.*;
+import nbcp.myoql.db.enums.*
+import nbcp.myoql.db.*;
+import nbcp.myoql.db.cache.*
+import nbcp.myoql.db.comm.*
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.slf4j.LoggerFactory

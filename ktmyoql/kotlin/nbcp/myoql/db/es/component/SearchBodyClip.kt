@@ -1,7 +1,7 @@
-package nbcp.db.es
+package nbcp.myoql.db.es.component
 
 import nbcp.base.comm.*
-import nbcp.db.es.component.EsQueryData
+import nbcp.base.extend.ToJson
 
 /**
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/search-search.html

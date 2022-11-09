@@ -10,9 +10,9 @@ import nbcp.myoql.db.enums.*
 import nbcp.myoql.db.*;
 import nbcp.myoql.db.comm.*
 import nbcp.db.mongo.entity.*
-import nbcp.db.sql.doInsert
 import nbcp.myoql.db.sql.s_annex
 import nbcp.myoql.db.mysql.ExistsSqlSourceConfigCondition
+import nbcp.myoql.db.sql.component.doInsert
 import nbcp.myoql.model.IUploadFileDbService
 import org.springframework.context.annotation.Conditional
 import org.springframework.stereotype.Component

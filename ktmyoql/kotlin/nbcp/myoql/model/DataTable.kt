@@ -1,8 +1,13 @@
 package nbcp.myoql.model
 
-import nbcp.base.comm.*
-import nbcp.comm.AsString
-import nbcp.comm.IsIn
+import nbcp.base.comm.*;
+import nbcp.base.db.*;
+import nbcp.base.enums.*;
+import nbcp.base.extend.*;
+import nbcp.base.utils.*;
+import nbcp.myoql.db.enums.*
+import nbcp.myoql.db.*;
+import nbcp.myoql.db.comm.*
 import java.io.Serializable
 import java.lang.reflect.ParameterizedType
 

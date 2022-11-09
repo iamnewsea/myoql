@@ -6,10 +6,10 @@ import nbcp.base.utils.*;
 import nbcp.base.data.Sys
 import nbcp.base.db.DbEntityGroup
 import nbcp.base.db.DbName
-import nbcp.db.sql.*
 import nbcp.myoql.db.sql.base.SqlAutoIncrementKey
 import nbcp.myoql.db.sql.base.SqlFk
 import nbcp.myoql.db.sql.base.SqlSpreadColumn
+import nbcp.myoql.db.sql.base.SqlSpreadColumnData
 import nbcp.myoql.db.sql.define.FkDefine
 import nbcp.myoql.db.sql.enums.DbType
 import nbcp.myoql.tool.CodeGeneratorHelper
