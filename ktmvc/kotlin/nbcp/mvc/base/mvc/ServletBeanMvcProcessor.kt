@@ -8,7 +8,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 @Component
 @ConditionalOnClass(RequestMappingHandlerAdapter::class)
-class ServletBeanProcessor : BeanPostProcessor {
+class ServletBeanMvcProcessor : BeanPostProcessor {
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
         if (bean is RequestMappingHandlerAdapter) {
             var handlerAdapter = bean;

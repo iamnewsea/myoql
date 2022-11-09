@@ -1,6 +1,7 @@
 package nbcp.web
 
 import nbcp.base.component.BaseImportBeanDefinitionRegistrar
+import nbcp.web.base.mvc.ServletBeanWebProcessor
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.core.type.filter.AnnotationTypeFilter
@@ -12,7 +13,8 @@ import org.springframework.web.bind.annotation.RestController
 @Import(
     value = [
         KotlinWebExtendConfigServlet::class,
-        KotlinWebExtendConfigWebFlux::class
+        KotlinWebExtendConfigWebFlux::class,
+        ServletBeanWebProcessor::class
     ]
 )
 //@Configuration
