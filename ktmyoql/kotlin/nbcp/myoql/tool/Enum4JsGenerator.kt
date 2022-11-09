@@ -1,19 +1,13 @@
 package nbcp.myoql.tool
 
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
 import nbcp.base.extend.*;
 import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.comm.*
 import nbcp.base.utils.MyUtil
 
 /**
  * 枚举Js的生成器
  */
-object enumer {
+object Enum4JsGenerator {
 
     /**
      * 入口

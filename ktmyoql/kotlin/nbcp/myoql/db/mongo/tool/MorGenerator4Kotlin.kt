@@ -38,13 +38,13 @@ class MorGenerator4Kotlin {
     fun work(
         targetPath: String,  //目标文件
         basePackage: String,   //实体的包名
-        tablePackageName: String = "nbcp.myoql.db.mongo.table",
+        metaPackageName: String,
         importPackages: Array<String> = arrayOf(),   //import 包名
         entityFilter: ((Class<*>) -> Boolean) = { true },
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
     ) {
-        targetEntityPathName = MyUtil.joinFilePath(targetPath, tablePackageName.split(".").joinToString("/"))
+        targetEntityPathName = MyUtil.joinFilePath(targetPath, metaPackageName.split(".").joinToString("/"))
         this.nameMapping = nameMapping;
 
         var p = File.separator;
@@ -61,7 +61,7 @@ class MorGenerator4Kotlin {
         var embClasses = getEmbClasses(groups);
 
         println("开始生成 mor...")
-        var fileHeader = """package ${tablePackageName}
+        var fileHeader = """package ${metaPackageName}
 
 import java.io.*
 import nbcp.base.db.*

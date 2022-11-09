@@ -59,13 +59,13 @@ class DbrGenerator4Java {
     fun work(
         targetPath: String, //目标文件
         basePackage: String,    //实体的包名
-        packageName: String = "nbcp.db.sql.table",
+        metaPackageName: String,
         packages: Array<String> = arrayOf(),   //import 包名
         entityFilter: ((Class<*>) -> Boolean) = { true },
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
     ) {
-        targetEntityPathName = MyUtil.joinFilePath(targetPath, packageName.split(".").joinToString("/"))
+        targetEntityPathName = MyUtil.joinFilePath(targetPath, metaPackageName.split(".").joinToString("/"))
         this.nameMapping = nameMapping
         var p = File.separator;
 
@@ -80,7 +80,7 @@ class DbrGenerator4Java {
 
 
         println("---------------生成 dbr---------------")
-        var fileHeader = """package ${packageName};
+        var fileHeader = """package ${metaPackageName};
 
 import nbcp.myoql.db.*;
 import nbcp.myoql.db.sql.*;

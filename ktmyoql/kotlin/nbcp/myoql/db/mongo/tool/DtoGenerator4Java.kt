@@ -5,7 +5,6 @@ import nbcp.base.comm.*
 import nbcp.base.extend.AsString
 import nbcp.base.extend.ToTab
 import nbcp.base.utils.*
-import nbcp.myoql.db.*
 import java.io.File
 import java.io.FileWriter
 import java.time.LocalDateTime
@@ -20,13 +19,13 @@ class DtoGenerator4Java {
     fun work(
         targetPath: String,  //目标文件
         basePackage: String,   //实体的包名
-        packageName: String = "nbcp.db.mongo.dto",
+        dtoPackageName: String,
         packages: Array<String> = arrayOf(),   //import 包名
         entityFilter: ((Class<*>) -> Boolean) = { true },
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
     ) {
-        targetEntityPathName = MyUtil.joinFilePath(targetPath, packageName.split(".").joinToString("/"))
+        targetEntityPathName = MyUtil.joinFilePath(targetPath, dtoPackageName.split(".").joinToString("/"))
         this.nameMapping = nameMapping;
 
         var p = File.separator;
@@ -42,7 +41,7 @@ class DtoGenerator4Java {
 
         println("开始生成 mor...")
 
-        var fileHeader = """package ${packageName};
+        var fileHeader = """package ${dtoPackageName};
 
 import nbcp.myoql.db.*;
 import nbcp.myoql.db.mongo.*;
@@ -100,7 +99,12 @@ public class ${it.simpleName}DTO extends ${it.simpleName} {
 
     fun writeToFile(className: String, content: String) {
 
-        FileWriter(MyUtil.joinFilePath(targetEntityPathName, if( className.contains(".") ) className else (  className + ".java") ), true).use { moer_File ->
+        FileWriter(
+            MyUtil.joinFilePath(
+                targetEntityPathName,
+                if (className.contains(".")) className else (className + ".java")
+            ), true
+        ).use { moer_File ->
             moer_File.appendLine(content)
             moer_File.flush()
         }

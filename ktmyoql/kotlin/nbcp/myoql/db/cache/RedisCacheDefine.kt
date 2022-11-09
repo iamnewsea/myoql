@@ -8,7 +8,7 @@ import java.util.*
  * 使用注解在指定单表上启用 RedisCache
  * 用于补充 DbEntityIndex 之外的缓存项，如id
  *
- * @see nbcp.db.DbEntityIndex
+ * @see nbcp.myoql.db.DbEntityIndex
  */
 @Inherited
 @Target(AnnotationTarget.CLASS)

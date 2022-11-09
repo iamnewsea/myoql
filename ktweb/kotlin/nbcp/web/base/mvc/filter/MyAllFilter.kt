@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletResponse
 /**
  * Created by udi on 2017.3.11.
  * 拦截所有请求，过滤普通的GET及上传下载。
+ * 拦截器开关： app.mvc-log-filter
  * 需要配置 ：
  * 1. app.filter.allow-origins
  * 2. app.filter.headers
@@ -40,8 +42,7 @@ import javax.servlet.http.HttpServletResponse
 @WebFilter(urlPatterns = ["/*", "/**"])
 @ConditionalOnClass(Filter::class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-//@WebFilter(urlPatterns = arrayOf("/**"), filterName = "MyAllFilter")
-//@ConfigurationProperties(prefix = "nbcp.filter")
+@ConditionalOnProperty(name = ["app.mvc-log-filter"], havingValue = "true", matchIfMissing = true)
 open class MyAllFilter : Filter {
     override fun destroy() {
         MDC.remove("request_id")

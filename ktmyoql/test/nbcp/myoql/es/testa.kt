@@ -6,7 +6,7 @@ import nbcp.base.db.DbEntityGroup
 import nbcp.base.db.IdName
 import nbcp.myoql.db.*
 import nbcp.myoql.db.comm.DbDefine
-import nbcp.myoql.db.es.tool.generator_mapping
+import nbcp.myoql.db.es.tool.EsMappingGenerator
 import org.junit.jupiter.api.Test
 
 @DbEntityGroup("sys")
@@ -43,7 +43,7 @@ class testa : TestBase() {
 
     @Test
     fun abc() {
-        var m = generator_mapping();
+        var m = EsMappingGenerator();
         m.work("mapping", "nbcp.myoql.es")
     }
 }

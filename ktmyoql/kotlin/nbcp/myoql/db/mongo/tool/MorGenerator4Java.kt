@@ -7,7 +7,6 @@ import nbcp.base.db.DbName
 import nbcp.base.extend.AsString
 import nbcp.base.extend.ToTab
 import nbcp.base.utils.*
-import nbcp.myoql.db.*
 import nbcp.myoql.tool.CodeGeneratorHelper
 import java.io.File
 import java.io.FileWriter
@@ -15,13 +14,7 @@ import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 import java.time.LocalDateTime
-import nbcp.base.comm.*;
-import nbcp.base.db.*;
-import nbcp.base.enums.*;
 import nbcp.base.extend.*;
-import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
 import nbcp.myoql.db.comm.*
 
 
@@ -48,13 +41,13 @@ class MorGenerator4Java {
     fun work(
         targetPath: String,  //目标文件
         basePackage: String,   //实体的包名
-        packageName: String = "nbcp.db.mongo.table",
+        metaPackageName: String,
         packages: Array<String> = arrayOf(),   //import 包名
         entityFilter: ((Class<*>) -> Boolean) = { true },
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
     ) {
-        targetEntityPathName = MyUtil.joinFilePath(targetPath, packageName.split(".").joinToString("/"))
+        targetEntityPathName = MyUtil.joinFilePath(targetPath, metaPackageName.split(".").joinToString("/"))
         this.nameMapping = nameMapping;
 
         var p = File.separator;
@@ -70,7 +63,7 @@ class MorGenerator4Java {
 
         println("开始生成 mor...")
 
-        var fileHeader = """package ${packageName};
+        var fileHeader = """package ${metaPackageName};
 
 import nbcp.myoql.db.*;
 import nbcp.myoql.db.mongo.*;
@@ -182,7 +175,12 @@ public class MoerMetaMap {
 
     fun writeToFile(className: String, content: String) {
 
-        FileWriter(MyUtil.joinFilePath(targetEntityPathName, if( className.contains(".") ) className else (  className + ".java") ), true).use { moer_File ->
+        FileWriter(
+            MyUtil.joinFilePath(
+                targetEntityPathName,
+                if (className.contains(".")) className else (className + ".java")
+            ), true
+        ).use { moer_File ->
             moer_File.appendLine(content)
             moer_File.flush()
         }
@@ -617,7 +615,8 @@ public ${v1_type} ${it.name} = new ${retValue};""".removeEmptyLine().ToTab(1)
                     }.joinToString(",")
                 }) {
         return this.delete()${
-                    keys.map { ".where (it-> it.${getKey(it)}.match( ${MyUtil.getSmallCamelCase(it)} ))" }.joinToString("")
+                    keys.map { ".where (it-> it.${getKey(it)}.match( ${MyUtil.getSmallCamelCase(it)} ))" }
+                        .joinToString("")
                 };
     }
 
@@ -633,7 +632,8 @@ public ${v1_type} ${it.name} = new ${retValue};""".removeEmptyLine().ToTab(1)
                     }.joinToString(",")
                 }) {
         return this.update()${
-                    keys.map { ".where ( it-> it.${getKey(it)}.match( ${MyUtil.getSmallCamelCase(it)} ))" }.joinToString("")
+                    keys.map { ".where ( it-> it.${getKey(it)}.match( ${MyUtil.getSmallCamelCase(it)} ))" }
+                        .joinToString("")
                 };
     }
 """

@@ -3,17 +3,12 @@ package nbcp.myoql.db.es.tool
 import nbcp.base.db.DbEntityGroup
 import nbcp.base.db.DbName
 import nbcp.base.comm.*;
-import nbcp.base.db.*;
 import nbcp.base.enums.*;
 import nbcp.base.extend.*;
 import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.cache.*
 import nbcp.myoql.db.comm.*
 import java.io.File
 import java.io.FileWriter
-import java.lang.RuntimeException
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 import java.time.LocalDate
@@ -26,7 +21,7 @@ import kotlin.collections.HashMap
 /**
  * es mapping 代码生成器
  */
-class generator_mapping {
+class EsMappingGenerator {
     private var nameMapping: StringMap = StringMap();
 
 

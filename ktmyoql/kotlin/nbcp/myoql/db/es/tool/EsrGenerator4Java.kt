@@ -3,13 +3,8 @@ package nbcp.myoql.db.es.tool
 import nbcp.base.comm.*;
 import nbcp.base.data.Sys
 import nbcp.base.db.*;
-import nbcp.base.enums.*;
 import nbcp.base.extend.*;
 import nbcp.base.utils.*;
-import nbcp.myoql.db.enums.*
-import nbcp.myoql.db.*;
-import nbcp.myoql.db.cache.*
-import nbcp.myoql.db.comm.*
 import nbcp.myoql.tool.CodeGeneratorHelper
 
 import java.io.File
@@ -39,13 +34,13 @@ class EsrGenerator4Java {
     fun work(
         targetPath: String,  //目标文件
         basePackage: String,   //实体的包名
-        packageName: String = "nbcp.db.es.table",
+        metaPackageName: String,
         packages: Array<String> = arrayOf(),   //import 包名
         entityFilter: ((Class<*>) -> Boolean) = { true },
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf("EsBase")  //忽略的包名
     ) {
-        targetEntityPathName = MyUtil.joinFilePath(targetPath, packageName.split(".").joinToString("/"))
+        targetEntityPathName = MyUtil.joinFilePath(targetPath, metaPackageName.split(".").joinToString("/"))
         this.nameMapping = nameMapping;
 
         var p = File.separator;
@@ -59,7 +54,7 @@ class EsrGenerator4Java {
         println("开始生成 esr...")
 
 
-        var fileHeader = """package ${packageName};
+        var fileHeader = """package ${metaPackageName};
 
 import nbcp.myoql.db.*;
 import nbcp.myoql.db.es.*;
@@ -173,7 +168,12 @@ public class EsrMetaMap {
 
     fun writeToFile(className: String, content: String) {
 
-        FileWriter(MyUtil.joinFilePath(targetEntityPathName, if( className.contains(".") ) className else (  className + ".java") ), true).use { moer_File ->
+        FileWriter(
+            MyUtil.joinFilePath(
+                targetEntityPathName,
+                if (className.contains(".")) className else (className + ".java")
+            ), true
+        ).use { moer_File ->
             moer_File.appendLine(content)
             moer_File.flush()
         }
