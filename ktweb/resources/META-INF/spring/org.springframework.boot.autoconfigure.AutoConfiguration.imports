@@ -2,4 +2,5 @@ nbcp.web.KotlinWebExtendConfig
 nbcp.web.base.mvc.filter.MyOqlCrossFilter
 nbcp.web.base.mvc.filter.MyAllFilter
 nbcp.web.base.flux.filter.CrossFilterConfig
+nbcp.web.base.mvc.WebMvcInterceptorConfig
 nbcp.web.MyMebStartEvent
