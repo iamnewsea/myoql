@@ -6,7 +6,7 @@ import nbcp.base.utils.SpringUtil
 import nbcp.mvc.mvc.queryJson
 import nbcp.mvc.comm.OpenAction
 import nbcp.web.service.IUserAuthenticationService
-import nbcp.web.tokenValue
+import nbcp.web.extend.*
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController

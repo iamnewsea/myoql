@@ -6,7 +6,7 @@ import nbcp.base.extend.FromJson
 import nbcp.base.extend.HasValue
 import nbcp.base.extend.ToJson
 import nbcp.myoql.db.redis.proxy.RedisStringProxy
-import nbcp.web.tokenValue
+import nbcp.web.extend.*
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean

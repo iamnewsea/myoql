@@ -1,7 +1,7 @@
 package nbcp.web.comm
 
 import nbcp.base.db.LoginUserModel
-import nbcp.web.LoginUser
+import nbcp.web.extend.LoginUser
 import org.slf4j.LoggerFactory
 import org.springframework.core.MethodParameter
 import org.springframework.web.bind.support.WebDataBinderFactory

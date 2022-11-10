@@ -9,7 +9,7 @@ import nbcp.mvc.mvc.findParameterStringValue
 import nbcp.mvc.mvc.parentAlert
 import nbcp.mvc.comm.AdminSysOpsAction
 import nbcp.mvc.comm.OpenAction
-import nbcp.web.LoginUser
+import nbcp.web.extend.*
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.method.HandlerMethod

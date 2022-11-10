@@ -7,7 +7,7 @@ import nbcp.base.enums.LogLevelScopeEnum
 import nbcp.base.extend.*
 import nbcp.mvc.mvc.MyHttpRequestWrapper
 import nbcp.mvc.mvc.*
-import nbcp.web.tokenValue
+import nbcp.web.extend.tokenValue
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
