@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
@@ -41,14 +40,9 @@ import javax.servlet.http.HttpServletResponse
 @WebFilter(urlPatterns = ["/*", "/**"])
 @ConditionalOnClass(Filter::class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnProperty(name = ["app.mvc-log-filter"], havingValue = "true", matchIfMissing = true)
 open class MyAllFilter : Filter {
-    override fun destroy() {
-        MDC.remove("request_id")
-    }
-
-    override fun init(p0: FilterConfig?) {
-    }
+    @Value("\${app.filter.enabled:true}")
+    var enabled: Boolean = true
 
     @Value("\${app.filter.ignore-log-urls:/health}")
     var ignoreLogUrls: List<String> = listOf()
@@ -71,6 +65,11 @@ open class MyAllFilter : Filter {
     }
 
     override fun doFilter(oriRequest: ServletRequest?, oriResponse: ServletResponse?, chain: FilterChain?) {
+        if (enabled == false) {
+            chain?.doFilter(oriRequest, oriResponse)
+            return;
+        }
+
         var httpRequest = oriRequest as HttpServletRequest
         if (matchUrI(httpRequest.requestURI, ignoreUrls)) {
             chain?.doFilter(oriRequest, oriResponse)
