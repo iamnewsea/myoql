@@ -5,7 +5,9 @@ package nbcp.base.extend
 
 import nbcp.base.comm.DiffData
 
-
+/**
+ * 移除指定索引的区间
+ */
 fun MutableList<*>.RemoveRange(startIndex: Int, endIndex: Int) {
     var startIndexValue = startIndex
     var endIndexValue = endIndex
@@ -22,6 +24,9 @@ fun MutableList<*>.RemoveRange(startIndex: Int, endIndex: Int) {
     }
 }
 
+/**
+ * 交换两个索引
+ */
 fun <T> MutableList<T>.Swap(index1: Int, index2: Int) {
     var tmp = this[index1];
     this[index1] = this[index2]
@@ -29,6 +34,10 @@ fun <T> MutableList<T>.Swap(index1: Int, index2: Int) {
 }
 
 
+/**
+ * 按一定规则，分隔列表。 典型场景是 Yaml 文件的 --- 就是分隔符。
+ * @param item: 判断该条目是否是分隔符。
+ */
 fun <T> List<T>.SplitList(item: ((T) -> Boolean)): List<List<T>> {
     var list = mutableListOf<List<T>>();
 
@@ -70,6 +79,9 @@ inline fun <reified T> Collection<Collection<T>>.Unwind(): List<T> {
     return Unwind(this);
 }
 
+/**
+ * 拆解集合中的集合。
+ */
 fun <T> Unwind(colltion: Collection<Collection<T>>): List<T> {
     var list = mutableListOf<T>()
     colltion.forEach {
@@ -125,7 +137,6 @@ fun <T> Array<out T>.ArraySlice(startIndex: Int, endIndex: Int = Int.MIN_VALUE):
 /**
  * [startIndex,endIndex)
  */
-
 @JvmOverloads
 fun <T> Collection<T>.Slice(startIndex: Int, endIndex: Int = Int.MIN_VALUE): List<T> {
     var endIndexValue = endIndex;

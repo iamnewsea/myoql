@@ -7,6 +7,7 @@ import nbcp.base.utils.MyUtil
 import nbcp.mvc.comm.JsonModel
 import org.slf4j.LoggerFactory
 import org.springframework.core.MethodParameter
+import org.springframework.core.Ordered
 import org.springframework.core.io.InputStreamSource
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.bind.support.WebDataBinderFactory
@@ -30,7 +31,7 @@ import javax.servlet.http.HttpSession
  * 3. 由于cao蛋的擦除机制，不支持List泛型参数，使用 Array泛型。
  * 4. 只解析没有注解的参数, 或 JsonModel 注解的参数。
  */
-class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
+class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -42,6 +43,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         if (HttpSession::class.java.isAssignableFrom(parameterType)) return false
         if (InputStreamSource::class.java.isAssignableFrom(parameterType)) return false
 
+        //系统注解
         if (parameter.hasParameterAnnotation(PathVariable::class.java)) return false;
         if (parameter.hasParameterAnnotation(CookieValue::class.java)) return false;
         if (parameter.hasParameterAnnotation(RequestHeader::class.java)) return false;
@@ -52,14 +54,11 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         if (parameter.hasParameterAnnotation(RequestPart::class.java)) return false;
 
 
-        //复杂对象，必须用 JsonModel！
-        if (parameter.hasParameterAnnotation(JsonModel::class.java)) return true;
+//        if (parameter.hasParameterAnnotation(JsonModel::class.java)) return true;
 
-//        var className = parameter.containingClass.name
-//        if (packages.any()) {
-//            return packages.any { return@any className.startsWith(it) }
-//        }
-        if (parameterType.IsSimpleType() == false) return false;
+//        if (parameterType.IsCollectionType) return true;
+//        if (parameterType.IsMapType) return true;
+//        if (parameterType.IsSimpleType()) return true;
         return true
     }
 
@@ -389,6 +388,10 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver {
         }
 
         return value;
+    }
+
+    override fun getOrder(): Int {
+        return Ordered.HIGHEST_PRECEDENCE + 10000;
     }
 
 }

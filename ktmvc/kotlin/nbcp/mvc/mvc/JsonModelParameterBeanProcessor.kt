@@ -1,15 +1,29 @@
 package nbcp.mvc.mvc
 
+import nbcp.base.extend.SplitList
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.core.Ordered
 import org.springframework.stereotype.Component
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
 
 @Component
 @ConditionalOnClass(RequestMappingHandlerAdapter::class)
-class ServletBeanMvcProcessor : BeanPostProcessor {
+class JsonModelParameterBeanProcessor : BeanPostProcessor {
+    companion object {
+        /**
+         * 如果有 Ordered，则在前，并按 Ordered排序， 其余顺序不变
+         */
+        fun <T> orderWithOrderedBean(list: List<T>): List<T> {
+            var map = list.groupBy { it is Ordered }
+            var list1 = map.get(true)?.sortedBy { (it as Ordered).order } ?: listOf();
+            var list2 = map.get(false) ?: listOf()
+
+            return list1 + list2;
+        }
+    }
+
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
         if (bean is RequestMappingHandlerAdapter) {
             var handlerAdapter = bean;
@@ -18,7 +32,9 @@ class ServletBeanMvcProcessor : BeanPostProcessor {
                 var listResolvers = mutableListOf<HandlerMethodArgumentResolver>()
                 listResolvers.add(JsonModelParameterConverter());
                 listResolvers.addAll(handlerAdapter.argumentResolvers ?: listOf())
-                handlerAdapter.argumentResolvers = listResolvers;
+
+
+                handlerAdapter.argumentResolvers = orderWithOrderedBean(listResolvers);
             }
         }
         return super.postProcessAfterInitialization(bean, beanName)

@@ -1,5 +1,6 @@
 package nbcp.web.comm
 
+import nbcp.mvc.mvc.JsonModelParameterBeanProcessor
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.stereotype.Component
@@ -9,7 +10,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 @Component
 @ConditionalOnClass(RequestMappingHandlerAdapter::class)
-class RequestMappingBeanProcessor : BeanPostProcessor {
+class LoginUserParameterBeanProcessor : BeanPostProcessor {
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
         if (bean is RequestMappingHandlerAdapter) {
             var handlerAdapter = bean;
@@ -19,7 +20,9 @@ class RequestMappingBeanProcessor : BeanPostProcessor {
                 var listResolvers = mutableListOf<HandlerMethodArgumentResolver>()
                 listResolvers.add(LoginUserParameterConverter());
                 listResolvers.addAll(resolvers)
-                handlerAdapter.argumentResolvers = listResolvers;
+
+
+                handlerAdapter.argumentResolvers = JsonModelParameterBeanProcessor.orderWithOrderedBean(listResolvers)
             }
         }
         return super.postProcessAfterInitialization(bean, beanName)

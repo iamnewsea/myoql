@@ -6,7 +6,7 @@ import nbcp.mvc.base.StringToDateConverter
 import nbcp.mvc.base.StringToLocalDateConverter
 import nbcp.mvc.base.StringToLocalDateTimeConverter
 import nbcp.mvc.base.StringToLocalTimeConverter
-import nbcp.mvc.mvc.ServletBeanMvcProcessor
+import nbcp.mvc.mvc.JsonModelParameterBeanProcessor
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters
@@ -22,7 +22,7 @@ import org.springframework.util.unit.DataSize
 import org.springframework.util.unit.DataUnit
 
 //@Component
-@Import(ServletBeanMvcProcessor::class)
+@Import(JsonModelParameterBeanProcessor::class)
 class MyMvcInitConfig : BeanPostProcessor {
     companion object {
         private var inited = false;

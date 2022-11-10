@@ -1,7 +1,7 @@
 package nbcp.web
 
 import nbcp.base.component.BaseImportBeanDefinitionRegistrar
-import nbcp.web.comm.RequestMappingBeanProcessor
+import nbcp.web.comm.LoginUserParameterBeanProcessor
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.core.type.filter.AnnotationTypeFilter
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @Import(
     value = [
-        RequestMappingBeanProcessor::class
+        LoginUserParameterBeanProcessor::class
     ]
 )
 //@Configuration
