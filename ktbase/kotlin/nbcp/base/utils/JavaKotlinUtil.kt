@@ -5,7 +5,7 @@ package nbcp.base.utils
  * Created by udi on 17-5-22.
  */
 
-object JavaListUtil {
+object JavaKotlinUtil {
     @JvmStatic
     fun <T> toMutableList(list: Iterable<T>): MutableList<T> {
         return list.toMutableList();
