@@ -1,11 +1,13 @@
 package nbcp.base.utils
 
+import java.io.File
+
 /**
  * 仅给Java使用。
  * Created by udi on 17-5-22.
  */
 
-object JavaListUtil {
+object JavaKotlinUtil {
     @JvmStatic
     fun <T> toMutableList(list: Iterable<T>): MutableList<T> {
         return list.toMutableList();
@@ -238,5 +240,14 @@ object JavaListUtil {
     @JvmStatic
     fun <K, V> toList(map: Map<K, V>): MutableList<Pair<K, V>> {
         return map.toList().toMutableList()
+    }
+
+
+    /**
+     * 递归删除文件
+     */
+    fun deleteFileRecursively(file: File): Boolean {
+        if (file.exists() == false) return false;
+        return file.deleteRecursively()
     }
 }
