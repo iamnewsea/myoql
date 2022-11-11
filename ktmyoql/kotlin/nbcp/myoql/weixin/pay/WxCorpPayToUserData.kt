@@ -31,7 +31,7 @@ class WxCorpPayToUserData @JvmOverloads constructor(
     var check_name: String = "NO_CHECK"  //NO_CHECK  不校验真实姓名   FORCE_CHECK：强校验真实姓名
     //var sign_type: String = "MD5"   不需要  居然是因为不需要
 
-    @nbcp.base.comm.Ignore
+    @nbcp.base.annotation.Ignore
     var sign: String = ""
 
     var nonce_str: String = CodeUtil.getCode().Slice(0, 32)  //是

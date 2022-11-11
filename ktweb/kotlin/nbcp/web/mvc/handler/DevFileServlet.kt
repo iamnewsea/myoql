@@ -7,7 +7,7 @@ import nbcp.base.extend.AsString
 import nbcp.base.extend.FullName
 import nbcp.base.utils.MyUtil
 import nbcp.mvc.mvc.setDownloadFileName
-import nbcp.mvc.comm.AdminSysOpsAction
+import nbcp.mvc.annotation.*
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.GetMapping
@@ -37,7 +37,7 @@ class DevFileServlet {
      * 通过Http上传的方式保存文件
      */
     @PostMapping("/save")
-    fun save(@nbcp.base.comm.Require work_path: String, request: HttpServletRequest): JsonResult {
+    fun save(@nbcp.base.annotation.Require work_path: String, request: HttpServletRequest): JsonResult {
         var target = File(work_path);
         if (target.exists()) {
             if (target.isFile == false) {
@@ -76,7 +76,7 @@ class DevFileServlet {
      * 下载 文件内容
      */
     @GetMapping("/download")
-    fun download(@nbcp.base.comm.Require work_path: String, @nbcp.base.comm.Require name: String, response: HttpServletResponse) {
+    fun download(@nbcp.base.annotation.Require work_path: String, @nbcp.base.annotation.Require name: String, response: HttpServletResponse) {
         var target = work_path + File.separator + name;
         var targetFile = File(target);
         if (targetFile.exists() == false) {
@@ -90,7 +90,7 @@ class DevFileServlet {
      * 查看 文件内容
      */
     @GetMapping("/view")
-    fun view(@nbcp.base.comm.Require work_path: String, @nbcp.base.comm.Require name: String, response: HttpServletResponse) {
+    fun view(@nbcp.base.annotation.Require work_path: String, @nbcp.base.annotation.Require name: String, response: HttpServletResponse) {
         var target = work_path + File.separator + name;
         var targetFile = File(target);
         if (targetFile.exists() == false) {
@@ -105,25 +105,25 @@ class DevFileServlet {
 
 
     @PostMapping("/list")
-    fun list(@nbcp.base.comm.Require work_path: String): ListResult<String> {
+    fun list(@nbcp.base.annotation.Require work_path: String): ListResult<String> {
         var docker_cmd = "ls -ahl  ${work_path}"
         return execCmd(docker_cmd);
     }
 
     @PostMapping("/delete")
-    fun delete(@nbcp.base.comm.Require work_path: String, @nbcp.base.comm.Require name: String): ListResult<String> {
+    fun delete(@nbcp.base.annotation.Require work_path: String, @nbcp.base.annotation.Require name: String): ListResult<String> {
         var docker_cmd = "rm -rf  ${work_path}"
         return execCmd(docker_cmd);
     }
 
     @PostMapping("/mkdir")
-    fun mkdir(@nbcp.base.comm.Require work_path: String, @nbcp.base.comm.Require name: String): JsonResult {
+    fun mkdir(@nbcp.base.annotation.Require work_path: String, @nbcp.base.annotation.Require name: String): JsonResult {
         var docker_cmd = "mkdir -p  ${work_path}"
         return execCmd(docker_cmd);
     }
 
     @PostMapping("/rename")
-    fun rename(@nbcp.base.comm.Require work_path: String, @nbcp.base.comm.Require name: String, @nbcp.base.comm.Require newName: String): JsonResult {
+    fun rename(@nbcp.base.annotation.Require work_path: String, @nbcp.base.annotation.Require name: String, @nbcp.base.annotation.Require newName: String): JsonResult {
         var docker_cmd = "mv ${work_path}/${name} ${work_path}/${newName}"
         return execCmd(docker_cmd)
     }

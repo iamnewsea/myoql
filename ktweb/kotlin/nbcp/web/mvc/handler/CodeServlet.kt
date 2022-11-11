@@ -3,7 +3,7 @@ package nbcp.web.mvc.handler
 import nbcp.base.extend.ToJson
 import nbcp.base.utils.CodeUtil
 import nbcp.mvc.mvc.WriteJsonRawValue
-import nbcp.mvc.comm.OpenAction
+import nbcp.mvc.annotation.*
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController

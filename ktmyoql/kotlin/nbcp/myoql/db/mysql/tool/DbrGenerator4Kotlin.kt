@@ -9,9 +9,7 @@ import nbcp.base.extend.*
 import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.KotlinCoderUtil
 import nbcp.base.utils.MyUtil
-import nbcp.myoql.db.sql.base.SqlAutoIncrementKey
-import nbcp.myoql.db.sql.base.SqlFk
-import nbcp.myoql.db.sql.base.SqlSpreadColumn
+import nbcp.myoql.db.sql.annotation.*
 import nbcp.myoql.db.sql.base.SqlSpreadColumnData
 import nbcp.myoql.db.sql.define.FkDefine
 import nbcp.myoql.db.sql.enums.DbType

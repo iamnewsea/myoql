@@ -18,11 +18,11 @@ import javax.net.ssl.SSLSocketFactory
  * https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_4
  */
 data class WxRefundPayRequestData @JvmOverloads constructor(
-    @nbcp.base.comm.Require
+    @nbcp.base.annotation.Require
     var out_trade_no: String,//是     商户订单号
     var out_refund_no: String,   //商户退款单号
 
-    @nbcp.base.comm.Require
+    @nbcp.base.annotation.Require
     var total_fee: Int, //是, 订单总金额
     var refund_fee: Int,//是        退款金额
 

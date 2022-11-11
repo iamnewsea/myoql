@@ -10,7 +10,7 @@ import nbcp.base.utils.*
 import nbcp.mvc.mvc.WriteTextValue
 import nbcp.mvc.mvc.findParameterIntValue
 import nbcp.mvc.mvc.findParameterStringValue
-import nbcp.mvc.comm.OpenAction
+import nbcp.mvc.annotation.*
 import nbcp.myoql.db.db
 import nbcp.myoql.model.IUploadFileDbService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass

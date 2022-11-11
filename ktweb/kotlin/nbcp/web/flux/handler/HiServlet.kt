@@ -5,7 +5,7 @@ import nbcp.base.extend.HasValue
 import nbcp.base.extend.getStringValue
 import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.SpringUtil
-import nbcp.mvc.comm.OpenAction
+import nbcp.mvc.annotation.OpenAction
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController

@@ -1,4 +1,4 @@
-package nbcp.myoql.db.mybatis
+package nbcp.myoql.annotation
 
 import java.lang.annotation.Inherited
 import kotlin.reflect.KClass

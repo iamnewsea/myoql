@@ -1,10 +1,11 @@
 package nbcp.mvc.mvc
 
 
+import nbcp.base.annotation.*
 import nbcp.base.comm.const
 import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
-import nbcp.mvc.comm.JsonModel
+import nbcp.mvc.annotation.*
 import org.slf4j.LoggerFactory
 import org.springframework.core.MethodParameter
 import org.springframework.core.Ordered
@@ -123,7 +124,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
             } else if (parameter.parameterType.IsCollectionType) {
                 value = listOf<Any>()
             } else if (parameter.parameterType.IsNumberType) {
-                var defNumberValue = parameter.getParameterAnnotation(nbcp.base.comm.DefaultNumberValue::class.java)
+                var defNumberValue = parameter.getParameterAnnotation(DefaultNumberValue::class.java)
                 if (defNumberValue != null) {
                     value = defNumberValue.value
                 } else {
@@ -298,7 +299,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
     }
 
     private fun checkRequire(parameter: MethodParameter, webRequest: HttpServletRequest) {
-        var require = parameter.getParameterAnnotation(nbcp.base.comm.Require::class.java)
+        var require = parameter.getParameterAnnotation(nbcp.base.annotation.Require::class.java)
         if (require == null) {
             return;
         }
@@ -315,7 +316,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
         }
 
         logger.Error { require.value.AsString("请求:${webRequest.fullUrl} --> 方法:${caller} 中，找不到参数${parameter.parameterName}") }
-        throw nbcp.base.comm.RequireException(parameter.parameterName!!)
+        throw RequireException(parameter.parameterName!!)
     }
 
     private fun getFromQuery(webRequest: HttpServletRequest, parameter: MethodParameter, parameterName: String): Any? {

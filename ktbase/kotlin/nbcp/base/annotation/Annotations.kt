@@ -1,4 +1,4 @@
-package nbcp.base.comm
+package nbcp.base.annotation
 
 import nbcp.base.enums.LogLevelScopeEnum
 import java.lang.annotation.Inherited

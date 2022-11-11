@@ -1,6 +1,6 @@
 package nbcp.web.flux.handler
 
-import nbcp.mvc.comm.OpenAction
+import nbcp.mvc.annotation.*
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController

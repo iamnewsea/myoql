@@ -5,7 +5,7 @@ import nbcp.base.extend.AsInt
 import nbcp.base.extend.AsIntWithNull
 import nbcp.base.extend.HasValue
 import nbcp.base.utils.SpringUtil
-import nbcp.mvc.comm.AdminSysOpsAction
+import nbcp.mvc.annotation.*
 import nbcp.myoql.bean.MongoFlywayBeanProcessor
 import nbcp.myoql.db.db
 import nbcp.myoql.db.mongo.delete

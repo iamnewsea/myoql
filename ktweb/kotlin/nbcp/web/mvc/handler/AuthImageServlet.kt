@@ -4,7 +4,7 @@ import com.wf.captcha.ArithmeticCaptcha
 import nbcp.base.extend.AsInt
 import nbcp.base.utils.SpringUtil
 import nbcp.mvc.mvc.queryJson
-import nbcp.mvc.comm.OpenAction
+import nbcp.mvc.annotation.*
 import nbcp.web.service.IUserAuthenticationService
 import nbcp.web.extend.*
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication

@@ -28,7 +28,7 @@ class SqlBaseGroup : IDataGroup{
      * 附件
      */
     @nbcp.base.db.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
-    @nbcp.myoql.db.sql.base.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
+    @nbcp.myoql.db.sql.annotation.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
     @nbcp.base.db.DbEntityGroup(value = """SqlBase""")
     @nbcp.base.db.Cn(value = """附件""")
     class s_annex_table(collectionName: String = "", datasource:String="")
@@ -112,7 +112,7 @@ class SqlBaseGroup : IDataGroup{
      * 数据垃圾箱
      */
     @nbcp.base.db.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
-    @nbcp.myoql.db.sql.base.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
+    @nbcp.myoql.db.sql.annotation.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
     @nbcp.base.db.DbEntityGroup(value = """SqlBase""")
     @nbcp.base.db.Cn(value = """数据垃圾箱""")
     class s_dustbin_table(collectionName: String = "", datasource:String="")
@@ -150,7 +150,7 @@ class SqlBaseGroup : IDataGroup{
      * 日志
      */
     @nbcp.base.db.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
-    @nbcp.myoql.db.sql.base.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
+    @nbcp.myoql.db.sql.annotation.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
     @nbcp.base.db.DbEntityGroup(value = """SqlBase""")
     @nbcp.base.db.Cn(value = """日志""")
     class s_log_table(collectionName: String = "", datasource:String="")

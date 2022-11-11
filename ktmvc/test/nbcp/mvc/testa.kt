@@ -1,6 +1,7 @@
 package nbcp.mvc
 
 
+import nbcp.base.annotation.MyLogLevel
 import nbcp.base.enums.LogLevelScopeEnum
 import nbcp.base.utils.SpringUtil
 import org.junit.jupiter.api.Test
@@ -13,7 +14,7 @@ class ff {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass);
     }
 
-    @nbcp.base.comm.MyLogLevel(LogLevelScopeEnum.trace)
+    @MyLogLevel(LogLevelScopeEnum.trace)
     fun abc(a: String) {
         logger.trace("OK:${a}")
     }

@@ -1,6 +1,8 @@
 package nbcp.myoql.db
 
 import nbcp.base.extend.scopes
+import nbcp.myoql.annotation.BrokeRedisCache
+import nbcp.myoql.annotation.brokeCache
 import nbcp.myoql.db.cache.*
 import nbcp.myoql.db.enums.MyOqlDbScopeEnum
 import nbcp.myoql.db.mongo.table.MongoBaseGroup

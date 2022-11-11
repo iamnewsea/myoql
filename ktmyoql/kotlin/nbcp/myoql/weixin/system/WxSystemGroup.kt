@@ -32,11 +32,11 @@ object WxSystemGroup {
         var list = type.AllFields
             .sortedBy { it.name }
             .map {
-                if (it.getAnnotation(nbcp.base.comm.Ignore::class.java) != null) {
+                if (it.getAnnotation(nbcp.base.annotation.Ignore::class.java) != null) {
                     return@map ""
                 }
 
-                var require = it.getAnnotation(nbcp.base.comm.Require::class.java) != null
+                var require = it.getAnnotation(nbcp.base.annotation.Require::class.java) != null
 
                 var value = it.get(wxModel)
 

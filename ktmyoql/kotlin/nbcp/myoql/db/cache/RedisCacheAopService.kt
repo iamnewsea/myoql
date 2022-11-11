@@ -3,6 +3,10 @@ package nbcp.myoql.db.cache
 import nbcp.base.comm.JsonMap
 import nbcp.base.comm.config
 import nbcp.base.extend.*
+import nbcp.myoql.annotation.BrokeRedisCache
+import nbcp.myoql.annotation.brokeCache
+import nbcp.myoql.annotation.getTableName
+import nbcp.myoql.annotation.resolveWithVariable
 import nbcp.myoql.db.cache.*
 import nbcp.myoql.db.db
 import org.aspectj.lang.ProceedingJoinPoint

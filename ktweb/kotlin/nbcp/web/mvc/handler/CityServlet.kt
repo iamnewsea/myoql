@@ -4,7 +4,7 @@ import nbcp.base.comm.ListResult
 import nbcp.base.comm.NoDataException
 import nbcp.base.comm.ParameterInvalidException
 import nbcp.base.extend.AsInt
-import nbcp.mvc.comm.OpenAction
+import nbcp.mvc.annotation.*
 import nbcp.myoql.db.db
 import nbcp.myoql.db.mongo.query
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -25,7 +25,7 @@ data class cn_city_model(var c: Int, var n: String)
 @ConditionalOnClass(value = arrayOf(MongoTemplate::class,  db::class))
 open class CityServlet {
     @PostMapping("/open/child-cities")
-    fun child(@nbcp.base.comm.Require pcode: Int, response: HttpServletResponse): ListResult<cn_city_model> {
+    fun child(@nbcp.base.annotation.Require pcode: Int, response: HttpServletResponse): ListResult<cn_city_model> {
         if (pcode % 100 != 0) {
             throw ParameterInvalidException("城市code非法")
         }
@@ -44,7 +44,7 @@ open class CityServlet {
      * 返回 wbs 路径信息
      */
     @PostMapping("/open/city-full-info")
-    fun fullInfo(@nbcp.base.comm.Require code: Int, response: HttpServletResponse): ListResult<cn_city_model> {
+    fun fullInfo(@nbcp.base.annotation.Require code: Int, response: HttpServletResponse): ListResult<cn_city_model> {
         if (code == 0) {
             throw NoDataException("城市code不能为空")
         }
