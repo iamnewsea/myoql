@@ -246,6 +246,7 @@ object JavaKotlinUtil {
     /**
      * 递归删除文件
      */
+    @JvmStatic
     fun deleteFileRecursively(file: File): Boolean {
         if (file.exists() == false) return false;
         return file.deleteRecursively()
