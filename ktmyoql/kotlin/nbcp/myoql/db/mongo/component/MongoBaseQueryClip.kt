@@ -5,9 +5,7 @@ import nbcp.base.enums.JsonStyleScopeEnum
 import nbcp.base.extend.*
 import nbcp.base.utils.Md5Util
 import nbcp.base.utils.MyUtil
-import nbcp.myoql.db.cache.FromRedisCache
-import nbcp.myoql.db.cache.onlyGetFromCache
-import nbcp.myoql.db.cache.onlySetToCache
+import nbcp.myoql.annotation.*
 import nbcp.myoql.db.db
 import nbcp.myoql.db.enums.MyOqlDbScopeEnum
 import nbcp.myoql.db.mongo.component.IMongoWhere

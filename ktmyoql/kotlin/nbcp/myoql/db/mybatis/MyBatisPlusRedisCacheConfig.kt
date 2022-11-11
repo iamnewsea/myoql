@@ -4,8 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.ISqlSegment
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
 import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
-import nbcp.myoql.annotation.BrokeRedisCache
-import nbcp.myoql.annotation.CacheForMyBatisPlusBaseMapper
+import nbcp.myoql.annotation.*
 import nbcp.myoql.annotation.brokeCache
 import nbcp.myoql.db.cache.*
 import org.aopalliance.intercept.MethodInterceptor
