@@ -58,3 +58,12 @@ annotation class Ignore(val value: String = "")
 //annotation class Setting(val settingFunc: String = "")
 
 open class RequireException(var key: String) : Exception("${key} 为必填项")
+
+
+/**
+ * 定时任务组件注解
+ */
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+@Inherited
+annotation class GroupLog(val value: String = "")
