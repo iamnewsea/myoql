@@ -1,6 +1,6 @@
 package nbcp.base
 
-import nbcp.base.aop.GroupLog
+import nbcp.base.annotation.*
 import org.junit.jupiter.api.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

@@ -1,7 +1,7 @@
 package nbcp.base.aop
 
 import nbcp.base.annotation.GroupLog
-import nbcp.base.comm.GroupLogScope
+import nbcp.base.scope.GroupLogScope
 import nbcp.base.extend.usingScope
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around

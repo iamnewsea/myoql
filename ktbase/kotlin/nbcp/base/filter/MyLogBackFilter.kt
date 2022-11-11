@@ -6,7 +6,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.classic.turbo.TurboFilter
 import ch.qos.logback.core.filter.Filter
 import ch.qos.logback.core.spi.FilterReply
-import nbcp.base.comm.GroupLogScope
+import nbcp.base.scope.GroupLogScope
 import nbcp.base.comm.config
 import nbcp.base.enums.LogLevelScopeEnum
 import nbcp.base.extend.HasValue

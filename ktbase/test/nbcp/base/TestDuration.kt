@@ -1,6 +1,6 @@
 package nbcp.base
 
-import nbcp.base.aop.GroupLog
+import nbcp.base.annotation.*
 import nbcp.base.comm.JsonMap
 import nbcp.base.enums.LogLevelScopeEnum
 import nbcp.base.extend.AsLocalDateTime

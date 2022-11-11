@@ -1,6 +1,7 @@
 package nbcp.base.aop
 
 import nbcp.base.TestBase
+import nbcp.base.annotation.GroupLog
 import nbcp.base.utils.ProxyUtil
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
