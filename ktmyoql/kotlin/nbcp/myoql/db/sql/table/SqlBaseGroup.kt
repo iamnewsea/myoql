@@ -1,16 +1,22 @@
 package nbcp.myoql.db.sql.table
 
-import nbcp.myoql.db.comm.BaseMetaData
-import nbcp.myoql.db.comm.IDataGroup
-import nbcp.myoql.db.comm.MetaDataGroup
-import nbcp.myoql.db.enums.DatabaseEnum
-import nbcp.myoql.db.sql.base.SqlBaseMetaTable
-import nbcp.myoql.db.sql.base.SqlColumnName
-import nbcp.myoql.db.sql.base.SqlSpreadColumnData
+import java.io.*
+import nbcp.base.db.*
+import nbcp.base.comm.*
+import nbcp.base.extend.*
+import nbcp.base.enums.*
+import nbcp.base.utils.*
+import nbcp.myoql.db.*
+import nbcp.myoql.db.sql.*
+
+import nbcp.myoql.db.comm.*
+import nbcp.myoql.db.enums.*
+import nbcp.myoql.db.sql.base.*
+import nbcp.myoql.db.sql.enums.*
+import nbcp.myoql.db.sql.define.*
 import nbcp.myoql.db.sql.component.*
-import nbcp.myoql.db.sql.define.FkDefine
-import nbcp.myoql.db.sql.enums.DbType
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.*
+
 
 
 @Component("sql.SqlBase")
