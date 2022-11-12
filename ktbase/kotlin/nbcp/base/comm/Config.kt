@@ -109,7 +109,7 @@ ${list.filter { it.HasValue }.joinToString("  ")}
         }
 
         /**
-         * 当前集群，一个集群可能有多个产品线。
+         * 当前集群，一个集群可能有多个产品线。  app.group or currentK8sNamespace
          */
         @JvmStatic
         val appGroup
