@@ -97,7 +97,7 @@ ${list.filter { it.HasValue }.joinToString("  ")}
 //        }
 
         /**
-         * 获取当前K8s名称空间
+         * 当前K8s名称空间
          */
         @JvmStatic
         val currentK8sNamespace by lazy {
