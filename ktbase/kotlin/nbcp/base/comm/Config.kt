@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.context.ApplicationListener
 import org.springframework.core.env.ConfigurableEnvironment
+import java.io.File
 
 /**
  * 配置项, 不能用Component 或Bean，因为它的时机，比Spring容器还要早。
@@ -96,11 +97,23 @@ ${list.filter { it.HasValue }.joinToString("  ")}
 //        }
 
         /**
+         * 获取当前K8s名称空间
+         */
+        @JvmStatic
+        val currentK8sNamespace by lazy {
+            var file = File("/var/run/secrets/kubernetes.io/serviceaccount/namespace")
+            if (file.exists() == false) {
+                return@lazy "";
+            }
+            return@lazy file.readText();
+        }
+
+        /**
          * 当前集群，一个集群可能有多个产品线。
          */
         @JvmStatic
         val appGroup
-            get() = getConfig("app.group").AsString()
+            get() = getConfig("app.group").AsString { currentK8sNamespace }
 
 
         /**
