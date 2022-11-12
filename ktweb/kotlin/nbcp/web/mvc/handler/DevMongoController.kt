@@ -3,7 +3,7 @@ package nbcp.web.mvc.handler
 import nbcp.base.comm.ListResult
 import nbcp.base.extend.IsSimpleType
 import nbcp.base.extend.Slice
-import nbcp.mvc.comm.AdminSysOpsAction
+import nbcp.mvc.annotation.*
 import nbcp.myoql.db.db
 import nbcp.myoql.db.mongo.component.MongoBaseMetaCollection
 import org.slf4j.LoggerFactory

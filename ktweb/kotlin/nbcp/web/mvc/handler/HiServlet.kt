@@ -9,7 +9,7 @@ import nbcp.base.utils.SpringUtil
 import nbcp.mvc.mvc.WriteHtmlBodyValue
 import nbcp.mvc.mvc.WriteHtmlValue
 import nbcp.mvc.mvc.findParameterValue
-import nbcp.mvc.comm.OpenAction
+import nbcp.mvc.annotation.*
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController

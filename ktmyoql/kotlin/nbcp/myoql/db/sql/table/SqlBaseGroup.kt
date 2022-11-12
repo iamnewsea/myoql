@@ -1,16 +1,22 @@
 package nbcp.myoql.db.sql.table
 
-import nbcp.myoql.db.comm.BaseMetaData
-import nbcp.myoql.db.comm.IDataGroup
-import nbcp.myoql.db.comm.MetaDataGroup
-import nbcp.myoql.db.enums.DatabaseEnum
-import nbcp.myoql.db.sql.base.SqlBaseMetaTable
-import nbcp.myoql.db.sql.base.SqlColumnName
-import nbcp.myoql.db.sql.base.SqlSpreadColumnData
+import java.io.*
+import nbcp.base.db.*
+import nbcp.base.comm.*
+import nbcp.base.extend.*
+import nbcp.base.enums.*
+import nbcp.base.utils.*
+import nbcp.myoql.db.*
+import nbcp.myoql.db.sql.*
+
+import nbcp.myoql.db.comm.*
+import nbcp.myoql.db.enums.*
+import nbcp.myoql.db.sql.base.*
+import nbcp.myoql.db.sql.enums.*
+import nbcp.myoql.db.sql.define.*
 import nbcp.myoql.db.sql.component.*
-import nbcp.myoql.db.sql.define.FkDefine
-import nbcp.myoql.db.sql.enums.DbType
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.*
+
 
 
 @Component("sql.SqlBase")
@@ -28,7 +34,7 @@ class SqlBaseGroup : IDataGroup{
      * 附件
      */
     @nbcp.base.db.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
-    @nbcp.myoql.db.sql.base.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
+    @nbcp.myoql.db.sql.annotation.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
     @nbcp.base.db.DbEntityGroup(value = """SqlBase""")
     @nbcp.base.db.Cn(value = """附件""")
     class s_annex_table(collectionName: String = "", datasource:String="")
@@ -112,7 +118,7 @@ class SqlBaseGroup : IDataGroup{
      * 数据垃圾箱
      */
     @nbcp.base.db.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
-    @nbcp.myoql.db.sql.base.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
+    @nbcp.myoql.db.sql.annotation.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
     @nbcp.base.db.DbEntityGroup(value = """SqlBase""")
     @nbcp.base.db.Cn(value = """数据垃圾箱""")
     class s_dustbin_table(collectionName: String = "", datasource:String="")
@@ -150,7 +156,7 @@ class SqlBaseGroup : IDataGroup{
      * 日志
      */
     @nbcp.base.db.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
-    @nbcp.myoql.db.sql.base.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
+    @nbcp.myoql.db.sql.annotation.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
     @nbcp.base.db.DbEntityGroup(value = """SqlBase""")
     @nbcp.base.db.Cn(value = """日志""")
     class s_log_table(collectionName: String = "", datasource:String="")

@@ -1,6 +1,6 @@
-package nbcp.base.comm
+package nbcp.base.scope
 
-import nbcp.base.aop.GroupLog
+import nbcp.base.annotation.GroupLog
 import nbcp.base.scope.IScopeData
 
 

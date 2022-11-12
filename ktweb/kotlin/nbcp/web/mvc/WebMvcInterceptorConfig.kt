@@ -14,7 +14,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 /**
  * Created by udi on 2017.3.11.
  */
-@Configuration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 open class WebMvcInterceptorConfig : WebMvcConfigurer {
     companion object {

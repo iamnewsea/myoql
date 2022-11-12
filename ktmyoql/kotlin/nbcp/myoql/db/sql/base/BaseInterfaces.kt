@@ -2,6 +2,7 @@ package nbcp.myoql.db.sql.base
 
 import nbcp.base.db.Cn
 import nbcp.base.db.DbEntityIndex
+import nbcp.myoql.db.sql.annotation.ConverterValueToDb
 import nbcp.myoql.db.sql.define.AutoIdConverter
 import java.io.Serializable
 import java.time.LocalDateTime

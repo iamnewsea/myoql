@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 
 //@Import(MyOqlInitConfig::class)
 //@Component
-@Configuration
+//@Configuration
 class KotlinMyOqlExtendConfig : BaseImportBeanDefinitionRegistrar(
     "nbcp",
     listOf(

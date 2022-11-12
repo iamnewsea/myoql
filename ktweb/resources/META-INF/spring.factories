@@ -1,7 +1,6 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=nbcp.web.KotlinWebExtendConfig\
 ,nbcp.web.mvc.filter.MyOqlCrossFilter\
 ,nbcp.web.mvc.filter.MyAllFilter\
-,nbcp.web.mvc.WebMvcInterceptorConfig\
 ,nbcp.web.flux.filter.CrossFilterConfig
 
 org.springframework.context.ApplicationListener=nbcp.web.MyMebStartEvent

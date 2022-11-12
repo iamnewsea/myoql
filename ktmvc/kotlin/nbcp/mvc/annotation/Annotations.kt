@@ -1,4 +1,4 @@
-package nbcp.mvc.comm
+package nbcp.mvc.annotation
 
 import java.lang.annotation.Inherited
 

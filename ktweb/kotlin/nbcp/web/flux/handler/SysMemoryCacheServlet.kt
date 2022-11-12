@@ -2,7 +2,7 @@ package nbcp.web.flux.handler
 
 import nbcp.base.comm.ListResult
 import nbcp.base.db.memoryCacheDb
-import nbcp.mvc.comm.AdminSysOpsAction
+import nbcp.mvc.annotation.*
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod

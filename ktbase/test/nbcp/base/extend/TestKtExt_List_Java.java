@@ -3,7 +3,7 @@ package nbcp.base.extend;
 import nbcp.base.TestBase;
 import nbcp.base.comm.BatchReader;
 import nbcp.base.comm.MyJsonUtil;
-import nbcp.base.utils.JavaListUtil;
+import nbcp.base.utils.JavaKotlinUtil;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
@@ -17,10 +17,10 @@ class TestKtExt_List_Java extends TestBase {
         list.add("a");
         list.add("b");
         list.add("c");
-        System.out.println(JavaListUtil.joinToString(list, "-"));
+        System.out.println(JavaKotlinUtil.joinToString(list, "-"));
 
 
-        String[] x = JavaListUtil.toTypedArray(list, String.class);
+        String[] x = JavaKotlinUtil.toTypedArray(list, String.class);
         System.out.println(MyJsonUtil.toJson(x));
     }
 

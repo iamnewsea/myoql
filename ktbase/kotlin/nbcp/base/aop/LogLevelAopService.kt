@@ -1,5 +1,6 @@
 package nbcp.base.aop
 
+import nbcp.base.annotation.MyLogLevel
 import nbcp.base.extend.usingScope
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
@@ -20,15 +21,15 @@ open class LogLevelAopService {
     /**
      * 日志拦截
      */
-    @Around("@within(nbcp.base.comm.MyLogLevel) || @annotation(nbcp.base.comm.MyLogLevel)")
+    @Around("@within(nbcp.base.annotation.MyLogLevel) || @annotation(nbcp.base.annotation.MyLogLevel)")
     fun logPoint(joinPoint: ProceedingJoinPoint): Any? {
         val signature = joinPoint.signature as MethodSignature;
         val method = signature.method
-        var level = method.getAnnotationsByType(nbcp.base.comm.MyLogLevel::class.java).firstOrNull()
+        var level = method.getAnnotationsByType(MyLogLevel::class.java).firstOrNull()
         if (level == null) {
             val targetType = signature.declaringType
-            level = targetType.getAnnotationsByType<nbcp.base.comm.MyLogLevel>(nbcp.base.comm.MyLogLevel::class.java)
-                .firstOrNull() as nbcp.base.comm.MyLogLevel?
+            level = targetType.getAnnotationsByType<MyLogLevel>(MyLogLevel::class.java)
+                .firstOrNull() as MyLogLevel?
         }
 
         if (level == null) {

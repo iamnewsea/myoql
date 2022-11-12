@@ -9,6 +9,7 @@ import nbcp.base.utils.*
 import nbcp.myoql.db.*
 import nbcp.myoql.db.comm.*
 import nbcp.myoql.db.enums.*
+import nbcp.myoql.db.sql.annotation.*
 import nbcp.myoql.db.sql.base.*
 import nbcp.myoql.db.sql.component.RawQuerySqlClip
 import nbcp.myoql.db.sql.enums.DbType

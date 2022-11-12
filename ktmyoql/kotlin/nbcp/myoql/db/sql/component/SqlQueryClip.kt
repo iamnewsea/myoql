@@ -5,9 +5,7 @@ import nbcp.base.comm.ListResult
 import nbcp.base.comm.StringMap
 import nbcp.base.comm.config
 import nbcp.base.extend.*
-import nbcp.myoql.db.cache.FromRedisCache
-import nbcp.myoql.db.cache.onlyGetFromCache
-import nbcp.myoql.db.cache.onlySetToCache
+import nbcp.myoql.annotation.*
 import nbcp.myoql.db.db
 import nbcp.myoql.db.enums.MyOqlDbScopeEnum
 import nbcp.myoql.db.mongo.MongoEntityCollector

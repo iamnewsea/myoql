@@ -3,6 +3,7 @@ package nbcp.myoql.db.sql.base
 
 import nbcp.base.extend.*
 import nbcp.myoql.db.comm.BaseMetaData
+import nbcp.myoql.db.sql.annotation.SqlSpreadColumn
 import nbcp.myoql.db.sql.define.FkDefine
 import java.io.Serializable
 import java.lang.reflect.Modifier

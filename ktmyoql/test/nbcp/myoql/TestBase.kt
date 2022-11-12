@@ -1,5 +1,6 @@
 package nbcp.myoql
 
+import nbcp.base.annotation.MyLogLevel
 import nbcp.base.enums.LogLevelScopeEnum
 import nbcp.base.extend.minus
 import org.junit.jupiter.api.extension.ExtendWith
@@ -42,7 +43,7 @@ open class KtMyoqlTestApplication {
 @WebAppConfiguration
 @SpringBootTest(classes = [KtMyoqlTestApplication::class])
 @TestPropertySource(locations = ["classpath:application.yml"])
-@nbcp.base.comm.MyLogLevel(LogLevelScopeEnum.info)
+@MyLogLevel(LogLevelScopeEnum.info)
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
 //@ActiveProfiles("unittest","productprofile")
 //注释 pom.xml 中的  project.build.resources.resource 中的 excludes

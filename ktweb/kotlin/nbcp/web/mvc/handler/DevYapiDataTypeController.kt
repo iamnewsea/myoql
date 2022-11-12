@@ -6,7 +6,7 @@ import nbcp.base.enums.*
 import nbcp.base.extend.*
 import nbcp.base.utils.*
 import nbcp.mvc.mvc.findParameterValue
-import nbcp.mvc.comm.OpenAction
+import nbcp.mvc.annotation.*
 import nbcp.myoql.db.db
 import nbcp.myoql.db.mongo.MongoBaseQueryClip
 import nbcp.myoql.db.mongo.MongoTemplateScope
@@ -29,7 +29,7 @@ class DevYapiDataTypeServlet {
      * @param typeMap , 形如： {"IdName": {id: {type:"string",description:"id",mock:"1"} ,name:{} }
      */
     @RequestMapping("/user-types", method = [RequestMethod.POST, RequestMethod.GET])
-    fun dbTypes(@nbcp.base.comm.Require connString: String, request: HttpServletRequest): nbcp.base.comm.ApiResult<JsonMap> {
+    fun dbTypes(@nbcp.base.annotation.Require connString: String, request: HttpServletRequest): nbcp.base.comm.ApiResult<JsonMap> {
         var typeMapObject = request.findParameterValue("typeMap")
 
         if (typeMapObject == null) {

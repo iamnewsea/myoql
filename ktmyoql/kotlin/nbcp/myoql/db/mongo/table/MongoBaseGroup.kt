@@ -1,13 +1,19 @@
 package nbcp.myoql.db.mongo.table
 
-import nbcp.myoql.db.comm.BaseMetaData
-import nbcp.myoql.db.comm.IDataGroup
-import nbcp.myoql.db.comm.MetaDataGroup
-import nbcp.myoql.db.enums.DatabaseEnum
+import java.io.*
+import nbcp.base.db.*
+import nbcp.base.comm.*
+import nbcp.base.extend.*
+import nbcp.base.enums.*
+import nbcp.base.utils.*
+import nbcp.myoql.db.*
+import nbcp.myoql.db.comm.*
+import nbcp.myoql.db.enums.*
 import nbcp.myoql.db.mongo.*
-import nbcp.myoql.db.mongo.base.MongoColumnName
-import nbcp.myoql.db.mongo.component.MongoBaseMetaCollection
-import org.springframework.stereotype.Component
+import nbcp.myoql.db.mongo.base.*
+import nbcp.myoql.db.mongo.component.*
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.*
 
 
 @Component("mongo.MongoBase")
