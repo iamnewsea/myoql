@@ -1,12 +1,10 @@
-
 # 发布
 
 - 修改 /pom.xml version
 - python sync_version.py
-- 本地安装： python install_jar.py  
+- 本地安装： python install_jar.py
 - 安装到远程仓库：python publish ${version}
 - 本发安装单个Jar包： python install_jar.py -f ktbase
-
 
     > 设置版本： mvn versions:set -DnewVersion=1.0.6-SNAPSHOT
     > 发布到私服：mvn clean deploy -Dmaven.test.skip=true -e           -U -am -P nancal-dev -pl ktweb 
@@ -16,9 +14,13 @@
     > mvn clean install -Dmaven.test.skip=true  -P release
     > mvn clean deploy -Dmaven.test.skip=true -P release
 
-pom.xml 中 profiles.release.profile.id == profiles.release.distributionManagement.repository.id == maven setting.xml servers.server.id
+pom.xml 中 profiles.release.profile.id == profiles.release.distributionManagement.repository.id == maven setting.xml
+servers.server.id
+
 ### 注意
+
 需要集成 kotlin-maven-plugin
+
 ```
 <plugin>
     <groupId>org.jetbrains.kotlin</groupId>
@@ -45,15 +47,18 @@ pom.xml 中 profiles.release.profile.id == profiles.release.distributionManageme
     </configuration>
 </plugin>
 ```
+
 `<phase>validate</phase>` 表示在 validate 阶段编译 kotlin
 让 `kotlin-maven-plugin` 执行编译的时机, 早于 默认的 `maven-compiler-plugin`
 
 `maven-compiler-plugin` 也可以编译 java . 所以 集成了 `maven-compiler-plugin` 后不必集成 `maven-compiler-plugin`
- 
+
 ## 发布到私服
+
 maven的 setting.xml 增加
 
 servers 节
+
 ```
 <server>
    <id>nancal-dev</id>
@@ -68,8 +73,8 @@ servers 节
 </server>
 ```
 
-
 profile 节
+
 ```
 <profiles>
     <profile>
@@ -82,7 +87,6 @@ profile 节
 </profiles>
 ```
 
-
 本地打包：python install_jar.py
 发布到私服：mvn clean deploy -Dmaven.test.skip=true -P nancal-dev
 
@@ -91,6 +95,16 @@ profile 节
 Major.Minor.Fix
 稳定版本=Major.Minor.Max
 
+## 第三方引入 ktbase
+
+安装 ktbase 包
+
+```
+cd lib
+mvn install:install-file -DgroupId=cn.dev8 -DartifactId=kotlin-boot-parent -Dversion=1.1.5-SNAPSHOT  -Dpackaging=pom -Dfile=kotlin-boot-parent-1.1.5-SNAPSHOT.pom 
+
+mvn install:install-file -DgroupId=cn.dev8 -DartifactId=ktbase -Dversion=1.1.5-SNAPSHOT   -Dfile=ktbase-1.1.5-SNAPSHOT.jar -DpomFile=ktbase-1.1.5-SNAPSHOT.pom 
+```
 
 # 使用包需要配置的变量
 
@@ -109,31 +123,29 @@ proxy_set_header X-Real-IP $remote_addr;
 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 ```
 
-
-
->开发环境
+> 开发环境
 
 - JDK 1.8
 - Intellij IDEA
 - Kotlin
 - Maven
 
->Intellij IDEA 插件
-    
+> Intellij IDEA 插件
+
     Kotlin
-    
->Intellij Idea环境配置：
-    
+
+> Intellij Idea环境配置：
+
     python build-base.py
     mvn-jar.cmd -f corp
     mvn-jar.cmd -f admin
- 
+
 ## 发版：
-    
+
     python scpshop.py
     或
     python scpadmin.py
- 
+
 # 项目特点
 
     可以 java + kotlin , 推荐 kotlin 更简单。
@@ -149,7 +161,7 @@ proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     封装 登录校验的请求 OpenAction
     MySql 主从数据库读取
     Mongo 多数据库数据源
-    
+
 # 教程
 
 参见： doc 文件夹下相应部分。

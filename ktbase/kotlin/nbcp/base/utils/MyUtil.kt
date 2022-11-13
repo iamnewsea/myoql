@@ -1113,10 +1113,10 @@ object MyUtil {
 
         path.map {
             it.split('/', '\\')
-                .filter { it.HasValue }
-                .filter { it != "." }
         }
             .Unwind()
+            .filter { it.HasValue }
+            .filter { it != "." }
             .forEach {
                 if (it == "..") {
                     if (list.removeLastOrNull() == null) {
