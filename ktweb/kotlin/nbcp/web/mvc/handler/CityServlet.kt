@@ -1,8 +1,8 @@
 package nbcp.web.mvc.handler
 
 import nbcp.base.comm.ListResult
-import nbcp.base.comm.NoDataException
-import nbcp.base.comm.ParameterInvalidException
+import nbcp.base.exception.NoDbDataException
+import nbcp.base.exception.ParameterInvalidException
 import nbcp.base.extend.AsInt
 import nbcp.mvc.annotation.*
 import nbcp.myoql.db.db
@@ -46,7 +46,7 @@ open class CityServlet {
     @PostMapping("/open/city-full-info")
     fun fullInfo(@nbcp.base.annotation.Require code: Int, response: HttpServletResponse): ListResult<cn_city_model> {
         if (code == 0) {
-            throw NoDataException("城市code不能为空")
+            throw NoDbDataException("城市code不能为空")
         }
 
         var city_codes = getWbsCodes(code)

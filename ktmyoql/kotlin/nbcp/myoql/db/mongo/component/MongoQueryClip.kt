@@ -3,7 +3,7 @@ package nbcp.myoql.db.mongo
 //import nbcp.base.comm.*
 
 
-import nbcp.base.comm.DataInvalidateException
+import nbcp.base.exception.DbDataInvalidException
 import nbcp.base.comm.ListResult
 import nbcp.myoql.db.db
 import nbcp.myoql.db.mongo.base.MongoColumnName
@@ -101,7 +101,7 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
      */
     private fun select_array_slice(select: String, vararg values: Int): MongoQueryClip<M, E> {
         if (values.isEmpty() || values.size > 2) {
-            throw DataInvalidateException()
+            throw DbDataInvalidException()
         }
 
         var doc = Document();

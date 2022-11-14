@@ -1,8 +1,8 @@
 package nbcp.web.mvc.handler
 
 
-import nbcp.base.comm.NoDataException
-import nbcp.base.comm.ParameterInvalidException
+import nbcp.base.exception.NoDbDataException
+import nbcp.base.exception.ParameterInvalidException
 import nbcp.base.comm.const
 import nbcp.base.extend.HasValue
 import nbcp.base.extend.ToJson
@@ -57,7 +57,7 @@ open class ImageGetServlet {
         }
 
         if (url.isEmpty()) {
-            url = dbService.queryById(id)?.url ?: throw NoDataException("找不到数据")
+            url = dbService.queryById(id)?.url ?: throw NoDbDataException("找不到数据")
         } else {
             url = JsUtil.decodeURIComponent(url);
         }
