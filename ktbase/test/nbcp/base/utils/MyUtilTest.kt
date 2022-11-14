@@ -21,9 +21,8 @@ class MyUtilTest : TestBase() {
 
     @Test
     fun getMethod() {
-        println(
-            MyUtil.getCurrentMethodInfo().methodName
-        )
+        println(CodeUtil.getCode())
+        println(MyUtil.getCurrentMethodInfo().methodName)
     }
 
     @Test

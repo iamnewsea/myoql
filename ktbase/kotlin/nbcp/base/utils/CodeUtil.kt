@@ -23,7 +23,7 @@ object CodeUtil {
     }
 
     /**
-     * 雪花算法 生成36进制字符串形式
+     * 雪花算法 生成36进制字符串形式,一般是12位长度。
      */
     @JvmStatic
     fun getCode(): String {
