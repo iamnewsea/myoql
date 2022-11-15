@@ -2,7 +2,7 @@ package nbcp.myoql.tool.freemarker
 
 import nbcp.base.extend.AllFields
 
-class Freemarker_All_Field : BaseMethodModelFreemarker() {
+class FreemarkerAllField : BaseMethodModelFreemarker() {
     override fun exec(p0: MutableList<Any?>): Any {
         var paramValue = getFreemarkerParameter(p0[0]);
         if (paramValue is Class<*>) {

@@ -125,9 +125,9 @@ object CodeGeneratorHelper {
             "status_enum_class" to status_enum_class,
             "idKey" to idKey,
 
-            "kotlin_type" to Freemarker_GetKotlinType(),
-            "has" to Freemarker_Has(),
-            "has_dustbin" to Freemarker_HasDustbin()
+            "kotlin_type" to FreemarkerGetKotlinType(),
+            "has" to FreemarkerHas(),
+            "has_dustbin" to FreemarkerHasDustbin()
         )
 
         return FreemarkerUtil.process(fileName, mapDefine)

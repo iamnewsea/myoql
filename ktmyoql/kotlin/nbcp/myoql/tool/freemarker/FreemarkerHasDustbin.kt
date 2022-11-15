@@ -8,7 +8,7 @@ import nbcp.myoql.db.comm.RemoveToSysDustbin
 /**
  * 实体上是否配置了垃圾箱
  */
-class Freemarker_HasDustbin : BaseMethodModelFreemarker() {
+class FreemarkerHasDustbin : BaseMethodModelFreemarker() {
     override fun exec(p0: MutableList<Any?>): Any {
         return (scopes.getLatest<ContextMapScope>()!!.value
             .get("entity_type") as Class<*>)

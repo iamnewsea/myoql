@@ -4,7 +4,7 @@ import freemarker.ext.beans.StringModel
 import freemarker.template.SimpleScalar
 import nbcp.base.extend.HasValue
 
-class Freemarker_HasValue : BaseMethodModelFreemarker() {
+class FreemarkerHasValue : BaseMethodModelFreemarker() {
     override fun exec(p0: MutableList<Any?>): Any {
         var p1 = p0[0];
 

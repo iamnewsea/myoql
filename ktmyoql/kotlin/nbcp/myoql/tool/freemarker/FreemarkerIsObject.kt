@@ -5,7 +5,7 @@ import nbcp.base.extend.IsSimpleType
 import java.lang.reflect.Field
 
 
-class Freemarker_IsObject : BaseMethodModelFreemarker() {
+class FreemarkerIsObject : BaseMethodModelFreemarker() {
     override fun exec(p0: MutableList<Any?>): Any {
         var paramValue = getFreemarkerParameter(p0[0])
         if (paramValue is Field) {

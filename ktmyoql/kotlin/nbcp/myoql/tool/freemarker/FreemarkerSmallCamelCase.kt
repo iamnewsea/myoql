@@ -1,16 +1,16 @@
 package nbcp.myoql.tool.freemarker
 
-import nbcp.myoql.tool.CodeGeneratorHelper
+import nbcp.base.utils.MyUtil
 import java.lang.reflect.Field
 
-/**
- *
- */
-class Freemarker_Field_IsEnumList : BaseMethodModelFreemarker() {
+class FreemarkerSmallCamelCase : BaseMethodModelFreemarker() {
     override fun exec(p0: MutableList<Any?>): Any {
         var paramValue = getFreemarkerParameter(p0[0]);
+
         if (paramValue is Field) {
-            return CodeGeneratorHelper.IsListEnum(paramValue)
+            return MyUtil.getSmallCamelCase(paramValue.name)
+        } else if (paramValue is String) {
+            return MyUtil.getSmallCamelCase(paramValue)
         }
         throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
     }
