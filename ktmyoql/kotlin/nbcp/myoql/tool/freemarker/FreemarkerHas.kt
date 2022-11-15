@@ -8,8 +8,8 @@ import java.lang.reflect.Field
  * 当前上下文实体是否有指定的字段。
  */
 class FreemarkerHas : BaseMethodModelFreemarker() {
-    override fun exec(p0: MutableList<Any?>): Any {
-        var paramValue = getFreemarkerParameter(p0[0])
+    override fun exec(list: MutableList<Any?>): Any {
+        var paramValue = getFreemarkerParameter(list[0])
         if (paramValue is String) {
             return (scopes.getLatest<ContextMapScope>()!!.value
                 .get("fields") as List<Field>)

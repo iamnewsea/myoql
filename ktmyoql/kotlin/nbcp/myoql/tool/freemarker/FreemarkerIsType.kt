@@ -6,9 +6,9 @@ import nbcp.base.extend.Slice
 import java.lang.reflect.Field
 
 class FreemarkerIsType : BaseMethodModelFreemarker() {
-    override fun exec(p0: MutableList<Any?>): Any {
-        var paramValue = getFreemarkerParameter(p0[0]);
-        var clazzes = getFreemarkerParameterList(*p0.Slice(1).toTypedArray()).map { it.AsString() } ;
+    override fun exec(list: MutableList<Any?>): Any {
+        var paramValue = getFreemarkerParameter(list[0]);
+        var clazzes = getFreemarkerParameterList(*list.Slice(1).toTypedArray()).map { it.AsString() } ;
         if (paramValue is Field) {
             return clazzes.any { paramValue.type.IsType(it) }
         } else if (paramValue is Class<*>) {

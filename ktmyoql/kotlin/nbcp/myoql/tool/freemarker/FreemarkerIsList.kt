@@ -4,9 +4,9 @@ import nbcp.myoql.tool.CodeGeneratorHelper
 import java.lang.reflect.Field
 
 class FreemarkerIsList : BaseMethodModelFreemarker() {
-    override fun exec(p0: MutableList<Any?>): Any {
-        var paramValue = getFreemarkerParameter(p0[0])
-        var clazz = getFreemarkerParameter(p0[1]) as String;
+    override fun exec(list: MutableList<Any?>): Any {
+        var paramValue = getFreemarkerParameter(list[0])
+        var clazz = getFreemarkerParameter(list[1]) as String;
         if (paramValue is Field) {
             return CodeGeneratorHelper.IsListType(paramValue, clazz)
         }

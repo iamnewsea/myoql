@@ -5,8 +5,8 @@ import freemarker.template.SimpleScalar
 import nbcp.base.extend.HasValue
 
 class FreemarkerHasValue : BaseMethodModelFreemarker() {
-    override fun exec(p0: MutableList<Any?>): Any {
-        var p1 = p0[0];
+    override fun exec(list: MutableList<Any?>): Any {
+        var p1 = list[0];
 
         var paramValue: Any? = null
         if (p1 != null) {

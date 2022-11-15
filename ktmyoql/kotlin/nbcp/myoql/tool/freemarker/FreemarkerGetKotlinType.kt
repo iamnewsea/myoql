@@ -7,8 +7,8 @@ import java.lang.reflect.Field
 
 // --------私有------
 class FreemarkerGetKotlinType : BaseMethodModelFreemarker() {
-    override fun exec(p0: MutableList<Any?>): Any {
-        var paramValue = getFreemarkerParameter(p0[0])
+    override fun exec(list: MutableList<Any?>): Any {
+        var paramValue = getFreemarkerParameter(list[0])
         if (paramValue is String) {
             return (scopes.getLatest<ContextMapScope>()!!.value
                 .get("fields") as List<Field>)

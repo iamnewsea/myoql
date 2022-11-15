@@ -4,8 +4,8 @@ import nbcp.base.utils.MyUtil
 import java.lang.reflect.Field
 
 class FreemarkerKebabCase : BaseMethodModelFreemarker() {
-    override fun exec(p0: MutableList<Any?>): Any {
-        var paramValue = getFreemarkerParameter(p0[0]);
+    override fun exec(list: MutableList<Any?>): Any {
+        var paramValue = getFreemarkerParameter(list[0]);
 
         if (paramValue is Field) {
             return MyUtil.getKebabCase(paramValue.name)
