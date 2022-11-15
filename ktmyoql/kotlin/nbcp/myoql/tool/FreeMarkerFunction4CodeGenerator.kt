@@ -11,7 +11,7 @@ import java.lang.reflect.Field
 // --------私有------
 class Freemarker_GetKotlinType : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
-        var paramValue = getFreemarkerParamter(p0[0])
+        var paramValue = getFreemarkerParameter(p0[0])
         if (paramValue is String) {
             return (scopes.getLatest<ContextMapScope>()!!.value
                 .get("fields") as List<Field>)
@@ -28,7 +28,7 @@ class Freemarker_GetKotlinType : TemplateMethodModelEx {
 
 class Freemarker_Has : TemplateMethodModelEx {
     override fun exec(p0: MutableList<Any?>): Any {
-        var paramValue = getFreemarkerParamter(p0[0])
+        var paramValue = getFreemarkerParameter(p0[0])
         if (paramValue is String) {
             return (scopes.getLatest<ContextMapScope>()!!.value
                 .get("fields") as List<Field>)
