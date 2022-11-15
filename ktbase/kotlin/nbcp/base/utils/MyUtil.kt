@@ -845,7 +845,7 @@ object MyUtil {
                 for (i in 1 until list.size) {
                     var item = list[i];
 
-                    if (MyUtil.allCharIsUpperCase(prevItem) && item[0].isUpperCase()) {
+                    if (item.HasValue && item[0].isUpperCase() && allCharIsUpperCase(prevItem)) {
                         prevItem = prevItem + item
                         list.set(i, prevItem);
                         list.set(i - 1, "");

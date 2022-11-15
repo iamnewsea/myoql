@@ -89,9 +89,13 @@ object CodeGeneratorHelper {
 
 
         var entityFields = entityClass.AllFields
-            .MoveToFirst { it.name == "code" }
-            .MoveToFirst { it.name == "name" }
-            .MoveToFirst { it.name == "id" }
+            .sortedBy {
+                if (it.name == "id") return@sortedBy -9
+                if (it.name == "name") return@sortedBy -8
+                if (it.name == "code") return@sortedBy -7
+
+                return@sortedBy 0
+            }
         //先处理${for:fields}
 
 

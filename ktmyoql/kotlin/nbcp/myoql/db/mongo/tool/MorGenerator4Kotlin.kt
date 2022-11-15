@@ -365,7 +365,13 @@ data class MoerMetaMap(val parentPropertyName: String) {
 
         var props = entType.AllFields
             .filter { it.name != "Companion" }
-            .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
+            .sortedBy {
+                if (it.name == "id") return@sortedBy -9
+                if (it.name == "name") return@sortedBy -8
+                if (it.name == "code") return@sortedBy -7
+
+                return@sortedBy 0
+            }
             .map {
                 var v1 = getMetaValue(it, entType, entTypeName, 1)
 
@@ -479,7 +485,13 @@ fun ${entityVarName}(${
 
         val props = entType.AllFields
             .filter { it.name != "Companion" }
-            .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
+            .sortedBy {
+                if (it.name == "id") return@sortedBy -9
+                if (it.name == "name") return@sortedBy -8
+                if (it.name == "code") return@sortedBy -7
+
+                return@sortedBy 0
+            }
             .map {
 
                 var (retValue, retTypeIsBasicType) = getEntityValue1(it, entType)

@@ -386,7 +386,9 @@ val Class<*>.AllFields: List<Field>
         if (this.superclass == null || this.superclass == Any::class.java) {
             return ret;
         }
-        ret.addAll(this.superclass.AllFields.filter { it.name.IsIn(ret.map { it.name }) == false });
+
+        var allKeys = ret.map { it.name };
+        ret.addAll(this.superclass.AllFields.filter { it.name.IsIn(allKeys) == false });
         return ret;
     }
 

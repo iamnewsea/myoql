@@ -382,7 +382,13 @@ public class MoerMetaMap {
 
         var props_fun = entType.AllFields
             .filter { it.name != "Companion" }
-            .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
+            .sortedBy {
+                if (it.name == "id") return@sortedBy -9
+                if (it.name == "name") return@sortedBy -8
+                if (it.name == "code") return@sortedBy -7
+
+                return@sortedBy 0
+            }
             .map {
                 var v1 = getMetaValue(it, entType, entTypeName, 1)
                 var v1_type = "MongoColumnName";
@@ -403,7 +409,13 @@ public ${v1_type} get${MyUtil.getBigCamelCase(it.name)}(){
 
         var props_set = entType.AllFields
             .filter { it.name != "Companion" }
-            .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
+            .sortedBy {
+                if (it.name == "id") return@sortedBy -9
+                if (it.name == "name") return@sortedBy -8
+                if (it.name == "code") return@sortedBy -7
+
+                return@sortedBy 0
+            }
             .map {
                 var v1 = getMetaValue(it, entType, entTypeName, 1)
 
@@ -532,7 +544,13 @@ public ${entityTypeName} ${entityVarName}(${
 
         val props = entType.AllFields
             .filter { it.name != "Companion" }
-            .MoveToFirst { it.name == "name" }.MoveToFirst { it.name == "id" }
+            .sortedBy {
+                if (it.name == "id") return@sortedBy -9
+                if (it.name == "name") return@sortedBy -8
+                if (it.name == "code") return@sortedBy -7
+
+                return@sortedBy 0
+            }
             .map {
 
                 var (retValue, retTypeIsBasicType) = getEntityValue1(it, entType)

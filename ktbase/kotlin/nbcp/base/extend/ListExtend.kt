@@ -368,35 +368,35 @@ inline fun <reified T> Collection<T>.SplitGroup(operatorItem: (T) -> Boolean): L
 /**
  * 把某些项移到前面。
  */
-fun <T> Collection<T>.MoveToFirst(itemCallback: (T) -> Boolean): List<T> {
-    var firstPart = mutableListOf<T>();
-    var normalPart = mutableListOf<T>()
-
-    this.forEach {
-        if (itemCallback(it)) {
-            firstPart.add(it);
-        } else {
-            normalPart.add(it);
-        }
-    }
-
-    return firstPart.asReversed() + normalPart;
-}
+//fun <T> Collection<T>.MoveToFirst(itemCallback: (T) -> Boolean): List<T> {
+//    var firstPart = mutableListOf<T>();
+//    var normalPart = mutableListOf<T>()
+//
+//    this.forEach {
+//        if (itemCallback(it)) {
+//            firstPart.add(it);
+//        } else {
+//            normalPart.add(it);
+//        }
+//    }
+//
+//    return firstPart.asReversed() + normalPart;
+//}
 
 /**
  * 修改数据
  */
-fun <T> MutableList<T>.ModifyListMoveToFirst(itemCallback: (T) -> Boolean): List<T> {
-    var length = this.size;
-    for (i in 0 until length) {
-        var item = this.get(i);
-        if (itemCallback(item)) {
-            this.Swap(0, i);
-        }
-    }
-
-    return this;
-}
+//fun <T> MutableList<T>.ModifyListMoveToFirst(itemCallback: (T) -> Boolean): List<T> {
+//    var length = this.size;
+//    for (i in 0 until length) {
+//        var item = this.get(i);
+//        if (itemCallback(item)) {
+//            this.Swap(0, i);
+//        }
+//    }
+//
+//    return this;
+//}
 
 /**
  *
