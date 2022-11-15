@@ -363,10 +363,8 @@ val Class<*>.AllFields: List<Field>
 //            this == LinkedList::class.java ||
 //            this == AbstractCollection::class.java ||
 //            this == Vector::class.java ||
-
-            this == LinkedHashMap::class.java ||
-            this == HashMap::class.java ||
-            this == Hashtable::class.java
+            this.IsCollectionType ||
+            this is java.util.Map<*, *>
         ) {
             return ret;
         }
