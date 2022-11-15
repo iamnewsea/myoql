@@ -2,7 +2,6 @@ package nbcp.myoql.db
 
 import nbcp.base.extend.scopes
 import nbcp.myoql.annotation.*
-import nbcp.myoql.db.cache.*
 import nbcp.myoql.db.enums.MyOqlDbScopeEnum
 import nbcp.myoql.db.mongo.table.MongoBaseGroup
 import nbcp.myoql.db.redis.RedisBaseGroup

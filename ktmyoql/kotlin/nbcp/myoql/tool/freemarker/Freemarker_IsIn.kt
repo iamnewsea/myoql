@@ -1,6 +1,5 @@
 package nbcp.myoql.tool.freemarker
 
-import freemarker.template.TemplateMethodModelEx
 import nbcp.base.extend.IsIn
 import nbcp.base.extend.Skip
 

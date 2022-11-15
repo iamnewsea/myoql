@@ -5,7 +5,7 @@ import nbcp.base.utils.MyUtil
 import nbcp.myoql.db.comm.EventResult
 import nbcp.myoql.db.db
 import nbcp.myoql.db.mongo.MongoEntityCollector
-import nbcp.myoql.db.sql.annotation.*
+import nbcp.myoql.db.sql.annotation.ConverterValueToDb
 import nbcp.myoql.db.sql.component.SqlInsertClip
 import nbcp.myoql.db.sql.extend.proc_value
 import org.springframework.stereotype.Component

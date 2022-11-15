@@ -7,6 +7,7 @@ import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
+import nbcp.myoql.tool.freemarker.*
 
 object CodeGeneratorHelper {
 

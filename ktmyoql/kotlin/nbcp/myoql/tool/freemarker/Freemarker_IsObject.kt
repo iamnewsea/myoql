@@ -1,7 +1,7 @@
 package nbcp.myoql.tool.freemarker
 
-import freemarker.template.TemplateMethodModelEx
-import nbcp.base.extend.*
+import nbcp.base.extend.IsCollectionType
+import nbcp.base.extend.IsSimpleType
 import java.lang.reflect.Field
 
 

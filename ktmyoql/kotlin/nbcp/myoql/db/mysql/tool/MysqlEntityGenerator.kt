@@ -1,6 +1,5 @@
 package nbcp.myoql.db.mysql.tool
 
-import freemarker.template.TemplateMethodModelEx
 import nbcp.base.comm.*
 import nbcp.base.db.*
 import nbcp.base.enums.*
@@ -475,15 +474,14 @@ ${checks.map { ", " + it }.joinToString("\n")}
             .toSet()
     }
 
-    class field_name : TemplateMethodModelEx {
-        override fun exec(p0: MutableList<Any?>?): String {
-            var p1 = p0?.elementAt(0).AsString();
-            if (p1.isEmpty()) return "";
-
-            if (MyUtil.allCharIsSameCase(p1)) return p1.lowercase();
-
-            return MyUtil.getSmallCamelCase(p1);
-        }
-
-    }
+//    class field_name : TemplateMethodModelEx {
+//        override fun exec(p0: MutableList<Any?>?): String {
+//            var p1 = p0?.elementAt(0).AsString();
+//            if (p1.isEmpty()) return "";
+//
+//            if (MyUtil.allCharIsSameCase(p1)) return p1.lowercase();
+//
+//            return MyUtil.getSmallCamelCase(p1);
+//        }
+//    }
 }

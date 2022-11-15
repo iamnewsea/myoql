@@ -4,7 +4,6 @@ import nbcp.base.comm.JsonMap
 import nbcp.base.comm.config
 import nbcp.base.extend.*
 import nbcp.myoql.annotation.*
-import nbcp.myoql.db.cache.*
 import nbcp.myoql.db.db
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around

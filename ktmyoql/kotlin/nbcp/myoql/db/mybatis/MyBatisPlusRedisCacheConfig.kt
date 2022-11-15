@@ -5,8 +5,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper
 import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
 import nbcp.myoql.annotation.*
-import nbcp.myoql.annotation.brokeCache
-import nbcp.myoql.db.cache.*
 import org.aopalliance.intercept.MethodInterceptor
 import org.aopalliance.intercept.MethodInvocation
 import org.springframework.aop.Advisor

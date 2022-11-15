@@ -4,8 +4,9 @@ import nbcp.base.db.Cn
 import nbcp.base.db.DbEntityGroup
 import nbcp.base.db.DbEntityIndex
 import nbcp.base.db.IdName
+import nbcp.myoql.db.sql.annotation.SqlColumnType
+import nbcp.myoql.db.sql.annotation.SqlSpreadColumn
 import nbcp.myoql.db.sql.base.AutoIdSqlBaseEntity
-import nbcp.myoql.db.sql.annotation.*
 import java.io.Serializable
 
 @DbEntityGroup("SqlBase")

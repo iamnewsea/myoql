@@ -1,6 +1,5 @@
 package nbcp.myoql.tool.freemarker
 
-import freemarker.template.TemplateMethodModelEx
 import java.lang.reflect.Field
 
 class Freemarker_IsRes : BaseMethodModelFreemarker() {

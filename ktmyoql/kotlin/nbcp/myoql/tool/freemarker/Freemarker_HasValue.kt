@@ -2,7 +2,6 @@ package nbcp.myoql.tool.freemarker
 
 import freemarker.ext.beans.StringModel
 import freemarker.template.SimpleScalar
-import freemarker.template.TemplateMethodModelEx
 import nbcp.base.extend.HasValue
 
 class Freemarker_HasValue : BaseMethodModelFreemarker() {

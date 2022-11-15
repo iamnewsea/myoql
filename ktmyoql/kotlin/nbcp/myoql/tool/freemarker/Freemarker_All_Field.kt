@@ -1,6 +1,5 @@
 package nbcp.myoql.tool.freemarker
 
-import freemarker.template.TemplateMethodModelEx
 import nbcp.base.extend.AllFields
 
 class Freemarker_All_Field : BaseMethodModelFreemarker() {

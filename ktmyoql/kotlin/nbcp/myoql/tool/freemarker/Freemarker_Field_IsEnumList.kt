@@ -1,6 +1,5 @@
 package nbcp.myoql.tool.freemarker
 
-import freemarker.template.TemplateMethodModelEx
 import nbcp.myoql.tool.CodeGeneratorHelper
 import java.lang.reflect.Field
 
