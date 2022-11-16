@@ -8,8 +8,9 @@ import java.lang.reflect.Field;
 
 public class CnAnnotationUtil {
     public static String getComment(Class entType) {
-        return getComment(entType,"");
+        return getComment(entType, "");
     }
+
     /**
      * 获取表的中文注释及Cn注解
      */
@@ -21,7 +22,7 @@ public class CnAnnotationUtil {
             cn = cnAnnotation.value();
         }
 
-        if (StringUtils.hasText(cn)) return "";
+        if (!StringUtils.hasText(cn) && !StringUtils.hasText(remark)) return "";
 
         return "/**\n" +
                 " * " + cn + remark + "\n" +
@@ -36,7 +37,8 @@ public class CnAnnotationUtil {
             cn = cnAnnotation.value();
         }
 
-        if (StringUtils.hasText(cn)) return "";
+        if (!StringUtils.hasText(cn)) return "";
+        
         return "/**\n" +
                 " * " + cn + "\n" +
                 " */";
@@ -50,7 +52,7 @@ public class CnAnnotationUtil {
             cn = cnAnnotation.value();
         }
 
-        if (StringUtils.hasText(cn)) return "";
+        if (!StringUtils.hasText(cn)) return "";
 
         return cn;
     }
@@ -69,7 +71,7 @@ public class CnAnnotationUtil {
             cn = cnAnnotation.value();
         }
 
-        if (StringUtils.hasText(cn)) return "";
+        if (!StringUtils.hasText(cn)) return "";
         return cn;
     }
 

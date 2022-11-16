@@ -15,17 +15,15 @@ import nbcp.myoql.db.mongo.component.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.*
 
-/**
- * 
- */
+
 class IdUrlMeta(private val parentPropertyName: String) : MongoColumnName() {
     constructor(value: MongoColumnName) : this(value.toString()) {}
 
-    /**
-     * 
-     */
     val id = mongoColumnJoin(this.parentPropertyName, "_id")
 
+    /**
+     * 网络资源地址
+     */
     @nbcp.base.db.annotation.Cn(value = """网络资源地址""")
     val url = mongoColumnJoin(this.parentPropertyName, "url")
     override fun toString(): String {

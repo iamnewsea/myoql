@@ -15,20 +15,12 @@ import nbcp.myoql.db.mongo.component.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.*
 
-/**
- * 
- */
+
 class CityCodeNameMeta(private val parentPropertyName: String) : MongoColumnName() {
     constructor(value: MongoColumnName) : this(value.toString()) {}
 
-    /**
-     * 
-     */
     val name = mongoColumnJoin(this.parentPropertyName, "name")
 
-    /**
-     * 
-     */
     val code = mongoColumnJoin(this.parentPropertyName, "code")
     override fun toString(): String {
         return mongoColumnJoin(this.parentPropertyName).toString()

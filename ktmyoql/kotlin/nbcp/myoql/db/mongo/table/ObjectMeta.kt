@@ -15,9 +15,7 @@ import nbcp.myoql.db.mongo.component.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.*
 
-/**
- * 
- */
+
 class ObjectMeta(private val parentPropertyName: String) : MongoColumnName() {
     constructor(value: MongoColumnName) : this(value.toString()) {}
 
