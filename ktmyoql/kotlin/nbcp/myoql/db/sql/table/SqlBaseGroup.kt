@@ -30,7 +30,9 @@ class SqlBaseGroup : IDataGroup{
     val s_log get() = s_log_table();
 
 
-
+    /**
+     * 附件
+     */
     @nbcp.base.db.annotation.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
     @nbcp.myoql.db.sql.annotation.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
     @nbcp.base.db.annotation.DbEntityGroup(value = """SqlBase""")
@@ -73,7 +75,9 @@ class SqlBaseGroup : IDataGroup{
         }
 
     }
-
+    /**
+     * 城市
+     */
     @nbcp.base.db.annotation.DbEntityGroup(value = """SqlBase""")
     @nbcp.base.db.annotation.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""code"""))
     @nbcp.base.db.annotation.Cn(value = """城市""")
@@ -110,7 +114,9 @@ class SqlBaseGroup : IDataGroup{
         }
 
     }
-
+    /**
+     * 数据垃圾箱
+     */
     @nbcp.base.db.annotation.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
     @nbcp.myoql.db.sql.annotation.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
     @nbcp.base.db.annotation.DbEntityGroup(value = """SqlBase""")
@@ -146,7 +152,9 @@ class SqlBaseGroup : IDataGroup{
         }
 
     }
-
+    /**
+     * 日志
+     */
     @nbcp.base.db.annotation.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
     @nbcp.myoql.db.sql.annotation.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
     @nbcp.base.db.annotation.DbEntityGroup(value = """SqlBase""")
