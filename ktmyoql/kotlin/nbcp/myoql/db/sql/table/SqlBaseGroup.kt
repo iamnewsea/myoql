@@ -1,16 +1,22 @@
 package nbcp.myoql.db.sql.table
 
-import nbcp.myoql.db.comm.BaseMetaData
-import nbcp.myoql.db.comm.IDataGroup
-import nbcp.myoql.db.comm.MetaDataGroup
-import nbcp.myoql.db.enums.DatabaseEnum
-import nbcp.myoql.db.sql.base.SqlBaseMetaTable
-import nbcp.myoql.db.sql.base.SqlColumnName
-import nbcp.myoql.db.sql.base.SqlSpreadColumnData
+import java.io.*
+import nbcp.base.db.*
+import nbcp.base.comm.*
+import nbcp.base.extend.*
+import nbcp.base.enums.*
+import nbcp.base.utils.*
+import nbcp.myoql.db.*
+import nbcp.myoql.db.sql.*
+
+import nbcp.myoql.db.comm.*
+import nbcp.myoql.db.enums.*
+import nbcp.myoql.db.sql.base.*
+import nbcp.myoql.db.sql.enums.*
+import nbcp.myoql.db.sql.define.*
 import nbcp.myoql.db.sql.component.*
-import nbcp.myoql.db.sql.define.FkDefine
-import nbcp.myoql.db.sql.enums.DbType
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.*
+
 
 
 @Component("sql.SqlBase")
@@ -24,10 +30,8 @@ class SqlBaseGroup : IDataGroup{
     val s_log get() = s_log_table();
 
 
-    /**
-     * 附件
-     */
-    @nbcp.base.db.annotation.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
+
+    @nbcp.base.db.annotation.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
     @nbcp.myoql.db.sql.annotation.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
     @nbcp.base.db.annotation.DbEntityGroup(value = """SqlBase""")
     @nbcp.base.db.annotation.Cn(value = """附件""")
@@ -69,11 +73,9 @@ class SqlBaseGroup : IDataGroup{
         }
 
     }
-    /**
-     * 城市
-     */
+
     @nbcp.base.db.annotation.DbEntityGroup(value = """SqlBase""")
-    @nbcp.base.db.annotation.DbEntityIndex(value = arrayOf("""code"""), unique = true, cacheable = false)
+    @nbcp.base.db.annotation.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""code"""))
     @nbcp.base.db.annotation.Cn(value = """城市""")
     class s_city_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.myoql.db.sql.entity.s_city>(nbcp.myoql.db.sql.entity.s_city::class.java, "s_city") {
@@ -108,10 +110,8 @@ class SqlBaseGroup : IDataGroup{
         }
 
     }
-    /**
-     * 数据垃圾箱
-     */
-    @nbcp.base.db.annotation.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
+
+    @nbcp.base.db.annotation.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
     @nbcp.myoql.db.sql.annotation.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
     @nbcp.base.db.annotation.DbEntityGroup(value = """SqlBase""")
     @nbcp.base.db.annotation.Cn(value = """数据垃圾箱""")
@@ -146,10 +146,8 @@ class SqlBaseGroup : IDataGroup{
         }
 
     }
-    /**
-     * 日志
-     */
-    @nbcp.base.db.annotation.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
+
+    @nbcp.base.db.annotation.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
     @nbcp.myoql.db.sql.annotation.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
     @nbcp.base.db.annotation.DbEntityGroup(value = """SqlBase""")
     @nbcp.base.db.annotation.Cn(value = """日志""")
