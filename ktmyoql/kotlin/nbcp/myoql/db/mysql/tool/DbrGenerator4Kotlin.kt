@@ -3,10 +3,11 @@ package nbcp.myoql.db.mysql.tool
 import nbcp.base.comm.StringMap
 import nbcp.base.comm.const
 import nbcp.base.data.Sys
-import nbcp.base.db.DbEntityGroup
-import nbcp.base.db.DbName
+import nbcp.base.db.annotation.*
+import nbcp.base.db.annotation.*
 import nbcp.base.extend.*
 import nbcp.base.utils.ClassUtil
+import nbcp.base.utils.CnAnnotationUtil
 import nbcp.base.utils.KotlinCoderUtil
 import nbcp.base.utils.MyUtil
 import nbcp.myoql.db.sql.annotation.SqlAutoIncrementKey
@@ -379,9 +380,8 @@ class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
 
         val ret = EntityResult();
         ret.body = """${
-            CodeGeneratorHelper.getEntityComment(
-                entType,
-                ""
+            CnAnnotationUtil.getComment(
+                entType 
             )
         }${KotlinCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
 class ${entityTableMetaName}(collectionName: String = "", datasource:String="")

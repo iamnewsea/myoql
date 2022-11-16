@@ -2,10 +2,11 @@ package nbcp.myoql.db.es.tool
 
 import nbcp.base.comm.StringMap
 import nbcp.base.comm.const
-import nbcp.base.db.DbEntityGroup
-import nbcp.base.db.DbName
+import nbcp.base.db.annotation.*
+import nbcp.base.db.annotation.*
 import nbcp.base.extend.*
 import nbcp.base.utils.ClassUtil
+import nbcp.base.utils.CnAnnotationUtil
 import nbcp.base.utils.KotlinCoderUtil
 import nbcp.base.utils.MyUtil
 import nbcp.myoql.tool.CodeGeneratorHelper
@@ -475,9 +476,8 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
         }
 
         val ent = """${
-            CodeGeneratorHelper.getEntityComment(
-                    entType,
-                    ""
+            CnAnnotationUtil.getComment(
+                    entType 
             )
         }${KotlinCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
 class ${entityTypeName}(collectionName:String="")

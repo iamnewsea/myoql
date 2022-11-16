@@ -11,7 +11,7 @@ import nbcp.myoql.db.comm.SortNumber
 import org.springframework.data.mongodb.core.mapping.Document
 import java.io.Serializable
 import java.time.LocalDateTime
-
+import nbcp.base.db.annotation.*
 
 //--------------------------------------------------------
 /**

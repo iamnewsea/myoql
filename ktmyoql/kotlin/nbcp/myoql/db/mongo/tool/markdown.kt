@@ -1,8 +1,8 @@
 package nbcp.myoql.db.mongo.tool
 
 import nbcp.base.comm.StringMap
-import nbcp.base.db.DbEntityGroup
-import nbcp.base.db.DbName
+import nbcp.base.db.annotation.*
+import nbcp.base.db.annotation.*
 import nbcp.base.extend.*
 import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.MyUtil

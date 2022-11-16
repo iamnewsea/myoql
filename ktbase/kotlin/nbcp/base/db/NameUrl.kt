@@ -1,5 +1,7 @@
 package nbcp.base.db
 
+import nbcp.base.db.annotation.Cn
+
 open class NameUrl() : BaseUrlModel() {
     @Cn("名称")
     var name: String = ""

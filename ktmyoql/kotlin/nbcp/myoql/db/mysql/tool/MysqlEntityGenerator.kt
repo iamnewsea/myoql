@@ -2,6 +2,7 @@ package nbcp.myoql.db.mysql.tool
 
 import nbcp.base.comm.*
 import nbcp.base.db.*
+import nbcp.base.db.annotation.*
 import nbcp.base.enums.*
 import nbcp.base.extend.*
 import nbcp.base.utils.*

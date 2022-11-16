@@ -1,7 +1,7 @@
 package nbcp.myoql.es
 
 
-import nbcp.base.db.DbEntityGroup
+import nbcp.base.db.annotation.*
 import nbcp.base.db.IdName
 import nbcp.myoql.TestBase
 import nbcp.myoql.db.BaseEntity

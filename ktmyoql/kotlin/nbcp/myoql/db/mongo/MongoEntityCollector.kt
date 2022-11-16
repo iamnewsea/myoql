@@ -1,6 +1,6 @@
 package nbcp.myoql.db.mongo
 
-import nbcp.base.db.DbEntityIndex
+import nbcp.base.db.annotation.*
 import nbcp.base.extend.ForEachExt
 import nbcp.base.extend.HasValue
 import nbcp.base.extend.usingScope

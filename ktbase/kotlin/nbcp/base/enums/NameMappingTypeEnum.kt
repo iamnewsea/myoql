@@ -1,6 +1,7 @@
 package nbcp.base.enums
 
-import nbcp.base.db.Cn
+import nbcp.base.db.annotation.*
+import nbcp.base.db.annotation.Cn
 import nbcp.base.utils.MyUtil
 
 /**

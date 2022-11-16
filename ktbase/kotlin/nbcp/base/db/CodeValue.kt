@@ -1,5 +1,6 @@
 package nbcp.base.db
 
+import nbcp.base.db.annotation.Cn
 import nbcp.base.extend.Slice
 import nbcp.base.extend.ToJson
 import java.io.Serializable

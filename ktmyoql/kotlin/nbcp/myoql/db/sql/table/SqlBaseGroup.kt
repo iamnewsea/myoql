@@ -27,10 +27,10 @@ class SqlBaseGroup : IDataGroup{
     /**
      * 附件
      */
-    @nbcp.base.db.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
+    @nbcp.base.db.annotation.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
     @nbcp.myoql.db.sql.annotation.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
-    @nbcp.base.db.DbEntityGroup(value = """SqlBase""")
-    @nbcp.base.db.Cn(value = """附件""")
+    @nbcp.base.db.annotation.DbEntityGroup(value = """SqlBase""")
+    @nbcp.base.db.annotation.Cn(value = """附件""")
     class s_annex_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.myoql.db.sql.entity.s_annex>(nbcp.myoql.db.sql.entity.s_annex::class.java, "s_annex") {
         val name = SqlColumnName(DbType.String, this.getAliaTableName(),"name")
@@ -72,9 +72,9 @@ class SqlBaseGroup : IDataGroup{
     /**
      * 城市
      */
-    @nbcp.base.db.DbEntityGroup(value = """SqlBase""")
-    @nbcp.base.db.DbEntityIndex(value = arrayOf("""code"""), unique = true, cacheable = false)
-    @nbcp.base.db.Cn(value = """城市""")
+    @nbcp.base.db.annotation.DbEntityGroup(value = """SqlBase""")
+    @nbcp.base.db.annotation.DbEntityIndex(value = arrayOf("""code"""), unique = true, cacheable = false)
+    @nbcp.base.db.annotation.Cn(value = """城市""")
     class s_city_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.myoql.db.sql.entity.s_city>(nbcp.myoql.db.sql.entity.s_city::class.java, "s_city") {
         val code = SqlColumnName(DbType.Int, this.getAliaTableName(),"code")
@@ -111,10 +111,10 @@ class SqlBaseGroup : IDataGroup{
     /**
      * 数据垃圾箱
      */
-    @nbcp.base.db.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
+    @nbcp.base.db.annotation.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
     @nbcp.myoql.db.sql.annotation.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
-    @nbcp.base.db.DbEntityGroup(value = """SqlBase""")
-    @nbcp.base.db.Cn(value = """数据垃圾箱""")
+    @nbcp.base.db.annotation.DbEntityGroup(value = """SqlBase""")
+    @nbcp.base.db.annotation.Cn(value = """数据垃圾箱""")
     class s_dustbin_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.myoql.db.sql.entity.s_dustbin>(nbcp.myoql.db.sql.entity.s_dustbin::class.java, "s_dustbin") {
         val table = SqlColumnName(DbType.String, this.getAliaTableName(),"table")
@@ -149,10 +149,10 @@ class SqlBaseGroup : IDataGroup{
     /**
      * 日志
      */
-    @nbcp.base.db.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
+    @nbcp.base.db.annotation.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
     @nbcp.myoql.db.sql.annotation.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
-    @nbcp.base.db.DbEntityGroup(value = """SqlBase""")
-    @nbcp.base.db.Cn(value = """日志""")
+    @nbcp.base.db.annotation.DbEntityGroup(value = """SqlBase""")
+    @nbcp.base.db.annotation.Cn(value = """日志""")
     class s_log_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.myoql.db.sql.entity.s_log>(nbcp.myoql.db.sql.entity.s_log::class.java, "s_log") {
         val module = SqlColumnName(DbType.String, this.getAliaTableName(),"module")

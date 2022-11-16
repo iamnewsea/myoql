@@ -11,7 +11,7 @@ class IdNameMeta(private val parentPropertyName: String) : MongoColumnName() {
     /**
      * 名称
      */
-    @nbcp.base.db.Cn(value = """名称""")
+    @nbcp.base.db.annotation.Cn(value = """名称""")
     val name = mongoColumnJoin(this.parentPropertyName, "name")
     override fun toString(): String {
         return mongoColumnJoin(this.parentPropertyName).toString()

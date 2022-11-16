@@ -672,16 +672,16 @@ object MyUtil {
         if (properties.any() == false) return null;
 
         var type = entity::class.java.FindField(properties.first(), ignoreCase);
-        if (type != null) {
-            var ret = type.get(entity);
-            if (properties.size == 1) {
-                return ret
-            } else {
-                var leftProperties = properties.slice(1 until properties.size).toTypedArray();
-                return getPrivatePropertyValue(ret, *leftProperties)
-            }
+        if (type == null) {
+            return null;
         }
-        return null;
+
+        var ret = type.get(entity);
+        if (properties.size == 1) {
+            return ret
+        }
+        var leftProperties = properties.slice(1 until properties.size).toTypedArray();
+        return getPrivatePropertyValue(ret, *leftProperties)
     }
 
 

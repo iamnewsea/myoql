@@ -1,6 +1,6 @@
 package nbcp.myoql.db.sql
 
-import nbcp.base.db.DbEntityIndex
+import nbcp.base.db.annotation.*
 import nbcp.base.extend.ForEachExt
 import nbcp.myoql.db.cache.RedisCacheColumns
 import nbcp.myoql.db.cache.RedisCacheDefine

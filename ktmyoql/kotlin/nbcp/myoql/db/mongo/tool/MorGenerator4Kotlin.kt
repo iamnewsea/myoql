@@ -3,10 +3,11 @@ package nbcp.myoql.db.mongo.tool
 import nbcp.base.comm.StringMap
 import nbcp.base.comm.const
 import nbcp.base.data.Sys
-import nbcp.base.db.DbEntityGroup
-import nbcp.base.db.DbName
+import nbcp.base.db.annotation.*
+import nbcp.base.db.annotation.*
 import nbcp.base.extend.*
 import nbcp.base.utils.ClassUtil
+import nbcp.base.utils.CnAnnotationUtil
 import nbcp.base.utils.KotlinCoderUtil
 import nbcp.base.utils.MyUtil
 import nbcp.myoql.db.comm.VarDatabase
@@ -375,7 +376,7 @@ data class MoerMetaMap(val parentPropertyName: String) {
             .map {
                 var v1 = getMetaValue(it, entType, entTypeName, 1)
 
-                return@map """${CodeGeneratorHelper.getFieldComment(it)}${
+                return@map """${CnAnnotationUtil.getComment(it)}${
                     KotlinCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }.joinToString("")
                 }
 val ${it.name} = ${v1}""".removeEmptyLine().ToTab(1)
@@ -385,7 +386,7 @@ val ${it.name} = ${v1}""".removeEmptyLine().ToTab(1)
 
 
         var ent =
-            """${CodeGeneratorHelper.getEntityComment(entType)}${
+            """${CnAnnotationUtil.getComment(entType)}${
                 KotlinCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")
             }
 class ${entityTypeName}Meta(private val parentPropertyName: String) : MongoColumnName() {
@@ -432,7 +433,7 @@ ${props.map { const.line_break + it }.joinToString(const.line_break)}
         ret.add("")
 
         ret.add(
-            """${CodeGeneratorHelper.getEntityComment(entType, tailRemark)}
+            """${CnAnnotationUtil.getComment(entType, tailRemark)}
 val ${entityVarName} get() = ${entityTypeName}();"""
         )
 
@@ -462,7 +463,7 @@ val ${entityVarName} get() = ${entityTypeName}();"""
             ret.add("")
 
             ret.add(
-                """${CodeGeneratorHelper.getEntityComment(entType, tailRemark)}
+                """${CnAnnotationUtil.getComment(entType, tailRemark)}
 fun ${entityVarName}(${
                     params.keys.filter { it.HasValue }.map { it + ":String" }.joinToString(", ")
                 }) = ${entityTypeName}(${params.values.first()},${params.values.last()});"""
@@ -497,7 +498,7 @@ fun ${entityVarName}(${
                 var (retValue, retTypeIsBasicType) = getEntityValue1(it, entType)
 
                 var pv =
-                    """${CodeGeneratorHelper.getFieldComment(it)}${
+                    """${CnAnnotationUtil.getComment(it)}${
                         KotlinCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }
                             .joinToString("")
                     } """
@@ -614,7 +615,7 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
 
         val ent =
             """${
-                CodeGeneratorHelper.getEntityComment(
+                CnAnnotationUtil.getComment(
                     entType,
                     varTableRemark
                 )

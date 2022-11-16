@@ -11,7 +11,7 @@ class IdUrlMeta(private val parentPropertyName: String) : MongoColumnName() {
     /**
      * 网络资源地址
      */
-    @nbcp.base.db.Cn(value = """网络资源地址""")
+    @nbcp.base.db.annotation.Cn(value = """网络资源地址""")
     val url = mongoColumnJoin(this.parentPropertyName, "url")
     override fun toString(): String {
         return mongoColumnJoin(this.parentPropertyName).toString()

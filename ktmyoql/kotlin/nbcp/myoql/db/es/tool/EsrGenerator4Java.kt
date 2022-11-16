@@ -3,10 +3,11 @@ package nbcp.myoql.db.es.tool
 import nbcp.base.comm.StringMap
 import nbcp.base.comm.const
 import nbcp.base.data.Sys
-import nbcp.base.db.DbEntityGroup
-import nbcp.base.db.DbName
+import nbcp.base.db.annotation.*
+import nbcp.base.db.annotation.*
 import nbcp.base.extend.*
 import nbcp.base.utils.ClassUtil
+import nbcp.base.utils.CnAnnotationUtil
 import nbcp.base.utils.JavaCoderUtil
 import nbcp.base.utils.MyUtil
 import nbcp.myoql.tool.CodeGeneratorHelper
@@ -385,7 +386,7 @@ public class EsrMetaMap {
                     v1_type = v1.Slice(4, v1_index_end);
                 }
 
-                return@map """${CodeGeneratorHelper.getFieldComment(it)}${
+                return@map """${CnAnnotationUtil.getComment(it)}${
                     JavaCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }.joinToString("")
                 }
 private ${v1_type} ${it.name} = null;
@@ -557,9 +558,8 @@ public ${entityTypeName} ${entityVarName}(String collectionName){
         }
 
         val ent = """${
-            CodeGeneratorHelper.getEntityComment(
-                entType,
-                ""
+            CnAnnotationUtil.getComment(
+                entType 
             )
         }${JavaCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")}
 public class ${entityTypeName} extends EsBaseMetaEntity<${entType.name}> {

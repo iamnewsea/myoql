@@ -3,6 +3,7 @@ package nbcp.myoql.db
 import com.mongodb.client.model.IndexOptions
 import nbcp.base.comm.*
 import nbcp.base.db.*
+import nbcp.base.db.annotation.DbEntityIndex
 import nbcp.base.enums.*
 import nbcp.base.extend.*
 import nbcp.base.utils.*

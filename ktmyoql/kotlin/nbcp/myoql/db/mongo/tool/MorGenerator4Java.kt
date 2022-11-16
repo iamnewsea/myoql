@@ -3,10 +3,11 @@ package nbcp.myoql.db.mongo.tool
 import nbcp.base.comm.StringMap
 import nbcp.base.comm.const
 import nbcp.base.data.Sys
-import nbcp.base.db.DbEntityGroup
-import nbcp.base.db.DbName
+import nbcp.base.db.annotation.*
+import nbcp.base.db.annotation.*
 import nbcp.base.extend.*
 import nbcp.base.utils.ClassUtil
+import nbcp.base.utils.CnAnnotationUtil
 import nbcp.base.utils.JavaCoderUtil
 import nbcp.base.utils.MyUtil
 import nbcp.myoql.db.comm.VarDatabase
@@ -397,7 +398,7 @@ public class MoerMetaMap {
                     v1_type = v1.Slice(4, v1_index_end);
                 }
 
-                return@map """${CodeGeneratorHelper.getFieldComment(it)}${
+                return@map """${CnAnnotationUtil.getComment(it)}${
                     JavaCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }.joinToString("")
                 }
 private ${v1_type} ${it.name} = null;
@@ -428,7 +429,7 @@ this.${it.name} = ${v1};
 
 
         var ent =
-            """${CodeGeneratorHelper.getEntityComment(entType)}${
+            """${CnAnnotationUtil.getComment(entType)}${
                 JavaCoderUtil.getAnnotationCodes(entType.annotations).map { const.line_break + it }.joinToString("")
             }
 public class ${entityTypeName}Meta extends MongoColumnName{
@@ -484,7 +485,7 @@ ${props_fun.map { const.line_break + it }.joinToString(const.line_break).ToTab(1
         ret.add("")
 
         ret.add(
-            """${CodeGeneratorHelper.getEntityComment(entType, tailRemark)}
+            """${CnAnnotationUtil.getComment(entType, tailRemark)}
 public ${entityTypeName} ${entityVarName} = new ${entityTypeName}();"""
         )
 
@@ -514,7 +515,7 @@ public ${entityTypeName} ${entityVarName} = new ${entityTypeName}();"""
             ret.add("")
 
             ret.add(
-                """${CodeGeneratorHelper.getEntityComment(entType, tailRemark)}
+                """${CnAnnotationUtil.getComment(entType, tailRemark)}
 public ${entityTypeName} ${entityVarName}(${
                     params.keys.filter { it.HasValue }.map { "String " + it }.joinToString(", ")
                 }) {
@@ -556,7 +557,7 @@ public ${entityTypeName} ${entityVarName}(${
                 var (retValue, retTypeIsBasicType) = getEntityValue1(it, entType)
 
                 var pv =
-                    """${CodeGeneratorHelper.getFieldComment(it)}${
+                    """${CnAnnotationUtil.getComment(it)}${
                         JavaCoderUtil.getAnnotationCodes(it.annotations).map { const.line_break + it }
                             .joinToString("")
                     } """
@@ -687,7 +688,7 @@ public ${v1_type} ${it.name} = new ${retValue};""".removeEmptyLine().ToTab(1)
 
         val ent =
             """${
-                CodeGeneratorHelper.getEntityComment(
+                CnAnnotationUtil.getComment(
                     entType,
                     varTableRemark
                 )

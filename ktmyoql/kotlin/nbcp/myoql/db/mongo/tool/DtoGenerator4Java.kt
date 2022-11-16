@@ -2,7 +2,7 @@ package nbcp.myoql.db.mongo.tool
 
 import nbcp.base.comm.StringMap
 import nbcp.base.comm.const
-import nbcp.base.db.DbEntityGroup
+import nbcp.base.db.annotation.*
 import nbcp.base.extend.AsString
 import nbcp.base.extend.ToTab
 import nbcp.base.utils.ClassUtil
