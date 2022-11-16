@@ -35,7 +35,15 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
 
         @JvmStatic
         val runningInTest: Boolean by lazy {
-            return@lazy Thread.currentThread().stackTrace.last().className == "com.intellij.rt.junit.JUnitStarter"
+            /**
+             * 两种方式:
+             * 1. 存在Bean：
+             * 2. 启动类是： com.intellij.rt.junit.JUnitStarter
+             */
+
+//            return@lazy Thread.currentThread().stackTrace.last().className == "com.intellij.rt.junit.JUnitStarter"
+
+            return@lazy context.containsBean("org.springframework.boot.test.context.filter.TestTypeExcludeFilter")
         }
 
         @JvmStatic
