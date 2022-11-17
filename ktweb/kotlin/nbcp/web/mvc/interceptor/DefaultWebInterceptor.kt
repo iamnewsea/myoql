@@ -26,8 +26,9 @@ import javax.servlet.http.HttpServletResponse
 class DefaultWebInterceptor : HandlerInterceptor {
 
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
+        //如果出现了错误。 就不允许执行了。
         if (response.status >= 400 && response.status <= 600) {
-            return true;
+            return false;
         }
 
         if (handler is HandlerMethod == false) {

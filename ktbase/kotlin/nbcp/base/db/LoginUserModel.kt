@@ -3,23 +3,23 @@ package nbcp.base.db
 /**
  * 登录用户数据
  */
-open class LoginUserModel @JvmOverloads constructor(
-    id: String = "",
-    name: String = "",
-    var system: String = "",
+open class LoginUserModel () : IdName("", "") {
+    var token: String = ""
+    var system: String = ""
+
     /**
      * 是否是超级管理员
      */
-    var isAdmin: Boolean = false,
-    var token: String = "",
-    var loginField: String = "",
-    var loginName: String = "",
+    var isAdmin: Boolean = false
+    var loginField: String = ""
+    var loginName: String = ""
+
     /**
      * 所属组织
      */
-    var organization: IdName = IdName(),
+    var organization: IdName = IdName()
     var freshToken: String = ""//角色
-) : IdName(id, name) {
+
 
     var depts: List<String> = listOf()
     var groups: List<String> = listOf()

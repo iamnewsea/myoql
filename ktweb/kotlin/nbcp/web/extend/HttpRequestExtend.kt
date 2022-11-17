@@ -23,7 +23,6 @@ val HttpServletRequest.userAuthenticationService by lazy {
 }
 
 
-
 /**
  * 高并发系统不应该有Session。使用token即可。
  * 另外，由于跨域 SameSite 的限制，需要避免使用 Cookie 的方式。
@@ -42,7 +41,7 @@ val HttpServletRequest.LoginUser: LoginUserModel
 
         ret = userAuthenticationService.getLoginInfoFromToken(this)
         if (ret == null) {
-            ret = LoginUserModel(token);
+            ret = LoginUserModel().apply { this.token = token }
         }
 
         this.setAttribute("[LoginUser]", ret)
