@@ -3,6 +3,7 @@ package nbcp.mvc.mvc
 
 import nbcp.base.annotation.*
 import nbcp.base.comm.const
+import nbcp.base.exception.ParameterInvalidException
 import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
 import nbcp.mvc.annotation.*
@@ -316,7 +317,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
         }
 
         logger.Error { require.value.AsString("请求:${webRequest.fullUrl} --> 方法:${caller} 中，找不到参数${parameter.parameterName}") }
-        throw RequireException(parameter.parameterName!!)
+        throw ParameterInvalidException(parameter.parameterName!!)
     }
 
     private fun getFromQuery(webRequest: HttpServletRequest, parameter: MethodParameter, parameterName: String): Any? {
