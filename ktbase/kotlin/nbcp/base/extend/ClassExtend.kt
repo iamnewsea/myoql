@@ -357,14 +357,9 @@ val Class<*>.AllFields: List<Field>
         if (this.IsSimpleType()) return ret;
 
         if (
-//            this == ArrayList::class.java ||
-//            this == HashSet::class.java ||
-//            this == AbstractSet::class.java ||
-//            this == LinkedList::class.java ||
-//            this == AbstractCollection::class.java ||
-//            this == Vector::class.java ||
+            this.isArray ||
             this.IsCollectionType ||
-            this is java.util.Map<*, *>
+            this.IsMapType
         ) {
             return ret;
         }
