@@ -94,7 +94,7 @@ ${packages.map { "import " + it + ";" }.joinToString(const.line_break)}
                 fileHeader +
                         """
 @Component("mongo.${groupName}")
-@MetaDataGroup(dbType = DatabaseEnum.Mongo, value = "${groupName}")
+@MetaDataGroup(dbType = DatabaseEnum.MONGO, value = "${groupName}")
 public class ${MyUtil.getBigCamelCase(groupName)}Group implements IDataGroup {
     @Override
     public Set<BaseMetaData> getEntities(){

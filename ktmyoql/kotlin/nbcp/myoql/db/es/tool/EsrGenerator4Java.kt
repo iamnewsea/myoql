@@ -86,7 +86,7 @@ ${packages.map { "import " + it + ";" }.joinToString(const.line_break)}
                 fileHeader +
                         """
 @Component("es.${groupName}")
-@MetaDataGroup(dbType =DatabaseEnum.ElasticSearch, value = "${groupName}")
+@MetaDataGroup(dbType = DatabaseEnum.ELASTIC_SEARCH, value = "${groupName}")
 public class ${MyUtil.getBigCamelCase(groupName)}Group implements IDataGroup{
     @Override
     public Set<BaseMetaData> getEntities(){

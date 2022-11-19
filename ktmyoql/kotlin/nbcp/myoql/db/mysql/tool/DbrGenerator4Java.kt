@@ -107,7 +107,7 @@ ${packages.map { "import " + it + ";" }.joinToString(const.line_break)}
                 fileHeader +
                         """
 @Component("sql.${group.key}")
-@MetaDataGroup(dbType = DatabaseEnum.Sql, value = "${group.key}")
+@MetaDataGroup(dbType = DatabaseEnum.SQL, value = "${group.key}")
 public class ${MyUtil.getBigCamelCase(group.key)}Group implements IDataGroup{
     @Override
     public Set<BaseMetaData> getEntities(){

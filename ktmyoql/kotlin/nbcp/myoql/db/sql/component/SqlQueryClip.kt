@@ -320,9 +320,9 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
         }
 
         if (this.lockType != null) {
-            if (this.lockType == SqlLockType.ShareMode) {
+            if (this.lockType == SqlLockType.SHARE_MODE) {
                 ret.expression += " lock in share mode"
-            } else if (this.lockType == SqlLockType.Update) {
+            } else if (this.lockType == SqlLockType.UPDATE) {
                 ret.expression += " for update"
             } else {
                 throw RuntimeException("不识别的SqlLockType:${this.lockType}")

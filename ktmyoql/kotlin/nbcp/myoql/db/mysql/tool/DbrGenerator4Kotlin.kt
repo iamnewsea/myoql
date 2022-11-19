@@ -113,7 +113,7 @@ ${importPackages.map { "import " + it }.joinToString(const.line_break)}
                 fileHeader +
                         """
 @Component("sql.${group.key}")
-@MetaDataGroup(DatabaseEnum.Sql, "${group.key}")
+@MetaDataGroup(DatabaseEnum.SQL, "${group.key}")
 class ${MyUtil.getBigCamelCase(group.key)}Group : IDataGroup{
     override fun getEntities():Set<BaseMetaData<out Any>> = setOf(${
                             groupEntities.map { genVarName(it).GetSafeKotlinName() }.joinToString(",")

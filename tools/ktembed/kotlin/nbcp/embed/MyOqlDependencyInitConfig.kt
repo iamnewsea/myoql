@@ -35,7 +35,7 @@ class MyOqlDependencyInitConfig : BeanPostProcessor {
 
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
         //收集Feign
-        if (dependency.components.contains(BaseComponentEnum.Feign)) {
+        if (dependency.components.contains(BaseComponentEnum.FEIGN)) {
             var beanType = bean::class.java;
             var feign =
                 beanType.annotations.firstOrNull { it.annotationClass.qualifiedName == "org.springframework.cloud.openfeign.FeignClient" }
@@ -80,32 +80,32 @@ class MyOqlDependencyInitConfig : BeanPostProcessor {
         var dependency = DependencyData();
 
         ClassUtil.existsClass("org.springframework.data.redis.core.RedisTemplate").ifTrue {
-            dependency.components.add(BaseComponentEnum.Redis)
+            dependency.components.add(BaseComponentEnum.REDIS)
         }
 
         ClassUtil.existsClass("org.springframework.data.mongodb.core.MongoTemplate").ifTrue {
-            dependency.components.add(BaseComponentEnum.Mongo)
+            dependency.components.add(BaseComponentEnum.MONGO)
         }
 
         ClassUtil.existsClass("org.springframework.jdbc.core.JdbcTemplate").ifTrue {
-            dependency.components.add(BaseComponentEnum.Jdbc)
+            dependency.components.add(BaseComponentEnum.JDBC)
 
 
         }
         ClassUtil.existsClass("org.springframework.amqp.rabbit.core.RabbitTemplate").ifTrue {
-            dependency.components.add(BaseComponentEnum.Rabbitmq)
+            dependency.components.add(BaseComponentEnum.RABBIT_MQ)
         }
 
         ClassUtil.existsClass("org.elasticsearch.client.RestClientBuilder").ifTrue {
-            dependency.components.add(BaseComponentEnum.Es)
+            dependency.components.add(BaseComponentEnum.ES)
         }
 
         ClassUtil.existsClass("org.springframework.cloud.openfeign.FeignClient").ifTrue {
-            dependency.components.add(BaseComponentEnum.Feign)
+            dependency.components.add(BaseComponentEnum.FEIGN)
         }
 
         ClassUtil.existsClass("io.minio.MinioClient").ifTrue {
-            dependency.components.add(BaseComponentEnum.Minio)
+            dependency.components.add(BaseComponentEnum.MINIO)
         }
 
 

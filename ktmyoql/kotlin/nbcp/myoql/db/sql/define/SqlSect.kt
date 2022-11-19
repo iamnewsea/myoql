@@ -126,7 +126,7 @@ class InsertSqlSect @JvmOverloads constructor(expression: String = "") : SqlBase
 /**
  * values 片断
  */
-class ValuesSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.Values, expression) {
+class ValuesSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.VALUES, expression) {
     var values = mutableListOf<String>()
 
     var next: ValuesSqlSect? = null
@@ -143,7 +143,7 @@ class UpdateSqlSect @JvmOverloads constructor(expression: String = "") : SqlBase
 /**
  * set 片断
  */
-class SetSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.Set, expression) {
+class SetSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.SET, expression) {
     var column = ""
     var value = ""
     var next: SetSqlSect? = null
@@ -160,5 +160,5 @@ class DeleteSqlSect @JvmOverloads constructor(expression: String = "") : SqlBase
 /**
  * union 片断
  */
-class UnionSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.Union, expression) {
+class UnionSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.UNION, expression) {
 }

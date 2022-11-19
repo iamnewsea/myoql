@@ -298,7 +298,7 @@ ${list.filter { it.HasValue }.joinToString("  ")}
 //        if (redisHost.HasValue &&
 //                SpringUtil.context.containsBean("org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration")
 //        ) {
-//            return@lazy TokenStorageTypeEnum.Redis
+//            return@lazy TokenStorageTypeEnum.REDIS
 //        }
 //
 //        return@lazy TokenStorageTypeEnum.Memory

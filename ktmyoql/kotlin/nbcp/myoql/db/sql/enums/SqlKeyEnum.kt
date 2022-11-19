@@ -19,13 +19,9 @@ enum class SqlKeyEnum {
     LIMIT,
     OFFSET,
 
-    Union,
-    Values,
-    Set,
-    Other,
+    UNION,
+    VALUES,
+    SET,
+    OTHER,
 }
 
-enum class SqlLockType{
-    ShareMode,
-    Update
-}

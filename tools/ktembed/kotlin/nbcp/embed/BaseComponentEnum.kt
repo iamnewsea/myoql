@@ -1,31 +1,34 @@
 package nbcp.embed
 
+/**
+ * 基础组件枚举
+ */
 enum class BaseComponentEnum {
-    Mariadb,
-    Mongo,
-    Jdbc,
-    Feign,
-    Redis,
-    Rabbitmq,
-    Es,
-    Influxdb,
-    Sentinel,
-    XxlJob,
-    Minio,
-    Mysql,
-    Sqlserver,
-    Postgresql,
-    Oracle,
-    Kafka,
-    Zookeeper,
-    Tidb,
-    DaMeng, // 达梦
-    GBase,
-    OceanBase,
-    OpenGauss,
-    PolarDB,
-    GaussDB,
-    JinCang, //人大金仓
-    SequoiaDBDOC,
-    SequoiaDBTP,
+    MARIADB,
+    MONGO,
+    JDBC,
+    FEIGN,
+    REDIS,
+    RABBIT_MQ,
+    ES,
+    INFLUX_DB,
+    SENTINEL,
+    XXL_JOB,
+    MINIO,
+    MY_SQL,
+    SQL_SERVER,
+    POSTGRE_SQL,
+    ORACLE,
+    KAFKA,
+    ZOOKEEPER,
+    TI_DB,
+    DA_MENG, // 达梦
+    GBASE,
+    OCEAN_BASE,
+    OPEN_GAUSS,
+    POLAR_DB,
+    GAUSS_DB,
+    JIN_CANG, //人大金仓
+    SEQUOIA_DB_DOC,
+    SEQUOIA_DB_TP,
 }

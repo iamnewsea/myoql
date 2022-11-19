@@ -122,7 +122,7 @@ data class SysCity(
 
 ```
 db.mor_base.sysAnnex.aggregate()
-    .addPipeLineRawString(PipeLineEnum.match, """ { "group" : "lowcode"} """.replace("##", "$"))
+    .addPipeLineRawString(PipeLineEnum.MATCH, """ { "group" : "lowcode"} """.replace("##", "$"))
     .addPipeLineRawString(
         PipeLineEnum.group, """
 {
@@ -133,7 +133,7 @@ db.mor_base.sysAnnex.aggregate()
 }
     """.replace("##", "$")
     )
-    .addPipeLineRawString(PipeLineEnum.sort, """ { "_id.扩展名":1 } """)
+    .addPipeLineRawString(PipeLineEnum.SORT, """ { "_id.扩展名":1 } """)
     .toMapList()
 ```
 
