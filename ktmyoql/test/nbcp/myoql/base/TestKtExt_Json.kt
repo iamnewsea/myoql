@@ -12,11 +12,11 @@ class TestKtExt_Json : TestBase() {
 
     @Test
     fun test_FromJson() {
-        usingScope(JsonSceneScopeEnum.Web) {
+        usingScope(JsonSceneScopeEnum.WEB) {
             println("""{"code":123}""".FromJson<CityCodeName>()!!.name)
         }
 
-        usingScope(JsonSceneScopeEnum.Db) {
+        usingScope(JsonSceneScopeEnum.DB) {
             println("""{"code":123}""".FromJson<CityCodeName>()!!.name)
         }
     }

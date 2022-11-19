@@ -14,7 +14,7 @@ class ff {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass);
     }
 
-    @MyLogLevel(LogLevelScopeEnum.trace)
+    @MyLogLevel(LogLevelScopeEnum.TRACE)
     fun abc(a: String) {
         logger.trace("OK:${a}")
     }

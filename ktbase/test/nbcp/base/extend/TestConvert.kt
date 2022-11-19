@@ -50,8 +50,8 @@ class TestConvert : TestBase() {
     fun timeConvert() {
         val now = LocalDateTime.now()
 
-        println(now.Format(listOf(JsonStyleScopeEnum.DateUtcStyle).getDateFormat()))
-        println(now.Format(listOf(JsonStyleScopeEnum.DateStandardStyle).getDateFormat()))
+        println(now.Format(listOf(JsonStyleScopeEnum.DATE_UTC_STYLE).getDateFormat()))
+        println(now.Format(listOf(JsonStyleScopeEnum.DATE_STANDARD_STYLE).getDateFormat()))
     }
 
     @Test

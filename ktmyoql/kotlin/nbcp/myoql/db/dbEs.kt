@@ -145,7 +145,7 @@ object dbEs {
 
         var json = JsonMap("description" to description, "processors" to processors)
         var requestBody = "";
-        usingScope(arrayOf(JsonStyleScopeEnum.DateUtcStyle, JsonStyleScopeEnum.Compress)) {
+        usingScope(arrayOf(JsonStyleScopeEnum.DATE_UTC_STYLE, JsonStyleScopeEnum.COMPRESS)) {
             requestBody = json.ToJson()
         }
 

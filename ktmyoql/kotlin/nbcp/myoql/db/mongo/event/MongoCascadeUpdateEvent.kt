@@ -37,7 +37,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
 
 
     override fun beforeUpdate(update: MongoBaseUpdateClip): EventResult {
-        if (scopes.getLatest(MyOqlDbScopeEnum.IgnoreCascadeUpdate) != null) {
+        if (scopes.getLatest(MyOqlDbScopeEnum.IGNORE_CASCADE_UPDATE) != null) {
             return EventResult(true, null)
         }
 

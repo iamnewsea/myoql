@@ -48,13 +48,13 @@ class testa : TestBase() {
 
     @Test
     fun test_IdUrl_Json() {
-        usingScope(JsonSceneScopeEnum.Web) {
+        usingScope(JsonSceneScopeEnum.WEB) {
             var a = IdUrl();
             a.url = "OK"
             println(a.ToJson())
         }
 
-        usingScope(JsonSceneScopeEnum.Db) {
+        usingScope(JsonSceneScopeEnum.DB) {
             var a = IdUrl();
             a.url = "OK"
             println(a.ToJson())

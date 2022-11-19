@@ -94,19 +94,19 @@ fun <M : MongoBaseMetaCollection<E>, E : Any> M.imageChange(
     action: MongoImageActionEnum, fieldName: String, id: String, image: IdUrl, index1: Int, index2: Int
 ): JsonResult {
 
-    if (action == MongoImageActionEnum.add) {
+    if (action == MongoImageActionEnum.ADD) {
         return this.add(fieldName, id, image).run {
             if (this == 0) return@run JsonResult.error("添加图片失败")
             return@run JsonResult()
         };
-    } else if (action == MongoImageActionEnum.remove) {
+    } else if (action == MongoImageActionEnum.REMOVE) {
         return this.remove(fieldName, id, image.id).run {
             if (this == 0) {
                 return@run JsonResult.error("删除图片失败")
             }
             return@run JsonResult();
         }
-    } else if (action == MongoImageActionEnum.swap) {
+    } else if (action == MongoImageActionEnum.SWAP) {
         return this.swap(fieldName, id, index1, index2);
     }
     return JsonResult()

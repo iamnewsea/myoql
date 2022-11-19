@@ -111,7 +111,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
             this.affectRowCount = ret;
 
             if (ret > 0) {
-                usingScope(arrayOf(MyOqlDbScopeEnum.IgnoreAffectRow, MyOqlDbScopeEnum.IgnoreExecuteTime)) {
+                usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {
                     settingResult.forEach {
                         it.event.delete(this, it.result)
                     }
@@ -129,7 +129,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
 
     private fun getDeleteScript(where: Criteria): String {
         var msgs = mutableListOf<String>()
-        usingScope(JsonStyleScopeEnum.WithNull) {
+        usingScope(JsonStyleScopeEnum.WITH_NULL) {
             msgs.add("[delete] " + this.actualTableName);
             msgs.add("[where] " + where.criteriaObject.ToJson())
         }

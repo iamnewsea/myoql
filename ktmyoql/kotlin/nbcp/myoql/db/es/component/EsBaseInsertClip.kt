@@ -97,7 +97,7 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
         var requestBody = "";
         // 关于es中时间类型，仅支持 "yyyy-MM-dd"、"yyyyMMdd"、"yyyyMMddHHmmss"、"yyyy-MM-ddTHH:mm:ss"、"yyyy-MM-ddTHH:mm:ss.SSS"、"yyyy-MM-ddTHH:mm:ss.SSSZ"格式
         // https://www.cnblogs.com/koushr/p/9498888.html
-        usingScope(arrayOf(JsonStyleScopeEnum.DateUtcStyle, JsonStyleScopeEnum.Compress)) {
+        usingScope(arrayOf(JsonStyleScopeEnum.DATE_UTC_STYLE, JsonStyleScopeEnum.COMPRESS)) {
             requestBody = data.map { it.ToJson() + const.line_break }.joinToString("")
         }
         request.entity = NStringEntity(requestBody, ContentType.create("application/x-ndjson", const.utf8))
@@ -117,7 +117,7 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
                 throw RuntimeException(responseBody.toString())
             }
 
-            usingScope(arrayOf(MyOqlDbScopeEnum.IgnoreAffectRow, MyOqlDbScopeEnum.IgnoreExecuteTime)) {
+            usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {
                 settingResult.forEach {
                     it.first.insert(this, it.second)
                 }

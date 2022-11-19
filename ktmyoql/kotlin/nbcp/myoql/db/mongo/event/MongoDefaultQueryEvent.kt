@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component
 @Component
 class MongoDefaultQueryEvent : IMongoEntityQuery {
     override fun beforeQuery(query: MongoBaseQueryClip): EventResult {
-        if (scopes.getLatest(MyOqlDbScopeEnum.IgnoreLogicalDelete) != null) {
+        if (scopes.getLatest(MyOqlDbScopeEnum.IGNORE_LOGICAL_DELETE) != null) {
             return EventResult(true, null)
         }
 

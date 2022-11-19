@@ -199,7 +199,7 @@ object dbMongo {
      */
     @JvmStatic
     fun cond(ifExpression: Criteria, trueExpression: String, falseExpression: String): MongoExpression {
-        return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
+        return op(PipeLineOperatorEnum.COND, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
 
     @JvmStatic
@@ -208,17 +208,17 @@ object dbMongo {
         trueExpression: MongoExpression,
         falseExpression: MongoExpression
     ): MongoExpression {
-        return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
+        return op(PipeLineOperatorEnum.COND, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
 
     @JvmStatic
     fun cond(ifExpression: Criteria, trueExpression: String, falseExpression: MongoExpression): MongoExpression {
-        return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
+        return op(PipeLineOperatorEnum.COND, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
 
     @JvmStatic
     fun cond(ifExpression: Criteria, trueExpression: MongoExpression, falseExpression: String): MongoExpression {
-        return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
+        return op(PipeLineOperatorEnum.COND, arrayOf(ifExpression.toExpression(), trueExpression, falseExpression))
     }
 
     @JvmStatic
@@ -227,7 +227,7 @@ object dbMongo {
         trueExpression: MongoExpression,
         falseExpression: MongoExpression
     ): MongoExpression {
-        return op(PipeLineOperatorEnum.cond, arrayOf(ifExpression, trueExpression, falseExpression))
+        return op(PipeLineOperatorEnum.COND, arrayOf(ifExpression, trueExpression, falseExpression))
     }
 
     /**
@@ -254,7 +254,7 @@ object dbMongo {
         map.put("as", alias);
         map.put("cond", condExpression);
 
-        return op(PipeLineOperatorEnum.filter, map);
+        return op(PipeLineOperatorEnum.FILTER, map);
     }
 
     @JvmStatic
@@ -320,7 +320,7 @@ db.getCollection("adminRole").aggregate(
 )
  */
 
-        return MongoExpression("$" + PipeLineOperatorEnum.ifNull.toString() to expression)
+        return MongoExpression("$" + PipeLineOperatorEnum.IF_NULL.toString() to expression)
     }
 
 

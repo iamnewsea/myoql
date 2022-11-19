@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class TestUtils : TestBase() {
     @Test
     fun testjs() {
-        println(ScriptLanguageEnum.js.info())
+        println(ScriptLanguageEnum.JAVA_SCRIPT.info())
         var d = "(function(a,b){ return a+b;})(1,3)"
         println(JsUtil.execScript(d))
 

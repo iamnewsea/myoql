@@ -82,7 +82,7 @@ class MongoEntityCollector : BeanPostProcessor {
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
         if (bean is IDataGroup) {
             var group = bean::class.java.getAnnotation(MetaDataGroup::class.java)
-            if (group.dbType == DatabaseEnum.Mongo) {
+            if (group.dbType == DatabaseEnum.MONGO) {
                 dbMongo.groups.add(bean)
 
                 bean.getEntities()
@@ -197,7 +197,7 @@ class MongoEntityCollector : BeanPostProcessor {
     fun onQuering(query: MongoBaseQueryClip): List<QueryEventResult> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<QueryEventResult>()
-        usingScope(arrayOf(MyOqlDbScopeEnum.IgnoreAffectRow, MyOqlDbScopeEnum.IgnoreExecuteTime)) {
+        usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {
             queryEvents.ForEachExt { it, _ ->
                 var ret = it.beforeQuery(query);
                 if (!ret.result) {
@@ -214,7 +214,7 @@ class MongoEntityCollector : BeanPostProcessor {
     fun onAggregate(query: MongoAggregateClip<*, out Any>): List<AggregateEventResult> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<AggregateEventResult>()
-        usingScope(arrayOf(MyOqlDbScopeEnum.IgnoreAffectRow, MyOqlDbScopeEnum.IgnoreExecuteTime)) {
+        usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {
             aggregateEvents.ForEachExt { it, _ ->
                 var ret = it.beforeAggregate(query);
                 if (!ret.result) {
@@ -230,7 +230,7 @@ class MongoEntityCollector : BeanPostProcessor {
     fun onInserting(insert: MongoBaseInsertClip): List<InsertEventResult> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<InsertEventResult>()
-        usingScope(arrayOf(MyOqlDbScopeEnum.IgnoreAffectRow, MyOqlDbScopeEnum.IgnoreExecuteTime)) {
+        usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {
             insertEvents.ForEachExt { it, _ ->
                 var ret = it.beforeInsert(insert);
                 if (!ret.result) {
@@ -250,7 +250,7 @@ class MongoEntityCollector : BeanPostProcessor {
 
         //先判断是否进行了类拦截.
         var list = mutableListOf<UpdateEventResult>()
-        usingScope(arrayOf(MyOqlDbScopeEnum.IgnoreAffectRow, MyOqlDbScopeEnum.IgnoreExecuteTime)) {
+        usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {
             updateEvents.ForEachExt { it, _ ->
                 var ret = it.beforeUpdate(update);
                 if (ret.result) {
@@ -268,7 +268,7 @@ class MongoEntityCollector : BeanPostProcessor {
 
         //先判断是否进行了类拦截.
         var list = mutableListOf<DeleteEventResult>()
-        usingScope(arrayOf(MyOqlDbScopeEnum.IgnoreAffectRow, MyOqlDbScopeEnum.IgnoreExecuteTime)) {
+        usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {
             deleteEvents.ForEachExt { it, _ ->
                 var ret = it.beforeDelete(delete);
                 if (ret.result) {

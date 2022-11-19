@@ -45,7 +45,7 @@ class RecursionUtilTest : TestBase() {
             listOf(item1, item2),
             { it.get("items") as MutableList<JsonMap> }, { pwbs, index ->
                 println(pwbs)
-                return@execute RecursionReturnEnum.Go
+                return@execute RecursionReturnEnum.GO
             })
     }
 

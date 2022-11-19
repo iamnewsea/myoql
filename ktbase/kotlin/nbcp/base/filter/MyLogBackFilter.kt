@@ -53,7 +53,7 @@ class MyLogBackFilter : TurboFilter() {
             return FilterReply.DENY;
         }
 
-        usingScope(LogLevelScopeEnum.off) {
+        usingScope(LogLevelScopeEnum.OFF) {
             //config.debug 本身也会调用 decide.
             if (config.debug) {
                 return FilterReply.ACCEPT

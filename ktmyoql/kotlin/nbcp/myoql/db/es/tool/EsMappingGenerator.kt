@@ -3,7 +3,6 @@ package nbcp.myoql.db.es.tool
 import nbcp.base.comm.JsonMap
 import nbcp.base.comm.StringMap
 import nbcp.base.db.annotation.*
-import nbcp.base.db.annotation.*
 import nbcp.base.enums.JsonStyleScopeEnum
 import nbcp.base.extend.*
 import nbcp.base.utils.ClassUtil
@@ -49,7 +48,7 @@ class EsMappingGenerator {
 
         println("开始生成 es mapping ...")
 
-        usingScope(JsonStyleScopeEnum.Pretty) {
+        usingScope(JsonStyleScopeEnum.PRETTY) {
             var count = 0;
             groups.forEach { group ->
                 var groupName = group.key

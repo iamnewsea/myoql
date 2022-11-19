@@ -9,7 +9,7 @@ import java.time.LocalDate
 class UploadFileNameData @JvmOverloads constructor(var msg: String = "") {
     var fileName: String = ""
     var extName: String = ""
-    var extType: FileExtensionTypeEnum = FileExtensionTypeEnum.Other
+    var extType: FileExtensionTypeEnum = FileExtensionTypeEnum.OTHER
 
     //        var imgWidth: Int = 0
 //        var imgHeight: Int = 0

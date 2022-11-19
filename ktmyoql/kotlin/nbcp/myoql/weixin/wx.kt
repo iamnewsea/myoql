@@ -45,9 +45,9 @@ data class WxUserData @JvmOverloads constructor(
             ret.openid = h5UserInfo.openid
             ret.nickName = h5UserInfo.nickname;
             if (h5UserInfo.sex == 1) {
-                ret.sex = UserSexEnum.Male;
+                ret.sex = UserSexEnum.MALE;
             } else if (h5UserInfo.sex == 2) {
-                ret.sex = UserSexEnum.Female;
+                ret.sex = UserSexEnum.FEMALE;
             }
             ret.city = h5UserInfo.city;
             ret.province = h5UserInfo.province
@@ -63,9 +63,9 @@ data class WxUserData @JvmOverloads constructor(
             ret.openid = miniProgramUserData.openid
             ret.nickName = miniProgramUserData.nickName;
             if (miniProgramUserData.gender == "1") {
-                ret.sex = UserSexEnum.Male;
+                ret.sex = UserSexEnum.MALE;
             } else if (miniProgramUserData.gender == "2") {
-                ret.sex = UserSexEnum.Female;
+                ret.sex = UserSexEnum.FEMALE;
             }
             ret.city = miniProgramUserData.city;
             ret.province = miniProgramUserData.province

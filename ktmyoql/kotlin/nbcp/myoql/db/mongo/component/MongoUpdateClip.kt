@@ -242,9 +242,9 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
 
                 usingScope(
                     arrayOf(
-                        MyOqlDbScopeEnum.IgnoreAffectRow,
-                        MyOqlDbScopeEnum.IgnoreExecuteTime,
-                        MyOqlDbScopeEnum.IgnoreUpdateAt
+                        MyOqlDbScopeEnum.IGNORE_AFFECT_ROW,
+                        MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME,
+                        MyOqlDbScopeEnum.IGNORE_UPDATE_AT
                     )
                 ) {
                     settingResult.forEach {

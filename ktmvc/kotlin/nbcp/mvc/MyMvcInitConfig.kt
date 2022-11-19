@@ -2,10 +2,7 @@ package nbcp.mvc
 
 import nbcp.base.comm.const
 import nbcp.base.component.WebJsonMapper
-import nbcp.mvc.base.StringToDateConverter
-import nbcp.mvc.base.StringToLocalDateConverter
-import nbcp.mvc.base.StringToLocalDateTimeConverter
-import nbcp.mvc.base.StringToLocalTimeConverter
+import nbcp.mvc.comm.*
 import nbcp.mvc.mvc.JsonModelParameterBeanProcessor
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
@@ -79,7 +76,7 @@ class MyMvcInitConfig : BeanPostProcessor {
                 //解决绝大多数Json转换问题
                 if (converter is MappingJackson2HttpMessageConverter) {
                     converter.defaultCharset = const.utf8
-                    converter.objectMapper = WebJsonMapper.INSTANCE
+                    converter.objectMapper = WebJsonMapper()
                     return@forEach
                 }
 

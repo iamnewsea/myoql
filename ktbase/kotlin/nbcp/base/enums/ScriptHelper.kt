@@ -8,10 +8,10 @@ import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 
 enum class ScriptLanguageEnum {
-    js,
-    python,
-    lua,
-    groovy;
+    JAVA_SCRIPT,
+    PYTHON,
+    LUA,
+    GROOVY;
 
 
     companion object {

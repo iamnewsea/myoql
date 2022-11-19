@@ -17,25 +17,25 @@ abstract class MyOqlBaseActionLogDefine(val logDefaultKey: String) : Initializin
 
     fun getQueryLog(tableDbName: String): Boolean {
         if (query.contains(tableDbName.lowercase())) return true;
-        if (logDefault.contains(CrudEnum.read)) return true;
+        if (logDefault.contains(CrudEnum.READ)) return true;
         return false;
     }
 
     fun getInsertLog(tableDbName: String): Boolean {
         if (insert.contains(tableDbName.lowercase())) return true;
-        if (logDefault.contains(CrudEnum.create)) return true;
+        if (logDefault.contains(CrudEnum.CREATE)) return true;
         return false
     }
 
     fun getUpdateLog(tableDbName: String): Boolean {
         if (update.contains(tableDbName.lowercase())) return true;
-        if (logDefault.contains(CrudEnum.update)) return true;
+        if (logDefault.contains(CrudEnum.UPDATE)) return true;
         return false;
     }
 
     fun getDeleteLog(tableDbName: String): Boolean {
         if (delete.contains(tableDbName.lowercase())) return true;
-        if (logDefault.contains(CrudEnum.delete)) return true;
+        if (logDefault.contains(CrudEnum.DELETE)) return true;
         return false;
     }
 

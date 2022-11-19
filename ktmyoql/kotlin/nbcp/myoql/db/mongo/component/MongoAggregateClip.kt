@@ -50,7 +50,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
      * 通用函数
      */
     fun addPipeLine(key: PipeLineEnum, json: Map<String, Any?>): MongoAggregateClip<M, E> {
-        this.pipeLines.add("\$${key}" to json);
+        this.pipeLines.add("\$${key.key}" to json);
         return this;
     }
 
@@ -58,7 +58,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
      * @param rawString 原始的mongo字符串，不解析
      */
     fun addPipeLineRawString(key: PipeLineEnum, rawString: String): MongoAggregateClip<M, E> {
-        this.pipeLines.add("\$${key}" to MyRawString(rawString));
+        this.pipeLines.add("\$${key.key}" to MyRawString(rawString));
         return this;
     }
 
@@ -81,7 +81,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
         jsonMap.put("connectToField", db.mongo.getMongoColumnName(connectToField(this.moerEntity).toString()))
         jsonMap.put("as", alias)
 
-        this.pipeLines.add("\$${PipeLineEnum.graphLookup}" to jsonMap);
+        this.pipeLines.add("\$${PipeLineEnum.GRAPH_LOOKUP.key}" to jsonMap);
         return this;
     }
 
@@ -213,7 +213,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
             var key = it.first;
             var value = it.second;
             if (value is ObjectId) {
-                return@map """{$key:${value.toString().toOIdJson().ToJson(JsonSceneScopeEnum.Db).AsString("null")}}"""
+                return@map """{$key:${value.toString().toOIdJson().ToJson(JsonSceneScopeEnum.DB).AsString("null")}}"""
             } else if (value is Criteria) {
 
                 var c_value = value.criteriaObject //.procWithMongoScript();
@@ -229,11 +229,11 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
 //                }
                 return@map """{$key:"${value}"}"""
             } else if (value is Map<*, *>) {
-                return@map "{$key:${value.procWithMongoScript().ToJson(JsonSceneScopeEnum.Db).AsString("null")}}"
+                return@map "{$key:${value.procWithMongoScript().ToJson(JsonSceneScopeEnum.DB).AsString("null")}}"
             }
 
             logger.warn("不识别的类型：${value::class.java.name}")
-            return@map "{$key:${value.ToJson(JsonSceneScopeEnum.Db).AsString("null")}}"
+            return@map "{$key:${value.ToJson(JsonSceneScopeEnum.DB).AsString("null")}}"
         }.joinToString(",") + "]"
 
         var exp = """{
@@ -285,7 +285,7 @@ cursor: {} } """
                 )
             this.executeTime = LocalDateTime.now() - startAt
 
-            usingScope(arrayOf(MyOqlDbScopeEnum.IgnoreAffectRow, MyOqlDbScopeEnum.IgnoreExecuteTime)) {
+            usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {
                 settingResult.forEach {
                     it.event.aggregate(this, it.result)
                 }

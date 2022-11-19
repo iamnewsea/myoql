@@ -5,28 +5,28 @@ package nbcp.myoql.db.mongo.enums
  */
 
 /**
- * MongoTypeEnum
+ * https://www.mongodb.com/docs/v6.0/reference/operator/query/type/
  */
 enum class MongoTypeEnum(var value:kotlin.Int,var alias:kotlin.String){
-    `Double`(1,"double"),
-    `String`(2,"string"),
-    `Object`(3,"object"),
-    `Array`(4,"array"),
-    `BinData`(5,"binData"),
-    `Undefined`(6,"undefined"),
-    `ObjectId`(7,"objectId"),
-    `Bool`(8,"bool"),
-    `Date`(9,"date"),
-    `Null`(10,"null"),
-    `Regex`(11,"regex"),
-    `DbPointer`(12,"dbPointer"),
-    `Javascript`(13,"javascript"),
-    `Symbol`(14,"symbol"),
-    `JavascriptWithScope`(15,"javascriptWithScope"),
-    `Int`(16,"int"),
-    `Timestamp`(17,"timestamp"),
-    `Long`(18,"long"),
-    `Decimal`(19,"decimal"),
-    `MinKey`(-1,"minKey"),
-    `MaxKey`(127,"maxKey")
+    `DOUBLE`(1,"double"),
+    `STRING`(2,"string"),
+    `OBJECT`(3,"object"),
+    `ARRAY`(4,"array"),
+    `BIN_DATA`(5,"binData"),
+    `UNDEFINED`(6,"undefined"),
+    `OBJECT_ID`(7,"objectId"),
+    `BOOL`(8,"bool"),
+    `DATE`(9,"date"),
+    `NULL`(10,"null"),
+    `REGEX`(11,"regex"),
+    `DB_POINTER`(12,"dbPointer"),
+    `JAVA_SCRIPT`(13,"javascript"),
+    `SYMBOL`(14,"symbol"),
+    `JAVA_SCRIPT_WITH_SCOPE`(15,"javascriptWithScope"),
+    `INT`(16,"int"),
+    `TIMESTAMP`(17,"timestamp"),
+    `LONG`(18,"long"),
+    `DECIMAL`(19,"decimal"),
+    `MIN_KEY`(-1,"minKey"),
+    `MAX_KEY`(127,"maxKey")
 }

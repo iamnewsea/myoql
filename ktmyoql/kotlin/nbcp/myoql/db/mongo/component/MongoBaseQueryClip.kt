@@ -204,7 +204,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
 
             this.affectRowCount = cursor.size;
 
-            usingScope(arrayOf(MyOqlDbScopeEnum.IgnoreAffectRow, MyOqlDbScopeEnum.IgnoreExecuteTime)) {
+            usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {
                 settingResult.forEach {
                     it.event.query(this, it.result)
                 }
@@ -279,7 +279,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
 
     private fun getQueryScript(criteria: Criteria): String {
         var msgs = mutableListOf<String>()
-        usingScope(JsonStyleScopeEnum.WithNull) {
+        usingScope(JsonStyleScopeEnum.WITH_NULL) {
             msgs.add("[query] " + this.actualTableName);
             msgs.add("[where] " + criteria.criteriaObject.ToJson())
             if (selectColumns.any() || selectProjections.any()) {
@@ -329,7 +329,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                 ).toInt()
             this.executeTime = LocalDateTime.now() - startAt
 
-            usingScope(arrayOf(MyOqlDbScopeEnum.IgnoreAffectRow, MyOqlDbScopeEnum.IgnoreExecuteTime)) {
+            usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {
                 settingResult.forEach {
                     it.event.query(this, it.result)
                 }
@@ -369,7 +369,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                 );
             this.executeTime = LocalDateTime.now() - startAt;
 
-            usingScope(arrayOf(MyOqlDbScopeEnum.IgnoreAffectRow, MyOqlDbScopeEnum.IgnoreExecuteTime)) {
+            usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {
                 settingResult.forEach {
                     it.event.query(this, it.result)
                 }
@@ -403,8 +403,8 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             if (ret.data.size < this.take) {
                 ret.total = ret.data.size;
             } else {
-                usingScope(MyOqlDbScopeEnum.IgnoreExecuteTime) {
-                    usingScope(MyOqlDbScopeEnum.IgnoreAffectRow) {
+                usingScope(MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME) {
+                    usingScope(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW) {
                         ret.total = count()
                     }
                 }

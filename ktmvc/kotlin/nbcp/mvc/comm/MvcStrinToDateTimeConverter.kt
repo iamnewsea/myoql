@@ -1,4 +1,4 @@
-package nbcp.mvc.base
+package nbcp.mvc.comm
 
 
 import nbcp.base.extend.AsDate

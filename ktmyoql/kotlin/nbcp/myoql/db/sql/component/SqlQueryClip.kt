@@ -482,7 +482,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
     override fun exists(): Boolean {
         this.take = 1;
         this.columns.clear();
-        var const1 = SqlColumnName.of(DbType.Int, "1")
+        var const1 = SqlColumnName.of(DbType.INT, "1")
         this.columns.add(const1);
         return super.exists()
     }
@@ -551,7 +551,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
             if (data.size < this.take) {
                 ret.total = data.size;
             } else {
-                usingScope(arrayOf(MyOqlDbScopeEnum.IgnoreExecuteTime, MyOqlDbScopeEnum.IgnoreAffectRow)) {
+                usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME, MyOqlDbScopeEnum.IGNORE_AFFECT_ROW)) {
                     ret.total = count()
                 }
             }

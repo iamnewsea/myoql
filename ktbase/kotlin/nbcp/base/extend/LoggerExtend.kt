@@ -46,7 +46,7 @@ inline fun Logger.Error(err: Throwable) {
  * 重要日志，使用 scope.info 记录
  */
 inline fun Logger.Important(msg: String) {
-    usingScope(LogLevelScopeEnum.info) {
+    usingScope(LogLevelScopeEnum.INFO) {
         this.info(msg);
     }
 }

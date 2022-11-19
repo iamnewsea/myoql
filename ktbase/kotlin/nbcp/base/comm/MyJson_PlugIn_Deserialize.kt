@@ -27,11 +27,11 @@ class DateJsonSerializer : JsonSerializer<Date>() {
         } else {
             //使用上下文格式转换。 , 不使用传过来的  (serializers.config.dateFormat as SimpleDateFormat).toPattern()
             var style = scopes.getLatest(
-                JsonStyleScopeEnum.DateLocalStyle,
-                JsonStyleScopeEnum.DateUtcStyle,
-                JsonStyleScopeEnum.DateStandardStyle
+                JsonStyleScopeEnum.DATE_LOCAL_STYLE,
+                JsonStyleScopeEnum.DATE_UTC_STYLE,
+                JsonStyleScopeEnum.DATE_STANDARD_STYLE
             )
-                ?: JsonStyleScopeEnum.DateStandardStyle
+                ?: JsonStyleScopeEnum.DATE_STANDARD_STYLE
             var format = listOf(style).getDateFormat()
 
             generator.writeString(value.Format(format))
@@ -47,13 +47,13 @@ class LocalDateJsonSerializer : JsonSerializer<LocalDate>() {
             //使用上下文格式转换。 , 不使用传过来的  (serializers.config.dateFormat as SimpleDateFormat).toPattern()
             var format = "yyyy-MM-dd";
             var style = scopes.getLatest(
-                JsonStyleScopeEnum.DateLocalStyle,
-                JsonStyleScopeEnum.DateUtcStyle,
-                JsonStyleScopeEnum.DateStandardStyle
+                JsonStyleScopeEnum.DATE_LOCAL_STYLE,
+                JsonStyleScopeEnum.DATE_UTC_STYLE,
+                JsonStyleScopeEnum.DATE_STANDARD_STYLE
             )
-                ?: JsonStyleScopeEnum.DateStandardStyle
-            if (style == JsonStyleScopeEnum.DateLocalStyle ||
-                style == JsonStyleScopeEnum.DateUtcStyle
+                ?: JsonStyleScopeEnum.DATE_STANDARD_STYLE
+            if (style == JsonStyleScopeEnum.DATE_LOCAL_STYLE ||
+                style == JsonStyleScopeEnum.DATE_UTC_STYLE
             ) {
                 format = "yyyy/MM/dd"
             }
@@ -82,11 +82,11 @@ class LocalDateTimeJsonSerializer : JsonSerializer<LocalDateTime>() {
             //使用上下文格式转换。 , 不使用传过来的  (serializers.config.dateFormat as SimpleDateFormat).toPattern()
 
             var style = scopes.getLatest(
-                JsonStyleScopeEnum.DateLocalStyle,
-                JsonStyleScopeEnum.DateUtcStyle,
-                JsonStyleScopeEnum.DateStandardStyle
+                JsonStyleScopeEnum.DATE_LOCAL_STYLE,
+                JsonStyleScopeEnum.DATE_UTC_STYLE,
+                JsonStyleScopeEnum.DATE_STANDARD_STYLE
             )
-                ?: JsonStyleScopeEnum.DateStandardStyle
+                ?: JsonStyleScopeEnum.DATE_STANDARD_STYLE
             var format = listOf(style).getDateFormat()
 
             generator.writeString(value.Format(format))
@@ -102,11 +102,11 @@ class TimestampJsonSerializer : JsonSerializer<Timestamp>() {
             //使用上下文格式转换。 , 不使用传过来的  (serializers.config.dateFormat as SimpleDateFormat).toPattern()
 
             var style = scopes.getLatest(
-                JsonStyleScopeEnum.DateLocalStyle,
-                JsonStyleScopeEnum.DateUtcStyle,
-                JsonStyleScopeEnum.DateStandardStyle
+                JsonStyleScopeEnum.DATE_LOCAL_STYLE,
+                JsonStyleScopeEnum.DATE_UTC_STYLE,
+                JsonStyleScopeEnum.DATE_STANDARD_STYLE
             )
-                ?: JsonStyleScopeEnum.DateStandardStyle
+                ?: JsonStyleScopeEnum.DATE_STANDARD_STYLE
             var format = listOf(style).getDateFormat()
             generator.writeString(value.toLocalDateTime().Format(format))
         }

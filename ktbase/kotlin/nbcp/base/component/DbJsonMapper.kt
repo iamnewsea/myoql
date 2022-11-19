@@ -4,7 +4,6 @@ package nbcp.base.component
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
 import nbcp.base.extend.initObjectMapper
 
 
@@ -26,15 +25,3 @@ class DbJsonMapper() : ObjectMapper() {
     }
 }
 
-//@Component("YamlObjectMapper")
-class YamlObjectMapper private constructor() : YAMLMapper() {
-    companion object {
-        val INSTANCE: YamlObjectMapper by lazy {
-            return@lazy YamlObjectMapper();
-        }
-    }
-
-    init {
-        this.initObjectMapper()
-    }
-}

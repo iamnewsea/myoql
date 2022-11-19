@@ -61,7 +61,7 @@ fun <T> T.ToJson(style: JsonSceneScopeEnum?, vararg jsonScopes: JsonStyleScopeEn
         var mapper = style.getJsonMapper();
 
         var styles = scopes.getScopeTypes<JsonStyleScopeEnum>()
-        if (styles.contains(JsonStyleScopeEnum.Pretty)) {
+        if (styles.contains(JsonStyleScopeEnum.PRETTY)) {
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this) ?: ""
         }
 
@@ -221,9 +221,9 @@ fun Array<out JsonStyleScopeEnum>.getDateFormat(): String = this.toList().getDat
 /**
  */
 fun Collection<JsonStyleScopeEnum>.getDateFormat(): String {
-    if (this.contains(JsonStyleScopeEnum.DateUtcStyle)) {
+    if (this.contains(JsonStyleScopeEnum.DATE_UTC_STYLE)) {
         return "yyyy-MM-dd'T'HH:mm:ss'Z'"
-    } else if (this.contains(JsonStyleScopeEnum.DateLocalStyle)) {
+    } else if (this.contains(JsonStyleScopeEnum.DATE_LOCAL_STYLE)) {
         return "yyyy/MM/dd HH:mm:ss"
     } else {
         return "yyyy-MM-dd HH:mm:ss";

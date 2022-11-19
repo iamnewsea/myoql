@@ -165,9 +165,9 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
             if (result.modifiedCount > 0) {
                 usingScope(
                     arrayOf(
-                        MyOqlDbScopeEnum.IgnoreAffectRow,
-                        MyOqlDbScopeEnum.IgnoreExecuteTime,
-                        MyOqlDbScopeEnum.IgnoreUpdateAt
+                        MyOqlDbScopeEnum.IGNORE_AFFECT_ROW,
+                        MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME,
+                        MyOqlDbScopeEnum.IGNORE_UPDATE_AT
                     )
                 ) {
                     settingResult.forEach {
@@ -195,7 +195,7 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         update: org.springframework.data.mongodb.core.query.Update
     ): String {
         var msgs = mutableListOf<String>()
-        usingScope(JsonStyleScopeEnum.WithNull) {
+        usingScope(JsonStyleScopeEnum.WITH_NULL) {
             msgs.add("[update] " + this.actualTableName);
             msgs.add("[where] " + where.criteriaObject.ToJson())
             msgs.add("[update] " + update.updateObject.ToJson())

@@ -21,14 +21,14 @@ class Test_Mongo_Query : TestBase() {
     @Test
     fun clone() {
         var query = db.morBase.sysLog.query()
-            .where{ it.id.match_hasValue()}
+            .where { it.id.match_hasValue() }
 
-        println(query.whereData.ToJson(JsonStyleScopeEnum.WithNull))
+        println(query.whereData.ToJson(JsonStyleScopeEnum.WITH_NULL))
     }
 
     @Test
     fun test_query_where() {
-        usingScope(LogLevelScopeEnum.debug) {
+        usingScope(LogLevelScopeEnum.DEBUG) {
             db.morBase.sysLog.query()
                 .apply {
                     this.where(
@@ -62,16 +62,16 @@ return  this.tags && this.tags.some(function(it) { return it == v } )
 
     @Test
     fun testCond() {
-        usingScope(LogLevelScopeEnum.info) {
+        usingScope(LogLevelScopeEnum.INFO) {
             db.morBase.sysAnnex.aggregate()
                 .addPipeLine(
-                    PipeLineEnum.addFields,
+                    PipeLineEnum.ADD_FIELDS,
                     db.mongo.cond(db.morBase.sysAnnex.group match "digitalthread", "1", "0").As("u")
                 )
                 .beginMatch()
                 .where { it.ext match "png" }
                 .endMatch()
-                .addPipeLine(PipeLineEnum.sort, JsonMap("u" to 1))
+                .addPipeLine(PipeLineEnum.SORT, JsonMap("u" to 1))
                 .limit(0, 2)
                 .toList()
                 .forEach {
@@ -83,7 +83,7 @@ return  this.tags && this.tags.some(function(it) { return it == v } )
 
     @Test
     fun testElemMatch() {
-        usingScope(LogLevelScopeEnum.info) {
+        usingScope(LogLevelScopeEnum.INFO) {
             var where1 = JsonMap("\$gte" to 1, "\$lte" to 9)
 
             db.morBase.sysAnnex.query()
@@ -121,7 +121,7 @@ return  this.tags && this.tags.some(function(it) { return it == v } )
                 .beginMatch()
                 .where { it.tags match_elemMatch where1 }
                 .endMatch()
-                .addPipeLine(PipeLineEnum.project, project)
+                .addPipeLine(PipeLineEnum.PROJECT, project)
                 .toList()
 
         }

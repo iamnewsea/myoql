@@ -1,14 +1,5 @@
 package nbcp.myoql.db.sql.table
 
-import java.io.*
-import nbcp.base.db.*
-import nbcp.base.comm.*
-import nbcp.base.extend.*
-import nbcp.base.enums.*
-import nbcp.base.utils.*
-import nbcp.myoql.db.*
-import nbcp.myoql.db.sql.*
-
 import nbcp.myoql.db.comm.*
 import nbcp.myoql.db.enums.*
 import nbcp.myoql.db.sql.base.*
@@ -20,7 +11,7 @@ import org.springframework.stereotype.*
 
 
 @Component("sql.SqlBase")
-@MetaDataGroup(DatabaseEnum.Sql, "SqlBase")
+@MetaDataGroup(DatabaseEnum.SQL, "SqlBase")
 class SqlBaseGroup : IDataGroup{
     override fun getEntities():Set<BaseMetaData<out Any>> = setOf(s_annex,s_city,s_dustbin,s_log)
 
@@ -39,21 +30,21 @@ class SqlBaseGroup : IDataGroup{
     @nbcp.base.db.annotation.Cn(value = """附件""")
     class s_annex_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.myoql.db.sql.entity.s_annex>(nbcp.myoql.db.sql.entity.s_annex::class.java, "s_annex") {
-        val name = SqlColumnName(DbType.String, this.getAliaTableName(),"name")
-        val tags = SqlColumnName(DbType.Json, this.getAliaTableName(),"tags")
-        val ext = SqlColumnName(DbType.String, this.getAliaTableName(),"ext")
-        val size = SqlColumnName(DbType.Int, this.getAliaTableName(),"size")
-        val imgWidth = SqlColumnName(DbType.Int, this.getAliaTableName(),"imgWidth")
-        val imgHeight = SqlColumnName(DbType.Int, this.getAliaTableName(),"imgHeight")
-        val url = SqlColumnName(DbType.String, this.getAliaTableName(),"url")
-        val creator_id = SqlColumnName(DbType.String, this.getAliaTableName(),"creator_id")
-        val creator_name = SqlColumnName(DbType.String, this.getAliaTableName(),"creator_name")
-        val group = SqlColumnName(DbType.String, this.getAliaTableName(),"group")
-        val corpId = SqlColumnName(DbType.String, this.getAliaTableName(),"corpId")
-        val errorMsg = SqlColumnName(DbType.String, this.getAliaTableName(),"errorMsg")
-        val id = SqlColumnName(DbType.String, this.getAliaTableName(),"id")
-        val createAt = SqlColumnName(DbType.DateTime, this.getAliaTableName(),"createAt")
-        val updateAt = SqlColumnName(DbType.DateTime, this.getAliaTableName(),"updateAt")
+        val name = SqlColumnName(DbType.STRING, this.getAliaTableName(),"name")
+        val tags = SqlColumnName(DbType.JSON, this.getAliaTableName(),"tags")
+        val ext = SqlColumnName(DbType.STRING, this.getAliaTableName(),"ext")
+        val size = SqlColumnName(DbType.INT, this.getAliaTableName(),"size")
+        val imgWidth = SqlColumnName(DbType.INT, this.getAliaTableName(),"imgWidth")
+        val imgHeight = SqlColumnName(DbType.INT, this.getAliaTableName(),"imgHeight")
+        val url = SqlColumnName(DbType.STRING, this.getAliaTableName(),"url")
+        val creator_id = SqlColumnName(DbType.STRING, this.getAliaTableName(),"creator_id")
+        val creator_name = SqlColumnName(DbType.STRING, this.getAliaTableName(),"creator_name")
+        val group = SqlColumnName(DbType.STRING, this.getAliaTableName(),"group")
+        val corpId = SqlColumnName(DbType.STRING, this.getAliaTableName(),"corpId")
+        val errorMsg = SqlColumnName(DbType.STRING, this.getAliaTableName(),"errorMsg")
+        val id = SqlColumnName(DbType.STRING, this.getAliaTableName(),"id")
+        val createAt = SqlColumnName(DbType.DATE_TIME, this.getAliaTableName(),"createAt")
+        val updateAt = SqlColumnName(DbType.DATE_TIME, this.getAliaTableName(),"updateAt")
 
         override fun getSpreadColumns(): Array<SqlSpreadColumnData> { return arrayOf<SqlSpreadColumnData>(SqlSpreadColumnData("creator","_"))}
 
@@ -83,16 +74,16 @@ class SqlBaseGroup : IDataGroup{
     @nbcp.base.db.annotation.Cn(value = """城市""")
     class s_city_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.myoql.db.sql.entity.s_city>(nbcp.myoql.db.sql.entity.s_city::class.java, "s_city") {
-        val code = SqlColumnName(DbType.Int, this.getAliaTableName(),"code")
-        val shortName = SqlColumnName(DbType.String, this.getAliaTableName(),"shortName")
-        val name = SqlColumnName(DbType.String, this.getAliaTableName(),"name")
-        val level = SqlColumnName(DbType.Int, this.getAliaTableName(),"level")
-        val lng = SqlColumnName(DbType.Float, this.getAliaTableName(),"lng")
-        val lat = SqlColumnName(DbType.Float, this.getAliaTableName(),"lat")
-        val pinyin = SqlColumnName(DbType.String, this.getAliaTableName(),"pinyin")
-        val telCode = SqlColumnName(DbType.String, this.getAliaTableName(),"telCode")
-        val postCode = SqlColumnName(DbType.String, this.getAliaTableName(),"postCode")
-        val pcode = SqlColumnName(DbType.Int, this.getAliaTableName(),"pcode")
+        val code = SqlColumnName(DbType.INT, this.getAliaTableName(),"code")
+        val shortName = SqlColumnName(DbType.STRING, this.getAliaTableName(),"shortName")
+        val name = SqlColumnName(DbType.STRING, this.getAliaTableName(),"name")
+        val level = SqlColumnName(DbType.INT, this.getAliaTableName(),"level")
+        val lng = SqlColumnName(DbType.FLOAT, this.getAliaTableName(),"lng")
+        val lat = SqlColumnName(DbType.FLOAT, this.getAliaTableName(),"lat")
+        val pinyin = SqlColumnName(DbType.STRING, this.getAliaTableName(),"pinyin")
+        val telCode = SqlColumnName(DbType.STRING, this.getAliaTableName(),"telCode")
+        val postCode = SqlColumnName(DbType.STRING, this.getAliaTableName(),"postCode")
+        val pcode = SqlColumnName(DbType.INT, this.getAliaTableName(),"pcode")
 
         override fun getSpreadColumns(): Array<SqlSpreadColumnData> { return arrayOf<SqlSpreadColumnData>()}
 
@@ -123,14 +114,14 @@ class SqlBaseGroup : IDataGroup{
     @nbcp.base.db.annotation.Cn(value = """数据垃圾箱""")
     class s_dustbin_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.myoql.db.sql.entity.s_dustbin>(nbcp.myoql.db.sql.entity.s_dustbin::class.java, "s_dustbin") {
-        val table = SqlColumnName(DbType.String, this.getAliaTableName(),"table")
-        val remark = SqlColumnName(DbType.String, this.getAliaTableName(),"remark")
-        val creator_id = SqlColumnName(DbType.String, this.getAliaTableName(),"creator_id")
-        val creator_name = SqlColumnName(DbType.String, this.getAliaTableName(),"creator_name")
-        val data = SqlColumnName(DbType.String, this.getAliaTableName(),"data")
-        val id = SqlColumnName(DbType.String, this.getAliaTableName(),"id")
-        val createAt = SqlColumnName(DbType.DateTime, this.getAliaTableName(),"createAt")
-        val updateAt = SqlColumnName(DbType.DateTime, this.getAliaTableName(),"updateAt")
+        val table = SqlColumnName(DbType.STRING, this.getAliaTableName(),"table")
+        val remark = SqlColumnName(DbType.STRING, this.getAliaTableName(),"remark")
+        val creator_id = SqlColumnName(DbType.STRING, this.getAliaTableName(),"creator_id")
+        val creator_name = SqlColumnName(DbType.STRING, this.getAliaTableName(),"creator_name")
+        val data = SqlColumnName(DbType.STRING, this.getAliaTableName(),"data")
+        val id = SqlColumnName(DbType.STRING, this.getAliaTableName(),"id")
+        val createAt = SqlColumnName(DbType.DATE_TIME, this.getAliaTableName(),"createAt")
+        val updateAt = SqlColumnName(DbType.DATE_TIME, this.getAliaTableName(),"updateAt")
 
         override fun getSpreadColumns(): Array<SqlSpreadColumnData> { return arrayOf<SqlSpreadColumnData>(SqlSpreadColumnData("creator","_"))}
 
@@ -161,18 +152,18 @@ class SqlBaseGroup : IDataGroup{
     @nbcp.base.db.annotation.Cn(value = """日志""")
     class s_log_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.myoql.db.sql.entity.s_log>(nbcp.myoql.db.sql.entity.s_log::class.java, "s_log") {
-        val module = SqlColumnName(DbType.String, this.getAliaTableName(),"module")
-        val type = SqlColumnName(DbType.String, this.getAliaTableName(),"type")
-        val tags = SqlColumnName(DbType.Json, this.getAliaTableName(),"tags")
-        val msg = SqlColumnName(DbType.String, this.getAliaTableName(),"msg")
-        val request = SqlColumnName(DbType.String, this.getAliaTableName(),"request")
-        val data = SqlColumnName(DbType.String, this.getAliaTableName(),"data")
-        val response = SqlColumnName(DbType.String, this.getAliaTableName(),"response")
-        val creator_id = SqlColumnName(DbType.String, this.getAliaTableName(),"creator_id")
-        val creator_name = SqlColumnName(DbType.String, this.getAliaTableName(),"creator_name")
-        val id = SqlColumnName(DbType.String, this.getAliaTableName(),"id")
-        val createAt = SqlColumnName(DbType.DateTime, this.getAliaTableName(),"createAt")
-        val updateAt = SqlColumnName(DbType.DateTime, this.getAliaTableName(),"updateAt")
+        val module = SqlColumnName(DbType.STRING, this.getAliaTableName(),"module")
+        val type = SqlColumnName(DbType.STRING, this.getAliaTableName(),"type")
+        val tags = SqlColumnName(DbType.JSON, this.getAliaTableName(),"tags")
+        val msg = SqlColumnName(DbType.STRING, this.getAliaTableName(),"msg")
+        val request = SqlColumnName(DbType.STRING, this.getAliaTableName(),"request")
+        val data = SqlColumnName(DbType.STRING, this.getAliaTableName(),"data")
+        val response = SqlColumnName(DbType.STRING, this.getAliaTableName(),"response")
+        val creator_id = SqlColumnName(DbType.STRING, this.getAliaTableName(),"creator_id")
+        val creator_name = SqlColumnName(DbType.STRING, this.getAliaTableName(),"creator_name")
+        val id = SqlColumnName(DbType.STRING, this.getAliaTableName(),"id")
+        val createAt = SqlColumnName(DbType.DATE_TIME, this.getAliaTableName(),"createAt")
+        val updateAt = SqlColumnName(DbType.DATE_TIME, this.getAliaTableName(),"updateAt")
 
         override fun getSpreadColumns(): Array<SqlSpreadColumnData> { return arrayOf<SqlSpreadColumnData>(SqlSpreadColumnData("creator","_"))}
 

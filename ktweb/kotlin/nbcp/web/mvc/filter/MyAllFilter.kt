@@ -93,7 +93,7 @@ open class MyAllFilter : Filter {
         var logLevel = getLogLevel(request);
 
         if (logLevel != null) {
-            if (logLevel == LogLevelScopeEnum.off) {
+            if (logLevel == LogLevelScopeEnum.OFF) {
                 chain?.doFilter(request, response)
                 return;
             }

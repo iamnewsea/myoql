@@ -67,7 +67,7 @@ abstract class BaseUploadService {
 
 
         //流不可重复读！！所以要重新从file中获取流
-        if (extInfo.extType == FileExtensionTypeEnum.Image) {
+        if (extInfo.extType == FileExtensionTypeEnum.IMAGE) {
             try {
                 val bufferedImage = ImageIO.read(file.inputStream)
                 annexInfo.imgWidth = bufferedImage.getWidth();
@@ -75,7 +75,7 @@ abstract class BaseUploadService {
             } catch (ex: Throwable) {
                 return nbcp.base.comm.ApiResult.error("不识别的图片格式!")
             }
-        } else if (extInfo.extType == FileExtensionTypeEnum.Video) {
+        } else if (extInfo.extType == FileExtensionTypeEnum.VIDEO) {
             if (config.videoLogo) {
                 VideoUtil.getVideoInfo(file.inputStream).data
                     .apply {
@@ -88,7 +88,7 @@ abstract class BaseUploadService {
                             var logoFile = UploadFileNameData();
                             logoFile.corpId = fileData.corpId;
                             logoFile.extName = "png";
-                            logoFile.extType = FileExtensionTypeEnum.Image;
+                            logoFile.extType = FileExtensionTypeEnum.IMAGE;
                             logoFile.fileName = CodeUtil.getCode() + ".png";
 
                             var logoUrl = saveFile(storageType, logoStream, annexInfo.group, logoFile);
@@ -172,7 +172,7 @@ abstract class BaseUploadService {
         val ids = ret.data;
 
         response.contentType = "application/json;charset=UTF-8"
-        usingScope(JsonSceneScopeEnum.Web) {
+        usingScope(JsonSceneScopeEnum.WEB) {
             if (ids.size == 0) {
                 response.outputStream.write(JsonResult.error("上传失败").ToJson().toByteArray(const.utf8));
             } else if (ids.size == 1) {

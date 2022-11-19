@@ -24,7 +24,7 @@ class EntityDbItemFieldData {
     var sqlType = ""
     var remark = ""
     var name = ""
-    var dbType = DbType.Other
+    var dbType = DbType.OTHER
     var commentString = ""
 
     val comment: String
@@ -48,7 +48,7 @@ class EntityDbItemFieldData {
 
     val javaDefaultValue: String
         get() {
-            if (this.dbType == DbType.Byte) {
+            if (this.dbType == DbType.BYTE) {
                 return "new byte[0]"
             }
             return this.dbType.toKotlinDefaultValue()

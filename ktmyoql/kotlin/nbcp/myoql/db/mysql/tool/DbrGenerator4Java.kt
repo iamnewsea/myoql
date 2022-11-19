@@ -5,7 +5,6 @@ import nbcp.base.comm.StringMap
 import nbcp.base.comm.const
 import nbcp.base.data.Sys
 import nbcp.base.db.annotation.*
-import nbcp.base.db.annotation.*
 import nbcp.base.extend.*
 import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.CnAnnotationUtil
@@ -600,7 +599,7 @@ public SqlUpdateClip<${GroupName}Group.${entityTableMetaName}> SqlUpdateClip<${G
             .forEach {
                 var dbType = DbType.of(it.type)
 
-                if (dbType != DbType.Other || it.type.IsCollectionType || Map::class.java.isAssignableFrom(it.type)) {
+                if (dbType != DbType.OTHER || it.type.IsCollectionType || Map::class.java.isAssignableFrom(it.type)) {
                     var varName = spreadColumnNames.take(varLen).joinToString("_")
                     var subVarNameWithDot = spreadColumnNames.ArraySlice(varLen).map { it + "." }.joinToString("");
                     list.add(".set{ it." + spreadColumnNames.joinToString("_") + "_" + it.name + " to " + varName + "." + subVarNameWithDot + it.name + " }");

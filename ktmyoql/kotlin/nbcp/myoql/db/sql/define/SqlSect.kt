@@ -16,14 +16,14 @@ open abstract class SqlBaseSect @JvmOverloads constructor(
 /**
  * Select 片断
  */
-class SelectSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.Select, expression) {
+class SelectSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.SELECT, expression) {
     var columns = mutableListOf<String>()
 }
 
 /**
  * From 片断
  */
-class FromSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.From, expression) {
+class FromSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.FROM, expression) {
     var tableName = ""
     var alias = ""
 }
@@ -31,7 +31,7 @@ class FromSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSe
 /**
  * Join 片断
  */
-class JoinSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.Join, expression) {
+class JoinSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.JOIN, expression) {
     var tableName = ""
     var alias = ""
     var onWhere: WhereSqlSect? = null
@@ -40,7 +40,7 @@ class JoinSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSe
 /**
  * Where 片断
  */
-class WhereSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.Where, expression) {
+class WhereSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.WHERE, expression) {
     var column: String = "";
     var op: String = "";
     var value: String = "";
@@ -55,28 +55,28 @@ class WhereSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseS
 /**
  * GroupBy片断
  */
-class GroupBySqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.GroupBy, expression) {
+class GroupBySqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.GROUP_BY, expression) {
     var columns = mutableListOf<String>()
 }
 
 /**
  * OrderBy片断
  */
-class OrderBySqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.OrderBy, expression) {
+class OrderBySqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.ORDER_BY, expression) {
     var groups = mutableListOf<String>()
 }
 
 /**
  * Having 片断
  */
-class HavingSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.Having, expression) {
+class HavingSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.HAVING, expression) {
     var where: WhereSqlSect? = null
 }
 
 /**
  * limit 片断
  */
-class LimitSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.Limit, expression) {
+class LimitSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.LIMIT, expression) {
     var skip = ""
     var take = ""
 }
@@ -84,7 +84,7 @@ class LimitSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseS
 /**
  * offset 片断
  */
-class OffsetSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.Offset, expression) {
+class OffsetSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.OFFSET, expression) {
     var skip = ""
     var take = ""
 }
@@ -92,7 +92,7 @@ class OffsetSqlSect @JvmOverloads constructor(expression: String = "") : SqlBase
 /**
  * with 片断
  */
-class WithSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.With, expression) {
+class WithSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.WITH, expression) {
     var name = ""
     var columns = mutableListOf<String>()
     var asSelect: SelectSqlSect? = null
@@ -103,7 +103,7 @@ class WithSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSe
 /**
  * call 片断
  */
-class CallSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.Call, expression) {
+class CallSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.CALL, expression) {
     var name = ""
     var parameters = mutableListOf<String>()
 }
@@ -111,14 +111,14 @@ class CallSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSe
 /**
  * into 片断
  */
-class IntoSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.Into, expression) {
+class IntoSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.INTO, expression) {
     var name = ""
 }
 
 /**
  * insert 片断
  */
-class InsertSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.Insert, expression) {
+class InsertSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.INSERT, expression) {
     var tableName = ""
     var columns = mutableListOf<String>()
 }
@@ -135,7 +135,7 @@ class ValuesSqlSect @JvmOverloads constructor(expression: String = "") : SqlBase
 /**
  * update 片断
  */
-class UpdateSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.Update, expression) {
+class UpdateSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.UPDATE, expression) {
     var tableName = ""
     var alias = ""
 }
@@ -152,7 +152,7 @@ class SetSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSec
 /**
  * delete 片断
  */
-class DeleteSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.Delete, expression) {
+class DeleteSqlSect @JvmOverloads constructor(expression: String = "") : SqlBaseSect(SqlKeyEnum.DELETE, expression) {
     var tableName = ""
     var alias = ""
 }

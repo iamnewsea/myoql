@@ -97,7 +97,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
         var url = getUrl("_search")
 
         var requestBody = ""
-        usingScope(arrayOf(JsonStyleScopeEnum.DateUtcStyle, JsonStyleScopeEnum.Compress)) {
+        usingScope(arrayOf(JsonStyleScopeEnum.DATE_UTC_STYLE, JsonStyleScopeEnum.COMPRESS)) {
             requestBody = this.search.toString()
         }
 
@@ -183,7 +183,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
         var url = getUrl("_count")
 
         var requestBody = ""
-        usingScope(arrayOf(JsonStyleScopeEnum.DateUtcStyle, JsonStyleScopeEnum.Compress)) {
+        usingScope(arrayOf(JsonStyleScopeEnum.DATE_UTC_STYLE, JsonStyleScopeEnum.COMPRESS)) {
             requestBody = this.search.toString()
         }
 
@@ -203,7 +203,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
         var url = getUrl("_search")
 
         var requestBody = ""
-        usingScope(arrayOf(JsonStyleScopeEnum.DateUtcStyle, JsonStyleScopeEnum.Compress)) {
+        usingScope(arrayOf(JsonStyleScopeEnum.DATE_UTC_STYLE, JsonStyleScopeEnum.COMPRESS)) {
             requestBody = this.search.toString()
         }
 

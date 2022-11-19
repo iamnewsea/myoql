@@ -3,38 +3,21 @@ package nbcp.myoql.db.mongo.enums
 /**
  * https://docs.mongodb.com/manual/reference/operator/update-array/
  */
-enum class UpdateArrayOperatorEnum(val value: String = "") {
-    `$set`("$"),
-    `$setAll`("$[]"),
-    `$setWithFilter`("$[<>]"),
-    addToSet,
-    pop,
-    pull,
-    push,
-    pullAll
-}
-
-enum class UpdateArrayOperatorModifierEnum{
-    each,
-    position,
-    slice,
-    sort
-}
+enum class UpdateArrayOperatorEnum(val key:String, val value: String = "") {
+    `SET`("\$set","$"),
+    `SET_ALL`("\$setAll","\$[]"),
+    `SET_WITH_FILTER`("\$setWithFilter", "$[<>]"),
+    ADD_TO_SET("addToSet"),
+    POP("pop"),
+    PULL("pull"),
+    PUSH("push"),
+    PULL_ALL("pullAll");
 
 
-/**
- * https://docs.mongodb.com/manual/reference/operator/update-field/
- */
-enum class UpdateFieldOperatorEnum{
-    currentDate,
-    inc,
-    min,
-    max,
-    mul,
-    rename,
-    set,
-    setOnInsert,
-    unset,
-    //https://docs.mongodb.com/manual/reference/operator/update-bitwise/
-    bit
+
+    override fun toString(): String {
+        return this.key;
+    }
 }
+
+

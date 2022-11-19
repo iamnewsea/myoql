@@ -1,7 +1,6 @@
 package nbcp.base.comm
 
 import nbcp.base.TestBase
-import nbcp.base.comm.*
 import nbcp.base.db.IdName
 import nbcp.base.enums.JsonSceneScopeEnum
 import nbcp.base.enums.JsonStyleScopeEnum
@@ -27,15 +26,15 @@ class TestKtExt_Json : TestBase() {
         b.ary = arrayOf(IdName("2", "def"))
         b.isDeleted = true;
 
-        usingScope(JsonSceneScopeEnum.Web) {
+        usingScope(JsonSceneScopeEnum.WEB) {
             println(b.ToJson())
         }
-        println(b.ToJson(JsonSceneScopeEnum.Web))
+        println(b.ToJson(JsonSceneScopeEnum.WEB))
 
-        usingScope(JsonSceneScopeEnum.Db) {
+        usingScope(JsonSceneScopeEnum.DB) {
             println(b.ToJson())
         }
-        println(b.ToJson(JsonSceneScopeEnum.Db))
+        println(b.ToJson(JsonSceneScopeEnum.DB))
     }
 
     @Test
@@ -50,7 +49,7 @@ class TestKtExt_Json : TestBase() {
         result.data = listOf(b);
 
         var str = result.ToJson();
-        usingScope(JsonSceneScopeEnum.Web) {
+        usingScope(JsonSceneScopeEnum.WEB) {
             var r2 = str.FromJson<ListResult<bc>>()!!;
             println(r2.data!!.first()::class.java.name)
 
@@ -88,7 +87,7 @@ class TestKtExt_Json : TestBase() {
     @Test
     fun withNul() {
         var map = JsonMap("a" to null)
-        var e = map.ToJson(JsonStyleScopeEnum.WithNull)
+        var e = map.ToJson(JsonStyleScopeEnum.WITH_NULL)
         println(e)
     }
 

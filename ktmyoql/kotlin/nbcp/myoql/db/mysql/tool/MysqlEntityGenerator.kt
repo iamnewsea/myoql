@@ -205,7 +205,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                                 .replace('\$', '＄')
                                 .replace('#', '＃')
 
-                            var dbType = DbType.String
+                            var dbType = DbType.STRING
                             var remark = "";
 
                             if (dataType basicSame "varchar"
@@ -213,39 +213,39 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                                 || dataType basicSame "nvarchar"
                                 || dataType basicSame "nchar"
                             ) {
-                                dbType = DbType.String
+                                dbType = DbType.STRING
                             } else if (dataType basicSame "text"
                                 || dataType basicSame "mediumtext"
                                 || dataType basicSame "longtext"
                             ) {
-                                dbType = DbType.Text
+                                dbType = DbType.TEXT
                             } else if (dataType basicSame "enum") {
-                                dbType = DbType.Enum
+                                dbType = DbType.ENUM
                             } else if (dataType basicSame "json") {
-                                dbType = DbType.Json
+                                dbType = DbType.JSON
                             } else if (dataType basicSame "int") {
-                                dbType = DbType.Int
+                                dbType = DbType.INT
                             } else if (dataType basicSame "bit") {
-                                dbType = DbType.Boolean
+                                dbType = DbType.BOOLEAN
                             } else if (dataType basicSame "datetime" ||
                                 dataType basicSame "timestamp"
                             ) {
-                                dbType = DbType.DateTime
+                                dbType = DbType.DATE_TIME
                             } else if (dataType basicSame "date") {
-                                dbType = DbType.Date
+                                dbType = DbType.DATE
                             } else if (dataType basicSame "float") {
-                                dbType = DbType.Float
+                                dbType = DbType.FLOAT
                             } else if (dataType basicSame "double") {
-                                dbType = DbType.Double
+                                dbType = DbType.DOUBLE
                             } else if (dataType basicSame "long") {
-                                dbType = DbType.Long
+                                dbType = DbType.LONG
                             } else if (dataType basicSame "tinyint") {
-                                dbType = DbType.Byte
+                                dbType = DbType.BYTE
                             } else if (dataType basicSame "bigint") {
-                                dbType = DbType.Long
+                                dbType = DbType.LONG
                             } else if (dataType basicSame "decimal") {
                                 remark = "warning sql data type: ${dataType}";
-                                dbType = DbType.Double
+                                dbType = DbType.DOUBLE
                             }
 
                             var columnData = EntityDbItemFieldData()
@@ -318,7 +318,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
 
     fun getColumnDefine(
         property: Field,
-        nameType: NameMappingTypeEnum = NameMappingTypeEnum.Origin,
+        nameType: NameMappingTypeEnum = NameMappingTypeEnum.ORIGIN,
         pFieldName: String = "",
         pCn: String = ""
     ): Pair<List<String>, List<String>> {
@@ -361,7 +361,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
             }
 
             return list to checks;
-        } else if (dbType == DbType.Json || dbType == DbType.Other) {
+        } else if (dbType == DbType.JSON || dbType == DbType.OTHER) {
             //生成关系表
             if (propertyType.IsCollectionType) {
                 var item =
@@ -389,7 +389,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
      * 生成实体的 sql 代码
      */
     @JvmStatic
-    fun entity2Sql(entity: Class<*>, nameType: NameMappingTypeEnum = NameMappingTypeEnum.Origin): String {
+    fun entity2Sql(entity: Class<*>, nameType: NameMappingTypeEnum = NameMappingTypeEnum.ORIGIN): String {
         var list = mutableListOf<String>();
 
         var fields = entity.AllFields
@@ -433,7 +433,7 @@ ${checks.map { ", " + it }.joinToString("\n")}
     /**
      * 从众多唯一索引中确定唯一索引。
      */
-    fun getPk(entity: Class<*>, nameType: NameMappingTypeEnum = NameMappingTypeEnum.Origin): Set<String> {
+    fun getPk(entity: Class<*>, nameType: NameMappingTypeEnum = NameMappingTypeEnum.ORIGIN): Set<String> {
         val id = entity.AllFields.firstOrNull { field ->
             var auto = field.getAnnotation(SqlAutoIncrementKey::class.java);
             if (auto != null) {
@@ -465,7 +465,7 @@ ${checks.map { ", " + it }.joinToString("\n")}
 
     private fun getPk(
         ids: List<DbEntityIndex>,
-        nameType: NameMappingTypeEnum = NameMappingTypeEnum.Origin
+        nameType: NameMappingTypeEnum = NameMappingTypeEnum.ORIGIN
     ): Set<String> {
         return ids
             .sortedBy { it.value.size * 1000 + it.value.map { it.length }.count() }

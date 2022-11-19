@@ -35,7 +35,7 @@ object RecursionUtil {
             producer,
             { wbs, index ->
                 if (callback(wbs, index) == false) {
-                    return@execute RecursionReturnEnum.Go
+                    return@execute RecursionReturnEnum.GO
                 }
 
                 val item = wbs.last();
@@ -54,7 +54,7 @@ object RecursionUtil {
                 } else {
                     list_wbs_ids.add(item_id);
                 }
-                return@execute RecursionReturnEnum.StopSub
+                return@execute RecursionReturnEnum.STOP_SUB
             });
 
 
@@ -65,14 +65,14 @@ object RecursionUtil {
                 var item = wbs.last();
                 var item_id = idCallback(item)
                 if (list_wbs_ids.contains(item_id) == false) {
-                    return@execute RecursionReturnEnum.Remove;
+                    return@execute RecursionReturnEnum.REMOVE;
                 }
 
                 if (list_queryed_ids.contains(item_id)) {
-                    return@execute RecursionReturnEnum.StopSub;
+                    return@execute RecursionReturnEnum.STOP_SUB;
                 }
 
-                return@execute RecursionReturnEnum.Go;
+                return@execute RecursionReturnEnum.GO;
             }
         );
     }
@@ -108,10 +108,10 @@ object RecursionUtil {
             var setT = parents.union(listOf(item));
             val ret = consumer(setT, i)
 
-            if (ret == RecursionReturnEnum.StopSub)
+            if (ret == RecursionReturnEnum.STOP_SUB)
                 continue
-            else if (ret == RecursionReturnEnum.Abord) return counted;
-            else if (ret == RecursionReturnEnum.Remove) {
+            else if (ret == RecursionReturnEnum.ABORT) return counted;
+            else if (ret == RecursionReturnEnum.REMOVE) {
                 removeIndexes.add(i);
                 continue;
             }

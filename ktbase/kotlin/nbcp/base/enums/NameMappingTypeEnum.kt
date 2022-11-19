@@ -1,6 +1,5 @@
 package nbcp.base.enums
 
-import nbcp.base.db.annotation.*
 import nbcp.base.db.annotation.Cn
 import nbcp.base.utils.MyUtil
 
@@ -9,25 +8,25 @@ import nbcp.base.utils.MyUtil
  */
 enum class NameMappingTypeEnum {
     @Cn("原始值")
-    Origin,
+    ORIGIN,
 
     @Cn("小驼峰")
-    SmallCamel,
+    SMALL_CAMEL,
 
     @Cn("大驼峰")
-    BigCamel,
+    BIG_CAMEL,
 
     @Cn("连字符")
-    Kebab,
+    KEBAB,
 
     @Cn("下划线")
-    Underline;
+    UNDER_LINE;
 
     fun getResult(input: String): String {
-        if (this == SmallCamel) return MyUtil.getSmallCamelCase(input);
-        if (this == BigCamel) return MyUtil.getBigCamelCase(input);
-        if (this == Kebab) return MyUtil.getKebabCase(input);
-        if (this == Underline) return MyUtil.getUnderlineCase(input);
+        if (this == SMALL_CAMEL) return MyUtil.getSmallCamelCase(input);
+        if (this == BIG_CAMEL) return MyUtil.getBigCamelCase(input);
+        if (this == KEBAB) return MyUtil.getKebabCase(input);
+        if (this == UNDER_LINE) return MyUtil.getUnderlineCase(input);
 
         return input;
     }

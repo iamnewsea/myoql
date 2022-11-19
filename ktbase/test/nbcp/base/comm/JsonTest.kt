@@ -134,7 +134,7 @@ logging:
         var result = ResultVO(listOf(IdName("1", "abc"), IdName("2", "def")));
         var listResult = ListResult.of(listOf(result));
 
-        var v2 = usingScope(JsonSceneScopeEnum.App) {
+        var v2 = usingScope(JsonSceneScopeEnum.WEB) {
             listResult.ToJson().FromJson<ListResult<ResultVO>>()!!;
         }
         v2.data.resetListItemType(ResultVO::class.java)

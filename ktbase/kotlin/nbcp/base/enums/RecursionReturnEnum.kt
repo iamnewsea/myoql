@@ -4,10 +4,10 @@ package nbcp.base.enums
 /**
  * 递归的返回状态
  */
-enum class RecursionReturnEnum private constructor(val value: Int) {
-    None(0),
-    Go(1),
-    StopSub(2),
-    Abord(6), // 6 = 2 + 4  , Abord 包含了 StopSub
-    Remove(8);
+enum class RecursionReturnEnum(val value: Int) {
+    NONE(0),
+    GO(1),
+    STOP_SUB(2),
+    ABORT(6), // 6 = 2 + 4  , abort 包含了 StopSub
+    REMOVE(8);
 }

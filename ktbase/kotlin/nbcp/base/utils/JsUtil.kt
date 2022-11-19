@@ -130,7 +130,7 @@ object JsUtil {
 
     @JvmStatic
     fun execScript(script: String): Any? {
-        return ScriptLanguageEnum.js.execScript(script);
+        return ScriptLanguageEnum.JAVA_SCRIPT.execScript(script);
     }
 
     /**

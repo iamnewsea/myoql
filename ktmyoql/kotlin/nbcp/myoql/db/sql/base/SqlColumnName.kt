@@ -59,7 +59,7 @@ open class SqlColumnName(
         }
 
         //仅支持 数组相等。
-        if (this.dbType == DbType.Json) {
+        if (this.dbType == DbType.JSON) {
             val json_equals = this.json_equals(value.ToJson())
 
             return WhereData(
@@ -79,7 +79,7 @@ open class SqlColumnName(
         }
 
         //仅支持 数组相等。
-        if (this.dbType == DbType.Json) {
+        if (this.dbType == DbType.JSON) {
             val v_type = value::class.java
             val json_length = this.json_length()
             if (v_type.isArray) {
@@ -120,7 +120,7 @@ open class SqlColumnName(
         }
 
         //仅支持 数组相等。
-        if (this.dbType == DbType.Json) {
+        if (this.dbType == DbType.JSON) {
             val json_equals = this.json_equals(value.ToJson())
 
             return WhereData(
@@ -137,7 +137,7 @@ open class SqlColumnName(
         }
 
         //仅支持 数组相等。
-        if (this.dbType == DbType.Json) {
+        if (this.dbType == DbType.JSON) {
             val v_type = value::class.java
 
             if (v_type.isArray) {
@@ -163,7 +163,7 @@ open class SqlColumnName(
         }
 
         //仅支持 数组相等。
-        if (this.dbType == DbType.Json) {
+        if (this.dbType == DbType.JSON) {
             val v_type = value::class.java
             if (v_type.isArray) {
                 val ary = value as Array<Any?>;
@@ -189,7 +189,7 @@ open class SqlColumnName(
         }
 
         //仅支持 数组相等。
-        if (this.dbType == DbType.Json) {
+        if (this.dbType == DbType.JSON) {
             val json_contains = this.json_contains(value.ToJson())
             return WhereData("${json_contains.expression} = 1", json_contains.values)
 
@@ -204,7 +204,7 @@ open class SqlColumnName(
         }
 
         //仅支持 数组相等。
-        if (this.dbType == DbType.Json) {
+        if (this.dbType == DbType.JSON) {
             val json_contains = this.json_contains(value.ToJson())
             return WhereData("${json_contains.expression} = 0")
         }
@@ -360,7 +360,7 @@ open class SqlColumnName(
         var emptyValue = "";
         if (this.dbType.isNumberic()) {
             emptyValue = " or ${this.fullName} = 0"
-        } else if (this.dbType != DbType.Other) {
+        } else if (this.dbType != DbType.OTHER) {
             emptyValue = " or ${this.fullName} = ''";
         }
 
@@ -371,7 +371,7 @@ open class SqlColumnName(
     companion object {
         @JvmStatic
         fun of(name: String): SqlColumnName {
-            return SqlColumnName(DbType.Other, "", name)
+            return SqlColumnName(DbType.OTHER, "", name)
         }
 
         @JvmStatic

@@ -4,21 +4,21 @@ import nbcp.base.extend.IsIn
 
 
 enum class DatabaseEnum {
-    Mongo,
-    Redis,
-    Hbase,
-    ElasticSearch,
+    MONGO,
+    REDIS,
+    HBASE,
+    ELASTIC_SEARCH,
 
-    Sql,
-    Mysql,
-    Oracle,
-    Sqlite,
-    SqlServer,
-    Postgre;
+    SQL,
+    MY_SQL,
+    ORACLE,
+    SQLITE,
+    SQL_SERVER,
+    POSTGRE_SQL;
 
 
     fun isSqlType(): Boolean {
-        if (this.IsIn(Sql, Mysql, Oracle, Sqlite, SqlServer, Postgre)) {
+        if (this.IsIn(SQL, MY_SQL, ORACLE, SQLITE, SQL_SERVER, POSTGRE_SQL)) {
             return true;
         }
         return false;

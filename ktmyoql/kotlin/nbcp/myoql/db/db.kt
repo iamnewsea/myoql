@@ -69,7 +69,7 @@ object db {
             return _affectRowCount.get()
         }
         set(value) {
-            if (scopes.getLatest(MyOqlDbScopeEnum.IgnoreAffectRow) != null) {
+            if (scopes.getLatest(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW) != null) {
                 return;
             }
             _affectRowCount.set(value);
@@ -101,7 +101,7 @@ object db {
             return _executeTime.get()
         }
         set(value) {
-            if (scopes.getLatest(MyOqlDbScopeEnum.IgnoreExecuteTime) != null) {
+            if (scopes.getLatest(MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME) != null) {
                 return;
             }
             _executeTime.set(value);

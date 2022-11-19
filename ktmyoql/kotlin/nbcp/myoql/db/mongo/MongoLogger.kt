@@ -63,7 +63,7 @@ inline fun Logger.myoqlLog(
     error: Exception?, collectionName: String, op: (String) -> Boolean,
     getMsg: (() -> String)
 ) {
-    usingScope(JsonStyleScopeEnum.WithNull) {
+    usingScope(JsonStyleScopeEnum.WITH_NULL) {
         if (error != null) {
             this.error(getMsg())
             this.error(error.message, error);

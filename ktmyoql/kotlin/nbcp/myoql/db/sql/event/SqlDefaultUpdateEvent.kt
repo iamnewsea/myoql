@@ -79,7 +79,7 @@ class SqlDefaultUpdateEvent : ISqlEntityUpdate {
 
     private fun setUpdateAt(update: SqlUpdateClip<*>) {
         update.setData.removeAll { it.toString() == "createAt" }
-        if (scopes.getLatest(MyOqlDbScopeEnum.IgnoreUpdateAt) == null) {
+        if (scopes.getLatest(MyOqlDbScopeEnum.IGNORE_UPDATE_AT) == null) {
             var updateAtColumn = update.mainEntity.getColumns().getColumn("updateAt")
             if (updateAtColumn != null) {
                 update.setData.put(updateAtColumn, LocalDateTime.now())

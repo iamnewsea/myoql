@@ -26,7 +26,7 @@ class MongoDefaultUpdateEvent : IMongoEntityUpdate {
 
     private fun setUpdateAt(update: MongoBaseUpdateClip) {
         update.setData.remove("createAt")
-        if (scopes.getLatest(MyOqlDbScopeEnum.IgnoreUpdateAt) == null) {
+        if (scopes.getLatest(MyOqlDbScopeEnum.IGNORE_UPDATE_AT) == null) {
             update.setValue("updateAt", LocalDateTime.now())
         }
     }

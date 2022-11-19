@@ -3,59 +3,61 @@ package nbcp.myoql.db.mongo.enums
 /**
  * https://docs.mongodb.com/manual/reference/operator/query/
  */
-enum class QueryProjectionEnum {
-    eq,
-    gt,
-    gte,
-    `in`,
-    lt,
-    lte,
-    ne,
-    nin,
+enum class QueryProjectionEnum (val key:String) {
+    EQ("eq"),
+    GT("gt"),
+    GTE("gte"),
+    `IN`("in"),
+    LT("lt"),
+    LTE("lte"),
+    NE("ne"),
+    NIN("nin"),
     //--------------------
-    and,
-    not,
-    nor,
-    or,
+    AND("and"),
+    NOT("not"),
+    NOR("nor"),
+    OR("or"),
     //---------------------
-    exists,
-    type,
+    EXISTS("exists"),
+    TYPE("type"),
     //---------------------
-    expr,
-    jsonSchema,
-    mod,
-    regex,
-    text,
-    where,
+    EXPR("expr"),
+    JSON_SCHEMA("jsonSchema"),
+    MOD("mod"),
+    REGEX("regex"),
+    TEXT("text"),
+    WHERE("where"),
     //---------------------
-    geoIntersects,
-    geoWithin,
-    near,
-    nearSphere,
-    box,
-    center,
-    centerSphere,
-    geometry,
-    maxDistance,
-    minDistance,
-    polygon,
-    uniqueDocs,
+    GEO_INTERSECTS("geoIntersects"),
+    GEO_WITHIN("geoWithin"),
+    NEAR("near"),
+    NEAR_SPHERE("nearSphere"),
+    BOX("box"),
+    CENTER("center"),
+    CENTER_SPHERE("centerSphere"),
+    GEOMETRY("geometry"),
+    MAX_DISTANCE("maxDistance"),
+    MIN_DISTANCE("minDistance"),
+    POLYGON("polygon"),
+    UNIQUE_DOCS("uniqueDocs"),
     //---------------------
-    all,
-    elemMatch,
-    size,
+    ALL("all"),
+    ELEM_MATCH("elemMatch"),
+    SIZE("size"),
     //---------------------
-    bitsAllClear,
-    bitsAllSet,
-    bitsAnyClear,
-    bitsAnySet,
+    BITS_ALL_CLEAR("bitsAllClear"),
+    BITS_ALL_SET("bitsAllSet"),
+    BITS_ANY_CLEAR("bitsAnyClear"),
+    BITS_ANY_SET("bitsAnySet"),
     //---------------------
-    comment,
+    COMMENT("comment"),
     //---------------------
-    `$`,
-    meta,
-    slice
+    `ARRAY_FIRST_ELEMENT`("$"),
+    META("meta"),
+    SLICE("slice");
     //---------------------
     //---------------------
-
+    override fun toString(): String {
+        return this.key;
+    }
 }

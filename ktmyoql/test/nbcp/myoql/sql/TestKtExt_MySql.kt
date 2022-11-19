@@ -48,7 +48,7 @@ class TestKtExt_MySql : TestBase() {
 
     @Test
     fun test_update_spread() {
-        usingScope(LogLevelScopeEnum.debug) {
+        usingScope(LogLevelScopeEnum.DEBUG) {
             var ent = db.sqlBase.s_annex.queryById("56Fgk7UEAm0Z").toEntity()!!;
             ent.creator = IdName("2", "rr")
             db.sqlBase.s_annex.updateWithEntity(ent)

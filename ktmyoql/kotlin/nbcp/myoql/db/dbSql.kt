@@ -43,26 +43,26 @@ object dbSql {
         var conn = config.getConfig("spring.datasource.url").AsString();
 
         if (conn.startsWith("jdbc:mysql://") || conn.startsWith("jdbc:mariadb://")) {
-            return@lazy DatabaseEnum.Mysql
+            return@lazy DatabaseEnum.MY_SQL
         }
 
         if (conn.startsWith("jdbc:sqlserver://")) {
-            return@lazy DatabaseEnum.SqlServer
+            return@lazy DatabaseEnum.SQL_SERVER
         }
         if (conn.startsWith("jdbc:oracle:")) {
-            return@lazy DatabaseEnum.Oracle
+            return@lazy DatabaseEnum.ORACLE
         }
         if (conn.startsWith("jdbc:postgresql://")) {
-            return@lazy DatabaseEnum.Postgre
+            return@lazy DatabaseEnum.POSTGRE_SQL
         }
         return@lazy null;
     }
 
     @JvmStatic
     fun getSqlQuoteName(value: String): String {
-        if (sqlDatabaseType == DatabaseEnum.Mysql) {
+        if (sqlDatabaseType == DatabaseEnum.MY_SQL) {
             return "`${value}`"
-        } else if (sqlDatabaseType == DatabaseEnum.SqlServer) {
+        } else if (sqlDatabaseType == DatabaseEnum.SQL_SERVER) {
             return "[${value}]"
         } else {
             return """"${value}""""

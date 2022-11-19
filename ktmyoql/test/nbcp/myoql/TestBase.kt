@@ -43,7 +43,7 @@ open class KtMyoqlTestApplication {
 @WebAppConfiguration
 @SpringBootTest(classes = [KtMyoqlTestApplication::class])
 @TestPropertySource(locations = ["classpath:application.yml"])
-@MyLogLevel(LogLevelScopeEnum.info)
+@MyLogLevel(LogLevelScopeEnum.INFO)
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
 //@ActiveProfiles("unittest","productprofile")
 //注释 pom.xml 中的  project.build.resources.resource 中的 excludes

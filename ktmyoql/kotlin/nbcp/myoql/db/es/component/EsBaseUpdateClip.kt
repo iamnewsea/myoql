@@ -127,7 +127,7 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
         }
 
         var requestBody = "";
-        usingScope(arrayOf(JsonStyleScopeEnum.DateUtcStyle, JsonStyleScopeEnum.Compress)) {
+        usingScope(arrayOf(JsonStyleScopeEnum.DATE_UTC_STYLE, JsonStyleScopeEnum.COMPRESS)) {
             requestBody = data.map { it.ToJson() + const.line_break }.joinToString("")
         }
 
@@ -146,7 +146,7 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
             db.executeTime = LocalDateTime.now() - startAt
 //            responseBody = response.entity.content.readBytes().toString(const.utf8)
 
-            usingScope(arrayOf(MyOqlDbScopeEnum.IgnoreAffectRow, MyOqlDbScopeEnum.IgnoreExecuteTime)) {
+            usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {
                 settingResult.forEach {
                     it.first.update(this, it.second)
                 }
