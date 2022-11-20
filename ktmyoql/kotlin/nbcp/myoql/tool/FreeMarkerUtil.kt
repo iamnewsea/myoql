@@ -69,12 +69,11 @@ object FreemarkerUtil {
         all_params.put("now", LocalDateTime.now().AsString())
         all_params.put("has_value", FreemarkerHasValue())
 
-        all_params.put("k", FreemarkerKebabCase())
-        all_params.put("W", FreemarkerBigCamelCase())
-        all_params.put("w", FreemarkerSmallCamelCase())
+        all_params.put("kb", FreemarkerKebabCase())
+        all_params.put("bc", FreemarkerBigCamelCase())
+        all_params.put("sc", FreemarkerSmallCamelCase())
 
         all_params.put("is_res", FreemarkerIsRes())
-        all_params.put("is_in", FreemarkerIsIn())
         all_params.put("is_object", FreemarkerIsObject())
         all_params.put("is_type", FreemarkerIsType())
 

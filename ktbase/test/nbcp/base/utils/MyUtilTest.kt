@@ -59,8 +59,8 @@ TomcatWebServer:8002 -- nacos: saas-dev.nancal.com:8848(yuxh) -- nacos-config:no
 
     @Test
     fun testformat() {
-        val ret = MyUtil.formatTemplateJson("dbr.\${group|w}.\${entity}.queryById(id)",
-            StringMap("group" to "wx", "entity" to "user"), { key, value, func, param ->
+        val ret = MyUtil.formatTemplateJson("dbr.\${group|-}.\${entity}.queryById(id)",
+            StringMap("group" to "sysWx", "entity" to "user"), { key, value, func, param ->
                 ""
             })
 

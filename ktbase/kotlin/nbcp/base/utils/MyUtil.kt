@@ -953,10 +953,11 @@ object MyUtil {
 
         var map: StringKeyMap<((String) -> String)> = StringKeyMap()
         map.put("-", { getKebabCase(it) })
-        map.put("W", { getBigCamelCase(it) })
-        map.put("w", { getSmallCamelCase(it) })
-        map.put("U", { it.uppercase() })
-        map.put("u", { it.lowercase() })
+        map.put("_", { getUnderlineCase(it) })
+        map.put("bc", { getBigCamelCase(it) })
+        map.put("sc", { getSmallCamelCase(it) })
+        map.put("u", { it.uppercase() })
+        map.put("l", { it.lowercase() })
 
         var map2: StringKeyMap<((String).(String) -> String)> = StringKeyMap()
         map2.put("trim", { trim(this, it) })
