@@ -6,7 +6,7 @@ import nbcp.myoql.db.es.component.EsBaseMetaEntity
 import nbcp.myoql.db.mongo.component.MongoBaseMetaCollection
 import nbcp.myoql.db.sql.base.SqlBaseMetaTable
 
-object UserCodeGenerator {
+object CrudCodeGeneratorUtil {
     /**
      * 生成基础的CRUD接口
      */
@@ -53,7 +53,7 @@ object UserCodeGenerator {
     fun genVueCard(entityClass: Class<*>): String {
         return CodeGeneratorHelper.proc(
             "/vue-template/vue_card_prop_template.ftl",
-            CodeGeneratorHelper.CodeTemplateData(
+            CrudCodeTemplateData(
                 "",
                 entityClass,
                 "",
@@ -77,7 +77,7 @@ object UserCodeGenerator {
 
         return CodeGeneratorHelper.proc(
             fileName,
-            CodeGeneratorHelper.CodeTemplateData(
+            CrudCodeTemplateData(
                 group,
                 entityClass,
                 metaEntity.tableName,

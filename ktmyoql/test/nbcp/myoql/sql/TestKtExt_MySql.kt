@@ -14,7 +14,7 @@ import nbcp.myoql.db.sql.component.WhereData
 import nbcp.myoql.db.sql.component.doInsert
 import nbcp.myoql.db.sql.component.updateWithEntity
 import nbcp.myoql.db.sql.entity.s_annex
-import nbcp.myoql.tool.UserCodeGenerator
+import nbcp.myoql.tool.CrudCodeGeneratorUtil
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.FileWriter
@@ -94,7 +94,7 @@ class TestKtExt_MySql : TestBase() {
 
     @Test
     fun test_gen() {
-        val file = UserCodeGenerator.genVueCard("base", db.sqlBase.s_annex);
+        val file = CrudCodeGeneratorUtil.genVueCard("base", db.sqlBase.s_annex);
 
         println(file)
     }

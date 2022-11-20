@@ -2,7 +2,6 @@ package nbcp.myoql.tool
 
 import nbcp.base.comm.JsonMap
 import nbcp.base.db.annotation.*
-import nbcp.base.db.annotation.*
 import nbcp.base.extend.*
 import nbcp.base.utils.CnAnnotationUtil
 import nbcp.base.utils.MyUtil
@@ -11,39 +10,10 @@ import java.lang.reflect.ParameterizedType
 import nbcp.myoql.tool.freemarker.*
 
 object CodeGeneratorHelper {
-    @JvmStatic
-    fun IsListType(field: Field, clazz: String): Boolean {
-//        var clazz = T::class.java;
-        return (
-                field.type.IsCollectionType &&
-                        (field.genericType as ParameterizedType).GetActualClass(
-                            0
-                        ).IsType(clazz)
 
-                ) ||
-                (field.type.isArray && field.type.componentType.javaClass.IsType(clazz))
-
-    }
-
-    /**
-     * 是否是 List枚举
-     */
-    @JvmStatic
-    fun IsListEnum(field: Field): Boolean {
-        return (field.type.IsCollectionType && (field.genericType as ParameterizedType).GetActualClass(0).isEnum) ||
-                (field.type.isArray && field.type.componentType.javaClass.isEnum)
-    }
-
-
-    class CodeTemplateData(
-        var group: String,
-        var entityClass: Class<*>,
-        var tableName: String,
-        var idKey: String
-    )
 
     @JvmStatic
-    fun proc(fileName: String, jsonValue: CodeTemplateData): String {
+    fun proc(fileName: String, jsonValue: CrudCodeTemplateData): String {
         var entityClass = jsonValue.entityClass
         var group = jsonValue.group
         var idKey = jsonValue.idKey

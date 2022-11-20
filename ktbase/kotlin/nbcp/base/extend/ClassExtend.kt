@@ -129,6 +129,32 @@ val Class<*>.IsCollectionType: Boolean
         return Collection::class.java.isAssignableFrom(this)
     }
 
+
+fun Field.IsCollectionType(type: String): Boolean {
+    var field = this;
+    return field.type.IsCollectionType &&
+            (field.genericType as ParameterizedType).GetActualClass(
+                0
+            ).IsType(type)
+
+}
+
+/**
+ * 是否是 List枚举
+ */
+val Field.IsCollectionEnum : Boolean
+    get() {
+        val field = this;
+        return (field.type.IsCollectionType && (field.genericType as ParameterizedType).GetActualClass(0).isEnum) ||
+                (field.type.isArray && field.type.componentType.javaClass.isEnum)
+    }
+
+
+fun Field.IsArrayType(type: String): Boolean {
+    var field = this;
+    return field.type.isArray && field.type.componentType.javaClass.IsType(type)
+}
+
 /**
  * 类型是否是 Map
  */

@@ -116,9 +116,9 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
          */
         @JvmStatic
         @JvmOverloads
-        fun containsBean(name: String, clazz: Class<*>, ignoreCase: Boolean = false): Boolean {
-            if (name.isEmpty()) return containsBean(clazz)
-            return context.getBeanNamesForType(clazz).firstOrNull { it.equals(name, ignoreCase) } != null
+        fun containsBean(name: String, type: Class<*>, ignoreCase: Boolean = false): Boolean {
+            if (name.isEmpty()) return containsBean(type)
+            return context.getBeanNamesForType(type).firstOrNull { it.equals(name, ignoreCase) } != null
         }
 
         @JvmStatic
