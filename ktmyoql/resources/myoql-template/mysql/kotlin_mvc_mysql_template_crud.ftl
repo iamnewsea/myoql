@@ -24,8 +24,8 @@ class ${entity}AutoController {
     @ApiOperation("列表")
     @PostMapping("/list")
     fun list(
-        ${idKey}: ${kotlin_type(idKey)}, //当列表列新一条后，刷新时使用
-<#if has("name")>
+        ${idKey}: ${kotlin_type(entity,idKey)}, //当列表列新一条后，刷新时使用
+<#if hasField(entity,"name")>
         name: String,
 </#if>
         @Require skip: Int,
@@ -38,7 +38,7 @@ class ${entity}AutoController {
                 if (${idKey}.HasValue) {
                     this.where{it.${idKey} match ${idKey}}
                 }
-<#if has("name")>
+<#if hasField(entity,"name")>
                 if (name.HasValue) {
                     this.where { it.name like name }
                 }
@@ -54,7 +54,7 @@ class ${entity}AutoController {
     @ApiOperation("详情")
     @PostMapping("/detail/{id}")
     fun detail(
-        @Require ${idKey}: ${kotlin_type(idKey)},
+        @Require ${idKey}: ${kotlin_type(entity,idKey)},
         request: HttpServletRequest
     ): ApiResult<${entity}> {
         dbr.${w(group)}.${entity}.queryBy${W(idKey)}(${idKey})
@@ -73,7 +73,7 @@ class ${entity}AutoController {
     fun save(
         @JsonModel entity: ${entity},
         request: HttpServletRequest
-    ): ApiResult<${kotlin_type(idKey)}> {
+    ): ApiResult<${kotlin_type(entity,idKey)}> {
         //鉴权
         var userId = request.UserId
 
@@ -94,12 +94,12 @@ class ${entity}AutoController {
                 return ApiResult.of(entity.${idKey})
             }
     }
-<#if has("status")>
+<#if hasField(entity,"status")>
 
     @ApiOperation("更新状态，更新一个字段")
     @PostMapping("/set-status")
     fun set(
-        @Require ${idKey}: ${kotlin_type(idKey)},
+        @Require ${idKey}: ${kotlin_type(entity,idKey)},
         @Require status: ${status_enum_class},
         request: HttpServletRequest
     ): JsonResult {
@@ -122,7 +122,7 @@ class ${entity}AutoController {
     @ApiOperation("删除")
     @PostMapping("/delete/{id}")
     fun delete(
-        @Require ${idKey}: ${kotlin_type(idKey)},
+        @Require ${idKey}: ${kotlin_type(entity,idKey)},
         request: HttpServletRequest
     ): JsonResult {
         //鉴权
@@ -132,7 +132,7 @@ class ${entity}AutoController {
         if (entity == null) {
             return JsonResult.error("找不到数据")
         }
-<#if has_dustbin()>
+<#if has_dustbin(entity)>
         //实体上配置了垃圾箱功能，物理删除后会自动移到垃圾箱。
 <#else>
         //实体上没有配置垃圾箱功能，物理删除后会丢失数据！

@@ -42,7 +42,7 @@
 </#if>
 </#list>
         <template #query="scope">
-<#if has("name")>
+<#if hasField(entity,"name")>
         <kv label="名称">
             <el-input v-model="scope.query.name"></el-input>
         </kv>

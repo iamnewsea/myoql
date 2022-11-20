@@ -5,8 +5,6 @@ import nbcp.base.db.annotation.*
 import nbcp.base.extend.*
 import nbcp.base.utils.CnAnnotationUtil
 import nbcp.base.utils.MyUtil
-import java.lang.reflect.Field
-import java.lang.reflect.ParameterizedType
 import nbcp.myoql.tool.freemarker.*
 
 object CodeGeneratorHelper {
@@ -57,7 +55,7 @@ object CodeGeneratorHelper {
             "idKey" to idKey,
 
             "kotlin_type" to FreemarkerGetKotlinType(),
-            "has" to FreemarkerHas(),
+            "hasField" to FreemarkerHasField(),
             "has_dustbin" to FreemarkerHasDustbin()
         )
 

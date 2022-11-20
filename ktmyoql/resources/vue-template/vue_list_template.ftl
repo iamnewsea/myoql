@@ -42,7 +42,7 @@
 </#list>
             <el-table-column label="操作" align="center">
                 <template v-slot="scope">
-                    <#if has("status")>
+                    <#if hasField(entity,"status")>
                     <el-button round @click="set_click(scope.row)" size="small">
                         设置状态
                     </el-button>
@@ -53,7 +53,7 @@
                 </template>
             </el-table-column>
             <template #query="scope">
-<#if has("name")>
+<#if hasField(entity,"name")>
                 <kv label="名称">
                     <el-input v-model="scope.query.name"></el-input>
                 </kv>
@@ -126,7 +126,7 @@ export default {
 
             let res = await this.$http.post("${url}/delete/" + rowId)
             this.loadData();
-        }<#if has("status")>,
+        }<#if hasField(entity,"status")>,
         set_click(row) {
             //设置事件
             let rowId = row.id;

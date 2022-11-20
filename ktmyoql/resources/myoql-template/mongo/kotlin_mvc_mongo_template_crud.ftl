@@ -26,7 +26,7 @@ class ${entity}AutoController {
     @PostMapping("/list")
     fun list(
         id: String, //当列表列新一条后，刷新时使用
-<#if has("name")>
+<#if hasField(entity,"name")>
         name: String,
 </#if>
         @Require skip: Int,
@@ -39,7 +39,7 @@ class ${entity}AutoController {
                 if (id.HasValue) {
                     this.where { it.id match id }
                 }
-<#if has("name")>
+<#if hasField(entity,"name")>
                 if (name.HasValue) {
                     this.where { it.name match_like name }
                 }
@@ -95,7 +95,7 @@ class ${entity}AutoController {
                 return ApiResult.of(entity.id)
             }
     }
-<#if has("status")>
+<#if hasField(entity,"status")>
 
     @ApiOperation("更新状态，更新一个字段")
     @PostMapping("/set-status")

@@ -6,17 +6,16 @@ import nbcp.base.comm.*
 import nbcp.base.db.*
 import nbcp.base.enums.*
 import nbcp.base.extend.*
-import nbcp.base.scope.ContextMapScope
 import nbcp.base.utils.*
 import nbcp.myoql.db.*
 import nbcp.myoql.db.comm.*
 import nbcp.myoql.db.enums.*
+import nbcp.myoql.tool.freemarker.*
 import java.io.IOException
 import java.io.StringReader
 import java.io.StringWriter
 import java.time.LocalDateTime
 import java.util.*
-import nbcp.myoql.tool.freemarker.*
 
 object FreemarkerUtil {
     /**
@@ -102,9 +101,10 @@ object FreemarkerUtil {
         configCallback?.invoke(config);
 
         val template = Template("template", StringReader(content), config, "utf-8")
-        usingScope(ContextMapScope(params)) {
-            return escapeString(processTemplate(template, params))
-        }
+//        usingScope(ContextMapScope(params)) {
+//
+//        }
+        return escapeString(processTemplate(template, params))
     }
 
     /**
@@ -128,8 +128,9 @@ object FreemarkerUtil {
 
         val template: Template = config.getTemplate(templateName)
 
-        usingScope(ContextMapScope(params)) {
-            return escapeString(processTemplate(template, params))
-        }
+//        usingScope(ContextMapScope(params)) {
+//
+//        }
+        return escapeString(processTemplate(template, params))
     }
 }

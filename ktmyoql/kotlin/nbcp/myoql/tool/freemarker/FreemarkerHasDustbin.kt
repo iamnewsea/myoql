@@ -1,7 +1,6 @@
 package nbcp.myoql.tool.freemarker
 
 import nbcp.base.extend.scopes
-import nbcp.base.scope.ContextMapScope
 import nbcp.myoql.db.comm.RemoveToSysDustbin
 
 
@@ -10,8 +9,8 @@ import nbcp.myoql.db.comm.RemoveToSysDustbin
  */
 class FreemarkerHasDustbin : BaseMethodModelFreemarker() {
     override fun exec(list: MutableList<Any?>): Any {
-        return (scopes.getLatest<ContextMapScope>()!!.value
-            .get("entity_type") as Class<*>)
+        val entity = getFreemarkerParameter(list[0])
+        return entity.javaClass
             .getAnnotation(RemoveToSysDustbin::class.java) != null
     }
 }
