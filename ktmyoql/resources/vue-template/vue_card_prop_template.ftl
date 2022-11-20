@@ -46,7 +46,7 @@
                     </kv>
     <#elseif isRes(field,"IdName")>
                     <kv label="${fieldCn(field)}">
-                        <ref-${k(field.getName())} v-model="info.${field.getName()}"></ref-${k(field.getName())}>
+                        <ref-${kb(field.getName())} v-model="info.${field.getName()}"></ref-${kb(field.getName())}>
                     </kv>
     <#elseif isRes(field,"boolean")>
                     <kv label="${fieldCn(field)}">
@@ -105,7 +105,7 @@ import Ref${W
 </#list>
 export default {
     components: {<#list fields as field><#if field.getName() == "creator" || field.getName() == "createBy" || field.getName() == "updater" || field.getName() == "updateBy"><#elseif isRes(field,"IdName")>
-        "ref-${k(field.getName())}": Ref${W(field.getName())},
+        "ref-${kb(field.getName())}": Ref${W(field.getName())},
 </#if></#list>},
     data() {
         return {

@@ -33,7 +33,7 @@ class ${entity}AutoController {
         request: HttpServletRequest
     ): ListResult<${entity}> {
 
-        mor.${sc(group)}.${entityField}.query()
+        mor.${sc(group)}.${sc(entity)}.query()
             .apply {
                 if (id.HasValue) {
                     this.where { it.id match id }
@@ -57,7 +57,7 @@ class ${entity}AutoController {
         @Require id: String,
         request: HttpServletRequest
     ): ApiResult<${entity}> {
-        mor.${sc(group)}.${entityField}.queryById(id)
+        mor.${sc(group)}.${sc(entity)}.queryById(id)
             .toEntity()
             .apply {
                 if (this == null) {
@@ -77,7 +77,7 @@ class ${entity}AutoController {
         //鉴权
         var userId = request.UserId
 
-        mor.${sc(group)}.${entityField}.updateWithEntity(entity)
+        mor.${sc(group)}.${sc(entity)}.updateWithEntity(entity)
             .withRequestParams()
             .run {
                 if (entity.id.HasValue) {
@@ -106,7 +106,7 @@ class ${entity}AutoController {
         //鉴权
         var userId = request.UserId
 
-        mor.${sc(group)}.${entityField}.updateById(id)
+        mor.${sc(group)}.${sc(entity)}.updateById(id)
             .set { it.status to status }
             .exec()
             .apply {
@@ -128,12 +128,12 @@ class ${entity}AutoController {
         //鉴权
         var userId = request.UserId
 
-        var entity = mor.${sc(group)}.${entityField}.queryById(id).toEntity()
+        var entity = mor.${sc(group)}.${sc(entity)}.queryById(id).toEntity()
         if (entity == null) {
             return JsonResult.error("找不到数据")
         }
 
-        mor.${sc(group)}.${entityField}.deleteById(id)
+        mor.${sc(group)}.${sc(entity)}.deleteById(id)
             .exec()
             .apply {
                 if (this == 0) {

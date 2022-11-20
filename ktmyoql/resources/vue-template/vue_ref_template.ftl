@@ -58,7 +58,7 @@
  * Created by CodeGenerator at ${now}
  */
 export default {
-    name: "ref-${k(entity)}",
+    name: "ref-${kb(entity)}",
     props: {
         readOnly: {type: Boolean, default: false},
         multi: {type: Boolean, default: false}, //多选
