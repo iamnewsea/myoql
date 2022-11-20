@@ -1,10 +1,18 @@
 package nbcp.myoql.tool
 
+import nbcp.base.comm.JsonMap
+import nbcp.base.extend.AllFields
 import nbcp.base.extend.AsString
+import nbcp.base.extend.kotlinTypeName
+import nbcp.base.utils.CnAnnotationUtil
+import nbcp.base.utils.MyUtil
 import nbcp.myoql.db.comm.BaseMetaData
 import nbcp.myoql.db.es.component.EsBaseMetaEntity
 import nbcp.myoql.db.mongo.component.MongoBaseMetaCollection
 import nbcp.myoql.db.sql.base.SqlBaseMetaTable
+import nbcp.myoql.tool.freemarker.FreemarkerGetKotlinType
+import nbcp.myoql.tool.freemarker.FreemarkerHasDustbin
+import nbcp.myoql.tool.freemarker.FreemarkerHasField
 
 object CrudCodeGeneratorUtil {
     /**
@@ -51,7 +59,7 @@ object CrudCodeGeneratorUtil {
 
     @JvmStatic
     fun genVueCard(entityClass: Class<*>): String {
-        return CodeGeneratorHelper.proc(
+        return proc(
             "/vue-template/vue_card_prop_template.ftl",
             CrudCodeTemplateData(
                 "",
@@ -60,6 +68,12 @@ object CrudCodeGeneratorUtil {
                 ""
             )
         )
+    }
+
+
+    @JvmStatic
+    fun proc(fileName: String, jsonValue: CrudCodeTemplateData): String {
+        return FreemarkerUtil.process(fileName, jsonValue)
     }
 
     private fun gen(group: String, metaEntity: BaseMetaData<out Any>, fileName: String): String {
@@ -75,7 +89,7 @@ object CrudCodeGeneratorUtil {
             idKey = "id"
         }
 
-        return CodeGeneratorHelper.proc(
+        return proc(
             fileName,
             CrudCodeTemplateData(
                 group,

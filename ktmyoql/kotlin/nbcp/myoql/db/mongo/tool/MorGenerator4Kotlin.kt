@@ -11,7 +11,7 @@ import nbcp.base.utils.KotlinCoderUtil
 import nbcp.base.utils.MyUtil
 import nbcp.myoql.db.comm.VarDatabase
 import nbcp.myoql.db.comm.VarTable
-import nbcp.myoql.tool.CodeGeneratorHelper
+import nbcp.myoql.tool.FreemarkerUtil
 import java.io.File
 import java.io.FileWriter
 import java.lang.reflect.Field
@@ -525,7 +525,7 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
 
 
 
-        uks.addAll(CodeGeneratorHelper.getEntityUniqueIndexesDefine(entType))
+        uks.addAll(FreemarkerUtil.getEntityUniqueIndexesDefine(entType))
 
 
         uks.forEach { uk ->

@@ -4,6 +4,7 @@ import freemarker.cache.ClassTemplateLoader
 import freemarker.template.*
 import nbcp.base.comm.*
 import nbcp.base.db.*
+import nbcp.base.db.annotation.DbEntityIndex
 import nbcp.base.enums.*
 import nbcp.base.extend.*
 import nbcp.base.utils.*
@@ -59,33 +60,15 @@ object FreemarkerUtil {
      * @throws IOException
      * @throws TemplateException
      */
-    private fun processTemplate(template: Template, params: Map<String, Any?>): String {
+    private fun processTemplate(template: Template, params: BaseFreemarkerModel): String {
         val result = StringWriter()
-
-        var all_params = JsonMap()
-        all_params.putAll(params)
-
-        all_params.put("now", LocalDateTime.now().AsString())
-        all_params.put("has_value", FreemarkerHasValue())
-
-        all_params.put("kb", FreemarkerKebabCase())
-        all_params.put("bc", FreemarkerBigCamelCase())
-        all_params.put("sc", FreemarkerSmallCamelCase())
-
-        all_params.put("is_res", FreemarkerIsRes())
-        all_params.put("is_object", FreemarkerIsObject())
-        all_params.put("is_type", FreemarkerIsType())
-
-        all_params.put("all_fields", FreemarkerAllField())
-        all_params.put("field_is_enum_list", FreemarkerFieldIsEnumList())
-        all_params.put("field_cn", FreemarkerFieldCn())
-        all_params.put("field_value", FreemarkerFieldValue())
-        all_params.put("field_is_list", FreemarkerIsList())
-        all_params.put("field_list_type", FreemarkerFieldListType())
-
-        template.process(all_params, result)
+        template.process(params, result)
         return result.toString()
     }
+
+
+
+
 
     /**
      * 按模板的内容执行
@@ -93,7 +76,7 @@ object FreemarkerUtil {
     @JvmStatic
     fun processContent(
         content: String,
-        params: JsonMap,
+        params: BaseFreemarkerModel,
         configCallback: ((Configuration) -> Unit)? = null
     ): String {
         val config = getFreemarkerConfig();
@@ -119,7 +102,7 @@ object FreemarkerUtil {
     @JvmStatic
     fun process(
         templateName: String,
-        params: JsonMap,
+        params: BaseFreemarkerModel,
         configCallback: ((Configuration) -> Unit)? = null
     ): String {
         val config = getFreemarkerConfig();
@@ -132,5 +115,32 @@ object FreemarkerUtil {
 //
 //        }
         return escapeString(processTemplate(template, params))
+    }
+
+
+
+    /**
+     * 查找所有唯一索引，每组用逗号分隔。
+     */
+    @JvmOverloads
+    @JvmStatic
+    fun getEntityUniqueIndexesDefine(
+        entType: Class<*>,
+        procedClasses: MutableSet<String> = mutableSetOf()
+    ): Set<String> {
+        procedClasses.add(entType.name)
+
+        val uks = mutableSetOf<String>()
+
+        entType.getAnnotationsByType(DbEntityIndex::class.java).forEach {
+            if (it.unique) {
+                uks.add(it.value.joinToString(","))
+            }
+        }
+
+        if (entType.superclass != null && !procedClasses.contains(entType.superclass.name)) {
+            uks.addAll(getEntityUniqueIndexesDefine(entType.superclass, procedClasses))
+        }
+        return uks;
     }
 }

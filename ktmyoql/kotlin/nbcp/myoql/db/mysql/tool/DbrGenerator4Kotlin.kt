@@ -15,7 +15,7 @@ import nbcp.myoql.db.sql.annotation.SqlSpreadColumn
 import nbcp.myoql.db.sql.base.SqlSpreadColumnData
 import nbcp.myoql.db.sql.define.FkDefine
 import nbcp.myoql.db.sql.enums.DbType
-import nbcp.myoql.tool.CodeGeneratorHelper
+import nbcp.myoql.tool.FreemarkerUtil
 import java.io.File
 import java.io.FileWriter
 import java.lang.reflect.ParameterizedType
@@ -516,7 +516,7 @@ ${idMethods.joinToString("\n")}
             }
 
 
-        ret.uks.addAll(CodeGeneratorHelper.getEntityUniqueIndexesDefine(entType))
+        ret.uks.addAll(FreemarkerUtil.getEntityUniqueIndexesDefine(entType))
 
         return ret;
     }

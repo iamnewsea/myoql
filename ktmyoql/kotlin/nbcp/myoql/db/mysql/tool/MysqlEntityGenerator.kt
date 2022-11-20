@@ -14,6 +14,7 @@ import nbcp.myoql.db.sql.base.*
 import nbcp.myoql.db.sql.component.RawQuerySqlClip
 import nbcp.myoql.db.sql.enums.DbType
 import nbcp.myoql.tool.FreemarkerUtil
+import nbcp.myoql.tool.GroupEntitiesCodeTemplateData
 import java.lang.reflect.Field
 import java.time.LocalDateTime
 import java.util.*
@@ -55,11 +56,13 @@ object MysqlEntityGenerator {
                     var group = it.key
                     var entitys = it.value
 
-                    var map = JsonMap(
-                        "entitys" to entitys
-                    )
+//                    var map = JsonMap(
+//                        "entitys" to entitys
+//                    )
 
-                    var code = FreemarkerUtil.process("/markdown-template/mysql_markdown.ftl", map);
+                    var groupEntitys = GroupEntitiesCodeTemplateData(group, entitys);
+
+                    var code = FreemarkerUtil.process("/markdown-template/mysql_markdown.ftl", groupEntitys);
                     ret.add(IdName(group, code));
                 }
 
@@ -79,11 +82,13 @@ object MysqlEntityGenerator {
                     var group = it.key
                     var entitys = it.value
 
-                    var map = JsonMap(
-                        "entitys" to entitys
-                    )
+//                    var map = JsonMap(
+//                        "entitys" to entitys
+//                    )
 
-                    var code = FreemarkerUtil.process("/myoql-template/mysql/mysql_myoql_entity.ftl", map);
+                    var groupEntites = GroupEntitiesCodeTemplateData(group, entitys);
+
+                    var code = FreemarkerUtil.process("/myoql-template/mysql/mysql_myoql_entity.ftl", groupEntites);
                     ret.add(IdName(group, code));
                 }
 

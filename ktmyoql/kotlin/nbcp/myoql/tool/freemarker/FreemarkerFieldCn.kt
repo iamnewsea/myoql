@@ -2,7 +2,6 @@ package nbcp.myoql.tool.freemarker
 
 import nbcp.base.extend.AsString
 import nbcp.base.utils.CnAnnotationUtil
-import nbcp.myoql.tool.CodeGeneratorHelper
 import java.lang.reflect.Field
 
 class FreemarkerFieldCn : BaseMethodModelFreemarker() {
@@ -10,7 +9,7 @@ class FreemarkerFieldCn : BaseMethodModelFreemarker() {
         var paramValue = getFreemarkerParameter(list[0]);
 
         if (paramValue is Field) {
-            return CnAnnotationUtil.getComment(paramValue).AsString(paramValue.name)
+            return CnAnnotationUtil.getCnValue(paramValue).AsString(paramValue.name)
         }
         throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
     }

@@ -1,4 +1,4 @@
-package @pkg@.mvc.${w(group)}
+package @pkg@.mvc.${sc(group)}
 
 import io.swagger.annotations.*
 import org.springframework.web.bind.annotation.*
@@ -33,7 +33,7 @@ class ${entity}AutoController {
         request: HttpServletRequest
     ): ListResult<${entity}> {
 
-        dbr.${w(group)}.${entity}.query()
+        dbr.${sc(group)}.${entity}.query()
             .apply {
                 if (${idKey}.HasValue) {
                     this.where{it.${idKey} match ${idKey}}
@@ -57,7 +57,7 @@ class ${entity}AutoController {
         @Require ${idKey}: ${kotlin_type(entity,idKey)},
         request: HttpServletRequest
     ): ApiResult<${entity}> {
-        dbr.${w(group)}.${entity}.queryBy${W(idKey)}(${idKey})
+        dbr.${sc(group)}.${entity}.queryBy${W(idKey)}(${idKey})
             .toEntity()
             .apply {
                 if (this == null) {
@@ -77,7 +77,7 @@ class ${entity}AutoController {
         //鉴权
         var userId = request.UserId
 
-        dbr.${w(group)}.${entity}.updateWithEntity(entity)
+        dbr.${sc(group)}.${entity}.updateWithEntity(entity)
             .withColumns(request.requestParameterKeys)
             .run {
                 if (entity.${idKey}.HasValue) {
@@ -106,7 +106,7 @@ class ${entity}AutoController {
         //鉴权
         var userId = request.UserId
 
-        dbr.${w(group)}.${entity}.updateBy${W(idKey)}(${idKey})
+        dbr.${sc(group)}.${entity}.updateBy${W(idKey)}(${idKey})
             .set { it.status to status }
             .exec()
             .apply {
@@ -128,7 +128,7 @@ class ${entity}AutoController {
         //鉴权
         var userId = request.UserId
 
-        var entity = dbr.${w(group)}.${entity}.queryBy${W(idKey)}(${idKey}).toEntity()
+        var entity = dbr.${sc(group)}.${entity}.queryBy${W(idKey)}(${idKey}).toEntity()
         if (entity == null) {
             return JsonResult.error("找不到数据")
         }
@@ -137,7 +137,7 @@ class ${entity}AutoController {
 <#else>
         //实体上没有配置垃圾箱功能，物理删除后会丢失数据！
 </#if>
-        dbr.${w(group)}.${entity}.deleteBy${W(idKey)}(${idKey})
+        dbr.${sc(group)}.${entity}.deleteBy${W(idKey)}(${idKey})
             .exec()
             .apply {
                 if (this == 0) {

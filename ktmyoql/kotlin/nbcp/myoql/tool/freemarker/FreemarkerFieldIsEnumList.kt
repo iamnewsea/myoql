@@ -1,7 +1,6 @@
 package nbcp.myoql.tool.freemarker
 
 import nbcp.base.extend.*
-import nbcp.myoql.tool.CodeGeneratorHelper
 import java.lang.reflect.Field
 
 /**

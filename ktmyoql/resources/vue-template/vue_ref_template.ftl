@@ -22,23 +22,23 @@
 <#elseif field.getName() == "createAt">
 <#elseif field.getName() == "updateAt">
 <#elseif field.getName() == "name">
-        <el-table-column label="${field_cn(field)}" align="center">
+        <el-table-column label="${fieldCn(field)}" align="center">
             <template v-slot="scope">
                 {{ scope.row.name }}
             </template>
         </el-table-column>
-<#elseif is_res(field)>
-        <el-table-column align="center" label="${field_cn(field)}" prop="${field.getName()}_res"></el-table-column>
-<#elseif is_type(field,"IdName")>
-        <el-table-column align="center" label="${field_cn(field)}" prop="${field.getName()}.name"></el-table-column>
-<#elseif is_type(field,"IdUrl")>
-        <el-table-column label="${field_cn(field)}" align="center">
+<#elseif isRes(field)>
+        <el-table-column align="center" label="${fieldCn(field)}" prop="${field.getName()}_res"></el-table-column>
+<#elseif isRes(field,"IdName")>
+        <el-table-column align="center" label="${fieldCn(field)}" prop="${field.getName()}.name"></el-table-column>
+<#elseif isRes(field,"IdUrl")>
+        <el-table-column label="${fieldCn(field)}" align="center">
             <template v-slot="scope">
                 <img :src="scope.row.url" />
             </template>
         </el-table-column>
 <#else>
-        <el-table-column align="center" label="${field_cn(field)}" prop="${field.getName()}"></el-table-column>
+        <el-table-column align="center" label="${fieldCn(field)}" prop="${field.getName()}"></el-table-column>
 </#if>
 </#list>
         <template #query="scope">
@@ -74,8 +74,8 @@ export default {
 <#list fields as field>
 <#if field.getType().isEnum()>
                 ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
-<#elseif field_is_enum_list(field)>
-                ${field_list_type(field)}: jv.enum.${field_list_type(field)}.getData(),
+<#elseif fieldIsEnumList(field)>
+                ${fieldListType(field)}: jv.enum.${fieldListType(field)}.getData(),
 </#if>
 </#list>
       }
@@ -100,8 +100,8 @@ export default {
 <#list fields as field>
 <#if field.getType().isEnum()>
                     jv.enum.${field.getType().getSimpleName()}.fillRes(it, "${field.getName()}");
-<#elseif field_is_enum_list(field)>
-                    jv.enum.${field_list_type(field)}.fillRes(it, "${field.getName()}");
+<#elseif fieldIsEnumList(field)>
+                    jv.enum.${fieldListType(field)}.fillRes(it, "${field.getName()}");
 </#if>
 </#list>
         });

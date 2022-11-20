@@ -8,7 +8,7 @@ import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.CnAnnotationUtil
 import nbcp.base.utils.KotlinCoderUtil
 import nbcp.base.utils.MyUtil
-import nbcp.myoql.tool.CodeGeneratorHelper
+import nbcp.myoql.tool.FreemarkerUtil
 import java.io.File
 import java.io.FileWriter
 import java.lang.reflect.Field
@@ -415,7 +415,7 @@ fun ${entityVarName}(collectionName:String)=${entityTypeName}(collectionName);""
         //每一项是 用逗号分隔的主键组合
         var uks = mutableListOf<String>();
 
-        uks.addAll(CodeGeneratorHelper.getEntityUniqueIndexesDefine(entType))
+        uks.addAll(FreemarkerUtil.getEntityUniqueIndexesDefine(entType))
 
         uks.forEach { uk ->
             var keys = uk.split(",")
