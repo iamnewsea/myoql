@@ -84,7 +84,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
      * 核心功能，查询列表，原始数据对象是 Document
      */
     @JvmOverloads
-    fun <R> toList(clazz: Class<R>, mapFunc: ((Map<String, Any?>) -> Unit)? = null): MutableList<R> {
+    fun <R> toList(type: Class<R>, mapFunc: ((Map<String, Any?>) -> Unit)? = null): MutableList<R> {
         var settingResult = db.es.esEvents.onQuering(this)
         if (settingResult.any { it.second.result == false }) {
             return mutableListOf();
@@ -136,19 +136,19 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
 //
 //                ret.add(MyUtil.getValueByWbsPath(it, *lastKey.split(".").toTypedArray()).AsString() as R)
 //            } else
-            if (clazz.IsSimpleType()) {
+            if (type.IsSimpleType()) {
                 if (lastKey.isEmpty()) {
                     lastKey = it.keys.last()
                 }
 
                 var value = MyUtil.getValueByWbsPath(it, *lastKey.split(".").toTypedArray())
                 if (value != null) {
-                    ret.add(value.ConvertType(clazz) as R);
+                    ret.add(value.ConvertType(type) as R);
                 } else {
                     skipNullCount++;
                 }
             } else {
-                var ent = it.ConvertJson(clazz)
+                var ent = it.ConvertJson(type)
                 ret.add(ent);
             }
         }
@@ -162,9 +162,9 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
     }
 
     @JvmOverloads
-    fun <R> toListResult(clazz: Class<R>, mapFunc: ((Map<String, Any?>) -> Unit)? = null): ListResult<R> {
+    fun <R> toListResult(type: Class<R>, mapFunc: ((Map<String, Any?>) -> Unit)? = null): ListResult<R> {
         var ret = ListResult<R>();
-        ret.data = toList(clazz, mapFunc);
+        ret.data = toList(type, mapFunc);
         ret.total = this.total;
         return ret;
     }

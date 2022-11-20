@@ -91,23 +91,23 @@ class JavaCoderUtil {
 
     var models: MutableSet<ClassCodeData> = mutableSetOf<ClassCodeData>()
 
-    fun addModelCode(clazz: Class<*>) {
-        if (clazz.IsSimpleType()) return;
-        if (clazz.IsMapType) return; //应该递归找值类
-        if (clazz.IsCollectionType) return;
+    fun addModelCode(type: Class<*>) {
+        if (type.IsSimpleType()) return;
+        if (type.IsMapType) return; //应该递归找值类
+        if (type.IsCollectionType) return;
 
         var ret = ClassCodeData();
-        ret.packageName = clazz.`package`.name;
-        ret.className = clazz.simpleName;
+        ret.packageName = type.`package`.name;
+        ret.className = type.simpleName;
         ret.content = """
 class ${ret.className}{
-${clazz.AllFields.map { "lateinit var " + it.name + ":" + it.type }.joinToString("\n").ToTab(1)}
+${type.AllFields.map { "lateinit var " + it.name + ":" + it.type }.joinToString("\n").ToTab(1)}
 }
         """;
 
 
         models.add(ret);
-        clazz.AllFields.forEach { addModelCode(it.type) }
+        type.AllFields.forEach { addModelCode(it.type) }
     }
 
 
@@ -152,10 +152,10 @@ fun ${this.name}(${
      * 根据Mvc的类，自动生成 Feign风格的代码
      */
     @JvmOverloads
-    fun getFeignClientCode(clazz: Class<*>, name: String = ""): ClassCodeData {
+    fun getFeignClientCode(type: Class<*>, name: String = ""): ClassCodeData {
         var beanName = name;
         if (beanName.isEmpty()) {
-            beanName = clazz.simpleName;
+            beanName = type.simpleName;
         }
 
         var ret = ClassCodeData();
@@ -167,14 +167,14 @@ fun ${this.name}(${
         }
 
 
-        ret.packageName = clazz.`package`.name.replace(".mvc.", ".client.")
+        ret.packageName = type.`package`.name.replace(".mvc.", ".client.")
             .replace(".web.", ".client.")
 
         if (ret.packageName.contains(".client.") == false) {
             ret.packageName += ".client"
         }
 
-        var mvcs = clazz.methods
+        var mvcs = type.methods
             .filter {
                 it.annotations.any {
                     it.annotationClass.qualifiedName!!.IsIn(

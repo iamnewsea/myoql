@@ -33,9 +33,9 @@ open class RedisCacheAopService {
 
 
         fun getRequestParamFullUrl(request: Any): String {
-            val clazz = Class.forName("javax.servlet.http.HttpServletRequest")
+            val type = Class.forName("javax.servlet.http.HttpServletRequest")
             val requestClass = request::class.java
-            if (clazz.isAssignableFrom(requestClass) == false) return "";
+            if (type.isAssignableFrom(requestClass) == false) return "";
 
             val getRequestURI = requestClass.getMethod("getRequestURI")
             val getQueryString = requestClass.getMethod("getQueryString")

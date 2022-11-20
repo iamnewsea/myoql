@@ -194,7 +194,7 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
     /**
      * 执行更新并返回更新后的数据（适用于更新一条的情况）
      */
-    fun <T> saveAndReturnNew(clazz: Class<T>, mapFunc: ((Document) -> Unit)? = null): T? {
+    fun <T> saveAndReturnNew(type: Class<T>, mapFunc: ((Document) -> Unit)? = null): T? {
         db.affectRowCount = -1;
 
         var settingResult = db.mongo.mongoEvents.onUpdating(this)
@@ -237,7 +237,7 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
 
             if (resultDocument != null) {
 
-                result = db.mongo.proc_mongo_doc_to_entity(resultDocument, clazz, "", mapFunc)
+                result = db.mongo.proc_mongo_doc_to_entity(resultDocument, type, "", mapFunc)
 
 
                 usingScope(

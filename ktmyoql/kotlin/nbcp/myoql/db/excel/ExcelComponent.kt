@@ -165,10 +165,10 @@ SXSSF：是在XSSF基础上，POI3.8版本开始提供的支持低内存占用�
          */
         @JvmOverloads
         fun <T : Any> getDataTable(
-            clazz: Class<T>,
+            type: Class<T>,
             filter: ((JsonMap, Map<Int, String>) -> Boolean)? = null
         ): DataTable<T> {
-            var dt = DataTable<T>(clazz)
+            var dt = DataTable<T>(type)
 
             var pk_values = mutableListOf<String>()
 
@@ -191,7 +191,7 @@ SXSSF：是在XSSF基础上，POI3.8版本开始提供的支持低内存占用�
                     }
                 }
 
-                dt.rows.add(row.ConvertJson(clazz));
+                dt.rows.add(row.ConvertJson(type));
 
                 return@readData true;
             }

@@ -56,8 +56,8 @@ fun BSONObject.ReadIdName(): IdName {
 
 fun <T : Any> Document.ReadAs(value: T): T {
     var ret = value;
-    var clazz = value.javaClass;
-    clazz.declaredFields.forEach {
+    var type = value.javaClass;
+    type.declaredFields.forEach {
         var name = it.name;
         it.isAccessible = true;
 

@@ -84,19 +84,19 @@ class ScopeStack : Stack<IScopeData>() {
         return getLatest(R::class.java, *enumValues);
     }
 
-    fun <R : IScopeData, Any> getLatest(clazz: KClass<R>, vararg enumValues: R): R? {
-        return getLatest(clazz.java, *enumValues)
+    fun <R : IScopeData, Any> getLatest(type: KClass<R>, vararg enumValues: R): R? {
+        return getLatest(type.java, *enumValues)
     }
 
     /**
      * @exception: 不能做日志,因为在 MyLogBackFilter 中会调用它!
      */
-    fun <R : IScopeData> getLatest(clazz: Class<R>, vararg enumValues: R): R? {
+    fun <R : IScopeData> getLatest(type: Class<R>, vararg enumValues: R): R? {
         if (this.size == 0) return null
 
         for (i in this.indices.reversed()) {
             val item = this[i];
-            if (clazz.isAssignableFrom(item.javaClass)) {
+            if (type.isAssignableFrom(item.javaClass)) {
                 if (enumValues.isEmpty() || enumValues.contains(item)) {
                     return item as R;
                 } else {

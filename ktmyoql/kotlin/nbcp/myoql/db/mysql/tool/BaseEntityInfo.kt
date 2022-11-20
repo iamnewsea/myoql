@@ -54,8 +54,8 @@ class BaseEntityInfo(var entity: EntityDbItemData, var baseEntityClass: Array<ou
 
     fun getColumnsWithoutBaseClasses(): Set<String> {
         var set = mutableSetOf<String>()
-        getBaseClasses().forEach { clazz ->
-            set.addAll(clazz.AllFields.map { it.name })
+        getBaseClasses().forEach { type ->
+            set.addAll(type.AllFields.map { it.name })
         }
 
         return set;
@@ -63,8 +63,8 @@ class BaseEntityInfo(var entity: EntityDbItemData, var baseEntityClass: Array<ou
 
     fun getColumnsWithoutBaseInterfaces(): Set<String> {
         var set = mutableSetOf<String>()
-        getBaseInterfaces().forEach { clazz ->
-            set.addAll(clazz.AllFields.map { it.name })
+        getBaseInterfaces().forEach { type ->
+            set.addAll(type.AllFields.map { it.name })
         }
 
         return set;

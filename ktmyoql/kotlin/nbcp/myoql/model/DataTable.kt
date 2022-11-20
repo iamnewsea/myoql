@@ -9,13 +9,12 @@ import java.io.Serializable
  * ExcelComponent 返回的数据类
  */
 
-class DataTable<T : Any>(clazz: Class<T>) : Serializable {
+class DataTable<T : Any>(type: Class<T>) : Serializable {
     var columns = arrayOf<String>()
     var sheetName = ""
 //    var columnDefines = StringMap()  // key = Excel 的列， value是实体属性。
 
     init {
-        var type = clazz;
         this.sheetName = type.simpleName;
 
         if (type.isMemberClass == false) {
@@ -55,8 +54,8 @@ class DataTable<T : Any>(clazz: Class<T>) : Serializable {
          * 第一行是标题
          */
         @JvmStatic
-        fun <T : Any> loadFromCsv(content: String, clazz: Class<T>): DataTable<T> {
-            var ret = DataTable(clazz)
+        fun <T : Any> loadFromCsv(content: String, type: Class<T>): DataTable<T> {
+            var ret = DataTable(type)
             var words = content.Tokenizer(
                 { it == ',' || it == '\n' }, arrayOf(
                     TokenQuoteDefine('"', '"', '"')
@@ -110,7 +109,7 @@ class DataTable<T : Any>(clazz: Class<T>) : Serializable {
                         }
                     }
 
-                    ret.rows.add(jsonMap.ConvertJson(clazz));
+                    ret.rows.add(jsonMap.ConvertJson(type));
                 }
 
             return ret;

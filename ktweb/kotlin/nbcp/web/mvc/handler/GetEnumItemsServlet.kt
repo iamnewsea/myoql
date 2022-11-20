@@ -24,10 +24,10 @@ open class GetEnumItemsServlet {
         if( enum.isEmpty()){
             return ListResult.error("找不到 enum 参数")
         }
-        var clazz = Class.forName(enum);
-        var nameField = clazz.GetEnumNumberField();
+        var type = Class.forName(enum);
+        var nameField = type.GetEnumNumberField();
 
-        var list = clazz.GetEnumList().map {
+        var list = type.GetEnumList().map {
             val key = it.toString();
             ValueLabelData(key, nameField?.get(it).AsString(key))
         }

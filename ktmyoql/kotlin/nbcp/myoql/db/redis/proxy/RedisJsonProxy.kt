@@ -11,7 +11,7 @@ import java.time.Duration
  */
 class RedisJsonProxy<T> @JvmOverloads constructor(
     key: String,
-    val clazz: Class<T>,
+    val type: Class<T>,
     defaultCacheSeconds: Int = 0,
     autoRenewal: Boolean = false
 ) :
@@ -26,7 +26,7 @@ class RedisJsonProxy<T> @JvmOverloads constructor(
         if (autoRenewal) {
             renewalKey()
         }
-        return value.FromJson(clazz)
+        return value.FromJson(type)
     }
 
 //    fun setKey(value: String, cacheSecond: Int = defaultCacheSeconds) = setKey("", value, cacheSecond);

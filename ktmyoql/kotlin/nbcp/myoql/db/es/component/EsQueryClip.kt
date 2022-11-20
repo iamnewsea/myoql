@@ -108,9 +108,9 @@ class EsQueryClip<M : EsBaseMetaEntity<E>, E : Serializable>(var moerEntity: M) 
     }
 
     @JvmOverloads
-    fun <R> toEntity(clazz: Class<R>, mapFunc: ((Map<String, Any?>) -> Unit)? = null): R? {
+    fun <R> toEntity(type: Class<R>, mapFunc: ((Map<String, Any?>) -> Unit)? = null): R? {
         this.search.take = 1;
-        return toList(clazz, mapFunc).firstOrNull();
+        return toList(type, mapFunc).firstOrNull();
     }
 
 

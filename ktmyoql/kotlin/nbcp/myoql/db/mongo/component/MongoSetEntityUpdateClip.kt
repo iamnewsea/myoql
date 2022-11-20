@@ -52,12 +52,12 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
         return this;
     }
 
-    fun setWholeField(clazz: Class<*>): MongoSetEntityUpdateClip<M, E> {
+    fun setWholeField(type: Class<*>): MongoSetEntityUpdateClip<M, E> {
         if (this.wholeFieldStyle) {
             throw RuntimeException("请先设置 spreadFieldStyle")
         }
 
-        this.spreadFieldStyleSetWholeFieldType.add(clazz);
+        this.spreadFieldStyleSetWholeFieldType.add(type);
         return this;
     }
 

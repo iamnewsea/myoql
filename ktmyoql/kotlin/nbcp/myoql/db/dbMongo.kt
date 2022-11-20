@@ -446,7 +446,7 @@ db.getCollection("adminRole").aggregate(
     @JvmStatic
     fun <T> proc_mongo_doc_to_entity(
         it: Document,
-        clazz: Class<T>,
+        type: Class<T>,
         lastKey: String,
         mapFunc: ((Document) -> Unit)? = null
     ): T? {
@@ -456,22 +456,22 @@ db.getCollection("adminRole").aggregate(
         if (mapFunc != null) {
             mapFunc(it);
         }
-        if (clazz.IsSimpleType()) {
+        if (type.IsSimpleType()) {
             if (lastKey.isEmpty()) {
                 lastKey = it.keys.last()
             }
 
             val value = MyUtil.getValueByWbsPath(it, *lastKey.split(".").toTypedArray());
             if (value != null) {
-                return value.ConvertType(clazz) as T
+                return value.ConvertType(type) as T
             } else {
                 return null;
             }
         } else {
-            if (Document::class.java.isAssignableFrom(clazz)) {
+            if (Document::class.java.isAssignableFrom(type)) {
                 return it as T;
             } else {
-                return it.ConvertJson(clazz) as T;
+                return it.ConvertJson(type) as T;
             }
         }
     }

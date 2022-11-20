@@ -146,37 +146,37 @@ public enum class DbType {
     }
 
     companion object {
-        fun <T : Any> of(clazz: KClass<T>): DbType {
-            return of(clazz.java);
+        fun <T : Any> of(type: KClass<T>): DbType {
+            return of(type.java);
         }
 
         @JvmStatic
-        fun <T> of(clazz: Class<T>): DbType {
+        fun <T> of(type: Class<T>): DbType {
 
-            if (clazz.isEnum) {
+            if (type.isEnum) {
                 return ENUM;
             }
 
             DbType.values()
-                .firstOrNull { it.javaType == clazz || (it.javaRefType != null && it.javaRefType == clazz) }
+                .firstOrNull { it.javaType == type || (it.javaRefType != null && it.javaRefType == type) }
                 .apply {
                     if (this != null) {
                         return this;
                     }
                 }
 
-            if (clazz == Character::class.java || clazz == java.lang.Character::class.java) {
+            if (type == Character::class.java || type == java.lang.Character::class.java) {
                 return STRING
             }
 
-            if (clazz == DATE::class.java) {
+            if (type == DATE::class.java) {
                 return DATE_TIME
             }
 
-            if (Map::class.java.isAssignableFrom(clazz)) {
+            if (Map::class.java.isAssignableFrom(type)) {
                 return JSON
             }
-            if (clazz.IsCollectionType) {
+            if (type.IsCollectionType) {
                 return JSON
             }
 

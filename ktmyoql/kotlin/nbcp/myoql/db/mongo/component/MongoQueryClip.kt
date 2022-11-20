@@ -191,9 +191,9 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
     }
 
     @JvmOverloads
-    fun <R> toEntity(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): R? {
+    fun <R> toEntity(type: Class<R>, mapFunc: ((Document) -> Unit)? = null): R? {
         this.take = 1;
-        return toList(clazz, mapFunc).firstOrNull();
+        return toList(type, mapFunc).firstOrNull();
     }
 
     @JvmOverloads

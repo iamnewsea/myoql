@@ -98,7 +98,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
      * 核心功能，查询列表，原始数据对象是 Document
      */
     @JvmOverloads
-    fun <R> toList(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): MutableList<R> {
+    fun <R> toList(type: Class<R>, mapFunc: ((Document) -> Unit)? = null): MutableList<R> {
         db.affectRowCount = -1;
 
         val settingResult = db.mongo.mongoEvents.onQuering(this)
@@ -171,22 +171,22 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                 if (mapFunc != null) {
                     mapFunc(row);
                 }
-                if (clazz.IsSimpleType()) {
+                if (type.IsSimpleType()) {
                     if (lastKey.isEmpty()) {
                         lastKey = row.keys.last()
                     }
 
                     val value = MyUtil.getValueByWbsPath(row, *lastKey.split(".").toTypedArray());
                     if (value != null) {
-                        ret.add(value.ConvertType(clazz) as R);
+                        ret.add(value.ConvertType(type) as R);
                     } else {
                         skipNullCount++;
                     }
                 } else {
-                    if (Document::class.java.isAssignableFrom(clazz)) {
+                    if (Document::class.java.isAssignableFrom(type)) {
                         ret.add(row as R);
                     } else {
-                        val ent = row.ConvertJson(clazz)
+                        val ent = row.ConvertJson(type)
                         ret.add(ent);
                     }
                 }
@@ -393,9 +393,9 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
 
 
     @JvmOverloads
-    fun <R> toListResult(clazz: Class<R>, mapFunc: ((Document) -> Unit)? = null): ListResult<R> {
+    fun <R> toListResult(type: Class<R>, mapFunc: ((Document) -> Unit)? = null): ListResult<R> {
         var ret = ListResult<R>();
-        ret.data = toList(clazz, mapFunc);
+        ret.data = toList(type, mapFunc);
 
         if (config.listResultWithCount) {
             ret.total = count()

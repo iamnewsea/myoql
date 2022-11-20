@@ -257,8 +257,8 @@ cursor: {} } """
 
 
     @JvmOverloads
-    fun <R : Any> toList(clazz: Class<R>, itemFunc: ((Document) -> Unit)? = null): MutableList<R> {
-        return toMapList(itemFunc).map { it.ConvertJson(clazz) }.toMutableList()
+    fun <R : Any> toList(type: Class<R>, itemFunc: ((Document) -> Unit)? = null): MutableList<R> {
+        return toMapList(itemFunc).map { it.ConvertJson(type) }.toMutableList()
     }
 
     /**
@@ -396,9 +396,9 @@ cursor: {} } """
 
 
     @JvmOverloads
-    fun <R : Any> toEntity(clazz: Class<R>, itemFunc: ((Document) -> Unit)? = null): R? {
+    fun <R : Any> toEntity(type: Class<R>, itemFunc: ((Document) -> Unit)? = null): R? {
         this.take(1);
-        return toList(clazz, itemFunc).firstOrNull();
+        return toList(type, itemFunc).firstOrNull();
     }
 }
 

@@ -204,10 +204,10 @@ ${
     /**
      * 递归返回嵌入实体。
      */
-    fun findEmbClasses(clazz: Class<*>, deep: Int = 0): List<Class<*>> {
+    fun findEmbClasses(type: Class<*>, deep: Int = 0): List<Class<*>> {
         if (deep == 6) return listOf();
 
-        var ret = clazz.AllFields.filter {
+        var ret = type.AllFields.filter {
             if (it.type.IsSimpleType()) return@filter false;
             if (Map::class.java.isAssignableFrom(it.type)) {
                 return@filter false;
@@ -220,7 +220,7 @@ ${
             }
             if (List::class.java.isAssignableFrom(it.type)) {
                 return@map (it.genericType as ParameterizedType).GetActualClass(0, {
-                    return@GetActualClass clazz.GetFirstTypeArguments()[0] as Class<*>;
+                    return@GetActualClass type.GetFirstTypeArguments()[0] as Class<*>;
                 });
             }
             return@map it.type;

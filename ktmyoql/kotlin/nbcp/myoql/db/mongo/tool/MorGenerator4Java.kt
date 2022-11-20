@@ -4,7 +4,6 @@ import nbcp.base.comm.StringMap
 import nbcp.base.comm.const
 import nbcp.base.data.Sys
 import nbcp.base.db.annotation.*
-import nbcp.base.db.annotation.*
 import nbcp.base.extend.*
 import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.CnAnnotationUtil
@@ -219,9 +218,9 @@ public class MoerMetaMap {
     /**
      * 递归返回嵌入实体。
      */
-    fun findEmbClasses(clazz: Class<*>, deep: Int = 0): List<Class<*>> {
+    fun findEmbClasses(type: Class<*>, deep: Int = 0): List<Class<*>> {
         if (deep == 6) return listOf();
-        var ret = clazz.AllFields
+        var ret = type.AllFields
             .filter {
                 if (it.type.IsSimpleType()) return@filter false;
                 if (Map::class.java.isAssignableFrom(it.type)) {
@@ -235,7 +234,7 @@ public class MoerMetaMap {
                 }
                 if (List::class.java.isAssignableFrom(it.type)) {
                     return@map (it.genericType as ParameterizedType).GetActualClass(0, {
-                        return@GetActualClass clazz.GetFirstTypeArguments()[0] as Class<*>;
+                        return@GetActualClass type.GetFirstTypeArguments()[0] as Class<*>;
                     })
                 }
                 return@map it.type;
@@ -330,7 +329,7 @@ public class MoerMetaMap {
     /**
      * @return key = 字段， value = 是否是基本类型。
      */
-    private fun getEntityValue(name: String, clazz: Class<*>): Pair<String, Boolean> {
+    private fun getEntityValue(name: String, type: Class<*>): Pair<String, Boolean> {
 
         val retTypeIsBasicType = true;
 
@@ -338,20 +337,20 @@ public class MoerMetaMap {
             return "\"_id\"" to retTypeIsBasicType;
         }
 
-        if (clazz.IsSimpleType() ||
-            Map::class.java.isAssignableFrom(clazz)
+        if (type.IsSimpleType() ||
+            Map::class.java.isAssignableFrom(type)
         ) {
             return "\"${name}\"" to retTypeIsBasicType
         }
 
-        if (List::class.java.isAssignableFrom(clazz) ||
-            clazz.isArray
+        if (List::class.java.isAssignableFrom(type) ||
+            type.isArray
         ) {
             //应该递归调用自己.
             return "" to retTypeIsBasicType
         }
 
-        return """${clazz.name.split(".").last()}Meta("${name}")""" to false;
+        return """${type.name.split(".").last()}Meta("${name}")""" to false;
     }
 
 

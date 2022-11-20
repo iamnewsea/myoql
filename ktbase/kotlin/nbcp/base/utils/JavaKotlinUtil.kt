@@ -218,8 +218,8 @@ object JavaKotlinUtil {
 
 
     @JvmStatic
-    fun <T> toTypedArray(list: Collection<T>, clazz: Class<T>): Array<T> {
-        var ret = java.lang.reflect.Array.newInstance(clazz, list.size) as Array<T>;
+    fun <T> toTypedArray(list: Collection<T>, type: Class<T>): Array<T> {
+        var ret = java.lang.reflect.Array.newInstance(type, list.size) as Array<T>;
 
         list.forEachIndexed { index, it ->
             java.lang.reflect.Array.set(ret, index, it);

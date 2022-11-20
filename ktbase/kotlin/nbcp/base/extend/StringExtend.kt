@@ -104,9 +104,9 @@ inline fun <reified T> String.FromYamlText(): T {
     return this.FromYamlText(T::class.java)
 }
 
-fun <T> String.FromYamlText(clazz: Class<T>): T {
+fun <T> String.FromYamlText(type: Class<T>): T {
     try {
-        return YamlObjectMapper.INSTANCE.readValue(this, clazz)
+        return YamlObjectMapper.INSTANCE.readValue(this, type)
     } catch (e: Exception) {
         logger.error(
             """
@@ -130,21 +130,21 @@ fun String.hasCn(): Boolean {
 }
 
 /**
- *@param clazz: 类型
+ *@param type: 类型
  */
-fun <T> String.FromListYarmText(clazz: Class<T>): List<T> {
+fun <T> String.FromListYarmText(type: Class<T>): List<T> {
     var mapper = YamlObjectMapper.INSTANCE;
-    var t = mapper.getTypeFactory().constructParametricType(ArrayList::class.java, clazz);
+    var t = mapper.getTypeFactory().constructParametricType(ArrayList::class.java, type);
 
     return mapper.readValue<List<T>>(this, t) ?: listOf()
 }
 
 
-fun <T> String.FromListYarmTextWithSplit(clazz: Class<T>): List<T> {
+fun <T> String.FromListYarmTextWithSplit(type: Class<T>): List<T> {
     return this.split("\n")
         .SplitList { it == "---" }
         .filter { it.isNotEmpty() }
-        .map { it.joinToString("\n").FromYamlText(clazz) }
+        .map { it.joinToString("\n").FromYamlText(type) }
 }
 
 

@@ -215,8 +215,8 @@ object ClassUtil {
      * 判断类是否是指定的Jar中
      */
     @JvmStatic
-    fun classIsInJar(clazz: Class<*>, jarFileName: String): Boolean {
-        var sects = clazz.protectionDomain.codeSource.location.path.split("/")
+    fun classIsInJar(type: Class<*>, jarFileName: String): Boolean {
+        var sects = type.protectionDomain.codeSource.location.path.split("/")
         return sects.contains(jarFileName) && sects.last().contains(jarFileName)
     }
 

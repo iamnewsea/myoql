@@ -127,53 +127,53 @@ fun <T> String.FromGenericJson(type: Class<T>, vararg genericClasses: Class<*>, 
 }
 
 
-fun <T : Any> String.FromJson(clazz: KClass<T>, style: JsonSceneScopeEnum? = null): T? {
-    return this.FromJson(clazz.java, style)
+fun <T : Any> String.FromJson(type: KClass<T>, style: JsonSceneScopeEnum? = null): T? {
+    return this.FromJson(type.java, style)
 }
 
 @JvmOverloads
-fun <T> String.FromJson(clazz: Class<T>, style: JsonSceneScopeEnum? = null): T? {
-    return this.FromJsonText(clazz, style)
+fun <T> String.FromJson(type: Class<T>, style: JsonSceneScopeEnum? = null): T? {
+    return this.FromJsonText(type, style)
 }
 
 
 @JvmOverloads
-fun <T> String.FromJsonText(clazz: Class<T>, style: JsonSceneScopeEnum? = null): T? {
+fun <T> String.FromJsonText(type: Class<T>, style: JsonSceneScopeEnum? = null): T? {
     if (this.isEmpty()) return null
 
-    if (clazz == String::class.java) {
+    if (type == String::class.java) {
         return this as T
     }
 
     val mapper = style.getJsonMapper();
 
     try {
-        return mapper.readValue(this, clazz)
+        return mapper.readValue(this, type)
     } catch (e: Exception) {
-        var msg = "Json转换出错！Json数据：${this}\n 类型:${clazz.name} \n 错误消息:" + e.message;
+        var msg = "Json转换出错！Json数据：${this}\n 类型:${type.name} \n 错误消息:" + e.message;
         throw RuntimeException(msg, e);
     }
 }
 
 
-fun <T : Any> Any.ConvertJson(clazz: KClass<out T>, style: JsonSceneScopeEnum? = null): T {
-    return this.ConvertJson(clazz.java, style)
+fun <T : Any> Any.ConvertJson(type: KClass<out T>, style: JsonSceneScopeEnum? = null): T {
+    return this.ConvertJson(type.java, style)
 }
 
 /**
  * 从 ConvertType 做为入口。 为避免死循环，禁止从ConvertJson调用 ConvertType。
  */
 @JvmOverloads
-fun <T> Any.ConvertJson(clazz: Class<out T>, style: JsonSceneScopeEnum? = null): T {
+fun <T> Any.ConvertJson(type: Class<out T>, style: JsonSceneScopeEnum? = null): T {
 //    if (clazz.isAssignableFrom(this::class.java)) {
 //        return this as T;
 //    }
 
     //如果是 String，转
     if (this is String) {
-        return this.FromJson(clazz, style) ?: throw RuntimeException("转换Json出错")
+        return this.FromJson(type, style) ?: throw RuntimeException("转换Json出错")
     } else if (this is Map<*, *>) {
-        if (Map::class.java.isAssignableFrom(clazz) == false) {
+        if (Map::class.java.isAssignableFrom(type) == false) {
             //处理 a.b.c = "10
             this.keys
                 .filter {
@@ -187,7 +187,7 @@ fun <T> Any.ConvertJson(clazz: Class<out T>, style: JsonSceneScopeEnum? = null):
         }
     }
 
-    return style.getJsonMapper().convertValue(this, clazz)
+    return style.getJsonMapper().convertValue(this, type)
 }
 
 

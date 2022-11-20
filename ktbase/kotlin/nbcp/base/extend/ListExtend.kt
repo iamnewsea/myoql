@@ -413,7 +413,7 @@ fun Array<*>.getArrayObject(): Array<Any?> {
     return this as Array<Any?>
 }
 
-fun List<Any?>.resetListItemType(clazz: Class<*>) {
+fun List<Any?>.resetListItemType(type: Class<*>) {
     var list = this as ArrayList<Any?>
     for (i in list.indices) {
         val itemValue = list.elementAt(i)
@@ -421,7 +421,7 @@ fun List<Any?>.resetListItemType(clazz: Class<*>) {
             continue;
         }
 
-        list.set(i, itemValue.ConvertType(clazz))
+        list.set(i, itemValue.ConvertType(type))
     }
 }
 

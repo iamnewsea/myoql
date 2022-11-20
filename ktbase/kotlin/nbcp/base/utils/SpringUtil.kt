@@ -122,13 +122,13 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
         }
 
         @JvmStatic
-        fun containsBean(clazz: KClass<*>): Boolean {
-            return containsBean(clazz.java)
+        fun containsBean(type: KClass<*>): Boolean {
+            return containsBean(type.java)
         }
 
         @JvmStatic
-        fun containsBean(clazz: Class<*>): Boolean {
-            return context.getBeanNamesForType(clazz).any()
+        fun containsBean(type: Class<*>): Boolean {
+            return context.getBeanNamesForType(type).any()
         }
 
 
@@ -151,14 +151,14 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
 
         //通过class获取Bean.
         @JvmStatic
-        fun <T : Any> getBean(clazz: KClass<T>): T {
-            return getBean(clazz.java)
+        fun <T : Any> getBean(type: KClass<T>): T {
+            return getBean(type.java)
         }
 
         //通过class获取Bean.
         @JvmStatic
-        fun <T> getBean(clazz: Class<T>): T {
-            var ret = context.getBean(clazz);
+        fun <T> getBean(type: Class<T>): T {
+            var ret = context.getBean(type);
             return ret;
         }
 
@@ -168,14 +168,14 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
         }
 
         @JvmStatic
-        fun <T : Any> getBeanWithNull(clazz: KClass<T>): T? {
-            return getBeanWithNull(clazz.java)
+        fun <T : Any> getBeanWithNull(type: KClass<T>): T? {
+            return getBeanWithNull(type.java)
         }
 
         @JvmStatic
-        fun <T> getBeanWithNull(clazz: Class<T>): T? {
-            if (containsBean(clazz) == false) return null
-            return Companion.context.getBean(clazz);
+        fun <T> getBeanWithNull(type: Class<T>): T? {
+            if (containsBean(type) == false) return null
+            return Companion.context.getBean(type);
         }
 
         /**
@@ -198,9 +198,9 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
         }
 
         @JvmStatic
-        fun <T> getBeanWithNull(name: String, clazz: Class<T>): T? {
-            if (containsBean(name, clazz) == false) return null
-            return context.getBean(name, clazz);
+        fun <T> getBeanWithNull(name: String, type: Class<T>): T? {
+            if (containsBean(name, type) == false) return null
+            return context.getBean(name, type);
         }
 
 

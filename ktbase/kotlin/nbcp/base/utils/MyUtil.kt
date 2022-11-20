@@ -741,62 +741,62 @@ object MyUtil {
     }
 
     @JvmStatic
-    fun <T : Any> getTypeDefaultValue(clazz: KClass<T>): Any? {
-        return getTypeDefaultValue(clazz.java)
+    fun <T : Any> getTypeDefaultValue(type: KClass<T>): Any? {
+        return getTypeDefaultValue(type.java)
     }
 
     //简单类型，请参考 Class.IsSimpleType
     @JvmStatic
-    fun <T> getTypeDefaultValue(clazz: Class<T>): Any? {
+    fun <T> getTypeDefaultValue(type: Class<T>): Any? {
 
 //        var className = clazz.name;
-        if (clazz == Boolean::class.java || clazz == java.lang.Boolean::class.java) {
+        if (type == Boolean::class.java || type == java.lang.Boolean::class.java) {
             return false;
         }
-        if (clazz == java.lang.Character::class.java || clazz == Char::class.java) {
+        if (type == java.lang.Character::class.java || type == Char::class.java) {
             return '\u0000';
         }
 
-        if (clazz == Byte::class.java || clazz == java.lang.Byte::class.java) {
+        if (type == Byte::class.java || type == java.lang.Byte::class.java) {
             return 0;
         }
-        if (clazz == Short::class.java || clazz == java.lang.Short::class.java) {
+        if (type == Short::class.java || type == java.lang.Short::class.java) {
             return 0;
         }
-        if (clazz == java.lang.Integer::class.java || clazz == Int::class.java) {
+        if (type == java.lang.Integer::class.java || type == Int::class.java) {
             return 0;
         }
-        if (clazz == Long::class.java || clazz == java.lang.Long::class.java) {
+        if (type == Long::class.java || type == java.lang.Long::class.java) {
             return 0L;
         }
-        if (clazz == Float::class.java || clazz == java.lang.Float::class.java) {
+        if (type == Float::class.java || type == java.lang.Float::class.java) {
             return 0F;
         }
-        if (clazz == Double::class.java || clazz == java.lang.Double::class.java) {
+        if (type == Double::class.java || type == java.lang.Double::class.java) {
             return 0.0;
         }
 
         //不应该执行这句.
-        if (clazz.isPrimitive) {
-            return clazz.constructors.firstOrNull { it.parameters.size == 0 }?.newInstance()
-        } else if (clazz.isEnum) {
-            return clazz.declaredFields.first().get(null);
-        } else if (clazz == String::class.java) {
+        if (type.isPrimitive) {
+            return type.constructors.firstOrNull { it.parameters.size == 0 }?.newInstance()
+        } else if (type.isEnum) {
+            return type.declaredFields.first().get(null);
+        } else if (type == String::class.java) {
             return "";
-        } else if (clazz == java.time.LocalDate::class.java) {
+        } else if (type == java.time.LocalDate::class.java) {
             return LocalDate.MIN
-        } else if (clazz == java.time.LocalTime::class.java) {
+        } else if (type == java.time.LocalTime::class.java) {
             return LocalTime.MIN
-        } else if (clazz == java.time.LocalDateTime::class.java) {
+        } else if (type == java.time.LocalDateTime::class.java) {
             return LocalDateTime.MIN
-        } else if (clazz == java.util.Date::class.java) {
+        } else if (type == java.util.Date::class.java) {
             return Date(0)
         }
 //        else if (clazz == org.bson.types.ObjectId::class.java) {
 //            return ObjectId(0, 0, 0, 0)
 //        }
 
-        return clazz.constructors.firstOrNull { it.parameters.size == 0 }?.newInstance()
+        return type.constructors.firstOrNull { it.parameters.size == 0 }?.newInstance()
     }
 
     @JvmStatic
