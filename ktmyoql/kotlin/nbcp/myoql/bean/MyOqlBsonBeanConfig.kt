@@ -46,7 +46,7 @@ class MyOqlBsonBeanConfig : BeanPostProcessor {
     }
 
     @EventListener
-    fun app_started(ev: ApplicationStartedEvent) {
+    fun bsonBeanInitOnApplicationStarted(ev: ApplicationStartedEvent) {
         bindExtendObjectMappers();
     }
 

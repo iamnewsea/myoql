@@ -14,13 +14,13 @@ import org.springframework.context.event.EventListener
 
 @Import(MongoFlywayBeanProcessor::class)
 @Configuration
-class MyOqlInitConfig {
+class MyOqlApplicationStarted {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
     @EventListener
-    fun app_started(ev: ApplicationStartedEvent) {
+    fun dbInitOnApplicationStarted(ev: ApplicationStartedEvent) {
 
         if (config.getConfig("app.flyway.enable", "true").AsBoolean(true)) {
             val flyways = SpringUtil.getBeanWithNull(MongoFlywayBeanProcessor::class.java)

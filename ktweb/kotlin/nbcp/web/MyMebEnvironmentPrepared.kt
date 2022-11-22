@@ -13,7 +13,7 @@ import org.springframework.context.ApplicationListener
 /**
  * 程序的最高事件。
  */
-class MyMebStartEvent : ApplicationListener<ApplicationEnvironmentPreparedEvent> {
+class MyMebEnvironmentPrepared : ApplicationListener<ApplicationEnvironmentPreparedEvent> {
     init {
         MyMvcStartEvent.logoLoaded = true;
         MyOqlStartEvent.logoLoaded = true;

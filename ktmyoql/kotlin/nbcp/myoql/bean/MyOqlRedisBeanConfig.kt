@@ -31,7 +31,9 @@ class MyOqlRedisBeanConfig : BeanPostProcessor {
 
             setStringRedisTemplate(bean);
 
-            loadRedisDependencyBeans()
+            if (SpringUtil.containsBean(RedisRenewalDynamicService::class.java) == false) {
+                SpringUtil.registerBeanDefinition(RedisRenewalDynamicService())
+            }
         }
 
         return ret;
@@ -47,25 +49,7 @@ class MyOqlRedisBeanConfig : BeanPostProcessor {
 //        val valueOps = type.getDeclaredField("valueOps");
 //        valueOps.isAccessible = true;
 //        modifiersField.setInt(valueOps, valueOps.modifiers and Modifier.FINAL.inv());
-//
-//
     }
 
-    private fun loadRedisDependencyBeans() {
-        if (SpringUtil.containsBean(RedisRenewalDynamicService::class.java) == false) {
-            SpringUtil.registerBeanDefinition(RedisRenewalDynamicService())
-        }
-//        SpringUtil.registerBeanDefinition(RedisCacheAopService())
-    }
-
-    @EventListener
-    fun app_started(event: ApplicationStartedEvent) {
-//        //如果存在 Redis环境，但是没有 RedisCacheDbDynamicService，就构造一个，保证在Redis环境下至少一个。
-//        if (SpringUtil.containsBean(StringRedisTemplate::class.java) &&
-//            !SpringUtil.containsBean(RedisCacheDbDynamicService::class.java)
-//        ) {
-//            SpringUtil.registerBeanDefinition(RedisCacheDbDynamicService())
-//        }
-    }
 
 }
