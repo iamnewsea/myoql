@@ -18,19 +18,19 @@ fun JsonSceneScopeEnum?.getJsonMapper(): ObjectMapper {
     var withNull = styles.contains(JsonStyleScopeEnum.WITH_NULL)
     if (withNull) {
         var ret: ObjectMapper;
-        if (scene == JsonSceneScopeEnum.DB) {
-            ret = DbJsonMapper()
-        } else {
+        if (scene == JsonSceneScopeEnum.WEB) {
             ret = WebJsonMapper()
+        } else {
+            ret = DbJsonMapper()
         }
 
         ret.setSerializationInclusion(JsonInclude.Include.ALWAYS)
         return ret;
     }
 
-    if (scene == JsonSceneScopeEnum.DB) {
-        return DbJsonMapper.INSTANCE
+    if (scene == JsonSceneScopeEnum.WEB) {
+        return WebJsonMapper.INSTANCE
     }
-    return WebJsonMapper.INSTANCE
+    return DbJsonMapper.INSTANCE
 }
 
