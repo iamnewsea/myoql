@@ -91,6 +91,9 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
             return@lazy ips.toSet();
         }
 
+        /**
+         * 使用 Basic $base64(用户名:密码) 格式
+         */
         @JvmStatic
         fun getBasicAuthorization(userName: String, password: String): String {
             return "Basic " + MyUtil.getBase64("${userName}:${password}".toByteArray())
@@ -459,7 +462,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
 
 
         this.currentRetryTimes++;
-        if (this.retryEnabled && this.status == 0 && this.currentRetryTimes <= this.maxRetryTimes) {
+        if (this.retryEnabled && this.status == 0 && this.currentRetryTimes < this.maxRetryTimes) {
             var sleep = this.retrySleepSeconds.invoke(this.currentRetryTimes)
             logger.Important("连接超时,${sleep} 秒后将进行第 ${this.currentRetryTimes} 次重试 ${this.url}")
 
@@ -484,6 +487,10 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
 
         if (this.status == 0) {
             msgs.add("[Timeout]");
+
+            if (this.maxRetryTimes > 0 && this.currentRetryTimes == this.maxRetryTimes) {
+                msgs.add("[重试了 ${this.maxRetryTimes} 次，终是网络失败!]");
+            }
         } else {
             var subLen = logResponseLength / 2;
             //小于 1K
@@ -523,9 +530,6 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
             }
         }
 
-        if (this.maxRetryTimes > 0 && this.currentRetryTimes <= this.maxRetryTimes) {
-            msgs.add("[重试 ${this.maxRetryTimes} 次失败!]");
-        }
 
         val content = msgs.joinToString(const.line_break);
         msgs.clear();

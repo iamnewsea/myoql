@@ -4,7 +4,10 @@ import nbcp.base.TestBase
 import org.junit.jupiter.api.Test
 
 class TestKtExt_Map : TestBase() {
-
+    @Test
+    fun abc(){
+        println(get_array_querys(mutableListOf("a","b")))
+    }
 
     @Test
     fun test_cn() {

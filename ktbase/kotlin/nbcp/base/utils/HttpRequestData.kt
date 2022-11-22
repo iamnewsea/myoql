@@ -29,6 +29,9 @@ data class HttpRequestData @JvmOverloads constructor(
         }
 
 
+    /**
+     * 在Header添加 AUTHORIZATION，使用 Basic $base64(用户名:密码) 格式
+     */
     fun setAuthorization(userName: String, password: String) {
         this.headers.set(
             HttpHeaders.AUTHORIZATION,

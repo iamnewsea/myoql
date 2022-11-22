@@ -152,7 +152,10 @@ fun Map<String, *>.getValueByWbsPath(
 }
 //------------------
 
-private fun get_array_querys(list: Collection<Any?>): List<String> {
+/**
+ * 对数组进行 encodeURIComponent ，使用 []= 格式
+ */
+fun get_array_querys(list: Collection<Any?>): List<String> {
     return list.map { value ->
         if (value == null) return@map listOf<String>();
 
@@ -178,7 +181,10 @@ private fun get_array_querys(list: Collection<Any?>): List<String> {
         .filter { it.HasValue }
 }
 
-private fun get_map_querys(map: Map<String, *>): List<String> {
+/**
+ * 对 value 进行 encodeURIComponent 编码！
+ */
+fun get_map_querys(map: Map<String, *>): List<String> {
     return map.map {
         var key = it.key;
         var value = it.value;
