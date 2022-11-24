@@ -62,20 +62,25 @@ class DefaultWebInterceptor : HandlerInterceptor {
 
         var beanType = handler.beanType;
 
-        if (beanType.name.IsIn(
-                listOf(
-                    // Swagger2.9.2
-                    "springfox.documentation.swagger.web.ApiResourceController",
-                    //Swagger3.0.0
-                    "springfox.documentation.swagger2.web.Swagger2ControllerWebMvc",
-                    "springfox.documentation.oas.web.OpenApiControllerWebMvc",
-                    //SpringDoc
-                    "org.springdoc.webmvc.ui.SwaggerWelcomeWebMvc",
-                    "org.springdoc.webmvc.ui.SwaggerConfigResource",
-                    "org.springdoc.webmvc.api.OpenApiWebMvcResource"
-                )
-            )
-        ) {
+//        if (beanType.name.IsIn(
+//                listOf(
+//                    // Swagger2.9.2
+//                    "springfox.documentation.swagger.web.ApiResourceController",
+//                    //Swagger3.0.0
+//                    "springfox.documentation.swagger2.web.Swagger2ControllerWebMvc",
+//                    "springfox.documentation.oas.web.OpenApiControllerWebMvc",
+//                    //SpringDoc
+//                    "org.springdoc.webmvc.ui.SwaggerWelcomeWebMvc",
+//                    "org.springdoc.webmvc.ui.SwaggerConfigResource",
+//                    "org.springdoc.webmvc.api.OpenApiWebMvcResource",
+//                    "org.springdoc.webmvc.api.MultipleOpenApiWebMvcResource"
+//                )
+//            )
+//        ) {
+//            return true;
+//        }
+
+        if (listOf("springfox.documentation.**", "org.springdoc.**").any { matcher.match(it, beanType.name) }) {
             return true;
         }
 
