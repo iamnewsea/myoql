@@ -42,13 +42,13 @@ import javax.servlet.http.HttpServletResponse
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 open class MyAllFilter : Filter {
     @Value("\${app.filter.enabled:true}")
-    var enabled: Boolean = true
+    var ENABLED: Boolean = true
 
     @Value("\${app.filter.ignore-log-urls:/health}")
-    var ignoreLogUrls: List<String> = listOf()
+    var IGNORE_LOG_URLS: List<String> = listOf()
 
     @Value("\${app.filter.ignore-urls:/health}")
-    var ignoreUrls: List<String> = listOf()
+    var IGNORE_URLS: List<String> = listOf()
 
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -65,13 +65,13 @@ open class MyAllFilter : Filter {
     }
 
     override fun doFilter(oriRequest: ServletRequest?, oriResponse: ServletResponse?, chain: FilterChain?) {
-        if (enabled == false) {
+        if (ENABLED == false) {
             chain?.doFilter(oriRequest, oriResponse)
             return;
         }
 
         var httpRequest = oriRequest as HttpServletRequest
-        if (matchUrI(httpRequest.requestURI, ignoreUrls)) {
+        if (matchUrI(httpRequest.requestURI, IGNORE_URLS)) {
             chain?.doFilter(oriRequest, oriResponse)
             return;
         }
@@ -127,7 +127,7 @@ open class MyAllFilter : Filter {
                 logger.Important("admin-token参数值不匹配！忽略 log-level")
             }
 
-            var ignoreLog = matchUrI(httpRequest.requestURI, ignoreLogUrls)
+            var ignoreLog = matchUrI(httpRequest.requestURI, IGNORE_LOG_URLS)
 
             if (ignoreLog) {
                 logLevel = Level.OFF;

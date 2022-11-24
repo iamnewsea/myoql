@@ -36,13 +36,13 @@ import javax.servlet.http.HttpServletResponse
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 open class MyOqlCrossFilter : Filter {
     @Value("\${app.filter.allow-origins:}")
-    var allowOrigins: String = "";
+    var ALLOW_ORIGINS: String = "";
 
     /**
      * 可以定义禁止的 header,默认允许通过所有 Header
      */
     @Value("\${app.filter.deny-headers:}")
-    var denyHeaders: List<String> = listOf()
+    var DENY_HEADERS: List<String> = listOf()
 
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
@@ -58,7 +58,7 @@ open class MyOqlCrossFilter : Filter {
         var httpResponse = response as HttpServletResponse
 
         var request2: HttpServletRequest? = null
-        httpRequest.getCorsResponseMap(this.allowOrigins.split(","), denyHeaders).apply {
+        httpRequest.getCorsResponseMap(this.ALLOW_ORIGINS.split(","), DENY_HEADERS).apply {
             if (this.any() && httpRequest.method != "OPTIONS") {
                 request2 = MyAllFilter.getRequestWrapper(httpRequest);
 
