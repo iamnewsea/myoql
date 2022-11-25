@@ -26,13 +26,6 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
             list.add(env.getProperty("spring.application.name").AsString())
             list.add(env.activeProfiles?.joinToString(",").AsString())
 
-            env.getProperty("app.scheduler").AsBooleanWithNull()
-                .apply {
-                    if (this === null || this) {
-                        list.add("@EnableScheduling")
-                    }
-                }
-
 
             logger.Important(
                 """

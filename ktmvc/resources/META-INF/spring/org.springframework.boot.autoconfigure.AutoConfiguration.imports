@@ -1,2 +1,2 @@
 nbcp.mvc.MyMvcInitConfig
-nbcp.mvc.MyMvcStartEvent
+nbcp.mvc.listener.MyMvcEnvironmentPreparedEventListener

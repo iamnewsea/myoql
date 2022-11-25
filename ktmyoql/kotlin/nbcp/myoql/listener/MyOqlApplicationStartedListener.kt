@@ -1,4 +1,4 @@
-package nbcp.myoql
+package nbcp.myoql.listener
 
 import nbcp.base.comm.config
 import nbcp.base.extend.AsBoolean
@@ -14,7 +14,7 @@ import org.springframework.context.event.EventListener
 
 @Import(MongoFlywayBeanProcessor::class)
 @Configuration
-class MyOqlApplicationStarted {
+class MyOqlApplicationStartedListener {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

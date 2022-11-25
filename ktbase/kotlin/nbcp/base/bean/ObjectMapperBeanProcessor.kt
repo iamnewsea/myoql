@@ -1,4 +1,4 @@
-package nbcp.base
+package nbcp.base.bean
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 
 @Component
 @ConditionalOnClass(ObjectMapper::class)
-class ObjectMapperConfiguration : BeanPostProcessor {
+class ObjectMapperBeanProcessor : BeanPostProcessor {
     override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
         if (bean is ObjectMapper) {
             bean.initObjectMapper();

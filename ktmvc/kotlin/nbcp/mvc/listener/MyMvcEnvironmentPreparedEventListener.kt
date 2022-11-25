@@ -1,4 +1,4 @@
-package nbcp.myoql
+package nbcp.mvc.listener
 
 import nbcp.base.comm.config
 import nbcp.base.extend.AsBooleanWithNull
@@ -12,11 +12,10 @@ import org.springframework.context.ApplicationListener
 /**
  * 程序的最高事件。
  */
-class MyOqlStartEvent : ApplicationListener<ApplicationEnvironmentPreparedEvent> {
+class MyMvcEnvironmentPreparedEventListener : ApplicationListener<ApplicationEnvironmentPreparedEvent> {
     init {
-        config.logoLoaded = true;
+        config.logoLoaded = true
     }
-
     override fun onApplicationEvent(event: ApplicationEnvironmentPreparedEvent) {
         val env = event.environment
 
@@ -33,13 +32,14 @@ class MyOqlStartEvent : ApplicationListener<ApplicationEnvironmentPreparedEvent>
                     }
                 }
 
+
             logger.Important(
                 """
-    ﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎
-        ╔╦╗┬ ┬┌─┐┌─┐ ┬  
-        ║║║└┬┘│ ││─┼┐│  
-        ╩ ╩ ┴ └─┘└─┘└┴─┘
-    ﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊
+    ﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹎
+    ╔╦╗┬ ┬┌─┐┌─┐ ┬    ╦ ╦┬  ┬┌─┐
+    ║║║└┬┘│ ││─┼┐│    ║║║└┐┌┘│  
+    ╩ ╩ ┴ └─┘└─┘└┴─┘  ╚╩╝ └┘ └─┘
+    ﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹊
 ${list.filter { it.HasValue }.joinToString("  ")}
 """
             )

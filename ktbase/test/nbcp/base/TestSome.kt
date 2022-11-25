@@ -1,9 +1,12 @@
 package nbcp.base
 
 import nbcp.base.annotation.*
+import nbcp.base.config.TaskConfig
+import nbcp.base.utils.SpringUtil
 import org.junit.jupiter.api.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor
 
 @GroupLog("main")
 class TestSome : TestBase() {
@@ -13,6 +16,7 @@ class TestSome : TestBase() {
 
     @Test
     fun Test_Duration() {
+        var d = SpringUtil.containsBean<ScheduledAnnotationBeanPostProcessor>();
         logger.error("III")
         logger.abcv("OK")
     }

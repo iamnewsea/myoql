@@ -2,4 +2,4 @@ nbcp.web.KotlinWebExtendConfig
 nbcp.web.mvc.filter.MyOqlCrossFilter
 nbcp.web.mvc.filter.MyAllFilter
 nbcp.web.flux.filter.CrossFilterConfig
-nbcp.web.MyMebEnvironmentPrepared
+nbcp.web.listener.MyMebEnvironmentPreparedListener
