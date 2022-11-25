@@ -57,10 +57,12 @@ class MyLogBackFilter : TurboFilter() {
 
             //找出倒数第2个 Scope
             var defineLogLevel: LogLevelScopeEnum? = null;
-            for (i in scopes.size - 2..0) {
-                val item = scopes[i];
-                if (LogLevelScopeEnum::class.java == item.javaClass) {
-                    defineLogLevel = item as LogLevelScopeEnum?;
+            if( scopes.size > 1) {
+                for (i in scopes.size - 2..0) {
+                    val item = scopes[i];
+                    if (LogLevelScopeEnum::class.java == item.javaClass) {
+                        defineLogLevel = item as LogLevelScopeEnum?;
+                    }
                 }
             }
 
