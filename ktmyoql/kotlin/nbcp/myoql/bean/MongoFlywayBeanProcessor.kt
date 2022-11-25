@@ -27,20 +27,17 @@ class MongoFlywayBeanProcessor {
      */
     fun playFlyVersion(version: Int? = null) {
         if (SpringUtil.runningInTest) {
-            logger.Important("""
-~-~-~-~-~-~ 单元测试环境下,跳过Flyway处理! ~-~-~-~-~-~""")
+            logger.Important("""~~-~~-~~-~~  单元测试环境下,跳过Flyway处理! ~~-~~-~~-~~ """)
             return;
         }
 
         if (config.getConfig("app.flyway.enable").AsBoolean(true) == false) {
-            logger.Important("""
-~-~-~-~-~-~ app.flyway.enable 配置为禁用! ~-~-~-~-~-~""")
+            logger.Important("""~~-~~-~~-~~  app.flyway.enable 配置为禁用! ~~-~~-~~-~~""")
             return;
         }
 
         if (config.getConfig("app.flyway.mongo.enable").AsBoolean(true) == false) {
-            logger.Important("""
-~-~-~-~-~-~ app.flyway.mongo.enable 配置为禁用! ~-~-~-~-~-~""")
+            logger.Important("""~~-~~-~~-~~  app.flyway.mongo.enable 配置为禁用! ~~-~~-~~-~~""")
             return;
         }
 

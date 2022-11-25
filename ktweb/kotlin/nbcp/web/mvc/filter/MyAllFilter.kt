@@ -81,6 +81,9 @@ open class MyAllFilter : Filter {
 
         request.characterEncoding = "utf-8";
 
+        var request_id = request.tokenValue;
+        MDC.put("request_id", request_id)
+
         RequestContextHolder.setRequestAttributes(ServletRequestAttributes(request, response))
         HttpContext.init(request, response);
 
@@ -88,8 +91,7 @@ open class MyAllFilter : Filter {
         setLang(request)
 
 
-        var request_id = request.tokenValue;
-        MDC.put("request_id", request_id)
+
         var logLevel = getLogLevel(request);
 
         if (logLevel != null) {

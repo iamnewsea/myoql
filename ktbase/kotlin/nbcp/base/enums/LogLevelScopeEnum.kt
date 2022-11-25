@@ -14,5 +14,6 @@ enum class LogLevelScopeEnum(val value: Int) : IScopeData {
     INFO(Level.INFO_INT),
     WARN(Level.WARN_INT),
     ERROR(Level.ERROR_INT),
-    OFF(Level.OFF_INT);
+    OFF(Level.OFF_INT),
+    IMPORTANT(300); //找一个没有用到的小数字。
 }

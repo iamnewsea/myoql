@@ -45,18 +45,35 @@ class MyLogBackFilter : TurboFilter() {
             return FilterReply.DENY;
         }
 
-        val log = scopes.getLatest<LogLevelScopeEnum>()
-        if (log != null) {
-            if (level.levelInt >= log.value) {
-                return FilterReply.ACCEPT
-            }
-            return FilterReply.DENY;
-        }
+
+        //危险！ getLatest方法整个调用链 绝不能使用Log
+        //val log = scopes.getLatest<LogLevelScopeEnum>()
 
         usingScope(LogLevelScopeEnum.OFF) {
-            //config.debug 本身也会调用 decide.
-            if (config.debug) {
-                return FilterReply.ACCEPT
+            //config.debug 本身也会调用 decide.会无限递归
+//            if (config.debug) {
+//                return FilterReply.ACCEPT
+//            }
+
+            //找出倒数第2个 Scope
+            var defineLogLevel: LogLevelScopeEnum? = null;
+            for (i in scopes.size - 2..0) {
+                val item = scopes[i];
+                if (LogLevelScopeEnum::class.java == item.javaClass) {
+                    defineLogLevel = item as LogLevelScopeEnum?;
+                }
+            }
+
+
+            if (defineLogLevel != null) {
+                if (defineLogLevel == LogLevelScopeEnum.IMPORTANT) {
+                    return FilterReply.ACCEPT
+                }
+
+                if (level.levelInt >= defineLogLevel.value) {
+                    return FilterReply.ACCEPT
+                }
+                return FilterReply.DENY;
             }
         }
         return FilterReply.NEUTRAL

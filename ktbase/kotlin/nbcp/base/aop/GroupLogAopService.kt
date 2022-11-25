@@ -11,8 +11,6 @@ import org.slf4j.MDC
 import java.lang.annotation.Inherited
 
 
-
-
 @Aspect
 //@Component
 class GroupLogAopService {
@@ -30,7 +28,9 @@ class GroupLogAopService {
 
         return usingScope(GroupLogScope.of(groupLog)) {
             MDC.put("group", groupLog.value)
-            return@usingScope joinPoint.proceed(joinPoint.args)
+            var ret = joinPoint.proceed(joinPoint.args)
+            MDC.remove("group");
+            return@usingScope ret;
         }
     }
 }

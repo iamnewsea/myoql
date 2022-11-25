@@ -72,8 +72,7 @@ class RedisRenewalDynamicService : InitializingBean {
      */
     override fun afterPropertiesSet() {
         if (task.isAlive == false) {
-            logger.Important("""
-~-~-~-~-~-~ Redis续期服务已启动! ~-~-~-~-~-~""")
+            logger.Important("""~~-~~-~~-~~  Redis续期服务已启动! ~~-~~-~~-~~ """)
             task.start()
         }
     }
