@@ -22,7 +22,6 @@ abstract class TestBase {
 
     init {
         System.setProperty("app.upload.host", "http://dev8.cn")
-        System.setProperty("app.scheduler", "true")
 //        GenericXmlApplicationContext().environment.setActiveProfiles("test")
 
 //        println(SpringUtil.context.environment.activeProfiles)
