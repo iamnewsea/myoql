@@ -1,6 +1,6 @@
 package nbcp.base.extend;
 
-import nbcp.base.TestBase;
+import nbcp.base.TestBaseJava;
 import nbcp.base.comm.BatchReader;
 import nbcp.base.comm.MyJsonUtil;
 import nbcp.base.utils.JavaKotlinUtil;
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
 
-class TestKtExt_List_Java extends TestBase {
+class TestKtExt_List_Java extends TestBaseJava {
 
 
     @Test

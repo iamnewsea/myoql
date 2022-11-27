@@ -1,13 +1,13 @@
 package nbcp.myoql.es;
 
 
-import nbcp.myoql.TestBase;
+import nbcp.myoql.TestBaseJava;
 import org.junit.jupiter.api.Test;
 
 
 @Skill("ok")
 @Skill("offk")
-public class AnnotationTestJava extends TestBase {
+public class AnnotationTestJava extends TestBaseJava {
 
     @Test
     void abcddd() {

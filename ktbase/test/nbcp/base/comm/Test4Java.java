@@ -1,14 +1,14 @@
 package nbcp.base.comm;
 
 import kotlin.collections.CollectionsKt;
-import nbcp.base.TestBase;
+import nbcp.base.TestBaseJava;
 import nbcp.base.extend.MyHelper;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
 import java.util.List;
 
-class Test4Java extends TestBase {
+class Test4Java extends TestBaseJava {
 
 
     @Test
