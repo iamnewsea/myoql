@@ -1,6 +1,7 @@
 package nbcp.myoql.db.sql.component
 
 import nbcp.base.comm.JsonMap
+import nbcp.base.extend.ConvertJson
 import nbcp.base.extend.ToJson
 import nbcp.base.extend.minus
 import nbcp.base.utils.Md5Util
@@ -107,6 +108,25 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
         return retJsons.map { JsonMap(it) }.toMutableList()
     }
 
+
+    /**
+     * 不对列名称做映射，不会把数据库的下划线格式转为小驼峰。
+     * ORM的本意是原生态转换。 表列和数据库一致！
+     */
+    fun <R> toList(entityClass: Class<R>, itemFunc: ((Map<String, Any?>) -> Unit)? = null): MutableList<R> {
+        var ret = toMapList()
+            .map {
+                if (itemFunc != null) {
+                    itemFunc(it);
+                }
+
+//            return@map mapToEntity(it, { entityClass.newInstance() })
+                return@map it.ConvertJson(entityClass)
+            }.toMutableList()
+
+        return ret
+    }
+
     protected open fun afterQuery(retJsons: List<MutableMap<String, Any?>>) {
 
     }
@@ -122,7 +142,7 @@ abstract class SqlBaseQueryClip(tableName: String) : SqlBaseClip(tableName) {
 
         return jdbcTemplate.query(
             sqlParameter.expression,
-            MapSqlParameterSource(sqlParameter.values) ,
+            MapSqlParameterSource(sqlParameter.values),
             rowMapper
         ) as List<MutableMap<String, Any?>>
     }

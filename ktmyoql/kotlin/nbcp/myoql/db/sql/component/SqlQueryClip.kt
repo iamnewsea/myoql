@@ -370,29 +370,16 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
     }
 
     @JvmOverloads
-    fun toList(itemFunc: ((Map<String,Any?>) -> Unit)? = null): List<T> {
+    fun toList(itemFunc: ((Map<String, Any?>) -> Unit)? = null): List<T> {
         return toList(this.mainEntity.entityClass, itemFunc);
     }
 
-    @JvmOverloads
-    fun <R> toList(entityClass: Class<R>, itemFunc: ((Map<String,Any?>) -> Unit)? = null): MutableList<R> {
-        var ret = toMapList().map {
-            if (itemFunc != null) {
-                itemFunc(it);
-            }
-
-//            return@map mapToEntity(it, { entityClass.newInstance() })
-            return@map it.ConvertJson(entityClass)
-        }.toMutableList()
-
-        return ret
-    }
 
 
 
     var kvs = listOf<StringMap>()
     override fun doQuery(sqlParameter: SqlParameterData): List<MutableMap<String, Any?>> {
-        kvs =  getMatchDefaultCacheIdValue()
+        kvs = getMatchDefaultCacheIdValue()
         for (kv in kvs) {
             var v = getFromDefaultCache(kv);
             if (v != null) return v;
@@ -459,12 +446,12 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
     }
 
     @JvmOverloads
-    fun toEntity(mapFunc: ((Map<String,Any?>) -> Unit)? = null): T? {
+    fun toEntity(mapFunc: ((Map<String, Any?>) -> Unit)? = null): T? {
         return toEntity(this.mainEntity.entityClass, mapFunc)
     }
 
     @JvmOverloads
-    fun <R : Any> toEntity(entityClass: Class<R>, mapFunc: ((Map<String,Any?>) -> Unit)? = null): R? {
+    fun <R : Any> toEntity(entityClass: Class<R>, mapFunc: ((Map<String, Any?>) -> Unit)? = null): R? {
         this.take = 1
         return toMapList().map {
             mapFunc?.invoke(it)
@@ -534,14 +521,14 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
     }
 
     @JvmOverloads
-    fun toListResult(mapFunc: ((Map<String,Any?>) -> Unit)? = null): ListResult<T> {
+    fun toListResult(mapFunc: ((Map<String, Any?>) -> Unit)? = null): ListResult<T> {
         return toListResult(this.mainEntity.entityClass, mapFunc);
     }
 
     /**
      */
     @JvmOverloads
-    fun <R> toListResult(entityClass: Class<R>, mapFunc: ((Map<String,Any?>) -> Unit)? = null): ListResult<R> {
+    fun <R> toListResult(entityClass: Class<R>, mapFunc: ((Map<String, Any?>) -> Unit)? = null): ListResult<R> {
         var ret = ListResult<R>()
         var data = toList(entityClass, mapFunc)
 

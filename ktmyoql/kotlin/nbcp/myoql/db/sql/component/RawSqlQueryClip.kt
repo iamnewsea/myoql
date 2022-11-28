@@ -1,6 +1,7 @@
 package nbcp.myoql.db.sql.component
 
 import nbcp.base.comm.JsonMap
+import nbcp.base.extend.ConvertJson
 import nbcp.base.extend.minus
 import nbcp.myoql.db.db
 import nbcp.myoql.db.sql.base.SqlParameterData
@@ -19,7 +20,6 @@ class RawQuerySqlClip(var sqlParameter: SqlParameterData, tableName: String) : S
 
     constructor(sqlWithVar: String, sqlValue: JsonMap = JsonMap(), tableName: String = "")
             : this(SqlParameterData(sqlWithVar, sqlValue), tableName) {
-
     }
 
     override fun toSql(): SqlParameterData {

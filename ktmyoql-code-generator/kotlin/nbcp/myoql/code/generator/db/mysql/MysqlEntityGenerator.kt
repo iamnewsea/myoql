@@ -6,6 +6,9 @@ import nbcp.base.db.annotation.*
 import nbcp.base.enums.*
 import nbcp.base.extend.*
 import nbcp.base.utils.*
+import nbcp.myoql.code.generator.db.mysql.model.TableColumnMetaData
+import nbcp.myoql.code.generator.db.mysql.model.TableIndexMetaData
+import nbcp.myoql.code.generator.db.mysql.model.TableMetaData
 import nbcp.myoql.db.*
 import nbcp.myoql.db.comm.*
 import nbcp.myoql.db.enums.*
@@ -148,59 +151,69 @@ ${
                 return@use it.catalog;
             }
 
-            var tables_map = RawQuerySqlClip(
+            var tables = RawQuerySqlClip(
                 """
-SELECT table_name,table_comment
+SELECT 
+table_name as `tableName`,
+table_comment as `tableComment`
 FROM INFORMATION_SCHEMA.TABLES
 where table_schema = :db 
 order by table_name
 """, JsonMap("db" to db)
-            ).toMapList()
+            ).toList(TableMetaData::class.java)
 
 
-            var columns_map = RawQuerySqlClip(
+            var columns = RawQuerySqlClip(
                 """
 SELECT 
-    table_name as `table_name` , 
-    column_name as `column_name`, 
-    data_type as `data_type` ,
-    column_type as `column_type`,
-    column_comment as `column_comment` , 
-    column_key as `column_key`,
+    table_name as `tableName` , 
+    column_name as `columnName`, 
+    data_type as `dataType` ,
+    column_type as `columnType`,
+    column_comment as `columnComment` , 
+    column_key as `columnKey`,
     extra as `extra`
 FROM INFORMATION_SCHEMA.COLUMNS
 where table_schema = :db  
-order by table_name , ordinal_position
+order by 
+    table_name , 
+    CASE COLUMN_NAME 
+        WHEN 'id' THEN -10 
+        when 'name' then -9  
+        when 'code' then -8
+        ELSE  char_length(COLUMN_NAME) - char_length(replace(COLUMN_NAME,'_','')) + 1
+    END ASC,
+    CHAR_LENGTH(COLUMN_NAME) ASC 
 """, JsonMap("db" to db)
-            ).toMapList()
+            ).toList(TableColumnMetaData::class.java)
 
 
-            var indexes_map = RawQuerySqlClip(
+            var indexes = RawQuerySqlClip(
                 """
 SELECT 
-    table_name as `table_name` ,
-    index_name as `index_name`,
-    seq_in_index as `seq_in_index`,
-    column_name as `column_name`
+    table_name as `tableName` ,
+    index_name as `indexName`,
+    seq_in_index as `seqInIndex`,
+    column_name as `columnName`
 FROM INFORMATION_SCHEMA.STATISTICS
 where table_schema = :db AND non_unique = 0 AND INDEX_name != 'PRIMARY' 
 ORDER BY TABLE_NAME , index_name , seq_in_index
 """, JsonMap("db" to db)
-            ).toMapList()
+            ).toList(TableIndexMetaData::class.java)
 
 
 
-            tables_map.filter { tableMap ->
+            tables.filter { tableMap ->
                 if (tableCallback != null) {
-                    return@filter tableCallback!!(tableMap.getStringValue("table_name", ignoreCase =  true)!!)
+                    return@filter tableCallback!!(tableMap.tableName!!)
                 }
                 return@filter true;
             }
                 .forEach { tableMap ->
                     var tableData = EntityDbItemData()
 
-                    tableData.name = tableMap.getStringValue("table_name", ignoreCase =  true)!!;
-                    tableData.commentString = tableMap.getStringValue("table_comment", ignoreCase =  true).AsString()
+                    tableData.name = tableMap.tableName!!;
+                    tableData.commentString = tableMap.tableComment.AsString()
                         .replace("\r\n", " ")
                         .replace('\n', ' ')
                         .replace('\"', '＂')
@@ -208,12 +221,12 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                         .replace('#', '＃')
 
 
-                    columns_map.filter { it.getStringValue("table_name", ignoreCase =  true) == tableData.name }
+                    columns.filter { it.tableName == tableData.name }
                         .forEach colMap@{ columnMap ->
 
-                            var columnName = columnMap.getStringValue("column_name", ignoreCase =  true)!!
-                            var dataType = columnMap.getStringValue("data_type", ignoreCase =  true).AsString()
-                            var columnComment = columnMap.getStringValue("column_comment", ignoreCase =  true).AsString()
+                            var columnName = columnMap.columnName
+                            var dataType = columnMap.dataType.AsString()
+                            var columnComment = columnMap.columnComment.AsString()
                                 .replace("\r\n", " ")
                                 .replace('\n', ' ')
                                 .replace('\"', '＂')
@@ -266,10 +279,10 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                             var columnData = EntityDbItemFieldData()
                             columnData.name = columnName
                             columnData.commentString = columnComment
-                            columnData.sqlType = columnMap.getStringValue("column_type", ignoreCase =  true) ?: ""
+                            columnData.sqlType = columnMap.columnType.AsString()
                             columnData.dbType = dbType
 
-                            if (columnMap.getStringValue("extra", ignoreCase =  true) == "auto_increment") {
+                            if (columnMap.extra == "auto_increment") {
                                 columnData.autoInc = true
                             }
 
@@ -282,19 +295,19 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
 
                     var uks = mutableListOf<String>();
 
-                    uks.add(columns_map.filter {
-                        it.getStringValue("table_name", ignoreCase =  true) == tableData.name
-                                && it.getStringValue(  "column_key", ignoreCase =  true  ) == "PRI"
+                    uks.add(columns.filter {
+                        it.tableName == tableData.name
+                                && it.columnKey == "PRI"
                     }
-                        .map { it.getStringValue("column_name", ignoreCase =  true) }
+                        .map { it.columnName }
 //                    .map { """"${it}""" }
                         .joinToString(",")
                     )
 
-                    indexes_map.filter { it.getStringValue("table_name", ignoreCase =  true) == tableData.name }
-                        .groupBy { it.getStringValue("index_name", ignoreCase =  true) }
+                    indexes.filter { it.tableName == tableData.name }
+                        .groupBy { it.indexName }
                         .forEach {
-                            uks.add(it.value.map { it.getStringValue("column_name", ignoreCase =  true) }
+                            uks.add(it.value.map { it.columnName }
 //                            .map { """"${it}"""" }
                                 .joinToString(",")
                             )
