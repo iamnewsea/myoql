@@ -102,7 +102,7 @@ class TestKtExt_MySql : TestBase() {
     @Test
     fun test_jpa() {
         MysqlEntityGenerator.db2Entity().toJpaCode("com.kjwt.gis.entity").forEach {
-            FileWriter("d:\\ent\\" + MyUtil.getBigCamelCase(it.id) + ".java").use { f ->
+            FileWriter("/opt/udi/" + MyUtil.getBigCamelCase(it.id) + ".java").use { f ->
                 f.write(it.name);
             }
         }

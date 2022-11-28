@@ -112,9 +112,10 @@ spring:
       password: admin
 
   datasource:
-    url: jdbc:mysql://genghuaimin:3306/zhks?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://yuxh-server:8806/mp?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
     username: root
-    password: mysql
+    password: boe.123
     type: com.zaxxer.hikari.HikariDataSource
     hikari2:
       maximum-pool-size: 30

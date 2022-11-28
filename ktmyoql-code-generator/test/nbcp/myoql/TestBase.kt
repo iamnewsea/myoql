@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.EnableAspectJAutoProxy
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.context.web.WebAppConfiguration
@@ -22,7 +23,12 @@ import java.time.LocalDateTime
 
 
 //@SpringBootApplication(exclude = arrayOf(MongoAutoConfiguration::class, RedisAutoConfiguration::class))
-@SpringBootApplication(exclude = arrayOf(DataSourceAutoConfiguration::class, RabbitAutoConfiguration::class))
+@SpringBootApplication(
+    exclude = arrayOf(
+        //DataSourceAutoConfiguration::class,
+        RabbitAutoConfiguration::class
+    )
+)
 open class KtMyoqlTestApplication {
 
     companion object {
@@ -45,7 +51,6 @@ open class KtMyoqlTestApplication {
 @TestPropertySource(locations = ["classpath:application.yml"])
 @MyLogLevel(LogLevelScopeEnum.INFO)
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
-//@ActiveProfiles("unittest","productprofile")
 //注释 pom.xml 中的  project.build.resources.resource 中的 excludes
 abstract class TestBase {
 
