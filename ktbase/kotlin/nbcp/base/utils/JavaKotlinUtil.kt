@@ -251,4 +251,10 @@ object JavaKotlinUtil {
         if (file.exists() == false) return false;
         return file.deleteRecursively()
     }
+
+
+    @JvmStatic
+    fun replace(value: String, oldValue: String, newValue: String, ignoreCase: Boolean): String {
+        return value.replace(oldValue, newValue, ignoreCase);
+    }
 }
