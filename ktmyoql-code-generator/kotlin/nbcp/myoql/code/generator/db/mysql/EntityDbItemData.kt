@@ -4,6 +4,9 @@ import nbcp.base.comm.config
 import nbcp.base.extend.HasValue
 import nbcp.base.utils.MyUtil
 
+/**
+ * 以后使用MySqlTableCodeTemplateData替换它。
+ */
 class EntityDbItemData {
     var name = ""
 
