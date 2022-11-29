@@ -16,35 +16,35 @@ import kotlin.reflect.KClass
 
 //站在开发角度,泛泛的数据类型.
 public enum class DbType {
-    STRING("字符串", kotlin.String::class.java, Types.VARCHAR),
-    ENUM("枚举", kotlin.String::class.java, Types.VARCHAR),
-    SET("枚举", kotlin.String::class.java, Types.VARCHAR),
-    INT("整数", kotlin.Int::class.java, Types.INTEGER, java.lang.Integer::class.java),
-    FLOAT("浮点数", kotlin.Float::class.java, Types.FLOAT, java.lang.Float::class.java),
-    LONG("长整数", kotlin.Long::class.java, Types.BIGINT, java.lang.Long::class.java),
-    DOUBLE("双精度", kotlin.Double::class.java, Types.DOUBLE, java.lang.Double::class.java),
-    BYTE("字节", kotlin.Byte::class.java, Types.TINYINT, java.lang.Byte::class.java),
-    SHORT("短整数", kotlin.Short::class.java, Types.SMALLINT, java.lang.Short::class.java),
-    BOOLEAN("布尔", kotlin.Boolean::class.java, Types.BIT, java.lang.Boolean::class.java),
+    STRING("字符串", String::class.java, Types.VARCHAR),
+    ENUM("枚举", String::class.java, Types.VARCHAR),
+    SET("枚举", String::class.java, Types.VARCHAR),
+    INT("整数", Int::class.java, Types.INTEGER, java.lang.Integer::class.java),
+    FLOAT("浮点数", Float::class.java, Types.FLOAT, java.lang.Float::class.java),
+    LONG("长整数", Long::class.java, Types.BIGINT, java.lang.Long::class.java),
+    DOUBLE("双精度", Double::class.java, Types.DOUBLE, java.lang.Double::class.java),
+    BYTE("字节", Byte::class.java, Types.TINYINT, java.lang.Byte::class.java),
+    SHORT("短整数", Short::class.java, Types.SMALLINT, java.lang.Short::class.java),
+    BOOLEAN("布尔", Boolean::class.java, Types.BIT, java.lang.Boolean::class.java),
     DECIMAL("大数字", BigDecimal::class.java, Types.DECIMAL),
     DATE("日期", LocalDate::class.java, Types.DATE),
     TIME("时间", LocalTime::class.java, Types.TIME),
     DATE_TIME("日期时间", LocalDateTime::class.java, Types.TIMESTAMP),
     BINARY("二进制数据", ByteArray::class.java, Types.VARBINARY),
 
-    TEXT("大文本", kotlin.String::class.java, Types.LONGVARCHAR),
-    JSON("Json", kotlin.String::class.java, Types.LONGVARCHAR),
+    TEXT("大文本", String::class.java, Types.LONGVARCHAR),
+    JSON("Json", String::class.java, Types.LONGVARCHAR),
 
     //比如sql表达式.
     OTHER("表达式类型", Any::class.java, Types.OTHER);
 
 
-    var remark: kotlin.String = "";
+    var remark: String = "";
     var javaType: Class<*>;
     var javaRefType: Class<*>?;
-    var sqlType: kotlin.Int
+    var sqlType: Int
 
-    constructor(remark: kotlin.String, javaType: Class<*>, sqlType: kotlin.Int, javaRefType: Class<*>? = null) {
+    constructor(remark: String, javaType: Class<*>, sqlType: Int, javaRefType: Class<*>? = null) {
         this.remark = remark;
         this.javaType = javaType;
         this.sqlType = sqlType;
@@ -53,28 +53,28 @@ public enum class DbType {
 
     //是否是Text类型. 需要 单引号包裹
     //Other 是复合列。
-    fun needTextWrap(): kotlin.Boolean {
+    fun needTextWrap(): Boolean {
         return this == STRING || this == TEXT || this == ENUM || this == SET || this.isDateOrTime();//|| this == DbType.Other;
     }
 
     //是否是数字格式.
-    fun isNumberic(): kotlin.Boolean {
+    fun isNumberic(): Boolean {
         return isInteger() || this == FLOAT || this == DOUBLE;
     }
 
-    fun isDateOrTime(): kotlin.Boolean {
+    fun isDateOrTime(): Boolean {
         return this == DATE || this == TIME || this == DATE_TIME;
     }
 
     //是否是整数
-    fun isInteger(): kotlin.Boolean {
+    fun isInteger(): Boolean {
         return this == INT || this == LONG || this == SHORT || this == BYTE || this == BOOLEAN
     }
 
     /**
      * 代码生成器用。
      */
-    fun toMySqlTypeString(varcharLength: kotlin.Int = 0, enumItems: kotlin.String = ""): kotlin.String {
+    fun toMySqlTypeString(varcharLength: Int = 0, enumItems: String = ""): String {
         return when (this) {
             STRING -> "varchar(${varcharLength.AsInt(200)})"
             TEXT -> "text(65535)"
@@ -99,7 +99,7 @@ public enum class DbType {
     /**
      * 代码生成器用。
      */
-    fun toKotlinType(): kotlin.String {
+    fun toKotlinType(): String {
         if (this == BOOLEAN) {
             return "Boolean?"
         }
@@ -129,7 +129,7 @@ public enum class DbType {
     /**
      * 代码生成器用
      */
-    fun toKotlinDefaultValue(): kotlin.String {
+    fun toKotlinDefaultValue(): String {
         return when (this) {
             STRING, TEXT, ENUM -> "\"\""
             FLOAT -> "0F"

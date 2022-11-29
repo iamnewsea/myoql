@@ -4,8 +4,7 @@ import nbcp.base.comm.config
 import nbcp.base.extend.basicSame
 import nbcp.base.utils.MyUtil
 import nbcp.myoql.code.generator.db.mysql.model.TableColumnMetaData
-import nbcp.myoql.code.generator.db.mysql.model.TableIndexMetaData
-import nbcp.myoql.code.generator.tool.BaseFreemarkerModel
+import nbcp.myoql.code.generator.removeQuoteContent
 import nbcp.myoql.db.sql.enums.DbType
 import org.springframework.beans.BeanUtils
 
@@ -27,7 +26,7 @@ class TableColumnDetail : TableColumnMetaData() {
      */
     val labelComment: String
         get() {
-            return Regex("""\s*\(\s*(auto_id)|(auto_number)\s*\)\s*""").replace(this.columnComment, "")
+            return this.columnComment.removeQuoteContent()
         }
 
     val fieldName: String

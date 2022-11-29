@@ -3,6 +3,7 @@ package nbcp.myoql.code.generator.db.mysql
 import nbcp.base.comm.config
 import nbcp.base.extend.HasValue
 import nbcp.base.utils.MyUtil
+import nbcp.myoql.code.generator.removeQuoteContent
 
 /**
  * 以后使用MySqlTableCodeTemplateData替换它。
@@ -16,7 +17,7 @@ class EntityDbItemData {
     //去除 （）
     val comment: String
         get() {
-            return Regex("""\s*\(\s*[\w-_]+\s*\)\s*""").replace(commentString, "")
+            return commentString.removeQuoteContent();
         }
 
     val group: String
@@ -25,9 +26,10 @@ class EntityDbItemData {
                 .find(
                     commentString
                         .replace("（", "(")
-                        .replace("）", "")
+                        .replace("）", ")")
                 )
                 ?.groupValues ?: listOf()
+
             var group_value = ""
             if (groups_all_value.size > 0) {
                 group_value = groups_all_value[1];
