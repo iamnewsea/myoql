@@ -253,7 +253,9 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
             startAt = LocalDateTime.now()
 
             this.init_app();
-            logger.Important(                """~~-~~-~~-~~  SpringUtil初始化! ~~-~~-~~-~~ """
+            logger.Important(                """
+~~-~~-~~-~~  SpringUtil初始化! ~~-~~-~~-~~ 
+"""
             )
             //发送初始化事件是没用的，因为需要先注册事件，再发出事件。 要保证注册事件在该方法之前
         }
