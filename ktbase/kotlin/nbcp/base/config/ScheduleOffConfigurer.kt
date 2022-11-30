@@ -26,6 +26,7 @@ class ScheduleOffConfigurer : SchedulingConfigurer {
             return;
         }
 
+        var cleared = false;
         taskRegistrar.javaClass.declaredFields
             .forEach { f ->
                 if (f.type.IsCollectionType) {
@@ -34,17 +35,22 @@ class ScheduleOffConfigurer : SchedulingConfigurer {
                     if (v == null) {
                         return@forEach
                     }
-                    if (v is MutableSet<*>) {
+                    if (v is MutableSet<*> && v.any()) {
                         v.clear();
-                    } else if (v is MutableList<*>) {
+                        cleared = true;
+                    } else if (v is MutableList<*> && v.any()) {
                         v.clear();
-                    }
-                    else if( v is HashMap<*,*>){
+                        cleared = true;
+                    } else if (v is HashMap<*, *> && v.any()) {
                         v.clear();
                     }
                 }
             }
 
-        logger.Important("~~-~~-~~-~~  Clear All Scheduling !!! ~~-~~-~~-~~ ")
+        if (cleared) {
+            logger.Important("""
+~~-~~-~~-~~  Clear All Scheduling !!! ~~-~~-~~-~~ 
+""")
+        }
     }
 }
