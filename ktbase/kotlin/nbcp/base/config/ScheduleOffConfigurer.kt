@@ -1,6 +1,8 @@
 package nbcp.base.config
 
 
+import nbcp.base.comm.config
+import nbcp.base.extend.AsBoolean
 import nbcp.base.extend.Important
 import nbcp.base.extend.IsCollectionType
 import org.slf4j.LoggerFactory
@@ -14,22 +16,28 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar
  * 给 scheduler 加开关
  */
 @Configuration
-@ConditionalOnProperty(name = ["app.schedule.off"])
 class ScheduleOffConfigurer : SchedulingConfigurer {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
     override fun configureTasks(taskRegistrar: ScheduledTaskRegistrar) {
+        if (config.getConfig("app.scheduler").AsBoolean(true)) {
+            return;
+        }
 
         taskRegistrar.javaClass.declaredFields
             .forEach { f ->
                 if (f.type.IsCollectionType) {
                     f.isAccessible = true
-                    val o = f.get(taskRegistrar) as MutableList<Any>?
-                    if (o != null) {
-                        //清除所有扫描到的定时任务
-                        o.clear();
+                    val v = f.get(taskRegistrar);
+                    if (v == null) {
+                        return@forEach
+                    }
+                    if (v is MutableSet<*>) {
+                        v.clear();
+                    } else if (v is MutableList<*>) {
+                        v.clear();
                     }
                 }
             }

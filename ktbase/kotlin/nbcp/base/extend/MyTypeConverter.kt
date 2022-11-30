@@ -233,11 +233,13 @@ fun Any?.AsBooleanWithNull(): Boolean? {
         if (value.equals("yes", true)) return true
         if (value.equals("1", true)) return true
         if (value.equals("enable", true)) return true
+        if (value.equals("on", true)) return true
 
         if (value.equals("false", true)) return false
         if (value.equals("no", true)) return false
         if (value.equals("0", true)) return false
         if (value.equals("disable", true)) return false
+        if (value.equals("off", true)) return false
 
     }
     return null;
