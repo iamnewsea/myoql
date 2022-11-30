@@ -39,9 +39,12 @@ class ScheduleOffConfigurer : SchedulingConfigurer {
                     } else if (v is MutableList<*>) {
                         v.clear();
                     }
+                    else if( v is HashMap<*,*>){
+                        v.clear();
+                    }
                 }
             }
 
-        logger.Important("~~-~~-~~-~~  Turn Off Scheduling !!! ~~-~~-~~-~~ ")
+        logger.Important("~~-~~-~~-~~  Clear All Scheduling !!! ~~-~~-~~-~~ ")
     }
 }
