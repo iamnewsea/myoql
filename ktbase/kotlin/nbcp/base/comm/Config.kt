@@ -118,7 +118,7 @@ ${list.filter { it.HasValue }.joinToString("  ")}
         //setOf(appGroup, getConfig("app.product-line.code")).filter { it.HasValue }.joinToString(".")
 
         /**
-         * redis 前缀，隔离key, = productLineCode/appGroup
+         * redis 前缀，隔离key, = productLineCode/appGroup/currentK8sNamespace
          */
         val appPrefix: String
             get() = productLineCode.AsString(appGroup.AsString())
@@ -127,19 +127,10 @@ ${list.filter { it.HasValue }.joinToString("  ")}
         @JvmStatic
         val redisProductLineCodePrefixEnable: Boolean
             get() {
-                getConfig("app.product-line.redis-prefix-enable")
-                    .apply {
-                        if (this.isNullOrEmpty()) {
-                            return true;
-                        }
-                        return this.AsBoolean()
-                    }
+                return getConfig("app.product-line.redis-prefix-enable").AsBoolean(true)
             }
 
 
-        /**
-         * 产品线编码
-         */
         @JvmStatic
         val videoLogo
             get() = getConfig("app.video-logo").AsBoolean();
