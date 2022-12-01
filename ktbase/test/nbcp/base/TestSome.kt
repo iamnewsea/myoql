@@ -1,7 +1,6 @@
 package nbcp.base
 
 import nbcp.base.annotation.*
-import nbcp.base.config.TaskConfig
 import nbcp.base.utils.SpringUtil
 import org.junit.jupiter.api.Test
 import org.slf4j.Logger

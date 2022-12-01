@@ -1,8 +1,9 @@
-package nbcp.base.utils
+package nbcp.base.data
 
 import nbcp.base.comm.StringMap
 import nbcp.base.extend.AsString
 import nbcp.base.extend.getByIgnoreCaseKey
+import nbcp.base.utils.HttpUtil
 import org.apache.http.HttpHeaders
 import java.io.ByteArrayOutputStream
 

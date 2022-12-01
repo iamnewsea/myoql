@@ -1,8 +1,9 @@
-package nbcp.base.utils
+package nbcp.base.data
 
 import nbcp.base.comm.StringMap
 import nbcp.base.extend.AsString
 import nbcp.base.extend.basicSame
+import nbcp.base.utils.HttpUtil
 
 class HttpResponseData {
 

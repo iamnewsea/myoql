@@ -1,4 +1,4 @@
-package nbcp.base.utils
+package nbcp.base.data
 
 import nbcp.base.extend.AsInt
 import nbcp.base.extend.AsLocalDateTime

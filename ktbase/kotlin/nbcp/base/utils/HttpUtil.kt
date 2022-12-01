@@ -5,6 +5,8 @@ package nbcp.base.utils
  */
 
 import nbcp.base.comm.*
+import nbcp.base.data.HttpRequestData
+import nbcp.base.data.HttpResponseData
 import nbcp.base.db.*
 import nbcp.base.enums.FileExtensionTypeEnum
 import nbcp.base.extend.*
