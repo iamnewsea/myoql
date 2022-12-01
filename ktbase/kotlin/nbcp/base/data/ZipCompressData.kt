@@ -13,7 +13,7 @@ import java.io.InputStream
 class ZipCompressData(file: File) {
     private var password = ""
     private val zipFile = ZipFile(file)
-    private var zipParameters: ZipParameters? = null;
+    private var zipParameters: ZipParameters = ZipParameters();
 
     fun withPassword(password: String): ZipCompressData {
         this.password = password;
