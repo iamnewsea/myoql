@@ -1,6 +1,7 @@
 package nbcp.myoql.db
 
 import nbcp.base.comm.*
+import nbcp.base.data.UrlQueryJsonData
 import nbcp.base.db.*
 import nbcp.base.enums.*
 import nbcp.base.extend.*
