@@ -405,7 +405,7 @@ object MyUtil {
     /**
      * 深度自由的克隆。可能有性能问题！
      */
-    @Deprecated
+    @Deprecated("未完成！")
     fun deepFreeClone(source: Any, target: Any, maxDepth: Int = 32, action: ((Any, Any) -> Boolean)? = null) {
         //TODO:
     }
