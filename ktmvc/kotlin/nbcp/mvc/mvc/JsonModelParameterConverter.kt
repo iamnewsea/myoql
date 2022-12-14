@@ -316,7 +316,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
             caller = "${method.name}(${method.parameters.map { it.toString() }.joinToString()})"
         }
 
-        logger.Error { require.value.AsString("请求:${webRequest.fullUrl} --> 方法:${caller} 中，找不到参数${parameter.parameterName}") }
+        logger.Error { require.message.AsString("请求:${webRequest.fullUrl} --> 方法:${caller} 中，找不到参数${parameter.parameterName}") }
         throw ParameterInvalidException(parameter.parameterName!!)
     }
 
