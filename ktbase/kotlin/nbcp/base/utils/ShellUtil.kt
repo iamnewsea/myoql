@@ -25,6 +25,7 @@ object ShellUtil {
         path: String = "",
         envs: Map<String, String> = mapOf()
     ): nbcp.base.comm.ApiResult<String> {
+        logger.info(cmds.joinToString("  "));
 
         var processBuilder = ProcessBuilder(*cmds.toTypedArray())
 

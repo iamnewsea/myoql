@@ -6,7 +6,9 @@ import nbcp.base.comm.JsonResult
 import nbcp.base.comm.ListResult
 import nbcp.base.extend.AsString
 import nbcp.base.extend.FullName
+import nbcp.base.extend.HasValue
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.ShellUtil
 import nbcp.mvc.mvc.setDownloadFileName
 import nbcp.mvc.annotation.*
 import org.slf4j.LoggerFactory
@@ -131,25 +133,13 @@ class DevFileServlet {
 
 
     fun execCmd(vararg cmds: String): ListResult<String> {
-        logger.info(cmds.joinToString(" "));
-        var p = Runtime.getRuntime().exec(cmds);
-        var lines = listOf<String>()
+        ShellUtil.execRuntimeCommand(cmds.toList())
+            .apply {
+                if (this.msg.HasValue) {
+                    return ListResult.error(this.msg)
+                }
 
-        try {
-            p.waitFor()
-            if (p.exitValue() == 0) {
-                BufferedReader(InputStreamReader(p.inputStream, "utf-8")).use { br ->
-                    lines = br.readLines()
-                    return ListResult.of(lines)
-                }
-            } else {
-                BufferedReader(InputStreamReader(p.errorStream, "utf-8")).use { br ->
-                    lines = br.readLines();
-                    return ListResult.error(lines.joinToString(","))
-                }
+                return ListResult.of(this.data!!.split("\n"))
             }
-        } catch (e: Exception) {
-            return ListResult.error(e.message ?: "error")
-        }
     }
 }
