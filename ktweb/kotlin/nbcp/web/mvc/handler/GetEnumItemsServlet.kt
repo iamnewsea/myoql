@@ -1,5 +1,6 @@
 package nbcp.web.mvc.handler
 
+import nbcp.base.annotation.Require
 import nbcp.base.comm.ListResult
 import nbcp.base.extend.AsString
 import nbcp.base.extend.GetEnumList
@@ -20,7 +21,7 @@ open class GetEnumItemsServlet {
     data class ValueLabelData(var value: String, var label: String)
 
     @GetMapping("/open/enum-items/list")
-    fun doGet(@nbcp.base.annotation.Require enum: String): ListResult<ValueLabelData> {
+    fun doGet(@Require enum: String): ListResult<ValueLabelData> {
         if( enum.isEmpty()){
             return ListResult.error("找不到 enum 参数")
         }

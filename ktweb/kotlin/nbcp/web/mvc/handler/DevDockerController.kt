@@ -1,5 +1,6 @@
 package nbcp.web.mvc.handler
 
+import nbcp.base.annotation.Require
 import nbcp.base.comm.FileExtensionInfo
 import nbcp.base.comm.ListResult
 import nbcp.base.db.IdUrl
@@ -53,10 +54,9 @@ class DevDockerServlet {
     /**
      * 列出内容
      */
-    @PostMapping("/list")
-    fun list(@nbcp.base.annotation.Require container: String, bash: String, @nbcp.base.annotation.Require work_path: String): ListResult<String> {
-        var docker_cmd = "ls -ahl  ${work_path}"
-        return execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd);
+    @PostMapping("/file/list")
+    fun list(@Require container: String, bash: String, @Require work_path: String): ListResult<String> {
+        return execDockerCmd(container, "ls -ahl  ${work_path}");
     }
 
 
@@ -69,8 +69,8 @@ class DevDockerServlet {
     /**
      * 把文件拷到宿主机
      */
-    @PostMapping("/copy2host")
-    fun copy2host(@nbcp.base.annotation.Require container: String, @nbcp.base.annotation.Require work_path: String, @nbcp.base.annotation.Require name: String): ListResult<String> {
+    @PostMapping("/file/copy2host")
+    fun copy2host(@Require container: String, @Require work_path: String, @Require name: String): ListResult<String> {
         var targetPathName = path + LocalTime.now().Format("HHmmss") + File.separator;
         var targetPath = File(targetPathName);
 
@@ -85,11 +85,11 @@ class DevDockerServlet {
     /**
      * 下载 文件内容
      */
-    @GetMapping("/download")
+    @GetMapping("/file/download")
     fun download(
-        @nbcp.base.annotation.Require container: String,
-        @nbcp.base.annotation.Require work_path: String,
-        @nbcp.base.annotation.Require name: String,
+        @Require container: String,
+        @Require work_path: String,
+        @Require name: String,
         response: HttpServletResponse
     ) {
         var targetPathName = path;
@@ -110,11 +110,11 @@ class DevDockerServlet {
     /**
      * 查看 文件内容
      */
-    @GetMapping("/view")
+    @GetMapping("/file/view")
     fun view(
-        @nbcp.base.annotation.Require container: String,
-        @nbcp.base.annotation.Require work_path: String,
-        @nbcp.base.annotation.Require name: String,
+        @Require container: String,
+        @Require work_path: String,
+        @Require name: String,
         response: HttpServletResponse
     ) {
         var targetPathName = path;
@@ -138,12 +138,12 @@ class DevDockerServlet {
     /**
      * 上传
      */
-    @PostMapping("/upload")
+    @PostMapping("/file/upload")
     fun upload(
-        @nbcp.base.annotation.Require container: String,
-        @nbcp.base.annotation.Require work_path: String,
-        @nbcp.base.annotation.Require name: String,
-        @nbcp.base.annotation.Require dbFile: IdUrl
+        @Require container: String,
+        @Require work_path: String,
+        @Require name: String,
+        @Require dbFile: IdUrl
     ): ListResult<String> {
         return execCmd("docker", "cp", "${path}${dbFile.url}", "${container}:${work_path}/${name}");
     }
@@ -151,49 +151,50 @@ class DevDockerServlet {
     /**
      * 改名
      */
-    @PostMapping("/rename")
+    @PostMapping("/file/rename")
     fun rename(
-        @nbcp.base.annotation.Require container: String,
+        @Require container: String,
         bash: String,
-        @nbcp.base.annotation.Require work_path: String,
-        @nbcp.base.annotation.Require name: String,
-        @nbcp.base.annotation.Require newName: String
+        @Require work_path: String,
+        @Require name: String,
+        @Require newName: String
     ): ListResult<String> {
-        var docker_cmd = "mv ${work_path}/${name} ${work_path}/${newName}"
-        return execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd)
+        return execDockerCmd(container, "mv ${work_path}/${name} ${work_path}/${newName}");
     }
 
 
     /**
      * 创建文件夹
      */
-    @PostMapping("/mkdir")
+    @PostMapping("/file/mkdir")
     fun mkdir(
-        @nbcp.base.annotation.Require container: String,
+        @Require container: String,
         bash: String,
-        @nbcp.base.annotation.Require work_path: String,
-        @nbcp.base.annotation.Require name: String
+        @Require work_path: String,
+        @Require name: String
     ): ListResult<String> {
-        var docker_cmd = "mkdir -p  ${work_path}/${name}"
-        return execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd);
+        return execDockerCmd(container, "mkdir -p  ${work_path}/${name}")
     }
 
     /**
      * 删除
      */
-    @PostMapping("/delete")
+    @PostMapping("/file/delete")
     fun delete(
-        @nbcp.base.annotation.Require container: String,
+        @Require container: String,
         bash: String,
-        @nbcp.base.annotation.Require work_path: String,
-        @nbcp.base.annotation.Require name: String
+        @Require work_path: String,
+        @Require name: String
     ): ListResult<String> {
-        var docker_cmd = "rm -rf  ${work_path}/${name}"
-        return execCmd("docker", "exec", container, bash.AsString("bash"), "-c", docker_cmd);
+        return execDockerCmd(container, " rm -rf  ${work_path}/${name} ");
+    }
+
+    fun execDockerCmd(container: String, cmd: String): ListResult<String> {
+        return execCmd("docker", "exec", container, "bash", "-c", cmd)
     }
 
     fun execCmd(vararg cmds: String): ListResult<String> {
-        ShellUtil.execRuntimeCommand(cmds.joinToString(" ")).apply {
+        ShellUtil.execRuntimeCommand(cmds.toList()).apply {
             if (this.msg.HasValue) {
                 return ListResult.error(this.msg)
             }

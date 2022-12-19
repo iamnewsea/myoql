@@ -1,5 +1,6 @@
 package nbcp.web.mvc.handler
 
+import nbcp.base.annotation.Require
 import nbcp.base.comm.ListResult
 import nbcp.base.db.memoryCacheDb
 import nbcp.mvc.annotation.*
@@ -20,7 +21,7 @@ open class SysMemoryCacheServlet {
      * @param key 用 AntPathMatcher 匹配,用 点 分隔每个部分
      */
     @RequestMapping("/sys/memory-cache/broke", method = arrayOf(RequestMethod.GET, RequestMethod.POST))
-    fun doGet(@nbcp.base.annotation.Require key: String): ListResult<String> {
+    fun doGet(@Require key: String): ListResult<String> {
 
         memoryCacheDb.brokeMemoryMatchCache(key)
             .apply {

@@ -1,5 +1,6 @@
 package nbcp.web.mvc.handler
 
+import nbcp.base.annotation.Require
 import nbcp.base.comm.*
 import nbcp.base.db.*
 import nbcp.base.enums.*
@@ -30,7 +31,7 @@ class DevYapiDataTypeServlet {
      * @param typeMap , 形如： {"IdName": {id: {type:"string",description:"id",mock:"1"} ,name:{} }
      */
     @RequestMapping("/user-types", method = [RequestMethod.POST, RequestMethod.GET])
-    fun dbTypes(@nbcp.base.annotation.Require connString: String, request: HttpServletRequest): nbcp.base.comm.ApiResult<JsonMap> {
+    fun dbTypes(@Require connString: String, request: HttpServletRequest): nbcp.base.comm.ApiResult<JsonMap> {
         var typeMapObject = request.findParameterValue("typeMap")
 
         if (typeMapObject == null) {

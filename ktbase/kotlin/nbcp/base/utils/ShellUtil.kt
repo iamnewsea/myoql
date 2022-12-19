@@ -15,17 +15,18 @@ object ShellUtil {
 
     /**
      * 简单的方式是，传递3个参数： "sh","-c","复杂的命令字符串"
+     * @param cmds，必须是严格的每个部分， 不能整体传一个字符串！
      */
     @JvmOverloads
     @JvmStatic
     fun execRuntimeCommand(
-        cmd: String,
+        cmds: List<String>,
         waitForSeconds: Int = 30,
         path: String = "",
         envs: Map<String, String> = mapOf()
     ): nbcp.base.comm.ApiResult<String> {
 
-        var processBuilder = ProcessBuilder(StringTokenizer(cmd).toList().map { it.toString() })
+        var processBuilder = ProcessBuilder(*cmds.toTypedArray())
 
         if (envs.any()) {
             var penv = processBuilder.environment()

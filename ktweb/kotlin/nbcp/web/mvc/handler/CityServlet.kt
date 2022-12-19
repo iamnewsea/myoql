@@ -1,5 +1,6 @@
 package nbcp.web.mvc.handler
 
+import nbcp.base.annotation.Require
 import nbcp.base.comm.ListResult
 import nbcp.base.exception.NoDbDataException
 import nbcp.base.exception.ParameterInvalidException
@@ -25,7 +26,7 @@ data class cn_city_model(var c: Int, var n: String)
 @ConditionalOnClass(value = arrayOf(MongoTemplate::class,  db::class))
 open class CityServlet {
     @PostMapping("/open/child-cities")
-    fun child(@nbcp.base.annotation.Require pcode: Int, response: HttpServletResponse): ListResult<cn_city_model> {
+    fun child(@Require pcode: Int, response: HttpServletResponse): ListResult<cn_city_model> {
         if (pcode % 100 != 0) {
             throw ParameterInvalidException("城市code非法")
         }
@@ -44,7 +45,7 @@ open class CityServlet {
      * 返回 wbs 路径信息
      */
     @PostMapping("/open/city-full-info")
-    fun fullInfo(@nbcp.base.annotation.Require code: Int, response: HttpServletResponse): ListResult<cn_city_model> {
+    fun fullInfo(@Require code: Int, response: HttpServletResponse): ListResult<cn_city_model> {
         if (code == 0) {
             throw NoDbDataException("城市code不能为空")
         }
