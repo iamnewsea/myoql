@@ -2,6 +2,7 @@ package nbcp.base.utils
 
 import nbcp.base.comm.const
 import nbcp.base.extend.toUtf8String
+import java.security.MessageDigest
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
@@ -9,6 +10,7 @@ import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.DESKeySpec
 import javax.crypto.spec.DESedeKeySpec
 import javax.crypto.spec.SecretKeySpec
+import kotlin.experimental.and
 
 /**
  * 加密解密工具
@@ -38,10 +40,24 @@ object CipherUtil {
         return String(Des3Util.decrypt(MyUtil.getFromBase64(text), MyUtil.getFromBase64(key)))
     }
 
+    /**
+     *
+     */
+    @JvmStatic
+    fun sha1(text: String): String {
+        var digest = MessageDigest.getInstance("SHA1");
+        digest.update(text.toByteArray(const.utf8));
+
+        return digest.digest().map {
+            (it.toInt() and 255).toString(16).padStart(2, '0')
+        }.joinToString("").lowercase();
+    }
+
 
     object AESUtil {
         private const val CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding"
         private const val KEY_ALGORITHM = "AES"
+
         @JvmStatic
         fun generateKey(): String {
             val kg: KeyGenerator = KeyGenerator.getInstance(KEY_ALGORITHM)
