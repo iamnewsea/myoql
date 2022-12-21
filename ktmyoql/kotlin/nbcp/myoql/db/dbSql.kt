@@ -53,7 +53,7 @@ object dbSql {
             return@lazy DatabaseEnum.ORACLE
         }
         if (conn.startsWith("jdbc:postgresql://")) {
-            return@lazy DatabaseEnum.POSTGRE_SQL
+            return@lazy DatabaseEnum.POSTGRESQL
         }
         return@lazy null;
     }
