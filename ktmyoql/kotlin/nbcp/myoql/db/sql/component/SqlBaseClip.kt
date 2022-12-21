@@ -80,49 +80,54 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
     }
 
     /**
+     * 当前连接的数据库
+     */
+    val catalog by lazy {
+        return@lazy this.jdbcTemplate.jdbcTemplate.dataSource.connection.catalog;
+    }
+
+    /**
      * 动态数据源：
      * 1. 配置文件
      * 2. 继承了 IDataSource 的Bean
      * 3. 当前作用域
      * 4. 如果是读操作，则使用 slave , 否则使用默认
      */
-    val jdbcTemplate: NamedParameterJdbcTemplate
-        get() {
-            var isRead = this is SqlBaseQueryClip;
+    val jdbcTemplate: NamedParameterJdbcTemplate by lazy {
+        var isRead = this is SqlBaseQueryClip;
 
-            var config = SpringUtil.getBean<SqlTableDataSource>();
-            var dataSourceName = config.getDataSourceName(this.tableName, isRead)
+        var config = SpringUtil.getBean<SqlTableDataSource>();
+        var dataSourceName = config.getDataSourceName(this.tableName, isRead)
 
-            if (dataSourceName.HasValue) {
+        if (dataSourceName.HasValue) {
+            var uri = SpringUtil.context.environment.getProperty("app.sql.${dataSourceName}.ds.uri").AsString()
+            var username =
+                SpringUtil.context.environment.getProperty("app.sql.${dataSourceName}.ds.username").AsString()
+            var password =
+                SpringUtil.context.environment.getProperty("app.sql.${dataSourceName}.ds.password").AsString()
 
-                var uri = SpringUtil.context.environment.getProperty("app.sql.${dataSourceName}.ds.uri").AsString()
-                var username =
-                    SpringUtil.context.environment.getProperty("app.sql.${dataSourceName}.ds.username").AsString()
-                var password =
-                    SpringUtil.context.environment.getProperty("app.sql.${dataSourceName}.ds.password").AsString()
+            //其它参数按数据源配置参数
+            var ds = db.sql.getDataSource(uri, username, password);
 
-                //其它参数按数据源配置参数
-                var ds = db.sql.getDataSource(uri, username, password);
-
-                return NamedParameterJdbcTemplate(ds);
-            }
-
-            var ds =
-                db.sql.sqlEvents?.getDataSource(this.tableName, isRead) ?: scopes.getLatest<DataSourceScope>()?.value
-            if (ds != null) {
-                return NamedParameterJdbcTemplate(ds);
-            }
-
-            if (isRead) {
-                if (SpringUtil.containsBean("slave", DataSource::class.java)) {
-                    ds = SpringUtil.getBeanByName<DataSource>("slave")
-                    return NamedParameterJdbcTemplate(ds);
-                }
-            }
-
-            ds = SpringUtil.getBean<DataSource>()
-            return NamedParameterJdbcTemplate(ds);
+            return@lazy NamedParameterJdbcTemplate(ds);
         }
+
+        var ds =
+            db.sql.sqlEvents?.getDataSource(this.tableName, isRead) ?: scopes.getLatest<DataSourceScope>()?.value
+        if (ds != null) {
+            return@lazy NamedParameterJdbcTemplate(ds);
+        }
+
+        if (isRead) {
+            if (SpringUtil.containsBean("slave", DataSource::class.java)) {
+                ds = SpringUtil.getBeanByName<DataSource>("slave")
+                return@lazy NamedParameterJdbcTemplate(ds);
+            }
+        }
+
+        ds = SpringUtil.getBean<DataSource>()
+        return@lazy NamedParameterJdbcTemplate(ds);
+    }
 
 
 //    val transactionTemplate: TransactionTemplate
