@@ -330,14 +330,7 @@ private fun Class<*>.getPropertyGetMethods(): List<Method> {
                 if (it.name.length > 2 && !it.name[2].isUpperCase()) {
                     return@filter false;
                 }
-                return@filter getPropertySetMethod(methods, it.returnType, "set" + it.name.substring(2)) != null
-            } else if (it.name.startsWith("is")) {
-                //忽略中文属性
-                if (it.name.length > 2 && !it.name[2].isUpperCase()) {
-                    return@filter false;
-                }
-
-                return@filter true;
+                return@filter true
             }
 
             return@filter false;
