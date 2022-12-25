@@ -1,7 +1,10 @@
 package nbcp.myoql.bean
 
+import nbcp.base.utils.SpringUtil
 import org.slf4j.LoggerFactory
 import org.springframework.amqp.core.AcknowledgeMode
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory
+import org.springframework.amqp.rabbit.connection.ConnectionFactory
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties
@@ -19,7 +22,9 @@ class MyOqlRabbitMqBeanConfig : BeanPostProcessor {
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
         var ret = super.postProcessAfterInitialization(bean, beanName)
 
-        if (bean is RabbitTemplate) {
+        if (bean is CachingConnectionFactory) {
+            //修正bug
+            bean.port = SpringUtil.getBean<RabbitProperties>().port;
 
         } else if (bean is RabbitProperties) {
             //ConfirmCallback 确认消息是否到达 Broker 服务器
