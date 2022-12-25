@@ -84,7 +84,7 @@ class ScopeStack : Stack<IScopeData>() {
         return getLatest(R::class.java, *enumValues);
     }
 
-    fun <R : IScopeData, Any> getLatest(type: KClass<R>, vararg enumValues: R): R? {
+    fun <R : IScopeData> getLatest(type: KClass<R>, vararg enumValues: R): R? {
         return getLatest(type.java, *enumValues)
     }
 

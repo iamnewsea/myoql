@@ -9,6 +9,7 @@ import nbcp.base.utils.*
 import nbcp.myoql.db.*
 import nbcp.myoql.db.comm.*
 import nbcp.myoql.db.enums.*
+import nbcp.myoql.db.sql.DataSourceScope
 import nbcp.myoql.db.sql.SqlEntityCollector
 import nbcp.myoql.db.sql.base.BaseAliasSqlSect
 import nbcp.myoql.db.sql.base.SqlColumnName
@@ -53,7 +54,7 @@ object dbSql {
             return@lazy DatabaseEnum.ORACLE
         }
         if (conn.startsWith("jdbc:postgresql://")) {
-            return@lazy DatabaseEnum.POSTGRE_SQL
+            return@lazy DatabaseEnum.POSTGRESQL
         }
         return@lazy null;
     }
@@ -118,6 +119,13 @@ object dbSql {
         return dataSource
     }
 
+    /**
+     * 获取当前作用域的 DataSource，如果没有，获取默认的。
+     */
+    @JvmStatic
+    fun getScopeDataSource(): DataSource? {
+        return scopes.getLatest(DataSourceScope::class)?.value ?: SpringUtil.getBeanWithNull(DataSource::class)
+    }
 
     @JvmStatic
     fun json_array(list: Collection<Any?>): SqlParameterData {

@@ -2,6 +2,7 @@ package nbcp.myoql.db.mybatis
 
 import nbcp.base.comm.config
 import nbcp.base.utils.SpringUtil
+import nbcp.myoql.db.db
 import org.mybatis.spring.mapper.MapperScannerConfigurer
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
@@ -44,9 +45,10 @@ class MybatisDbConfig {
     }
 
 
-    val dataSource: DataSource by lazy {
-        return@lazy SpringUtil.getBean<DataSource>()
-    }
+    val dataSource: DataSource
+        get() {
+            return db.sql.getScopeDataSource()!!;
+        }
 
 
     fun mybatisMapperScannerConfigurer(): MapperScannerConfigurer {

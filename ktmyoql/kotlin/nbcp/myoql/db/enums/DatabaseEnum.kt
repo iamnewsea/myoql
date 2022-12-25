@@ -10,15 +10,17 @@ enum class DatabaseEnum {
     ELASTIC_SEARCH,
 
     SQL,
+    DB2,
     MY_SQL,
+    MARIA_DB,
     ORACLE,
     SQLITE,
     SQL_SERVER,
-    POSTGRE_SQL;
+    POSTGRESQL;
 
 
     fun isSqlType(): Boolean {
-        if (this.IsIn(SQL, MY_SQL, ORACLE, SQLITE, SQL_SERVER, POSTGRE_SQL)) {
+        if (this.IsIn(SQL, DB2,MY_SQL, MARIA_DB, ORACLE, SQLITE, SQL_SERVER, POSTGRESQL)) {
             return true;
         }
         return false;

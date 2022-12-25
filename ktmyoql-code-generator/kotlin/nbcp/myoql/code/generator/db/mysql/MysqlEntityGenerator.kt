@@ -147,10 +147,6 @@ ${
         fun getTablesData(): List<EntityDbItemData> {
             var ret = mutableListOf<EntityDbItemData>()
 
-            var db = SpringUtil.getBean<DataSource>().connection.use {
-                return@use it.catalog;
-            }
-
             var tables = RawQuerySqlClip(
                 """
 SELECT 
@@ -159,8 +155,12 @@ table_comment as `tableComment`
 FROM INFORMATION_SCHEMA.TABLES
 where table_schema = :db 
 order by table_name
-""", JsonMap("db" to db)
-            ).toList(TableMetaData::class.java)
+""", JsonMap()
+            )
+                .apply {
+                    this.sqlParameter.values.put("db", this.catalog)
+                }
+                .toList(TableMetaData::class.java)
 
 
             var columns = RawQuerySqlClip(
@@ -184,8 +184,12 @@ order by
         ELSE  char_length(COLUMN_NAME) - char_length(replace(COLUMN_NAME,'_','')) + 1
     END ASC,
     CHAR_LENGTH(COLUMN_NAME) ASC 
-""", JsonMap("db" to db)
-            ).toList(TableColumnMetaData::class.java)
+""", JsonMap()
+            )
+                .apply {
+                    this.sqlParameter.values.put("db", this.catalog)
+                }
+                .toList(TableColumnMetaData::class.java)
 
 
             var indexes = RawQuerySqlClip(
@@ -198,8 +202,12 @@ SELECT
 FROM INFORMATION_SCHEMA.STATISTICS
 where table_schema = :db AND non_unique = 0 AND INDEX_name != 'PRIMARY' 
 ORDER BY TABLE_NAME , index_name , seq_in_index
-""", JsonMap("db" to db)
-            ).toList(TableIndexMetaData::class.java)
+""", JsonMap()
+            )
+                .apply {
+                    this.sqlParameter.values.put("db", this.catalog)
+                }
+                .toList(TableIndexMetaData::class.java)
 
 
 

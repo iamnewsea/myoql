@@ -2,6 +2,7 @@ package nbcp.myoql.db.mybatis
 
 import nbcp.base.utils.MyUtil
 import nbcp.base.utils.SpringUtil
+import nbcp.myoql.db.db
 import org.apache.ibatis.cache.CacheKey
 import org.apache.ibatis.executor.Executor
 import org.apache.ibatis.executor.keygen.SelectKeyGenerator
@@ -76,7 +77,7 @@ class MyBatisInterceptor : Interceptor {
         MyUtil.setPrivatePropertyValue(
             executor.transaction as SpringManagedTransaction,
             "dataSource",
-            SpringUtil.getBean<DataSource>()
+            db.sql.getScopeDataSource()
         )
     }
 

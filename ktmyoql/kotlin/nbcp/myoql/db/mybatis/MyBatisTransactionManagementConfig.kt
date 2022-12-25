@@ -2,6 +2,7 @@ package nbcp.myoql.db.mybatis
 
 
 import nbcp.base.utils.SpringUtil
+import nbcp.myoql.db.db
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.TransactionManagementConfigurer
@@ -14,8 +15,9 @@ import javax.sql.DataSource
 
 
 open class MyBatisTransactionManagementConfig() : TransactionManagementConfigurer {
-    val dataSource: DataSource by lazy {
-        return@lazy SpringUtil.getBean<DataSource>()
+    val dataSource: DataSource
+    get() {
+        return db.sql.getScopeDataSource()!!;
     }
 
     override fun annotationDrivenTransactionManager(): PlatformTransactionManager {
