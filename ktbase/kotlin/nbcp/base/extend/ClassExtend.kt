@@ -307,14 +307,16 @@ private fun getPropertySetMethod(methods: List<Method>, fieldType: Class<*>, met
 private fun Class<*>.getPropertyGetMethods(): List<Method> {
     var methods = this.methods.filter {
         if (it.IsStatic) return@filter false;
-        if (it.IsPrivate) return@filter false;
+        if (!it.IsPublic) return@filter false;
         if (it.IsTransient) return@filter false;
+        if (Modifier.isNative(it.modifiers)) return@filter false;
 
         return@filter it.name.startsWith("is") || it.name.startsWith("get")
     }
 
     return methods.filter {
         if (it.parameters.any()) return@filter false;
+        if (it.name == "getClass") return@filter false;
         if (it.name.startsWith("get")) {
             //忽略中文属性
             if (it.name.length > 3 && !it.name[3].isUpperCase()) {
