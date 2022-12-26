@@ -48,7 +48,7 @@ abstract class MongoBaseMetaCollection<T : Any> @JvmOverloads constructor(
 
 
     fun getColumn(column: String): MongoColumnName? {
-        return getColumns().firstOrNull { it.toString() == column }
+        return getColumns().firstOrNull { if (column == "id") it.toString() == "_id" else it.toString() == column }
     }
 
     fun getMongoTemplate(): MongoTemplate {
