@@ -20,12 +20,12 @@ typealias mongoQuery = org.springframework.data.mongodb.core.query.Query
  * mongo 元数据实体的基类
  */
 abstract class MongoBaseMetaCollection<T : Any> @JvmOverloads constructor(
-    /**
-     * 实体的类型
-     */
-    entityClass: Class<T>,
-    tableName: String = "",
-    databaseId: String = ""
+        /**
+         * 实体的类型
+         */
+        entityClass: Class<T>,
+        tableName: String = "",
+        databaseId: String = ""
 ) : BaseMetaData<T>(entityClass, tableName, databaseId) {
     //    abstract fun getColumns(): Array<String>;
     companion object {
@@ -34,15 +34,21 @@ abstract class MongoBaseMetaCollection<T : Any> @JvmOverloads constructor(
 
     @Transient
     private var _columns = arrayOf<MongoColumnName>()
+
     fun getColumns(): Array<MongoColumnName> {
         if (_columns.isNotEmpty()) {
             return _columns;
         }
 
         _columns = this::class.java.AllFields.filter { MongoColumnName::class.java.isAssignableFrom(it.type) }
-            .map { it.get(this) as MongoColumnName }
-            .toTypedArray()
+                .map { it.get(this) as MongoColumnName }
+                .toTypedArray()
         return _columns;
+    }
+
+
+    fun getColumn(column: String): MongoColumnName? {
+        return getColumns().firstOrNull { it.toString() == column }
     }
 
     fun getMongoTemplate(): MongoTemplate {

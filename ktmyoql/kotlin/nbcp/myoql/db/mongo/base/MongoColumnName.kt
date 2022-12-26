@@ -12,7 +12,7 @@ import java.util.regex.Pattern
 /**
  * Mongo列
  */
-open class MongoColumnName @JvmOverloads constructor(private var _mongo_value: String = "") : java.io.Serializable {
+open class MongoColumnName @JvmOverloads constructor(private var mongo_column_name: String = "") : java.io.Serializable {
 
 //    val asc: MongoOrderBy
 //        get() = MongoOrderBy(true, this)
@@ -21,11 +21,11 @@ open class MongoColumnName @JvmOverloads constructor(private var _mongo_value: S
 //        get() = MongoOrderBy(false, this)
 
     override fun hashCode(): Int {
-        return _mongo_value.hashCode()
+        return mongo_column_name.hashCode()
     }
 
     override fun toString(): String {
-        return _mongo_value.toString()
+        return mongo_column_name
     }
 
     infix fun match(to: Any?): Criteria {
