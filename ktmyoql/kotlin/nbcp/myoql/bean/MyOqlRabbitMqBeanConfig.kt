@@ -23,8 +23,13 @@ class MyOqlRabbitMqBeanConfig : BeanPostProcessor {
         var ret = super.postProcessAfterInitialization(bean, beanName)
 
         if (bean is CachingConnectionFactory) {
+            var properties = SpringUtil.getBean<RabbitProperties>()
             //修正bug
-            bean.port = SpringUtil.getBean<RabbitProperties>().port;
+            bean.port = properties.port;
+            bean.host = properties.host;
+            bean.username = properties.username;
+            bean.setPassword(properties.password)
+            bean.virtualHost = properties.virtualHost;
 
         } else if (bean is RabbitProperties) {
             //ConfirmCallback 确认消息是否到达 Broker 服务器
