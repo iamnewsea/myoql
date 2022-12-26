@@ -10,19 +10,19 @@ import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
 
 
-fun <M : MongoBaseMetaCollection<T>, T:Any > M.query(): MongoQueryClip<M, T> = MongoQueryClip(this);
+fun <M : MongoBaseMetaCollection<T>, T : Any> M.query(): MongoQueryClip<M, T> = MongoQueryClip(this);
 
-fun <M : MongoBaseMetaCollection<T>, T:Any > M.query(whereData: Criteria): MongoQueryClip<M, T> {
+fun <M : MongoBaseMetaCollection<T>, T : Any> M.query(whereData: Criteria): MongoQueryClip<M, T> {
     var ret = MongoQueryClip(this);
     ret.where(whereData);
     return ret;
 }
 
-fun <M : MongoBaseMetaCollection<T>, T :Any> M.queryById(id: String): MongoQueryClip<M, T> =
+fun <M : MongoBaseMetaCollection<T>, T : Any> M.queryById(id: String): MongoQueryClip<M, T> =
     this.query().where("id" match id);
 
 
-fun <M : MongoBaseMetaCollection<out E>,E:Any> M.updateById(id: String): MongoUpdateClip<M,E> {
+fun <M : MongoBaseMetaCollection<out E>, E : Any> M.updateById(id: String): MongoUpdateClip<M, E> {
     var idValue = id.trim()
     if (idValue.isEmpty()) {
         throw RuntimeException("按id更新mongo数据时，id不能为空！")
@@ -33,7 +33,7 @@ fun <M : MongoBaseMetaCollection<out E>,E:Any> M.updateById(id: String): MongoUp
 /**
  * 按实体单条更新。 默认使用Id更新，不会更新id。
  */
-fun <M : MongoBaseMetaCollection<out E>,E:Any> M.updateWithEntity(entity: E): MongoSetEntityUpdateClip<M,E> {
+fun <M : MongoBaseMetaCollection<out E>, E : Any> M.updateWithEntity(entity: E): MongoSetEntityUpdateClip<M, E> {
     return MongoSetEntityUpdateClip(this, entity);
 }
 
@@ -43,13 +43,13 @@ fun <M : MongoBaseMetaCollection<out Any>> M.batchInsert(): MongoInsertClip<M> {
 }
 
 
-fun <M : MongoBaseMetaCollection<out E>,E:Any> M.updateById(id: ObjectId): MongoUpdateClip<M,E> {
+fun <M : MongoBaseMetaCollection<out E>, E : Any> M.updateById(id: ObjectId): MongoUpdateClip<M, E> {
     var ret = this.update();
     ret.where("id" match id);
     return ret;
 }
 
-fun <M : MongoBaseMetaCollection<out E>,E:Any> M.update(): MongoUpdateClip<M,E> {
+fun <M : MongoBaseMetaCollection<out E>, E : Any> M.update(): MongoUpdateClip<M, E> {
     return MongoUpdateClip(this);
 }
 
@@ -62,7 +62,16 @@ fun <M : MongoBaseMetaCollection<out Any>> M.deleteById(id: String): MongoDelete
 }
 
 
-fun <M : MongoBaseMetaCollection<E>, E:Any> M.aggregate(): MongoAggregateClip<M, E> {
+/**
+ * 聚合。
+ */
+fun <M : MongoBaseMetaCollection<E>, E : Any> M.aggregate(): MongoAggregateClip<M, E> {
+    /*
+db.articles.aggregate( [
+    { $match : { score : { $gt : 70, $lte : 90 } } },
+    { $group: { _id: null, count: { $sum: 1 } } }
+   ] );
+     */
     var ret = MongoAggregateClip(this);
     return ret;
 }
