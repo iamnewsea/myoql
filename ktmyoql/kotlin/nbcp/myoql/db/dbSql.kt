@@ -124,7 +124,7 @@ object dbSql {
      */
     @JvmStatic
     fun getScopeDataSource(): DataSource? {
-        return scopes.getLatest(DataSourceScope::class)?.value ?: SpringUtil.getBeanWithNull(DataSource::class)
+        return scopes.getLatest(DataSourceScope::class.java)?.value ?: SpringUtil.getBeanWithNull(DataSource::class)
     }
 
     @JvmStatic

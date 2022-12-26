@@ -84,9 +84,9 @@ class ScopeStack : Stack<IScopeData>() {
         return getLatest(R::class.java, *enumValues);
     }
 
-    fun <R : IScopeData> getLatest(type: KClass<R>, vararg enumValues: R): R? {
-        return getLatest(type.java, *enumValues)
-    }
+//    fun <R : IScopeData> getLatest(type: KClass<R>, vararg enumValues: R): R? {
+//        return getLatest(type.java, *enumValues)
+//    }
 
     /**
      * @exception: 不能做日志,因为在 MyLogBackFilter 中会调用它!
