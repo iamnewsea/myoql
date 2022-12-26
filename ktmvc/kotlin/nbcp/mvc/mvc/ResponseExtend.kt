@@ -44,6 +44,7 @@ fun ServletResponse.WriteHtmlBodyValue(text: String) {
 }
 
 fun HttpServletResponse.setDownloadFileName(fileName: String) {
+    //让程序可以读取该Header
     this.setHeader("Content-Disposition", "attachment; filename=" + JsUtil.encodeURIComponent(fileName));
     this.contentType = "application/octet-stream"
 }

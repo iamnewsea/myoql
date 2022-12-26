@@ -47,10 +47,10 @@ x-real-ip: 10.0.4.20
 x-forwarded-for: 103.10.86.226,124.70.126.65,10.0.4.20
      */
     var forwardIps = (request.getHeader("X-Forwarded-For") ?: "")
-        .split(",")
-        .map { it.trim() }
-        .filter { it.HasValue && !it.basicSame("unknown") && !MyUtil.isLocalIp(it) }
-        .toList();
+            .split(",")
+            .map { it.trim() }
+            .filter { it.HasValue && !it.basicSame("unknown") && !MyUtil.isLocalIp(it) }
+            .toList();
 
     //如果设置了 X-Forwarded-For
     if (forwardIps.any()) {
@@ -138,10 +138,10 @@ val HttpServletRequest.postBody: ByteArray?
         }
 
         var maxHttpPostSize = DataSize.parse(
-            config.getConfig("server.servlet.max-http-post-size")
-                .AsString { config.getConfig("server.tomcat.max-http-post-size", "") }
+                config.getConfig("server.servlet.max-http-post-size")
+                        .AsString { config.getConfig("server.tomcat.max-http-post-size", "") }
 //                .AsString{config.getConfig("server.tomcat.max-http-post-size", "")}
-                .AsString("2MB")
+                        .AsString("2MB")
         )
         if (this.contentLength > maxHttpPostSize.toBytes()) {
             throw RuntimeException("请求体超过${(maxHttpPostSize.toString()).AsInt()}!")
@@ -152,7 +152,7 @@ val HttpServletRequest.postBody: ByteArray?
         return postBodyValue;
     }
 
-private fun setValue(jm: MutableMap<String,Any?>, prop: String, arykey: String, value: String) {
+private fun setValue(jm: MutableMap<String, Any?>, prop: String, arykey: String, value: String) {
     if (arykey.isEmpty()) {
         jm[prop] = value;
         return;
@@ -190,7 +190,7 @@ private fun getPostJsonFromRequest(request: HttpServletRequest): JsonMap {
 
         return JsonMap();
     } else if (contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-        || contentType.startsWith("application/x-www-form-urlencode")
+            || contentType.startsWith("application/x-www-form-urlencode")
     ) {
         //按 key进行分组，假设客户端是：
         // corp[id]=1&corp[name]=abc&role[id]=2&role[name]=def
@@ -277,8 +277,8 @@ fun HttpServletRequest.getParameterValue(key: String): Any? {
 
     //读取表单内容
     if (request.contentType != null &&
-        (request.contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                || request.contentType.startsWith("application/x-www-form-urlencode"))
+            (request.contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                    || request.contentType.startsWith("application/x-www-form-urlencode"))
     ) {
         ret = request.getParameter(key)
         if (ret != null) {
@@ -333,11 +333,11 @@ val HttpServletRequest.fullUrl: String
 
 fun StandardMultipartHttpServletRequest.getFirstUploadFileStream(): InputStream {
     return this
-        .multiFileMap
-        .values
-        .first()
-        .first()
-        .inputStream
+            .multiFileMap
+            .values
+            .first()
+            .first()
+            .inputStream
 }
 
 
@@ -377,10 +377,10 @@ fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>, denyHeader
 //    allowHeaders.add("Authorization")
 
     allowHeaders.addAll(
-        request.getHeader("Access-Control-Request-Headers")
-            .AsString()
-            .split(",")
-            .filter { it.HasValue }
+            request.getHeader("Access-Control-Request-Headers")
+                    .AsString()
+                    .split(",")
+                    .filter { it.HasValue }
     )
 
     allowHeaders.removeIf { it.isEmpty() }
@@ -391,7 +391,7 @@ fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>, denyHeader
 
     if (allowHeaders.any()) {
         retMap.put("Access-Control-Allow-Headers", allowHeaders.joinToString(","))
-        retMap.put("Access-Control-Expose-Headers", allowHeaders.joinToString(","))
+        retMap.put("Access-Control-Expose-Headers", (allowHeaders + "Content-Disposition").joinToString(","))
     }
     return retMap;
 }

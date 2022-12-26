@@ -51,7 +51,7 @@ x-real-ip: 10.0.4.20
 x-forwarded-for: 103.10.86.226,124.70.126.65,10.0.4.20
      */
     var forwardIps = (request.getHeader("X-Forwarded-For") ?: "").split(",").map { it.trim() }
-        .filter { it.HasValue && !it.basicSame("unknown") && !MyUtil.isLocalIp(it) }.toList();
+            .filter { it.HasValue && !it.basicSame("unknown") && !MyUtil.isLocalIp(it) }.toList();
 
     //如果设置了 X-Forwarded-For
     if (forwardIps.any()) {
@@ -121,9 +121,9 @@ val ServerWebExchange.postBody: Mono<ByteArray>
         }
 
         var maxHttpPostSize = DataSize.parse(
-            config.getConfig("server.jetty.max-http-post-size")
+                config.getConfig("server.jetty.max-http-post-size")
 //                .AsString { config.getConfig("server.tomcat.max-http-post-size", "") }
-                .AsString("2MB")
+                        .AsString("2MB")
         )
 
         if (this.request.headers.contentLength > maxHttpPostSize.toBytes()) {
@@ -149,7 +149,7 @@ val ServerWebExchange.postBody: Mono<ByteArray>
 //        return postBodyValue;
     }
 
-private fun setValue(jm: MutableMap<String,Any?>, prop: String, arykey: String, value: String) {
+private fun setValue(jm: MutableMap<String, Any?>, prop: String, arykey: String, value: String) {
     if (arykey.isEmpty()) {
         jm[prop] = value;
         return;
@@ -293,9 +293,9 @@ fun ServerHttpRequest.getCorsResponseMap(allowOrigins: List<String>, denyHeaders
     if (requestOrigin.isEmpty()) return retMap;
 
     var allow =
-        allowOrigins.any { requestOrigin.contains(it) } || requestOrigin.contains("localhost") || requestOrigin.contains(
-            "127.0.0"
-        );
+            allowOrigins.any { requestOrigin.contains(it) } || requestOrigin.contains("localhost") || requestOrigin.contains(
+                    "127.0.0"
+            );
 
     if (allow == false) {
         LoggerFactory.getLogger("ktmvc.getCorsResponseMap").warn("系统忽略未允许的跨域请求源:${requestOrigin}")
@@ -310,12 +310,13 @@ fun ServerHttpRequest.getCorsResponseMap(allowOrigins: List<String>, denyHeaders
 
 
     var allowHeaders = mutableSetOf<String>();
+    allowHeaders.add("Content-Disposition");
     allowHeaders.add(config.tokenKey);
     //添加指定的
 //    allowHeaders.add("Authorization")
 
     allowHeaders.addAll(request.getHeader("Access-Control-Request-Headers").AsString().split(",")
-        .filter { it.HasValue })
+            .filter { it.HasValue })
 
     allowHeaders.removeIf { it.isEmpty() }
 
@@ -323,7 +324,7 @@ fun ServerHttpRequest.getCorsResponseMap(allowOrigins: List<String>, denyHeaders
 
     if (allowHeaders.any()) {
         retMap.put("Access-Control-Allow-Headers", allowHeaders.joinToString(","))
-        retMap.put("Access-Control-Expose-Headers", allowHeaders.joinToString(","))
+        retMap.put("Access-Control-Expose-Headers", (allowHeaders + "Content-Disposition").joinToString(","))
     }
     return retMap;
 }
