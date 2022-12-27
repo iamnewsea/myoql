@@ -55,6 +55,13 @@ open class MyOqlCrossFilter : Filter {
         }
 
         val httpRequest = request
+        if (httpRequest.getAttribute("(CrossFilterProced)").AsBoolean()) {
+            chain.doFilter(request, response)
+            return
+        }
+        httpRequest.setAttribute("(CrossFilterProced)", true);
+
+
         var httpResponse = response as HttpServletResponse
 
         var request2: HttpServletRequest? = null

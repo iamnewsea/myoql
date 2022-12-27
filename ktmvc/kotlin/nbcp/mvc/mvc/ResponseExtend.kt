@@ -5,6 +5,7 @@ package nbcp.mvc.mvc
 
 import nbcp.base.comm.const
 import nbcp.base.extend.AsString
+import nbcp.base.extend.HasValue
 import nbcp.base.utils.JsUtil
 import nbcp.base.utils.WebUtil
 import org.springframework.http.MediaType
@@ -35,7 +36,7 @@ fun ServletResponse.WriteHtmlValue(text: String) {
 fun ServletResponse.WriteHtmlBodyValue(text: String) {
     this.contentType = "text/html;charset=UTF-8";
     this.outputStream.write(
-        """<!DOCTYPE html>
+            """<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"></head>
 <body>${text}</body>
@@ -45,6 +46,9 @@ fun ServletResponse.WriteHtmlBodyValue(text: String) {
 
 fun HttpServletResponse.setDownloadFileName(fileName: String) {
     //让程序可以读取该Header
+    var accessControlExposeHeaders = this.getHeader("Access-Control-Expose-Headers").AsString().split(",").filter { it.HasValue }.toMutableSet();
+    accessControlExposeHeaders.add("content-disposition")
+    this.setHeader("Access-Control-Expose-Headers", accessControlExposeHeaders.joinToString(","))
     this.setHeader("Content-Disposition", "attachment; filename=" + JsUtil.encodeURIComponent(fileName));
     this.contentType = "application/octet-stream"
 }

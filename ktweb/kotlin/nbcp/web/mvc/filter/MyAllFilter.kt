@@ -64,15 +64,21 @@ open class MyAllFilter : Filter {
         }
     }
 
-    override fun doFilter(oriRequest: ServletRequest?, oriResponse: ServletResponse?, chain: FilterChain?) {
+    override fun doFilter(oriRequest: ServletRequest?, oriResponse: ServletResponse?, chain: FilterChain) {
         if (ENABLED == false) {
-            chain?.doFilter(oriRequest, oriResponse)
+            chain.doFilter(oriRequest, oriResponse)
             return;
         }
 
         var httpRequest = oriRequest as HttpServletRequest
+        if (httpRequest.getAttribute("(MyAllFilterProced)").AsBoolean()) {
+            chain.doFilter(oriRequest, oriResponse)
+            return
+        }
+        httpRequest.setAttribute("(MyAllFilterProced)", true);
+
         if (matchUrI(httpRequest.requestURI, IGNORE_URLS)) {
-            chain?.doFilter(oriRequest, oriResponse)
+            chain.doFilter(oriRequest, oriResponse)
             return;
         }
 
@@ -91,12 +97,11 @@ open class MyAllFilter : Filter {
         setLang(request)
 
 
-
         var logLevel = getLogLevel(request);
 
         if (logLevel != null) {
             if (logLevel == LogLevelScopeEnum.OFF) {
-                chain?.doFilter(request, response)
+                chain.doFilter(request, response)
                 return;
             }
 
@@ -114,7 +119,7 @@ open class MyAllFilter : Filter {
 
         var logLevelString = httpRequest.queryJson.findParameterKey("logLevel").AsString();
         if (logLevelString.HasValue &&
-            config.adminToken == httpRequest.findParameterStringValue("adminToken")
+                config.adminToken == httpRequest.findParameterStringValue("adminToken")
         ) {
             if (logLevelString.IsNumberic()) {
                 var logLevelInt = logLevelString.AsInt()
@@ -161,26 +166,26 @@ open class MyAllFilter : Filter {
 
 
     private fun procFilter(
-        request: MyHttpRequestWrapper,
-        response: ContentCachingResponseWrapper,
-        chain: FilterChain?
+            request: MyHttpRequestWrapper,
+            response: ContentCachingResponseWrapper,
+            chain: FilterChain
     ) {
         var startAt = LocalDateTime.now()
         beforeRequest(request)
         var errorMsg = ""
         try {
-            chain?.doFilter(request, response);
+            chain.doFilter(request, response);
         } catch (ex: Throwable) {
             //全局异常之外的异常会来这。
             var err = getInnerException(ex);
             var errorInfo = mutableListOf<String>()
             errorInfo.add(
-                err::class.java.simpleName + ": " + err.Detail.AsString(err.message.AsString()).AsString("(未知错误)")
-                    .Slice(0, 256)
+                    err::class.java.simpleName + ": " + err.Detail.AsString(err.message.AsString()).AsString("(未知错误)")
+                            .Slice(0, 256)
             )
 
             errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }
-                .take(24))
+                    .take(24))
 
             errorMsg = errorInfo.joinToString(const.line_break)
         } finally {
@@ -233,11 +238,11 @@ open class MyAllFilter : Filter {
 
 
     fun afterComplete(
-        request: HttpServletRequest,
-        response: ContentCachingResponseWrapper,
-        callback: String,
-        startAt: LocalDateTime,
-        errorMsg: String
+            request: HttpServletRequest,
+            response: ContentCachingResponseWrapper,
+            callback: String,
+            startAt: LocalDateTime,
+            errorMsg: String
     ) {
         var resStringValue = errorMsg;
         if (resStringValue.HasValue) {
