@@ -8,13 +8,12 @@
     <name>kotlin-boot-parent</name>
 
     <modules>
-        <module>ktagent</module>
         <module>ktbase</module>
         <module>ktmyoql</module>
         <module>ktmyoql-code-generator</module>
         <module>ktmvc</module>
         <module>ktweb</module>
-        <module>tools/ktembed</module>
+        <module>tools</module>
     </modules>
 
     <licenses>
