@@ -122,20 +122,25 @@ public class SplitLibMojo
         getLog().info(StringUtil.fillWithPad("包名", 48, '-') + "groupId");
         for (var jar : libJars) {
             var groupId = getJarGroupId(jar);
-            var key = StringUtil.fillWithPad(jar.getPath().substring(libFile.getPath().length() + 1), 48, '-');
 
             if (ListUtil.indexOf(groupIds, groupId) < 0) {
                 jar.renameTo(new File(FileUtil.joinPath(splitLibPath.getPath(), "lib", jar.getName())));
-                getLog().info(key + "匹配 " + groupId + " !");
+                var key = StringUtil.fillWithPad(jar.getPath().substring(libFile.getPath().length() + 1), 48, ' ');
+
+                getLog().info(key + groupId);
                 count++;
             } else {
-                getLog().info(key + groupId);
+                var key = StringUtil.fillWithPad(jar.getPath().substring(libFile.getPath().length() + 1), 48, '-');
+
+                getLog().info(key + StringUtil.fillWithPad(groupId, 16, ' ') + " ✔");
             }
         }
 
         getLog().info("split-lib 共拆出 " + count + " 个Jar包！");
 
-        FileUtil.deleteAll(new File(FileUtil.joinPath(splitLibPath.getPath(), "lib")), true);
+        if (FileUtil.deleteAll(new File(FileUtil.joinPath(splitLibPath.getPath(), "tmp")), true) == false) {
+            getLog().warn("清理 tmp  失败！");
+        }
     }
 
     private void extractJar(String jarFileName) {

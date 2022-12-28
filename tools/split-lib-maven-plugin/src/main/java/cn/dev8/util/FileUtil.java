@@ -101,6 +101,8 @@ public class FileUtil {
             if (!deleteAll(f, ignoreError) && !ignoreError) {
                 return false;
             }
+
+            f.delete();
         }
 
         return true;
