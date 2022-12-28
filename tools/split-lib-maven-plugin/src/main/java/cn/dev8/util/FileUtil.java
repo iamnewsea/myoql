@@ -62,7 +62,6 @@ public class FileUtil {
             }
             if (it.equals(".")) {
                 splitList.remove(i);
-                continue;
             }
         }
 
@@ -93,6 +92,10 @@ public class FileUtil {
      * @return
      */
     public static boolean deleteAll(File file, boolean ignoreError) {
+        if( file.exists() == false){
+            return true;
+        }
+
         if (file.isFile()) {
             return file.delete();
         }

@@ -42,7 +42,7 @@ import java.util.Arrays;
  *
  * @deprecated Don't use!
  */
-@Mojo(name = "split-lib", defaultPhase = LifecyclePhase.PROCESS_SOURCES)
+@Mojo(name = "split-lib", defaultPhase = LifecyclePhase.PACKAGE)
 public class SplitLibMojo
         extends AbstractMojo {
     /**
@@ -61,11 +61,18 @@ public class SplitLibMojo
     @Parameter(property = "keepGroupIds", defaultValue = "")
     private String keepGroupIds;
 
+    @Parameter(property = "disabled", defaultValue = "false")
+    private Boolean disabled;
+
     private String jarPath = "";
 
     @SneakyThrows
     public void execute()
             throws MojoExecutionException {
+        if (disabled) {
+            return;
+        }
+
         var now = LocalDateTime.now();
         var nowString = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
 
@@ -82,14 +89,19 @@ public class SplitLibMojo
 
         getLog().info("split-lib 拆分的包名为：" + String.join(",", groupIds));
 
-        var javaHomePath = System.getenv("JAVA_HOME");
         var osName = System.getProperty("os.name").toLowerCase();
+        var javaHomePath = System.getenv("JAVA_HOME");
+        if (osName.contains("windows")) {
+            javaHomePath = javaHomePath.replace('/', '\\');
+        }
+
         jarPath = FileUtil.joinPath(javaHomePath, "bin", "jar");
         if (osName.contains("windows")) {
             jarPath += ".exe";
         }
 
         if (new File(jarPath).exists() == false) {
+            getLog().error("JAVA_HOME:" + javaHomePath);
             throw new RuntimeException("找不到 jar 命令：" + jarPath);
         }
 
@@ -132,7 +144,7 @@ public class SplitLibMojo
             } else {
                 var key = StringUtil.fillWithPad(jar.getPath().substring(libFile.getPath().length() + 1), 48, '-');
 
-                getLog().info(key + StringUtil.fillWithPad(groupId, 16, ' ') + " ✔");
+                getLog().info(key + StringUtil.fillWithPad(groupId, 16, ' ') + " √");
             }
         }
 
@@ -140,6 +152,21 @@ public class SplitLibMojo
 
         if (FileUtil.deleteAll(new File(FileUtil.joinPath(splitLibPath.getPath(), "tmp")), true) == false) {
             getLog().warn("清理 tmp  失败！");
+        }
+
+        zipJar(FileUtil.joinPath(splitLibPath.getPath(), "jar"));
+    }
+
+    private void zipJar(String workPath) {
+        var cmd = new ArrayList<String>();
+        cmd.add(jarPath);
+        cmd.add("cf0M");
+        cmd.add(FileUtil.joinPath(workPath, "..", project.getArtifactId() + "-" + project.getVersion() + ".jar"));
+        cmd.add("*");
+
+        var result = ShellUtil.execRuntimeCommand(cmd, workPath);
+        if (result.hasError()) {
+            throw new RuntimeException(result.getMsg());
         }
     }
 

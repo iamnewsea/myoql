@@ -38,7 +38,7 @@ import java.time.format.DateTimeFormatter;
  *
  * @deprecated Don't use!
  */
-@Mojo(name = "check-layout", defaultPhase = LifecyclePhase.PROCESS_SOURCES)
+@Mojo(name = "check-layout", defaultPhase = LifecyclePhase.PREPARE_PACKAGE)
 public class CheckMojo
         extends AbstractMojo {
     /**
