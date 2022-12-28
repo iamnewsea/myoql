@@ -35,7 +35,6 @@ import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Goal which touches a timestamp file.
@@ -64,7 +63,9 @@ public class SplitLibMojo
     @Parameter(property = "disabled", defaultValue = "false")
     private Boolean disabled;
 
-    private String jarPath = "";
+    private String jarExePath = "";
+
+    private String jarName = "";
 
     @SneakyThrows
     public void execute()
@@ -95,15 +96,17 @@ public class SplitLibMojo
             javaHomePath = javaHomePath.replace('/', '\\');
         }
 
-        jarPath = FileUtil.joinPath(javaHomePath, "bin", "jar");
+        jarExePath = FileUtil.joinPath(javaHomePath, "bin", "jar");
         if (osName.contains("windows")) {
-            jarPath += ".exe";
+            jarExePath += ".exe";
         }
 
-        if (new File(jarPath).exists() == false) {
+        if (new File(jarExePath).exists() == false) {
             getLog().error("JAVA_HOME:" + javaHomePath);
-            throw new RuntimeException("找不到 jar 命令：" + jarPath);
+            throw new RuntimeException("找不到 jar 命令：" + jarExePath);
         }
+
+        jarName = project.getArtifactId() + "-" + project.getVersion() + ".jar";
 
         var splitLibPath = new File(FileUtil.joinPath(outputDirectory.getPath(), "split-lib"));
         if (splitLibPath.exists() && FileUtil.deleteAll(splitLibPath, false)) {
@@ -113,19 +116,12 @@ public class SplitLibMojo
         splitLibPath.mkdirs();
 
 
-        var writer = new FileWriter(FileUtil.joinPath(splitLibPath.getPath(), "readme.txt"));
-        writer.write("[" + project.getName() + "]" + FileUtil.LINE_BREAK + "execute split-lib-maven-plugin at : " + nowString + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
-        writer.write("keepGroupIds : " + String.join(",", groupIds));
-        writer.flush();
-        writer.close();
-
-
-        extractJar(FileUtil.joinPath(outputDirectory.getPath(), project.getArtifactId() + "-" + project.getVersion() + ".jar"));
+        extractJar(FileUtil.joinPath(outputDirectory.getPath(), jarName));
 
 
         var libFile = new File(FileUtil.joinPath(splitLibPath.getPath(), "jar", "BOOT-INF", "lib"));
         if (libFile.exists() == false) {
-            getLog().error(project.getArtifactId() + "-" + project.getVersion() + ".jar 中不存在 BOOT-INF/lib !");
+            getLog().error(jarName + " 中不存在 BOOT-INF/lib !");
             return;
         }
         var libJars = libFile.listFiles();
@@ -154,14 +150,24 @@ public class SplitLibMojo
             getLog().warn("清理 tmp  失败！");
         }
 
+
+        var writer = new FileWriter(FileUtil.joinPath(splitLibPath.getPath(), "readme.txt"));
+        writer.write("[" + project.getName() + "]" + FileUtil.LINE_BREAK + "execute split-lib-maven-plugin at : " + nowString + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
+        writer.write("keepGroupIds : " + String.join(",", groupIds) + FileUtil.LINE_BREAK);
+        writer.write("共拆出: " + count + " 个包" + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
+        writer.write("运行：" + FileUtil.LINE_BREAK);
+        writer.write("java-" + System.getProperty("java.version") + " -Dloader.path=lib -jar " + jarName;
+        writer.flush();
+        writer.close();
+
         zipJar(FileUtil.joinPath(splitLibPath.getPath(), "jar"));
     }
 
     private void zipJar(String workPath) {
         var cmd = new ArrayList<String>();
-        cmd.add(jarPath);
+        cmd.add(jarExePath);
         cmd.add("cf0M");
-        cmd.add(FileUtil.joinPath(workPath, "..", project.getArtifactId() + "-" + project.getVersion() + ".jar"));
+        cmd.add(FileUtil.joinPath(workPath, "..", jarName));
         cmd.add("*");
 
         var result = ShellUtil.execRuntimeCommand(cmd, workPath);
@@ -180,7 +186,7 @@ public class SplitLibMojo
         new File(FileUtil.joinPath(splitLibPath.getPath(), "tmp")).mkdirs();
 
         var cmd = new ArrayList<String>();
-        cmd.add(jarPath);
+        cmd.add(jarExePath);
         cmd.add("xf");
         cmd.add(jarFileName);
 
@@ -198,7 +204,7 @@ public class SplitLibMojo
         }
 
         var cmd = new ArrayList<String>();
-        cmd.add(jarPath);
+        cmd.add(jarExePath);
         cmd.add("xf");
         cmd.add(jar.getPath());
 
