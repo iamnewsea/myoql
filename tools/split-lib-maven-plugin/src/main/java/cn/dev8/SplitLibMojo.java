@@ -156,7 +156,7 @@ public class SplitLibMojo
         writer.write("keepGroupIds : " + String.join(",", groupIds) + FileUtil.LINE_BREAK);
         writer.write("共拆出: " + count + " 个包" + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
         writer.write("运行：" + FileUtil.LINE_BREAK);
-        writer.write("java-" + System.getProperty("java.version") + " -Dloader.path=lib -jar " + jarName;
+        writer.write("java-" + System.getProperty("java.version") + " -Dloader.path=lib -jar " + jarName);
         writer.flush();
         writer.close();
 
