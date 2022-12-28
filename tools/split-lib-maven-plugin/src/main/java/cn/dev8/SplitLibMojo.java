@@ -91,10 +91,10 @@ public class SplitLibMojo
         getLog().info("split-lib 拆分的包名为：" + String.join(",", groupIds));
 
         var osName = System.getProperty("os.name").toLowerCase();
-        var javaHomePath = System.getenv("JAVA_HOME");
-        if (osName.contains("windows")) {
-            javaHomePath = javaHomePath.replace('/', '\\');
-        }
+        var javaHomePath = System.getProperty("java.home");
+//        if (osName.contains("windows")) {
+//            javaHomePath = javaHomePath.replace('/', '\\');
+//        }
 
         jarExePath = FileUtil.joinPath(javaHomePath, "bin", "jar");
         if (osName.contains("windows")) {
@@ -151,6 +151,8 @@ public class SplitLibMojo
         }
 
 
+        zipJar(FileUtil.joinPath(splitLibPath.getPath(), "jar"));
+
         var writer = new FileWriter(FileUtil.joinPath(splitLibPath.getPath(), "readme.txt"));
         writer.write("[" + project.getName() + "]" + FileUtil.LINE_BREAK + "execute split-lib-maven-plugin at : " + nowString + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
         writer.write("keepGroupIds : " + String.join(",", groupIds) + FileUtil.LINE_BREAK);
@@ -159,8 +161,6 @@ public class SplitLibMojo
         writer.write("java-" + System.getProperty("java.version") + " -Dloader.path=lib -jar " + jarName);
         writer.flush();
         writer.close();
-
-        zipJar(FileUtil.joinPath(splitLibPath.getPath(), "jar"));
     }
 
     private void zipJar(String workPath) {

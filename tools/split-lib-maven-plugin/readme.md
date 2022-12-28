@@ -1,6 +1,4 @@
-
 # split-lib 使用方式：
-
 
 ``` 
 <plugin>
@@ -19,4 +17,13 @@
         </execution>
     </executions>
 </plugin>
+```
+
+或者，命令行执行：
+
+先package.
+
+```
+cd module!
+mvn cn.dev8:split-lib-maven-plugin:split-lib  -DkeepGroupIds=cn.dev8,com.nancal
 ```

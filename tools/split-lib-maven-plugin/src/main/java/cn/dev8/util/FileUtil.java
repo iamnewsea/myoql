@@ -48,7 +48,7 @@ public class FileUtil {
         var splitList = new ArrayList<List<String>>();
 
         for (var it : Arrays.asList(path)) {
-            splitList.add(ListUtil.<String>fromArray(it.split("[\\|/]")));
+            splitList.add(ListUtil.<String>fromArray(it.split("[\\\\|/]")));
         }
 
 

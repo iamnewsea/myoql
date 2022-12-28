@@ -12,10 +12,7 @@ public class ListUtil {
     public static <T> List<T> unwindWithList(List<? extends Collection<T>> list) {
         var ret = new ArrayList<T>();
         for (var i = 0; i < list.size(); i++) {
-            var item = list.get(i);
-            for (var j = 0; j < item.size(); j++) {
-                ret.add(elementAt(item, j));
-            }
+            ret.addAll(list.get(i));
         }
         return ret;
     }
@@ -28,6 +25,7 @@ public class ListUtil {
                 return iterator.next();
             }
             count++;
+            iterator.next();
         }
         return null;
     }
