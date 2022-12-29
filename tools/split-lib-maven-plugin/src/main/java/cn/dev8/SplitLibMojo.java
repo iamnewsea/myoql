@@ -131,7 +131,8 @@ public class SplitLibMojo
         }
         var libJars = libFile.listFiles();
 
-        var count = 0;
+        var keepCount = 0;
+        var splitCount = 0;
         getLog().info(StringUtil.fillWithPad("包名", 48, '-') + "groupId");
         for (var jar : libJars) {
             var groupId = getJarGroupId(jar);
@@ -141,15 +142,16 @@ public class SplitLibMojo
                 var key = StringUtil.fillWithPad(jar.getPath().substring(libFile.getPath().length() + 1), 48, ' ');
 
                 getLog().info(key + groupId);
-                count++;
+                splitCount++;
             } else {
                 var key = StringUtil.fillWithPad(jar.getPath().substring(libFile.getPath().length() + 1), 48, '-');
 
                 getLog().info(key + StringUtil.fillWithPad(groupId, 16, ' ') + " √");
+                keepCount++;
             }
         }
 
-        getLog().info("split-lib 共拆出 " + count + " 个Jar包！");
+        getLog().info("split-lib 共拆出 " + splitCount + " 个Jar包,Jar包中保留了 " + keepCount + " 个包！");
 
 //        if (FileUtil.deleteAll(new File(FileUtil.joinPath(splitLibPath.getPath(), "tmp")), true) == false) {
 //            getLog().warn("清理 tmp  失败！");
@@ -161,7 +163,7 @@ public class SplitLibMojo
         var writer = new FileWriter(FileUtil.joinPath(splitLibPath.getPath(), "readme.txt"));
         writer.write("[" + project.getName() + "]" + FileUtil.LINE_BREAK + "execute split-lib-maven-plugin at : " + nowString + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
         writer.write("keepGroupIds : " + String.join(",", groupIds) + FileUtil.LINE_BREAK);
-        writer.write("共拆出: " + count + " 个包" + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
+        writer.write("共拆出: " + splitCount + " 个包" + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
         writer.write("运行：" + FileUtil.LINE_BREAK);
         writer.write("java-" + System.getProperty("java.version") + " -Dloader.path=lib -jar " + jarName);
         writer.flush();
