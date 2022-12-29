@@ -13,7 +13,6 @@
         <module>ktmyoql-code-generator</module>
         <module>ktmvc</module>
         <module>ktweb</module>
-        <module>tools</module>
     </modules>
 
     <licenses>
