@@ -50,6 +50,7 @@ public class ListUtil {
     }
 
     public static <T> int indexOf(T[] list, T item) {
+        if (item == null) return -1;
         var index = -1;
         for (var it : list) {
             index++;
@@ -59,6 +60,7 @@ public class ListUtil {
         }
         return -1;
     }
+
 
     public static <T> T removeAt(Collection<T> list, int index) {
         Iterator itr = list.iterator();

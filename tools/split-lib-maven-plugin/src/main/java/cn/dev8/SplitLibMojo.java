@@ -113,7 +113,7 @@ public class SplitLibMojo
         var splitLibPath = new File(FileUtil.joinPath(outputDirectory.getPath(), "split-lib"));
         if (splitLibPath.exists() && FileUtil.deleteAll(splitLibPath, false)) {
 
-            if (splitLibPath.exists() && splitLibPath.list().length  > 0) {
+            if (splitLibPath.exists() && splitLibPath.list().length > 0) {
                 throw new RuntimeException("删除文件夹: " + splitLibPath.getPath() + " 失败！");
             }
         }
@@ -136,7 +136,7 @@ public class SplitLibMojo
         for (var jar : libJars) {
             var groupId = getJarGroupId(jar);
 
-            if (ListUtil.indexOf(groupIds, groupId) < 0) {
+            if (indexOfItemStartWith(groupIds, groupId) < 0) {
                 jar.renameTo(new File(FileUtil.joinPath(splitLibPath.getPath(), "lib", jar.getName())));
                 var key = StringUtil.fillWithPad(jar.getPath().substring(libFile.getPath().length() + 1), 48, ' ');
 
@@ -166,6 +166,19 @@ public class SplitLibMojo
         writer.write("java-" + System.getProperty("java.version") + " -Dloader.path=lib -jar " + jarName);
         writer.flush();
         writer.close();
+    }
+
+
+    public int indexOfItemStartWith(String[] list, String item) {
+        if (item == null) return -1;
+        var index = -1;
+        for (var it : list) {
+            index++;
+            if (item.startsWith(it)) {
+                return index;
+            }
+        }
+        return -1;
     }
 
     private void zipJar(String workPath) {
