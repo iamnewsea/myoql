@@ -112,7 +112,10 @@ public class SplitLibMojo
 
         var splitLibPath = new File(FileUtil.joinPath(outputDirectory.getPath(), "split-lib"));
         if (splitLibPath.exists() && FileUtil.deleteAll(splitLibPath, false)) {
-            throw new RuntimeException("删除文件夹: " + splitLibPath.getPath() + " 失败！");
+
+            if (splitLibPath.exists() && splitLibPath.list().length  > 0) {
+                throw new RuntimeException("删除文件夹: " + splitLibPath.getPath() + " 失败！");
+            }
         }
 
         splitLibPath.mkdirs();
