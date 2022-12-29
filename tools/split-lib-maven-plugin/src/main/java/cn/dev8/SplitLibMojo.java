@@ -32,9 +32,11 @@ import org.apache.maven.project.MavenProject;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.jar.JarFile;
 
 /**
  * Goal which touches a timestamp file.
@@ -146,9 +148,9 @@ public class SplitLibMojo
 
         getLog().info("split-lib 共拆出 " + count + " 个Jar包！");
 
-        if (FileUtil.deleteAll(new File(FileUtil.joinPath(splitLibPath.getPath(), "tmp")), true) == false) {
-            getLog().warn("清理 tmp  失败！");
-        }
+//        if (FileUtil.deleteAll(new File(FileUtil.joinPath(splitLibPath.getPath(), "tmp")), true) == false) {
+//            getLog().warn("清理 tmp  失败！");
+//        }
 
 
         zipJar(FileUtil.joinPath(splitLibPath.getPath(), "jar"));
@@ -183,7 +185,7 @@ public class SplitLibMojo
         var workJar = new File(FileUtil.joinPath(splitLibPath.getPath(), "jar"));
         workJar.mkdirs();
         new File(FileUtil.joinPath(splitLibPath.getPath(), "lib")).mkdirs();
-        new File(FileUtil.joinPath(splitLibPath.getPath(), "tmp")).mkdirs();
+//        new File(FileUtil.joinPath(splitLibPath.getPath(), "tmp")).mkdirs();
 
         var cmd = new ArrayList<String>();
         cmd.add(jarExePath);
@@ -197,7 +199,43 @@ public class SplitLibMojo
 
     }
 
-    private String getJarGroupId(File jar) {
+    @SneakyThrows
+    private String getJarGroupId(File file) {
+        var jarFile = new JarFile(file);
+
+        var entries = jarFile.entries();
+        while (entries.hasMoreElements()) {
+            var jarEntry = entries.nextElement();
+            if (jarEntry.isDirectory()) {
+                continue;
+            }
+            if (jarEntry.getName().startsWith("META-INF/maven")
+                    && jarEntry.getName().endsWith("/pom.properties")) {
+                var inputStream = jarFile.getInputStream(jarEntry);
+
+                byte[] bytes = new byte[inputStream.available()];
+                inputStream.read(bytes);
+
+                inputStream.close();
+                jarFile.close();
+                return getGroupIdFromPomProperties(new String(bytes, StandardCharsets.UTF_8));
+            }
+        }
+        jarFile.close();
+        return "";
+    }
+
+    private String getGroupIdFromPomProperties(String content) {
+        var lines = content.split("\n");
+        for (var l : lines) {
+            if (l.startsWith("groupId=")) {
+                return l.split("=")[1].trim();
+            }
+        }
+        return "";
+    }
+
+    private String getJarGroupIdWithUnzip(File jar) {
         var tmpPath = new File(FileUtil.joinPath(outputDirectory.getPath(), "split-lib", "tmp", jar.getName()));
         if (tmpPath.mkdirs() == false) {
             throw new RuntimeException("创建文件夹失败：" + tmpPath.getPath());
@@ -224,13 +262,7 @@ public class SplitLibMojo
         }
 
         var content = FileUtil.readFileContent(pomPropertyFile.getPath());
-        var lines = content.split("\n");
-        for (var l : lines) {
-            if (l.startsWith("groupId=")) {
-                return l.split("=")[1].trim();
-            }
-        }
-        return "";
+        return getGroupIdFromPomProperties(content);
     }
 
     private File getPomPropertyFile(File tmpPath) {
