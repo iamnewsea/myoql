@@ -78,8 +78,6 @@ public class SplitLibMojo
             return;
         }
 
-        checkLayout();
-
         var now = LocalDateTime.now();
         nowString = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
 
@@ -87,14 +85,14 @@ public class SplitLibMojo
             return;
         }
 
-        String[] groupIds = getKeepGroupIds();
+        File splitLibPath = initWorkPathAndGetLibFile();
+        checkLayout();
 
         initJarExePath();
 
+        String[] groupIds = getKeepGroupIds();
+
         jarName = project.getArtifactId() + "-" + project.getVersion() + ".jar";
-
-        File splitLibPath = initWorkPathAndGetLibFile();
-
 
         extractJar(FileUtil.joinPath(outputDirectory.getPath(), jarName));
 
@@ -203,8 +201,11 @@ public class SplitLibMojo
             return;
         }
 
-        var message = "org.springframework.boot:spring-boot-maven-plugin.configuration.layout 必须为 ZIP!";
-        var writer = new FileWriter(new File(outputDirectory, "split-lib-check.txt"));
+        var message = "org.springframework.boot:spring-boot-maven-plugin.configuration.layout must be ZIP!";
+
+        getLog().error("split-lib 检查不通过！ " + message);
+
+        var writer = new FileWriter(FileUtil.joinPath(outputDirectory.getPath(), "split-lib", "split-lib-check.txt"));
         writer.write("[" + project.getName() + "]" + FileUtil.LINE_BREAK + "execute split-lib-maven-plugin at : " + nowString + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
         writer.write(message);
         writer.flush();
