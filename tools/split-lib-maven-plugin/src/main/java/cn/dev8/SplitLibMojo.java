@@ -69,6 +69,8 @@ public class SplitLibMojo
 
     private String jarName = "";
 
+    private String nowString = "";
+
     @SneakyThrows
     public void execute()
             throws MojoExecutionException {
@@ -79,7 +81,7 @@ public class SplitLibMojo
         checkLayout();
 
         var now = LocalDateTime.now();
-        var nowString = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
+        nowString = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
 
         if (!outputDirectory.exists()) {
             return;
