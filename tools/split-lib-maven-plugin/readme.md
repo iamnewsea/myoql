@@ -17,13 +17,13 @@ mvn install:install-file -DgroupId=cn.dev8 -DartifactId=split-lib-maven-plugin -
 #### windows:
 c:\window\split-lib.cmd
 ```
-mvn clean deploy -Dmaven.test.skip=true -e -U   -DkeepGroupIds=%*
+mvn cn.dev8:split-lib-maven-plugin:1.1.7-SNAPSHOT:split-lib  -DkeepGroupIds=%*
 ```
 
 #### linux:
 /usr/local/bin/split-lib.sh
 ```
-mvn clean deploy -Dmaven.test.skip=true -e -U   -DkeepGroupIds=$*
+mvn cn.dev8:split-lib-maven-plugin:1.1.7-SNAPSHOT:split-lib  -DkeepGroupIds=$*
 ```
 
 # 命令行执行：
@@ -31,7 +31,7 @@ mvn clean deploy -Dmaven.test.skip=true -e -U   -DkeepGroupIds=$*
 ```
 先package.
 cd module!
-mvn cn.dev8:split-lib-maven-plugin:1.1.7-SANPSHOT:split-lib  -DkeepGroupIds=cn.dev8,com.nancal
+mvn cn.dev8:split-lib-maven-plugin:1.1.7-SNAPSHOT:split-lib  -DkeepGroupIds=cn.dev8,com.nancal
 ```
 
 # 集成到程序里 （可忽略，直接使用命令行执行更方便！）
