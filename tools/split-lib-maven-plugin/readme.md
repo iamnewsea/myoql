@@ -42,8 +42,7 @@ mvn cn.dev8:split-lib-maven-plugin:1.1.7-SANPSHOT:split-lib  -DkeepGroupIds=cn.d
     <artifactId>split-lib-maven-plugin</artifactId>
     <version>1.1.7-SNAPSHOT</version>
     <executions>
-        <execution>
-            <phase>package</phase>
+        <execution> 
             <goals>
                 <goal>split-lib</goal>
             </goals>

@@ -76,6 +76,8 @@ public class SplitLibMojo
             return;
         }
 
+        checkLayout();
+
         var now = LocalDateTime.now();
         var nowString = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
 
@@ -83,42 +85,13 @@ public class SplitLibMojo
             return;
         }
 
-        String[] groupIds;
-        if (keepGroupIds == null || keepGroupIds.length() == 0) {
-            groupIds = new String[]{project.getGroupId()};
-        } else {
-            groupIds = keepGroupIds.split(",");
-        }
+        String[] groupIds = getKeepGroupIds();
 
-        getLog().info("split-lib 拆分的包名为：" + String.join(",", groupIds));
-
-        var osName = System.getProperty("os.name").toLowerCase();
-        var javaHomePath = System.getProperty("java.home");
-//        if (osName.contains("windows")) {
-//            javaHomePath = javaHomePath.replace('/', '\\');
-//        }
-
-        jarExePath = FileUtil.joinPath(javaHomePath, "bin", "jar");
-        if (osName.contains("windows")) {
-            jarExePath += ".exe";
-        }
-
-        if (new File(jarExePath).exists() == false) {
-            getLog().error("JAVA_HOME:" + javaHomePath);
-            throw new RuntimeException("找不到 jar 命令：" + jarExePath);
-        }
+        initJarExePath();
 
         jarName = project.getArtifactId() + "-" + project.getVersion() + ".jar";
 
-        var splitLibPath = new File(FileUtil.joinPath(outputDirectory.getPath(), "split-lib"));
-        if (splitLibPath.exists() && FileUtil.deleteAll(splitLibPath, false)) {
-
-            if (splitLibPath.exists() && splitLibPath.list().length > 0) {
-                throw new RuntimeException("删除文件夹: " + splitLibPath.getPath() + " 失败！");
-            }
-        }
-
-        splitLibPath.mkdirs();
+        File splitLibPath = initWorkPathAndGetLibFile();
 
 
         extractJar(FileUtil.joinPath(outputDirectory.getPath(), jarName));
@@ -133,18 +106,17 @@ public class SplitLibMojo
 
         var keepCount = 0;
         var splitCount = 0;
-        getLog().info(StringUtil.fillWithPad("包名", 48, '-') + "groupId");
+        getLog().info(StringUtil.fillWithPad("包名", 48, ' ') + "匹配的groupId");
+        getLog().info(StringUtil.fillWithPad("", 64, '-'));
         for (var jar : libJars) {
             var groupId = getJarGroupId(jar);
 
             if (indexOfItemStartWith(groupIds, groupId) < 0) {
                 jar.renameTo(new File(FileUtil.joinPath(splitLibPath.getPath(), "lib", jar.getName())));
-                var key = StringUtil.fillWithPad(jar.getPath().substring(libFile.getPath().length() + 1), 48, ' ');
-
-                getLog().info(key + groupId);
+//                var key = StringUtil.fillWithPad(jar.getPath().substring(libFile.getPath().length() + 1), 48, ' ');
                 splitCount++;
             } else {
-                var key = StringUtil.fillWithPad(jar.getPath().substring(libFile.getPath().length() + 1), 48, '-');
+                var key = StringUtil.fillWithPad(jar.getPath().substring(libFile.getPath().length() + 1), 48, ' ');
 
                 getLog().info(key + StringUtil.fillWithPad(groupId, 16, ' ') + " √");
                 keepCount++;
@@ -168,6 +140,75 @@ public class SplitLibMojo
         writer.write("java-" + System.getProperty("java.version") + " -Dloader.path=lib -jar " + jarName);
         writer.flush();
         writer.close();
+    }
+
+    private File initWorkPathAndGetLibFile() {
+        var splitLibPath = new File(FileUtil.joinPath(outputDirectory.getPath(), "split-lib"));
+        if (splitLibPath.exists() && FileUtil.deleteAll(splitLibPath, false)) {
+
+            if (splitLibPath.exists() && splitLibPath.list().length > 0) {
+                throw new RuntimeException("删除文件夹: " + splitLibPath.getPath() + " 失败！");
+            }
+        }
+
+        splitLibPath.mkdirs();
+        return splitLibPath;
+    }
+
+    private void initJarExePath() {
+        var osName = System.getProperty("os.name").toLowerCase();
+        var javaHomePath = System.getProperty("java.home");
+
+        //修复！
+        if (javaHomePath.endsWith("jre")) {
+            javaHomePath = FileUtil.joinPath(javaHomePath, "../");
+        }
+
+        jarExePath = FileUtil.joinPath(javaHomePath, "bin", "jar");
+        if (osName.contains("windows")) {
+            jarExePath += ".exe";
+        }
+
+        if (new File(jarExePath).exists() == false) {
+            getLog().error("JAVA_HOME:" + javaHomePath);
+            throw new RuntimeException("找不到 jar 命令：" + jarExePath);
+        }
+    }
+
+    private String[] getKeepGroupIds() {
+        String[] groupIds = null;
+        if (keepGroupIds == null || keepGroupIds.length() == 0) {
+            groupIds = new String[]{project.getGroupId()};
+        } else {
+            groupIds = keepGroupIds.split(",");
+        }
+
+        getLog().info("split-lib 拆分的包名为：" + String.join(",", groupIds));
+
+        return groupIds;
+    }
+
+    @SneakyThrows
+    private void checkLayout() {
+        var pomContent = FileUtil.readFileContent(project.getFile().getPath());
+
+        var checked = pomContent.contains("org.springframework.boot") &&
+                pomContent.contains("spring-boot-maven-plugin") &&
+                pomContent.contains("<layout>ZIP</layout>");
+
+
+        if (checked) {
+            return;
+        }
+
+        var message = "org.springframework.boot:spring-boot-maven-plugin.configuration.layout 必须为 ZIP!";
+        var writer = new FileWriter(new File(outputDirectory, "split-lib-check.txt"));
+        writer.write("[" + project.getName() + "]" + FileUtil.LINE_BREAK + "execute split-lib-maven-plugin at : " + nowString + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
+        writer.write(message);
+        writer.flush();
+        writer.close();
+
+        throw new RuntimeException(message);
     }
 
 
