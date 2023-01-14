@@ -42,11 +42,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>cn.dev8</groupId>
-            <artifactId>ktbase</artifactId>
-            <version>1.1.7-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.8.2</version>
