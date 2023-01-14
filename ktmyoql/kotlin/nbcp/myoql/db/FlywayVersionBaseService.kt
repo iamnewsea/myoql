@@ -34,7 +34,7 @@ abstract class FlywayVersionBaseService(val version: Int) {
         fileExt: String,
         tableCallback: (String, List<String>) -> Boolean
     ): Boolean {
-        return ClassUtil.findResources(resourcePath).map {
+        return ResourceUtil.findResources(resourcePath).map {
             return@map it.substring(resourcePath.length + 1)
                 .split('/')
                 .filter { it.HasValue }

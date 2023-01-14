@@ -1,6 +1,7 @@
 package nbcp.myoql.db.mongo.event;
 
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.StringUtil
 import nbcp.myoql.db.comm.EventResult
 import nbcp.myoql.db.db
 import nbcp.myoql.db.mongo.MongoBaseQueryClip
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Component
 class MongoLogHistoryUpdateEvent : IMongoEntityUpdate {
     override fun beforeUpdate(update: MongoBaseUpdateClip): EventResult {
         var logs =
-                MongoEntityCollector.logHistoryMap.filter { MyUtil.getSmallCamelCase(it.key.actualTableName) == update.actualTableName }
+                MongoEntityCollector.logHistoryMap.filter { StringUtil.getSmallCamelCase(it.key.actualTableName) == update.actualTableName }
         if (logs.any() == false) {
             return EventResult(true, null)
         }

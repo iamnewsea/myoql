@@ -29,7 +29,7 @@ object CipherUtil {
      */
     @JvmStatic
     fun encrypt3des(text: String, key: String): String {
-        return MyUtil.getBase64(Des3Util.encrypt(text.toByteArray(), MyUtil.getFromBase64(key)))
+        return Base64Util.encode2Base64(Des3Util.encrypt(text.toByteArray(), Base64Util.decodeBase64(key)))
     }
 
     /**
@@ -37,7 +37,7 @@ object CipherUtil {
      */
     @JvmStatic
     fun decrypt3des(text: String, key: String): String {
-        return String(Des3Util.decrypt(MyUtil.getFromBase64(text), MyUtil.getFromBase64(key)))
+        return String(Des3Util.decrypt(Base64Util.decodeBase64(text), Base64Util.decodeBase64(key)))
     }
 
     /**
@@ -75,7 +75,7 @@ object CipherUtil {
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec)
             val encrypted = cipher.doFinal(sSrc.toByteArray(const.utf8))
 
-            return nbcp.base.utils.Base64Util.toBase64(encrypted)
+            return  Base64Util.encode2Base64(encrypted)
         }
 
         // 解密
@@ -86,7 +86,7 @@ object CipherUtil {
             val skeySpec = SecretKeySpec(raw, KEY_ALGORITHM)
             val cipher = Cipher.getInstance(CIPHER_ALGORITHM)
             cipher.init(Cipher.DECRYPT_MODE, skeySpec)
-            val encrypted1 = nbcp.base.utils.Base64Util.readFromBase64(sSrc)//先用base64解密
+            val encrypted1 = Base64Util.decodeBase64(sSrc)//先用base64解密
 
             val original = cipher.doFinal(encrypted1)
             return String(original, const.utf8)

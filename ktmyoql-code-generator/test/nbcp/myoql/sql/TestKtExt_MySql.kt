@@ -7,6 +7,7 @@ import nbcp.base.extend.ToJson
 import nbcp.base.extend.usingScope
 import nbcp.base.utils.MyUtil
 import nbcp.base.utils.SpringUtil
+import nbcp.base.utils.StringUtil
 import nbcp.myoql.TestBase
 import nbcp.myoql.code.generator.db.mysql.MysqlEntityGenerator
 import nbcp.myoql.code.generator.tool.CrudCodeGeneratorUtil
@@ -102,7 +103,7 @@ class TestKtExt_MySql : TestBase() {
     @Test
     fun test_jpa() {
         MysqlEntityGenerator.db2Entity().toJpaCode("com.kjwt.gis.entity").forEach {
-            FileWriter("/opt/udi/" + MyUtil.getBigCamelCase(it.id) + ".java").use { f ->
+            FileWriter("/opt/udi/" + StringUtil.getBigCamelCase(it.id) + ".java").use { f ->
                 f.write(it.name);
             }
         }
@@ -111,7 +112,7 @@ class TestKtExt_MySql : TestBase() {
     @Test
     fun test_mybatis() {
         MysqlEntityGenerator.db2Entity().toJpaCode("com.kjwt.gis.entity").forEach {
-            FileWriter("d:\\ent\\" + MyUtil.getBigCamelCase(it.id) + ".java").use { f ->
+            FileWriter("d:\\ent\\" + StringUtil.getBigCamelCase(it.id) + ".java").use { f ->
                 f.write(it.name);
             }
         }

@@ -5,10 +5,7 @@ import nbcp.base.comm.const
 import nbcp.base.data.Sys
 import nbcp.base.db.annotation.*
 import nbcp.base.extend.*
-import nbcp.base.utils.ClassUtil
-import nbcp.base.utils.CnAnnotationUtil
-import nbcp.base.utils.KotlinCoderUtil
-import nbcp.base.utils.MyUtil
+import nbcp.base.utils.*
 import nbcp.myoql.db.comm.VarDatabase
 import nbcp.myoql.db.comm.VarTable
 import nbcp.myoql.code.generator.tool.*
@@ -47,7 +44,7 @@ class MorGenerator4Kotlin {
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
     ) {
-        targetEntityPathName = MyUtil.joinFilePath(targetPath, metaPackageName.split(".").joinToString("/"))
+        targetEntityPathName = FileUtil.joinPath(targetPath, metaPackageName.split(".").joinToString("/"))
         this.nameMapping = nameMapping;
 
         var p = File.separator;
@@ -95,12 +92,12 @@ ${importPackages.map { "import " + it }.joinToString(const.line_break)}
 
 
             writeToFile(
-                "${MyUtil.getBigCamelCase(groupName)}Group",
+                "${StringUtil.getBigCamelCase(groupName)}Group",
                 fileHeader +
                         """
 @Component("mongo.${groupName}")
 @MetaDataGroup(DatabaseEnum.MONGO, "${groupName}")
-class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup {
+class ${StringUtil.getBigCamelCase(groupName)}Group : IDataGroup {
     override fun getEntities(): Set<BaseMetaData<out Any>> = setOf(${
                             group.value.map { genVarName(it).GetSafeKotlinName() }.joinToString(", ")
                         })
@@ -108,19 +105,19 @@ class ${MyUtil.getBigCamelCase(groupName)}Group : IDataGroup {
             )
             println("${groupName}:")
             writeToFile(
-                "${MyUtil.getBigCamelCase(groupName)}Group",
+                "${StringUtil.getBigCamelCase(groupName)}Group",
                 groupEntities.map { (genVarEntity(it).ToTab(1)) }.joinToString(const.line_break)
             )
 
-            writeToFile("${MyUtil.getBigCamelCase(groupName)}Group", const.line_break)
+            writeToFile("${StringUtil.getBigCamelCase(groupName)}Group", const.line_break)
 
             groupEntities.forEach {
                 count++;
                 println("${count.toString().padStart(2, ' ')} 生成实体：${groupName}.${it.simpleName}".ToTab(1))
 
-                writeToFile("${MyUtil.getBigCamelCase(groupName)}Group", genEntity(it).ToTab(1))
+                writeToFile("${StringUtil.getBigCamelCase(groupName)}Group", genEntity(it).ToTab(1))
             }
-            writeToFile("${MyUtil.getBigCamelCase(groupName)}Group", """}""")
+            writeToFile("${StringUtil.getBigCamelCase(groupName)}Group", """}""")
         }
 
         writeToFile(
@@ -162,7 +159,7 @@ data class MoerMetaMap(val parentPropertyName: String) {
     fun writeToFile(className: String, content: String) {
 
         FileWriter(
-            MyUtil.joinFilePath(
+            FileUtil.joinPath(
                 targetEntityPathName,
                 if (className.contains(".")) className else (className + ".kt")
             ), true
@@ -442,8 +439,8 @@ val ${entityVarName} get() = ${entityTypeName}();"""
 
         if (varTable?.value.HasValue) {
             params.put(
-                MyUtil.getSmallCamelCase(varTable?.value.AsString("")),
-                """"${entityVarName}-${'$'}{${MyUtil.getSmallCamelCase(varTable.value)}}""""
+                StringUtil.getSmallCamelCase(varTable?.value.AsString("")),
+                """"${entityVarName}-${'$'}{${StringUtil.getSmallCamelCase(varTable.value)}}""""
             )
         } else {
             params.put("", "\"\"")
@@ -451,8 +448,8 @@ val ${entityVarName} get() = ${entityTypeName}();"""
 
         if (varDb?.value.HasValue) {
             params.put(
-                MyUtil.getSmallCamelCase(varDb.value.AsString()),
-                MyUtil.getSmallCamelCase(varDb.value.AsString())
+                StringUtil.getSmallCamelCase(varDb.value.AsString()),
+                StringUtil.getSmallCamelCase(varDb.value.AsString())
             );
         } else {
             params.put("", "\"\"")
@@ -515,7 +512,7 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
         var dbName = entType.getAnnotation(DbName::class.java)?.value ?: ""
 
         if (dbName.isEmpty()) {
-            dbName = MyUtil.getSmallCamelCase(entType.simpleName)
+            dbName = StringUtil.getSmallCamelCase(entType.simpleName)
         }
 
         val idMethods = mutableSetOf<String>()
@@ -542,45 +539,45 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
             idMethods.add(
                 """
     fun queryBy${
-                    keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
+                    keys.map { StringUtil.getBigCamelCase(it) }.joinToString("")
                 }(${
                     keys.map {
-                        "${MyUtil.getSmallCamelCase(it)}: ${
+                        "${StringUtil.getSmallCamelCase(it)}: ${
                             entType.GetFieldPath(
                                 *it.split(".").toTypedArray()
                             )!!.type.kotlinTypeName
                         }"
                     }.joinToString(",")
                 }): MongoQueryClip<${entityTypeName}, ${entType.name}> {
-        return this.query()${keys.map { ".where { it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+        return this.query()${keys.map { ".where { it.${it} match ${StringUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
     fun deleteBy${
-                    keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
+                    keys.map { StringUtil.getBigCamelCase(it) }.joinToString("")
                 }(${
                     keys.map {
-                        "${MyUtil.getSmallCamelCase(it)}: ${
+                        "${StringUtil.getSmallCamelCase(it)}: ${
                             entType.GetFieldPath(
                                 *it.split(".").toTypedArray()
                             )!!.type.kotlinTypeName
                         }"
                     }.joinToString(",")
                 }): MongoDeleteClip<${entityTypeName}> {
-        return this.delete()${keys.map { ".where { it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+        return this.delete()${keys.map { ".where { it.${it} match ${StringUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
     fun updateBy${
-                    keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
+                    keys.map { StringUtil.getBigCamelCase(it) }.joinToString("")
                 }(${
                     keys.map {
-                        "${MyUtil.getSmallCamelCase(it)}: ${
+                        "${StringUtil.getSmallCamelCase(it)}: ${
                             entType.GetFieldPath(
                                 *it.split(".").toTypedArray()
                             )!!.type.kotlinTypeName
                         }"
                     }.joinToString(",")
                 }): MongoUpdateClip<${entityTypeName}, ${entType.name}> {
-        return this.update()${keys.map { ".where { it.${it} match ${MyUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+        return this.update()${keys.map { ".where { it.${it} match ${StringUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 """
             )

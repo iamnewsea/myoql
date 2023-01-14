@@ -14,7 +14,7 @@
 //@Component
 //class EsLogHistoryUpdateEvent : IEsEntityUpdate {
 //    override fun beforeUpdate(update: EsBaseUpdateClip): DbEntityEventResult {
-//        var logs = EsEntityEvent.logHistoryMap.filter { MyUtil.getSmallCamelCase(it.key.simpleName) == update.collectionName }
+//        var logs = EsEntityEvent.logHistoryMap.filter { StringUtil.getSmallCamelCase(it.key.simpleName) == update.collectionName }
 //        if (logs.any() == false) {
 //            return DbEntityEventResult(true, null)
 //        }

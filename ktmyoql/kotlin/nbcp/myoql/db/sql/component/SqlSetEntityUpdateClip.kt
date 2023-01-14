@@ -4,6 +4,7 @@ package nbcp.myoql.db.sql.component
 import nbcp.base.comm.JsonMap
 import nbcp.base.extend.AllFields
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.ReflectUtil
 import nbcp.myoql.db.db
 import nbcp.myoql.db.sql.base.SqlBaseMetaTable
 import nbcp.myoql.db.sql.base.SqlColumnName
@@ -126,7 +127,7 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEnt
 
 
         whereColumns2.forEach { column ->
-            var value = MyUtil.getValueByWbsPath(entity, column.name)
+            var value = ReflectUtil.getValueByWbsPath(entity, column.name)
 
             where.and(
                 WhereData(
@@ -154,7 +155,7 @@ class SqlSetEntityUpdateClip<M : SqlBaseMetaTable<out Serializable>>(var mainEnt
                         && setColumn_names.contains(column.name)
             }
             .forEach { key ->
-                var value = MyUtil.getValueByWbsPath(entity, key.name)
+                var value = ReflectUtil.getValueByWbsPath(entity, key.name)
                 if (value == null) {
                     setValues.put(key, null);
                     return@forEach

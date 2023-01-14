@@ -37,7 +37,7 @@
 //            }
 //
 //            insert.ori_entities.forEachIndexed { index, entity ->
-//                MyUtil.setPrivatePropertyValue(entity, field.name, values[index])
+//                ReflectUtil.setPrivatePropertyValue(entity, field.name, values[index])
 //            }
 //        }
 //

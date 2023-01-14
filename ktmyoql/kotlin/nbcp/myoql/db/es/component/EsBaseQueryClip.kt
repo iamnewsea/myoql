@@ -6,6 +6,7 @@ import nbcp.base.enums.JsonStyleScopeEnum
 import nbcp.base.extend.*
 import nbcp.base.utils.Md5Util
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.ReflectUtil
 import nbcp.myoql.db.db
 import nbcp.myoql.db.es.logger.logGet
 import org.elasticsearch.client.Request
@@ -134,14 +135,14 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
 //                    lastKey = it.keys.last()
 //                }
 //
-//                ret.add(MyUtil.getValueByWbsPath(it, *lastKey.split(".").toTypedArray()).AsString() as R)
+//                ret.add(ReflectUtil.getValueByWbsPath(it, *lastKey.split(".").toTypedArray()).AsString() as R)
 //            } else
             if (type.IsSimpleType()) {
                 if (lastKey.isEmpty()) {
                     lastKey = it.keys.last()
                 }
 
-                var value = MyUtil.getValueByWbsPath(it, *lastKey.split(".").toTypedArray())
+                var value = ReflectUtil.getValueByWbsPath(it, *lastKey.split(".").toTypedArray())
                 if (value != null) {
                     ret.add(value.ConvertType(type) as R);
                 } else {

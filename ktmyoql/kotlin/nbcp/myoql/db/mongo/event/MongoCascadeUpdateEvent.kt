@@ -3,6 +3,7 @@ package nbcp.myoql.db.mongo.event;
 import nbcp.base.comm.JsonMap
 import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.StringUtil
 import nbcp.myoql.db.comm.DbEntityFieldRefData
 import nbcp.myoql.db.comm.EventResult
 import nbcp.myoql.db.db
@@ -43,7 +44,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
 
 
         var refs =
-            MongoEntityCollector.refsMap.filter { MyUtil.getSmallCamelCase(it.refEntityClass.simpleName) == update.defEntityName }
+            MongoEntityCollector.refsMap.filter { StringUtil.getSmallCamelCase(it.refEntityClass.simpleName) == update.defEntityName }
         if (refs.any() == false) {
             return EventResult(true, null)
         }
@@ -161,7 +162,7 @@ class MongoCascadeUpdateEvent : IMongoEntityUpdate {
         cascadeUpdates
             .filter { it.masterIdValues.any() }
             .forEach { cu ->
-                val targetCollection = MyUtil.getSmallCamelCase(cu.ref.entityClass.simpleName)
+                val targetCollection = StringUtil.getSmallCamelCase(cu.ref.entityClass.simpleName)
 
                 val update2 = MongoBaseUpdateClip(targetCollection)
                 update2.whereData.putAll((MongoColumnName(cu.ref.field + "." + cu.ref.idField) match_in cu.masterIdValues).criteriaObject)

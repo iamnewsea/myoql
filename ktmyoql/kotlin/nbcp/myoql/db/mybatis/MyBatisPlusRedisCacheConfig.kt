@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.ISqlSegment
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
 import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.ReflectUtil
 import nbcp.myoql.annotation.*
 import org.aopalliance.intercept.MethodInterceptor
 import org.aopalliance.intercept.MethodInvocation
@@ -25,7 +26,7 @@ class MyBatisRedisCachePointcutAdvisor {
 
             var target = Proxy.getInvocationHandler(invocation.`this`!!)
 
-            var type = MyUtil.getValueByWbsPath(target, "mapperInterface") as Class<*>
+            var type = ReflectUtil.getValueByWbsPath(target, "mapperInterface") as Class<*>
 
             val cache = type.getAnnotationsByType(CacheForMyBatisPlusBaseMapper::class.java).firstOrNull()
             if (cache == null) {
@@ -180,7 +181,7 @@ class MyBatisRedisCachePointcutAdvisor {
             if (deleteValueType.IsSimpleType()) {
                 idValue = deleteValue.toString()
             } else {
-                idValue = MyUtil.getValueByWbsPath(deleteValue, "id").AsString()
+                idValue = ReflectUtil.getValueByWbsPath(deleteValue, "id").AsString()
             }
 
 

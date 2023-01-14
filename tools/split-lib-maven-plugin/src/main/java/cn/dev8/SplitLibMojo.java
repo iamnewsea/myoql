@@ -88,7 +88,7 @@ public class SplitLibMojo
         File splitLibPath = initWorkPathAndGetLibFile();
         checkLayout();
 
-        initJarExePath();
+        jarExePath = getJarExePath();
 
         String[] groupIds = getKeepGroupIds();
 
@@ -155,7 +155,7 @@ public class SplitLibMojo
         return splitLibPath;
     }
 
-    private void initJarExePath() {
+    private String getJarExePath() {
         var osName = System.getProperty("os.name").toLowerCase();
         var javaHomePath = System.getProperty("java.home");
 
@@ -164,7 +164,7 @@ public class SplitLibMojo
             javaHomePath = FileUtil.joinPath(javaHomePath, "../");
         }
 
-        jarExePath = FileUtil.joinPath(javaHomePath, "bin", "jar");
+        var jarExePath = FileUtil.joinPath(javaHomePath, "bin", "jar");
         if (osName.contains("windows")) {
             jarExePath += ".exe";
         }
@@ -173,6 +173,8 @@ public class SplitLibMojo
             getLog().error("JAVA_HOME:" + javaHomePath);
             throw new RuntimeException("找不到 jar 命令：" + jarExePath);
         }
+
+        return jarExePath;
     }
 
     private String[] getKeepGroupIds() {

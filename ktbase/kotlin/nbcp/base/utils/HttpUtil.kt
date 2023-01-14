@@ -98,13 +98,13 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
          */
         @JvmStatic
         fun getBasicAuthorization(userName: String, password: String): String {
-            return "Basic " + MyUtil.getBase64("${userName}:${password}".toByteArray())
+            return "Basic " + Base64Util.encode2Base64("${userName}:${password}".toByteArray())
         }
 
         @JvmStatic
         fun getLoginNamePassword(basicAuthorization: String): LoginNamePasswordData {
             if (basicAuthorization.startsWith("Basic ")) return LoginNamePasswordData();
-            var value = MyUtil.getStringContentFromBase64(basicAuthorization.substring("Basic ".length));
+            var value = Base64Util.decodeBase64Utf8(basicAuthorization.substring("Basic ".length));
             var index = value.indexOf(":");
             if (index < 0) return LoginNamePasswordData();
             return LoginNamePasswordData(value.substring(0, index), value.substring(index + 1))
@@ -152,7 +152,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
     var url: String = ""
         get
         set(value) {
-            field = MyUtil.getHttpHostUrl(value)
+            field = WebUtil.getHttpHostUrl(value)
         }
 
     init {
@@ -235,8 +235,8 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
         this.request.requestMethod = "GET"
 
         if (query.HasValue) {
-            var queryObj = JsUtil.parseUrlQueryJson(if (query.startsWith('?')) query else "?" + query)
-            var urlObj = JsUtil.parseUrlQueryJson(this.url);
+            var queryObj = UrlUtil.parseUrlQueryJson(if (query.startsWith('?')) query else "?" + query)
+            var urlObj = UrlUtil.parseUrlQueryJson(this.url);
             urlObj.queryJson.putAll(queryObj.queryJson);
             this.url = urlObj.toUrl();
         }
@@ -253,7 +253,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
             requestBody = postJson.ToJson()
         } else {
             requestBody =
-                postJson.map { it.key + "=" + JsUtil.encodeURIComponent(it.value.AsString()) }.joinToString("&");
+                postJson.map { it.key + "=" + UrlUtil.encodeURIComponent(it.value.AsString()) }.joinToString("&");
         }
 
         return doPut(requestBody);
@@ -272,7 +272,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
             requestBody = postJson.ToJson()
         } else {
             requestBody =
-                postJson.map { it.key + "=" + JsUtil.encodeURIComponent(it.value.AsString()) }.joinToString("&");
+                postJson.map { it.key + "=" + UrlUtil.encodeURIComponent(it.value.AsString()) }.joinToString("&");
         }
 
         return doPost(requestBody);
@@ -570,7 +570,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
         ret.name = extInfo.name;
         ret.extName = extInfo.extName;
 
-        var fileName = targetFileName.AsString { MyUtil.joinUrl("./", extInfo.getFileName()) }
+        var fileName = targetFileName.AsString { UrlUtil.joinUrl("./", extInfo.getFileName()) }
 
         ret.fullPath = fileName;
 

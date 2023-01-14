@@ -7,6 +7,7 @@ import nbcp.base.enums.JsonStyleScopeEnum
 import nbcp.base.extend.*
 import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.StringUtil
 import nbcp.myoql.db.comm.DbDefine
 import nbcp.myoql.db.comm.IkFieldDefine
 import java.io.File
@@ -63,7 +64,7 @@ class EsMappingGenerator {
                     var entType = it;
                     var dbName = entType.getAnnotation(DbName::class.java)?.value.AsString(entType.simpleName)
 
-                    dbName = MyUtil.getKebabCase(dbName)
+                    dbName = StringUtil.getKebabCase(dbName)
 
                     println("${count.toString().padStart(2, ' ')} 生成Mapping：${groupName}.${dbName}".ToTab(1))
 

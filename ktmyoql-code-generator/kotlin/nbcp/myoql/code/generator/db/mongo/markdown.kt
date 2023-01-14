@@ -5,6 +5,8 @@ import nbcp.base.db.annotation.*
 import nbcp.base.extend.*
 import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.ReflectUtil
+import nbcp.base.utils.StringUtil
 import java.io.File
 import java.io.FileWriter
 import java.lang.reflect.Field
@@ -66,7 +68,7 @@ class markdown {
             var groupEntities = group.value
 
             writeToFile("""
-### ${MyUtil.getBigCamelCase(groupName)} 模块
+### ${StringUtil.getBigCamelCase(groupName)} 模块
 
 """)
 
@@ -372,10 +374,10 @@ body table thead th{
                     s.add("* ${it.toString()}")
 
                     if (number_remark != null) {
-                        s.add("(" + MyUtil.getValueByWbsPath(it, number_remark.name).AsString() + ")");
+                        s.add("(" + ReflectUtil.getValueByWbsPath(it, number_remark.name).AsString() + ")");
                     }
                     if (string_remark != null) {
-                        s.add(": " + MyUtil.getValueByWbsPath(it, string_remark.name).AsString());
+                        s.add(": " + ReflectUtil.getValueByWbsPath(it, string_remark.name).AsString());
                     }
 
 
@@ -447,7 +449,7 @@ ${props.joinToString("\n")}
         var dbName = entType.getAnnotation(DbName::class.java)?.value ?: ""
 
         if (dbName.isEmpty()) {
-            dbName = MyUtil.getSmallCamelCase(entType.simpleName)
+            dbName = StringUtil.getSmallCamelCase(entType.simpleName)
         }
 
         val ent = """#### 集合 ${dbName}

@@ -5,7 +5,9 @@ import nbcp.base.annotation.*
 import nbcp.base.comm.const
 import nbcp.base.exception.ParameterInvalidException
 import nbcp.base.extend.*
+import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.StringUtil
 import nbcp.mvc.annotation.*
 import org.slf4j.LoggerFactory
 import org.springframework.core.MethodParameter
@@ -129,7 +131,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
                 if (defNumberValue != null) {
                     value = defNumberValue.value
                 } else {
-                    value = MyUtil.getTypeDefaultValue(parameter.parameterType);
+                    value = ClassUtil.getTypeDefaultValue(parameter.parameterType);
                 }
             }
         }
@@ -239,7 +241,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
             return null;
         }
 
-        var kName = MyUtil.getKebabCase(parameter.parameterName);
+        var kName = StringUtil.getKebabCase(parameter.parameterName);
         if (kName != parameter.parameterName) {
             return getValueFromRequest(webRequest, parameter, kName)
         }
@@ -285,7 +287,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
                     }
                     return postBody.ConvertType(parameter.parameterType);
                 } else {
-                    return MyUtil.getTypeDefaultValue(parameter.parameterType);
+                    return ClassUtil.getTypeDefaultValue(parameter.parameterType);
                 }
             }
 

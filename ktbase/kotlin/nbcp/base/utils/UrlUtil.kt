@@ -2,22 +2,16 @@ package nbcp.base.utils
 
 import nbcp.base.comm.JsonMap
 import nbcp.base.data.UrlQueryJsonData
-import nbcp.base.extend.AsString
-import nbcp.base.extend.HasValue
-import nbcp.base.extend.Slice
-import nbcp.base.extend.toUrlQuery
+import nbcp.base.extend.*
 import java.net.URLDecoder
 import java.net.URLEncoder
-import javax.script.Compilable
-import javax.script.ScriptEngine
-import javax.script.ScriptEngineManager
 
 /**
  * Created by udi on 17-4-21.
  */
 
 
-object JsUtil {
+object UrlUtil {
 
     @JvmStatic
     fun getSoloKeysFromUrl(value: String): Array<String> {
@@ -105,7 +99,7 @@ object JsUtil {
                     value = "true"
                 }
             } else {
-                value = JsUtil.decodeURIComponent(kv[1]);
+                value = decodeURIComponent(kv[1]);
             }
 
             if (value == null) {
@@ -141,6 +135,38 @@ object JsUtil {
     @JvmStatic
     fun toUrlQuery(map: Map<String, *>): String {
         return map.toUrlQuery()
+    }
+
+
+
+    /**
+     * 处理 Url，连接各个部分， 其中第一部分是 Host， 不处理。
+     */
+    @JvmStatic
+    fun joinUrl(host: String, vararg path: String): String {
+        if (path.any() == false) return host;
+
+        var list = mutableListOf<String>()
+
+        path.map {
+            it.split('/')
+                    .filter { it.HasValue }
+                    .filter { it != "." }
+        }
+                .Unwind()
+                .forEach {
+                    if (it == "..") {
+                        if (list.removeLastOrNull() == null) {
+                            throw RuntimeException("url地址层级溢出")
+                        }
+                        return@forEach
+                    }
+
+                    list.add(it);
+                }
+
+
+        return host + list.map { "/" + it }.joinToString("")
     }
 }
 

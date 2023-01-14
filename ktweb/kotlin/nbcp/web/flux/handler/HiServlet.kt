@@ -4,6 +4,7 @@ import nbcp.base.extend.AsString
 import nbcp.base.extend.HasValue
 import nbcp.base.extend.getStringValue
 import nbcp.base.utils.ClassUtil
+import nbcp.base.utils.JarUtil
 import nbcp.base.utils.SpringUtil
 import nbcp.mvc.annotation.OpenAction
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
@@ -53,7 +54,7 @@ open class HiServlet {
         val json = mutableMapOf<String, String?>();
         val env = SpringUtil.context.environment;
 
-        val jarFile = ClassUtil.getStartingJarFile();
+        val jarFile = JarUtil.getStartingJarFile();
         json["应用名称"] = env.getProperty("app.cn_name");
         json["当前配置"] = env.activeProfiles.joinToString(",")
         json["集群"] = env.getProperty("app.group");

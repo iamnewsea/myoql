@@ -8,6 +8,8 @@ import nbcp.base.extend.AsString
 import nbcp.base.extend.HasValue
 import nbcp.base.extend.Skip
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.UrlUtil
+import nbcp.base.utils.WebUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -48,7 +50,7 @@ class MinioBaseService : ISaveFileService {
 
 
     private val minioClient by lazy {
-        var host = MyUtil.getHttpHostUrl(API_HOST.AsString(WEB_HOST))
+        var host = WebUtil.getHttpHostUrl(API_HOST.AsString(WEB_HOST))
 
 
         return@lazy MinioClient.builder().endpoint(host).credentials(MINIO_ACCESSKEY, MINIO_SECRETKEY).build()
@@ -101,7 +103,7 @@ class MinioBaseService : ISaveFileService {
         val fileName = fileData.getTargetFileName().joinToString("/")
 
         //类型
-        val contentType = MyUtil.getMimeType(fileData.extName).AsString("application/octet-stream")
+        val contentType = WebUtil.getMimeType(fileData.extName).AsString("application/octet-stream")
         //把文件放置MinIo桶(文件夹)
 
         return fileStream.use {
@@ -120,17 +122,17 @@ class MinioBaseService : ISaveFileService {
                     .build()
             )
 
-            var responseHost = MyUtil.getHostUrlWithoutHttp(WEB_HOST.AsString(API_HOST))
+            var responseHost = WebUtil.getHostUrlWithoutHttp(WEB_HOST.AsString(API_HOST))
 
-            return@use MyUtil.joinUrl(responseHost, response.bucket(), response.`object`())
+            return@use UrlUtil.joinUrl(responseHost, response.bucket(), response.`object`())
         }
     }
 
 
     override fun delete(url: String): JsonResult {
-        var path = MyUtil.getHostUrlWithoutHttp(url);
-        var apiHost = MyUtil.getHostUrlWithoutHttp(API_HOST);
-        var webHost = MyUtil.getHostUrlWithoutHttp(WEB_HOST);
+        var path = WebUtil.getHostUrlWithoutHttp(url);
+        var apiHost = WebUtil.getHostUrlWithoutHttp(API_HOST);
+        var webHost = WebUtil.getHostUrlWithoutHttp(WEB_HOST);
 
         if (path.startsWith(apiHost, true)) {
             path = path.substring(apiHost.length);

@@ -6,6 +6,7 @@ import nbcp.base.comm.const
 import nbcp.base.extend.*
 import nbcp.base.utils.CodeUtil
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.ReflectUtil
 import nbcp.myoql.db.BaseEntity
 import nbcp.myoql.db.db
 import nbcp.myoql.db.sql.base.SqlBaseMetaTable
@@ -354,7 +355,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
             }
 
             if (this.ori_entities.any()) {
-                MyUtil.setPrivatePropertyValue(this.ori_entities.first(), autoIncrmentKey, db.lastAutoId)
+                ReflectUtil.setPrivatePropertyValue(this.ori_entities.first(), autoIncrmentKey, db.lastAutoId)
             }
         } else {
             //没有自增Id的情况

@@ -7,6 +7,7 @@ import nbcp.base.enums.JsonSceneScopeEnum
 import nbcp.base.enums.JsonStyleScopeEnum
 import nbcp.base.scope.getJsonMapper
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.ReflectUtil
 import kotlin.reflect.KClass
 
 /**
@@ -182,7 +183,7 @@ fun <T> Any.ConvertJson(type: Class<out T>, style: JsonSceneScopeEnum? = null): 
                 }
                 .forEach { it ->
                     var key = it.AsString();
-                    MyUtil.setValueByWbsPath(this, key, value = this.get(key))
+                    ReflectUtil.setValueByWbsPath(this, key, value = this.get(key))
                 }
         }
     }

@@ -2,6 +2,7 @@ package nbcp.myoql.db.sql.event;
 
 import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.ReflectUtil
 import nbcp.myoql.db.comm.EventResult
 import nbcp.myoql.db.db
 import nbcp.myoql.db.mongo.MongoEntityCollector
@@ -112,7 +113,7 @@ class SqlDefaultInsertEvent : ISqlEntityInsert {
         cacheGroups.forEach { groupKeys ->
             insert.entities.forEach { ent ->
                 val groupValue = groupKeys.map {
-                    return@map it to MyUtil.getValueByWbsPath(ent, it).AsString()
+                    return@map it to ReflectUtil.getValueByWbsPath(ent, it).AsString()
                 }.filter { it.second.HasValue }
                     .toMap();
 

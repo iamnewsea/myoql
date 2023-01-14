@@ -8,6 +8,7 @@ import nbcp.base.comm.JsonResult
 import nbcp.base.extend.AsString
 import nbcp.base.extend.HasValue
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.WebUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -49,7 +50,7 @@ class AliOssBaseService : ISaveFileService {
 
         //5、如果需要在初始化分片时设置文件存储类型，并通过setContentType决定链接是预览还是下载
         val metadata = ObjectMetadata()
-        metadata.setContentType(MyUtil.getMimeType(fileData.extName).AsString("application/octet-stream"))
+        metadata.setContentType(WebUtil.getMimeType(fileData.extName).AsString("application/octet-stream"))
         metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString())
         metadata.setContentLength(contentLength.toLong())
 

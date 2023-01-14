@@ -5,6 +5,7 @@ package nbcp.base.extend
 
 import nbcp.base.enums.LogLevelScopeEnum
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.ReflectUtil
 import org.slf4j.Logger
 import java.io.File
 
@@ -56,10 +57,10 @@ fun ch.qos.logback.classic.Logger.getLoggerFile(configName: String): String {
     if (appenderList.hasNext()) {
         var fileAppender =
             (appenderList.Filter { it.name == configName }.first() as ch.qos.logback.core.rolling.RollingFileAppender)
-        return (MyUtil.getValueByWbsPath(fileAppender, "currentlyActiveFile") as File).absolutePath
+        return (ReflectUtil.getValueByWbsPath(fileAppender, "currentlyActiveFile") as File).absolutePath
     }
 
-    var parent = MyUtil.getValueByWbsPath(this, "parent") as ch.qos.logback.classic.Logger?
+    var parent = ReflectUtil.getValueByWbsPath(this, "parent") as ch.qos.logback.classic.Logger?
     if (parent == null) return "";
     return parent.getLoggerFile(configName);
 }

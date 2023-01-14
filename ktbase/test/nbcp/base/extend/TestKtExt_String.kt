@@ -3,6 +3,7 @@ package nbcp.base.extend
 import nbcp.base.TestBase
 import nbcp.base.comm.const
 import nbcp.base.utils.CipherUtil
+import nbcp.base.utils.FileUtil
 import nbcp.base.utils.MyUtil
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -55,7 +56,7 @@ aaa
 
         var basePath = Thread.currentThread().contextClassLoader.getResource("./").path.split("/target/")[0];
 
-        var path = File(MyUtil.joinFilePath(basePath, "./kotlin"));
+        var path = File(FileUtil.joinPath(basePath, "./kotlin"));
 
         var _walk_all_path: ((File) -> Boolean)? = null;
         var walk_all_path: ((File) -> Boolean) = walk@{ file ->

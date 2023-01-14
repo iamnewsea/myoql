@@ -52,13 +52,13 @@ class MyMvcInitConfig : BeanPostProcessor {
 //                var connectTimeout = beanType.getDeclaredField("connectTimeout")
 //
 //                if (MyUtil.getPrivatePropertyValue(bean, connectTimeout).AsInt() < 1000) {
-//                    MyUtil.setPrivatePropertyValue(bean, connectTimeout, 3000)
+//                    ReflectUtil.setPrivatePropertyValue(bean, connectTimeout, 3000)
 //                }
 //
 //                var responseTimeout = beanType.getDeclaredField("responseTimeout")
 //                var responseTimeout_value = MyUtil.getPrivatePropertyValue(bean, responseTimeout) as Duration
 //                if (responseTimeout_value.toMinutes() < 1) {
-//                    MyUtil.setPrivatePropertyValue(bean, responseTimeout, Duration.ofMinutes(3))
+//                    ReflectUtil.setPrivatePropertyValue(bean, responseTimeout, Duration.ofMinutes(3))
 //                }
 //            }
 //        }

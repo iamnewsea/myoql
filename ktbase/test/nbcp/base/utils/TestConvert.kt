@@ -9,7 +9,7 @@ class TestUtils : TestBase() {
 
     @Test
     fun abc() {
-        val str = """MyUtil.getKebabCase("abcDefa-fw")"""
+        val str = """StringUtil.getKebabCase("abcDefa-fw")"""
 
 
         println("df".Slice(0, 100))

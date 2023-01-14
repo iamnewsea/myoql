@@ -8,8 +8,9 @@ import nbcp.base.comm.StringMap
 import nbcp.base.comm.config
 import nbcp.base.comm.const
 import nbcp.base.extend.*
-import nbcp.base.utils.JsUtil
+import nbcp.base.utils.UrlUtil
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.StringUtil
 import nbcp.base.utils.WebUtil
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
@@ -49,7 +50,7 @@ x-forwarded-for: 103.10.86.226,124.70.126.65,10.0.4.20
     var forwardIps = (request.getHeader("X-Forwarded-For") ?: "")
             .split(",")
             .map { it.trim() }
-            .filter { it.HasValue && !it.basicSame("unknown") && !MyUtil.isLocalIp(it) }
+            .filter { it.HasValue && !it.basicSame("unknown") && !WebUtil.isLocalIp(it) }
             .toList();
 
     //如果设置了 X-Forwarded-For
@@ -60,7 +61,7 @@ x-forwarded-for: 103.10.86.226,124.70.126.65,10.0.4.20
     var realIp = request.getHeader("X-Real-IP") ?: "";
     // 如果设置了 X-Real-IP
     // 必须 = realIp
-    if (MyUtil.isLocalIp(realIp) == false) {
+    if (WebUtil.isLocalIp(realIp) == false) {
         return realIp;
     }
 
@@ -114,7 +115,7 @@ val HttpServletRequest.queryJson: JsonMap
 
 val HttpServletRequest.soloQueryKeys: Array<String>
     get() {
-        return JsUtil.getSoloKeysFromUrl(this.queryString ?: "")
+        return UrlUtil.getSoloKeysFromUrl(this.queryString ?: "")
     }
 
 val HttpServletRequest.requestParameterKeys: Set<String>
@@ -305,8 +306,8 @@ fun HttpServletRequest.findParameterValue(key: String): Any? {
     }
 
     //兼容查询
-    if (MyUtil.isKebabCase(key)) {
-        var key2 = MyUtil.getSmallCamelCase(key);
+    if (StringUtil.isKebabCase(key)) {
+        var key2 = StringUtil.getSmallCamelCase(key);
         if (key != key2) {
             ret = this.getParameterValue(key2);
         }
@@ -314,7 +315,7 @@ fun HttpServletRequest.findParameterValue(key: String): Any? {
         return ret;
     }
 
-    var kKey = MyUtil.getKebabCase(key);
+    var kKey = StringUtil.getKebabCase(key);
     if (kKey != key) {
         ret = this.getParameterValue(kKey);
     }

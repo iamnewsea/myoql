@@ -1,5 +1,6 @@
 package nbcp.base.utils
 
+import nbcp.base.comm.JsonMap
 import nbcp.base.extend.*
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
@@ -9,10 +10,14 @@ import org.reflections.util.ConfigurationBuilder
 import org.springframework.core.io.ClassPathResource
 import org.springframework.util.ClassUtils
 import java.io.File
+import java.lang.reflect.Field
 import java.net.JarURLConnection
 import java.net.URL
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.*
+import kotlin.reflect.KClass
 
 
 /**
@@ -22,9 +27,6 @@ import java.util.*
  */
 object ClassUtil {
 
-    val startJarPackage: String by lazy {
-        return@lazy Thread.currentThread().stackTrace.last().className.split(".").Slice(0, -1).joinToString(".")
-    }
 
     /**
      * 是否存在类
@@ -107,96 +109,6 @@ object ClassUtil {
     }
 
 
-    @JvmStatic
-    fun getMainApplicationLastModified(): LocalDateTime? {
-        val list = ClasspathHelper.forResource("");
-        if (list.any() == false) return null;
-
-        val fileName = list.first().path;
-
-        return Date(File(fileName).lastModified()).AsLocalDateTime()
-    }
-
-
-    /**
-     * 判断是否是 Jar包启动。
-     */
-    @JvmStatic
-    fun isJarStarting(): Boolean {
-        return Thread.currentThread().contextClassLoader.getResource("/") != null;
-    }
-
-    @JvmStatic
-    fun getStartingJarFile(url: URL): File? {
-        val path = JsUtil.decodeURIComponent(url.path)
-        if (url.protocol == "jar") {
-            //值是： file:/D:/code/sites/server/admin/target/admin-api-1.0.1.jar!/BOOT-INF/classes!/
-            var index = 0;
-            if (path.startsWith("file:/")) {
-                index = "file:/".length;
-            }
-            return File(path.Slice(index - 1, -"!/BOOT-INF/classes!/".length))
-        } else if (url.protocol == "file") {
-            //值是： /D:/code/sites/server/admin/target/classes/
-            //处理文件路径中中文的问题。
-            val targetPath = File(path).parentFile
-            val mvn_file = targetPath?.listFiles { it -> it.name == "maven-archiver" }?.firstOrNull()
-                ?.listFiles { it -> it.name == "pom.properties" }?.firstOrNull()
-            if (mvn_file == null) {
-                return null;
-//                throw RuntimeException("找不到 maven-archiver , 先打包再运行!")
-            }
-
-            val jarFile_lines = mvn_file.readLines()
-            val version = jarFile_lines.first { it.startsWith("version=") }.split("=").last()
-            val artifactId = jarFile_lines.first { it.startsWith("artifactId=") }.split("=").last()
-
-            return File(targetPath.FullName + "/" + artifactId + "-" + version + ".jar")
-        }
-
-        return null;
-//        throw RuntimeException("不识别的协议类型 ${url.protocol}")
-    }
-
-    /**
-     * 获取启动Jar所的路径
-     * 调试时，会返回 target/classes/nbcp/base/utils
-     */
-    @JvmStatic
-    fun getStartingJarFile(): File? {
-//        val stackTraceElements = RuntimeException().stackTrace
-//        for (stackTraceElement in stackTraceElements) {
-//            if ("main" == stackTraceElement.methodName) {
-//                return stackTraceElement.className
-//            }
-//        }
-        /**
-        file:/opt/edu_report/admin-api-1.0.1.jar!/BOOT-INF/classes!/
-        /D:/code/edu_report/server/admin/target/classes/
-         */
-        /**
-         * 还有一种办法获取 file
-         * var file = Thread.currentThread().contextClassLoader.getResource("./").path
-         */
-//        var file = clazz.protectionDomain.codeSource.location.path
-        val classLoader = Thread.currentThread().contextClassLoader
-
-        /**
-         * jar -Dloader.path=libs 方式:
-         * 1. 使用 /, 表示启动的Jar包 !/BOOT-INF/classes!/
-         * 2. 使用 ./ 或 空串 表示 libs 目录
-         *
-         * jar 方式：
-         * 1. 使用 /, 表示启动的Jar包 !/BOOT-INF/classes!/
-         * 2. 使用 ./ 或 空串 表示Jar包
-         *
-         * 调试时：
-         * 1. 使用 / 返回 null
-         * 2. 使用 ./ 或 空串 ,返回 /D:/code/sites/server/admin/target/classes/
-         */
-        val url = classLoader.getResource("./") ?: classLoader.getResource("")
-        return getStartingJarFile(url)
-    }
 
 
 //    @JvmStatic fun getApplicationMainClass(): Class<*>? {
@@ -236,7 +148,7 @@ object ClassUtil {
         val url =
             resource.url; //得到的结果大概是：jar:file:/C:/Users/ibm/.m2/repository/junit/junit/4.12/junit-4.12.jar!/org/junit
 
-        findResources(url, baseResourcePath, { jarEntryName ->
+        ResourceUtil. findResources(url, baseResourcePath, { jarEntryName ->
             //如果是死循环,则停止
             if (jarEntryName == basePack || jarEntryName == baseResourcePath) {
                 return@findResources false
@@ -264,16 +176,7 @@ object ClassUtil {
     }
 
 
-    /**
-     * @param basePath: 前后不带/
-     */
-    @JvmOverloads
-    @JvmStatic
-    fun findResources(basePath: String, filter: ((String) -> Boolean)? = null): List<String> {
-        val resource = ClassPathResource(basePath);
-        if (resource.exists() == false) return listOf();
-        return findResources(resource.url, basePath.trim('/'), filter)
-    }
+
 
     private fun getClassName(fullPath: String, basePack: String, jarPath: String): String {
         if (fullPath.endsWith(".class") == false) {
@@ -329,57 +232,70 @@ object ClassUtil {
 //        return list;
 //    }
 
-    @JvmOverloads
+
     @JvmStatic
-    fun findResources(url: URL, basePath: String, filter: ((String) -> Boolean)? = null): List<String> {
-        //转换为JarURLConnection
-        val connection = url.openConnection()
-        if (connection == null) {
-            return listOf();
-        }
-
-        if (connection is JarURLConnection) {
-            val jarFile = connection.jarFile
-            if (jarFile == null) {
-                return listOf();
-            }
-
-            var list = mutableListOf<String>()
-            //得到该jar文件下面的类实体
-            val jarEntryEnumeration = jarFile.entries()
-            while (jarEntryEnumeration.hasMoreElements()) {
-                val entry = jarEntryEnumeration.nextElement()
-                val jarEntryName = entry.getName()
-
-                if (jarEntryName.startsWith(basePath) == false) {
-                    continue
-                }
-
-
-                if (filter?.invoke(jarEntryName) ?: true) {
-                    list.add(jarEntryName);
-                }
-            }
-            return list;
-        } else {
-            var list = mutableListOf<String>()
-            var base = url.file.split("/target/classes/")[1]
-
-            connection.inputStream.readContentString()
-                .split("\n")
-                .filter { it.HasValue }
-                .forEach { it ->
-                    var jarClassName = base + "/" + it;
-
-                    if (filter?.invoke(jarClassName) ?: true) {
-                        list.add(jarClassName);
-                    }
-                }
-            return list;
-        }
-
-        //throw java.lang.RuntimeException("不识别的类型:${connection::class.java.name}!")
+    fun <T : Any> getTypeDefaultValue(type: KClass<T>): Any? {
+        return getTypeDefaultValue(type.java)
     }
+
+    //简单类型，请参考 Class.IsSimpleType
+    @JvmStatic
+    fun <T> getTypeDefaultValue(type: Class<T>): Any? {
+
+//        var className = clazz.name;
+        if (type == Boolean::class.java || type == java.lang.Boolean::class.java) {
+            return false;
+        }
+        if (type == java.lang.Character::class.java || type == Char::class.java) {
+            return '\u0000';
+        }
+
+        if (type == Byte::class.java || type == java.lang.Byte::class.java) {
+            return 0;
+        }
+        if (type == Short::class.java || type == java.lang.Short::class.java) {
+            return 0;
+        }
+        if (type == java.lang.Integer::class.java || type == Int::class.java) {
+            return 0;
+        }
+        if (type == Long::class.java || type == java.lang.Long::class.java) {
+            return 0L;
+        }
+        if (type == Float::class.java || type == java.lang.Float::class.java) {
+            return 0F;
+        }
+        if (type == Double::class.java || type == java.lang.Double::class.java) {
+            return 0.0;
+        }
+
+        //不应该执行这句.
+        if (type.isPrimitive) {
+            return type.constructors.firstOrNull { it.parameters.size == 0 }?.newInstance()
+        } else if (type.isEnum) {
+            return type.declaredFields.first().get(null);
+        } else if (type == String::class.java) {
+            return "";
+        } else if (type == java.time.LocalDate::class.java) {
+            return LocalDate.MIN
+        } else if (type == java.time.LocalTime::class.java) {
+            return LocalTime.MIN
+        } else if (type == java.time.LocalDateTime::class.java) {
+            return LocalDateTime.MIN
+        } else if (type == java.util.Date::class.java) {
+            return Date(0)
+        }
+//        else if (clazz == org.bson.types.ObjectId::class.java) {
+//            return ObjectId(0, 0, 0, 0)
+//        }
+
+        return type.constructors.firstOrNull { it.parameters.size == 0 }?.newInstance()
+    }
+
+
+
+
+
 
 
 }

@@ -42,9 +42,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-utils</artifactId>
-            <version>3.0.8</version>
+            <groupId>cn.dev8</groupId>
+            <artifactId>ktbase</artifactId>
+            <version>1.1.7-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

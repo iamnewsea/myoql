@@ -42,7 +42,7 @@
 //}
 //
 //fun ServerHttpResponse.setDownloadFileName(fileName: String) {
-//    this.headers.set("Content-Disposition", "attachment; filename=" + JsUtil.encodeURIComponent(fileName));
+//    this.headers.set("Content-Disposition", "attachment; filename=" + UrlUtil.encodeURIComponent(fileName));
 //    this.headers.contentType = MediaType.APPLICATION_OCTET_STREAM
 //}
 //

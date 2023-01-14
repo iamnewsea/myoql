@@ -2,6 +2,7 @@ package nbcp.base.enums
 
 import nbcp.base.db.annotation.Cn
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.StringUtil
 
 /**
  * 名称映射类型
@@ -23,10 +24,10 @@ enum class NameMappingTypeEnum {
     UNDER_LINE;
 
     fun getResult(input: String): String {
-        if (this == SMALL_CAMEL) return MyUtil.getSmallCamelCase(input);
-        if (this == BIG_CAMEL) return MyUtil.getBigCamelCase(input);
-        if (this == KEBAB) return MyUtil.getKebabCase(input);
-        if (this == UNDER_LINE) return MyUtil.getUnderlineCase(input);
+        if (this == SMALL_CAMEL) return StringUtil.getSmallCamelCase(input);
+        if (this == BIG_CAMEL) return StringUtil.getBigCamelCase(input);
+        if (this == KEBAB) return StringUtil.getKebabCase(input);
+        if (this == UNDER_LINE) return StringUtil.getUnderlineCase(input);
 
         return input;
     }

@@ -3,6 +3,7 @@ package nbcp.myoql.code.generator.db.mysql
 import nbcp.base.comm.config
 import nbcp.base.extend.HasValue
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.StringUtil
 import nbcp.myoql.code.generator.removeQuoteContent
 
 /**
@@ -60,9 +61,9 @@ class EntityDbItemData {
             }
 
             if (config.myoqlKeepDbName) {
-                return MyUtil.splitWordParts(name2).joinToString("_")
+                return StringUtil.splitWordParts(name2).joinToString("_")
             }
 
-            return MyUtil.getBigCamelCase(name2)
+            return StringUtil.getBigCamelCase(name2)
         }
 }

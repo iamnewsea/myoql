@@ -47,7 +47,7 @@ object ImageUtil {
         }
         sourceImage.reset();
 
-        val type = MyUtil.getFileTypeWithBom(ary).AsString("png");
+        val type = FileUtil.getFileTypeWithBom(ary).AsString("png");
 
         val oriImage = ImageIO.read(sourceImage)
 

@@ -51,7 +51,7 @@ x-real-ip: 10.0.4.20
 x-forwarded-for: 103.10.86.226,124.70.126.65,10.0.4.20
      */
     var forwardIps = (request.getHeader("X-Forwarded-For") ?: "").split(",").map { it.trim() }
-            .filter { it.HasValue && !it.basicSame("unknown") && !MyUtil.isLocalIp(it) }.toList();
+            .filter { it.HasValue && !it.basicSame("unknown") && !WebUtil.isLocalIp(it) }.toList();
 
     //如果设置了 X-Forwarded-For
     if (forwardIps.any()) {
@@ -61,7 +61,7 @@ x-forwarded-for: 103.10.86.226,124.70.126.65,10.0.4.20
     var realIp = request.getHeader("X-Real-IP") ?: "";
     // 如果设置了 X-Real-IP
     // 必须 = realIp
-    if (MyUtil.isLocalIp(realIp) == false) {
+    if (WebUtil.isLocalIp(realIp) == false) {
         return realIp;
     }
 

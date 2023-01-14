@@ -31,7 +31,7 @@ class KotlinCoderUtil {
 
             var members = an.getMemberValues()
 //            var h = Proxy.getInvocationHandler(an);
-//            var members = MyUtil.getValueByWbsPath(h, "memberValues") as Map<String, Any?>?;
+//            var members = ReflectUtil.getValueByWbsPath(h, "memberValues") as Map<String, Any?>?;
 //            if (members == null) return "";
 
 

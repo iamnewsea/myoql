@@ -5,6 +5,7 @@ import nbcp.base.extend.AsInt
 import nbcp.base.extend.AsLocalDateTime
 import nbcp.base.extend.AsString
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.ReflectUtil
 import org.apache.poi.ss.util.CellReference
 import org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler
 import org.apache.poi.xssf.usermodel.XSSFComment
@@ -58,10 +59,10 @@ class SheetContentRowArrayDataReader(
         var handler = (xmlReader.contentHandler as XSSFSheetXMLHandler)
 
 
-        var formatIndex = MyUtil.getValueByWbsPath(handler, "formatIndex").AsInt()
-        var formatString = MyUtil.getValueByWbsPath(handler, "formatString").AsString()
-        var nextDataType = MyUtil.getValueByWbsPath(handler, "nextDataType").AsString()
-        var value = MyUtil.getValueByWbsPath(handler, "value").AsDouble()
+        var formatIndex = ReflectUtil.getValueByWbsPath(handler, "formatIndex").AsInt()
+        var formatString = ReflectUtil.getValueByWbsPath(handler, "formatString").AsString()
+        var nextDataType = ReflectUtil.getValueByWbsPath(handler, "nextDataType").AsString()
+        var value = ReflectUtil.getValueByWbsPath(handler, "value").AsDouble()
         //[$-F400]h:mm:ss\ AM/PM = 3:20:39 下午
 
         if (value >= 0 && nextDataType == "NUMBER" && org.apache.poi.ss.usermodel.DateUtil.isADateFormat(formatIndex, formatString)) {

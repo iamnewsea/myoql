@@ -41,11 +41,11 @@ class MyOqlDependencyInitConfig : BeanPostProcessor {
                 beanType.annotations.firstOrNull { it.annotationClass.qualifiedName == "org.springframework.cloud.openfeign.FeignClient" }
 
             if (feign != null) {
-                var url = MyUtil.getValueByWbsPath(feign, "url").AsString();
+                var url = ReflectUtil.getValueByWbsPath(feign, "url").AsString();
                 if (url.HasValue) {
                     dependency.services.add(url)
                 } else {
-                    var value = MyUtil.getValueByWbsPath(feign, "value").AsString();
+                    var value = ReflectUtil.getValueByWbsPath(feign, "value").AsString();
                     if (value.HasValue) {
                         dependency.services.add(value)
                     }

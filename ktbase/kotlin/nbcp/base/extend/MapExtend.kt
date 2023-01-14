@@ -5,8 +5,10 @@ package nbcp.base.extend
 
 import nbcp.base.comm.JsonMap
 import nbcp.base.db.JsonKeyValuePair
-import nbcp.base.utils.JsUtil
+import nbcp.base.utils.UrlUtil
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.ReflectUtil
+import nbcp.base.utils.StringUtil
 import java.util.*
 
 
@@ -33,8 +35,8 @@ fun Map<*, *>.findParameterKey(key: String): Any? {
     }
 
     //兼容查询
-    if (MyUtil.isKebabCase(key)) {
-        var key2 = MyUtil.getSmallCamelCase(key);
+    if (StringUtil.isKebabCase(key)) {
+        var key2 = StringUtil.getSmallCamelCase(key);
         if (key != key2) {
             ret = this.getByIgnoreCaseKey(key2);
         }
@@ -42,7 +44,7 @@ fun Map<*, *>.findParameterKey(key: String): Any? {
         return ret;
     }
 
-    var kKey = MyUtil.getKebabCase(key);
+    var kKey = StringUtil.getKebabCase(key);
     if (kKey != key) {
         ret = this.getByIgnoreCaseKey(kKey);
     }
@@ -102,7 +104,7 @@ fun <V> MutableMap<String, V>.onlyHoldKeys(keys: Set<String>) {
  * 多层级获取属性值
  */
 inline fun <reified T> Map<String, *>.getTypeValue(vararg keys: String, ignoreCase: Boolean = false): T? {
-    var ret = MyUtil.getValueByWbsPath(this, *keys, ignoreCase = ignoreCase);
+    var ret = ReflectUtil.getValueByWbsPath(this, *keys, ignoreCase = ignoreCase);
     if (ret === null) return null;
     if (ret is T) return ret;
     return null;
@@ -112,7 +114,7 @@ inline fun <reified T> Map<String, *>.getTypeValue(vararg keys: String, ignoreCa
  * 多层级获取属性值
  */
 fun Map<*, *>.getStringValue(vararg keys: String, ignoreCase: Boolean = false): String? {
-    var v = MyUtil.getValueByWbsPath(this, *keys, ignoreCase = ignoreCase)
+    var v = ReflectUtil.getValueByWbsPath(this, *keys, ignoreCase = ignoreCase)
     if (v == null) return null;
 //    var v_type = v::class.java;
     if (v is Array<*>) {
@@ -127,7 +129,7 @@ fun Map<*, *>.getStringValue(vararg keys: String, ignoreCase: Boolean = false): 
  * 多层级获取属性值
  */
 fun Map<*, *>.getIntValue(vararg keys: String, ignoreCase: Boolean = false): Int {
-    var v = MyUtil.getValueByWbsPath(this, *keys, ignoreCase = ignoreCase)
+    var v = ReflectUtil.getValueByWbsPath(this, *keys, ignoreCase = ignoreCase)
     if (v == null) return 0;
     return v.AsInt()
 }
@@ -140,7 +142,7 @@ fun Map<String, *>.setValueByWbsPath(
     value: Any?,
     ignoreCase: Boolean = false
 ): Boolean {
-    return MyUtil.setValueByWbsPath(this, *keys, value = value, ignoreCase = ignoreCase);
+    return ReflectUtil.setValueByWbsPath(this, *keys, value = value, ignoreCase = ignoreCase);
 }
 
 
@@ -148,7 +150,7 @@ fun Map<String, *>.getValueByWbsPath(
     vararg keys: String,
     ignoreCase: Boolean = false
 ): Any? {
-    return MyUtil.getValueByWbsPath(this, *keys, ignoreCase = ignoreCase);
+    return ReflectUtil.getValueByWbsPath(this, *keys, ignoreCase = ignoreCase);
 }
 //------------------
 
@@ -175,7 +177,7 @@ fun get_array_querys(list: Collection<Any?>): List<String> {
                 .map { "[]=" + it }
         }
 
-        return@map listOf(JsUtil.encodeURIComponent(value.toString()))
+        return@map listOf(UrlUtil.encodeURIComponent(value.toString()))
     }
         .Unwind()
         .filter { it.HasValue }
@@ -209,7 +211,7 @@ fun get_map_querys(map: Map<String, *>): List<String> {
                 .map { key + "." + it }
         }
 
-        return@map listOf(key + "=" + JsUtil.encodeURIComponent(value.toString()))
+        return@map listOf(key + "=" + UrlUtil.encodeURIComponent(value.toString()))
     }
         .Unwind()
         .filter { it.HasValue }

@@ -8,6 +8,7 @@ import nbcp.base.extend.ToJson
 import nbcp.base.extend.Xml2Json
 import nbcp.base.extend.usingScope
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.StringUtil
 import org.junit.jupiter.api.Test
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -73,7 +74,7 @@ class testa : TestBase() {
     fun abcd2() {
 //        var a = const.utf8.encode("上").toByteArray().map { it.toUByte().toString(16) }
 //        println(a)
-        println(MyUtil.decodeStringFromFanOctalCode("\\344\\270\\212\\347\\272\\277"))
+        println(StringUtil.decodeStringFromFanOctalCode("\\344\\270\\212\\347\\272\\277"))
     }
 
     fun execCmd(vararg cmds: String): ListResult<String> {

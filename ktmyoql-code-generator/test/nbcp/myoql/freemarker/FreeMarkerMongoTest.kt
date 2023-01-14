@@ -2,6 +2,7 @@ package nbcp.myoql.freemarker
 
 import nbcp.base.extend.FullName
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.StringUtil
 import nbcp.myoql.TestBase
 import nbcp.myoql.code.generator.tool.CrudCodeGeneratorUtil
 import nbcp.myoql.db.db
@@ -16,7 +17,7 @@ class FreeMarkerMongoTest : TestBase() {
         var group = "base";
         db.morBase.getEntities().forEach {
             var entity = it;
-            var entity_upper = MyUtil.getBigCamelCase(it.tableName)
+            var entity_upper = StringUtil.getBigCamelCase(it.tableName)
 
             var fileNameAuto = File.separator + group + File.separator + entity_upper + "Controller.kt";
 
@@ -33,7 +34,7 @@ class FreeMarkerMongoTest : TestBase() {
         var group = "base";
         db.morBase.getEntities().forEach {
             var entity = it;
-            var entity_upper = MyUtil.getBigCamelCase(it.tableName)
+            var entity_upper = StringUtil.getBigCamelCase(it.tableName)
 
             var fileNameAuto = File.separator + group + File.separator + entity_upper + "Controller.kt";
 

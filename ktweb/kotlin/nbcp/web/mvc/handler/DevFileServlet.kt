@@ -9,6 +9,7 @@ import nbcp.base.extend.FullName
 import nbcp.base.extend.HasValue
 import nbcp.base.utils.MyUtil
 import nbcp.base.utils.ShellUtil
+import nbcp.base.utils.WebUtil
 import nbcp.mvc.mvc.setDownloadFileName
 import nbcp.mvc.annotation.*
 import org.slf4j.LoggerFactory
@@ -101,7 +102,7 @@ class DevFileServlet {
         }
 
         var fileInfo = FileExtensionInfo.ofFileName(name);
-        response.contentType = MyUtil.getMimeType(fileInfo.extName).AsString("text/plain")
+        response.contentType = WebUtil.getMimeType(fileInfo.extName).AsString("text/plain")
 
         response.outputStream.write(targetFile.readBytes())
     }

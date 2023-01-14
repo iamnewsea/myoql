@@ -517,7 +517,7 @@ ${checks.map { ", " + it }.joinToString("\n")}
 //
 //            if (MyUtil.allCharIsSameCase(p1)) return p1.lowercase();
 //
-//            return MyUtil.getSmallCamelCase(p1);
+//            return StringUtil.getSmallCamelCase(p1);
 //        }
 //    }
 }

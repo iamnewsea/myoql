@@ -5,6 +5,7 @@ import nbcp.base.extend.AsString
 import nbcp.base.extend.kotlinTypeName
 import nbcp.base.utils.CnAnnotationUtil
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.StringUtil
 import nbcp.myoql.code.generator.tool.freemarker.*
 import nbcp.myoql.code.generator.tool.freemarker.*
 import nbcp.myoql.code.generator.tool.freemarker.*
@@ -19,7 +20,7 @@ class CrudCodeTemplateData(
 
     val url: String
         get() {
-            return "/${MyUtil.getKebabCase(group)}/${MyUtil.getKebabCase(entityClass.simpleName)}";
+            return "/${StringUtil.getKebabCase(group)}/${StringUtil.getKebabCase(entityClass.simpleName)}";
         }
 
     val entity: String

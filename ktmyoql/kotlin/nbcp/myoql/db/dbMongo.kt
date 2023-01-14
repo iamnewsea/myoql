@@ -121,7 +121,7 @@ object dbMongo {
          * https://docs.mongodb.com/manual/reference/connection-string/#std-label-connections-connection-options
          */
         var uri = mongoURI;
-        var urlJson = JsUtil.parseUrlQueryJson(uri);
+        var urlJson = UrlUtil.parseUrlQueryJson(uri);
 
         if (urlJson.queryJson.get("uuidRepresentation").AsString().isEmpty()) {
             urlJson.queryJson.put("uuidRepresentation", "STANDARD")
@@ -462,7 +462,7 @@ db.getCollection("adminRole").aggregate(
                 lastKey = it.keys.last()
             }
 
-            val value = MyUtil.getValueByWbsPath(it, *lastKey.split(".").toTypedArray());
+            val value = ReflectUtil.getValueByWbsPath(it, *lastKey.split(".").toTypedArray());
             if (value != null) {
                 return value.ConvertType(type) as T
             } else {

@@ -3,6 +3,7 @@ package nbcp.base.comm
 
 import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.StringUtil
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent
 import org.springframework.context.ApplicationContext
@@ -178,7 +179,7 @@ ${list.filter { it.HasValue }.joinToString("  ")}
                 return ret;
             }
 
-            var key2 = key.split(".").map { MyUtil.getKebabCase(it) }.joinToString(".")
+            var key2 = key.split(".").map { StringUtil.getKebabCase(it) }.joinToString(".")
             if (key != key2) {
                 ret = doGetConfig(key2);
                 if (ret != null) {
@@ -186,7 +187,7 @@ ${list.filter { it.HasValue }.joinToString("  ")}
                 }
             }
 
-            key2 = key.split(".").map { MyUtil.getSmallCamelCase(it) }.joinToString(".")
+            key2 = key.split(".").map { StringUtil.getSmallCamelCase(it) }.joinToString(".")
             if (key != key2) {
                 ret = doGetConfig(key2);
                 if (ret != null) {

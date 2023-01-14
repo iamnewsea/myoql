@@ -8,10 +8,7 @@ import nbcp.base.extend.AsString
 import nbcp.base.extend.AsStringWithNull
 import nbcp.base.extend.HasValue
 import nbcp.base.extend.findParameterKey
-import nbcp.base.utils.HttpUtil
-import nbcp.base.utils.MyUtil
-import nbcp.base.utils.SpringUtil
-import nbcp.base.utils.TokenUtil
+import nbcp.base.utils.*
 import nbcp.mvc.mvc.HttpContext
 import nbcp.mvc.mvc.findParameterStringValue
 import nbcp.web.service.IUserAuthenticationService
@@ -88,7 +85,7 @@ val HttpServletRequest.basicLoginNamePassword: LoginNamePasswordData
         if (value == null) {
             return LoginNamePasswordData();
         }
-        var value_decript = MyUtil.getStringContentFromBase64(value);
+        var value_decript = Base64Util.decodeBase64Utf8(value);
         return HttpUtil.getLoginNamePassword(value_decript)
     }
 

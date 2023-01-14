@@ -6,10 +6,7 @@ import nbcp.base.comm.const
 import nbcp.base.data.Sys
 import nbcp.base.db.annotation.*
 import nbcp.base.extend.*
-import nbcp.base.utils.ClassUtil
-import nbcp.base.utils.CnAnnotationUtil
-import nbcp.base.utils.JavaCoderUtil
-import nbcp.base.utils.MyUtil
+import nbcp.base.utils.*
 import nbcp.myoql.db.sql.annotation.SqlAutoIncrementKey
 import nbcp.myoql.db.sql.annotation.SqlFk
 import nbcp.myoql.db.sql.annotation.SqlSpreadColumn
@@ -31,7 +28,7 @@ private fun _join(vararg args: String): String {
 //    if (value.any() == false) return this;
 //
 //    var con = this.javaClass.getConstructor(String::class.java);
-//    return con.newInstance(_join(MyUtil.getValueByWbsPath(this, "_pname").toString(), *value)) as T;
+//    return con.newInstance(_join(ReflectUtil.getValueByWbsPath(this, "_pname").toString(), *value)) as T;
 //}
 
 /**
@@ -64,7 +61,7 @@ class DbrGenerator4Java {
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
     ) {
-        targetEntityPathName = MyUtil.joinFilePath(targetPath, metaPackageName.split(".").joinToString("/"))
+        targetEntityPathName = FileUtil.joinPath(targetPath, metaPackageName.split(".").joinToString("/"))
         this.nameMapping = nameMapping
         var p = File.separator;
 
@@ -103,12 +100,12 @@ ${packages.map { "import " + it + ";" }.joinToString(const.line_break)}
             var groupEntities = group.value.filter(entityFilter);
 
 
-            writeToFile("${MyUtil.getBigCamelCase(group.key)}Group",
+            writeToFile("${StringUtil.getBigCamelCase(group.key)}Group",
                 fileHeader +
                         """
 @Component("sql.${group.key}")
 @MetaDataGroup(dbType = DatabaseEnum.SQL, value = "${group.key}")
-public class ${MyUtil.getBigCamelCase(group.key)}Group implements IDataGroup{
+public class ${StringUtil.getBigCamelCase(group.key)}Group implements IDataGroup{
     @Override
     public Set<BaseMetaData> getEntities(){
         var set = new HashSet<BaseMetaData>();
@@ -128,24 +125,24 @@ ${
                 .forEach { entityType ->
                     count++;
                     println("${count.toString().padStart(2, ' ')} 生成实体：${group.key}.${entityType.simpleName}".ToTab(1))
-                    writeToFile("${MyUtil.getBigCamelCase(group.key)}Group", genVarEntity(entityType).ToTab(1))
+                    writeToFile("${StringUtil.getBigCamelCase(group.key)}Group", genVarEntity(entityType).ToTab(1))
                 }
 
-            writeToFile("${MyUtil.getBigCamelCase(group.key)}Group", "\n")
+            writeToFile("${StringUtil.getBigCamelCase(group.key)}Group", "\n")
 
             groupEntities
                 .forEach { entityType ->
-                    var item = genEntity(MyUtil.getSmallCamelCase(group.key), entityType)
+                    var item = genEntity(StringUtil.getSmallCamelCase(group.key), entityType)
 
                     if (item.ext.HasValue) {
                         exts.add(item.ext);
                     }
-                    writeToFile("${MyUtil.getBigCamelCase(group.key)}Group", item.body.ToTab(1))
+                    writeToFile("${StringUtil.getBigCamelCase(group.key)}Group", item.body.ToTab(1))
                 }
 
-            writeToFile("${MyUtil.getBigCamelCase(group.key)}Group", """}""")
+            writeToFile("${StringUtil.getBigCamelCase(group.key)}Group", """}""")
 
-            writeToFile("${MyUtil.getBigCamelCase(group.key)}Group", exts.joinToString("\n"))
+            writeToFile("${StringUtil.getBigCamelCase(group.key)}Group", exts.joinToString("\n"))
         }
 
 
@@ -163,7 +160,7 @@ ${
     fun writeToFile(className: String, content: String) {
 
         FileWriter(
-            MyUtil.joinFilePath(
+            FileUtil.joinPath(
                 targetEntityPathName,
                 if (className.contains(".")) className else (className + ".java")
             ), true
@@ -329,52 +326,52 @@ ${
             idMethods.add(
                 """
     public SqlQueryClip<${entityTableMetaName}, ${entType.name}> queryBy${
-                    keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
+                    keys.map { StringUtil.getBigCamelCase(it) }.joinToString("")
                 } (${
                     keys.map {
                         "${
                             entType.GetFieldPath(
                                 *it.split(".").toTypedArray()
                             )!!.type.javaTypeName
-                        } ${MyUtil.getSmallCamelCase(it)}"
+                        } ${StringUtil.getSmallCamelCase(it)}"
                     }.joinToString(",")
                 }) {
         return this.query()${
-                    keys.map { ".where(it-> it.${it.replace(".", "_")}.match(${MyUtil.getSmallCamelCase(it)}))" }
+                    keys.map { ".where(it-> it.${it.replace(".", "_")}.match(${StringUtil.getSmallCamelCase(it)}))" }
                         .joinToString("")
                 };
     }
 
     public SqlDeleteClip<${entityTableMetaName}> deleteBy${
-                    keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
+                    keys.map { StringUtil.getBigCamelCase(it) }.joinToString("")
                 } (${
                     keys.map {
                         "${
                             entType.GetFieldPath(
                                 *it.split(".").toTypedArray()
                             )!!.type.javaTypeName
-                        } ${MyUtil.getSmallCamelCase(it)}"
+                        } ${StringUtil.getSmallCamelCase(it)}"
                     }.joinToString(",")
                 }) {
         return this.delete()${
-                    keys.map { ".where(it-> it.${it.replace(".", "_")}.match(${MyUtil.getSmallCamelCase(it)}))" }
+                    keys.map { ".where(it-> it.${it.replace(".", "_")}.match(${StringUtil.getSmallCamelCase(it)}))" }
                         .joinToString("")
                 };
     }
 
     public SqlUpdateClip<${entityTableMetaName}> updateBy${
-                    keys.map { MyUtil.getBigCamelCase(it) }.joinToString("")
+                    keys.map { StringUtil.getBigCamelCase(it) }.joinToString("")
                 } (${
                     keys.map {
                         "${
                             entType.GetFieldPath(
                                 *it.split(".").toTypedArray()
                             )!!.type.javaTypeName
-                        } ${MyUtil.getSmallCamelCase(it)}"
+                        } ${StringUtil.getSmallCamelCase(it)}"
                     }.joinToString(",")
                 }) {
         return this.update()${
-                    keys.map { ".where(it-> it.${it.replace(".", "_")}.match(${MyUtil.getSmallCamelCase(it)}))" }
+                    keys.map { ".where(it-> it.${it.replace(".", "_")}.match(${StringUtil.getSmallCamelCase(it)}))" }
                         .joinToString("")
                 };
     }
@@ -574,13 +571,13 @@ ${idMethods.joinToString("\n")}
         spreadColumnType: Class<*>
     ): String {
 
-        val GroupName = MyUtil.getBigCamelCase(groupName)
+        val GroupName = StringUtil.getBigCamelCase(groupName)
         val paramName = spreadColumnNames.joinToString("_")
         val entityTableMetaName = getEntityClassName(entityName)
 
         return """
 public SqlUpdateClip<${GroupName}Group.${entityTableMetaName}> SqlUpdateClip<${GroupName}Group.${entityTableMetaName}>.set_${
-            MyUtil.getSmallCamelCase(
+            StringUtil.getSmallCamelCase(
                 entityName
             )
         }_${paramName}(${paramName}:${spreadColumnType.name}) {

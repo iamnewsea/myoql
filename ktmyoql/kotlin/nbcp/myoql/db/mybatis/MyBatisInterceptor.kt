@@ -1,6 +1,8 @@
 package nbcp.myoql.db.mybatis
 
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.ReflectUtil
+import nbcp.base.utils.ResourceUtil
 import nbcp.base.utils.SpringUtil
 import nbcp.myoql.db.db
 import org.apache.ibatis.cache.CacheKey
@@ -65,7 +67,7 @@ class MyBatisInterceptor : Interceptor {
     private fun setReadMode(executor: Executor) {
         if (SpringUtil.containsBean("slave", DataSource::class.java)) {
             val slave = SpringUtil.getBeanByName<DataSource>("slave");
-            MyUtil.setPrivatePropertyValue(executor.transaction as SpringManagedTransaction, "dataSource", slave)
+            ReflectUtil.setPrivatePropertyValue(executor.transaction as SpringManagedTransaction, "dataSource", slave)
             return;
         }
 
@@ -74,7 +76,7 @@ class MyBatisInterceptor : Interceptor {
 
     //默认
     private fun setWriteMode(executor: Executor) {
-        MyUtil.setPrivatePropertyValue(
+        ReflectUtil.setPrivatePropertyValue(
             executor.transaction as SpringManagedTransaction,
             "dataSource",
             db.sql.getScopeDataSource()

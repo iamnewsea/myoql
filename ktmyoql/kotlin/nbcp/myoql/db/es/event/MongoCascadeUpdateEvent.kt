@@ -19,7 +19,7 @@
 //@Component
 //class EsCascadeUpdateEvent : IEsEntityUpdate {
 //    override fun beforeUpdate(update: EsBaseUpdateClip): DbEntityEventResult {
-//        var refs = EsEntityEvent.refsMap.filter { MyUtil.getSmallCamelCase(it.masterEntityClass.simpleName) == update.collectionName }
+//        var refs = EsEntityEvent.refsMap.filter { StringUtil.getSmallCamelCase(it.masterEntityClass.simpleName) == update.collectionName }
 //        if (refs.any() == false) {
 //            return DbEntityEventResult(true, null)
 //        }
@@ -77,7 +77,7 @@
 //
 //
 //        ret.forEach { ref ->
-//            var update2 = EsBaseUpdateClip(MyUtil.getSmallCamelCase(ref.ref.entityClass.simpleName))
+//            var update2 = EsBaseUpdateClip(StringUtil.getSmallCamelCase(ref.ref.entityClass.simpleName))
 //            update2.whereData.add(EsColumnName(ref.ref.idField) match_in ref.masterIdValues)
 //            update2.setValue(ref.ref.nameField, ref.masterNameValue)
 //            update2.exec();

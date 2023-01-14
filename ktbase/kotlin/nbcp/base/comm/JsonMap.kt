@@ -1,7 +1,7 @@
 package nbcp.base.comm
 
 import nbcp.base.extend.IntersectIndexes
-import nbcp.base.utils.JsUtil
+import nbcp.base.utils.UrlUtil
 import org.slf4j.LoggerFactory
 
 open class JsonMap : StringKeyMap<Any?> {
@@ -55,7 +55,7 @@ open class JsonMap : StringKeyMap<Any?> {
         @JvmStatic
         @JvmOverloads
         fun loadFromUrl(urlQueryString: String, soloIsTrue: Boolean = false): JsonMap {
-            return JsUtil.urlQueryToJson(urlQueryString, soloIsTrue)
+            return UrlUtil.urlQueryToJson(urlQueryString, soloIsTrue)
         }
     }
 

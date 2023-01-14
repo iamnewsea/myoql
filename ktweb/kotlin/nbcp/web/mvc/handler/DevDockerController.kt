@@ -8,9 +8,7 @@ import nbcp.base.extend.AsString
 import nbcp.base.extend.Format
 import nbcp.base.extend.FullName
 import nbcp.base.extend.HasValue
-import nbcp.base.utils.CodeUtil
-import nbcp.base.utils.MyUtil
-import nbcp.base.utils.ShellUtil
+import nbcp.base.utils.*
 import nbcp.mvc.mvc.setDownloadFileName
 import nbcp.mvc.annotation.*
 import org.slf4j.LoggerFactory
@@ -61,7 +59,7 @@ class DevDockerServlet {
 
 
     val path: String
-        get() = MyUtil.joinFilePath(
+        get() = FileUtil.joinPath(
             System.getProperty("java.io.tmpdir"),
             "docker-" + LocalDate.now().Format("yyyy-MM-dd")
         )
@@ -129,7 +127,7 @@ class DevDockerServlet {
 
 
         var fileInfo = FileExtensionInfo.ofFileName(name);
-        response.contentType = MyUtil.getMimeType(fileInfo.extName).AsString("text/plain")
+        response.contentType = WebUtil.getMimeType(fileInfo.extName).AsString("text/plain")
 
         response.outputStream.write(File(target).readBytes())
     }

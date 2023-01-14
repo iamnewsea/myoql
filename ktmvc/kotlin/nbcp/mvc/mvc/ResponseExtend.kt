@@ -6,7 +6,7 @@ package nbcp.mvc.mvc
 import nbcp.base.comm.const
 import nbcp.base.extend.AsString
 import nbcp.base.extend.HasValue
-import nbcp.base.utils.JsUtil
+import nbcp.base.utils.UrlUtil
 import nbcp.base.utils.WebUtil
 import org.springframework.http.MediaType
 import javax.servlet.ServletResponse
@@ -49,7 +49,7 @@ fun HttpServletResponse.setDownloadFileName(fileName: String) {
     var accessControlExposeHeaders = this.getHeader("Access-Control-Expose-Headers").AsString().split(",").filter { it.HasValue }.toMutableSet();
     accessControlExposeHeaders.add("content-disposition")
     this.setHeader("Access-Control-Expose-Headers", accessControlExposeHeaders.joinToString(","))
-    this.setHeader("Content-Disposition", "attachment; filename=" + JsUtil.encodeURIComponent(fileName));
+    this.setHeader("Content-Disposition", "attachment; filename=" + UrlUtil.encodeURIComponent(fileName));
     this.contentType = "application/octet-stream"
 }
 

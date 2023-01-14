@@ -59,7 +59,7 @@ open class ImageGetServlet {
         if (url.isEmpty()) {
             url = dbService.queryById(id)?.url ?: throw NoDbDataException("找不到数据")
         } else {
-            url = JsUtil.decodeURIComponent(url);
+            url = UrlUtil.decodeURIComponent(url);
         }
 
         var ret = ImageUtil.zoomImageScale(HttpUtil.getImage(url).inputStream(), response.outputStream, width, height)
@@ -69,7 +69,7 @@ open class ImageGetServlet {
         }
 
 
-        var contentType = MyUtil.getMimeType(ret.data!!)
+        var contentType = WebUtil.getMimeType(ret.data!!)
         if (contentType.HasValue) {
             response.contentType = contentType
         }

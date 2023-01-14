@@ -4,6 +4,7 @@ import nbcp.base.extend.GetEnumList
 import nbcp.base.extend.GetEnumStringField
 import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.ReflectUtil
 
 /**
  * 枚举Js的生成器
@@ -38,7 +39,7 @@ object Enum4JsGenerator {
             ret = """jv.defEnum("${jsonEnumClass.simpleName}",{""" +
                     jsonList.map {
                         it.toString() + ":\"" +
-                                (if (strField != null) MyUtil.getPrivatePropertyValue(
+                                (if (strField != null) ReflectUtil.getPrivatePropertyValue(
                                     it,
                                     strField
                                 ) else it.toString()) + "\""

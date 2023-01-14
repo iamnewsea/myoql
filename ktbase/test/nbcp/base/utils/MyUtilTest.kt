@@ -12,11 +12,11 @@ import org.junit.jupiter.api.Test
 class MyUtilTest : TestBase() {
     @Test
     fun test1() {
-        println(MyUtil.joinFilePath("/a", "..\\b", ".d/../c"))
+        println(FileUtil.joinPath("/a", "..\\b", ".d/../c"))
         println(MyUtil.getRandomNumber(-1000, 9))
         println(MyUtil.getRandomNumber(9999, 10))
         println(MyUtil.getRandomWithLength(10))
-        println(MyUtil.getBigCamelCase("abc--d__efnf"))
+        println(StringUtil.getBigCamelCase("abc--d__efnf"))
     }
 
     @Test
@@ -54,12 +54,12 @@ class MyUtilTest : TestBase() {
 TomcatWebServer:8002 -- nacos: saas-dev.nancal.com:8848(yuxh) -- nacos-config:none -- admin-api:yuxh
 ================================================
          """
-        println(MyUtil.getCenterEachLine(txt.split("\n")).joinToString("\n"))
+        println(StringUtil.getCenterEachLine(txt.split("\n")).joinToString("\n"))
     }
 
     @Test
     fun testformat() {
-        val ret = MyUtil.formatTemplateJson("dbr.\${group|-}.\${entity}.queryById(id)",
+        val ret = StringUtil.formatTemplateJson("dbr.\${group|-}.\${entity}.queryById(id)",
             StringMap("group" to "sysWx", "entity" to "user"), { key, value, func, param ->
                 ""
             })
@@ -76,22 +76,22 @@ TomcatWebServer:8002 -- nacos: saas-dev.nancal.com:8848(yuxh) -- nacos-config:no
     fun testGetValue() {
         val json = JsonMap("a" to 1, "b" to JsonMap("c" to 2), "d" to IdName("id1", "name1"))
 
-        println(MyUtil.getValueByWbsPath(json, "a"))
-        println(MyUtil.getValueByWbsPath(json, "b.c"))
-        println(MyUtil.getValueByWbsPath(json, "d.id"))
-        println(MyUtil.getValueByWbsPath(json, "e[0]"))
-        println(MyUtil.getValueByWbsPath(json, "x.y.z", fillMap = true))
+        println(ReflectUtil.getValueByWbsPath(json, "a"))
+        println(ReflectUtil.getValueByWbsPath(json, "b.c"))
+        println(ReflectUtil.getValueByWbsPath(json, "d.id"))
+        println(ReflectUtil.getValueByWbsPath(json, "e[0]"))
+        println(ReflectUtil.getValueByWbsPath(json, "x.y.z", fillMap = true))
         println(json.ToJson())
     }
 
     @Test
     fun setValue() {
         val json = JsonMap()
-        MyUtil.setValueByWbsPath(json, "a", ignoreCase = true, value = 1)
+        ReflectUtil.setValueByWbsPath(json, "a", ignoreCase = true, value = 1)
         println(json.ToJson())
-        MyUtil.setValueByWbsPath(json, "b[0]", ignoreCase = true, value = 2)
+        ReflectUtil.setValueByWbsPath(json, "b[0]", ignoreCase = true, value = 2)
         println(json.ToJson())
-        MyUtil.setValueByWbsPath(json, "d.e[3].id", ignoreCase = true, value = 3)
+        ReflectUtil.setValueByWbsPath(json, "d.e[3].id", ignoreCase = true, value = 3)
         println(json.ToJson())
     }
 }

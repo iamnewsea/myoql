@@ -2,6 +2,7 @@ package nbcp.myoql.db.mongo.event;
 
 import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.ReflectUtil
 import nbcp.myoql.db.BaseEntity
 import nbcp.myoql.db.comm.EventResult
 import nbcp.myoql.db.comm.SortNumber
@@ -48,7 +49,7 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
 
                 sortNumbers.forEach { sortNumber ->
                     if (map.getTypeValue<Float>(sortNumber.field, ignoreCase = false).AsFloat() == 0F) {
-                        var groupBy = MyUtil.getValueByWbsPath(entity, sortNumber.groupBy).AsString();
+                        var groupBy = ReflectUtil.getValueByWbsPath(entity, sortNumber.groupBy).AsString();
                         var sortNumberValue = getSortNumber(tableName, groupBy, sortNumber.step);
                         if (sortNumberValue != null) {
                             map.setValueByWbsPath(
@@ -96,14 +97,14 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
         tableName: String
     ) {
         sortNumbers.forEach { sortNumber ->
-            var value = MyUtil.getValueByWbsPath(entity, *sortNumber.field.split(".").toTypedArray());
+            var value = ReflectUtil.getValueByWbsPath(entity, *sortNumber.field.split(".").toTypedArray());
             if (value != null) {
                 if (value.AsFloat() == 0F) {
-                    var groupBy = MyUtil.getValueByWbsPath(entity, sortNumber.groupBy).AsString();
+                    var groupBy = ReflectUtil.getValueByWbsPath(entity, sortNumber.groupBy).AsString();
                     var sortNumberValue = getSortNumber(tableName, groupBy, sortNumber.step);
                     if (sortNumberValue != null) {
 
-                        MyUtil.setValueByWbsPath(
+                        ReflectUtil.setValueByWbsPath(
                             entity,
                             *sortNumber.field.split(".").toTypedArray(),
                             ignoreCase = false,
@@ -138,7 +139,7 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
 
 
                 val groupValue = groupKeys.map {
-                    return@map it to MyUtil.getValueByWbsPath(ent, it).AsString()
+                    return@map it to ReflectUtil.getValueByWbsPath(ent, it).AsString()
                 }.filter { it.second.HasValue }
                     .toMap();
 

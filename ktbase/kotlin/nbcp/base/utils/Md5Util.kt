@@ -29,7 +29,7 @@ object Md5Util {
         result.add((checksum ushr 8).toByte())
         result.add((checksum % 255).toByte())
 
-        return nbcp.base.utils.Base64Util.getUrlSafeValue(MyUtil.getBase64(result.toByteArray()))
+        return nbcp.base.utils.Base64Util.getUrlSafeValue(Base64Util.encode2Base64(result.toByteArray()))
     }
 
     /**
@@ -106,6 +106,6 @@ object Md5Util {
         result.add((checksum ushr 8).toByte())
         result.add((checksum % 255).toByte())
 
-        return nbcp.base.utils.Base64Util.getUrlSafeValue(MyUtil.getBase64(result.toByteArray()))
+        return nbcp.base.utils.Base64Util.getUrlSafeValue(Base64Util.encode2Base64(result.toByteArray()))
     }
 }

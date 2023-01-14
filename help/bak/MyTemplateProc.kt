@@ -15,12 +15,12 @@ object MyTemplateProc {
 
     var title = CodeGeneratorHelper.getEntityCommentValue(entityClass).AsString(tableName);
 
-    var url = "/${MyUtil.getKebabCase(group)}/${MyUtil.getKebabCase(entityClass.simpleName)}"
+    var url = "/${StringUtil.getKebabCase(group)}/${StringUtil.getKebabCase(entityClass.simpleName)}"
     var mapDefine = StringMap(
     "url" to url,
     "group" to group,
     "entity" to entityClass.simpleName,
-    "entityField" to MyUtil.getSmallCamelCase(entityClass.simpleName),
+    "entityField" to StringUtil.getSmallCamelCase(entityClass.simpleName),
     "title" to title,
     "now" to LocalDateTime.now().AsString(),
     "status_enum_class" to status_enum_class,
@@ -60,7 +60,7 @@ object MyTemplateProc {
 
             var t2 = entityFields.map {
                 var forExp2 = procIf(forExp, "fif", entityFields, it);
-                return@map MyUtil.formatTemplateJson(
+                return@map StringUtil.formatTemplateJson(
                     forExp2,
                     StringMap(
                         "name" to it.name,

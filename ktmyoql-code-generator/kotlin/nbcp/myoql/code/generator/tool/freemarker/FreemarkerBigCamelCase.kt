@@ -1,6 +1,7 @@
 package nbcp.myoql.code.generator.tool.freemarker
 
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.StringUtil
 import java.lang.reflect.Field
 
 class FreemarkerBigCamelCase : BaseMethodModelFreemarker() {
@@ -8,9 +9,9 @@ class FreemarkerBigCamelCase : BaseMethodModelFreemarker() {
         var paramValue = getFreemarkerParameter(list[0]);
 
         if (paramValue is Field) {
-            return MyUtil.getBigCamelCase(paramValue.name)
+            return StringUtil.getBigCamelCase(paramValue.name)
         } else if (paramValue is String) {
-            return MyUtil.getBigCamelCase(paramValue)
+            return StringUtil.getBigCamelCase(paramValue)
         }
         throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
     }

@@ -6,6 +6,7 @@ import nbcp.base.extend.AllFields
 import nbcp.base.extend.FromJson
 import nbcp.base.extend.HasValue
 import nbcp.base.extend.ToJson
+import nbcp.base.utils.Base64Util
 import nbcp.base.utils.HttpUtil
 import nbcp.base.utils.Md5Util
 import nbcp.base.utils.MyUtil
@@ -102,11 +103,11 @@ object WxSystemGroup {
      */
     @JvmStatic
     fun decryptWxUserData(encryptedData: String, sessionKey: String, iv: String): String { // 被加密的数据
-        val dataByte = MyUtil.getFromBase64(encryptedData)
+        val dataByte = Base64Util.decodeBase64(encryptedData)
         // 加密秘钥
-        var keyByte = MyUtil.getFromBase64(sessionKey)
+        var keyByte = Base64Util.decodeBase64(sessionKey)
         // 偏移量
-        val ivByte = MyUtil.getBase64(iv).toByteArray(const.utf8)
+        val ivByte = Base64Util.encode2Base64(iv).toByteArray(const.utf8)
         // 如果密钥不足16位，那么就补足.  这个if 中的内容很重要
         val base = 16
         if (keyByte.size % base != 0) {

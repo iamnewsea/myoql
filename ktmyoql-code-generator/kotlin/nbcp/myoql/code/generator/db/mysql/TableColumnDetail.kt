@@ -3,6 +3,7 @@ package nbcp.myoql.code.generator.db.mysql
 import nbcp.base.comm.config
 import nbcp.base.extend.basicSame
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.StringUtil
 import nbcp.myoql.code.generator.db.mysql.model.TableColumnMetaData
 import nbcp.myoql.code.generator.removeQuoteContent
 import nbcp.myoql.db.sql.enums.DbType
@@ -37,9 +38,9 @@ class TableColumnDetail : TableColumnMetaData() {
             }
 
             if (config.myoqlKeepDbName) {
-                return MyUtil.splitWordParts(name2).joinToString("_");
+                return StringUtil.splitWordParts(name2).joinToString("_");
             }
-            return MyUtil.getSmallCamelCase(name2);
+            return StringUtil.getSmallCamelCase(name2);
         }
 
     var dbType = DbType.OTHER

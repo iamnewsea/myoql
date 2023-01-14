@@ -103,7 +103,7 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
          */
         @JvmStatic
         fun registerBeanDefinition(instance: Any) {
-            registerBeanDefinition(MyUtil.getSmallCamelCase(instance::class.java.simpleName), instance)
+            registerBeanDefinition(StringUtil.getSmallCamelCase(instance::class.java.simpleName), instance)
         }
 
 

@@ -5,6 +5,7 @@ import nbcp.base.enums.JsonStyleScopeEnum
 import nbcp.base.extend.*
 import nbcp.base.utils.Md5Util
 import nbcp.base.utils.MyUtil
+import nbcp.base.utils.ReflectUtil
 import nbcp.myoql.annotation.FromRedisCache
 import nbcp.myoql.annotation.onlyGetFromCache
 import nbcp.myoql.annotation.onlySetToCache
@@ -176,7 +177,7 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
                         lastKey = row.keys.last()
                     }
 
-                    val value = MyUtil.getValueByWbsPath(row, *lastKey.split(".").toTypedArray());
+                    val value = ReflectUtil.getValueByWbsPath(row, *lastKey.split(".").toTypedArray());
                     if (value != null) {
                         ret.add(value.ConvertType(type) as R);
                     } else {

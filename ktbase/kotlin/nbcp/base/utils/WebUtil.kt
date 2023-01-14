@@ -1,6 +1,9 @@
 package nbcp.base.utils
 
 
+import nbcp.base.comm.StringMap
+import nbcp.base.extend.AsString
+import nbcp.base.extend.getStringValue
 import nbcp.base.extend.insertAt
 
 /**
@@ -53,6 +56,90 @@ object WebUtil {
             throw java.lang.RuntimeException("${url} 不合法")
         }
 
-        return url.insertAt(index + 2, "${JsUtil.encodeURIComponent(userName)}:${JsUtil.encodeURIComponent(password)}@")
+        return url.insertAt(index + 2, "${UrlUtil.encodeURIComponent(userName)}:${UrlUtil.encodeURIComponent(password)}@")
     }
+
+
+
+    @JvmStatic
+    fun isLocalIp(Ip: String): Boolean {
+        return Ip.isEmpty() || Ip.startsWith("127.") || Ip.startsWith("0.") || Ip.startsWith("0:")
+    }
+
+
+    /**
+     * https://www.w3school.com.cn/media/media_mimeref.asp
+     */
+    private val mimeLists = StringMap(
+            "css" to "text/css",
+            "htm" to "text/html",
+            "html" to "text/html",
+            "js" to "application/javascript",
+            "xml" to "text/xml",
+            "gif" to "image/gif",
+            "jpg" to "image/jpeg",
+            "jpeg" to "image/jpeg",
+            "png" to "image/jpeg",
+            "tiff" to "image/tiff",
+            "json" to "application/json",
+            "txt" to "text/plain",
+            "mp3" to "audio/mpeg",
+            "avi" to "video/x-msvideo",
+            "mp4" to "video/mpeg4",
+            "doc" to "application/msword",
+            "docx" to "application/msword",
+            "pdf" to "application/pdf",
+            "xls" to "application/vnd.ms-excel",
+            "xlsx" to "application/vnd.ms-excel",
+            "ppt" to "application/vnd.ms-powerpoint",
+            "exe" to "application/octet-stream",
+            "zip" to "application/zip",
+            "m3u" to "audio/x-mpegurl",
+            "svg" to "image/svg+xml",
+            "h" to "text/plain",
+            "c" to "text/plain",
+            "dll" to "application/x-msdownload"
+    )
+
+    @JvmStatic
+    fun getMimeType(extName: String): String {
+        return mimeLists.getStringValue(extName.lowercase()).AsString()
+    }
+
+
+
+    @JvmStatic
+    fun getHttpHostUrl(host: String): String {
+        if (host.isEmpty()) return ""
+
+        if (host.startsWith("http://", true) || host.startsWith("https://", true)) {
+            return host;
+        }
+
+        if (host.startsWith("//")) {
+            return "http:" + host;
+        }
+
+        return "http://" + host;
+    }
+
+
+    @JvmStatic
+    fun getHostUrlWithoutHttp(host: String): String {
+        if (host.isEmpty()) return ""
+
+        if (host.startsWith("http://", true)) {
+            return host.substring(5);
+        }
+        if (host.startsWith("https://", true)) {
+            return host.substring(6);
+        }
+
+        if (host.startsWith("//")) {
+            return host;
+        }
+
+        return "//" + host;
+    }
+
 }
