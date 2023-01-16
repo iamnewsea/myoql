@@ -62,8 +62,11 @@ public class SplitLibMojo
     @Parameter(property = "keepGroupIds", defaultValue = "")
     private String keepGroupIds;
 
-    @Parameter(property = "disabled", defaultValue = "false")
-    private Boolean disabled;
+    @Parameter(property = "skip", defaultValue = "false")
+    private Boolean skip;
+
+    @Parameter(property = "override", defaultValue = "true")
+    private Boolean override;
 
     private String jarExePath = "";
 
@@ -74,7 +77,7 @@ public class SplitLibMojo
     @SneakyThrows
     public void execute()
             throws MojoExecutionException {
-        if (disabled) {
+        if (skip) {
             return;
         }
 
@@ -140,6 +143,12 @@ public class SplitLibMojo
         writer.write("java-" + System.getProperty("java.version") + " -Dloader.path=lib -jar " + jarName);
         writer.flush();
         writer.close();
+
+
+        if (override) {
+            new File(FileUtil.joinPath(splitLibPath.getPath(), jarName)).renameTo(new File(FileUtil.joinPath(outputDirectory.getPath(), jarName)));
+            new File(FileUtil.joinPath(splitLibPath.getPath(), "lib")).renameTo(new File(FileUtil.joinPath(outputDirectory.getPath(), "lib")));
+        }
     }
 
     private File initWorkPathAndGetLibFile() {
@@ -236,7 +245,14 @@ public class SplitLibMojo
         cmd.add(FileUtil.joinPath(workPath, "..", jarName));
         cmd.add("*");
 
-        var result = ShellUtil.execRuntimeCommand(cmd, workPath);
+        getLog().info(String.join(" ", cmd));
+
+        var bash_cmd = new ArrayList<String>();
+        bash_cmd.add("/bin/bash");
+        bash_cmd.add("-c");
+        bash_cmd.add(String.join(" ", cmd));
+
+        var result = ShellUtil.execRuntimeCommand(bash_cmd, workPath);
         if (result.hasError()) {
             throw new RuntimeException(result.getMsg());
         }
