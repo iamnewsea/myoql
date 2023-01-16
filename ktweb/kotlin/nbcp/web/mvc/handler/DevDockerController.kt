@@ -59,7 +59,7 @@ class DevDockerServlet {
 
 
     val path: String
-        get() = FileUtil.joinPath(
+        get() = FileUtil.resolvePath(
             System.getProperty("java.io.tmpdir"),
             "docker-" + LocalDate.now().Format("yyyy-MM-dd")
         )

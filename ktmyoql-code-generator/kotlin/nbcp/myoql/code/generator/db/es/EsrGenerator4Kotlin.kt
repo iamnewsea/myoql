@@ -29,7 +29,7 @@ class EsrGenerator4Kotlin {
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf("EsBase")  //忽略的包名
     ) {
-        targetEntityPathName = FileUtil.joinPath(targetPath, metaPackageName.split(".").joinToString("/"))
+        targetEntityPathName = FileUtil.resolvePath(targetPath, metaPackageName.split(".").joinToString("/"))
         this.nameMapping = nameMapping;
 
         var p = File.separator;
@@ -136,7 +136,7 @@ data class EsrMetaMap(val parentPropertyName:String) {
 
     fun writeToFile(className: String, content: String) {
 
-        FileWriter(FileUtil.joinPath(targetEntityPathName, if( className.contains(".") ) className else (  className + ".kt") ), true).use { moer_File ->
+        FileWriter(FileUtil.resolvePath(targetEntityPathName, if( className.contains(".") ) className else (  className + ".kt") ), true).use { moer_File ->
             moer_File.appendLine(content)
             moer_File.flush()
         }

@@ -7,7 +7,6 @@ import nbcp.base.extend.AsString
 import nbcp.base.extend.ToTab
 import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.FileUtil
-import nbcp.base.utils.MyUtil
 import java.io.File
 import java.io.FileWriter
 import java.time.LocalDateTime
@@ -28,7 +27,7 @@ class DtoGenerator4Java {
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
     ) {
-        targetEntityPathName = FileUtil.joinPath(targetPath, dtoPackageName.split(".").joinToString("/"))
+        targetEntityPathName = FileUtil.resolvePath(targetPath, dtoPackageName.split(".").joinToString("/"))
         this.nameMapping = nameMapping;
 
         var p = File.separator;
@@ -103,7 +102,7 @@ public class ${it.simpleName}DTO extends ${it.simpleName} {
     fun writeToFile(className: String, content: String) {
 
         FileWriter(
-            FileUtil.joinPath(
+            FileUtil.resolvePath(
                 targetEntityPathName,
                 if (className.contains(".")) className else (className + ".java")
             ), true

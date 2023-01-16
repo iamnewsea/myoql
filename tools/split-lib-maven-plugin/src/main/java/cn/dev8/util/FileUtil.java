@@ -7,7 +7,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class FileUtil {
 
@@ -34,7 +33,7 @@ public class FileUtil {
         return String.join(LINE_BREAK, list);
     }
 
-    public static String joinPath(String... path) {
+    public static String resolvePath(String... path) {
         if (path.length == 0) {
             return "";
         }

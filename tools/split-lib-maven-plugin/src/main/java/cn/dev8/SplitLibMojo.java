@@ -17,7 +17,6 @@ package cn.dev8;
  */
 
 import cn.dev8.util.FileUtil;
-import cn.dev8.util.ListUtil;
 import cn.dev8.util.ShellUtil;
 import cn.dev8.util.StringUtil;
 import lombok.SneakyThrows;
@@ -97,10 +96,10 @@ public class SplitLibMojo
 
         jarName = project.getArtifactId() + "-" + project.getVersion() + ".jar";
 
-        extractJar(FileUtil.joinPath(outputDirectory.getPath(), jarName));
+        extractJar(FileUtil.resolvePath(outputDirectory.getPath(), jarName));
 
 
-        var libFile = new File(FileUtil.joinPath(splitLibPath.getPath(), "jar", "BOOT-INF", "lib"));
+        var libFile = new File(FileUtil.resolvePath(splitLibPath.getPath(), "jar", "BOOT-INF", "lib"));
         if (libFile.exists() == false) {
             getLog().error(jarName + " 中不存在 BOOT-INF/lib !");
             return;
@@ -115,7 +114,7 @@ public class SplitLibMojo
             var groupId = getJarGroupId(jar);
 
             if (indexOfItemStartWith(groupIds, groupId) < 0) {
-                jar.renameTo(new File(FileUtil.joinPath(splitLibPath.getPath(), "lib", jar.getName())));
+                jar.renameTo(new File(FileUtil.resolvePath(splitLibPath.getPath(), "lib", jar.getName())));
 //                var key = StringUtil.fillWithPad(jar.getPath().substring(libFile.getPath().length() + 1), 48, ' ');
                 splitCount++;
             } else {
@@ -133,9 +132,9 @@ public class SplitLibMojo
 //        }
 
 
-        zipJar(FileUtil.joinPath(splitLibPath.getPath(), "jar"));
+        zipJar(FileUtil.resolvePath(splitLibPath.getPath(), "jar"));
 
-        var writer = new FileWriter(FileUtil.joinPath(splitLibPath.getPath(), "readme.txt"));
+        var writer = new FileWriter(FileUtil.resolvePath(splitLibPath.getPath(), "readme.txt"));
         writer.write("[" + project.getName() + "]" + FileUtil.LINE_BREAK + "execute split-lib-maven-plugin at : " + nowString + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
         writer.write("keepGroupIds : " + String.join(",", groupIds) + FileUtil.LINE_BREAK);
         writer.write("共拆出: " + splitCount + " 个包" + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
@@ -146,13 +145,13 @@ public class SplitLibMojo
 
 
         if (override) {
-            new File(FileUtil.joinPath(splitLibPath.getPath(), jarName)).renameTo(new File(FileUtil.joinPath(outputDirectory.getPath(), jarName)));
-            new File(FileUtil.joinPath(splitLibPath.getPath(), "lib")).renameTo(new File(FileUtil.joinPath(outputDirectory.getPath(), "lib")));
+            new File(FileUtil.resolvePath(splitLibPath.getPath(), jarName)).renameTo(new File(FileUtil.resolvePath(outputDirectory.getPath(), jarName)));
+            new File(FileUtil.resolvePath(splitLibPath.getPath(), "lib")).renameTo(new File(FileUtil.resolvePath(outputDirectory.getPath(), "lib")));
         }
     }
 
     private File initWorkPathAndGetLibFile() {
-        var splitLibPath = new File(FileUtil.joinPath(outputDirectory.getPath(), "split-lib"));
+        var splitLibPath = new File(FileUtil.resolvePath(outputDirectory.getPath(), "split-lib"));
         if (splitLibPath.exists() && FileUtil.deleteAll(splitLibPath, false)) {
 
             if (splitLibPath.exists() && splitLibPath.list().length > 0) {
@@ -170,10 +169,10 @@ public class SplitLibMojo
 
         //修复！
         if (javaHomePath.endsWith("jre")) {
-            javaHomePath = FileUtil.joinPath(javaHomePath, "../");
+            javaHomePath = FileUtil.resolvePath(javaHomePath, "../");
         }
 
-        var jarExePath = FileUtil.joinPath(javaHomePath, "bin", "jar");
+        var jarExePath = FileUtil.resolvePath(javaHomePath, "bin", "jar");
         if (osName.contains("windows")) {
             jarExePath += ".exe";
         }
@@ -216,7 +215,7 @@ public class SplitLibMojo
 
         getLog().error("split-lib 检查不通过！ " + message);
 
-        var writer = new FileWriter(FileUtil.joinPath(outputDirectory.getPath(), "split-lib", "split-lib-check.txt"));
+        var writer = new FileWriter(FileUtil.resolvePath(outputDirectory.getPath(), "split-lib", "split-lib-check.txt"));
         writer.write("[" + project.getName() + "]" + FileUtil.LINE_BREAK + "execute split-lib-maven-plugin at : " + nowString + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
         writer.write(message);
         writer.flush();
@@ -242,7 +241,7 @@ public class SplitLibMojo
         var cmd = new ArrayList<String>();
         cmd.add(jarExePath);
         cmd.add("cf0M");
-        cmd.add(FileUtil.joinPath(workPath, "..", jarName));
+        cmd.add(FileUtil.resolvePath(workPath, "..", jarName));
         cmd.add("*");
 
         getLog().info(String.join(" ", cmd));
@@ -259,12 +258,12 @@ public class SplitLibMojo
     }
 
     private void extractJar(String jarFileName) {
-        var splitLibPath = new File(FileUtil.joinPath(outputDirectory.getPath(), "split-lib"));
+        var splitLibPath = new File(FileUtil.resolvePath(outputDirectory.getPath(), "split-lib"));
 
 
-        var workJar = new File(FileUtil.joinPath(splitLibPath.getPath(), "jar"));
+        var workJar = new File(FileUtil.resolvePath(splitLibPath.getPath(), "jar"));
         workJar.mkdirs();
-        new File(FileUtil.joinPath(splitLibPath.getPath(), "lib")).mkdirs();
+        new File(FileUtil.resolvePath(splitLibPath.getPath(), "lib")).mkdirs();
 //        new File(FileUtil.joinPath(splitLibPath.getPath(), "tmp")).mkdirs();
 
         var cmd = new ArrayList<String>();
@@ -316,7 +315,7 @@ public class SplitLibMojo
     }
 
     private String getJarGroupIdWithUnzip(File jar) {
-        var tmpPath = new File(FileUtil.joinPath(outputDirectory.getPath(), "split-lib", "tmp", jar.getName()));
+        var tmpPath = new File(FileUtil.resolvePath(outputDirectory.getPath(), "split-lib", "tmp", jar.getName()));
         if (tmpPath.mkdirs() == false) {
             throw new RuntimeException("创建文件夹失败：" + tmpPath.getPath());
         }
@@ -331,7 +330,7 @@ public class SplitLibMojo
             throw new RuntimeException(result.getMsg());
         }
 
-        var startFile = new File(FileUtil.joinPath(tmpPath.getPath(), "META-INF", "maven"));
+        var startFile = new File(FileUtil.resolvePath(tmpPath.getPath(), "META-INF", "maven"));
         if (startFile.exists() == false) {
             return "";
         }

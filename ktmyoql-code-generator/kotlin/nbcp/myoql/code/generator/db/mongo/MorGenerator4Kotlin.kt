@@ -44,7 +44,7 @@ class MorGenerator4Kotlin {
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
     ) {
-        targetEntityPathName = FileUtil.joinPath(targetPath, metaPackageName.split(".").joinToString("/"))
+        targetEntityPathName = FileUtil.resolvePath(targetPath, metaPackageName.split(".").joinToString("/"))
         this.nameMapping = nameMapping;
 
         var p = File.separator;
@@ -159,7 +159,7 @@ data class MoerMetaMap(val parentPropertyName: String) {
     fun writeToFile(className: String, content: String) {
 
         FileWriter(
-            FileUtil.joinPath(
+            FileUtil.resolvePath(
                 targetEntityPathName,
                 if (className.contains(".")) className else (className + ".kt")
             ), true

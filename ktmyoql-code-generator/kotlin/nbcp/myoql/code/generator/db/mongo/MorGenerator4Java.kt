@@ -45,7 +45,7 @@ class MorGenerator4Java {
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
     ) {
-        targetEntityPathName = FileUtil.joinPath(targetPath, metaPackageName.split(".").joinToString("/"))
+        targetEntityPathName = FileUtil.resolvePath(targetPath, metaPackageName.split(".").joinToString("/"))
         this.nameMapping = nameMapping;
 
         var p = File.separator;
@@ -174,7 +174,7 @@ public class MoerMetaMap {
     fun writeToFile(className: String, content: String) {
 
         FileWriter(
-            FileUtil.joinPath(
+            FileUtil.resolvePath(
                 targetEntityPathName,
                 if (className.contains(".")) className else (className + ".java")
             ), true

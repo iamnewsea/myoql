@@ -3,7 +3,6 @@ package nbcp.web.service.upload
 import nbcp.base.comm.JsonResult
 import nbcp.base.extend.*
 import nbcp.base.utils.FileUtil
-import nbcp.base.utils.MyUtil
 import nbcp.base.utils.UrlUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -51,7 +50,7 @@ class LocalUploadBaseService : ISaveFileService {
         var fileNames = fileData.getTargetFileName()
 
         val targetFileName =
-            FileUtil.joinPath(UPLOAD_LOCAL_PATH, group, fileNames.joinToString(File.separator))
+            FileUtil.resolvePath(UPLOAD_LOCAL_PATH, group, fileNames.joinToString(File.separator))
 
         val targetFile = File(targetFileName);
 
@@ -77,7 +76,7 @@ class LocalUploadBaseService : ISaveFileService {
         if (index < 0) return JsonResult.error("url非法")
 
         var sects = url.Slice(index + 2).split("/");
-        var path = FileUtil.joinPath(UPLOAD_LOCAL_PATH, sects.Skip(1).joinToString(File.separator))
+        var path = FileUtil.resolvePath(UPLOAD_LOCAL_PATH, sects.Skip(1).joinToString(File.separator))
 
         File(path).delete()
 

@@ -25,9 +25,9 @@ object JarUtil {
 
         //修复！
         if (javaHomePath.endsWith("jre")) {
-            javaHomePath = FileUtil.joinPath(javaHomePath, "../")
+            javaHomePath = FileUtil.resolvePath(javaHomePath, "../")
         }
-        var jarExePath = FileUtil.joinPath(javaHomePath, "bin", "jar")
+        var jarExePath = FileUtil.resolvePath(javaHomePath, "bin", "jar")
         if (osName.contains("windows")) {
             jarExePath += ".exe"
         }

@@ -10,7 +10,7 @@ object FileUtil {
      * 把文件的各个部分组织在一起， 处理 . 和 .. 部分
      */
     @JvmStatic
-    fun joinPath(vararg path: String): String {
+    fun resolvePath(vararg path: String): String {
         if (path.any() == false) return "";
         var isRoot = path.first().let { it.startsWith('/') || it.startsWith('\\') }
 

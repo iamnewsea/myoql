@@ -39,7 +39,7 @@ class EsrGenerator4Java {
         nameMapping: StringMap = StringMap(), // 名称转换
         ignoreGroups: List<String> = listOf("EsBase")  //忽略的包名
     ) {
-        targetEntityPathName = FileUtil.joinPath(targetPath, metaPackageName.split(".").joinToString("/"))
+        targetEntityPathName = FileUtil.resolvePath(targetPath, metaPackageName.split(".").joinToString("/"))
         this.nameMapping = nameMapping;
 
         var p = File.separator;
@@ -168,7 +168,7 @@ public class EsrMetaMap {
     fun writeToFile(className: String, content: String) {
 
         FileWriter(
-            FileUtil.joinPath(
+            FileUtil.resolvePath(
                 targetEntityPathName,
                 if (className.contains(".")) className else (className + ".java")
             ), true
