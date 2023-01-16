@@ -247,9 +247,13 @@ public class SplitLibMojo
         getLog().info(String.join(" ", cmd));
 
         var bash_cmd = new ArrayList<String>();
-        bash_cmd.add("/bin/bash");
-        bash_cmd.add("-c");
-        bash_cmd.add(String.join(" ", cmd));
+        if (System.getProperty("os.name").contains("linux")) {
+            bash_cmd.add("/bin/bash");
+            bash_cmd.add("-c");
+            bash_cmd.add(String.join(" ", cmd));
+        } else {
+            bash_cmd = cmd;
+        }
 
         var result = ShellUtil.execRuntimeCommand(bash_cmd, workPath);
         if (result.hasError()) {
