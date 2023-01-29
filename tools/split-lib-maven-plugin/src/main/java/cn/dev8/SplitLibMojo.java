@@ -30,7 +30,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -64,12 +66,9 @@ public class SplitLibMojo
     @Parameter(property = "skip", defaultValue = "false")
     private Boolean skip;
 
-    @Parameter(property = "override", defaultValue = "true")
-    private Boolean override;
-
     private String jarExePath = "";
 
-    private String jarName = "";
+    private File jarFile = null;
 
     private String nowString = "";
 
@@ -84,7 +83,7 @@ public class SplitLibMojo
         nowString = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
 
         if (!outputDirectory.exists()) {
-            return;
+            throw new RuntimeException("找不到 " + outputDirectory + " !");
         }
 
         File splitLibPath = initWorkPathAndGetLibFile();
@@ -94,14 +93,22 @@ public class SplitLibMojo
 
         String[] groupIds = getKeepGroupIds();
 
-        jarName = project.getArtifactId() + "-" + project.getVersion() + ".jar";
+        jarFile = new File(FileUtil.resolvePath(outputDirectory.getPath(), project.getArtifactId() + "-" + project.getVersion() + ".jar"));
+        var jarBakFile = new File(jarFile.getPath() + ".split-lib.bak");
 
-        extractJar(FileUtil.resolvePath(outputDirectory.getPath(), jarName));
+        if (jarBakFile.exists() == false) {
+            jarFile.renameTo(jarBakFile);
+        }
+
+        if (jarBakFile.exists() == false) {
+            throw new RuntimeException("找不到 " + jarFile.getPath() + "!");
+        }
+        extractJar(jarBakFile.getPath());
 
 
         var libFile = new File(FileUtil.resolvePath(splitLibPath.getPath(), "jar", "BOOT-INF", "lib"));
         if (libFile.exists() == false) {
-            getLog().error(jarName + " 中不存在 BOOT-INF/lib !");
+            getLog().error(jarFile.getName() + " 中不存在 BOOT-INF/lib !");
             return;
         }
         var libJars = libFile.listFiles();
@@ -133,21 +140,28 @@ public class SplitLibMojo
 
 
         zipJar(FileUtil.resolvePath(splitLibPath.getPath(), "jar"));
+        var writer = new OutputStreamWriter(new FileOutputStream(FileUtil.resolvePath(splitLibPath.getPath(), "readme.txt")), StandardCharsets.UTF_8);
 
-        var writer = new FileWriter(FileUtil.resolvePath(splitLibPath.getPath(), "readme.txt"));
-        writer.write("[" + project.getName() + "]" + FileUtil.LINE_BREAK + "execute split-lib-maven-plugin at : " + nowString + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
-        writer.write("keepGroupIds : " + String.join(",", groupIds) + FileUtil.LINE_BREAK);
-        writer.write("共拆出: " + splitCount + " 个包" + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
-        writer.write("运行：" + FileUtil.LINE_BREAK);
-        writer.write("java-" + System.getProperty("java.version") + " -Dloader.path=lib -jar " + jarName);
-        writer.flush();
-        writer.close();
-
-
-        if (override) {
-            new File(FileUtil.resolvePath(splitLibPath.getPath(), jarName)).renameTo(new File(FileUtil.resolvePath(outputDirectory.getPath(), jarName)));
-            new File(FileUtil.resolvePath(splitLibPath.getPath(), "lib")).renameTo(new File(FileUtil.resolvePath(outputDirectory.getPath(), "lib")));
+        try {
+            writer.write("[" + project.getName() + "]" + FileUtil.LINE_BREAK + "execute split-lib-maven-plugin at : " + nowString + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
+            writer.write("keepGroupIds : " + String.join(",", groupIds) + FileUtil.LINE_BREAK);
+            writer.write("共拆出: " + splitCount + " 个包" + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
+            writer.write("运行：" + FileUtil.LINE_BREAK);
+            writer.write("java-" + System.getProperty("java.version") + " -Dloader.path=lib -jar " + jarFile.getName());
+        } finally {
+            writer.flush();
+            writer.close();
         }
+
+        jarFile.delete();
+
+        new File(FileUtil.resolvePath(splitLibPath.getPath(), jarFile.getName())).renameTo(jarFile);
+        var libPath = new File(FileUtil.resolvePath(outputDirectory.getPath(), "lib"));
+        if (FileUtil.deleteAll(libPath, false) == false) {
+            throw new RuntimeException("删除 lib 文件夹出错！");
+        }
+
+        new File(FileUtil.resolvePath(splitLibPath.getPath(), "lib")).renameTo(libPath);
     }
 
     private File initWorkPathAndGetLibFile() {
@@ -241,7 +255,7 @@ public class SplitLibMojo
         var cmd = new ArrayList<String>();
         cmd.add(jarExePath);
         cmd.add("cf0M");
-        cmd.add(FileUtil.resolvePath(workPath, "..", jarName));
+        cmd.add(FileUtil.resolvePath(workPath, "..", jarFile.getName()));
         cmd.add("*");
 
         getLog().info(String.join(" ", cmd));
@@ -270,16 +284,17 @@ public class SplitLibMojo
         new File(FileUtil.resolvePath(splitLibPath.getPath(), "lib")).mkdirs();
 //        new File(FileUtil.joinPath(splitLibPath.getPath(), "tmp")).mkdirs();
 
+
         var cmd = new ArrayList<String>();
         cmd.add(jarExePath);
         cmd.add("xf");
         cmd.add(jarFileName);
 
+
         var result = ShellUtil.execRuntimeCommand(cmd, workJar.getPath());
         if (result.hasError()) {
             throw new RuntimeException(result.getMsg());
         }
-
     }
 
     @SneakyThrows

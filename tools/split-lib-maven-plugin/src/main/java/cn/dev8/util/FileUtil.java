@@ -91,12 +91,17 @@ public class FileUtil {
      * @return
      */
     public static boolean deleteAll(File file, boolean ignoreError) {
-        if( file.exists() == false){
+        if (file.exists() == false) {
             return true;
         }
+        var ret = true;
 
         if (file.isFile()) {
-            return file.delete();
+            ret = file.delete();
+            if (!ret && !ignoreError) {
+                throw new RuntimeException("删除失败: " + file.getName());
+            }
+            return true;
         }
 
         for (var f : file.listFiles()) {
@@ -104,9 +109,18 @@ public class FileUtil {
                 return false;
             }
 
-            f.delete();
+            ret &= f.delete();
+            if (!ret && !ignoreError) {
+                throw new RuntimeException("删除失败: " + f.getName());
+            }
         }
 
-        return true;
+
+        ret &= file.delete();
+        if (!ret && !ignoreError) {
+            throw new RuntimeException("删除失败: " + file.getName());
+        }
+
+        return ret;
     }
 }
