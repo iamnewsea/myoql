@@ -132,7 +132,7 @@ public class SplitLibMojo
             }
         }
 
-        getLog().info("split-lib 共拆出 " + splitCount + " 个Jar包,Jar包中保留了 " + keepCount + " 个包！");
+        getLog().info("split-lib 拆到 target/lib " + splitCount + " 个Jar包, " + jarFile.getName() + " 中保留了 " + keepCount + " 个包！");
 
 //        if (FileUtil.deleteAll(new File(FileUtil.joinPath(splitLibPath.getPath(), "tmp")), true) == false) {
 //            getLog().warn("清理 tmp  失败！");
