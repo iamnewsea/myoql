@@ -99,7 +99,7 @@ public class FileUtil {
         if (file.isFile()) {
             ret = file.delete();
             if (!ret && !ignoreError) {
-                throw new RuntimeException("删除失败: " + file.getName());
+                throw new RuntimeException("删除失败: " + file.getPath());
             }
             return true;
         }
@@ -108,17 +108,12 @@ public class FileUtil {
             if (!deleteAll(f, ignoreError) && !ignoreError) {
                 return false;
             }
-
-            ret &= f.delete();
-            if (!ret && !ignoreError) {
-                throw new RuntimeException("删除失败: " + f.getName());
-            }
         }
 
 
         ret &= file.delete();
         if (!ret && !ignoreError) {
-            throw new RuntimeException("删除失败: " + file.getName());
+            throw new RuntimeException("删除失败: " + file.getPath());
         }
 
         return ret;
