@@ -256,12 +256,12 @@ public class SplitLibMojo
         cmd.add(jarExePath);
         cmd.add("cf0M");
         cmd.add(FileUtil.resolvePath(workPath, "..", jarFile.getName()));
-        cmd.add("*");
+        cmd.add(FileUtil.resolvePath(workPath, "*"));
 
         getLog().info(String.join(" ", cmd));
 
         var bash_cmd = new ArrayList<String>();
-        if (System.getProperty("os.name").contains("linux")) {
+        if (System.getProperty("os.name").toLowerCase().contains("linux")) {
             bash_cmd.add("/bin/bash");
             bash_cmd.add("-c");
             bash_cmd.add(String.join(" ", cmd));
