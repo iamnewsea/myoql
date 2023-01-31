@@ -71,7 +71,7 @@ fun <T> T.IsIn(equalFunc: ((T, T) -> Boolean)?, vararg values: T): Boolean {
 /**
  * 大于等于 start 并且 小于等于 end
  */
-fun <T : Comparable<in T>> T.RangeTo(start: T?, end: T?): Boolean {
+fun <T : Comparable<in T>> T.IfRangeTo(start: T?, end: T?): Boolean {
     if (start == null || end == null) return false;
     if (this < start) return false;
     if (this >  end) return false;
@@ -82,7 +82,7 @@ fun <T : Comparable<in T>> T.RangeTo(start: T?, end: T?): Boolean {
 /**
  * 大于等于 且 小于
  */
-fun <T : Comparable<in T>> T.Until(start: T?, end: T?): Boolean {
+fun <T : Comparable<in T>> T.IfUntil(start: T?, end: T?): Boolean {
     if (start == null || end == null) return false;
     if (this < start) return false;
     if (this >= end) return false;

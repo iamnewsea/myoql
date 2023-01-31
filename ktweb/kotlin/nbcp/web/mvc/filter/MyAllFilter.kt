@@ -280,7 +280,7 @@ open class MyAllFilter : Filter {
         response.copyBodyToResponse()
 
         val endAt = LocalDateTime.now();
-        logger.InfoError(errorMsg.HasValue || !response.status.Until(200, 400)) {
+        logger.InfoError(errorMsg.HasValue || !response.status.IfUntil(200, 400)) {
             var msgs = mutableListOf<String>()
             msgs.add("--> ${request.fullUrl}")
 

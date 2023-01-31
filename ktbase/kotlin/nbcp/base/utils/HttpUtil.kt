@@ -206,7 +206,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
 
     val isSuccess: Boolean
         get() {
-            return this.status.Until(200, 400)
+            return this.status.IfUntil(200, 400)
         }
 
     /**
@@ -430,7 +430,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
             }
 
             var responseStream: InputStream?
-            if (conn.responseCode.Until(200, 400)) {
+            if (conn.responseCode.IfUntil(200, 400)) {
                 responseStream = conn.inputStream;
             } else {
                 responseStream = conn.errorStream;

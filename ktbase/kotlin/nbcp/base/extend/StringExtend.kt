@@ -119,7 +119,7 @@ ${this}
 }
 
 fun Char.IsCn(): Boolean {
-    return this.code.Until(19968, 40909)
+    return this.code.IfUntil(19968, 40909)
 }
 
 /**
