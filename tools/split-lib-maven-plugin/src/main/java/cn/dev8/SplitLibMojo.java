@@ -256,8 +256,9 @@ public class SplitLibMojo
         cmd.add(jarExePath);
         cmd.add("cf0M");
         cmd.add(FileUtil.resolvePath(workPath, "..", jarFile.getName()));
-        cmd.add(FileUtil.resolvePath(workPath, "*"));
+        cmd.add("*");
 
+        getLog().info("当前目录：" + workPath);
         getLog().info(String.join(" ", cmd));
 
         var bash_cmd = new ArrayList<String>();
