@@ -254,7 +254,7 @@ open class SqlColumnName(
     }
 
 
-    private fun column_match_between(min: Any, max: Any): WhereData {
+    private fun match_until(min: Any, max: Any): WhereData {
         var minValue = proc_value(min);
         var maxValue = proc_value(max);
 
@@ -265,13 +265,13 @@ open class SqlColumnName(
     }
 
     /**
-     * 大于等于，并且 小于
+     * 开闭区间，表示大于等于 并且 小于
      */
-    fun <T : Serializable> match_between(min: T, max: T): WhereData {
+    fun <T : Serializable> match_until(min: T, max: T): WhereData {
         if (min is SqlColumnName && max is SqlColumnName) {
             return WhereData("${this.fullName} >= ${min.fullName} and ${this.fullName} < ${max.fullName}")
         }
-        return this.column_match_between(min, max);
+        return this.match_until(min, max);
     }
 
 

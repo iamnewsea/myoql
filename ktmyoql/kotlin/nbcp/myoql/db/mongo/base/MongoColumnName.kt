@@ -102,7 +102,7 @@ open class MongoColumnName @JvmOverloads constructor(private var mongo_column_na
     /**
      * 大于等于并且小于。
      */
-    infix fun match_between(value: Pair<Any, Any>): Criteria {
+    infix fun match_until(value: Pair<Any, Any>): Criteria {
         var (key, value2) = db.mongo.proc_mongo_key_value(this, value);
         var pair = value2 as Pair<Any, Any>
 
@@ -239,10 +239,6 @@ open class MongoColumnName @JvmOverloads constructor(private var mongo_column_na
         return where;
     }
 
-
-    /**
-     * Created by udi on 17-7-10.
-     */
     /**
      * 另一种形式的条件。值可以是字段。
      */
@@ -299,8 +295,12 @@ open class MongoColumnName @JvmOverloads constructor(private var mongo_column_na
         return this.match_expr("lt", to);
     }
 
-    infix fun match_expr_between(to: MongoColumnName): Criteria {
-        return this.match_expr("between", to);
+
+    /**
+     * 开闭区间，大于等于且小于
+     */
+    fun match_expr_until(from: MongoColumnName, to: MongoColumnName): Criteria {
+        return this.match_expr("gte", from).andOperator(this.match_expr("lt", to));
     }
 
 

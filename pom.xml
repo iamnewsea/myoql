@@ -3,7 +3,7 @@
 
     <groupId>cn.dev8</groupId>
     <artifactId>kotlin-boot-parent</artifactId>
-    <version>1.1.8-SNAPSHOT</version>
+    <version>1.1.9-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>kotlin-boot-parent</name>
 

@@ -21,7 +21,7 @@ class Test_Mongo_Query : TestBase() {
     @Test
     fun clone() {
         var query = db.morBase.sysLog.query()
-            .where { it.id.match_hasValue() }
+                .where { it.id.match_hasValue() }
 
         println(query.whereData.ToJson(JsonStyleScopeEnum.WITH_NULL))
     }
@@ -30,18 +30,18 @@ class Test_Mongo_Query : TestBase() {
     fun test_query_where() {
         usingScope(LogLevelScopeEnum.DEBUG) {
             db.morBase.sysLog.query()
-                .apply {
-                    this.where(
-                        """
+                    .apply {
+                        this.where(
+                                """
 var v = this.ext;
 return  this.tags && this.tags.some(function(it) { return it == v } ) 
 """
-                    )
-                }
-                .toList()
-                .apply {
-                    println(this.size)
-                }
+                        )
+                    }
+                    .toList()
+                    .apply {
+                        println(this.size)
+                    }
         }
     }
 
@@ -50,9 +50,9 @@ return  this.tags && this.tags.some(function(it) { return it == v } )
         var start = LocalDateTime.now().minusHours(1)
         var end = LocalDateTime.now().plusHours(1);
         var query = db.morBase.sysLog.query()
-            .where { it.createAt match_between (start to end) }
-            .where { it.level match 8 }
-            .whereOr({ it.msg match_like "df" }, { it.tags match "df" })
+                .where { it.createAt match_until (start to end) }
+                .where { it.level match 8 }
+                .whereOr({ it.msg match_like "df" }, { it.tags match "df" })
 
         var d = db.mongo.getMergedMongoCriteria(query.whereData)
         var e = db.mongo.getCriteriaFromDocument(d.toDocument());
@@ -64,19 +64,19 @@ return  this.tags && this.tags.some(function(it) { return it == v } )
     fun testCond() {
         usingScope(LogLevelScopeEnum.INFO) {
             db.morBase.sysAnnex.aggregate()
-                .addPipeLine(
-                    PipeLineEnum.ADD_FIELDS,
-                    db.mongo.cond(db.morBase.sysAnnex.group match "digitalthread", "1", "0").As("u")
-                )
-                .beginMatch()
-                .where { it.ext match "png" }
-                .endMatch()
-                .addPipeLine(PipeLineEnum.SORT, JsonMap("u" to 1))
-                .limit(0, 2)
-                .toList()
-                .forEach {
-                    println(it.ToJson())
-                }
+                    .addPipeLine(
+                            PipeLineEnum.ADD_FIELDS,
+                            db.mongo.cond(db.morBase.sysAnnex.group match "digitalthread", "1", "0").As("u")
+                    )
+                    .beginMatch()
+                    .where { it.ext match "png" }
+                    .endMatch()
+                    .addPipeLine(PipeLineEnum.SORT, JsonMap("u" to 1))
+                    .limit(0, 2)
+                    .toList()
+                    .forEach {
+                        println(it.ToJson())
+                    }
 
         }
     }
@@ -87,11 +87,11 @@ return  this.tags && this.tags.some(function(it) { return it == v } )
             var where1 = JsonMap("\$gte" to 1, "\$lte" to 9)
 
             db.morBase.sysAnnex.query()
-                .where_select_elemMatch_first_item { it.tags match_elemMatch where1 }
-                .whereData
-                .apply {
-                    println(this.ToJson())
-                }
+                    .where_select_elemMatch_first_item { it.tags match_elemMatch where1 }
+                    .whereData
+                    .apply {
+                        println(this.ToJson())
+                    }
 
             /*
     {
@@ -110,19 +110,19 @@ return  this.tags && this.tags.some(function(it) { return it == v } )
 
              */
             var project = JsonMap(
-                "tags" to
-                        db.mongo.filter(
-                            "\$tags", "item",
-                            (MongoColumnName("\$item") match 3).toExpression()
-                        )
+                    "tags" to
+                            db.mongo.filter(
+                                    "\$tags", "item",
+                                    (MongoColumnName("\$item") match 3).toExpression()
+                            )
             )
 
             db.morBase.sysAnnex.aggregate()
-                .beginMatch()
-                .where { it.tags match_elemMatch where1 }
-                .endMatch()
-                .addPipeLine(PipeLineEnum.PROJECT, project)
-                .toList()
+                    .beginMatch()
+                    .where { it.tags match_elemMatch where1 }
+                    .endMatch()
+                    .addPipeLine(PipeLineEnum.PROJECT, project)
+                    .toList()
 
         }
     }

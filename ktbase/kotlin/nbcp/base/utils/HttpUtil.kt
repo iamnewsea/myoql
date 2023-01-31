@@ -27,10 +27,10 @@ import javax.net.ssl.*
 
 
 data class FileMessage @JvmOverloads constructor(
-    var fullPath: String = "",
-    var name: String = "",
-    var extName: String = "",
-    var msg: String = ""
+        var fullPath: String = "",
+        var name: String = "",
+        var extName: String = "",
+        var msg: String = ""
 );
 
 
@@ -206,7 +206,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
 
     val isSuccess: Boolean
         get() {
-            return this.status.Between(200, 399)
+            return this.status.Until(200, 400)
         }
 
     /**
@@ -253,7 +253,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
             requestBody = postJson.ToJson()
         } else {
             requestBody =
-                postJson.map { it.key + "=" + UrlUtil.encodeURIComponent(it.value.AsString()) }.joinToString("&");
+                    postJson.map { it.key + "=" + UrlUtil.encodeURIComponent(it.value.AsString()) }.joinToString("&");
         }
 
         return doPut(requestBody);
@@ -272,7 +272,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
             requestBody = postJson.ToJson()
         } else {
             requestBody =
-                postJson.map { it.key + "=" + UrlUtil.encodeURIComponent(it.value.AsString()) }.joinToString("&");
+                    postJson.map { it.key + "=" + UrlUtil.encodeURIComponent(it.value.AsString()) }.joinToString("&");
         }
 
         return doPost(requestBody);
@@ -430,7 +430,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
             }
 
             var responseStream: InputStream?
-            if (conn.responseCode.Between(200, 299)) {
+            if (conn.responseCode.Until(200, 400)) {
                 responseStream = conn.inputStream;
             } else {
                 responseStream = conn.errorStream;
@@ -442,7 +442,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
                 } else if (this.response.resultIsText) {
                     DataInputStream(responseStream).use { input ->
                         this.response.resultBody =
-                            toByteArray(input).toString(Charset.forName(this.response.charset));
+                                toByteArray(input).toString(Charset.forName(this.response.charset));
                     }
                 }
             }
@@ -502,10 +502,10 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
                     msgs.add(this.request.postBody)
                 } else {
                     msgs.add(
-                        this.request.postBody.substring(
-                            0,
-                            subLen
-                        ) + "\n〘…〙\n" + this.request.postBody.Slice(-subLen)
+                            this.request.postBody.substring(
+                                    0,
+                                    subLen
+                            ) + "\n〘…〙\n" + this.request.postBody.Slice(-subLen)
                     )
                 }
             }
@@ -523,10 +523,10 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
                     msgs.add(this.response.resultBody)
                 } else {
                     msgs.add(
-                        this.response.resultBody.substring(
-                            0,
-                            subLen
-                        ) + "\n〘…〙\n" + this.response.resultBody.Slice(-subLen)
+                            this.response.resultBody.substring(
+                                    0,
+                                    subLen
+                            ) + "\n〘…〙\n" + this.response.resultBody.Slice(-subLen)
                     )
                 }
             }
@@ -612,24 +612,24 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
     private val CACHESIZE = 1024 * 1024;
     fun submitForm(form: Map<String, Any>): String {
         var items = form
-            .filter { it.value::class.java.IsSimpleType() }
-            .mapValues { it.value.AsString() }
-            .filter { it.value.HasValue }
+                .filter { it.value::class.java.IsSimpleType() }
+                .mapValues { it.value.AsString() }
+                .filter { it.value.HasValue }
 
         var files = form
-            .filter { it.value::class.java.IsSimpleType() == false }
-            .mapValues {
-                var v = it.value;
-                if (v is UploadFileResource) {
-                    return@mapValues v;
-                }
+                .filter { it.value::class.java.IsSimpleType() == false }
+                .mapValues {
+                    var v = it.value;
+                    if (v is UploadFileResource) {
+                        return@mapValues v;
+                    }
 
-                if (v is File) {
-                    return@mapValues UploadFileResource(v.name, v.inputStream())
-                }
+                    if (v is File) {
+                        return@mapValues UploadFileResource(v.name, v.inputStream())
+                    }
 
-                throw RuntimeException("不识别的类型:${v::class.java.name}")
-            }
+                    throw RuntimeException("不识别的类型:${v::class.java.name}")
+                }
 
         return submitForm(items, files)
     }
@@ -703,11 +703,11 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
 
             out.writeLine("--${boundary}")
             writeDispositionHeaders(
-                out,
-                fileName,
-                "application/octet-stream",
-                contentLength,
-                resource.fileName.AsString("filename")
+                    out,
+                    fileName,
+                    "application/octet-stream",
+                    contentLength,
+                    resource.fileName.AsString("filename")
             )
 
 
@@ -724,11 +724,11 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
 //    }
 
     private fun writeDispositionHeaders(
-        out: OutputStream,
-        key: String,
-        contentType: String,
-        contentLength: Int = 0,
-        fileName: String = ""
+            out: OutputStream,
+            key: String,
+            contentType: String,
+            contentLength: Int = 0,
+            fileName: String = ""
     ) {
         if (fileName.isEmpty()) {
             out.writeLine("""Content-Disposition: form-data; name="${key}"""")

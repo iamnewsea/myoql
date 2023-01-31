@@ -71,13 +71,23 @@ fun <T> T.IsIn(equalFunc: ((T, T) -> Boolean)?, vararg values: T): Boolean {
 /**
  * 大于等于 start 并且 小于等于 end
  */
-fun <T : Comparable<in T>> T.Between(start: T?, end: T?): Boolean {
+fun <T : Comparable<in T>> T.RangeTo(start: T?, end: T?): Boolean {
     if (start == null || end == null) return false;
     if (this < start) return false;
-    if (this > end) return false;
+    if (this >  end) return false;
     return true;
 }
 
+
+/**
+ * 大于等于 且 小于
+ */
+fun <T : Comparable<in T>> T.Until(start: T?, end: T?): Boolean {
+    if (start == null || end == null) return false;
+    if (this < start) return false;
+    if (this >= end) return false;
+    return true;
+}
 
 fun Serializable.ToSerializableByteArray(): ByteArray {
     ByteArrayOutputStream().use { byteOutStream ->
@@ -99,11 +109,18 @@ fun ByteArray.ToSerializableObject(): Serializable {
 }
 
 
-fun Temporal.BetweenSeconds(nextTime: Temporal): Int {
+/**
+ * 开闭区间
+ */
+fun Temporal.RangeToSeconds(nextTime: Temporal): Int {
     return Duration.between(this.AsLocalDateTime(), nextTime.AsLocalDateTime()).getSeconds().AsInt();
 }
 
-fun Temporal.BetweenDays(nextTime: Temporal): Int {
+
+/**
+ * 开闭区间
+ */
+fun Temporal.RangeToDays(nextTime: Temporal): Int {
     return (Duration.between(this.AsLocalDateTime(), nextTime.AsLocalDateTime())
         .getSeconds() / MyUtil.OneDaySeconds).AsInt();
 }

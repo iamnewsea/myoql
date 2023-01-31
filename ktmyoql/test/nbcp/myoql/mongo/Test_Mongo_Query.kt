@@ -50,7 +50,7 @@ return  this.tags && this.tags.some(function(it) { return it == v } )
         var start = LocalDateTime.now().minusHours(1)
         var end = LocalDateTime.now().plusHours(1);
         var query = db.morBase.sysLog.query()
-            .where { it.createAt match_between (start to end) }
+            .where { it.createAt match_until (start to end) }
             .where { it.level match 8 }
             .whereOr({ it.msg match_like "df" }, { it.tags match "df" })
 
