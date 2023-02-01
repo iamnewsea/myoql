@@ -41,23 +41,33 @@ mvn cn.dev8:split-lib-maven-plugin:1.1.9-SNAPSHOT:split-lib  -DkeepGroupIds=cn.d
 # 集成到程序里 （可忽略，直接使用命令行执行更方便！）
 
 ``` 
-<plugin>
-    <groupId>cn.dev8</groupId>
-    <artifactId>split-lib-maven-plugin</artifactId>
-    <version>1.1.9-SNAPSHOT</version>
-    <executions>
-        <execution> 
-            <goals>
-                <goal>split-lib</goal>
-            </goals>
-            <configuration>
-                <skip>true</skip>
-                <keepGroupIds>cn.dev8,com.nancal</keepGroupIds>
-            </configuration>
-        </execution>
-    </executions>
-</plugin>
+<profile>
+    <id>split-lib</id>
+    <properties>
+        <env>split-lib</env>
+    </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>cn.dev8</groupId>
+                <artifactId>split-lib-maven-plugin</artifactId>
+                <version>1.1.9-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>split-lib</goal>
+                        </goals>
+                        <configuration>
+                            <skip>true</skip>
+                            <keepGroupIds>cn.dev8</keepGroupIds>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</profile>
 ```
 
-加入 skip , 这样， mvn package 不起作用，通过 Idea Maven 菜单，Plugins ，可以手动执行！
+放入到 profile, 并加入 skip ， 这样， mvn package 不起作用，通过 Idea Maven 菜单，Plugins ，可以手动执行！
 
