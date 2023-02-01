@@ -1,13 +1,13 @@
 # split-lib 使用方式：
 
 # 手动安装
- 
+
 ```
 mvn dependency:get -DremoteRepositories=https://oss.sonatype.org/content/repositories/snapshots -DgroupId=cn.dev8  -DartifactId=split-lib-maven-plugin -Dversion=1.1.9-SNAPSHOT
 ```
 
-
 或者安装指定文件：
+
 ```
 mvn install:install-file -DgroupId=cn.dev8 -DartifactId=split-lib-maven-plugin -Dversion=1.1.9-SNAPSHOT  -Dpackaging=pom -Dfile=pom.xml
 
@@ -15,13 +15,17 @@ mvn install:install-file -DgroupId=cn.dev8 -DartifactId=split-lib-maven-plugin -
 ```
 
 #### windows:
+
 c:\window\split-lib.cmd
+
 ```
 mvn cn.dev8:split-lib-maven-plugin:1.1.9-SNAPSHOT:split-lib  -DkeepGroupIds=%*
 ```
 
 #### linux:
+
 /usr/local/bin/split-lib.sh
+
 ```
 mvn cn.dev8:split-lib-maven-plugin:1.1.9-SNAPSHOT:split-lib  -DkeepGroupIds=$*
 ```
@@ -47,9 +51,13 @@ mvn cn.dev8:split-lib-maven-plugin:1.1.9-SNAPSHOT:split-lib  -DkeepGroupIds=cn.d
                 <goal>split-lib</goal>
             </goals>
             <configuration>
+                <skip>true</skip>
                 <keepGroupIds>cn.dev8,com.nancal</keepGroupIds>
             </configuration>
         </execution>
     </executions>
 </plugin>
 ```
+
+加入 skip , 这样， mvn package 不起作用，通过 Idea Maven 菜单，Plugins ，可以手动执行！
+
