@@ -58,7 +58,6 @@ mvn cn.dev8:split-lib-maven-plugin:1.1.9-SNAPSHOT:split-lib  -DkeepGroupIds=cn.d
                             <goal>split-lib</goal>
                         </goals>
                         <configuration>
-                            <skip>true</skip>
                             <keepGroupIds>cn.dev8</keepGroupIds>
                         </configuration>
                     </execution>
@@ -69,5 +68,5 @@ mvn cn.dev8:split-lib-maven-plugin:1.1.9-SNAPSHOT:split-lib  -DkeepGroupIds=cn.d
 </profile>
 ```
 
-放入到 profile, 并加入 skip ， 这样， mvn package 不起作用，通过 Idea Maven 菜单，Plugins ，可以手动执行！
+不可以手动执行！因为手动执行拿不到变量!
 
