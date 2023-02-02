@@ -37,6 +37,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.jar.JarFile;
 
 /**
@@ -91,7 +93,7 @@ public class SplitLibMojo
 
         jarExePath = getJarExePath();
 
-        String[] groupIds = getKeepGroupIds();
+        Set<String> groupIds = getKeepGroupIds();
 
         jarFile = new File(FileUtil.resolvePath(outputDirectory.getPath(), project.getArtifactId() + "-" + project.getVersion() + ".jar"));
         var jarBakFile = new File(jarFile.getPath() + ".split-lib.bak");
@@ -199,16 +201,17 @@ public class SplitLibMojo
         return jarExePath;
     }
 
-    private String[] getKeepGroupIds() {
-        String[] groupIds = null;
-        if (keepGroupIds == null || keepGroupIds.length() == 0) {
-            groupIds = new String[]{project.getGroupId()};
-        } else {
-            groupIds = keepGroupIds.split(",");
+    private Set<String> getKeepGroupIds() {
+        HashSet<String> groupIds = new HashSet<String>();
+        groupIds.add(project.getGroupId());
+
+        if (keepGroupIds != null && keepGroupIds.length() > 0) {
+            for(var it : keepGroupIds.split(",")){
+                groupIds.add(it);
+            }
         }
 
         getLog().info("split-lib 拆分的包名为：" + String.join(",", groupIds));
-
         return groupIds;
     }
 
@@ -239,7 +242,7 @@ public class SplitLibMojo
     }
 
 
-    public int indexOfItemStartWith(String[] list, String item) {
+    public int indexOfItemStartWith(Set<String> list, String item) {
         if (item == null) return -1;
         var index = -1;
         for (var it : list) {
