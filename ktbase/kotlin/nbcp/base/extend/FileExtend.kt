@@ -16,7 +16,7 @@ import java.time.LocalDateTime
  */
 val File.FullName: String
     get() {
-        return this.path
+        return this.canonicalPath
     }
 
 
