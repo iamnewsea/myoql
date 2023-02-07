@@ -1,5 +1,6 @@
 package nbcp.web.mvc.handler
 
+import nbcp.base.comm.ApiResult
 import nbcp.base.extend.ToJson
 import nbcp.base.utils.CodeUtil
 import nbcp.mvc.mvc.WriteJsonRawValue

@@ -1,5 +1,6 @@
 package nbcp.web.util
 
+import nbcp.base.comm.ApiResult
 import nbcp.base.extend.AsInt
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.Java2DFrameConverter
