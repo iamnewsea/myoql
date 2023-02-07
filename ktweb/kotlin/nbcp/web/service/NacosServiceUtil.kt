@@ -79,7 +79,7 @@ object NacosServiceUtil {
         http.request.requestMethod = "DELETE"
         val res = http.doNet();
         if (http.isSuccess) {
-            return nbcp.base.comm.ApiResult.of(res)
+            return ApiResult.of(res)
         }
         throw HttpInvokeException(http.status, "ns:$ns,dataId:$dataId,group:$groupLocal , 获取nacos配置错误 : $res")
     }
@@ -90,13 +90,13 @@ object NacosServiceUtil {
             getConfig(serverHost, ns, group, dataId)
                 .apply {
                     if (this.msg.HasValue) {
-                        return nbcp.base.comm.ApiResult.error(this.msg)
+                        return ApiResult.error(this.msg)
                     }
-                    return nbcp.base.comm.ApiResult.of(true)
+                    return ApiResult.of(true)
                 }
         } catch (e: HttpInvokeException) {
             if (e.status == 404) {
-                return nbcp.base.comm.ApiResult.of(false)
+                return ApiResult.of(false)
             }
             throw e;
         }
@@ -112,7 +112,7 @@ object NacosServiceUtil {
             HttpUtil("${getConfigServerHost(serverHost)}/v1/cs/configs?dataId=${dataId}&group=${groupLocal}&tenant=$ns")
         val res = http.doGet();
         if (http.isSuccess) {
-            return nbcp.base.comm.ApiResult.of(res)
+            return ApiResult.of(res)
         }
         throw HttpInvokeException(http.status, "ns:$ns,dataId:$dataId,group:$groupLocal , 获取nacos配置错误 : $res")
     }

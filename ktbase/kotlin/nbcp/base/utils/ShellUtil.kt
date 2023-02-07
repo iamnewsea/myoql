@@ -1,5 +1,6 @@
 package nbcp.base.utils
 
+import nbcp.base.comm.ApiResult
 import nbcp.base.extend.AsLong
 import nbcp.base.extend.HasValue
 import nbcp.base.model.InputStreamTextReaderThread
@@ -24,7 +25,7 @@ object ShellUtil {
         waitForSeconds: Int = 30,
         path: String = "",
         envs: Map<String, String> = mapOf()
-    ): nbcp.base.comm.ApiResult<String> {
+    ): ApiResult<String> {
         logger.info(cmds.joinToString("  "));
 
         var processBuilder = ProcessBuilder(*cmds.toTypedArray())
@@ -53,12 +54,12 @@ object ShellUtil {
             result = streamThread.results.joinToString("");
         } else {
             streamThread.done()
-            return nbcp.base.comm.ApiResult.error("超时")
+            return ApiResult.error("超时")
         }
 
         if (process.exitValue() == 0) {
-            return nbcp.base.comm.ApiResult.of(result)
+            return ApiResult.of(result)
         }
-        return nbcp.base.comm.ApiResult.error(result)
+        return ApiResult.error(result)
     }
 }

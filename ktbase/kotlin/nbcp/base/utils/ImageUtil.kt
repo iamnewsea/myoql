@@ -1,5 +1,6 @@
 package nbcp.base.utils
 
+import nbcp.base.comm.ApiResult
 import nbcp.base.extend.AsString
 import nbcp.base.extend.IsIn
 import java.awt.Image
@@ -30,20 +31,20 @@ object ImageUtil {
         target: OutputStream,
         maxWidth: Int,
         maxHeight: Int
-    ): nbcp.base.comm.ApiResult<String> {
+    ): ApiResult<String> {
         if (maxWidth < 1) {
-            return nbcp.base.comm.ApiResult.error("目标宽度参数不合法");
+            return ApiResult.error("目标宽度参数不合法");
         }
 
         if (maxHeight < 1) {
-            return nbcp.base.comm.ApiResult.error("目标高度参数不合法");
+            return ApiResult.error("目标高度参数不合法");
         }
 
         var length = 8;
         sourceImage.mark(length);
         var ary = ByteArray(length);
         if (sourceImage.read(ary, 0, length) < length) {
-            return nbcp.base.comm.ApiResult();
+            return ApiResult();
         }
         sourceImage.reset();
 
@@ -59,7 +60,7 @@ object ImageUtil {
 
         if (scale > 1) {
             ImageIO.write(oriImage, type, target)
-            return nbcp.base.comm.ApiResult.of(type);
+            return ApiResult.of(type);
         }
 
         var maxWidthValue = (originalWidth / scale).toInt()
@@ -101,6 +102,6 @@ object ImageUtil {
 //                return "写入新文件失败: ${destFile.FullName}"
 //        }
 
-        return nbcp.base.comm.ApiResult.error(type)
+        return ApiResult.error(type)
     }
 }

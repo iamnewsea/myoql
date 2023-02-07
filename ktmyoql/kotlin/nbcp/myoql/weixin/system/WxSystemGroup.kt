@@ -1,5 +1,6 @@
 package nbcp.myoql.weixin.system
 
+import nbcp.base.comm.ApiResult
 import nbcp.base.comm.JsonMap
 import nbcp.base.comm.const
 import nbcp.base.extend.AllFields
@@ -145,7 +146,7 @@ object WxSystemGroup {
         val tokenData = wx.officeAccount.getAccessToken(appSecret)
 
         if (tokenData.msg.HasValue) {
-            return nbcp.base.comm.ApiResult.error(tokenData.msg)
+            return ApiResult.error(tokenData.msg)
         }
 
         val token = tokenData.data!!.token
@@ -165,10 +166,10 @@ object WxSystemGroup {
 
         var bytes = http.doNet();
         if (http.isError || http.response.contentType.contains("json")) {
-            return nbcp.base.comm.ApiResult.error(bytes, http.status)
+            return ApiResult.error(bytes, http.status)
         }
 
-        return nbcp.base.comm.ApiResult.of(http)
+        return ApiResult.of(http)
 
 //        // 请求返回来的流接收到这里,然后转换
 //        val outStream = ByteArrayOutputStream()
@@ -261,7 +262,7 @@ object WxSystemGroup {
 
         val http = HttpUtil();
         if (tokenData.msg.HasValue) {
-            return nbcp.base.comm.ApiResult.error(tokenData.msg)
+            return ApiResult.error(tokenData.msg)
         }
 
         http.url = "${wx_url}${tokenData.data!!.token}"
@@ -270,12 +271,12 @@ object WxSystemGroup {
         val ret = http.doPost(data.ToJson())
             .apply {
                 if (http.isError) {
-                    return nbcp.base.comm.ApiResult.error("接口调用出错!")
+                    return ApiResult.error("接口调用出错!")
                 }
             }
             .FromJson<wx_return_data>() ?: wx_return_data()
         if (ret.errcode != 0) {
-            return nbcp.base.comm.ApiResult.error(ret.errmsg);
+            return ApiResult.error(ret.errmsg);
         }
         return nbcp.base.comm.ApiResult();
     }

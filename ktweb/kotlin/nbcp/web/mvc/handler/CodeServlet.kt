@@ -22,7 +22,7 @@ open class CodeServlet {
     @GetMapping("/open/code")
     fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
         var code = CodeUtil.getCode();
-        response.WriteJsonRawValue(nbcp.base.comm.ApiResult.of(code).ToJson())
+        response.WriteJsonRawValue(ApiResult.of(code).ToJson())
     }
 
 //    @PostMapping("/open/code")

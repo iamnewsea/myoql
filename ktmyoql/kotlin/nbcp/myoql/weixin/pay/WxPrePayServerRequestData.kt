@@ -1,5 +1,6 @@
 package nbcp.myoql.weixin.pay
 
+import nbcp.base.comm.ApiResult
 import nbcp.base.extend.AsString
 import nbcp.base.extend.ConvertJson
 import nbcp.base.extend.Slice
@@ -61,14 +62,14 @@ data class WxPrePayServerRequestData @JvmOverloads constructor(
     /**
      * 获取预付Id
      */
-    fun getPrepayId(mchSecret: String): nbcp.base.comm.ApiResult<String> {
+    fun getPrepayId(mchSecret: String): ApiResult<String> {
         val ajax = HttpUtil("https://api.mch.weixin.qq.com/pay/unifiedorder")
         ajax.request. contentType = "text/xml;charset=UTF-8"
 
         val result = ajax.doPost(this.toWxAppPayXml(mchSecret))
             .apply {
                 if( ajax.isError){
-                    return nbcp.base.comm.ApiResult.error("接口调用出错!")
+                    return ApiResult.error("接口调用出错!")
                 }
             }
             .Xml2Json()
@@ -76,13 +77,13 @@ data class WxPrePayServerRequestData @JvmOverloads constructor(
             ?.ConvertJson(WxPrePayServerResponseData::class.java)
 
         if (result == null) {
-            return nbcp.base.comm.ApiResult.error("接口返回数据错误!")
+            return ApiResult.error("接口返回数据错误!")
         }
 
         if (result.return_code != "SUCCESS" && result.result_code != "SUCCESS") {
             throw RuntimeException("获取PrepayId错误:" + result.return_msg.AsString(result.err_code_des));
         }
 
-        return nbcp.base.comm.ApiResult.of(result.prepay_id)
+        return ApiResult.of(result.prepay_id)
     }
 }

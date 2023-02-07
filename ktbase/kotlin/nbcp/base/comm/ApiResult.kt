@@ -12,16 +12,16 @@ open class ApiResult<T> : nbcp.base.comm.JsonResult() {
     companion object {
         @JvmStatic
         @JvmOverloads
-        fun <T> error(msg: String, code: Int = 0): nbcp.base.comm.ApiResult<T> {
-            var ret = nbcp.base.comm.ApiResult<T>();
+        fun <T> error(msg: String, code: Int = 0): ApiResult<T> {
+            var ret = ApiResult<T>();
             ret.code = code;
             ret.msg = msg;
             return ret;
         }
 
         @JvmStatic
-        fun <T> of(data: T?): nbcp.base.comm.ApiResult<T> {
-            var ret = nbcp.base.comm.ApiResult<T>();
+        fun <T> of(data: T?): ApiResult<T> {
+            var ret = ApiResult<T>();
             ret.data = data;
             return ret;
         }
@@ -30,7 +30,7 @@ open class ApiResult<T> : nbcp.base.comm.JsonResult() {
     /** 设置额外value的值。
      * @param value value的值
      */
-    fun withValue(value: Any?): nbcp.base.comm.ApiResult<T> {
+    fun withValue(value: Any?): ApiResult<T> {
         this.value = value;
         return this;
     }

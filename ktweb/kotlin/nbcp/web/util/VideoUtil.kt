@@ -27,7 +27,7 @@ object VideoUtil {
             val ftp = fFmpegFrameGrabber.lengthInFrames
             if (ftp <= 0) {
                 fFmpegFrameGrabber.stop()
-                return nbcp.base.comm.ApiResult.error("视频没有内容")
+                return ApiResult.error("视频没有内容")
             }
 
             //取第1帧做封装
@@ -35,7 +35,7 @@ object VideoUtil {
             var frame = fFmpegFrameGrabber.grabImage()
             if (frame == null) {
                 fFmpegFrameGrabber.stop()
-                return nbcp.base.comm.ApiResult.error("视频没有内容")
+                return ApiResult.error("视频没有内容")
             }
 
 
@@ -51,7 +51,7 @@ object VideoUtil {
             fFmpegFrameGrabber.stop()
 
             var inputStream = ByteArrayInputStream(outputStream.toByteArray());
-            return nbcp.base.comm.ApiResult.of(VideoDataInfoModel(inputStream, imgWidth, imgHeight, videoTime))
+            return ApiResult.of(VideoDataInfoModel(inputStream, imgWidth, imgHeight, videoTime))
         }
     }
 }

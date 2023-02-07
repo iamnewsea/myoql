@@ -27,7 +27,7 @@ open class TokenGeneratorServlet {
     @GetMapping("/open/token")
     fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
         var token = request.tokenValue;
-        response.WriteJsonRawValue(nbcp.base.comm.ApiResult.of(token).ToJson())
+        response.WriteJsonRawValue(ApiResult.of(token).ToJson())
     }
 }
 

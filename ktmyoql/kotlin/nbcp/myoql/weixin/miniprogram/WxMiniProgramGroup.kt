@@ -1,5 +1,6 @@
 package nbcp.myoql.weixin.miniprogram
 
+import nbcp.base.comm.ApiResult
 import nbcp.base.extend.FromJson
 import nbcp.base.extend.HasValue
 import nbcp.base.utils.HttpUtil
@@ -30,7 +31,7 @@ object WxMiniProgramGroup {
 
         var openId = jscode2session(code).get()
         if (openId.HasValue) {
-            return nbcp.base.comm.ApiResult.of(openId);
+            return ApiResult.of(openId);
         }
 
         val url =
@@ -39,20 +40,20 @@ object WxMiniProgramGroup {
         val ajax = HttpUtil(url);
         var data = ajax.doGet().FromJson<WxLoginInfoModel>();
         if (ajax.isError) {
-            return nbcp.base.comm.ApiResult.error("接口调用出错", ajax.status);
+            return ApiResult.error("接口调用出错", ajax.status);
         }
 
         if (data == null) {
-            return nbcp.base.comm.ApiResult.error("接口调用没有返回数据!")
+            return ApiResult.error("接口调用没有返回数据!")
         }
 
         if (data.errmsg.HasValue) {
-            return nbcp.base.comm.ApiResult.error(data.errmsg)
+            return ApiResult.error(data.errmsg)
         }
 
         openId = data.openid;
         jscode2session(code).set(openId);
-        return nbcp.base.comm.ApiResult.of(openId);
+        return ApiResult.of(openId);
     }
 
 

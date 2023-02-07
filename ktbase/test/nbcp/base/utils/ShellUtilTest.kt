@@ -1,6 +1,7 @@
 package nbcp.base.utils
 
 import nbcp.base.TestBase
+import nbcp.base.comm.ApiResult
 import nbcp.base.extend.AsLong
 import nbcp.base.extend.HasValue
 import nbcp.base.model.InputStreamTextReaderThread
@@ -25,7 +26,7 @@ class ShellUtilTest : TestBase() {
         waitForSeconds: Int = 30,
         path: String = "",
         envs: Map<String, String> = mapOf()
-    ): nbcp.base.comm.ApiResult<String> {
+    ): ApiResult<String> {
 
         var processBuilder = ProcessBuilder(StringTokenizer(cmd).toList().map { it.toString() })
 
@@ -45,7 +46,7 @@ class ShellUtilTest : TestBase() {
         var process = try {
             processBuilder.start();
         } catch (e: Exception) {
-            return nbcp.base.comm.ApiResult.error(e.message ?: "命令错误")
+            return ApiResult.error(e.message ?: "命令错误")
         }
 
         var streamThread = InputStreamTextReaderThread(process.inputStream)
@@ -57,12 +58,12 @@ class ShellUtilTest : TestBase() {
             result = streamThread.results.joinToString("");
         } else {
             streamThread.done()
-            return nbcp.base.comm.ApiResult.error("命令超时")
+            return ApiResult.error("命令超时")
         }
 
         if (process.exitValue() == 0) {
-            return nbcp.base.comm.ApiResult.of(result)
+            return ApiResult.of(result)
         }
-        return nbcp.base.comm.ApiResult.error(result)
+        return ApiResult.error(result)
     }
 }

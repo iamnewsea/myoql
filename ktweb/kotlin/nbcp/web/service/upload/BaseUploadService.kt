@@ -73,7 +73,7 @@ abstract class BaseUploadService {
                 annexInfo.imgWidth = bufferedImage.getWidth();
                 annexInfo.imgHeight = bufferedImage.getHeight();
             } catch (ex: Throwable) {
-                return nbcp.base.comm.ApiResult.error("不识别的图片格式!")
+                return ApiResult.error("不识别的图片格式!")
             }
         } else if (extInfo.extType == FileExtensionTypeEnum.VIDEO) {
             if (config.videoLogo) {
@@ -105,14 +105,14 @@ abstract class BaseUploadService {
         annexInfo.url = saveFile(storageType, fileStream, annexInfo.group, fileData)
 
         if (annexInfo.url.isEmpty()) {
-            return nbcp.base.comm.ApiResult.error("保存文件出错")
+            return ApiResult.error("保存文件出错")
         }
 
 
         if (dbService.insert(annexInfo) == 0) {
-            return nbcp.base.comm.ApiResult.error("记录到数据出错")
+            return ApiResult.error("记录到数据出错")
         }
-        return nbcp.base.comm.ApiResult.of(annexInfo)
+        return ApiResult.of(annexInfo)
     }
 
 //    private fun setVideoUrlTime(annexInfo: SysAnnex, vFile: File, fileData: FileNameData) {
@@ -176,7 +176,7 @@ abstract class BaseUploadService {
             if (ids.size == 0) {
                 response.outputStream.write(JsonResult.error("上传失败").ToJson().toByteArray(const.utf8));
             } else if (ids.size == 1) {
-                response.outputStream.write(nbcp.base.comm.ApiResult.of(ids[0]).ToJson().toByteArray(const.utf8));
+                response.outputStream.write(ApiResult.of(ids[0]).ToJson().toByteArray(const.utf8));
             } else {
                 response.outputStream.write(ListResult.of(ids).ToJson().toByteArray(const.utf8));
             }

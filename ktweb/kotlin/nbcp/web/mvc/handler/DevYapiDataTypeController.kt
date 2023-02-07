@@ -93,7 +93,7 @@ class DevYapiDataTypeServlet {
             }
         }
 
-        return nbcp.base.comm.ApiResult.of(ret)
+        return ApiResult.of(ret)
     }
 
 
