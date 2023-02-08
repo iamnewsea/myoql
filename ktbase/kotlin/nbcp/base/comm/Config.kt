@@ -31,7 +31,9 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
             var title = list.filter { it.HasValue }
                 .let {
                     if (it.any()) {
-                        return@let """${list.joinToString("  ")}""";
+                        return@let """${list.joinToString("  ")}
+
+""";
                     }
                     return@let "";
                 }
