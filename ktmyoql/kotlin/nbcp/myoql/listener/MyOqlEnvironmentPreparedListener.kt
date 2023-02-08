@@ -1,9 +1,11 @@
 package nbcp.myoql.listener
 
 import nbcp.base.comm.config
+import nbcp.base.enums.AlignDirectionEnum
 import nbcp.base.extend.AsString
 import nbcp.base.extend.HasValue
 import nbcp.base.extend.Important
+import nbcp.base.extend.WrapByRectangle
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent
 import org.springframework.context.ApplicationListener
@@ -27,13 +29,11 @@ class MyOqlEnvironmentPreparedListener : ApplicationListener<ApplicationEnvironm
 
             logger.Important(
                 """
-    ﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎
-        ╔╦╗┬ ┬┌─┐┌─┐ ┬  
-        ║║║└┬┘│ ││─┼┐│  
-        ╩ ╩ ┴ └─┘└─┘└┴─┘
-    ﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊
+        ╔╦╗┬ ┬┌─┐┌─┐ ┬      
+        ║║║└┬┘│ ││─┼┐│      
+        ╩ ╩ ┴ └─┘└─┘└┴─┘    
 ${list.filter { it.HasValue }.joinToString("  ")}
-"""
+""".WrapByRectangle(AlignDirectionEnum.CENTER)
             )
         }
 

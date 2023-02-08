@@ -1,6 +1,7 @@
 package nbcp.base.comm
 
 
+import nbcp.base.enums.AlignDirectionEnum
 import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
 import nbcp.base.utils.StringUtil
@@ -29,14 +30,12 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
 
 
             logger.Important(
-                """
-    ﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹎﹎
-    ╔╦╗┬ ┬┌─┐┌─┐ ┬    ╔╗ ┌─┐┌─┐┌─┐
-    ║║║└┬┘│ ││─┼┐│    ╠╩╗├─┤└─┐├┤ 
-    ╩ ╩ ┴ └─┘└─┘└┴─┘  ╚═╝┴ ┴└─┘└─┘
-    ﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹊﹊
+                    """
+    ╔╦╗┬ ┬┌─┐┌─┐ ┬    ╔╗ ┌─┐┌─┐┌─┐    
+    ║║║└┬┘│ ││─┼┐│    ╠╩╗├─┤└─┐├┤     
+    ╩ ╩ ┴ └─┘└─┘└┴─┘  ╚═╝┴ ┴└─┘└─┘    
 ${list.filter { it.HasValue }.joinToString("  ")}
-"""
+""".WrapByRectangle(AlignDirectionEnum.CENTER)
             )
         }
 
@@ -323,7 +322,7 @@ ${list.filter { it.HasValue }.joinToString("  ")}
         @JvmStatic
         val applicationName: String
             get() = getConfig("spring.application.name").must { it.HasValue }
-                .elseThrow { "必须指定 spring.application.name" }
+                    .elseThrow { "必须指定 spring.application.name" }
     }
 
     override fun setApplicationContext(applicationContext: ApplicationContext) {

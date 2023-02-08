@@ -1,8 +1,10 @@
 package nbcp.web.listener
 
+import nbcp.base.enums.AlignDirectionEnum
 import nbcp.base.extend.AsString
 import nbcp.base.extend.HasValue
 import nbcp.base.extend.Important
+import nbcp.base.extend.WrapByRectangle
 import nbcp.mvc.listener.MyMvcEnvironmentPreparedEventListener
 import nbcp.myoql.listener.MyOqlEnvironmentPreparedListener
 import org.slf4j.LoggerFactory
@@ -17,6 +19,7 @@ class MyMebEnvironmentPreparedListener : ApplicationListener<ApplicationEnvironm
         MyMvcEnvironmentPreparedEventListener.logoLoaded = true;
         MyOqlEnvironmentPreparedListener.logoLoaded = true;
     }
+
     override fun onApplicationEvent(event: ApplicationEnvironmentPreparedEvent) {
         val env = event.environment
 
@@ -31,14 +34,12 @@ class MyMebEnvironmentPreparedListener : ApplicationListener<ApplicationEnvironm
              * 如果要关闭这个日志,日志级别的设定,只能在 bootstrap.yaml 或 application.yaml 中, 在最高的时机设置!
              */
             logger.Important(
-                """
-    ﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎﹍﹎
-    ╔╦╗┬ ┬┌─┐┌─┐ ┬    ╦ ╦┌─┐┌┐ 
-    ║║║└┬┘│ ││─┼┐│    ║║║├┤ ├┴┐
-    ╩ ╩ ┴ └─┘└─┘└┴─┘  ╚╩╝└─┘└─┘
-    ﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊﹉﹊
+                    """
+    ╔╦╗┬ ┬┌─┐┌─┐ ┬    ╦ ╦┌─┐┌┐     
+    ║║║└┬┘│ ││─┼┐│    ║║║├┤ ├┴┐    
+    ╩ ╩ ┴ └─┘└─┘└┴─┘  ╚╩╝└─┘└─┘    
 ${list.filter { it.HasValue }.joinToString("  ")}
-"""
+""".WrapByRectangle(AlignDirectionEnum.CENTER)
             )
         }
 

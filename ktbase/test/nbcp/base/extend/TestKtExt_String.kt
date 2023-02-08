@@ -2,6 +2,7 @@ package nbcp.base.extend
 
 import nbcp.base.TestBase
 import nbcp.base.comm.const
+import nbcp.base.enums.AlignDirectionEnum
 import nbcp.base.utils.CipherUtil
 import nbcp.base.utils.FileUtil
 import org.junit.jupiter.api.Test
@@ -18,9 +19,9 @@ class TestKtExt_String : TestBase() {
         """
 
         txt.Tokenizer(
-            { it == ',' || it == '\n' }, arrayOf(
+                { it == ',' || it == '\n' }, arrayOf(
                 TokenQuoteDefine('"', '"', '"')
-            )
+        )
         ).forEachIndexed { index, s ->
             println("[" + index.toString() + "]:" + s)
         }
@@ -38,10 +39,10 @@ aaa
 """
 
         var t = txt.regexMultiLineEdit(
-            Regex("^ENV\\s+(JAVA_OPTS)\\s+", RegexOption.MULTILINE),
-            "0,-1",
-            "+=>",
-            " -XX:256 \$1"
+                Regex("^ENV\\s+(JAVA_OPTS)\\s+", RegexOption.MULTILINE),
+                "0,-1",
+                "+=>",
+                " -XX:256 \$1"
         );
 
         println(t)
@@ -64,9 +65,9 @@ aaa
                 var txt = file.readText(const.utf8);
 
                 txt.Tokenizer(
-                    { it == ',' || it == '\n' }, arrayOf(
+                        { it == ',' || it == '\n' }, arrayOf(
                         TokenQuoteDefine('"', '"', '"')
-                    )
+                )
                 ).forEachIndexed { index, s ->
                     println("[" + index.toString() + "]:" + s)
                 }
@@ -102,11 +103,8 @@ select * from[pub space].tab where`id`  like'% 1 %'
     @Test
     fun abc2() {
         var d = "";
-        d = "12345678".PadStepEnViewWidth(4, '*')
-        println(d + ":")
-
-        d = "1234567890123".PadStepEnViewWidth(4, '*')
-        println(d + ":")
+        d = "12345678".WrapByRectangle(AlignDirectionEnum.CENTER, 4)
+        println(d)
     }
 
     @Test
@@ -114,7 +112,7 @@ select * from[pub space].tab where`id`  like'% 1 %'
         var key1 = CipherUtil.get3desKey();
         println("key:" + key1)
         var result1 =
-            CipherUtil.decrypt3des("println(ConvertToLocalDateTime(\"20111203101530\",DateTimeFormatter.", key1)
+                CipherUtil.decrypt3des("println(ConvertToLocalDateTime(\"20111203101530\",DateTimeFormatter.", key1)
         println("结果:" + result1);
         println("原文:" + CipherUtil.decrypt3des(result1, key1))
 
