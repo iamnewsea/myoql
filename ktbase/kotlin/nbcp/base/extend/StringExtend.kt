@@ -625,7 +625,7 @@ fun String.ToTab(deepth: Int): String {
  * En宽度，一个中文按两个算。多行，按最宽的算。
  */
 private var ONE_LEN_CHARS =
-    "─━│┃┄┅┆┇┈┉┊┋┌┍┎┏┐┑┒┓└┕┖┗┘┙┚┛├┝┞┟┠┡┢┣┤┥┦┧┨┩┪┫┬┭┮┯┰┱┲┳┴┵┶┷┸┹┺┻┼┽┾┿╀╁╂╃╄╅╆╇╈╉╊╋╌╍╎╏═║╒╓╔╕╖╗╘╙╚╛╜╝╞╟╠╡╢╣╤╥╦╧╨╩╪╫╬╭╮";
+    "─━│┃┄┅┆┇┈┉┊┋┌┍┎┏┐┑┒┓└┕┖┗┘┙┚┛├┝┞┟┠┡┢┣┤┥┦┧┨┩┪┫┬┭┮┯┰┱┲┳┴┵┶┷┸┹┺┻┼┽┾┿╀╁╂╃╄╅╆╇╈╉╊╋╌╍╎╏═║╒╓╔╕╖╗╘╙╚╛╜╝╞╟╠╡╢╣╤╥╦╧╨╩╪╫╬╭╮╰╯";
 
 val String.EnViewWidth: Int
     get() {
@@ -876,8 +876,8 @@ fun String.WrapByRectangle(align: AlignDirectionEnum, paddingWith: Int = 4, step
     var content = lines.map { "│" + it.PadStepEnViewWidth(align, lineMaxWith) + "│" }.joinToString("\n");
 
     return """
-┌${"─".Repeat(lineMaxWith)}┐
+╭${"─".Repeat(lineMaxWith)}╮
 ${content}
-└${"─".Repeat(lineMaxWith)}┘
+╰${"─".Repeat(lineMaxWith)}╯
 """
 }
