@@ -35,7 +35,6 @@ class MyMvcEnvironmentPreparedEventListener : ApplicationListener<ApplicationEnv
                 .let {
                     if (it.any()) {
                         return@let """${list.joinToString("  ")}
-
 """;
                     }
                     return@let "";

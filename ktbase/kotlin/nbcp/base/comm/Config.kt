@@ -32,7 +32,6 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
                 .let {
                     if (it.any()) {
                         return@let """${list.joinToString("  ")}
-
 """;
                     }
                     return@let "";

@@ -31,7 +31,6 @@ class MyMebEnvironmentPreparedListener : ApplicationListener<ApplicationEnvironm
                 .let {
                     if (it.any()) {
                         return@let """${list.joinToString("  ")}
-
 """;
                     }
                     return@let "";
