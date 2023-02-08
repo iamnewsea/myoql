@@ -2,10 +2,7 @@ package nbcp.myoql.listener
 
 import nbcp.base.comm.config
 import nbcp.base.enums.AlignDirectionEnum
-import nbcp.base.extend.AsString
-import nbcp.base.extend.HasValue
-import nbcp.base.extend.Important
-import nbcp.base.extend.WrapByRectangle
+import nbcp.base.extend.*
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent
 import org.springframework.context.ApplicationListener
@@ -27,13 +24,21 @@ class MyOqlEnvironmentPreparedListener : ApplicationListener<ApplicationEnvironm
             list.add(env.getProperty("spring.application.name").AsString())
             list.add(env.activeProfiles?.joinToString(",").AsString())
 
+            var title = list.filter { it.HasValue }
+                .let {
+                    if (it.any()) {
+                        return@let """${list.joinToString("  ")}""";
+                    }
+                    return@let "";
+                }
+
             logger.Important(
                 """
         ╔╦╗┬ ┬┌─┐┌─┐ ┬      
         ║║║└┬┘│ ││─┼┐│      
         ╩ ╩ ┴ └─┘└─┘└┴─┘    
-${list.filter { it.HasValue }.joinToString("  ")}
-""".WrapByRectangle(AlignDirectionEnum.CENTER)
+${title}
+""".Slice(1, -2).WrapByRectangle(AlignDirectionEnum.CENTER)
             )
         }
 

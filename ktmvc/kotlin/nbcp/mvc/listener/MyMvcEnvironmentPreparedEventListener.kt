@@ -31,13 +31,21 @@ class MyMvcEnvironmentPreparedEventListener : ApplicationListener<ApplicationEnv
                 }
 
 
+            var title = list.filter { it.HasValue }
+                .let {
+                    if (it.any()) {
+                        return@let """${list.joinToString("  ")}""";
+                    }
+                    return@let "";
+                }
+
             logger.Important(
                 """
     ╔╦╗┬ ┬┌─┐┌─┐ ┬    ╦ ╦┬  ┬┌─┐    
     ║║║└┬┘│ ││─┼┐│    ║║║└┐┌┘│      
     ╩ ╩ ┴ └─┘└─┘└┴─┘  ╚╩╝ └┘ └─┘    
-${list.filter { it.HasValue }.joinToString("  ")}
-""".WrapByRectangle(AlignDirectionEnum.CENTER)
+${title}
+""".Slice(1,-2).WrapByRectangle(AlignDirectionEnum.CENTER)
             )
         }
 

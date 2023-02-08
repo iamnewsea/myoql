@@ -54,15 +54,15 @@ fun String.regexMultiLineEdit(regex: Regex, range: String, opSign: String, value
     var results = regex.findAll(this).toList();
 
     var rangeList = range
-            .split(",")
-            .filter { it.HasValue }
-            .map { it.AsInt() }
-            .map {
-                if (it < 0) {
-                    return@map results.size + (it % results.size)
-                }
-                return@map it;
+        .split(",")
+        .filter { it.HasValue }
+        .map { it.AsInt() }
+        .map {
+            if (it < 0) {
+                return@map results.size + (it % results.size)
             }
+            return@map it;
+        }
 
     results.forEachIndexed { index, matchResult ->
 
@@ -109,7 +109,7 @@ fun <T> String.FromYamlText(type: Class<T>): T {
         return YamlObjectMapper.INSTANCE.readValue(this, type)
     } catch (e: Exception) {
         logger.error(
-                """
+            """
 转换Yaml出错:
 ${this}
 """
@@ -142,9 +142,9 @@ fun <T> String.FromListYarmText(type: Class<T>): List<T> {
 
 fun <T> String.FromListYarmTextWithSplit(type: Class<T>): List<T> {
     return this.split("\n")
-            .SplitList { it == "---" }
-            .filter { it.isNotEmpty() }
-            .map { it.joinToString("\n").FromYamlText(type) }
+        .SplitList { it == "---" }
+        .filter { it.isNotEmpty() }
+        .map { it.joinToString("\n").FromYamlText(type) }
 }
 
 
@@ -171,19 +171,19 @@ fun String.IsNumberic(): Boolean {
 
     var hasDot = false;
     if (self.all {
-                if (it == '.') {
-                    if (hasDot == false) {
-                        hasDot = true;
-                        return@all true;
-                    }
-                    return@all false;
-                }
-
-                if (it.isDigit()) {
+            if (it == '.') {
+                if (hasDot == false) {
+                    hasDot = true;
                     return@all true;
                 }
                 return@all false;
-            } == false) {
+            }
+
+            if (it.isDigit()) {
+                return@all true;
+            }
+            return@all false;
+        } == false) {
         return false;
     }
 
@@ -251,11 +251,11 @@ fun String.removeEmptyLine(withTrim: Boolean = true): String {
 }
 
 data class CharFlowSetting @JvmOverloads constructor(
-        var index: Int = 0,
-        var item: Char = 0.toChar(),
-        var prevCutIndex: Int = 0,
-        //休息状态，如在括号内部
-        var sleep: Boolean = false
+    var index: Int = 0,
+    var item: Char = 0.toChar(),
+    var prevCutIndex: Int = 0,
+    //休息状态，如在括号内部
+    var sleep: Boolean = false
 )
 
 /**
@@ -321,9 +321,9 @@ fun String.cutWith(callback: ((CharFlowSetting) -> Boolean)): List<String> {
  * 定义引用定义，开始符号，结束符号，逃逸符号。
  */
 data class TokenQuoteDefine @JvmOverloads constructor(
-        var start: Char,
-        var end: Char = 0.toChar(),
-        var escape: Char = '\\'
+    var start: Char,
+    var end: Char = 0.toChar(),
+    var escape: Char = '\\'
 ) {
     init {
         if (end.code == 0) {
@@ -414,14 +414,14 @@ fun String.nextIndexOf(startIndex: Int, until: (Char) -> Boolean): Int {
  */
 @JvmOverloads
 fun String.Tokenizer(
-        wordSplit: ((Char) -> Boolean)? = null,
-        quoteDefines: Array<TokenQuoteDefine> = arrayOf(
-                TokenQuoteDefine('`'),
-                TokenQuoteDefine('[', ']'),
-                TokenQuoteDefine('"'),
-                TokenQuoteDefine('\'')
-        ),
-        only1Blank: Boolean = true
+    wordSplit: ((Char) -> Boolean)? = null,
+    quoteDefines: Array<TokenQuoteDefine> = arrayOf(
+        TokenQuoteDefine('`'),
+        TokenQuoteDefine('[', ']'),
+        TokenQuoteDefine('"'),
+        TokenQuoteDefine('\'')
+    ),
+    only1Blank: Boolean = true
 ): List<String> {
     var wordSplitLocal = wordSplit;
     if (wordSplitLocal == null) {
@@ -496,10 +496,10 @@ fun String.Tokenizer(
  * 找下一个分词的位置，不能==startIndex
  */
 private fun getNextSplitIndex(
-        value: String,
-        startIndex: Int,
-        quoteDefines: Array<TokenQuoteDefine>,
-        wordSplit: (Char) -> Boolean
+    value: String,
+    startIndex: Int,
+    quoteDefines: Array<TokenQuoteDefine>,
+    wordSplit: (Char) -> Boolean
 ): Int {
 
     var startQuoteKeys = quoteDefines.map { it.start }.toTypedArray();
@@ -624,18 +624,24 @@ fun String.ToTab(deepth: Int): String {
 /**
  * En宽度，一个中文按两个算。多行，按最宽的算。
  */
+private var ONE_LEN_CHARS =
+    "─━│┃┄┅┆┇┈┉┊┋┌┍┎┏┐┑┒┓└┕┖┗┘┙┚┛├┝┞┟┠┡┢┣┤┥┦┧┨┩┪┫┬┭┮┯┰┱┲┳┴┵┶┷┸┹┺┻┼┽┾┿╀╁╂╃╄╅╆╇╈╉╊╋╌╍╎╏═║╒╓╔╕╖╗╘╙╚╛╜╝╞╟╠╡╢╣╤╥╦╧╨╩╪╫╬╭╮";
+
 val String.EnViewWidth: Int
     get() {
         return this.lineSequence().maxOf { line ->
             return@maxOf line
-                    .toCharArray()
-                    .sumOf {
-                        var v = it.code;
-                        if (v < 128) {
-                            return@sumOf 1;
-                        }
-                        return@sumOf 2.AsInt()
+                .toCharArray()
+                .sumOf {
+                    if (ONE_LEN_CHARS.contains(it)) {
+                        return@sumOf 1;
                     }
+                    var v = it.code;
+                    if (v < 128) {
+                        return@sumOf 1;
+                    }
+                    return@sumOf 2.AsInt()
+                }
         }
     }
 
@@ -644,17 +650,21 @@ val String.EnViewWidth: Int
  */
 fun String.PadStepEnViewWidth(align: AlignDirectionEnum, stepWidth: Int = 4, padChar: Char = ' '): String {
     val len = this.EnViewWidth;
+    val padString = padChar.toString();
+    if (len == 0) {
+        return padString.Repeat(stepWidth);
+    }
+
     val mod = len % stepWidth;
     if (mod == 0) {
         return this;
     }
 
-    val padString = padChar.toString();
     return when (align) {
         AlignDirectionEnum.LEFT -> padString.Repeat(stepWidth - mod) + this
         AlignDirectionEnum.CENTER -> {
             var left = (stepWidth - mod) / 2;
-            var right = stepWidth - left;
+            var right = stepWidth - mod - left;
 
             padString.Repeat(left) + this + padString.Repeat(right)
         }
@@ -701,19 +711,19 @@ fun String.MatchPattern(pattern: String): StringMap {
     var tokens = mutableListOf<MatchPatternTokenItem>();
     var prevEndIndex = 0;
     Regex("""\b\w+\b""").findAll(pattern).toList()
-            .mapIndexed { _, it ->
-                var group = it.groups.firstOrNull();
-                if (group == null) {
-                    return@mapIndexed
-                }
-
-                if (group.range.first > prevEndIndex) {
-                    tokens.add(MatchPatternTokenItem(pattern.slice(prevEndIndex + 1..group.range.first - 1)))
-                }
-
-                tokens.add(MatchPatternTokenItem(group.value))
-                prevEndIndex = group.range.last;
+        .mapIndexed { _, it ->
+            var group = it.groups.firstOrNull();
+            if (group == null) {
+                return@mapIndexed
             }
+
+            if (group.range.first > prevEndIndex) {
+                tokens.add(MatchPatternTokenItem(pattern.slice(prevEndIndex + 1..group.range.first - 1)))
+            }
+
+            tokens.add(MatchPatternTokenItem(group.value))
+            prevEndIndex = group.range.last;
+        }
 
     if (prevEndIndex + 1 < this.length) {
         tokens.add(MatchPatternTokenItem(pattern.substring(prevEndIndex + 1)))
@@ -787,10 +797,10 @@ fun <T> String.ToEnum(enumClazz: Class<T>): T? {
  */
 @JvmOverloads
 fun String.formatWithJson(
-        json: Map<String, Any?>,
-        style: String = "",
-        keyCallback: ((String) -> String)? = null,  //参数：原始key , 返回: 取map值的key
-        valueCallback: ((String, String?) -> String?)? = null  //参数： 原始key,value , 返回value
+    json: Map<String, Any?>,
+    style: String = "",
+    keyCallback: ((String) -> String)? = null,  //参数：原始key , 返回: 取map值的key
+    valueCallback: ((String, String?) -> String?)? = null  //参数： 原始key,value , 返回value
 
 ): String {
     var styleValue = style;
@@ -854,8 +864,14 @@ fun String.formatWithJson(
  * 每一行都居中。
  */
 fun String.WrapByRectangle(align: AlignDirectionEnum, stepWidth: Int = 4): String {
+    var stepWidth = stepWidth;
+    if (stepWidth % 2 != 0) {
+        stepWidth += 1;
+    }
+
     var lines = this.split("\n");
-    var lineMaxWith = Math.ceil((lines.map { it.EnViewWidth }.maxOrNull() ?: stepWidth) * 1.0 / stepWidth).AsInt();
+    var lineMaxWith =
+        Math.ceil((lines.map { it.EnViewWidth }.maxOrNull() ?: stepWidth) * 1.0 / stepWidth).AsInt() * stepWidth;
     var content = lines.map { "│" + it.PadStepEnViewWidth(align, lineMaxWith) + "│" }.joinToString("\n");
 
     return """

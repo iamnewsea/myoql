@@ -6,6 +6,7 @@ import nbcp.base.enums.AlignDirectionEnum
 import nbcp.base.utils.CipherUtil
 import nbcp.base.utils.FileUtil
 import org.junit.jupiter.api.Test
+import java.awt.Font
 import java.io.File
 
 class TestKtExt_String : TestBase() {
@@ -102,9 +103,14 @@ select * from[pub space].tab where`id`  like'% 1 %'
 
     @Test
     fun abc2() {
-        var d = "";
-        d = "12345678".WrapByRectangle(AlignDirectionEnum.CENTER, 4)
-        println(d)
+        var f =  Font("宋体", Font.PLAIN, 12);
+        var fm = sun.font.FontDesignMetrics.getMetrics(f);
+        println(fm.charWidth('A'))
+        println(fm.charWidth('a'))
+        println(fm.charWidth('─'))
+        println(fm.charWidth('│'))
+        println(fm.charWidth('中'))
+        println(fm.charWidth('╔'))
     }
 
     @Test

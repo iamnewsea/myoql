@@ -28,14 +28,21 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
             list.add(env.getProperty("spring.application.name").AsString())
             list.add(env.activeProfiles?.joinToString(",").AsString())
 
+            var title = list.filter { it.HasValue }
+                .let {
+                    if (it.any()) {
+                        return@let """${list.joinToString("  ")}""";
+                    }
+                    return@let "";
+                }
 
             logger.Important(
-                    """
+                """
     ╔╦╗┬ ┬┌─┐┌─┐ ┬    ╔╗ ┌─┐┌─┐┌─┐    
     ║║║└┬┘│ ││─┼┐│    ╠╩╗├─┤└─┐├┤     
     ╩ ╩ ┴ └─┘└─┘└┴─┘  ╚═╝┴ ┴└─┘└─┘    
-${list.filter { it.HasValue }.joinToString("  ")}
-""".WrapByRectangle(AlignDirectionEnum.CENTER)
+${title}
+""".Slice(1, -2).WrapByRectangle(AlignDirectionEnum.CENTER)
             )
         }
 
@@ -322,7 +329,7 @@ ${list.filter { it.HasValue }.joinToString("  ")}
         @JvmStatic
         val applicationName: String
             get() = getConfig("spring.application.name").must { it.HasValue }
-                    .elseThrow { "必须指定 spring.application.name" }
+                .elseThrow { "必须指定 spring.application.name" }
     }
 
     override fun setApplicationContext(applicationContext: ApplicationContext) {
