@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import java.io.BufferedReader
 import java.io.Console
 import java.io.InputStreamReader
+import java.util.*
 
 
 @SpringBootApplication
@@ -19,9 +20,6 @@ open class PzxEntityTestApplication {
             val app = SpringApplication(PzxEntityTestApplication::class.java)
             app.setBannerMode(Banner.Mode.OFF)
             app.run(*args)
-
-
-            test_ascii()
         }
 
 
@@ -32,8 +30,10 @@ open class PzxEntityTestApplication {
             var row = -1;
             while (true) {
                 if (row > 0 && row % 100 == 0) {
-                    var key = System.`in`.read();
-                    if (key == 27) {
+                    var key =  Scanner(System.`in`).next().firstOrNull();
+                    if (key != null && key != Char(10)) {
+                    }
+                    else{
                         println("用戶取消！")
                         break
                     }
