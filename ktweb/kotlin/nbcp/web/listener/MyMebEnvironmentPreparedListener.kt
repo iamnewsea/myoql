@@ -25,7 +25,17 @@ class MyMebEnvironmentPreparedListener : ApplicationListener<ApplicationEnvironm
 
             val list = mutableListOf<String>()
             list.add(env.getProperty("spring.application.name").AsString())
-            list.add(env.activeProfiles?.joinToString(",").AsString())
+            (env.activeProfiles?.toList() ?: listOf()).also {
+                if (it.HasValue) {
+                    list.add("profiles:" + env.activeProfiles?.joinToString(",").AsString())
+                }
+            }
+
+            env.getProperty("server.port").AsString().also {
+                if( it.HasValue) {
+                    list.add("port≈" + it)
+                }
+            }
 
             var title = list.filter { it.HasValue }
                 .let {

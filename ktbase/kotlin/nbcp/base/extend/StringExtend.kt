@@ -863,7 +863,7 @@ fun String.formatWithJson(
 /**
  * 每一行都居中。
  */
-fun String.WrapByRectangle(align: AlignDirectionEnum, stepWidth: Int = 4): String {
+fun String.WrapByRectangle(align: AlignDirectionEnum, paddingWith: Int = 4, stepWidth: Int = 4): String {
     var stepWidth = stepWidth;
     if (stepWidth % 2 != 0) {
         stepWidth += 1;
@@ -871,7 +871,8 @@ fun String.WrapByRectangle(align: AlignDirectionEnum, stepWidth: Int = 4): Strin
 
     var lines = this.split("\n");
     var lineMaxWith =
-        Math.ceil((lines.map { it.EnViewWidth }.maxOrNull() ?: stepWidth) * 1.0 / stepWidth).AsInt() * stepWidth;
+        Math.ceil((lines.map { it.EnViewWidth }.maxOrNull() ?: stepWidth) * 1.0 / stepWidth)
+            .AsInt() * stepWidth + 2 * paddingWith;
     var content = lines.map { "│" + it.PadStepEnViewWidth(align, lineMaxWith) + "│" }.joinToString("\n");
 
     return """

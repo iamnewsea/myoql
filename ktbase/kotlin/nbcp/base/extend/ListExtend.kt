@@ -429,3 +429,10 @@ fun List<Any?>.resetListItemType(type: Class<*>) {
 fun List<out String>.findWithIgnoreCase(item: String): String? {
     return this.firstOrNull { it basicSame item }
 }
+
+
+val <T> List<T>?.HasValue: Boolean
+    @JvmName("hasValue")
+    get() {
+        return this != null && this.size > 0;
+    }

@@ -26,7 +26,11 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
             val env = env!!
             val list = mutableListOf<String>()
             list.add(env.getProperty("spring.application.name").AsString())
-            list.add(env.activeProfiles?.joinToString(",").AsString())
+            (env.activeProfiles?.toList() ?: listOf()).also {
+                if (it.HasValue) {
+                    list.add("profiles:" + env.activeProfiles?.joinToString(",").AsString())
+                }
+            }
 
             var title = list.filter { it.HasValue }
                 .let {
