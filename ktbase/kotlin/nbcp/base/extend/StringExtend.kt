@@ -621,35 +621,12 @@ fun String.ToTab(deepth: Int): String {
     }.joinToString(const.line_break)
 }
 
-/**
- * En宽度，一个中文按两个算。多行，按最宽的算。
- */
-private var ONE_LEN_CHARS =
-    "─━│┃┄┅┆┇┈┉┊┋┌┍┎┏┐┑┒┓└┕┖┗┘┙┚┛├┝┞┟┠┡┢┣┤┥┦┧┨┩┪┫┬┭┮┯┰┱┲┳┴┵┶┷┸┹┺┻┼┽┾┿╀╁╂╃╄╅╆╇╈╉╊╋╌╍╎╏═║╒╓╔╕╖╗╘╙╚╛╜╝╞╟╠╡╢╣╤╥╦╧╨╩╪╫╬╭╮╰╯";
-
-val String.EnViewWidth: Int
-    get() {
-        return this.lineSequence().maxOf { line ->
-            return@maxOf line
-                .toCharArray()
-                .sumOf {
-                    if (ONE_LEN_CHARS.contains(it)) {
-                        return@sumOf 1;
-                    }
-                    var v = it.code;
-                    if (v < 128) {
-                        return@sumOf 1;
-                    }
-                    return@sumOf 2.AsInt()
-                }
-        }
-    }
 
 /**
  * 按En宽度倍数向右填充空格
  */
 fun String.PadStepEnViewWidth(align: AlignDirectionEnum, stepWidth: Int = 4, padChar: Char = ' '): String {
-    val len = this.EnViewWidth;
+    val len = this.RowMaxCnCount + this.length;
     val padString = padChar.toString();
     if (len == 0) {
         return padString.Repeat(stepWidth);
@@ -859,6 +836,22 @@ fun String.formatWithJson(
     })
 }
 
+/**
+ * 获取中文字符个数
+ */
+val String.RowMaxCnCount: Int
+    get() {
+        return this.lineSequence().maxOf { line ->
+            return@maxOf line
+                .toCharArray()
+                .sumOf {
+                    if (it.IsCn()) {
+                        return@sumOf 1;
+                    }
+                    return@sumOf 0.AsInt();
+                }
+        }
+    }
 
 /**
  * 每一行都居中。
@@ -871,7 +864,7 @@ fun String.WrapByRectangle(align: AlignDirectionEnum, paddingWith: Int = 4, step
 
     var lines = this.split("\n");
     var lineMaxWith =
-        Math.ceil((lines.map { it.EnViewWidth }.maxOrNull() ?: stepWidth) * 1.0 / stepWidth)
+        Math.ceil((lines.map { it.RowMaxCnCount + it.length }.maxOrNull() ?: stepWidth) * 1.0 / stepWidth)
             .AsInt() * stepWidth + 2 * paddingWith;
     var content = lines.map { "│" + it.PadStepEnViewWidth(align, lineMaxWith) + "│" }.joinToString("\n");
 
