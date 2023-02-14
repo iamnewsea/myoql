@@ -18,8 +18,6 @@ open class LoginUserModel () : IdName("", "") {
      * 所属组织
      */
     var organization: IdName = IdName()
-    var freshToken: String = ""//角色
-
 
     var depts: List<String> = listOf()
     var groups: List<String> = listOf()
