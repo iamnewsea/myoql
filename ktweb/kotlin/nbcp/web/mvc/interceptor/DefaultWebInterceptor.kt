@@ -14,6 +14,7 @@ import nbcp.web.extend.*
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.context.annotation.Configuration
+import org.springframework.stereotype.Component
 import org.springframework.util.AntPathMatcher
 import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.HandlerInterceptor
@@ -24,7 +25,7 @@ import javax.servlet.http.HttpServletResponse
 /**
  * Created by yuxh on 2019/1/17
  */
-@Configuration
+@Component
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 class DefaultWebInterceptor : HandlerInterceptor {
 

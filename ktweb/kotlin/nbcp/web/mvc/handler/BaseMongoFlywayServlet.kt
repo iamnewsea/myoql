@@ -6,7 +6,7 @@ import nbcp.base.extend.AsIntWithNull
 import nbcp.base.extend.HasValue
 import nbcp.base.utils.SpringUtil
 import nbcp.mvc.annotation.*
-import nbcp.myoql.bean.MongoFlywayBeanProcessor
+import nbcp.myoql.db.flyway.FlywayMongoBeanProcessor
 import nbcp.myoql.db.db
 import nbcp.myoql.db.mongo.delete
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -41,7 +41,7 @@ open class BaseMongoFlywayServlet {
             }
             .exec();
 
-        val flyways = SpringUtil.getBeanWithNull(MongoFlywayBeanProcessor::class.java)
+        val flyways = SpringUtil.getBeanWithNull(FlywayMongoBeanProcessor::class.java)
         if (flyways == null) {
             return JsonResult.error("找不到Flyway相关配置！")
         }

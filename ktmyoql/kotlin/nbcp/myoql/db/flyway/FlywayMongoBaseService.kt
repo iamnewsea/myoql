@@ -1,4 +1,4 @@
-package nbcp.myoql.db
+package nbcp.myoql.db.flyway
 
 import com.mongodb.client.model.IndexOptions
 import nbcp.base.comm.*
@@ -18,7 +18,7 @@ import org.bson.Document
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.ClassPathResource
 
-abstract class FlywayVersionBaseService(val version: Int) {
+abstract class FlywayMongoBaseService(val version: Int) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

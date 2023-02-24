@@ -161,7 +161,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
      * @param eachItems: 每一个聚合的表达式。
      * @see MongoExpression
      */
-    fun group(_id: String, eachItems: Map<String,*>): MongoAggregateClip<M, E> {
+    fun group(_id: String, eachItems: Map<String,out Object>): MongoAggregateClip<M, E> {
         var raw = JsonMap();
         raw.put("_id", _id)
         raw.putAll(eachItems)
