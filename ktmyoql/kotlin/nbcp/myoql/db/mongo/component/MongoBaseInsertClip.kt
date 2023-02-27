@@ -42,7 +42,8 @@ open class MongoBaseInsertClip(tableName: String) : MongoClipBase(tableName) {
         var startAt = LocalDateTime.now()
         var error: Exception? = null;
         try {
-            getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).insert(entities, this.actualTableName)
+            getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource)
+                    .insert(entities, this.actualTableName)
             this.executeTime = LocalDateTime.now() - startAt
 
             usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {

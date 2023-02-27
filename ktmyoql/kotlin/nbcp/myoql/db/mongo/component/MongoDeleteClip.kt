@@ -26,7 +26,7 @@ import java.time.LocalDateTime
  * MongoDelete
  */
 class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
-    MongoClipBase(moerEntity.tableName), IMongoWhere {
+        MongoClipBase(moerEntity.tableName), IMongoWhere {
 
     override val whereData = MongoWhereClip()
 
@@ -62,6 +62,7 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
     fun whereAnd(vararg wheres: (M) -> Criteria): MongoDeleteClip<M> {
         return whereAnd(*wheres.map { it(moerEntity) }.toTypedArray())
     }
+
     /**
      * 对同一个字段多个条件时使用。
      */
@@ -102,10 +103,11 @@ class MongoDeleteClip<M : MongoBaseMetaCollection<out Any>>(var moerEntity: M) :
         try {
             this.script = getDeleteScript(criteria);
             result =
-                getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).remove(
-                    query,
-                    actualTableName
-                );
+                    getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource)
+                            .remove(
+                                    query,
+                                    actualTableName
+                            );
             this.executeTime = LocalDateTime.now() - startAt
             ret = result.deletedCount.toInt()
             this.affectRowCount = ret;

@@ -49,8 +49,8 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         return ret;
     }
 
-    fun whereOr(vararg wheres: Criteria)  {
-        if (wheres.any() == false) return  ;
+    fun whereOr(vararg wheres: Criteria) {
+        if (wheres.any() == false) return;
         var where = Criteria();
         where.orOperator(*wheres)
         this.whereData.putAll(where.criteriaObject);
@@ -59,8 +59,8 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
     /**
      * 对同一个字段多个条件时使用。
      */
-    fun whereAnd(vararg wheres: Criteria)  {
-        if (wheres.any() == false) return  ;
+    fun whereAnd(vararg wheres: Criteria) {
+        if (wheres.any() == false) return;
         var where = Criteria();
         where.andOperator(*wheres)
         this.whereData.putAll(where.criteriaObject);
@@ -154,21 +154,22 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
         try {
             this.script = getUpdateScript(criteria, update)
             result =
-                getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).updateMulti(
-                    query,
-                    update,
-                    actualTableName
-                );
+                    getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource)
+                            .updateMulti(
+                                    query,
+                                    update,
+                                    actualTableName
+                            );
 
             this.executeTime = LocalDateTime.now() - startAt
 
             if (result.modifiedCount > 0) {
                 usingScope(
-                    arrayOf(
-                        MyOqlDbScopeEnum.IGNORE_AFFECT_ROW,
-                        MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME,
-                        MyOqlDbScopeEnum.IGNORE_UPDATE_AT
-                    )
+                        arrayOf(
+                                MyOqlDbScopeEnum.IGNORE_AFFECT_ROW,
+                                MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME,
+                                MyOqlDbScopeEnum.IGNORE_UPDATE_AT
+                        )
                 ) {
                     settingResult.forEach {
                         it.event.update(this, it.result)
@@ -191,8 +192,8 @@ open class MongoBaseUpdateClip(tableName: String) : MongoClipBase(tableName), IM
 
 
     protected fun getUpdateScript(
-        where: Criteria,
-        update: org.springframework.data.mongodb.core.query.Update
+            where: Criteria,
+            update: org.springframework.data.mongodb.core.query.Update
     ): String {
         var msgs = mutableListOf<String>()
         usingScope(JsonStyleScopeEnum.WITH_NULL) {

@@ -30,7 +30,7 @@ import java.time.LocalDateTime
  * MongoAggregate
  */
 class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M) :
-    MongoClipBase(moerEntity.tableName) {
+        MongoClipBase(moerEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass);
     }
@@ -67,9 +67,9 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
      * 递归返回 wbs
      */
     fun addGraphLookup(
-        connectFromField: (M) -> MongoColumnName,
-        connectToField: (M) -> MongoColumnName,
-        alias: String = "wbs"
+            connectFromField: (M) -> MongoColumnName,
+            connectToField: (M) -> MongoColumnName,
+            alias: String = "wbs"
     ): MongoAggregateClip<M, E> {
         var jsonMap = JsonMap();
 
@@ -147,7 +147,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
      *
      * 其中, 列名1,列名2,列名3,必须有一个是 _id
      */
-    fun group(group: (M) -> Map<String,*>): MongoAggregateClip<M, E> {
+    fun group(group: (M) -> Map<String, *>): MongoAggregateClip<M, E> {
         var raw = group.invoke(this.moerEntity)
         if (raw.containsKey("_id") == false) {
             throw RuntimeException("group必须包含_id列")
@@ -161,7 +161,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
      * @param eachItems: 每一个聚合的表达式。
      * @see MongoExpression
      */
-    fun group(_id: String, eachItems: Map<String,out Object>): MongoAggregateClip<M, E> {
+    fun group(_id: String, eachItems: Map<String, *>): MongoAggregateClip<M, E> {
         var raw = JsonMap();
         raw.put("_id", _id)
         raw.putAll(eachItems)
@@ -172,7 +172,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
     }
 
     @JvmOverloads
-    fun group(_id: Map<String,Any?>?, vararg eachItems: Map<String,*>): MongoAggregateClip<M, E> {
+    fun group(_id: Map<String, Any?>?, vararg eachItems: Map<String, *>): MongoAggregateClip<M, E> {
         var raw = JsonMap();
         raw.put("_id", _id)
 
@@ -280,9 +280,10 @@ cursor: {} } """
         try {
             this.script = queryJson;
             result =
-                getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).executeCommand(
-                    queryJson
-                )
+                    getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource)
+                            .executeCommand(
+                                    queryJson
+                            )
             this.executeTime = LocalDateTime.now() - startAt
 
             usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {

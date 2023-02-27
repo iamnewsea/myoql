@@ -58,9 +58,8 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     }
 
 
-
     fun whereOr(vararg wheres: Criteria) {
-        if (wheres.any() == false) return  ;
+        if (wheres.any() == false) return;
         val where = Criteria();
         where.orOperator(*wheres)
         this.whereData.putAll(where.criteriaObject);
@@ -69,8 +68,8 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
     /**
      * 对同一个字段多个条件时使用。
      */
-    fun whereAnd(vararg wheres: Criteria)  {
-        if (wheres.any() == false) return  ;
+    fun whereAnd(vararg wheres: Criteria) {
+        if (wheres.any() == false) return;
         var where = Criteria();
         where.andOperator(*wheres)
         this.whereData.putAll(where.criteriaObject);
@@ -147,11 +146,12 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
 
         if (cursor == null) {
             cursor =
-                getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).find(
-                    query,
-                    Document::class.java,
-                    this.actualTableName
-                )
+                    getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource)
+                            .find(
+                                    query,
+                                    Document::class.java,
+                                    this.actualTableName
+                            )
         }
 
         this.executeTime = LocalDateTime.now() - startAt
@@ -196,10 +196,10 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
 
             kvs.forEach { kv ->
                 FromRedisCache(
-                    table = this.actualTableName,
-                    groupKey = kv.keys.joinToString(","),
-                    groupValue = kv.values.joinToString(","),
-                    sql = "def"
+                        table = this.actualTableName,
+                        groupKey = kv.keys.joinToString(","),
+                        groupValue = kv.values.joinToString(","),
+                        sql = "def"
                 ).onlySetToCache(cursor)
             }
 
@@ -270,12 +270,12 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
      */
     private fun getFromDefaultCache(kv: StringMap): List<Document>? {
         return FromRedisCache(
-            table = this.actualTableName,
-            groupKey = kv.keys.joinToString(","),
-            groupValue = kv.values.joinToString(","),
-            sql = "def"
+                table = this.actualTableName,
+                groupKey = kv.keys.joinToString(","),
+                groupValue = kv.values.joinToString(","),
+                sql = "def"
         )
-            .onlyGetFromCache({ it.FromListJson(Document::class.java) })
+                .onlyGetFromCache({ it.FromListJson(Document::class.java) })
     }
 
     private fun getQueryScript(criteria: Criteria): String {
@@ -285,10 +285,10 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
             msgs.add("[where] " + criteria.criteriaObject.ToJson())
             if (selectColumns.any() || selectProjections.any()) {
                 msgs.add(
-                    "[select] " + arrayOf(
-                        selectColumns.joinToString(","),
-                        selectProjections.ToJson()
-                    ).joinToString(",")
+                        "[select] " + arrayOf(
+                                selectColumns.joinToString(","),
+                                selectProjections.ToJson()
+                        ).joinToString(",")
                 )
             }
 
@@ -324,10 +324,11 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         try {
             this.script = getQueryScript(criteria)
             ret =
-                getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).count(
-                    query,
-                    actualTableName
-                ).toInt()
+                    getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource)
+                            .count(
+                                    query,
+                                    actualTableName
+                            ).toInt()
             this.executeTime = LocalDateTime.now() - startAt
 
             usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {
@@ -364,10 +365,11 @@ open class MongoBaseQueryClip(tableName: String) : MongoClipBase(tableName), IMo
         try {
             this.script = getQueryScript(criteria)
             ret =
-                getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).exists(
-                    query,
-                    actualTableName
-                );
+                    getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource)
+                            .exists(
+                                    query,
+                                    actualTableName
+                            );
             this.executeTime = LocalDateTime.now() - startAt;
 
             usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {

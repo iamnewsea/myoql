@@ -28,7 +28,7 @@ import java.time.LocalDateTime
  * MongoUpdate
  */
 class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntity: M) :
-    MongoBaseUpdateClip(moerEntity.tableName) {
+        MongoBaseUpdateClip(moerEntity.tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -225,13 +225,14 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
         try {
             this.script = getUpdateScript(criteria, update)
             resultDocument =
-                getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource).findAndModify(
-                    query,
-                    update,
-                    updateOption,
-                    Document::class.java,
-                    actualTableName
-                );
+                    getMongoTemplate(settingResult.lastOrNull { it.result.dataSource.HasValue }?.result?.dataSource)
+                            .findAndModify(
+                                    query,
+                                    update,
+                                    updateOption,
+                                    Document::class.java,
+                                    actualTableName
+                            );
 
             this.executeTime = LocalDateTime.now() - startAt
 
@@ -241,11 +242,11 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
 
 
                 usingScope(
-                    arrayOf(
-                        MyOqlDbScopeEnum.IGNORE_AFFECT_ROW,
-                        MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME,
-                        MyOqlDbScopeEnum.IGNORE_UPDATE_AT
-                    )
+                        arrayOf(
+                                MyOqlDbScopeEnum.IGNORE_AFFECT_ROW,
+                                MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME,
+                                MyOqlDbScopeEnum.IGNORE_UPDATE_AT
+                        )
                 ) {
                     settingResult.forEach {
                         it.event.update(this, it.result)
