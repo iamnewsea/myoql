@@ -149,10 +149,13 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
      */
     fun group(group: (M) -> Map<String, *>): MongoAggregateClip<M, E> {
         var raw = group.invoke(this.moerEntity)
-        if (raw.containsKey("_id") == false) {
-            throw RuntimeException("group必须包含_id列")
-        }
         pipeLines.add("\$group" to raw)
+        return this;
+    }
+
+
+    fun group(group: Map<String, *>): MongoAggregateClip<M, E> {
+        pipeLines.add("\$group" to group)
         return this;
     }
 
@@ -161,7 +164,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
      * @param eachItems: 每一个聚合的表达式。
      * @see MongoExpression
      */
-    fun group(_id: String, eachItems: Map<String, *>): MongoAggregateClip<M, E> {
+    fun groupWithId(_id: String, eachItems: Map<String, *>): MongoAggregateClip<M, E> {
         var raw = JsonMap();
         raw.put("_id", _id)
         raw.putAll(eachItems)
@@ -177,18 +180,8 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
      * @param eachItems: 每一个聚合的表达式。
      * @see MongoExpression
      */
-    fun group(_id: JsonMap, eachItems: Map<String, *>): MongoAggregateClip<M, E> {
-        var raw = JsonMap();
-        raw.put("_id", _id)
-        raw.putAll(eachItems)
-
-
-        pipeLines.add("\$group" to raw)
-        return this;
-    }
-
     @JvmOverloads
-    fun group(_id: Map<String, Any?>?, vararg eachItems: Map<String, *>): MongoAggregateClip<M, E> {
+    fun groupWithId(_id: Map<String, *>, vararg eachItems: Map<String, *>): MongoAggregateClip<M, E> {
         var raw = JsonMap();
         raw.put("_id", _id)
 
