@@ -171,6 +171,22 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
         return this;
     }
 
+
+    /**
+     * @param _id: 如果要设置列，前面加$.  如： { $group: {"_id": {  code: "$productLine.code" } } }
+     * @param eachItems: 每一个聚合的表达式。
+     * @see MongoExpression
+     */
+    fun group(_id: JsonMap, eachItems: Map<String, *>): MongoAggregateClip<M, E> {
+        var raw = JsonMap();
+        raw.put("_id", _id)
+        raw.putAll(eachItems)
+
+
+        pipeLines.add("\$group" to raw)
+        return this;
+    }
+
     @JvmOverloads
     fun group(_id: Map<String, Any?>?, vararg eachItems: Map<String, *>): MongoAggregateClip<M, E> {
         var raw = JsonMap();
