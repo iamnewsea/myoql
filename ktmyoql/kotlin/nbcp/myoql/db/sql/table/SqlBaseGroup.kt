@@ -1,5 +1,14 @@
 package nbcp.myoql.db.sql.table
 
+import java.io.*
+import nbcp.base.db.*
+import nbcp.base.comm.*
+import nbcp.base.extend.*
+import nbcp.base.enums.*
+import nbcp.base.utils.*
+import nbcp.myoql.db.*
+import nbcp.myoql.db.sql.*
+
 import nbcp.myoql.db.comm.*
 import nbcp.myoql.db.enums.*
 import nbcp.myoql.db.sql.base.*
@@ -13,18 +22,19 @@ import org.springframework.stereotype.*
 @Component("sql.SqlBase")
 @MetaDataGroup(DatabaseEnum.SQL, "SqlBase")
 class SqlBaseGroup : IDataGroup{
-    override fun getEntities():Set<BaseMetaData<out Any>> = setOf(s_annex,s_city,s_dustbin,s_log)
+    override fun getEntities():Set<BaseMetaData<out Any>> = setOf(s_annex,s_city,s_dustbin,s_flyway,s_log)
 
     val s_annex get() = s_annex_table();
     val s_city get() = s_city_table();
     val s_dustbin get() = s_dustbin_table();
+    val s_flyway get() = s_flyway_table();
     val s_log get() = s_log_table();
 
 
     /**
      * 附件
      */
-    @nbcp.base.db.annotation.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
+    @nbcp.base.db.annotation.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
     @nbcp.myoql.db.sql.annotation.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
     @nbcp.base.db.annotation.DbEntityGroup(value = """SqlBase""")
     @nbcp.base.db.annotation.Cn(value = """附件""")
@@ -70,7 +80,7 @@ class SqlBaseGroup : IDataGroup{
      * 城市
      */
     @nbcp.base.db.annotation.DbEntityGroup(value = """SqlBase""")
-    @nbcp.base.db.annotation.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""code"""))
+    @nbcp.base.db.annotation.DbEntityIndex(value = arrayOf("""code"""), unique = true, cacheable = false)
     @nbcp.base.db.annotation.Cn(value = """城市""")
     class s_city_table(collectionName: String = "", datasource:String="")
         :SqlBaseMetaTable<nbcp.myoql.db.sql.entity.s_city>(nbcp.myoql.db.sql.entity.s_city::class.java, "s_city") {
@@ -108,7 +118,7 @@ class SqlBaseGroup : IDataGroup{
     /**
      * 数据垃圾箱
      */
-    @nbcp.base.db.annotation.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
+    @nbcp.base.db.annotation.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
     @nbcp.myoql.db.sql.annotation.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
     @nbcp.base.db.annotation.DbEntityGroup(value = """SqlBase""")
     @nbcp.base.db.annotation.Cn(value = """数据垃圾箱""")
@@ -144,9 +154,48 @@ class SqlBaseGroup : IDataGroup{
 
     }
     /**
+     * 数据版本初始化
+     */
+    @nbcp.base.db.annotation.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
+    @nbcp.myoql.db.sql.annotation.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
+    @nbcp.base.db.annotation.DbEntityGroup(value = """SqlBase""")
+    @nbcp.base.db.annotation.Cn(value = """数据版本初始化""")
+    class s_flyway_table(collectionName: String = "", datasource:String="")
+        :SqlBaseMetaTable<nbcp.myoql.db.sql.entity.s_flyway>(nbcp.myoql.db.sql.entity.s_flyway::class.java, "s_flyway") {
+        val version = SqlColumnName(DbType.INT, this.getAliaTableName(),"version")
+        val remark = SqlColumnName(DbType.STRING, this.getAliaTableName(),"remark")
+        val execClass = SqlColumnName(DbType.STRING, this.getAliaTableName(),"execClass")
+        val startAt = SqlColumnName(DbType.DATE_TIME, this.getAliaTableName(),"startAt")
+        val finishAt = SqlColumnName(DbType.DATE_TIME, this.getAliaTableName(),"finishAt")
+        val isSuccess = SqlColumnName(DbType.BOOLEAN, this.getAliaTableName(),"isSuccess")
+        val id = SqlColumnName(DbType.STRING, this.getAliaTableName(),"id")
+        val createAt = SqlColumnName(DbType.DATE_TIME, this.getAliaTableName(),"createAt")
+        val updateAt = SqlColumnName(DbType.DATE_TIME, this.getAliaTableName(),"updateAt")
+
+        override fun getSpreadColumns(): Array<SqlSpreadColumnData> { return arrayOf<SqlSpreadColumnData>()}
+
+        override fun getAutoIncrementKey(): String { return ""}
+        override fun getUks(): Array<Array<String>>{ return arrayOf( arrayOf("id")  )}
+        override fun getFks(): Array<FkDefine>{ return arrayOf()}
+
+
+        fun queryById (id: String): SqlQueryClip<s_flyway_table, nbcp.myoql.db.sql.entity.s_flyway> {
+            return this.query().where{ it.id match id }
+        }
+
+        fun deleteById (id: String): SqlDeleteClip<s_flyway_table> {
+            return this.delete().where{ it.id match id }
+        }
+
+        fun updateById (id: String): SqlUpdateClip<s_flyway_table> {
+            return this.update().where{ it.id match id }
+        }
+
+    }
+    /**
      * 日志
      */
-    @nbcp.base.db.annotation.DbEntityIndex(unique = true, cacheable = false, value = arrayOf("""id"""))
+    @nbcp.base.db.annotation.DbEntityIndex(value = arrayOf("""id"""), unique = true, cacheable = false)
     @nbcp.myoql.db.sql.annotation.ConverterValueToDb(value = nbcp.myoql.db.sql.define.AutoIdConverter::class, field = """id""")
     @nbcp.base.db.annotation.DbEntityGroup(value = """SqlBase""")
     @nbcp.base.db.annotation.Cn(value = """日志""")

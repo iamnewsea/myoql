@@ -5,8 +5,9 @@ import nbcp.base.extend.AsBoolean
 import nbcp.base.extend.Important
 import nbcp.base.utils.SpringUtil
 import nbcp.myoql.db.db
-import nbcp.myoql.db.mongo.entity.SysFlywayVersion
-import nbcp.myoql.db.mongo.query
+import nbcp.myoql.db.sql.component.doInsert
+import nbcp.myoql.db.sql.component.query
+import nbcp.myoql.db.sql.entity.s_flyway
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.jdbc.core.JdbcTemplate
@@ -55,8 +56,7 @@ class FlywayJdbcBeanProcessor : FlywayBaseComponent(){
                 }
         }
 
-
-        var dbMaxVersion = db.morBase.sysFlywayVersion.query()
+        var dbMaxVersion = db.sqlBase.s_flyway.query()
             .where { it.isSuccess match true }
             .orderByDesc { it.version }
             .toEntity()
@@ -87,7 +87,7 @@ class FlywayJdbcBeanProcessor : FlywayBaseComponent(){
 
     private fun playFlyway(it: FlywayJdbcBaseService) {
         var err_msg = "";
-        val ent = SysFlywayVersion();
+        val ent = s_flyway();
         ent.version = it.version
         ent.execClass = it::class.java.name
         ent.startAt = LocalDateTime.now()
@@ -96,10 +96,10 @@ class FlywayJdbcBeanProcessor : FlywayBaseComponent(){
             it.exec();
             ent.isSuccess = true;
             ent.finishAt = LocalDateTime.now();
-            db.morBase.sysFlywayVersion.doInsert(ent);
+            db.sqlBase.s_flyway.doInsert(ent);
         } catch (e: Exception) {
             ent.isSuccess = false;
-            db.morBase.sysFlywayVersion.doInsert(ent);
+            db.sqlBase.s_flyway.doInsert(ent);
             err_msg = e.message ?: "异常!";
             throw e;
         } finally {

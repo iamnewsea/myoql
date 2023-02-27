@@ -81,7 +81,7 @@ class DefaultWebInterceptor : HandlerInterceptor {
 //            return true;
 //        }
 
-        if (listOf("springfox.documentation.**", "org.springdoc.**").any { matcher.match(it, beanType.name) }) {
+        if (listOf("springfox.documentation.**", "org.springdoc.webmvc.**").any { matcher.match(it, beanType.name) }) {
             return true;
         }
 

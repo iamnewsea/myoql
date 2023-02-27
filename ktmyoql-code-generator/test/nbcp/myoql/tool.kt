@@ -10,7 +10,7 @@ class tool : TestBase() {
 
     @Test
     fun gen_dbr() {
-        var path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0];
+        var path = System.getProperty("user.dir");
 
         DbrGenerator4Kotlin()
             .work(
@@ -22,7 +22,7 @@ class tool : TestBase() {
 
     @Test
     fun gen_mor() {
-        val path = Thread.currentThread().contextClassLoader.getResource("").path.split("/target/")[0]
+        val path = System.getProperty("user.dir")
 
         MorGenerator4Kotlin()
             .work(

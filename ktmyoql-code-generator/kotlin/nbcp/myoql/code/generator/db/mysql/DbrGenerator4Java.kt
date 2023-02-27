@@ -538,7 +538,7 @@ ${idMethods.joinToString("\n")}
                         ret.columns.add(db_column_name);
 
                         var item =
-                            """public SqlColumnName ${parentEntityPrefix + field.name} = new SqlColumnName(DbType.Json, this.getAliaTableName(),"${db_column_name}");""".ToTab(
+                            """public SqlColumnName ${parentEntityPrefix + field.name} = new SqlColumnName(DbType.JSON, this.getAliaTableName(),"${db_column_name}");""".ToTab(
                                 1
                             )
                         ret.props.add(item);

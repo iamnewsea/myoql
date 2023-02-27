@@ -26,60 +26,55 @@ abstract class FlywayMongoBaseService(val version: Int) {
     abstract fun exec();
 
     /**
-     * @param itemFunc: 参数：实体名，文件名全路径，所有行数据。返回false停止。
+     * @param tableCallback: 参数：实体名，文件名全路径，所有行数据。返回false停止。
      */
     fun loadResource(
-        resourcePath: String,
-        fileName: String,
-        fileExt: String,
-        tableCallback: (String, List<String>) -> Boolean
+            resourcePath: String,
+            fileName: String,
+            fileExt: String,
+            tableCallback: (String, List<String>) -> Boolean
     ): Boolean {
-        return ResourceUtil.findResources(resourcePath).map {
-            return@map it.substring(resourcePath.length + 1)
-                .split('/')
-                .filter { it.HasValue }
-                .lastOrNull() ?: ""
-        }
-            .filter { it.endsWith(fileExt, true) }
-            .filter {
-                if (fileName.isEmpty()) {
-                    return@filter true;
+        return ResourceUtil.findResources(resourcePath)
+                .map {
+                    return@map it.substring(resourcePath.length + 1)
+                            .split('/')
+                            .filter { it.HasValue }
+                            .lastOrNull() ?: ""
                 }
+                .filter { it.endsWith(fileExt, true) }
+                .filter {
+                    if (fileName.isEmpty()) {
+                        return@filter true;
+                    }
 
-                return@filter it == fileName + fileExt
-            }
-            .all {
-                var tableName = it.split(".").first()
-                var content = ClassPathResource(resourcePath + "/" + it).inputStream.readContentString()
-                return@all tableCallback.invoke(tableName, content.split("\n").filter { it.HasValue })
-            }
+                    return@filter it == fileName + fileExt
+                }
+                .all {
+                    var tableName = it.split(".").first()
+                    var content = ClassPathResource(resourcePath + "/" + it).inputStream.readContentString()
+                    return@all tableCallback.invoke(tableName, content.split("\n").filter { it.HasValue })
+                }
     }
 
     /**
      * 推送所有数据
      */
     fun pushAllResourcesData(autoSave: Boolean) {
-        return addResourceData("", autoSave)
+        return pushResourceData("", autoSave)
     }
 
-    fun pushResourcesData(tableName: String, autoSave: Boolean) {
-        if (tableName.isEmpty()) {
-            throw RuntimeException("tableName不能为空")
-        }
-        return addResourceData(tableName, autoSave)
-    }
 
     /**
-     * 初始化数据,目录：flyway-v${version}, 文件后缀 .dat
+     * 初始化数据,目录：flyway/mongo/v${version}, 文件后缀 .dat
      */
-    private fun addResourceData(tableName: String = "", autoSave: Boolean = true) {
-        loadResource("flyway-v${version}", tableName, ".dat") { tableName, lines ->
+    fun pushResourceData(tableName: String = "", autoSave: Boolean = true) {
+        loadResource("flyway/mongo/v${version}", tableName, ".dat") { tableName, lines ->
             var count = 0;
             if (autoSave) {
                 lines.map { it.FromJson<JsonMap>()!! }
-                    .forEach {
-                        count += db.mongo.dynamicEntity(tableName).updateWithEntity(it).doubleExecSave();
-                    }
+                        .forEach {
+                            count += db.mongo.dynamicEntity(tableName).updateWithEntity(it).doubleExecSave();
+                        }
 
                 logger.Important("同步:${tableName},${count}条数据")
             } else {
@@ -95,15 +90,15 @@ abstract class FlywayMongoBaseService(val version: Int) {
 
     private fun DbEntityIndex.indexName(): String {
         return "i." + this.value
-            .joinToString("_")
+                .joinToString("_")
     }
 
     private fun DbEntityIndex.toDocument(): Document {
         return Document(JsonMap(this.value
-            .map {
-                return@map db.mongo.getMongoColumnName(it);
-            }
-            .map { it to 1 }
+                .map {
+                    return@map db.mongo.getMongoColumnName(it);
+                }
+                .map { it to 1 }
         ))
     }
 
@@ -127,12 +122,12 @@ abstract class FlywayMongoBaseService(val version: Int) {
 //            .map { it.indexName() }
 
         collection.listIndexes()
-            .toList()
-            .map { it.get("name").AsString() }
-            .filter { it.startsWith("i.") } // i. 表示是组件自动创建的索引
-            .forEach {
-                collection.dropIndex(it);
-            }
+                .toList()
+                .map { it.get("name").AsString() }
+                .filter { it.startsWith("i.") } // i. 表示是组件自动创建的索引
+                .forEach {
+                    collection.dropIndex(it);
+                }
     }
 
     fun <M : MongoBaseMetaCollection<Any>> M.createIndex(dbEntityIndex: DbEntityIndex) {
@@ -152,19 +147,19 @@ abstract class FlywayMongoBaseService(val version: Int) {
         var indexName = dbEntityIndex.indexName();
 
         if (collection.listIndexes()
-                .toList()
-                .map { it.get("name").AsString() }
-                .contains(indexName) == false
+                        .toList()
+                        .map { it.get("name").AsString() }
+                        .contains(indexName) == false
         ) {
             try {
                 collection.createIndex(
-                    dbEntityIndex.toDocument(),
-                    IndexOptions().name(indexName).unique(dbEntityIndex.unique)
+                        dbEntityIndex.toDocument(),
+                        IndexOptions().name(indexName).unique(dbEntityIndex.unique)
                 )
             } catch (ex: Throwable) {
                 throw RuntimeException(
-                    "创建索引失败: ${this.tableName} ${dbEntityIndex.ToJson()},${ex.message}",
-                    ex
+                        "创建索引失败: ${this.tableName} ${dbEntityIndex.ToJson()},${ex.message}",
+                        ex
                 )
             }
         }
@@ -175,27 +170,27 @@ abstract class FlywayMongoBaseService(val version: Int) {
         db.mongo.groups.forEach {
             it.getEntities().forEach { ent ->
                 (ent as MongoBaseMetaCollection<Any>)
-                    .apply {
-                        if (callback != null && callback(this) == false) {
-                            return@forEach
+                        .apply {
+                            if (callback != null && callback(this) == false) {
+                                return@forEach
+                            }
+                            var indexes = this.entityClass.getAnnotationsByType(DbEntityIndex::class.java);
+
+                            if (indexes.any() == false) {
+                                return@apply
+                            }
+
+                            this.createTable()
+
+                            if (rebuild) {
+                                this.dropDefineIndexes();
+                            }
+
+
+                            indexes.forEach { index ->
+                                createIndex(index);
+                            }
                         }
-                        var indexes = this.entityClass.getAnnotationsByType(DbEntityIndex::class.java);
-
-                        if (indexes.any() == false) {
-                            return@apply
-                        }
-
-                        this.createTable()
-
-                        if (rebuild) {
-                            this.dropDefineIndexes();
-                        }
-
-
-                        indexes.forEach { index ->
-                            createIndex(index);
-                        }
-                    }
             }
         }
     }
