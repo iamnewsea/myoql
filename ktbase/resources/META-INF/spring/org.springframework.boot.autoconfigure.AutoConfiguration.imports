@@ -3,4 +3,4 @@ nbcp.base.KotlinExtendInitConfig
 nbcp.base.aop.LogLevelAopService
 nbcp.base.aop.GroupLogAopService
 nbcp.base.component.DbJsonMapper
-nbcp.base.comm.config
+nbcp.base.comm.SystemConfig

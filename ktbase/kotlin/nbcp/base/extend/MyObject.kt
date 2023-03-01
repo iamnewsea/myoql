@@ -3,9 +3,11 @@
 
 package nbcp.base.extend
 
+import com.google.common.cache.Cache
 import nbcp.base.comm.JsonMap
 import nbcp.base.utils.MyUtil
 import org.slf4j.LoggerFactory
+import org.springframework.util.AntPathMatcher
 import java.io.*
 import java.time.Duration
 import java.time.temporal.Temporal
@@ -14,7 +16,7 @@ import java.time.temporal.Temporal
  * Created by udi on 17-4-3.
  */
 
-data class CheckMustExpresstion<T>(var condition: Boolean, var data: T?) {
+data class CheckMustExpression<T>(var condition: Boolean, var data: T?) {
     fun elseThrow(msg: ((T?) -> String)): T {
         if (condition) return data!!
         else throw RuntimeException(msg(data));
@@ -27,9 +29,12 @@ data class CheckMustExpresstion<T>(var condition: Boolean, var data: T?) {
     }
 }
 
+
+
+
 @JvmOverloads
-fun <T> T?.must(trueCondition: ((T?) -> Boolean)? = null): CheckMustExpresstion<T> {
-    return CheckMustExpresstion(if (trueCondition == null) this != null else trueCondition(this), this)
+fun <T> T?.must(trueCondition: ((T?) -> Boolean)? = null): CheckMustExpression<T> {
+    return CheckMustExpression(if (trueCondition == null) this != null else trueCondition(this), this)
 }
 
 fun <T> Boolean.ifTrue(trueAction: (() -> T)): T? {
@@ -74,7 +79,7 @@ fun <T> T.IsIn(equalFunc: ((T, T) -> Boolean)?, vararg values: T): Boolean {
 fun <T : Comparable<in T>> T.IfRangeTo(start: T?, end: T?): Boolean {
     if (start == null || end == null) return false;
     if (this < start) return false;
-    if (this >  end) return false;
+    if (this > end) return false;
     return true;
 }
 
@@ -122,7 +127,7 @@ fun Temporal.RangeToSeconds(nextTime: Temporal): Int {
  */
 fun Temporal.RangeToDays(nextTime: Temporal): Int {
     return (Duration.between(this.AsLocalDateTime(), nextTime.AsLocalDateTime())
-        .getSeconds() / MyUtil.OneDaySeconds).AsInt();
+            .getSeconds() / MyUtil.OneDaySeconds).AsInt();
 }
 
 
@@ -267,7 +272,7 @@ infix fun Any?.basicSame(other: Any?): Boolean {
 }
 
 fun Any?.simpleFieldToJson(
-    initLevel: Int = 1, maxLength: Int = 256
+        initLevel: Int = 1, maxLength: Int = 256
 ): Any? {
     return this.simpleFieldToValue(initLevel, initLevel, maxLength);
 }
@@ -289,10 +294,10 @@ private fun Any?.simpleFieldToValue(initLevel: Int, level: Int, maxLength: Int):
         return this;
     } else if (type.isArray) {
         return (this as Array<Any?>).map { it.simpleFieldToValue(initLevel, level, maxLength) }
-            .filter { it != null && it != "~" }
+                .filter { it != null && it != "~" }
     } else if (type.IsCollectionType) {
         return (this as Collection<Any?>).map { it.simpleFieldToValue(initLevel, level, maxLength) }
-            .filter { it != null && it != "~" }
+                .filter { it != null && it != "~" }
     }
 
 
@@ -301,8 +306,8 @@ private fun Any?.simpleFieldToValue(initLevel: Int, level: Int, maxLength: Int):
     }
     if (type.IsMapType) {
         return (this as Map<String, Any?>)
-            .mapValues { it.value.simpleFieldToValue(initLevel, level - 1, maxLength) }
-            .filter { it.value != null }
+                .mapValues { it.value.simpleFieldToValue(initLevel, level - 1, maxLength) }
+                .filter { it.value != null }
     }
 
 

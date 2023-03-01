@@ -1,6 +1,7 @@
 package nbcp.base.comm
 
 
+import com.google.common.cache.CacheBuilder
 import nbcp.base.enums.AlignDirectionEnum
 import nbcp.base.extend.*
 import nbcp.base.utils.MyUtil
@@ -12,11 +13,15 @@ import org.springframework.context.ApplicationContextAware
 import org.springframework.context.ApplicationListener
 import org.springframework.core.env.ConfigurableEnvironment
 import java.io.File
+import java.time.Duration
+
+
+val config = SystemConfig
 
 /**
  * 配置项, 不能用Component 或Bean，因为它的时机，比Spring容器还要早。
  */
-class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, ApplicationContextAware {
+class SystemConfig : ApplicationListener<ApplicationEnvironmentPreparedEvent>, ApplicationContextAware {
     override fun onApplicationEvent(event: ApplicationEnvironmentPreparedEvent) {
         env = event.environment
 
@@ -33,16 +38,16 @@ class config : ApplicationListener<ApplicationEnvironmentPreparedEvent>, Applica
             }
 
             var title = list.filter { it.HasValue }
-                .let {
-                    if (it.any()) {
-                        return@let """${list.joinToString("  ")}
+                    .let {
+                        if (it.any()) {
+                            return@let """${list.joinToString("  ")}
 """;
+                        }
+                        return@let "";
                     }
-                    return@let "";
-                }
 
             logger.Important(
-                """
+                    """
     ╔╦╗┬ ┬┌─┐┌─┐ ┬    ╔╗ ┌─┐┌─┐┌─┐    
     ║║║└┬┘│ ││─┼┐│    ╠╩╗├─┤└─┐├┤     
     ╩ ╩ ┴ └─┘└─┘└┴─┘  ╚═╝┴ ┴└─┘└─┘    
@@ -82,6 +87,25 @@ ${title}
         fun onInit(callback: (ConfigurableEnvironment) -> Unit) {
             init_callbacks.add(callback);
         }
+
+        var cache1MinuteContainer = CacheBuilder.newBuilder()
+                .expireAfterWrite(Duration.ofMinutes(1))
+                .build<String, Any>()
+
+        var cache1HourContainer = CacheBuilder.newBuilder()
+                .expireAfterWrite(Duration.ofHours(1))
+                .build<String, Any>()
+
+        var cache4HourContainer = CacheBuilder.newBuilder()
+                .expireAfterWrite(Duration.ofHours(4))
+                .build<String, Any>()
+
+        var cache1DayContainer = CacheBuilder.newBuilder()
+                .expireAfterWrite(Duration.ofDays(1))
+                .build<String, Any>()
+
+
+        var cacheContainers = CacheContainers(cache1MinuteContainer, cache1HourContainer, cache4HourContainer, cache1DayContainer)
 
         //        /**
 //         * 是否在Web环境
@@ -334,7 +358,7 @@ ${title}
         @JvmStatic
         val applicationName: String
             get() = getConfig("spring.application.name").must { it.HasValue }
-                .elseThrow { "必须指定 spring.application.name" }
+                    .elseThrow { "必须指定 spring.application.name" }
     }
 
     override fun setApplicationContext(applicationContext: ApplicationContext) {

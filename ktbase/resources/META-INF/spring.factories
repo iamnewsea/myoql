@@ -3,4 +3,4 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=nbcp.base.utils.S
 ,nbcp.base.aop.LogLevelAopService\
 ,nbcp.base.aop.GroupLogAopService\
 ,nbcp.base.component.DbJsonMapper
-org.springframework.context.ApplicationListener=nbcp.base.comm.config
+org.springframework.context.ApplicationListener=nbcp.base.comm.SystemConfig
