@@ -265,7 +265,7 @@ public class SplitLibMojo
         getLog().info(String.join(" ", cmd));
 
         var bash_cmd = new ArrayList<String>();
-        if (System.getProperty("os.name").toLowerCase().contains("linux")) {
+        if (!System.getProperty("os.name").toLowerCase().contains("windows")) {
             bash_cmd.add("/bin/bash");
             bash_cmd.add("-c");
             bash_cmd.add(String.join(" ", cmd));
