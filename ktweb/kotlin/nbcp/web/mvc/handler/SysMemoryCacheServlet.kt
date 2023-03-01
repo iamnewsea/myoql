@@ -3,6 +3,7 @@ package nbcp.web.mvc.handler
 import nbcp.base.annotation.Require
 import nbcp.base.comm.ListResult
 import nbcp.base.comm.config
+import nbcp.base.comm.myMemoryCaches
 import nbcp.mvc.annotation.*
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.RequestMapping
@@ -23,7 +24,7 @@ open class SysMemoryCacheServlet {
     @RequestMapping("/sys/memory-cache/broke", method = arrayOf(RequestMethod.GET, RequestMethod.POST))
     fun doGet(@Require key: String): ListResult<String> {
 
-        var list = config.cacheContainers.brokeWithMatch(key);
+        var list = myMemoryCaches.brokeWithMatch(key);
         return ListResult.of(list)
     }
 }

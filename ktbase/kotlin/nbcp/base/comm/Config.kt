@@ -88,25 +88,6 @@ ${title}
             init_callbacks.add(callback);
         }
 
-        var cache1MinuteContainer = CacheBuilder.newBuilder()
-                .expireAfterWrite(Duration.ofMinutes(1))
-                .build<String, Any>()
-
-        var cache1HourContainer = CacheBuilder.newBuilder()
-                .expireAfterWrite(Duration.ofHours(1))
-                .build<String, Any>()
-
-        var cache4HourContainer = CacheBuilder.newBuilder()
-                .expireAfterWrite(Duration.ofHours(4))
-                .build<String, Any>()
-
-        var cache1DayContainer = CacheBuilder.newBuilder()
-                .expireAfterWrite(Duration.ofDays(1))
-                .build<String, Any>()
-
-
-        var cacheContainers = CacheContainers(cache1MinuteContainer, cache1HourContainer, cache4HourContainer, cache1DayContainer)
-
         //        /**
 //         * 是否在Web环境
 //         */
