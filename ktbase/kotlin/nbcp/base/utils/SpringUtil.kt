@@ -1,5 +1,6 @@
 package nbcp.base.utils
 
+import nbcp.base.extend.HasValue
 import nbcp.base.extend.Important
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
@@ -88,9 +89,9 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
         @JvmStatic
         @JvmOverloads
         fun registerBeanDefinition(
-            name: String,
-            instance: Any,
-            callback: ((BeanDefinitionBuilder) -> Unit) = {}
+                name: String,
+                instance: Any,
+                callback: ((BeanDefinitionBuilder) -> Unit) = {}
         ) {
             registry.registerBeanDefinition(name, getGenericBeanDefinition(instance, callback));
 
@@ -209,8 +210,8 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
          */
         @JvmStatic
         fun getGenericBeanDefinition(
-            instance: Any,
-            callback: ((BeanDefinitionBuilder) -> Unit) = {}
+                instance: Any,
+                callback: ((BeanDefinitionBuilder) -> Unit) = {}
         ): GenericBeanDefinition {
             var type = instance::class.java
             val builder = BeanDefinitionBuilder.genericBeanDefinition(type);
@@ -253,11 +254,19 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
             startAt = LocalDateTime.now()
 
             this.init_app();
-            logger.Important(                """
+            logger.Important("""
 ~~-~~-~~-~~  SpringUtil初始化! ~~-~~-~~-~~ 
 """
             )
             //发送初始化事件是没用的，因为需要先注册事件，再发出事件。 要保证注册事件在该方法之前
+
+            //调试用。 加载配置中心的值。
+            var value = context.environment.getProperty("app.config.debug.value")
+            if (value.HasValue) {
+                logger.Important("""
+${value}
+""");
+            }
         }
     }
 
