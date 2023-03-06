@@ -261,7 +261,7 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
             //发送初始化事件是没用的，因为需要先注册事件，再发出事件。 要保证注册事件在该方法之前
 
             //调试用。 加载配置中心的值。
-            var value = context.environment.getProperty("app.config.loaded-title")
+            var value = context.environment.getProperty("app.config.started-title")
             if (value.HasValue) {
                 logger.Important("""
 ${value}
