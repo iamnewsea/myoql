@@ -65,12 +65,20 @@ open class MyAllFilter : Filter {
     }
 
     override fun doFilter(oriRequest: ServletRequest?, oriResponse: ServletResponse?, chain: FilterChain) {
+        var httpRequest = oriRequest as HttpServletRequest
+        var httpResponse = oriResponse as HttpServletResponse;
+
+        if (httpRequest.requestURI == "/health") {
+            httpResponse.status = 200;
+            return;
+        }
+
         if (ENABLED == false) {
             chain.doFilter(oriRequest, oriResponse)
             return;
         }
 
-        var httpRequest = oriRequest as HttpServletRequest
+
         if (httpRequest.getAttribute("(MyAllFilterProced)").AsBoolean()) {
             chain.doFilter(oriRequest, oriResponse)
             return
@@ -83,7 +91,7 @@ open class MyAllFilter : Filter {
         }
 
         var request = getRequestWrapper(httpRequest);
-        var response = getResponseWrapper(oriResponse as HttpServletResponse);
+        var response = getResponseWrapper(httpResponse);
 
         request.characterEncoding = "utf-8";
 

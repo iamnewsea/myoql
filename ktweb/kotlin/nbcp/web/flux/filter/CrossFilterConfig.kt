@@ -5,10 +5,7 @@ import nbcp.base.comm.config
 import nbcp.base.comm.const
 import nbcp.base.enums.LogLevelScopeEnum
 import nbcp.base.extend.*
-import nbcp.mvc.flux.HttpContext
-import nbcp.mvc.flux.findParameterValue
-import nbcp.mvc.flux.getCorsResponseMap
-import nbcp.mvc.flux.queryJson
+import nbcp.mvc.flux.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
@@ -43,6 +40,11 @@ class CrossFilterConfig {
         return WebFilter { exchange_ori, chain ->
             var exchange = exchange_ori
 
+            if ("/health" == exchange.request.path.value()) {
+                exchange.response.rawStatusCode = 200;
+                return@WebFilter Mono.empty();
+            }
+
             HttpContext.init(exchange)
 
             if (ignoreFilter(exchange.request)) {
@@ -50,23 +52,23 @@ class CrossFilterConfig {
             }
 
             exchange.request.getCorsResponseMap(ALLOW_ORIGINS.split(","), DENY_HEADERS)
-                .apply {
-                    if (this.any()) {
-                        var originClient = exchange.request.getHeader("origin")
+                    .apply {
+                        if (this.any()) {
+                            var originClient = exchange.request.getHeader("origin")
 
-                        var request2 = exchange.request.mutate().headers {
-                            it.remove("origin")
-                        }.build()
+                            var request2 = exchange.request.mutate().headers {
+                                it.remove("origin")
+                            }.build()
 
-                        if (ignoreLog(exchange.request) == false) {
-                            logger.Important("跨域移除(origin)${originClient}, (url)${exchange.request.uri}")
+                            if (ignoreLog(exchange.request) == false) {
+                                logger.Important("跨域移除(origin)${originClient}, (url)${exchange.request.uri}")
+                            }
+
+                            exchange = exchange.mutate().request(request2).build();
                         }
-
-                        exchange = exchange.mutate().request(request2).build();
+                    }.forEach { key, value ->
+                        exchange.response.headers.set(key, value);
                     }
-                }.forEach { key, value ->
-                    exchange.response.headers.set(key, value);
-                }
 
 
             if (exchange.request.method == HttpMethod.OPTIONS) {
@@ -92,22 +94,22 @@ class CrossFilterConfig {
 
                 for (key in exchange.request.headers.keys.filter {
                     it.IsIn(
-                        "token",
-                        "api-token",
-                        "apiToken",
-                        ignoreCase = true
+                            "token",
+                            "api-token",
+                            "apiToken",
+                            ignoreCase = true
                     )
                 }) {
                     errorInfo.add("\t${key}: ${exchange.request.headers.get(key)?.joinToString(",")}")
                 }
 
                 errorInfo.add(
-                    err::class.java.simpleName + ": " + err.Detail.AsString(err.message.AsString()).AsString("(未知错误)")
-                        .substring(0, 256)
+                        err::class.java.simpleName + ": " + err.Detail.AsString(err.message.AsString()).AsString("(未知错误)")
+                                .substring(0, 256)
                 )
 
                 errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }
-                    .take(24))
+                        .take(24))
 
                 var errorMsg = errorInfo.joinToString(const.line_break)
 
@@ -123,7 +125,7 @@ class CrossFilterConfig {
 
         var logLevelString = httpRequest.queryJson.findParameterKey("logLevel").AsString();
         if (logLevelString.HasValue &&
-            config.adminToken == httpRequest.queryJson.findParameterKey("adminToken")
+                config.adminToken == httpRequest.queryJson.findParameterKey("adminToken")
         ) {
             if (logLevelString.IsNumberic()) {
                 var logLevelInt = logLevelString.AsInt()
