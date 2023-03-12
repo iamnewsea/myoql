@@ -6,11 +6,13 @@ import nbcp.base.extend.HasValue
 import nbcp.base.utils.FileUtil
 import nbcp.base.utils.JarUtil
 import nbcp.base.utils.SpringUtil
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.*
 
 class WebAppInfo {
     companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass);
         fun getAppInfo(): String {
 
 
@@ -65,16 +67,17 @@ h2{margin:20px 0 0}
                 return mapOf()
             }
 
-            var reportFile = File(FileUtil.resolvePath(jarFile.parentFile.FullName, "./.ops.report.txt"))
+            var reportFile = File(FileUtil.resolvePath(jarFile.parentFile.FullName, ".ops.report.txt"))
 
 
             if (!reportFile.exists()) {
+                logger.info("找不到构建信息文件: " + reportFile.FullName)
                 return mapOf()
             }
 
             return reportFile.readText(Charsets.UTF_8).split("\n")
                     .map { it.trim() }
-                    .filter { !it.startsWith("﹍") && !it.startsWith("﹊") && it.contains(":") }
+                    .filter { it.contains(":") }
                     .map {
                         var index = it.indexOf(":")
                         return@map it.substring(0, index) to it.substring(index + 1)
