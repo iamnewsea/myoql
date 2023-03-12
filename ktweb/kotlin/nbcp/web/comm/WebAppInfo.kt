@@ -34,7 +34,7 @@ h2{margin:20px 0 0}
                             .filter { it.value.HasValue }
                             .map { "<div><span>${it.key}</span><span>${it.value}</span></div>" }
                             .joinToString("") +
-                    "<br /> <h2>构建信息</h2>" +
+                    "<br /> <h2>构建信息 (.ops.report.txt)</h2>" +
                     getDeployReport()
                             .filter { it.value.HasValue }
                             .map { "<div><span>${it.key}</span><span>${it.value}</span></div>" }
