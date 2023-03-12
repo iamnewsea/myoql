@@ -3,6 +3,7 @@ package nbcp.web.comm
 import nbcp.base.extend.AsString
 import nbcp.base.extend.FullName
 import nbcp.base.extend.HasValue
+import nbcp.base.extend.Important
 import nbcp.base.utils.FileUtil
 import nbcp.base.utils.JarUtil
 import nbcp.base.utils.SpringUtil
@@ -71,7 +72,7 @@ h2{margin:20px 0 0}
 
 
             if (!reportFile.exists()) {
-                logger.info("找不到构建信息文件: " + reportFile.FullName)
+                logger.Important("找不到构建信息文件: " + reportFile.FullName)
                 return mapOf()
             }
 

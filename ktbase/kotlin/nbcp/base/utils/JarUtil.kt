@@ -48,85 +48,13 @@ object JarUtil {
         return Date(File(fileName).lastModified()).AsLocalDateTime()
     }
 
-
-    /**
-     * 判断是否是 Jar包启动。
-     */
-    @JvmStatic
-    fun isJarStarting(): Boolean {
-        return Thread.currentThread().contextClassLoader.getResource("/") != null;
-    }
-
-    @JvmStatic
-    fun getStartingJarFile(url: URL): File? {
-        val path = UrlUtil.decodeURIComponent(url.path)
-        if (url.protocol == "jar") {
-            //值是： file:/D:/code/sites/server/admin/target/admin-api-1.0.1.jar!/BOOT-INF/classes!/
-            var index = 0;
-            if (path.startsWith("file:/")) {
-                index = "file:/".length;
-            }
-            return File(path.Slice(index - 1, -"!/BOOT-INF/classes!/".length))
-        } else if (url.protocol == "file") {
-            //值是： /D:/code/sites/server/admin/target/classes/
-            //处理文件路径中中文的问题。
-            val targetPath = File(path).parentFile
-            val mvn_file = targetPath?.listFiles { it -> it.name == "maven-archiver" }?.firstOrNull()
-                    ?.listFiles { it -> it.name == "pom.properties" }?.firstOrNull()
-            if (mvn_file == null) {
-                return null;
-//                throw RuntimeException("找不到 maven-archiver , 先打包再运行!")
-            }
-
-            val jarFile_lines = mvn_file.readLines()
-            val version = jarFile_lines.first { it.startsWith("version=") }.split("=").last()
-            val artifactId = jarFile_lines.first { it.startsWith("artifactId=") }.split("=").last()
-
-            return File(targetPath.FullName + "/" + artifactId + "-" + version + ".jar")
-        }
-
-        return null;
-//        throw RuntimeException("不识别的协议类型 ${url.protocol}")
-    }
-
     /**
      * 获取启动Jar所的路径
      * 调试时，会返回 target/classes/nbcp/base/utils
      */
     @JvmStatic
-    fun getStartingJarFile(): File? {
-//        val stackTraceElements = RuntimeException().stackTrace
-//        for (stackTraceElement in stackTraceElements) {
-//            if ("main" == stackTraceElement.methodName) {
-//                return stackTraceElement.className
-//            }
-//        }
-        /**
-        file:/opt/edu_report/admin-api-1.0.1.jar!/BOOT-INF/classes!/
-        /D:/code/edu_report/server/admin/target/classes/
-         */
-        /**
-         * 还有一种办法获取 file
-         * var file = Thread.currentThread().contextClassLoader.getResource("./").path
-         */
-//        var file = clazz.protectionDomain.codeSource.location.path
-        val classLoader = Thread.currentThread().contextClassLoader
-
-        /**
-         * jar -Dloader.path=libs 方式:
-         * 1. 使用 /, 表示启动的Jar包 !/BOOT-INF/classes!/
-         * 2. 使用 ./ 或 空串 表示 libs 目录
-         *
-         * jar 方式：
-         * 1. 使用 /, 表示启动的Jar包 !/BOOT-INF/classes!/
-         * 2. 使用 ./ 或 空串 表示Jar包
-         *
-         * 调试时：
-         * 1. 使用 / 返回 null
-         * 2. 使用 ./ 或 空串 ,返回 /D:/code/sites/server/admin/target/classes/
-         */
-        val url = classLoader.getResource("./") ?: classLoader.getResource("")
-        return getStartingJarFile(url)
+    fun getStartingJarFile(): File {
+        return File(FileUtil.resolvePath(System.getProperty("user.dir"), System.getProperty("java.class.path")))
     }
 
 
