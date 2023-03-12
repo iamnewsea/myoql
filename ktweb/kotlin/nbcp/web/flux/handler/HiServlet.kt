@@ -7,6 +7,7 @@ import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.JarUtil
 import nbcp.base.utils.SpringUtil
 import nbcp.mvc.annotation.OpenAction
+import nbcp.web.comm.WebAppInfo
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
@@ -40,58 +41,13 @@ open class HiServlet {
             }
         }
 
-        getHiContent().apply {
+        WebAppInfo.getAppInfo().apply {
             if (this.HasValue) {
                 return Mono.just(this);
             } else {
                 return Mono.empty()
             }
         }
-    }
-
-
-    private fun getHiContent(): String {
-        val json = mutableMapOf<String, String?>();
-        val env = SpringUtil.context.environment;
-
-        val jarFile = JarUtil.getStartingJarFile();
-        json["应用名称"] = env.getProperty("app.cn_name");
-        json["当前配置"] = env.activeProfiles.joinToString(",")
-        json["集群"] = env.getProperty("app.group");
-
-        json["产品线"] =
-            env.getProperty("app.product-line.name").AsString() + "(" +
-                    env.getProperty("app.product-line.code") + ")";
-
-        if (jarFile != null) {
-            json["启动文件"] = jarFile.name;
-            json["启动文件时间"] = Date(jarFile.lastModified()).AsString();
-        }
-
-//        json["登录用户Id"] = request.UserId;
-//        json["登录用户名称"] = request.UserName;
-        json["JAVA_VERSION"] = System.getProperty("java.version");
-        json["JAVA_OPTS"] = System.getenv("JAVA_OPTS");
-        json["HOST名称"] = System.getenv("HOSTNAME");
-
-        json["镜像版本号"] = env.getProperty("app.docker-image-version");
-        json["Git提交Id"] = env.getProperty("app.git-commit-id");
-        json["Git提交时间"] = env.getProperty("app.git-commit-time");
-
-
-        return """<style>
-body{padding:16px;} 
-div{margin-top:10px;} 
-div>span:first-child{font-size:14px;color:gray} 
-div>span:last-child{font-size:16px;} 
-div>span:first-child::after{content:":";display:inline-block;margin-right:6px;}
-h1{margin:0}
-hr{height: 1px;border: none;border-top: 1px dashed gray;}
-</style>""" +
-                "<h1>" + SpringUtil.context.environment.getProperty("spring.application.name") + "</h1><hr />" +
-                json.filter { it.value.HasValue }
-                    .map { "<div><span>${it.key}</span><span>${it.value}</span></div>" }
-                    .joinToString("");
     }
 }
 
