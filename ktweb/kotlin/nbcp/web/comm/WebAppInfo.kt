@@ -26,7 +26,7 @@ div>span:first-child::after{content:":";display:inline-block;margin-right:6px;}
 h1{margin:0}
 hr{height: 1px;border: none;border-top: 1px dashed gray;}
 h2{margin:20px 0 0}
-.grid{display: grid;grid-template-columns: 1fr 1fr;border: solid 4px #ccd7f2;padding: 10px;grid-column-gap: 20px;grid-row-gap: 4px;}
+.grid{position:relative;display:grid;grid-template-columns:1fr 1fr;border:solid 4px #ccd7f2;padding:10px;grid-column-gap:20px;grid-row-gap:4px;}
 .grid:after{content:"";position:absolute;display:block;width:4px;height:100%;background-color:#ccd7f2;left:50%;margin-left:-4px;}
 </style>"""
 
