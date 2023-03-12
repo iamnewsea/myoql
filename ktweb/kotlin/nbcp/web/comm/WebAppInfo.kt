@@ -32,16 +32,17 @@ h2{margin:20px 0 0}
 
             return style +
                     "<h1>" + SpringUtil.context.environment.getProperty("spring.application.name") +
-                    "</h1>" +
+                    "</h1><div class='grid'>" +
                     getBasicInfo()
                             .filter { it.value.HasValue }
                             .map { "<div><span>${it.key}</span><span>${it.value}</span></div>" }
                             .joinToString("") +
-                    "<br /> <h2>构建信息 (.ops.report.txt)</h2>" +
+                    "</div><br /> <h2>构建信息 (.ops.report.txt)</h2><div class='grid'>" +
                     getDeployReport()
                             .filter { it.value.HasValue }
                             .map { "<div><span>${it.key}</span><span>${it.value}</span></div>" }
-                            .joinToString("")
+                            .joinToString("") +
+                    "</div>"
         }
 
         fun getBasicInfo(): Map<String, String?> {
