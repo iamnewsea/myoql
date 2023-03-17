@@ -9,6 +9,6 @@ class TestKtExt_Mongo : TestBase() {
 
     fun agg() {
         db.morBase.sysCity.aggregate()
-            .group { JsonMap() }
+            .rawGroup { JsonMap() }
     }
 }

@@ -137,7 +137,7 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
     }
 
     /**
-     * @param group: 必须包含 _id
+     * @param group:
      *
      * {
      *  "列名1": { "聚合函数": "列名"} ,
@@ -147,14 +147,14 @@ class MongoAggregateClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity
      *
      * 其中, 列名1,列名2,列名3,必须有一个是 _id
      */
-    fun group(group: (M) -> Map<String, *>): MongoAggregateClip<M, E> {
+    fun rawGroup(group: (M) -> Map<String, *>): MongoAggregateClip<M, E> {
         var raw = group.invoke(this.moerEntity)
         pipeLines.add("\$group" to raw)
         return this;
     }
 
 
-    fun group(group: Map<String, *>): MongoAggregateClip<M, E> {
+    fun rawGroup(group: Map<String, *>): MongoAggregateClip<M, E> {
         pipeLines.add("\$group" to group)
         return this;
     }
