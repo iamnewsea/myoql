@@ -1,6 +1,11 @@
 package nbcp.base.utils;
 
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemWriter;
+
 import javax.crypto.Cipher;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -18,6 +23,10 @@ public class RSARawUtil {
      * 密钥长度必须是64的倍数，在512到65536位之间
      */
     private static final int KEY_SIZE = 1024;
+
+
+    private static final String pemPublicKeyPrefix = "PUBLIC KEY";
+    private static final String pemPrivateKeyPrefix = "PRIVATE KEY";
 
     private RSARawUtil() {
     }
@@ -81,6 +90,21 @@ public class RSARawUtil {
         return java.util.Base64.getEncoder().encodeToString(this.getPublicKeyBytes());
     }
 
+
+    public String getPemStylePrivateKey() throws IOException {
+        StringWriter sw = new StringWriter();
+        PemWriter pw = new PemWriter(sw);
+        pw.writeObject(new PemObject(pemPrivateKeyPrefix, this.getPrivateKeyBytes()));
+        return sw.toString();
+    }
+
+
+    public String getPemStylePublicKey() throws IOException {
+        StringWriter sw = new StringWriter();
+        PemWriter pw = new PemWriter(sw);
+        pw.writeObject(new PemObject(pemPublicKeyPrefix, this.getPublicKeyBytes()));
+        return sw.toString();
+    }
 
     /**
      * 私钥加密
