@@ -1,6 +1,7 @@
 package nbcp.myoql.db.cache
 
 import nbcp.base.comm.JsonMap
+import nbcp.base.comm.StringKeyMap
 import nbcp.base.comm.config
 import nbcp.base.extend.*
 import nbcp.myoql.annotation.*
@@ -28,9 +29,20 @@ import java.time.LocalDateTime
 @Component
 @ConditionalOnClass(RedisTemplate::class)
 open class RedisCacheAopService {
+    class LockJobModel(
+            var name: String = "",
+            var lastRedisTryLockAt: LocalDateTime? = null,
+            var lastRedisLockResult: Boolean = false,
+            var lastRedisLockErrorMsg: String = "",
+            var lastExecuteAt: LocalDateTime? = null,
+            var lastExecuteErrorMsg: String = "",
+            var lastRedisDeleteLockErrorMsg: String = ""
+    )
+
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
 
+        val jobMonitor = StringKeyMap<LockJobModel>()
 
         fun getRequestParamFullUrl(request: Any): String {
             val type = Class.forName("javax.servlet.http.HttpServletRequest")
@@ -65,16 +77,16 @@ open class RedisCacheAopService {
         //如果有 HttpRequest,则添加Url
         var hasHttpRequest = false;
         val variableMap = JsonMap(
-            method.parameters
-                .filter {
-                    if (it.type.AnySuperClass { it.name.startsWith("javax.servlet.") }) {
-                        hasHttpRequest = true;
-                        return@filter false;
-                    }
+                method.parameters
+                        .filter {
+                            if (it.type.AnySuperClass { it.name.startsWith("javax.servlet.") }) {
+                                hasHttpRequest = true;
+                                return@filter false;
+                            }
 
-                    return@filter true;
-                }
-                .mapIndexed { index, it -> it.name to args.get(index) }
+                            return@filter true;
+                        }
+                        .mapIndexed { index, it -> it.name to args.get(index) }
         );
 
         var ext = "";
@@ -98,10 +110,10 @@ open class RedisCacheAopService {
         }
 
         return cache
-            .resolveWithVariable(variableMap, ext)
-            .getJson(signature.returnType, {
-                return@getJson joinPoint.proceed(args)
-            });
+                .resolveWithVariable(variableMap, ext)
+                .getJson(signature.returnType, {
+                    return@getJson joinPoint.proceed(args)
+                });
     }
 
 
@@ -130,15 +142,15 @@ open class RedisCacheAopService {
 
     private fun brokeCache(method: Method, args: Array<Any>, cache: BrokeRedisCache) {
         val variableMap = JsonMap(
-            method.parameters
-                .filter {
-                    if (it.type.AnySuperClass { it.name == "javax.servlet.ServletRequest" }) {
-                        return@filter false;
-                    }
+                method.parameters
+                        .filter {
+                            if (it.type.AnySuperClass { it.name == "javax.servlet.ServletRequest" }) {
+                                return@filter false;
+                            }
 
-                    return@filter true;
-                }
-                .mapIndexed { index, it -> it.name to args.get(index) }
+                            return@filter true;
+                        }
+                        .mapIndexed { index, it -> it.name to args.get(index) }
         );
 
         cache.resolveWithVariable(variableMap).brokeCache();
@@ -149,11 +161,11 @@ open class RedisCacheAopService {
         val signature = joinPoint.signature as MethodSignature;
         var method = signature.method
         val key = listOf(
-            config.applicationName,
-            signature.declaringType.name + "." + method.name
+                config.applicationName,
+                signature.declaringType.name + "." + method.name
         )
-            .filter { it.HasValue }
-            .joinToString(":")
+                .filter { it.HasValue }
+                .joinToString(":")
 
         val now = LocalDateTime.now();
         var cacheTime = 0;
@@ -174,6 +186,7 @@ open class RedisCacheAopService {
         }
 
 
+        var jobModel = LockJobModel(key, LocalDateTime.now());
         var setted = false;
         try {
             //如果存在,则查看时间
@@ -187,34 +200,55 @@ open class RedisCacheAopService {
                         db.rerBase.taskLock(key).deleteKey();
                     } catch (e: Exception) {
                         logger.error(e.message, e);
+                        jobModel.lastRedisDeleteLockErrorMsg = e.javaClass.name + " " + e.message.AsString()
                     }
                 }
             }
 
             setted = db.rerBase.taskLock(key)
-                .setIfAbsent(now.toNumberString());
+                    .setIfAbsent(now.toNumberString());
         } catch (e: Exception) {
             logger.error(e.message, e);
+            jobModel.lastRedisLockErrorMsg = e.javaClass.name + " " + e.message.AsString()
             return null;
+        } finally {
+            if (setted == false) {
+                logger.debug("未能获取到锁 ${key}")
+            }
+
+            jobModel.lastRedisLockResult = setted;
+            addJobMonitor(jobModel);
         }
 
         if (setted == false) {
-            logger.debug("未能获取到锁 ${key}")
             return null;
         }
 
 
+        jobModel.lastExecuteAt = LocalDateTime.now();
         try {
             return joinPoint.proceed(joinPoint.args)
         } catch (e: Exception) {
             logger.error(e.message, e);
+            jobModel.lastExecuteErrorMsg = e.javaClass.name + " " + e.message.AsString()
             return null;
         } finally {
             try {
                 db.rerBase.taskLock(key).deleteKey();
             } catch (e: Exception) {
                 logger.error(e.message, e);
+                jobModel.lastRedisDeleteLockErrorMsg = e.javaClass.name + " " + e.message.AsString()
             }
+
+            addJobMonitor(jobModel);
         }
+    }
+
+    private fun addJobMonitor(lockJobModel: LockJobModel) {
+        if (jobMonitor.contains(lockJobModel.name)) {
+            jobMonitor.remove(lockJobModel.name)
+        }
+
+        jobMonitor.put(lockJobModel.name, lockJobModel);
     }
 }

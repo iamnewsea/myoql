@@ -1,16 +1,12 @@
 package nbcp.web.mvc.handler
 
-import nbcp.base.extend.AsFloat
-import nbcp.base.extend.AsInt
-import nbcp.base.extend.AsString
-import nbcp.base.extend.HasValue
+import nbcp.base.extend.*
 import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.JarUtil
 import nbcp.base.utils.SpringUtil
-import nbcp.mvc.mvc.WriteHtmlBodyValue
-import nbcp.mvc.mvc.WriteHtmlValue
-import nbcp.mvc.mvc.findParameterValue
 import nbcp.mvc.annotation.*
+import nbcp.mvc.mvc.*
+import nbcp.myoql.db.cache.RedisCacheAopService
 import nbcp.web.comm.WebAppInfo
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.GetMapping
@@ -40,20 +36,23 @@ open class HiServlet {
         val status = request.findParameterValue("status").AsInt()
         if (status.HasValue) {
             response.status = status
-            return;
         }
 
 
-        var key = request.getParameter("key")
-        if (key.HasValue) {
+        var envKey = request.getParameter("env-key")
+        if (envKey.HasValue) {
             val env = SpringUtil.context.environment;
-            var value = env.getProperty(key)
+            var value = env.getProperty(envKey)
             if (value != null) {
-                response.WriteHtmlValue(value)
-                return;
-            } else {
-                return;
+                response.WriteTextValue(value)
             }
+            return;
+        }
+
+        var jobMonitor = request.getParameter("job-monitor").AsBooleanWithNull()
+        if (jobMonitor ?: false) {
+            response.WriteJsonRawValue(RedisCacheAopService.jobMonitor.toJsonString())
+            return;
         }
 
 
