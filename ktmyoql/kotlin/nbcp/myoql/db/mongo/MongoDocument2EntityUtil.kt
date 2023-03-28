@@ -1,13 +1,16 @@
 package nbcp.myoql.db.mongo
 
 import nbcp.base.comm.StringMap
+import nbcp.base.extend.Important
 import nbcp.base.extend.IsStringType
 import nbcp.base.extend.Slice
 import nbcp.base.utils.RecursionUtil
 import org.bson.Document
 import org.bson.types.ObjectId
+import org.slf4j.LoggerFactory
 
 object MongoDocument2EntityUtil {
+    private val logger = LoggerFactory.getLogger(this::class.java);
 
     /**
      * 把 _id 转换为 id
@@ -107,7 +110,11 @@ object MongoDocument2EntityUtil {
             //Document{{answerRole=Patriarch}}
             //目前只发现一个键值对形式的。
             val startIndex = v_string_value.indexOf("{{");
+            if (startIndex < 0) {
+                return v_string_value;
+            }
 
+            logger.Important("发现mongo Document怪异值: " + v_string_value);
             val json = StringMap();
             v_string_value.Slice(startIndex + 2, -2).split(",").forEach { item ->
                 val sect = item.split("=");
