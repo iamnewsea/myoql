@@ -4,6 +4,7 @@ import nbcp.base.comm.StringMap
 import nbcp.base.extend.Important
 import nbcp.base.extend.IsStringType
 import nbcp.base.extend.Slice
+import nbcp.base.extend.ToJson
 import nbcp.base.utils.RecursionUtil
 import org.bson.Document
 import org.bson.types.ObjectId
@@ -123,7 +124,7 @@ object MongoDocument2EntityUtil {
             return json;
         }
 
-        MongoDocument2EntityUtil.procResultData_id2Id(value);
+        procResultData_id2Id(value);
 
         RecursionUtil.recursionAny(value, { json ->
             json.keys.toTypedArray().forEachIndexed { _, key ->
@@ -134,6 +135,9 @@ object MongoDocument2EntityUtil {
                 if (!testDocumentString(documentStringValue)) {
                     return@forEachIndexed
                 }
+
+                logger.Important("发现怪异mongo Document: " + value.ToJson())
+                logger.Important("发现怪异mongo Document,当前: " + json.ToJson())
                 (json as MutableMap<Any, Any>).set(key, procDocumentString(documentStringValue.toString()));
 
                 return@forEachIndexed
@@ -145,6 +149,9 @@ object MongoDocument2EntityUtil {
                 if (it == null || !testDocumentString(it)) {
                     return@forEachIndexed
                 }
+
+                logger.Important("发现怪异mongo Document: " + value.ToJson())
+                logger.Important("发现怪异mongo Array[${index}]: " + it.ToJson())
                 arrayList[index] = procDocumentString(it.toString());
             }
 
