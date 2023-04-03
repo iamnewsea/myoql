@@ -1,4 +1,4 @@
-<#list entitys as entity>
+<#list entities as entity>
 ### 表: ${entity.getName()}
 ${entity.getComment()}
 列名 | 类型 | 备注 | 主键 | 默认值

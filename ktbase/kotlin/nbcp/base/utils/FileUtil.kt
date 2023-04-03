@@ -4,6 +4,7 @@ import nbcp.base.extend.HasValue
 import nbcp.base.extend.ToHexLowerString
 import nbcp.base.extend.Unwind
 import java.io.File
+import java.io.FileWriter
 
 object FileUtil {
     /**
@@ -36,7 +37,6 @@ object FileUtil {
 
         return (if (isRoot) File.separator else "") + list.joinToString(File.separator)
     }
-
 
 
     /**
@@ -88,5 +88,11 @@ object FileUtil {
         );
 
         return map.filterKeys { value.startsWith(it) }.values.firstOrNull() ?: ""
+    }
+
+    fun writeContent(fileName: String, txt: String) {
+        FileWriter(fileName).use { f ->
+            f.write(txt);
+        }
     }
 }

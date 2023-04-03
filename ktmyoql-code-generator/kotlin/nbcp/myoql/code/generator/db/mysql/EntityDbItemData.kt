@@ -23,13 +23,12 @@ class EntityDbItemData {
 
     val group: String
         get() {
-            var groups_all_value = Regex("""\(\s*([\w-_]+)\s*\)""")
-                .find(
-                    commentString
-                        .replace("（", "(")
-                        .replace("）", ")")
-                )
-                ?.groupValues ?: listOf()
+            // [组名]，先对表注释内容进行组名提取。
+            var groups_all_value = Regex("""\[\s*([\w-_]+)\s*\]""")
+                    .find(
+                            commentString
+                    )
+                    ?.groupValues ?: listOf()
 
             var group_value = ""
             if (groups_all_value.size > 0) {
@@ -42,11 +41,11 @@ class EntityDbItemData {
                 return groups_value.first();
             }
             groups_value = name.split("_", "-");
-            if (groups_value.size > 1) {
+            if (groups_value.size > 0) {
                 return groups_value.first()
             }
 
-            return ""
+            return "";
         }
 
     var uks = arrayOf<String>()
