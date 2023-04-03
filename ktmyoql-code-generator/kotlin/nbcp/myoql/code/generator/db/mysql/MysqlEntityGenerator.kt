@@ -310,14 +310,14 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
 
                         var uks = mutableListOf<String>();
 
-                        uks.add(columns
-                                .filter {
-                                    it.tableName == tableData.name
-                                            && it.columnKey == "PRI"
-                                }
-                                .map { it.columnName }
-                                .joinToString(",")
-                        )
+//                        uks.add(columns
+//                                .filter {
+//                                    it.tableName == tableData.name
+//                                            && it.columnKey == "PRI"
+//                                }
+//                                .map { it.columnName }
+//                                .joinToString(",")
+//                        )
 
                         indexes.filter { it.tableName == tableData.name }
                                 .groupBy { it.indexName }

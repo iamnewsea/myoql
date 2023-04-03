@@ -48,6 +48,9 @@ class EntityDbItemData {
             return "";
         }
 
+    /**
+     * 除主键之外的唯一键。
+     */
     var uks = arrayOf<String>()
 
     var columns = mutableListOf<EntityDbItemFieldData>()
