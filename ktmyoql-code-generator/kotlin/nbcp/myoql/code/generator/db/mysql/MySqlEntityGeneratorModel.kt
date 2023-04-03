@@ -1,6 +1,8 @@
 package nbcp.myoql.code.generator.db.mysql
 
 import nbcp.base.comm.config
+import nbcp.base.extend.AsBoolean
+import nbcp.base.extend.AsBooleanWithNull
 import nbcp.base.utils.MyUtil
 import nbcp.base.utils.StringUtil
 import nbcp.myoql.db.sql.enums.DbType
@@ -26,6 +28,7 @@ class EntityDbItemFieldData {
     var name = ""
     var dbType = DbType.OTHER
     var commentString = ""
+    var isPrimary = false
 
     val comment: String
         get() {
@@ -56,11 +59,19 @@ class EntityDbItemFieldData {
 
     var autoId: Boolean = false
         get() {
+            var idIsAutoId = fieldName == "id" && config.getConfig("app.sql.id-is-autoId").AsBoolean();
+            if (idIsAutoId) {
+                return idIsAutoId;
+            }
             return commentString.contains(Regex("\bauto_id\b", RegexOption.IGNORE_CASE))
         }
 
     var autoNumber: Boolean = false
         get() {
+            var idIsAutoNumber = fieldName == "id" && config.getConfig("app.sql.id-is-autoNumber").AsBoolean();
+            if (idIsAutoNumber) {
+                return idIsAutoNumber;
+            }
             return commentString.contains(Regex("\bauto_number\b", RegexOption.IGNORE_CASE))
         }
 

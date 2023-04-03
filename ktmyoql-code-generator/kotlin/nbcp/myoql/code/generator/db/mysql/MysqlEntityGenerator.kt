@@ -54,19 +54,19 @@ object MysqlEntityGenerator {
 
             //先对 group分组
             data.groupBy { it.group }
-                .forEach {
-                    var group = it.key
-                    var entitys = it.value
+                    .forEach {
+                        var group = it.key
+                        var entitys = it.value
 
 //                    var map = JsonMap(
 //                        "entitys" to entitys
 //                    )
 
-                    var groupEntitys = GroupEntitiesCodeTemplateData(group, entitys);
+                        var groupEntitys = GroupEntitiesCodeTemplateData(group, entitys);
 
-                    var code = FreemarkerUtil.process("/markdown-template/mysql_markdown.ftl", groupEntitys);
-                    ret.add(IdName(group, code));
-                }
+                        var code = FreemarkerUtil.process("/markdown-template/mysql_markdown.ftl", groupEntitys);
+                        ret.add(IdName(group, code));
+                    }
 
             return ret;
         }
@@ -80,19 +80,19 @@ object MysqlEntityGenerator {
 
             //先对 group分组
             data.groupBy { it.group }
-                .forEach {
-                    var group = it.key
-                    var entitys = it.value
+                    .forEach {
+                        var group = it.key
+                        var entitys = it.value
 
 //                    var map = JsonMap(
 //                        "entitys" to entitys
 //                    )
 
-                    var groupEntites = GroupEntitiesCodeTemplateData(group, entitys);
+                        var groupEntites = GroupEntitiesCodeTemplateData(group, entitys);
 
-                    var code = FreemarkerUtil.process("/myoql-template/mysql/mysql_myoql_entity.ftl", groupEntites);
-                    ret.add(IdName(group, code));
-                }
+                        var code = FreemarkerUtil.process("/myoql-template/mysql/mysql_myoql_entity.ftl", groupEntites);
+                        ret.add(IdName(group, code));
+                    }
 
             return ret;
         }
@@ -133,7 +133,7 @@ import java.lang.*;
 public class ${entity.className} ${entInfo.getBaseClasseString()} ${entInfo.getBaseInterfaceString()} {
 ${
                     entInfo.getJpaStyleFields().joinToString("\n")
-                        .ToTab(1)
+                            .ToTab(1)
                 }
 }
 """
@@ -148,7 +148,7 @@ ${
             var ret = mutableListOf<EntityDbItemData>()
 
             var tables = RawQuerySqlClip(
-                """
+                    """
 SELECT 
 table_name as `tableName`,
 table_comment as `tableComment`
@@ -157,14 +157,14 @@ where table_schema = :db
 order by table_name
 """, JsonMap()
             )
-                .apply {
-                    this.sqlParameter.values.put("db", this.catalog)
-                }
-                .toList(TableMetaData::class.java)
+                    .apply {
+                        this.sqlParameter.values.put("db", this.catalog)
+                    }
+                    .toList(TableMetaData::class.java)
 
 
             var columns = RawQuerySqlClip(
-                """
+                    """
 SELECT 
     table_name as `tableName` , 
     column_name as `columnName`, 
@@ -186,14 +186,14 @@ order by
     CHAR_LENGTH(COLUMN_NAME) ASC 
 """, JsonMap()
             )
-                .apply {
-                    this.sqlParameter.values.put("db", this.catalog)
-                }
-                .toList(TableColumnMetaData::class.java)
+                    .apply {
+                        this.sqlParameter.values.put("db", this.catalog)
+                    }
+                    .toList(TableColumnMetaData::class.java)
 
 
             var indexes = RawQuerySqlClip(
-                """
+                    """
 SELECT 
     table_name as `tableName` ,
     index_name as `indexName`,
@@ -204,10 +204,10 @@ where table_schema = :db AND non_unique = 0 AND INDEX_name != 'PRIMARY'
 ORDER BY TABLE_NAME , index_name , seq_in_index
 """, JsonMap()
             )
-                .apply {
-                    this.sqlParameter.values.put("db", this.catalog)
-                }
-                .toList(TableIndexMetaData::class.java)
+                    .apply {
+                        this.sqlParameter.values.put("db", this.catalog)
+                    }
+                    .toList(TableIndexMetaData::class.java)
 
 
 
@@ -217,116 +217,123 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                 }
                 return@filter true;
             }
-                .forEach { tableMap ->
-                    var tableData = EntityDbItemData()
+                    .forEach { tableMap ->
+                        var tableData = EntityDbItemData()
 
-                    tableData.name = tableMap.tableName!!;
-                    tableData.commentString = tableMap.tableComment.AsString()
-                        .replace("\r\n", " ")
-                        .replace('\n', ' ')
-                        .replace('\"', '＂')
-                        .replace('\$', '＄')
-                        .replace('#', '＃')
-
-
-                    columns.filter { it.tableName == tableData.name }
-                        .forEach colMap@{ columnMap ->
-
-                            var columnName = columnMap.columnName
-                            var dataType = columnMap.dataType.AsString()
-                            var columnComment = columnMap.columnComment.AsString()
+                        tableData.name = tableMap.tableName!!;
+                        tableData.commentString = tableMap.tableComment.AsString()
                                 .replace("\r\n", " ")
                                 .replace('\n', ' ')
                                 .replace('\"', '＂')
                                 .replace('\$', '＄')
                                 .replace('#', '＃')
 
-                            var dbType = DbType.STRING
-                            var remark = "";
 
-                            if (dataType basicSame "varchar"
-                                || dataType basicSame "char"
-                                || dataType basicSame "nvarchar"
-                                || dataType basicSame "nchar"
-                            ) {
-                                dbType = DbType.STRING
-                            } else if (dataType basicSame "text"
-                                || dataType basicSame "mediumtext"
-                                || dataType basicSame "longtext"
-                            ) {
-                                dbType = DbType.TEXT
-                            } else if (dataType basicSame "enum") {
-                                dbType = DbType.ENUM
-                            } else if (dataType basicSame "json") {
-                                dbType = DbType.JSON
-                            } else if (dataType basicSame "int") {
-                                dbType = DbType.INT
-                            } else if (dataType basicSame "bit") {
-                                dbType = DbType.BOOLEAN
-                            } else if (dataType basicSame "datetime" ||
-                                dataType basicSame "timestamp"
-                            ) {
-                                dbType = DbType.DATE_TIME
-                            } else if (dataType basicSame "date") {
-                                dbType = DbType.DATE
-                            } else if (dataType basicSame "float") {
-                                dbType = DbType.FLOAT
-                            } else if (dataType basicSame "double") {
-                                dbType = DbType.DOUBLE
-                            } else if (dataType basicSame "long") {
-                                dbType = DbType.LONG
-                            } else if (dataType basicSame "tinyint") {
-                                dbType = DbType.BYTE
-                            } else if (dataType basicSame "bigint") {
-                                dbType = DbType.LONG
-                            } else if (dataType basicSame "decimal") {
-                                remark = "warning sql data type: ${dataType}";
-                                dbType = DbType.DOUBLE
-                            }
+                        columns.filter { it.tableName == tableData.name }
+                                .forEach colMap@{ columnMap ->
 
-                            var columnData = EntityDbItemFieldData()
-                            columnData.name = columnName
-                            columnData.commentString = columnComment
-                            columnData.sqlType = columnMap.columnType.AsString()
-                            columnData.dbType = dbType
+                                    var columnName = columnMap.columnName
+                                    var dataType = columnMap.dataType.AsString()
+                                    var columnComment = columnMap.columnComment.AsString()
+                                            .replace("\r\n", " ")
+                                            .replace('\n', ' ')
+                                            .replace('\"', '＂')
+                                            .replace('\$', '＄')
+                                            .replace('#', '＃')
 
-                            if (columnMap.extra == "auto_increment") {
-                                columnData.autoInc = true
-                            }
+                                    var dbType = DbType.STRING
+                                    var remark = "";
 
-                            if (remark.HasValue) {
-                                columnData.remark = remark
-                            }
+                                    if (dataType basicSame "varchar"
+                                            || dataType basicSame "char"
+                                            || dataType basicSame "nvarchar"
+                                            || dataType basicSame "nchar"
+                                    ) {
+                                        dbType = DbType.STRING
+                                    } else if (dataType basicSame "text"
+                                            || dataType basicSame "mediumtext"
+                                            || dataType basicSame "longtext"
+                                    ) {
+                                        dbType = DbType.TEXT
+                                    } else if (dataType basicSame "enum") {
+                                        dbType = DbType.ENUM
+                                    } else if (dataType basicSame "json") {
+                                        dbType = DbType.JSON
+                                    } else if (dataType basicSame "int") {
+                                        dbType = DbType.INT
+                                    } else if (dataType basicSame "bit") {
+                                        dbType = DbType.BOOLEAN
+                                    } else if (dataType basicSame "datetime" ||
+                                            dataType basicSame "timestamp"
+                                    ) {
+                                        dbType = DbType.DATE_TIME
+                                    } else if (dataType basicSame "date") {
+                                        dbType = DbType.DATE
+                                    } else if (dataType basicSame "float") {
+                                        dbType = DbType.FLOAT
+                                    } else if (dataType basicSame "double") {
+                                        dbType = DbType.DOUBLE
+                                    } else if (dataType basicSame "long") {
+                                        dbType = DbType.LONG
+                                    } else if (dataType basicSame "tinyint") {
+                                        dbType = DbType.BYTE
+                                    } else if (dataType basicSame "bigint") {
+                                        dbType = DbType.LONG
+                                    } else if (dataType basicSame "decimal") {
+                                        remark = "warning sql data type: ${dataType}";
+                                        dbType = DbType.DOUBLE
+                                    }
 
-                            tableData.columns.add(columnData)
-                        }
+                                    var columnData = EntityDbItemFieldData()
+                                    columnData.name = columnName
+                                    columnData.commentString = columnComment
+                                    columnData.sqlType = columnMap.columnType.AsString()
+                                    columnData.dbType = dbType
+                                    columnData.isPrimary = columns
+                                            .filter {
+                                                it.tableName == tableData.name
+                                                        && it.columnKey == "PRI"
+                                            }
+                                            .map { it.columnName }
+                                            .contains(columnName)
 
-                    var uks = mutableListOf<String>();
+                                    if (columnMap.extra == "auto_increment") {
+                                        columnData.autoInc = true
+                                    }
 
-                    uks.add(columns.filter {
-                        it.tableName == tableData.name
-                                && it.columnKey == "PRI"
-                    }
-                        .map { it.columnName }
-//                    .map { """"${it}""" }
-                        .joinToString(",")
-                    )
+                                    if (remark.HasValue) {
+                                        columnData.remark = remark
+                                    }
 
-                    indexes.filter { it.tableName == tableData.name }
-                        .groupBy { it.indexName }
-                        .forEach {
-                            uks.add(it.value.map { it.columnName }
-//                            .map { """"${it}"""" }
+                                    tableData.columns.add(columnData)
+                                }
+
+                        var uks = mutableListOf<String>();
+
+                        uks.add(columns
+                                .filter {
+                                    it.tableName == tableData.name
+                                            && it.columnKey == "PRI"
+                                }
+                                .map { it.columnName }
                                 .joinToString(",")
-                            )
-                        }
+                        )
 
-                    tableData.uks = uks
-                        .map { """"${it}"""" }
-                        .toTypedArray()
+                        indexes.filter { it.tableName == tableData.name }
+                                .groupBy { it.indexName }
+                                .forEach {
+                                    uks.add(it.value.map { it.columnName }
+//                            .map { """"${it}"""" }
+                                            .joinToString(",")
+                                    )
+                                }
 
-                    ret.add(tableData)
-                }
+                        tableData.uks = uks
+                                .map { """"${it}"""" }
+                                .toTypedArray()
+
+                        ret.add(tableData)
+                    }
 
             return ret;
         }
@@ -352,10 +359,10 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
     }
 
     fun getColumnDefine(
-        property: Field,
-        nameType: NameMappingTypeEnum = NameMappingTypeEnum.ORIGIN,
-        pFieldName: String = "",
-        pCn: String = ""
+            property: Field,
+            nameType: NameMappingTypeEnum = NameMappingTypeEnum.ORIGIN,
+            pFieldName: String = "",
+            pCn: String = ""
     ): Pair<List<String>, List<String>> {
         var list = mutableListOf<String>()
         var checks = mutableListOf<String>()
@@ -364,20 +371,20 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
 
         var dbType = DbType.of(propertyType);
         var type = property.getAnnotation(SqlColumnType::class.java)?.value
-            .AsString {
-                dbType.toMySqlTypeString(getVarcharLen(property), getEnumItems(propertyType))
-            }
+                .AsString {
+                    dbType.toMySqlTypeString(getVarcharLen(property), getEnumItems(propertyType))
+                }
 
         var comment = arrayOf(pCn, property.getAnnotation(Cn::class.java)?.value.AsString()).filter { it.HasValue }
-            .joinToString(" ")
+                .joinToString(" ")
         var spreadColumn = property.getAnnotation(SqlSpreadColumn::class.java);
         if (spreadColumn != null) {
             propertyType.AllFields.forEach {
                 getColumnDefine(it, nameType, columnName + spreadColumn.value, comment)
-                    .apply {
-                        list.addAll(this.first)
-                        checks.addAll(this.second)
-                    }
+                        .apply {
+                            list.addAll(this.first)
+                            checks.addAll(this.second)
+                        }
 //                var columnNameValue = columnName + spreadColumn.value + it.name;
 //
 //                var sqlTypeString = it.getAnnotation(SqlColumnType::class.java)?.value
@@ -400,20 +407,20 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
             //生成关系表
             if (propertyType.IsCollectionType) {
                 var item =
-                    """`${columnName}` Json not null  default '[]' comment '${comment}'"""
+                        """`${columnName}` Json not null  default '[]' comment '${comment}'"""
                 list.add(item);
 
                 checks.add("CONSTRAINT `c_${columnName}` CHECK ( json_valid(`${columnName}`) )")
             } else {
                 var item =
-                    """`${columnName}` Json not null  default '{}' comment '${comment}'"""
+                        """`${columnName}` Json not null  default '{}' comment '${comment}'"""
                 list.add(item);
 
                 checks.add("CONSTRAINT `c_${columnName}` CHECK ( json_valid(`${columnName}`) )")
             }
         } else {
             var item =
-                """`${columnName}` ${type} not null ${if (propertyType.IsNumberType) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment '${comment}'"""
+                    """`${columnName}` ${type} not null ${if (propertyType.IsNumberType) "default '0'" else if (propertyType.IsStringType) "default ''" else ""} comment '${comment}'"""
             list.add(item);
         }
 
@@ -428,29 +435,29 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
         var list = mutableListOf<String>();
 
         var fields = entity.AllFields
-            .sortedBy {
-                // id,code,name 这三个字段提前。
-                if (it.name basicSame "id") return@sortedBy -9;
-                if (it.name basicSame "code") return@sortedBy -8;
-                if (it.name basicSame "name") return@sortedBy -7;
+                .sortedBy {
+                    // id,code,name 这三个字段提前。
+                    if (it.name basicSame "id") return@sortedBy -9;
+                    if (it.name basicSame "code") return@sortedBy -8;
+                    if (it.name basicSame "name") return@sortedBy -7;
 
 
-                // 其它系统字段最后
-                if (it.name basicSame "remark") return@sortedBy 1000 + it.name.length;
-                if (it.name.contains("delete", true)) return@sortedBy 1000 + it.name.length;
-                if (it.name.contains("create", true)) return@sortedBy 1000 + it.name.length;
-                if (it.name.contains("update", true)) return@sortedBy 1000 + it.name.length;
-                return@sortedBy it.name.length;
-            }
+                    // 其它系统字段最后
+                    if (it.name basicSame "remark") return@sortedBy 1000 + it.name.length;
+                    if (it.name.contains("delete", true)) return@sortedBy 1000 + it.name.length;
+                    if (it.name.contains("create", true)) return@sortedBy 1000 + it.name.length;
+                    if (it.name.contains("update", true)) return@sortedBy 1000 + it.name.length;
+                    return@sortedBy it.name.length;
+                }
 
         var checks = mutableListOf<String>();
 
         fields.forEach {
             getColumnDefine(it, nameType)
-                .apply {
-                    list.addAll(this.first);
-                    checks.addAll(this.second);
-                }
+                    .apply {
+                        list.addAll(this.first);
+                        checks.addAll(this.second);
+                    }
         }
 
         var tableName = nameType.getResult(entity.simpleName)
@@ -499,15 +506,15 @@ ${checks.map { ", " + it }.joinToString("\n")}
     }
 
     private fun getPk(
-        ids: List<DbEntityIndex>,
-        nameType: NameMappingTypeEnum = NameMappingTypeEnum.ORIGIN
+            ids: List<DbEntityIndex>,
+            nameType: NameMappingTypeEnum = NameMappingTypeEnum.ORIGIN
     ): Set<String> {
         return ids
-            .sortedBy { it.value.size * 1000 + it.value.map { it.length }.count() }
-            .first()
-            .value
-            .map { nameType.getResult(it) }
-            .toSet()
+                .sortedBy { it.value.size * 1000 + it.value.map { it.length }.count() }
+                .first()
+                .value
+                .map { nameType.getResult(it) }
+                .toSet()
     }
 
 //    class field_name : TemplateMethodModelEx {
