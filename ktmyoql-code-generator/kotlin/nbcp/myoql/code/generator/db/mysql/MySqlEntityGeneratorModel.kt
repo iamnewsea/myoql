@@ -28,7 +28,7 @@ class EntityDbItemFieldData {
     var name = ""
     var dbType = DbType.OTHER
     var commentString = ""
-    var isPrimary = false
+    var isPrimary = ""
 
     val comment: String
         get() {

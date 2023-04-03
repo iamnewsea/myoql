@@ -296,6 +296,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                                             }
                                             .map { it.columnName }
                                             .contains(columnName)
+                                            .ifTrue { "主键" } ?: ""
 
                                     if (columnMap.extra == "auto_increment") {
                                         columnData.autoInc = true
