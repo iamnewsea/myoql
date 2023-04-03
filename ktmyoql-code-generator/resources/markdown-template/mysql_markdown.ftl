@@ -1,6 +1,7 @@
 <#list entities as entity>
-### 表: ${entity.getName()}
-${entity.getComment()}
+## 表: ${entity.getName()}
+### `${entity.getComment()}`
+
 | 列名 | 类型 | 备注 | 主键 | 默认值 |
 |---|---|---|---|---|
 <#list entity.getColumns() as field>
@@ -8,7 +9,8 @@ ${entity.getComment()}
 </#list>
 
 唯一索引：
+
 <#list entity.getUks() as uk>
-    ${uk_index}. ${uk}
+    ${uk_index}: ${uk}
 </#list>
 </#list>
