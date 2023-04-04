@@ -6,6 +6,7 @@ import nbcp.base.db.annotation.*
 import nbcp.base.enums.*
 import nbcp.base.extend.*
 import nbcp.base.utils.*
+import nbcp.myoql.code.generator.compareDbName
 import nbcp.myoql.code.generator.db.mysql.model.TableColumnMetaData
 import nbcp.myoql.code.generator.db.mysql.model.TableIndexMetaData
 import nbcp.myoql.code.generator.db.mysql.model.TableMetaData
@@ -17,6 +18,7 @@ import nbcp.myoql.db.sql.base.*
 import nbcp.myoql.db.sql.component.RawQuerySqlClip
 import nbcp.myoql.db.sql.enums.DbType
 import nbcp.myoql.code.generator.tool.*
+import org.slf4j.LoggerFactory
 import java.lang.reflect.Field
 import java.time.LocalDateTime
 import java.util.*
@@ -27,6 +29,7 @@ import javax.sql.DataSource
  * MySql 实体生成器
  */
 object MysqlEntityGenerator {
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     @JvmStatic
     fun db2Entity() = DbEntityBuilder();
@@ -48,8 +51,8 @@ object MysqlEntityGenerator {
         /**
          * TODO: 需要好好整理一下。
          */
-        fun toMarkdown(): List<IdName> {
-            var ret = mutableListOf<IdName>()
+        fun toMarkdown(): List<CodeValue> {
+            var ret = mutableListOf<CodeValue>()
             var data = getTablesData();
 
             //先对 group分组
@@ -65,7 +68,7 @@ object MysqlEntityGenerator {
                         var groupEntitys = GroupEntitiesCodeTemplateData(group, entitys);
 
                         var code = FreemarkerUtil.process("/markdown-template/mysql_markdown.ftl", groupEntitys);
-                        ret.add(IdName(group, code));
+                        ret.add(CodeValue(group, code));
                     }
 
             return ret;
@@ -163,6 +166,9 @@ order by table_name
                     .toList(TableMetaData::class.java)
 
 
+            tables.sortWith { a, b -> compareDbName(a.tableName, b.tableName) }
+
+
             var columns = RawQuerySqlClip(
                     """
 SELECT 
@@ -191,6 +197,8 @@ order by
                     }
                     .toList(TableColumnMetaData::class.java)
 
+            columns.sortWith { a, b -> compareDbName(a.columnName, b.columnName) }
+
 
             var indexes = RawQuerySqlClip(
                     """
@@ -217,6 +225,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                 }
                 return@filter true;
             }
+
                     .forEach { tableMap ->
                         var tableData = EntityDbItemData()
 
@@ -229,8 +238,8 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                                 .replace('#', '＃')
 
 
-                        columns.filter { it.tableName == tableData.name }
-                                .forEach colMap@{ columnMap ->
+                        columns.filter { column -> column.tableName == tableData.name }
+                                .forEachIndexed colMap@{ index, columnMap ->
 
                                     var columnName = columnMap.columnName
                                     var dataType = columnMap.dataType.AsString()
@@ -241,51 +250,11 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                                             .replace('\$', '＄')
                                             .replace('#', '＃')
 
-                                    var dbType = DbType.STRING
-                                    var remark = "";
-
-                                    if (dataType basicSame "varchar"
-                                            || dataType basicSame "char"
-                                            || dataType basicSame "nvarchar"
-                                            || dataType basicSame "nchar"
-                                    ) {
-                                        dbType = DbType.STRING
-                                    } else if (dataType basicSame "text"
-                                            || dataType basicSame "mediumtext"
-                                            || dataType basicSame "longtext"
-                                    ) {
-                                        dbType = DbType.TEXT
-                                    } else if (dataType basicSame "enum") {
-                                        dbType = DbType.ENUM
-                                    } else if (dataType basicSame "json") {
-                                        dbType = DbType.JSON
-                                    } else if (dataType basicSame "int") {
-                                        dbType = DbType.INT
-                                    } else if (dataType basicSame "bit") {
-                                        dbType = DbType.BOOLEAN
-                                    } else if (dataType basicSame "datetime" ||
-                                            dataType basicSame "timestamp"
-                                    ) {
-                                        dbType = DbType.DATE_TIME
-                                    } else if (dataType basicSame "date") {
-                                        dbType = DbType.DATE
-                                    } else if (dataType basicSame "float") {
-                                        dbType = DbType.FLOAT
-                                    } else if (dataType basicSame "double") {
-                                        dbType = DbType.DOUBLE
-                                    } else if (dataType basicSame "long") {
-                                        dbType = DbType.LONG
-                                    } else if (dataType basicSame "tinyint") {
-                                        dbType = DbType.BYTE
-                                    } else if (dataType basicSame "bigint") {
-                                        dbType = DbType.LONG
-                                    } else if (dataType basicSame "decimal") {
-                                        remark = "warning sql data type: ${dataType}";
-                                        dbType = DbType.DOUBLE
-                                    }
+                                    var dbType = getDbType(dataType);
 
                                     var columnData = EntityDbItemFieldData()
                                     columnData.name = columnName
+                                    columnData.index = (index + 1).toString()
                                     columnData.commentString = columnComment
                                     columnData.sqlType = columnMap.columnType.AsString()
                                     columnData.dbType = dbType
@@ -302,9 +271,6 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                                         columnData.autoInc = true
                                     }
 
-                                    if (remark.HasValue) {
-                                        columnData.remark = remark
-                                    }
 
                                     tableData.columns.add(columnData)
                                 }
@@ -338,6 +304,52 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
 
             return ret;
         }
+    }
+
+
+
+    private fun getDbType(dataType: String): DbType {
+        if (dataType basicSame "varchar"
+                || dataType basicSame "char"
+                || dataType basicSame "nvarchar"
+                || dataType basicSame "nchar"
+        ) {
+            return DbType.STRING
+        } else if (dataType basicSame "text"
+                || dataType basicSame "mediumtext"
+                || dataType basicSame "longtext"
+        ) {
+            return DbType.TEXT
+        } else if (dataType basicSame "enum") {
+            return DbType.ENUM
+        } else if (dataType basicSame "json") {
+            return DbType.JSON
+        } else if (dataType basicSame "int") {
+            return DbType.INT
+        } else if (dataType basicSame "bit") {
+            return DbType.BOOLEAN
+        } else if (dataType basicSame "datetime" ||
+                dataType basicSame "timestamp"
+        ) {
+            return DbType.DATE_TIME
+        } else if (dataType basicSame "date") {
+            return DbType.DATE
+        } else if (dataType basicSame "float") {
+            return DbType.FLOAT
+        } else if (dataType basicSame "double") {
+            return DbType.DOUBLE
+        } else if (dataType basicSame "long") {
+            return DbType.LONG
+        } else if (dataType basicSame "tinyint") {
+            return DbType.BYTE
+        } else if (dataType basicSame "bigint") {
+            return DbType.LONG
+        } else if (dataType basicSame "decimal") {
+            logger.Important("warning sql data type: ${dataType}")
+            return DbType.DOUBLE
+        }
+
+        return DbType.STRING
     }
 
     private fun getVarcharLen(field: Field): Int {

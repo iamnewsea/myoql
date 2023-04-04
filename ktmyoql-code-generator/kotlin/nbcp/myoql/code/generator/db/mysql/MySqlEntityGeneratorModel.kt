@@ -24,11 +24,11 @@ class EntityDbItemFieldData {
         }
 
     var sqlType = ""
-    var remark = ""
     var name = ""
     var dbType = DbType.OTHER
     var commentString = ""
     var isPrimary = ""
+    var index = "";
 
     val comment: String
         get() {
@@ -77,5 +77,19 @@ class EntityDbItemFieldData {
 
     /*下面四个属性表示该表的单键主键 或 唯一键*/
     var autoInc: Boolean = false
+
+
+    fun getRemark(): String {
+        if (autoInc) {
+            return "自增"
+        }
+        if (autoId) {
+            return "雪花Id字符串"
+        }
+        if (autoNumber) {
+            return "雪花Id数值"
+        }
+        return ""
+    }
 }
 

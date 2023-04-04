@@ -1,12 +1,12 @@
-## `${group}` 组
+# `${group}` 组
 
 <#list entities as entity>
-### `${entity.getName()}` : ${entity.getComment()}
+## `${entity.getName()}` : ${entity.getComment()}
 
-| 列名 | 类型 | 备注 | 主键 | 默认值 |
-|---|---|---|---|---|
+| 序号 | 列名 | 类型 | 备注 | 主键 | 默认值 |
+|---|---|---|---|---|---|
 <#list entity.getColumns() as field>
-| ${field.getName()} | ${field.getSqlType()} | ${field.getComment()} | ${field.isPrimary()} | <#if  field.getAutoInc()>自增<#elseif field.getAutoId()>雪花Id字符串<#elseif field.getAutoNumber()>雪花Id数值</#if> |
+| ${style(field,field.getIndex())} | ${style(field,field.getName())} | ${style(field,field.getSqlType())} | ${style(field,field.getComment())} | ${style(field,field.isPrimary())} | ${style(field,field.getRemark())} |
 </#list>
 
 

@@ -1,6 +1,7 @@
 package nbcp.myoql.code.generator.tool
 
 import nbcp.myoql.code.generator.db.mysql.*
+import nbcp.myoql.code.generator.tool.freemarker.FreemarkerColumnStyle
 
 
 class GroupEntitiesCodeTemplateData(
@@ -9,5 +10,6 @@ class GroupEntitiesCodeTemplateData(
 ) : BaseFreemarkerModel() {
 
 
+    val style = FreemarkerColumnStyle()
 
 }
