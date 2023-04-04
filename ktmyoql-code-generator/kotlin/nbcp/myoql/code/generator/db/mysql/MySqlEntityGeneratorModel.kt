@@ -81,15 +81,15 @@ class EntityDbItemFieldData {
 
     fun getRemark(): String {
         if (autoInc) {
-            return "自增"
+            return "[自增] " + this.comment
         }
         if (autoId) {
-            return "雪花Id字符串"
+            return "[雪花Id字符串] " + this.comment
         }
         if (autoNumber) {
-            return "雪花Id数值"
+            return "[雪花Id数值] " + this.comment
         }
-        return ""
+        return this.comment
     }
 }
 

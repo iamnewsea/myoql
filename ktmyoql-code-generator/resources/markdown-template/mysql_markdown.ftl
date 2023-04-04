@@ -3,10 +3,10 @@
 <#list entities as entity>
 ## `${entity.getName()}` : ${entity.getComment()}
 
-| 序号 | 列名 | 类型 | 备注 | 主键 | 默认值 |
-|---|---|---|---|---|---|
+| 序号 | 列名 | 类型 | 主键 | 备注 |
+|---|---|---|---|---|
 <#list entity.getColumns() as field>
-| ${style(field,field.getIndex())} | ${style(field,field.getName())} | ${style(field,field.getSqlType())} | ${style(field,field.getComment())} | ${style(field,field.isPrimary())} | ${style(field,field.getRemark())} |
+| ${style(field,field.getIndex())} | ${style(field,field.getName())} | ${style(field,field.getSqlType())} | ${style(field,field.isPrimary())} | ${style(field,field.getRemark())} |
 </#list>
 
 
