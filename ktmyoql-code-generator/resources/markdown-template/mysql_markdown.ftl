@@ -6,7 +6,7 @@
 | 序号 | 列名 | 类型 | 备注 | 索引 |
 |---|---|---|---|---|
 <#list entity.getColumns() as field>
-| ${style(field,"index",field.getIndex())} | ${style(field,"name",field.getName())} | ${style(field,"sqlType",field.getSqlType())} | ${style(field,"remark",field.getRemark())} | ${style(field,"index",field.isPrimary())} |
+| ${style(field,"id",field.getIndex())} | ${style(field,"name",field.getName())} | ${style(field,"sqlType",field.getSqlType())} | ${style(field,"remark",field.getRemark())} | ${style(field,"index",field.isPrimary())} |
 </#list>
 
 

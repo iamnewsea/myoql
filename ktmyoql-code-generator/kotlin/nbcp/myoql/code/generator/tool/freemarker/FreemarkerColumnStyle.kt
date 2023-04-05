@@ -20,7 +20,7 @@ class FreemarkerColumnStyle : BaseMethodModelFreemarker() {
             return "*" + paramValue + "*"
         }
 
-        if (field.isPrimary.HasValue && key.IsIn("nam", "index")) {
+        if (field.isPrimary.HasValue && key.IsIn("name", "index")) {
             return "**" + paramValue + "**"
         }
         return paramValue;
