@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory
 import java.lang.reflect.Field
 import java.time.LocalDateTime
 import java.util.*
-import javax.sql.DataSource
 
 
 /**
@@ -237,6 +236,21 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                                 .replace('\$', '＄')
                                 .replace('#', '＃')
 
+                        var myIndex = indexes
+                                .filter { it.tableName == tableData.name }
+                                .groupBy { it.indexName }
+
+
+                        var aloneIndex = myIndex
+                                .filter { it.value.size == 1 }
+                                .map { it.value.first().columnName }
+
+                        var unionIndex = myIndex.filter { it.value.size > 1 }
+
+                        tableData.auks = unionIndex
+                                .map { it.value.map { it.columnName }.joinToString(",") }
+                                .toTypedArray()
+
 
                         columns.filter { column -> column.tableName == tableData.name }
                                 .forEachIndexed colMap@{ index, columnMap ->
@@ -258,14 +272,19 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                                     columnData.commentString = columnComment
                                     columnData.sqlType = columnMap.columnType.AsString()
                                     columnData.dbType = dbType
-                                    columnData.isPrimary = columns
-                                            .filter {
-                                                it.tableName == tableData.name
-                                                        && it.columnKey == "PRI"
-                                            }
-                                            .map { it.columnName }
-                                            .contains(columnName)
-                                            .ifTrue { "主键" } ?: ""
+
+
+                                    if (columns
+                                                    .filter {
+                                                        it.tableName == tableData.name
+                                                                && it.columnKey == "PRI"
+                                                    }
+                                                    .map { it.columnName }
+                                                    .contains(columnName)) {
+                                        columnData.isPrimary = "主键"
+                                    } else if (aloneIndex.contains(columnName)) {
+                                        columnData.isPrimary = "单唯一键"
+                                    }
 
                                     if (columnMap.extra == "auto_increment") {
                                         columnData.autoInc = true
@@ -275,29 +294,31 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                                     tableData.columns.add(columnData)
                                 }
 
-                        var uks = mutableListOf<String>();
+                        tableData.columns.sortWith { a, b ->
 
-//                        uks.add(columns
-//                                .filter {
-//                                    it.tableName == tableData.name
-//                                            && it.columnKey == "PRI"
-//                                }
-//                                .map { it.columnName }
-//                                .joinToString(",")
-//                        )
+                            if (a.isPrimary == "主键") {
+                                return@sortWith -1;
+                            }
+                            if (b.isPrimary == "主键") {
+                                return@sortWith 1;
+                            }
 
-                        indexes.filter { it.tableName == tableData.name }
-                                .groupBy { it.indexName }
-                                .forEach {
-                                    uks.add(it.value.map { it.columnName }
-//                            .map { """"${it}"""" }
-                                            .joinToString(",")
-                                    )
-                                }
+                            if (a.isPrimary == "单唯一键") {
+                                return@sortWith -1;
+                            }
+                            if (b.isPrimary == "单唯一键") {
+                                return@sortWith 1;
+                            }
 
-                        tableData.uks = uks
-                                .map { """"${it}"""" }
-                                .toTypedArray()
+                            return@sortWith compareDbName(a.name, b.name)
+                        }
+
+
+                        var index = 0;
+                        for (column in tableData.columns) {
+                            index++;
+                            column.index = (index + 1).toString();
+                        }
 
                         ret.add(tableData)
                     }
@@ -305,7 +326,6 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
             return ret;
         }
     }
-
 
 
     private fun getDbType(dataType: String): DbType {

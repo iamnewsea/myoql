@@ -2,7 +2,6 @@ package nbcp.myoql.code.generator.db.mysql
 
 import nbcp.base.comm.config
 import nbcp.base.extend.HasValue
-import nbcp.base.utils.MyUtil
 import nbcp.base.utils.StringUtil
 import nbcp.myoql.code.generator.removeQuoteContent
 
@@ -49,9 +48,9 @@ class EntityDbItemData {
         }
 
     /**
-     * 除主键之外的唯一键。
+     * 除主键，单唯一键之外的联合唯一键。
      */
-    var uks = arrayOf<String>()
+    var auks = arrayOf<String>()
 
     var columns = mutableListOf<EntityDbItemFieldData>()
 
