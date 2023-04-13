@@ -144,6 +144,10 @@ fun <T> FromRedisCache.getList(cacheType: Class<out T>, consumer: Supplier<List<
 }
 
 fun <T> FromRedisCache.onlyGetFromCache(converter: java.util.function.Function<String, T?>): T? {
+    if( !config.enableCache){
+        return null;
+    }
+
     val cacheKey = this.getCacheKey()
 
     if (this.cacheSeconds >= 0 && cacheKey.HasValue) {
@@ -161,6 +165,10 @@ fun <T> FromRedisCache.onlyGetFromCache(converter: java.util.function.Function<S
 }
 
 fun FromRedisCache.onlySetToCache(ret: Any) {
+    if( !config.enableCache){
+        return;
+    }
+
     val cacheKey = this.getCacheKey()
 
     if (cacheSeconds >= 0 && cacheKey.HasValue) {

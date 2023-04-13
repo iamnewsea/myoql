@@ -69,6 +69,8 @@ ${title}
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
         private var _debug: Boolean? = null;
 
+        var enableCache = false;
+
         @JvmStatic
         val debug: Boolean
             @JvmName("debug") get() {
