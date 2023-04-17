@@ -1,5 +1,6 @@
 package nbcp.myoql.annotation
 
+import nbcp.base.comm.config
 import nbcp.base.extend.HasValue
 import nbcp.base.extend.Important
 import nbcp.base.extend.ToJson
@@ -77,6 +78,10 @@ fun BrokeRedisCache.resolveWithVariable(variableMap: Map<String,Any?>): BrokeRed
  * 执行破坏缓存操作！
  */
 fun BrokeRedisCache.brokeCache() {
+    if( !config.enableCache){
+        return;
+    }
+
     val cacheBroke = this;
     BrokeRedisCache.logger.Important("!执行破坏缓存! ${cacheBroke.ToJson()}")
 
