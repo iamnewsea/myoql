@@ -153,6 +153,8 @@ public class SplitLibMojo
 
 
         if (override) {
+            getLog().info("删除原文件: " + jarFile.getName());
+
             jarFile.delete();
             var newJarFile = new File(FileUtil.resolvePath(outputDirectory.getPath(), project.getArtifactId() + "-" + project.getVersion() + "-split-jar.jar"));
             new File(FileUtil.resolvePath(splitLibPath.getPath(), jarFile.getName())).renameTo(newJarFile);
