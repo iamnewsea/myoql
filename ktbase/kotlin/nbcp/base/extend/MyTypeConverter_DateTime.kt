@@ -123,6 +123,12 @@ val LocalTime.totalSeconds: Int
         return this.hour * 3600 + this.minute * 60 + this.second
     }
 
+val LocalDateTime.totalSeconds : Long
+    get() {
+        return this.toEpochSecond(ZoneId.systemDefault().rules.getOffset(Instant.EPOCH))
+    }
+
+
 /**
  * 字符串转为 LocalDateTime
  */
