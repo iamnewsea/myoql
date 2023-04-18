@@ -17,6 +17,7 @@ package cn.dev8;
  */
 
 import cn.dev8.util.FileUtil;
+import cn.dev8.util.ListUtil;
 import cn.dev8.util.ShellUtil;
 import cn.dev8.util.StringUtil;
 import lombok.SneakyThrows;
@@ -39,6 +40,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.jar.JarFile;
 
 /**
@@ -205,7 +207,15 @@ public class SplitLibMojo
 
     private Set<String> getKeepGroupIds() {
         HashSet<String> groupIds = new HashSet<String>();
-        groupIds.add(project.getGroupId());
+
+        var groupIdString = project.getGroupId();
+        var groupIdsArray = ListUtil.<String>fromArray(groupIdString.split("\\."));
+        if (groupIdsArray.size() > 1) {
+            ListUtil.removeLast(groupIdsArray);
+            groupIdString = String.join(".", groupIdsArray);
+        }
+
+        groupIds.add(groupIdString);
 
         if (keepGroupIds != null && keepGroupIds.length() > 0) {
             for (var it : keepGroupIds.split(",")) {
