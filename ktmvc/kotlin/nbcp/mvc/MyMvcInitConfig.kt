@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.core.convert.support.GenericConversionService
 import org.springframework.http.converter.AbstractHttpMessageConverter
 import org.springframework.http.converter.FormHttpMessageConverter
+import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
@@ -69,32 +70,7 @@ class MyMvcInitConfig : BeanPostProcessor {
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
         if (bean is HttpMessageConverters) {
             bean.converters.forEach { converter ->
-                if (converter is AbstractHttpMessageConverter) {
-                    converter.defaultCharset = const.utf8
-                }
-
-                //解决绝大多数Json转换问题
-                if (converter is MappingJackson2HttpMessageConverter) {
-                    converter.defaultCharset = const.utf8
-                    converter.objectMapper = WebJsonMapper()
-                    return@forEach
-                }
-
-                if (converter is StringHttpMessageConverter) {
-                    converter.setWriteAcceptCharset(false);
-                    converter.defaultCharset = const.utf8;
-                }
-
-                if (converter is FormHttpMessageConverter) {
-                    converter.setCharset(const.utf8)
-
-                    converter.partConverters.forEach foreach2@{ sub_conveter ->
-                        if (sub_conveter is AbstractJackson2HttpMessageConverter) {
-                            sub_conveter.defaultCharset = const.utf8
-                        }
-                        return@foreach2
-                    }
-                }
+                setConverter(converter);
                 return@forEach
             }
         } else if (bean is GenericConversionService) {
@@ -105,6 +81,31 @@ class MyMvcInitConfig : BeanPostProcessor {
         }
 
         return super.postProcessAfterInitialization(bean, beanName);
+    }
+
+    private fun setConverter(converter: HttpMessageConverter<*>) {
+        if (converter is StringHttpMessageConverter) {
+            converter.setWriteAcceptCharset(false);
+            converter.defaultCharset = const.utf8;
+            return
+        }
+        //解决绝大多数Json转换问题
+        if (converter is MappingJackson2HttpMessageConverter) {
+            converter.defaultCharset = const.utf8
+            converter.objectMapper = WebJsonMapper()
+            return
+        }
+        if (converter is AbstractHttpMessageConverter) {
+            converter.defaultCharset = const.utf8
+            return
+        }
+        if (converter is FormHttpMessageConverter) {
+            converter.setCharset(const.utf8)
+
+            converter.partConverters.forEach foreach2@{ sub_conveter ->
+                setConverter(sub_conveter);
+            }
+        }
     }
 
 
