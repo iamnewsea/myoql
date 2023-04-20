@@ -68,7 +68,9 @@ class MyMvcInitConfig : BeanPostProcessor {
     }
 
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
-        if (bean is HttpMessageConverters) {
+        if (bean is HttpMessageConverter<*>) {
+            setConverter(bean);
+        } else if (bean is HttpMessageConverters) {
             bean.converters.forEach { converter ->
                 setConverter(converter);
                 return@forEach
