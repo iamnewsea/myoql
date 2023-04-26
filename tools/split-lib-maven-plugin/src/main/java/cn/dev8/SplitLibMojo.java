@@ -215,12 +215,15 @@ public class SplitLibMojo
             groupIdString = String.join(".", groupIdsArray);
         }
 
-        groupIds.add(groupIdString);
 
         if (keepGroupIds != null && keepGroupIds.length() > 0) {
             for (var it : keepGroupIds.split(",")) {
                 groupIds.add(it);
             }
+        }
+
+        if( groupIds.size() == 0){
+            groupIds.add(groupIdString);
         }
 
         getLog().info("split-lib 拆分的包名为：" + String.join(",", groupIds));
