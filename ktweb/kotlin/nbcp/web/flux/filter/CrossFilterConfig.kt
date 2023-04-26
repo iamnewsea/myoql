@@ -25,8 +25,8 @@ class CrossFilterConfig {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 
-    @Value("\${app.filter.allow-origins:}")
-    var ALLOW_ORIGINS: String = "";
+    @Value("\${app.filter.allow-origins:*}")
+    var ALLOW_ORIGINS: String = "*";
 
     /**
      * 可以定义禁止的 header,默认允许通过所有 Header

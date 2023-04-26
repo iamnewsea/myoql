@@ -2,15 +2,16 @@ package nbcp.base.utils
 
 import nbcp.base.TestBase
 import org.junit.jupiter.api.Test
+import org.springframework.util.AntPathMatcher
 
 class CodeTest : TestBase() {
     @Test
     fun test_code() {
-        var e = CipherUtil.AESUtil.generateKey();
-        println(e)
-        var r = CipherUtil.AESUtil.encrypt("abc", e)
-        println(r)
-        println(CipherUtil.AESUtil.decrypt(r, e))
+        var match = AntPathMatcher(".");
+
+        println(match.match("appDeploySetting.%2A%2A","appDeploySetting.abc"))
+        println(match.match("appDeploySetting.*",null))
+
     }
 
 //    @Test

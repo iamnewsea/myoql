@@ -35,8 +35,8 @@ import javax.servlet.http.HttpServletResponse
 @ConditionalOnClass(Filter::class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 open class MyOqlCrossFilter : Filter {
-    @Value("\${app.filter.allow-origins:}")
-    var ALLOW_ORIGINS: String = "";
+    @Value("\${app.filter.allow-origins:*}")
+    var ALLOW_ORIGINS: String = "*";
 
     /**
      * 可以定义禁止的 header,默认允许通过所有 Header

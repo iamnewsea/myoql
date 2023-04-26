@@ -356,9 +356,10 @@ fun HttpServletRequest.getCorsResponseMap(allowOrigins: List<String>, denyHeader
     var retMap = StringMap();
     if (requestOrigin.isEmpty()) return retMap;
 
-    var allow = allowOrigins.any { requestOrigin.contains(it) } ||
-            requestOrigin.contains("localhost") ||
-            requestOrigin.contains("127.0.0");
+    var allow = requestOrigin.contains("localhost") ||
+            requestOrigin.startsWith("127.0.0") ||
+            requestOrigin.startsWith("192.168.") ||
+            allowOrigins.any { it == "*" || requestOrigin.contains(it) };
 
     if (allow == false) {
         LoggerFactory.getLogger("ktmvc.getCorsResponseMap").warn("系统忽略未允许的跨域请求源:${requestOrigin}")

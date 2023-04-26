@@ -146,7 +146,7 @@ class MemoryCacheList() : ArrayList<Cache<String, Any>>() {
      */
     private fun Cache<String, Any>.brokeWithMatch(key: String): List<String> {
         var match = AntPathMatcher(".");
-        var list = this.asMap().keys.toSet().filter { match.match(key.AsString("*"), it) };
+        var list = this.asMap().keys.toSet().filter{ it != null}.filter { match.match(key.AsString("*"), it) };
         this.invalidateAll(list);
         return list;
     }
