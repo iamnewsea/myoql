@@ -7,7 +7,6 @@ import org.springframework.util.AntPathMatcher
 import java.time.Duration
 
 
-
 var myMemoryCaches = MemoryCacheList.myMemoryCaches;
 
 /**
@@ -101,7 +100,6 @@ class MemoryCacheList() : ArrayList<Cache<String, Any>>() {
         )
 
 
-
         inline fun <T> findTypedValueByKey(key: String): T? {
             return myMemoryCaches.findTypedValueByKey(key)
         }
@@ -146,7 +144,10 @@ class MemoryCacheList() : ArrayList<Cache<String, Any>>() {
      */
     private fun Cache<String, Any>.brokeWithMatch(key: String): List<String> {
         var match = AntPathMatcher(".");
-        var list = this.asMap().keys.toSet().filter { match.match(key.AsString("*"), it) };
+        var list = this.asMap()?.keys?.toSet()?.filter { match.match(key.AsString("*"), it) };
+        if (list.isNullOrEmpty()) {
+            return listOf();
+        }
         this.invalidateAll(list);
         return list;
     }
