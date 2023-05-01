@@ -106,14 +106,15 @@ public class SplitLibMojo
         Set<String> groupIds = getKeepGroupIds();
 
         jarFile = new File(FileUtil.resolvePath(outputDirectory.getPath(),
-                project.getArtifactId() + "-" + project.getVersion() + (classifier.length() ==0 ? "" : ("-" + classifier)) + ".jar"));
+                project.getArtifactId() + "-" + project.getVersion() + ((classifier == null || classifier.length() == 0) ? "" : ("-" + classifier)) + ".jar"));
         extractJar(jarFile.getPath());
 
 
         var libFile = new File(FileUtil.resolvePath(splitLibPath.getPath(), "jar", "BOOT-INF", "lib"));
         if (libFile.exists() == false) {
-            getLog().error(jarFile.getName() + " 中不存在 BOOT-INF/lib !");
-            return;
+            var msg = jarFile.getName() + " 中不存在 BOOT-INF/lib !";
+            getLog().error(msg);
+            throw new RuntimeException(msg);
         }
         var libJars = libFile.listFiles();
 
@@ -202,8 +203,9 @@ public class SplitLibMojo
         }
 
         if (new File(jarExePath).exists() == false) {
-            getLog().error("JAVA_HOME:" + javaHomePath);
-            throw new RuntimeException("找不到 jar 命令：" + jarExePath);
+            var msg = "找不到 jar 命令: " + jarExePath + "!  JAVA_HOME:" + javaHomePath;
+            getLog().error(msg);
+            throw new RuntimeException(msg);
         }
 
         return jarExePath;
@@ -247,9 +249,9 @@ public class SplitLibMojo
             return;
         }
 
-        var message = "org.springframework.boot:spring-boot-maven-plugin.configuration.layout must be ZIP!";
+        var message = "split-lib 检查不通过！ org.springframework.boot:spring-boot-maven-plugin.configuration.layout must be ZIP!";
 
-        getLog().error("split-lib 检查不通过！ " + message);
+        getLog().error(message);
 
         var writer = new FileWriter(FileUtil.resolvePath(outputDirectory.getPath(), "split-lib", "split-lib-check.txt"));
         writer.write("[" + project.getName() + "]" + FileUtil.LINE_BREAK + "execute split-lib-maven-plugin at : " + nowString + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
