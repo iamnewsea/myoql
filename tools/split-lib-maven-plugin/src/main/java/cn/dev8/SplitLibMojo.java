@@ -20,6 +20,7 @@ import cn.dev8.util.FileUtil;
 import cn.dev8.util.ListUtil;
 import cn.dev8.util.ShellUtil;
 import cn.dev8.util.StringUtil;
+import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import lombok.var;
 import org.apache.maven.plugin.AbstractMojo;
@@ -74,6 +75,8 @@ public class SplitLibMojo
     @Parameter(property = "override", defaultValue = "false")
     private Boolean override;
 
+    @Parameter(property = "classifier", defaultValue = "")
+    private String classifier;
 
     private String jarExePath = "";
 
@@ -102,7 +105,8 @@ public class SplitLibMojo
 
         Set<String> groupIds = getKeepGroupIds();
 
-        jarFile = new File(FileUtil.resolvePath(outputDirectory.getPath(), project.getArtifactId() + "-" + project.getVersion() + ".jar"));
+        jarFile = new File(FileUtil.resolvePath(outputDirectory.getPath(),
+                project.getArtifactId() + "-" + project.getVersion() + (classifier.length() ==0 ? "" : ("-" + classifier)) + ".jar"));
         extractJar(jarFile.getPath());
 
 
@@ -222,7 +226,7 @@ public class SplitLibMojo
             }
         }
 
-        if( groupIds.size() == 0){
+        if (groupIds.size() == 0) {
             groupIds.add(groupIdString);
         }
 
@@ -383,7 +387,6 @@ public class SplitLibMojo
     }
 
     private File getPomPropertyFile(File tmpPath) {
-
         var files = tmpPath.listFiles();
         if (files == null) return null;
 
