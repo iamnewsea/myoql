@@ -112,9 +112,7 @@ class MemoryCacheList() : ArrayList<Cache<String, Any>>() {
         /**
          * 按正则破坏key
          */
-
-
-        fun brokeWithMatch(key: String): List<String> {
+        fun brokeWithMatch(key: String): Set<String> {
             return myMemoryCaches.brokeWithMatch(key);
         }
     }
@@ -142,21 +140,30 @@ class MemoryCacheList() : ArrayList<Cache<String, Any>>() {
     /**
      * 按正则破坏key
      */
-    private fun Cache<String, Any>.brokeWithMatch(key: String): List<String> {
+    private fun Cache<String, Any>.brokeItemWithMatch(key: String): Set<String> {
+        var keys = this.asMap().keys.toSet();
+        if (keys.isEmpty()) {
+            return setOf();
+        }
+        if (key.isNullOrEmpty()) {
+            this.invalidateAll();
+            return keys;
+        }
+
         var match = AntPathMatcher(".");
-        var list = this.asMap()?.keys?.toSet()?.filter { match.match(key.AsString("*"), it) };
+        var list = keys.filter { match.match(key, it) }.toSet();
         if (list.isNullOrEmpty()) {
-            return listOf();
+            return setOf();
         }
         this.invalidateAll(list);
         return list;
     }
 
 
-    fun brokeWithMatch(key: String): List<String> {
-        var list = mutableListOf<String>();
+    fun brokeWithMatch(key: String): Set<String> {
+        var list = mutableSetOf<String>();
         for (it in this) {
-            list.addAll(it.brokeWithMatch(key))
+            list.addAll(it.brokeItemWithMatch(key))
         }
         return list;
     }
