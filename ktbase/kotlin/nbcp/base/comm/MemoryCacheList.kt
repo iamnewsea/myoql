@@ -141,7 +141,12 @@ class MemoryCacheList() : ArrayList<Cache<String, Any>>() {
      * 按正则破坏key
      */
     private fun Cache<String, Any>.brokeItemWithMatch(key: String): Set<String> {
-        var keys = this.asMap().keys.toSet();
+        var map = this.asMap();
+        if (map.isNullOrEmpty()) {
+            return setOf();
+        }
+
+        var keys = map.keys;
         if (keys.isEmpty()) {
             return setOf();
         }
