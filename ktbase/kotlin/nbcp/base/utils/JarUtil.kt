@@ -54,7 +54,8 @@ object JarUtil {
      */
     @JvmStatic
     fun getStartingJarFile(): File {
-        return File(FileUtil.resolvePath(System.getProperty("user.dir"), System.getProperty("java.class.path")))
+        var targetPath = System.getProperty("java.class.path").split(";").filter{ it.startsWith(System.getProperty("user.dir"))}.firstOrNull() ?: "";
+        return File(FileUtil.resolvePath(System.getProperty("user.dir"), targetPath))
     }
 
 

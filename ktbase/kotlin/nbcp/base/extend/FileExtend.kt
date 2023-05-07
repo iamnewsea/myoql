@@ -16,6 +16,10 @@ import java.time.LocalDateTime
  */
 val File.FullName: String
     get() {
+        if (this.path.contains(";")) {
+            return this.path;
+        }
+
         return this.canonicalPath
     }
 
@@ -25,8 +29,8 @@ val File.FullName: String
  */
 @JvmOverloads
 fun File.ListRecursionFiles(
-    pathCallback: ((String) -> Boolean)? = null,
-    fileCallback: ((String) -> Boolean)? = null
+        pathCallback: ((String) -> Boolean)? = null,
+        fileCallback: ((String) -> Boolean)? = null
 ): List<String> {
     var ret = mutableSetOf<String>()
     if (this.isFile) {
@@ -213,11 +217,11 @@ fun File.withCacheObject(cacheSeconds: Int, contentAction: () -> String): String
  */
 @JvmOverloads
 fun File.FilterLines(
-    matchLineCount: Int,
-    extCount: Int = 0,
-    filter: List<String> = emptyList(),
-    not: List<String> = emptyList(),
-    tail: Boolean = true
+        matchLineCount: Int,
+        extCount: Int = 0,
+        filter: List<String> = emptyList(),
+        not: List<String> = emptyList(),
+        tail: Boolean = true
 ): List<String> {
     var matchLines = matchLineCount;
     if (matchLines == 0) {
