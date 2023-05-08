@@ -40,8 +40,8 @@ val ServerHttpRequest.IsOctetContent: Boolean
     }
 
 
-fun ServerHttpRequest.getHeader(key: String): String? {
-    return this.headers.get(key)?.joinToString(",")
+fun ServerHttpRequest.getHeader(key: String): String {
+    return this.headers.get(key)?.joinToString(",") ?: "";
 }
 
 private fun _getClientIp(request: ServerHttpRequest): String {
@@ -50,7 +50,7 @@ private fun _getClientIp(request: ServerHttpRequest): String {
 x-real-ip: 10.0.4.20
 x-forwarded-for: 103.10.86.226,124.70.126.65,10.0.4.20
      */
-    var forwardIps = (request.getHeader("X-Forwarded-For") ?: "").split(",").map { it.trim() }
+    var forwardIps = request.getHeader("X-Forwarded-For").split(",").map { it.trim() }
             .filter { it.HasValue && !it.basicSame("unknown") && !WebUtil.isLocalIp(it) }.toList();
 
     //如果设置了 X-Forwarded-For
@@ -58,7 +58,7 @@ x-forwarded-for: 103.10.86.226,124.70.126.65,10.0.4.20
         return forwardIps[0];
     }
 
-    var realIp = request.getHeader("X-Real-IP") ?: "";
+    var realIp = request.getHeader("X-Real-IP");
     // 如果设置了 X-Real-IP
     // 必须 = realIp
     if (WebUtil.isLocalIp(realIp) == false) {
@@ -286,7 +286,7 @@ fun ServerHttpRequest.getCorsResponseMap(allowOrigins: List<String>, denyHeaders
     //https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
 
     var request = this;
-    var requestOrigin = request.getHeader("origin") ?: ""
+    var requestOrigin = request.getHeader("origin")
 
 
     var retMap = StringMap();
@@ -315,7 +315,7 @@ fun ServerHttpRequest.getCorsResponseMap(allowOrigins: List<String>, denyHeaders
     //添加指定的
 //    allowHeaders.add("Authorization")
 
-    allowHeaders.addAll(request.getHeader("Access-Control-Request-Headers").AsString().split(",")
+    allowHeaders.addAll(request.getHeader("Access-Control-Request-Headers").split(",")
             .filter { it.HasValue })
 
     allowHeaders.removeIf { it.isEmpty() }
