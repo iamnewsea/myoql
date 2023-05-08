@@ -318,8 +318,6 @@ fun ServerHttpRequest.getCorsResponseMap(allowOrigins: List<String>, denyHeaders
     allowHeaders.addAll(request.getHeader("Access-Control-Request-Headers").split(",")
             .filter { it.HasValue })
 
-    allowHeaders.removeIf { it.isEmpty() }
-
     allowHeaders -= denyHeaders;
 
     if (allowHeaders.any()) {
