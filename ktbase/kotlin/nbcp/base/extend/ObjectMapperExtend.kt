@@ -30,6 +30,11 @@ fun ObjectMapper.initObjectMapper() {
     this.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true)
     this.configure(MapperFeature.USE_STD_BEAN_NAMING, true)
 
+    /**
+     * 类型：枚举，map，时间等， 空字符串转换为 null
+     */
+    this.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+
     // 设置输入时忽略在JSON字符串中存在但Java对象实际没有的属性
     this.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
