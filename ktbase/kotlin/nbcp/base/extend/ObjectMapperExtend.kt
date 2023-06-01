@@ -26,6 +26,7 @@ fun ObjectMapper.initObjectMapper() {
     this.registerKotlinModule()
 
     // 允许单引号、允许不带引号的字段名称
+    this.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
     this.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
     this.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true)
     this.configure(MapperFeature.USE_STD_BEAN_NAMING, true)
