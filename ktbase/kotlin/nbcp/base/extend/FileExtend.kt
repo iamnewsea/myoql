@@ -78,11 +78,6 @@ fun File.ReadTailLines(action: ((String, Int) -> Boolean)): Int {
     }
 }
 
-
-fun File.ReadContent(): String {
-    return FileInputStream(this).readContentString();
-}
-
 fun File.ReadHeadLines(action: ((String, Int) -> Boolean)): Int {
     if (this.isFile == false) return -1;
 
