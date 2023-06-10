@@ -2,6 +2,7 @@ package nbcp.myoql.redis
 
 import nbcp.myoql.TestBase
 import nbcp.myoql.db.db
+import nbcp.myoql.db.redis.scanAllKeys
 import nbcp.myoql.db.redis.scanKeys
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,9 +17,9 @@ class testa : TestBase() {
 
     @Test
     fun testScanKeys() {
-        template.scanKeys("mp:*ip*") {
+        template.scanAllKeys("*") {
             println(it)
-            return@scanKeys true;
+            return@scanAllKeys true;
         }
     }
 

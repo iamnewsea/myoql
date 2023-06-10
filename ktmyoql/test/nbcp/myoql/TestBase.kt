@@ -22,7 +22,10 @@ import java.time.LocalDateTime
 
 
 //@SpringBootApplication(exclude = arrayOf(MongoAutoConfiguration::class, RedisAutoConfiguration::class))
-@SpringBootApplication(exclude = arrayOf(DataSourceAutoConfiguration::class, RabbitAutoConfiguration::class))
+@SpringBootApplication(exclude =
+arrayOf(
+        DataSourceAutoConfiguration::class,
+        RabbitAutoConfiguration::class))
 open class KtMyoqlTestApplication {
 
     companion object {
@@ -42,7 +45,7 @@ open class KtMyoqlTestApplication {
 @ExtendWith(SpringExtension::class)
 @WebAppConfiguration
 @SpringBootTest(classes = [KtMyoqlTestApplication::class])
-@TestPropertySource(locations = ["classpath:application.yml"])
+@TestPropertySource(locations = ["classpath:application.properties"])
 @MyLogLevel(LogLevelScopeEnum.INFO)
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
 //@ActiveProfiles("unittest","productprofile")

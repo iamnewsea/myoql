@@ -19,7 +19,7 @@ fun RedisTemplate<*, *>.scanKeys(pattern: String, limit: Int = 9999, callback: (
 
     var searchPatternValue = pattern;
     if (prefix.HasValue &&
-        !searchPatternValue.startsWith(prefix + ":")
+            !searchPatternValue.startsWith(prefix + ":")
     ) {
         searchPatternValue = prefix + ":" + searchPatternValue
     }
@@ -29,25 +29,27 @@ fun RedisTemplate<*, *>.scanKeys(pattern: String, limit: Int = 9999, callback: (
 
 /**
  * 不受产品线前缀的影响
+ * 不要用 Jedis，因为它不支持集群。
+ * 使用默认的： org.springframework.boot:spring-boot-starter-data-redis ,支持集群模式扫描！
  */
 @JvmOverloads
 fun RedisTemplate<*, *>.scanAllKeys(pattern: String, limit: Int = 9999, callback: (String) -> Boolean) {
     this.connectionFactory
-        .connection
-        .use { conn ->
-            conn.scan(
-                ScanOptions
-                    .scanOptions()
-                    .match(pattern)
-                    .count(limit.AsLong())
-                    .build()
-            ).use { result ->
-                while (result.hasNext()) {
-                    val key = String(result.next())
-                    if (callback(key) == false) {
-                        break;
+            .connection
+            .use { conn ->
+                conn.scan(
+                        ScanOptions
+                                .scanOptions()
+                                .match(pattern)
+                                .count(limit.AsLong())
+                                .build()
+                ).use { result ->
+                    while (result.hasNext()) {
+                        val key = String(result.next())
+                        if (callback(key) == false) {
+                            break;
+                        }
                     }
                 }
             }
-        }
 }

@@ -25,17 +25,27 @@ class MyOqlRabbitMqBeanConfig : BeanPostProcessor {
         if (bean is CachingConnectionFactory) {
             var properties = SpringUtil.getBean<RabbitProperties>()
             //修正bug
-            bean.port = properties.port;
-            bean.host = properties.host;
-            bean.username = properties.username;
-            bean.setPassword(properties.password)
-            bean.virtualHost = properties.virtualHost;
+            bean.port = properties.port ?: 5672;
 
+            if (properties.host != null) {
+                bean.host = properties.host;
+            }
+
+            if (properties.username != null) {
+                bean.username = properties.username;
+            }
+
+            if (properties.password != null) {
+                bean.setPassword(properties.password)
+            }
+
+            if (properties.virtualHost != null) {
+                bean.virtualHost = properties.virtualHost;
+            }
         } else if (bean is RabbitProperties) {
             //ConfirmCallback 确认消息是否到达 Broker 服务器
             if (bean.publisherConfirmType == null) {
-                bean.publisherConfirmType =
-                    org.springframework.amqp.rabbit.connection.CachingConnectionFactory.ConfirmType.CORRELATED;
+                bean.publisherConfirmType = CachingConnectionFactory.ConfirmType.CORRELATED;
             }
 
             //需要实现 ReturnCallback 接口
