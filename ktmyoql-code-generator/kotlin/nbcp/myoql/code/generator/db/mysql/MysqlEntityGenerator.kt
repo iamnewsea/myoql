@@ -393,6 +393,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
     }
 
     fun getColumnDefine(
+            tableName: String,
             property: Field,
             nameType: NameMappingTypeEnum = NameMappingTypeEnum.ORIGIN,
             pFieldName: String = "",
@@ -415,7 +416,7 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
         var spreadColumn = property.getAnnotation(SqlSpreadColumn::class.java);
         if (spreadColumn != null) {
             propertyType.AllFields.forEach {
-                getColumnDefine(it, nameType, columnName + spreadColumn.value, comment)
+                getColumnDefine(tableName, it, nameType, columnName + spreadColumn.value, comment)
                         .apply {
                             list.addAll(this.first)
                             checks.addAll(this.second)
@@ -457,10 +458,10 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                 }
 
                 var item =
-                        """`${columnName}` Json not null  default '{}' comment '${objComment}'"""
+                        """`${columnName}` Json not null  comment '${objComment}'"""
                 list.add(item);
 
-                checks.add("CONSTRAINT `c_${columnName}` CHECK ( json_valid(`${columnName}`) )")
+                checks.add("CONSTRAINT `jc_${tableName}_${columnName}` CHECK ( json_valid(`${columnName}`) )")
             }
         } else {
             var item =
@@ -494,17 +495,17 @@ ORDER BY TABLE_NAME , index_name , seq_in_index
                     return@sortedBy it.name.length;
                 }
 
+        var tableName = nameType.getResult(entity.simpleName)
         var checks = mutableListOf<String>();
 
         fields.forEach {
-            getColumnDefine(it, nameType)
+            getColumnDefine(tableName, it, nameType)
                     .apply {
                         list.addAll(this.first);
                         checks.addAll(this.second);
                     }
         }
 
-        var tableName = nameType.getResult(entity.simpleName)
 
         return """
 DROP TABLE IF EXISTS `${tableName}`;
