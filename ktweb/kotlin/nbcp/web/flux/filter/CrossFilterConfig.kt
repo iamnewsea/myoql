@@ -6,6 +6,7 @@ import nbcp.base.comm.const
 import nbcp.base.enums.LogLevelScopeEnum
 import nbcp.base.extend.*
 import nbcp.mvc.flux.*
+import nbcp.myoql.db.db
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
@@ -46,6 +47,7 @@ class CrossFilterConfig {
             }
 
             HttpContext.init(exchange)
+            db.currentRequestChangeDbTable.clear()
 
             if (ignoreFilter(exchange.request)) {
                 return@WebFilter chain.filter(exchange)

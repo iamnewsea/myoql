@@ -15,7 +15,7 @@
 ### 灵活的上下文模式
 
     var ds_main = SpringUtil.getBean<DataSource>()
-    var ds_read = SpringUtil.getBean<DataSource>("slave") 
+    var ds_read = SpringUtil.getBean<DataSource>("slaveDataSource") 
     
     
     usingScope(ds_read){
@@ -43,7 +43,7 @@
     public class MysqlDynamicDataSource:ISqlDataSource{
         override run(tableName:String,isRead:Boolean):DataSource?{
             var ds_main = SpringUtil.getBean<DataSource>()
-            var ds_read = SpringUtil.getBean<DataSource>("slave") 
+            var ds_read = SpringUtil.getBean<DataSource>("slaveDataSource") 
 
             if(tableName.IsIn("product","order") ){
                 if(isRead == false){

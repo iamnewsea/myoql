@@ -119,8 +119,8 @@ abstract class SqlBaseClip(var tableName: String) : Serializable {
         }
 
         if (isRead) {
-            if (SpringUtil.containsBean("slave", DataSource::class.java)) {
-                ds = SpringUtil.getBeanByName<DataSource>("slave")
+            ds = SpringUtil.getBeanWithNull<DataSource>("slaveDataSource")
+            if (ds != null) {
                 return@lazy NamedParameterJdbcTemplate(ds);
             }
         }

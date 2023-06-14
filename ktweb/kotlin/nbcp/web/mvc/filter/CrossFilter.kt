@@ -9,6 +9,7 @@ import nbcp.mvc.mvc.MyHttpRequestWrapper
 import nbcp.mvc.mvc.HttpContext
 import nbcp.mvc.mvc.fullUrl
 import nbcp.mvc.mvc.getCorsResponseMap
+import nbcp.myoql.db.db
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -86,8 +87,9 @@ open class MyOqlCrossFilter : Filter {
         val targetRequest = request2 ?: request;
 
 
-
         HttpContext.init(targetRequest, httpResponse);
+        db.currentRequestChangeDbTable.clear()
+
         chain.doFilter(targetRequest, response)
     }
 }

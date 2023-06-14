@@ -7,6 +7,7 @@ import nbcp.base.enums.LogLevelScopeEnum
 import nbcp.base.extend.*
 import nbcp.mvc.mvc.MyHttpRequestWrapper
 import nbcp.mvc.mvc.*
+import nbcp.myoql.db.db
 import nbcp.web.extend.tokenValue
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
@@ -67,6 +68,8 @@ open class MyAllFilter : Filter {
     override fun doFilter(oriRequest: ServletRequest?, oriResponse: ServletResponse?, chain: FilterChain) {
         var httpRequest = oriRequest as HttpServletRequest
         var httpResponse = oriResponse as HttpServletResponse;
+
+        db.currentRequestChangeDbTable.clear()
 
         if (httpRequest.requestURI == "/health") {
             httpResponse.status = 200;

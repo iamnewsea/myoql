@@ -27,7 +27,7 @@ class MySqlDataSourceConfig {
         @JvmStatic
         val hasSlave: Boolean
             get() {
-                return SpringUtil.containsBean("slave", DataSource::class.java);
+                return SpringUtil.containsBean("slaveDataSource", DataSource::class.java);
             }
     }
 

@@ -1,5 +1,6 @@
 package nbcp.myoql.db
 
+import nbcp.base.comm.StringMap
 import nbcp.base.extend.scopes
 import nbcp.myoql.annotation.*
 import nbcp.myoql.db.enums.MyOqlDbScopeEnum
@@ -31,34 +32,18 @@ object db {
     @JvmStatic
     val redis = nbcp.myoql.db.DbRedis;
 
-//    private val _beforeExecuteDbData: ThreadLocal<Any?> = ThreadLocal.withInitial { return@withInitial null }
-//
-//    //执行前保存的数据,可能会执行后用到。
-//    //删除数据之前，先查出来，执行成功后，放到垃圾箱。
-//    @JvmStatic
-//    var beforeExecuteDbData: Any?
-//        get() {
-//            return _beforeExecuteDbData.get()
-//        }
-//        set(value) {
-//            _beforeExecuteDbData.set(value);
-//        }
-
-
-//    private val _lastCommand: ThreadLocal<String> = ThreadLocal.withInitial { return@withInitial "" }
-//
-//    //最后执行的命令
-//    @JvmStatic
-//    var lastCommand: String
-//        get() {
-//            return _lastCommand.get()
-//        }
-//        set(value) {
-//            _lastCommand.set(value);
-//        }
-
-
     private val _affectRowCount: ThreadLocal<Int> = ThreadLocal.withInitial { return@withInitial -1 }
+
+
+    /**
+     * 读写分离用！当前请求对数据库表执行 insert,update,delete 操作的表. 全小写
+     */
+    private val _currentRequestChangeDbTable: ThreadLocal<LinkedHashSet<String>> = ThreadLocal.withInitial { return@withInitial LinkedHashSet<String>() }
+
+    val currentRequestChangeDbTable: LinkedHashSet<String>
+        get() {
+            return _currentRequestChangeDbTable.get();
+        }
 
     /**
      * 最后执行的影响行数，mongo,sql
@@ -180,21 +165,21 @@ object db {
 
     @JvmStatic
     fun <T> getRedisCacheJson(
-        tableClass: Class<T>,
-        /**
-         * 缓存表的隔离键, 如:"cityCode"
-         */
-        groupKey: String,
-        /**
-         * 缓存表的隔离值,如: "010"
-         */
-        groupValue: String,
+            tableClass: Class<T>,
+            /**
+             * 缓存表的隔离键, 如:"cityCode"
+             */
+            groupKey: String,
+            /**
+             * 缓存表的隔离值,如: "010"
+             */
+            groupValue: String,
 
-        /**
-         * 唯一值
-         */
-        sql: String,
-        consumer: Supplier<T?>
+            /**
+             * 唯一值
+             */
+            sql: String,
+            consumer: Supplier<T?>
     ): T? {
         return getRedisCacheJson(tableClass.simpleName, tableClass, groupKey, groupValue, sql, consumer)
     }
@@ -204,84 +189,84 @@ object db {
      */
     @JvmStatic
     fun <T> getRedisCacheJson(
-        table: String,
-        cacheType: Class<T>,
-        /**
-         * 缓存表的隔离键, 如:"cityCode"
-         */
-        groupKey: String,
-        /**
-         * 缓存表的隔离值,如: "010"
-         */
-        groupValue: String,
+            table: String,
+            cacheType: Class<T>,
+            /**
+             * 缓存表的隔离键, 如:"cityCode"
+             */
+            groupKey: String,
+            /**
+             * 缓存表的隔离值,如: "010"
+             */
+            groupValue: String,
 
-        /**
-         * 唯一值
-         */
-        sql: String,
-        consumer: Supplier<T?>
+            /**
+             * 唯一值
+             */
+            sql: String,
+            consumer: Supplier<T?>
     ): T? {
         return FromRedisCache(table = table, groupKey = groupKey, groupValue = groupValue, sql = sql)
-            .getJson(
-                cacheType,
-                consumer
-            )
+                .getJson(
+                        cacheType,
+                        consumer
+                )
     }
 
     @JvmStatic
     fun <T> getRedisCacheList(
-        tableClass: Class<T>,
-        /**
-         * 缓存表的隔离键, 如:"cityCode"
-         */
-        groupKey: String,
-        /**
-         * 缓存表的隔离值,如: "010"
-         */
-        groupValue: String,
+            tableClass: Class<T>,
+            /**
+             * 缓存表的隔离键, 如:"cityCode"
+             */
+            groupKey: String,
+            /**
+             * 缓存表的隔离值,如: "010"
+             */
+            groupValue: String,
 
-        /**
-         * 唯一值
-         */
-        sql: String,
-        consumer: Supplier<List<T>?>
+            /**
+             * 唯一值
+             */
+            sql: String,
+            consumer: Supplier<List<T>?>
     ): List<T>? {
         return getRedisCacheList(tableClass.simpleName, tableClass, groupKey, groupValue, sql, consumer)
     }
 
     @JvmStatic
     fun <T> getRedisCacheList(
-        table: String,
-        cacheType: Class<T>,
-        /**
-         * 缓存表的隔离键, 如:"cityCode"
-         */
-        groupKey: String,
-        /**
-         * 缓存表的隔离值,如: "010"
-         */
-        groupValue: String,
+            table: String,
+            cacheType: Class<T>,
+            /**
+             * 缓存表的隔离键, 如:"cityCode"
+             */
+            groupKey: String,
+            /**
+             * 缓存表的隔离值,如: "010"
+             */
+            groupValue: String,
 
-        /**
-         * 唯一值
-         */
-        sql: String,
-        consumer: Supplier<List<T>?>
+            /**
+             * 唯一值
+             */
+            sql: String,
+            consumer: Supplier<List<T>?>
     ): List<T>? {
         return FromRedisCache(table = table, groupKey = groupKey, groupValue = groupValue, sql = sql)
-            .getList(
-                cacheType,
-                consumer
-            )
+                .getList(
+                        cacheType,
+                        consumer
+                )
     }
 
 
     @JvmStatic
     fun brokeRedisCache(tableClass: KClass<*>, groupKey: String, groupValue: String) {
         return BrokeRedisCache(
-            table = tableClass.java.simpleName,
-            groupKey = groupKey,
-            groupValue = groupValue
+                table = tableClass.java.simpleName,
+                groupKey = groupKey,
+                groupValue = groupValue
         ).brokeCache()
     }
 
