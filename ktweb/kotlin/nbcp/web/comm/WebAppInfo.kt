@@ -1,9 +1,7 @@
 package nbcp.web.comm
 
-import nbcp.base.extend.AsString
-import nbcp.base.extend.FullName
-import nbcp.base.extend.HasValue
-import nbcp.base.extend.Important
+import nbcp.base.extend.*
+import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.FileUtil
 import nbcp.base.utils.JarUtil
 import nbcp.base.utils.SpringUtil
@@ -17,18 +15,7 @@ class WebAppInfo {
         fun getAppInfo(): String {
 
 
-            var style = """<style>
-body{padding:16px;} 
-div{margin-top:10px;} 
-div>span:first-child{font-size:14px;color:gray} 
-div>span:last-child{font-size:16px;} 
-div>span:first-child::after{content:":";display:inline-block;margin-right:6px;}
-h1{margin:0}
-hr{height: 1px;border: none;border-top: 1px dashed gray;}
-h2{margin:20px 0 0}
-.grid{position:relative;display:grid;grid-template-columns:1fr 1fr;border:solid 4px #ccd7f2;padding:10px;grid-column-gap:20px;grid-row-gap:4px;}
-.grid:after{content:"";position:absolute;display:block;width:4px;height:100%;background-color:#ccd7f2;left:50%;margin-left:-4px;}
-</style>"""
+            var style = """<style>${ClassUtil.getDefaultClassLoader().getResourceAsStream("hi.css").readContentString()}</style>"""
 
             return style +
                     "<h1>" + SpringUtil.context.environment.getProperty("spring.application.name") +
