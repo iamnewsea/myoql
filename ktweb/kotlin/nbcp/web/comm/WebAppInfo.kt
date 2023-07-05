@@ -5,6 +5,7 @@ import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.FileUtil
 import nbcp.base.utils.JarUtil
 import nbcp.base.utils.SpringUtil
+import nbcp.mvc.mvc.HttpContext
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.*
@@ -12,7 +13,7 @@ import java.util.*
 class WebAppInfo {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass);
-        fun getAppInfo(): String {
+        fun getAppInfo(clientIp:String): String {
 
 
             var style = """<style>${ClassUtil.getDefaultClassLoader().getResourceAsStream("hi.css").readContentString()}</style>"""
@@ -20,7 +21,7 @@ class WebAppInfo {
             return style +
                     "<h1>" + SpringUtil.context.environment.getProperty("spring.application.name") +
                     "</h1><div class='grid'>" +
-                    getBasicInfo()
+                    getBasicInfo(clientIp)
                             .filter { it.value.HasValue }
                             .map { "<div><span>${it.key}</span><span>${it.value}</span></div>" }
                             .joinToString("") +
@@ -32,11 +33,12 @@ class WebAppInfo {
                     "</div>"
         }
 
-        fun getBasicInfo(): Map<String, String?> {
+        fun getBasicInfo(clientIp:String): Map<String, String?> {
             val json = mutableMapOf<String, String?>();
             val env = SpringUtil.context.environment;
 
             val jarFile = JarUtil.getStartingJarFile();
+            json["访问者Ip"] = clientIp
             json["当前配置"] = env.activeProfiles.joinToString(",")
             json["集群"] = env.getProperty("app.group");
 

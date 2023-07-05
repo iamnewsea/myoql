@@ -7,6 +7,7 @@ import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.JarUtil
 import nbcp.base.utils.SpringUtil
 import nbcp.mvc.annotation.OpenAction
+import nbcp.mvc.flux.ClientIp
 import nbcp.web.comm.WebAppInfo
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.GetMapping
@@ -41,7 +42,7 @@ open class HiServlet {
             }
         }
 
-        WebAppInfo.getAppInfo().apply {
+        WebAppInfo.getAppInfo(swe.ClientIp).apply {
             if (this.HasValue) {
                 return Mono.just(this);
             } else {

@@ -56,7 +56,7 @@ open class HiServlet {
         }
 
 
-        WebAppInfo.getAppInfo().apply {
+        WebAppInfo.getAppInfo(request.ClientIp).apply {
             if (this.HasValue) {
                 response.WriteHtmlBodyValue(this);
             }
