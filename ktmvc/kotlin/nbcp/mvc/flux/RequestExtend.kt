@@ -11,7 +11,7 @@ import nbcp.base.extend.AsInt
 import nbcp.base.extend.AsString
 import nbcp.base.extend.HasValue
 import nbcp.base.extend.basicSame
-import nbcp.base.utils.MyUtil
+import nbcp.base.utils.CodeUtil
 import nbcp.base.utils.WebUtil
 import org.slf4j.LoggerFactory
 import org.springframework.http.server.reactive.ServerHttpRequest
@@ -58,7 +58,7 @@ x-forwarded-for: 103.10.86.226,124.70.126.65,10.0.4.20
         return forwardIps[0];
     }
 
-    var realIp = request.getHeader("X-Real-IP");
+    var realIp = request.getHeader("X-Real-Ip");
     // 如果设置了 X-Real-IP
     // 必须 = realIp
     if (WebUtil.isLocalIp(realIp) == false) {
@@ -71,11 +71,11 @@ x-forwarded-for: 103.10.86.226,124.70.126.65,10.0.4.20
 
 /**
  * 获取客户端Ip，已缓存到 Request 对象。
- * Nginx 应该在最外层， 设置 X-Real-IP 和 X-Forwarded-For.
- * proxy_set_header X-Real-IP $remote_addr;
+ * Nginx 应该在最外层， 设置 X-Real-Ip 和 X-Forwarded-For.
+ * proxy_set_header X-Real-Ip $remote_addr;
  * proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
- * 如果没有设置 X-Real-IP 和 X-Forwarded-For，返回  remoteAddr
- * 否则返回 X-Real-IP ， X-Forwarded-For
+ * 如果没有设置 X-Real-Ip 和 X-Forwarded-For，返回  remoteAddr
+ * 否则返回 X-Real-Ip ， X-Forwarded-For
  * 默认返回 remoteAddr
  */
 val ServerWebExchange.ClientIp: String
@@ -96,6 +96,24 @@ val ServerWebExchange.ClientIp: String
         return clientIp;
     }
 
+
+val ServerWebExchange.XTraceId: String
+    get() {
+        var xTraceId = this.request.getHeader("X-Trace_Id");
+        if( xTraceId.HasValue){
+            return xTraceId;
+        }
+
+        xTraceId = this.attributes.get("[XTraceId]").AsString()
+        if (xTraceId.HasValue) {
+            return xTraceId
+        }
+
+        xTraceId = CodeUtil.getCode();
+
+        this.attributes.set("[XTraceId]", xTraceId);
+        return xTraceId;
+    }
 
 /**
  * 把 queryString 加载为 Json

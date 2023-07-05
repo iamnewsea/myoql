@@ -19,6 +19,12 @@ object HttpContext {
     }
 
     @JvmStatic
+    val exchange: ServerWebExchange
+        get() {
+            return _exchange.get();
+        }
+
+    @JvmStatic
     val hasRequest: Boolean
         get() {
             if (_exchange.get() != null) return true;
@@ -30,14 +36,14 @@ object HttpContext {
     val request: ServerHttpRequest
         get() {
             return _exchange.get()?.request
-                ?: throw RuntimeException("找不到 ServerWebExchange.ServerHttpRequest")
+                    ?: throw RuntimeException("找不到 ServerWebExchange.ServerHttpRequest")
         }
 
     @JvmStatic
     val response: ServerHttpResponse
         get() {
             return _exchange.get()?.response
-                ?: throw RuntimeException("找不到 ServerWebExchange.ServerHttpResponse")
+                    ?: throw RuntimeException("找不到 ServerWebExchange.ServerHttpResponse")
         }
 
     //(RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.response!!

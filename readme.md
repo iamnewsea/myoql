@@ -123,7 +123,7 @@ mvn install:install-file -DgroupId=cn.dev8 -DartifactId=ktbase -Dversion=1.1.5-S
 # nginx 代理：
 
 ```
-proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Real-Ip $remote_addr;
 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 ```
 
