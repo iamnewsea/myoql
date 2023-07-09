@@ -24,7 +24,6 @@ class SystemConfig : ApplicationListener<ApplicationEnvironmentPreparedEvent>, A
         env = event.environment
 
         if (logoLoaded == false) {
-            initSystemProperties();
             logoLoaded = true;
 
             val env = env!!
@@ -55,6 +54,12 @@ ${title}
             )
         }
 
+        if (inited == false) {
+            inited = true;
+
+            initSystemProperties();
+        }
+
         init_callbacks.forEach {
             it.invoke(env!!);
         }
@@ -72,20 +77,28 @@ ${title}
             logger.warn("init-system.properties 内容为空")
             return
         }
-        content.split("\n")
+
+        var list = content.split("\n")
                 .map { it -> it.trim() }
                 .filter { it -> it.HasValue && !it.startsWith("#") }
-                .forEach { it ->
-                    val kv = it.split("=")
-                    if (kv.size !== 2) {
-                        return@forEach
-                    }
-                    System.setProperty(kv.get(0), kv.get(1))
-                }
+
+        var count = 0;
+        list.forEach { it ->
+            val kv = it.split("=")
+            if (kv.size !== 2) {
+                return@forEach
+            }
+
+            count++;
+            System.setProperty(kv.get(0), kv.get(1))
+        }
+
+        logger.warn("加载了 init-system.properties! 共${count}项")
     }
 
     companion object {
         var logoLoaded = false;
+        var inited = false;
         private var contextField: ApplicationContext? = null
         private var env: ConfigurableEnvironment? = null;
 
