@@ -188,21 +188,15 @@ fun String.ConvertToLocalDateTime(dateTimeFormatter: DateTimeFormatter? = null):
     }
 
     var datePartString = "";
+    var timePartString = "";
 
     if (wrappeT) {
         datePartString = strValue.substring(0, fenIndex - 1);
-        strValue = strValue.substring(fenIndex + 2);
+        timePartString = strValue.substring(fenIndex + 2);
     } else {
         datePartString = strValue.substring(0, fenIndex);
-        strValue = strValue.substring(fenIndex + 1);
+        timePartString = strValue.substring(fenIndex + 1);
     }
-
-    var timePartString =
-        if (withZ) {
-            strValue.Slice(0, -1)
-        } else {
-            strValue
-        }
 
     var zoneSecond = 0;
     if (withZ) {

@@ -34,9 +34,13 @@ object HttpContext {
             return false;
         }
 
-    var lastFeign: HttpFeignLogData?
+    var lastFeign: HttpFeignLogData
         get() {
-            return _last_feign.get()
+            var ret = _last_feign.get()
+            if (ret == null) {
+                throw RuntimeException("找不到 Feign！");
+            }
+            return ret;
         }
         set(value) {
             _last_feign.set(value);
