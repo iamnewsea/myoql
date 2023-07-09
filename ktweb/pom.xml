@@ -147,6 +147,14 @@
             <version>11.8</version>
             <scope>provided</scope>
         </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/io.github.openfeign/feign-okhttp -->
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-okhttp</artifactId>
+            <version>12.4</version>
+        </dependency>
     </dependencies>
 
     <build>

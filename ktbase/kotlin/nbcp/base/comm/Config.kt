@@ -1,10 +1,8 @@
 package nbcp.base.comm
 
 
-import com.google.common.cache.CacheBuilder
 import nbcp.base.enums.AlignDirectionEnum
 import nbcp.base.extend.*
-import nbcp.base.utils.MyUtil
 import nbcp.base.utils.StringUtil
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent
@@ -13,7 +11,7 @@ import org.springframework.context.ApplicationContextAware
 import org.springframework.context.ApplicationListener
 import org.springframework.core.env.ConfigurableEnvironment
 import java.io.File
-import java.time.Duration
+import java.util.*
 
 
 val config = SystemConfig
@@ -26,6 +24,7 @@ class SystemConfig : ApplicationListener<ApplicationEnvironmentPreparedEvent>, A
         env = event.environment
 
         if (logoLoaded == false) {
+            initSystemProperties();
             logoLoaded = true;
 
             val env = env!!
@@ -59,6 +58,30 @@ ${title}
         init_callbacks.forEach {
             it.invoke(env!!);
         }
+    }
+
+
+    private fun initSystemProperties() {
+        val stream = Thread.currentThread().contextClassLoader.getResourceAsStream("init-system.properties")
+        if (stream == null) {
+            logger.warn("找不到 init-system.properties")
+            return
+        }
+        val content = stream.readContentString()
+        if (content.isNullOrEmpty()) {
+            logger.warn("init-system.properties 内容为空")
+            return
+        }
+        content.split("\n")
+                .map { it -> it.trim() }
+                .filter { it -> it.HasValue && !it.startsWith("#") }
+                .forEach { it ->
+                    val kv = it.split("=")
+                    if (kv.size !== 2) {
+                        return@forEach
+                    }
+                    System.setProperty(kv.get(0), kv.get(1))
+                }
     }
 
     companion object {

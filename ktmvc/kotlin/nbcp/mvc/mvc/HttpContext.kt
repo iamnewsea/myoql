@@ -4,6 +4,7 @@
 package nbcp.mvc.mvc
 
 
+import nbcp.mvc.comm.HttpFeignLogData
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import javax.servlet.http.HttpServletRequest
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletResponse
 object HttpContext {
     private var _request = ThreadLocal.withInitial<HttpServletRequest?> { null }
     private var _response = ThreadLocal.withInitial<HttpServletResponse?> { null }
+    private var _last_feign = ThreadLocal.withInitial<HttpFeignLogData?> { null }
 
     @JvmStatic
     fun init(request: HttpServletRequest, response: HttpServletResponse) {
@@ -32,6 +34,14 @@ object HttpContext {
             return false;
         }
 
+    var lastFeign: HttpFeignLogData?
+        get() {
+            return _last_feign.get()
+        }
+        set(value) {
+            _last_feign.set(value);
+        }
+
 //    @JvmStatic
 //    val hasResponse: Boolean
 //        get() {
@@ -46,16 +56,16 @@ object HttpContext {
     val request: HttpServletRequest
         get() {
             return (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.request
-                ?: _request.get()
-                ?: throw RuntimeException("找不到 HttpServletRequest")
+                    ?: _request.get()
+                    ?: throw RuntimeException("找不到 HttpServletRequest")
         }
 
     @JvmStatic
     val response: HttpServletResponse
         get() {
             return (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.response
-                ?: _response.get()
-                ?: throw RuntimeException("找不到 HttpServletResponse")
+                    ?: _response.get()
+                    ?: throw RuntimeException("找不到 HttpServletResponse")
         }
 
     //(RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)?.response!!
