@@ -26,10 +26,13 @@ class MyOqlRedisBeanConfig : BeanPostProcessor {
         var ret = super.postProcessAfterInitialization(bean, beanName)
 
         if (bean is StringRedisTemplate) {
-            bean.hashValueSerializer = RedisSerializer.json()
+            if (bean.hashValueSerializer == null) {
+                bean.hashValueSerializer = RedisSerializer.json()
+            }
 
-
-            setStringRedisTemplate(bean);
+            if (bean.keySerializer == null) {
+                bean.keySerializer = MyRedisKeySerializerWithProductLine();
+            }
 
             if (SpringUtil.containsBean(RedisRenewalDynamicService::class.java) == false) {
                 SpringUtil.registerBeanDefinition(RedisRenewalDynamicService())
@@ -40,7 +43,7 @@ class MyOqlRedisBeanConfig : BeanPostProcessor {
     }
 
     private fun setStringRedisTemplate(bean: StringRedisTemplate) {
-        bean.keySerializer = MyRedisKeySerializerWithProductLine();
+
 //        val type = bean::class.java;
 //        val modifiersField = Field::class.java.getDeclaredField("modifiers");
 //        modifiersField.isAccessible = true;
