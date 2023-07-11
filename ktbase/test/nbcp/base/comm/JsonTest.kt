@@ -126,22 +126,16 @@ logging:
         println("==============")
     }
 
-    class ResultVO(var users: List<IdName>)
-
-
-    @Test
-    fun test_vo_list_json() {
-        var result = ResultVO(listOf(IdName("1", "abc"), IdName("2", "def")));
-        var listResult = ListResult.of(listOf(result));
-
-        var v2 = usingScope(JsonSceneScopeEnum.WEB) {
-            listResult.ToJson().FromJson<ListResult<ResultVO>>()!!;
-        }
-        v2.data.resetListItemType(ResultVO::class.java)
-
-        println(v2.data[0].users[0].name)
+    class ResultVO {
+        var dt: LocalDateTime? = null
     }
 
+    @Test
+    fun test_dt() {
+        var j = """{"dt":"2009-06-15T13:45:30"}"""
+
+        println(j.FromJson(ResultVO::class.java)!!.dt)
+    }
 
 
 }

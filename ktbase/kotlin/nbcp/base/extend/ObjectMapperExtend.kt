@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import nbcp.base.comm.*
 import nbcp.base.comm.json.*
@@ -45,14 +46,16 @@ fun ObjectMapper.initObjectMapper() {
 
     this.dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+    this.registerModule(JavaTimeModule())
+
     addObjectMapperTypeModule(MyString::class.java, MyStringSerializer(), MyStringDeserializer())
     addObjectMapperTypeModule(Date::class.java, DateJsonSerializer(), DateJsonDeserializer())
     addObjectMapperTypeModule(LocalDate::class.java, LocalDateJsonSerializer(), LocalDateJsonDeserializer())
     addObjectMapperTypeModule(LocalTime::class.java, LocalTimeJsonSerializer(), LocalTimeJsonDeserializer())
     addObjectMapperTypeModule(
-        LocalDateTime::class.java,
-        LocalDateTimeJsonSerializer(),
-        LocalDateTimeJsonDeserializer()
+            LocalDateTime::class.java,
+            LocalDateTimeJsonSerializer(),
+            LocalDateTimeJsonDeserializer()
     )
     addObjectMapperTypeModule(Timestamp::class.java, TimestampJsonSerializer(), TimestampJsonDeserializer())
     addObjectMapperTypeModule(MyRawString::class.java, MyRawStringSerializer(), MyRawStringDeserializer())
