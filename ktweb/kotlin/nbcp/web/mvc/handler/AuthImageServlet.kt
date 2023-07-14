@@ -1,11 +1,11 @@
 package nbcp.web.mvc.handler
 
 import com.wf.captcha.ArithmeticCaptcha
+import nbcp.base.event.SetValidateCodeEvent
 import nbcp.base.extend.AsInt
 import nbcp.base.utils.SpringUtil
 import nbcp.mvc.mvc.queryJson
 import nbcp.mvc.annotation.*
-import nbcp.web.service.IUserAuthenticationService
 import nbcp.web.extend.*
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.GetMapping
@@ -25,9 +25,6 @@ import javax.servlet.http.HttpServletResponse
 //@ConditionalOnBean(IUserAuthenticationService::class)
 open class AuthImageServlet {
 
-    val userSystemService: IUserAuthenticationService by lazy {
-        return@lazy SpringUtil.getBean()
-    }
 
     @GetMapping("/open/validate-code-image")
     fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
@@ -42,7 +39,9 @@ open class AuthImageServlet {
         var captcha = ArithmeticCaptcha(width, height);
         var txt = captcha.text()
 
-        userSystemService.setValidateCode(token, txt);
+        var ev = SetValidateCodeEvent(token);
+        ev.result = txt;
+        SpringUtil.context.publishEvent(ev);
         response.setHeader("content-type", "image/png")
 
         captcha.out(response.outputStream);

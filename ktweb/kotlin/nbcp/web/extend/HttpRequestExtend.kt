@@ -4,6 +4,7 @@ import io.jsonwebtoken.Jwts
 import nbcp.base.comm.config
 import nbcp.base.db.LoginNamePasswordData
 import nbcp.base.db.LoginUserModel
+import nbcp.base.event.GetLoginUserInfoEvent
 import nbcp.base.extend.AsString
 import nbcp.base.extend.AsStringWithNull
 import nbcp.base.extend.HasValue
@@ -11,13 +12,8 @@ import nbcp.base.extend.findParameterKey
 import nbcp.base.utils.*
 import nbcp.mvc.mvc.HttpContext
 import nbcp.mvc.mvc.findParameterStringValue
-import nbcp.web.service.IUserAuthenticationService
 import org.springframework.http.HttpHeaders
 import javax.servlet.http.HttpServletRequest
-
-val HttpServletRequest.userAuthenticationService by lazy {
-    return@lazy SpringUtil.getBean<IUserAuthenticationService>();
-}
 
 
 /**
@@ -36,7 +32,10 @@ val HttpServletRequest.LoginUser: LoginUserModel
 
         var token = this.tokenValue;
 
-        ret = userAuthenticationService.getLoginInfoFromToken(this)
+        var ev = GetLoginUserInfoEvent(token);
+        SpringUtil.context.publishEvent(ev);
+        ret = ev.result;
+
         if (ret == null) {
             ret = LoginUserModel().apply { this.token = token }
         }
@@ -45,6 +44,9 @@ val HttpServletRequest.LoginUser: LoginUserModel
         return ret;
     }
 
+fun HttpServletRequest.clearLoginUserCache() {
+    this.removeAttribute("[LoginUser]")
+}
 
 val HttpServletRequest.UserId: String
     get() {
@@ -68,9 +70,9 @@ fun getJwtUserId(value: String): String {
     if (config.jwtSecretKey.isEmpty()) return "";
 
     var claims = Jwts.parser()
-        .setSigningKey(config.jwtSecretKey)
-        .parseClaimsJws(value)
-        .getBody();
+            .setSigningKey(config.jwtSecretKey)
+            .parseClaimsJws(value)
+            .getBody();
 
     return claims.findParameterKey("userId").AsString()
 }
