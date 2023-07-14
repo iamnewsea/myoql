@@ -40,13 +40,12 @@ val HttpServletRequest.LoginUser: LoginUserModel
             ret = LoginUserModel().apply { this.token = token }
         }
 
-        this.setAttribute("[LoginUser]", ret)
+        if (ret.id.HasValue) {
+            this.setAttribute("[LoginUser]", ret)
+        }
         return ret;
     }
 
-fun HttpServletRequest.clearLoginUserCache() {
-    this.removeAttribute("[LoginUser]")
-}
 
 val HttpServletRequest.UserId: String
     get() {
