@@ -5,7 +5,10 @@ import nbcp.base.comm.config
 import nbcp.base.comm.const
 import nbcp.base.enums.LogLevelScopeEnum
 import nbcp.base.extend.*
-import nbcp.mvc.flux.*
+import nbcp.flux.FluxContext
+import nbcp.flux.findParameterValue
+import nbcp.flux.getCorsResponseMap
+import nbcp.flux.queryJson
 import nbcp.myoql.db.db
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -46,7 +49,7 @@ class CrossFilterConfig {
                 return@WebFilter Mono.empty();
             }
 
-            HttpContext.init(exchange)
+            FluxContext.init(exchange)
             db.currentRequestChangeDbTable.clear()
 
             if (ignoreFilter(exchange.request)) {

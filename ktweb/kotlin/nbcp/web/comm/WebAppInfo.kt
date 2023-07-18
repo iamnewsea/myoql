@@ -5,7 +5,6 @@ import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.FileUtil
 import nbcp.base.utils.JarUtil
 import nbcp.base.utils.SpringUtil
-import nbcp.mvc.mvc.HttpContext
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.*

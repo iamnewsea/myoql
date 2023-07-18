@@ -10,7 +10,7 @@ import nbcp.base.extend.AsStringWithNull
 import nbcp.base.extend.HasValue
 import nbcp.base.extend.findParameterKey
 import nbcp.base.utils.*
-import nbcp.mvc.mvc.HttpContext
+import nbcp.mvc.mvc.MvcContext
 import nbcp.mvc.mvc.findParameterStringValue
 import org.springframework.http.HttpHeaders
 import javax.servlet.http.HttpServletRequest
@@ -122,7 +122,7 @@ val HttpServletRequest.tokenValue: String
 
         if (token.isEmpty()) {
             token = TokenUtil.generateToken();
-            HttpContext.response.setHeader(config.tokenKey, token)
+            MvcContext.response.setHeader(config.tokenKey, token)
         }
 
         var event = RequestGetTokenEvent(this, token);

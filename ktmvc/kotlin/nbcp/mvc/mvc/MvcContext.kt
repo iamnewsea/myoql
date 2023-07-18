@@ -13,10 +13,9 @@ import javax.servlet.http.HttpServletResponse
 /**
  * 当前连接的上下文信息
  */
-object HttpContext {
+object MvcContext {
     private var _request = ThreadLocal.withInitial<HttpServletRequest?> { null }
     private var _response = ThreadLocal.withInitial<HttpServletResponse?> { null }
-    private var _last_feign = ThreadLocal.withInitial<HttpFeignLogData?> { null }
 
     @JvmStatic
     fun init(request: HttpServletRequest, response: HttpServletResponse) {
@@ -34,17 +33,6 @@ object HttpContext {
             return false;
         }
 
-    var lastFeign: HttpFeignLogData
-        get() {
-            var ret = _last_feign.get()
-            if (ret == null) {
-                throw RuntimeException("找不到 Feign！");
-            }
-            return ret;
-        }
-        set(value) {
-            _last_feign.set(value);
-        }
 
 //    @JvmStatic
 //    val hasResponse: Boolean

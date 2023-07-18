@@ -1,7 +1,7 @@
 @file:JvmName("MyFluxHelper")
 @file:JvmMultifileClass
 
-package nbcp.mvc.flux
+package nbcp.flux
 
 import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.http.server.reactive.ServerHttpResponse
@@ -10,7 +10,7 @@ import org.springframework.web.server.ServerWebExchange
 /**
  * 当前连接的上下文信息
  */
-object HttpContext {
+object FluxContext {
     private var _exchange = ThreadLocal.withInitial<ServerWebExchange?> { null }
 
     @JvmStatic

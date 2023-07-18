@@ -1,7 +1,7 @@
 package nbcp.web.fiegn
 
+import nbcp.HttpContext
 import nbcp.base.comm.StringMap
-import nbcp.mvc.mvc.HttpContext
 import nbcp.mvc.comm.HttpFeignLogData
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient

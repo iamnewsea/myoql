@@ -6,7 +6,7 @@ import nbcp.base.enums.*
 import nbcp.base.extend.*
 import nbcp.base.utils.*
 import nbcp.mvc.mvc.MyHttpRequestWrapper
-import nbcp.mvc.mvc.HttpContext
+import nbcp.mvc.mvc.MvcContext
 import nbcp.mvc.mvc.fullUrl
 import nbcp.mvc.mvc.getCorsResponseMap
 import nbcp.myoql.db.db
@@ -87,7 +87,7 @@ open class MyOqlCrossFilter : Filter {
         val targetRequest = request2 ?: request;
 
 
-        HttpContext.init(targetRequest, httpResponse);
+        MvcContext.init(targetRequest, httpResponse);
         db.currentRequestChangeDbTable.clear()
 
         chain.doFilter(targetRequest, response)

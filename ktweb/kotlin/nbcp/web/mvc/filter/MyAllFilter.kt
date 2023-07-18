@@ -102,7 +102,7 @@ open class MyAllFilter : Filter {
         MDC.put("request_id", request_id)
 
         RequestContextHolder.setRequestAttributes(ServletRequestAttributes(request, response))
-        HttpContext.init(request, response);
+        MvcContext.init(request, response);
 
         //set lang
         setLang(request)

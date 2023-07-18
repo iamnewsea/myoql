@@ -1,4 +1,4 @@
-//package nbcp.base.flux
+package nbcp.flux//package nbcp.base.flux
 //
 //
 //import nbcp.base.comm.*

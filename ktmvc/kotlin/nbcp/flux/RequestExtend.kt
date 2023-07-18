@@ -1,7 +1,7 @@
 @file:JvmName("MyFluxHelper")
 @file:JvmMultifileClass
 
-package nbcp.mvc.flux
+package nbcp.flux
 
 
 import nbcp.base.comm.JsonMap

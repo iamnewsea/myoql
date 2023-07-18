@@ -3,11 +3,9 @@ package nbcp.web.flux.handler
 import nbcp.base.extend.AsString
 import nbcp.base.extend.HasValue
 import nbcp.base.extend.getStringValue
-import nbcp.base.utils.ClassUtil
-import nbcp.base.utils.JarUtil
 import nbcp.base.utils.SpringUtil
 import nbcp.mvc.annotation.OpenAction
-import nbcp.mvc.flux.ClientIp
+import nbcp.flux.ClientIp
 import nbcp.web.comm.WebAppInfo
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.GetMapping
