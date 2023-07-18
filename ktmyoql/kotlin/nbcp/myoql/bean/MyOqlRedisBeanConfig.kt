@@ -1,6 +1,7 @@
 package nbcp.myoql.bean
 
 
+import nbcp.base.comm.config
 import nbcp.base.utils.SpringUtil
 import nbcp.myoql.db.redis.MyRedisKeySerializerWithProductLine
 import nbcp.myoql.db.redis.RedisRenewalDynamicService
@@ -30,7 +31,7 @@ class MyOqlRedisBeanConfig : BeanPostProcessor {
                 bean.hashValueSerializer = RedisSerializer.json()
             }
 
-            if (bean.keySerializer == null) {
+            if (config.redisProductLineCodePrefixEnable) {
                 bean.keySerializer = MyRedisKeySerializerWithProductLine();
             }
 
