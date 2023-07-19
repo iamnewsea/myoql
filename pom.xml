@@ -47,7 +47,6 @@
         <elasticsearch.version>7.15.0</elasticsearch.version>
         <!-- jackson.version 设置为 2.13.0 会有错误 -->
         <jackson.version>2.12.5</jackson.version>
-        <reflections.version>0.10.2</reflections.version>
         <bcprov.version>1.69</bcprov.version>
         <asm.version>9.2</asm.version>
         <okhttp.version>4.9.3</okhttp.version>
@@ -105,11 +104,6 @@
             <artifactId>spring-aop</artifactId>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
-        <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-        </dependency>
 
 
         <dependency>
@@ -270,12 +264,6 @@
             <!--            </dependency>-->
 
 
-            <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
-            <dependency>
-                <groupId>org.reflections</groupId>
-                <artifactId>reflections</artifactId>
-                <version>${reflections.version}</version>
-            </dependency>
 
 
             <!-- https://mvnrepository.com/artifact/cglib/cglib -->

@@ -90,10 +90,9 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
         @JvmOverloads
         fun registerBeanDefinition(
                 name: String,
-                instance: Any,
-                callback: ((BeanDefinitionBuilder) -> Unit) = {}
+                instance: Any
         ) {
-            registry.registerBeanDefinition(name, getGenericBeanDefinition(instance, callback));
+            registry.registerBeanDefinition(name, getGenericBeanDefinition(instance));
 
             //添加这一句,就可以执行 Bean 的接口了.
             context.getBean(name, instance::class.java);
@@ -210,8 +209,7 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
          */
         @JvmStatic
         fun getGenericBeanDefinition(
-                instance: Any,
-                callback: ((BeanDefinitionBuilder) -> Unit) = {}
+                instance: Any
         ): GenericBeanDefinition {
             var type = instance::class.java
             val builder = BeanDefinitionBuilder.genericBeanDefinition(type);
@@ -228,8 +226,6 @@ class SpringUtil : BeanDefinitionRegistryPostProcessor, ApplicationContextAware,
 //            if (instance is InitializingBean) {
 //                instance.afterPropertiesSet()
 //            }
-
-            callback(builder);
             return definition;
         }
     }

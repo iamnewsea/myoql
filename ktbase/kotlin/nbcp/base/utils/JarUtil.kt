@@ -5,7 +5,6 @@ import nbcp.base.extend.AsLocalDateTime
 import nbcp.base.extend.FullName
 import nbcp.base.extend.Slice
 import nbcp.base.extend.readContentString
-import org.reflections.util.ClasspathHelper
 import java.io.File
 import java.net.URL
 import java.time.LocalDateTime
@@ -35,17 +34,6 @@ object JarUtil {
             throw RuntimeException("找不到 jar 命令：$jarExePath")
         }
         return jarExePath
-    }
-
-
-    @JvmStatic
-    fun getMainApplicationLastModified(): LocalDateTime? {
-        val list = ClasspathHelper.forResource("");
-        if (list.any() == false) return null;
-
-        val fileName = list.first().path;
-
-        return Date(File(fileName).lastModified()).AsLocalDateTime()
     }
 
     /**

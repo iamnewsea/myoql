@@ -1,18 +1,11 @@
 package nbcp.base.utils
 
-import nbcp.base.comm.JsonMap
 import nbcp.base.extend.*
-import org.reflections.Reflections
-import org.reflections.scanners.SubTypesScanner
-import org.reflections.scanners.TypeAnnotationsScanner
-import org.reflections.util.ClasspathHelper
-import org.reflections.util.ConfigurationBuilder
 import org.springframework.core.io.ClassPathResource
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver
+import org.springframework.core.type.classreading.SimpleMetadataReaderFactory
 import org.springframework.util.ClassUtils
 import java.io.File
-import java.lang.reflect.Field
-import java.net.JarURLConnection
-import java.net.URL
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -41,87 +34,63 @@ object ClassUtil {
         }
     }
 
-    /**
-     * 获取 AppClassLoader 。
-     */
-//    private @JvmStatic fun getLaunchedURLClassLoader(loader: ClassLoader? = null): ClassLoader {
-//        val loaderValue = loader ?: ClassUtils.getDefaultClassLoader()
-//        if (loaderValue == null) {
-//            throw RuntimeException("找不到默认的类加载器")
-//        }
-//
-//        if (loaderValue::class.java.name == "org.springframework.boot.loader.LaunchedURLClassLoader") {
-//            return loaderValue;
-//        }
-//
-//        if (loaderValue.parent == null) {
-//            return loaderValue;
-//        }
-//        return getLaunchedURLClassLoader(loaderValue.parent);
-//    }
-//
-//    private @JvmStatic fun getAppClassLoader(loader: ClassLoader? = null): ClassLoader {
-//        val loaderValue = loader ?: ClassUtils.getDefaultClassLoader()
-//        if (loaderValue == null) {
-//            throw RuntimeException("找不到默认的类加载器")
-//        }
-//
-//        if (loaderValue::class.java.name == "sun.misc.Launcher\$AppClassLoader") {
-//            return loaderValue;
-//        }
-//
-//        if (loaderValue.parent == null) {
-//            return loaderValue;
-//        }
-//        return getAppClassLoader(loaderValue.parent);
-//    }
-
     @JvmStatic
     fun getDefaultClassLoader(): ClassLoader {
         return ClassUtils.getDefaultClassLoader()
     }
 
+    /**
+     * @param resourcePattern 形如： *星/星 表示 所有类
+     * @param onlyInStartApplication 表示是否仅在当前启动应用内搜索
+     */
     @JvmStatic
-    fun getClasses(basePackage: String): Set<String> {
-        return Reflections(
-            ConfigurationBuilder()
-                .forPackages(basePackage)
-                .setScanners(SubTypesScanner(false))
-        ).allTypes
+    fun findClassNames(resourcePattern: String, onlyInStartApplication: Boolean = false, callback: ((String) -> Boolean)? = null): Set<String> {
+        val resolver = PathMatchingResourcePatternResolver()
+        //如果这里写： classpath:**/*.class ，表示查找启动工程下的类。
+        var locationPattern = resourcePattern.replace(".","/")
+        if (onlyInStartApplication) {
+            locationPattern = "classpath:${locationPattern}.class"
+        } else {
+            locationPattern = "classpath*:${locationPattern}.class"
+        }
+
+        val ret = mutableSetOf<String>();
+        val resources = resolver.getResources(locationPattern)
+        for (res in resources) {
+            val clsName = SimpleMetadataReaderFactory().getMetadataReader(res).classMetadata.className
+
+            if (callback?.invoke(clsName) ?: true) {
+                ret.add(clsName)
+            }
+        }
+
+        return ret;
     }
 
     @JvmStatic
-    fun getClassesWithBaseType(basePackage: String, baseType: Class<*>): Set<Class<*>> {
-        return Reflections(
-            ConfigurationBuilder()
-                .forPackages(basePackage)
-                .setScanners(SubTypesScanner())
-        ).getSubTypesOf(baseType)
+    fun findClasses(resourcePattern: String,
+                    onlyInStartApplication: Boolean = false,
+                    baseClass: Class<*>? = null): Set<Class<*>> {
+
+        return findClassNames(resourcePattern, onlyInStartApplication)
+                .map { Class.forName(it) }
+                .filter { baseClass?.isAssignableFrom(it) ?: true }
+                .toSet()
     }
 
     @JvmStatic
-    fun getClassesWithAnnotationType(basePackage: String, annotationType: Class<out Annotation>): Set<Class<*>> {
-        return Reflections(
-            ConfigurationBuilder()
-                .forPackages(basePackage)
-                .setScanners(SubTypesScanner(false), TypeAnnotationsScanner())
-        ).getTypesAnnotatedWith(annotationType)
+    fun findClassesWithAnnotationType(resourcePattern: String,
+                                      onlyInStartApplication: Boolean = false,
+                                      annotationType: Class<out Annotation>): Set<Class<*>> {
+        return findClassNames(resourcePattern, onlyInStartApplication)
+                .map { Class.forName(it) }
+                .filter {
+                    if (annotationType == null) return@filter true;
+                    return@filter it.getAnnotationsByType(annotationType) != null
+                }
+                .toSet()
     }
 
-
-
-
-//    @JvmStatic fun getApplicationMainClass(): Class<*>? {
-//        RuntimeException().getStackTrace().reversed().firstOrNull {
-//            if ("main" == it.methodName) {
-//                return@firstOrNull true
-//            }
-//            return@firstOrNull false;
-//        }?.className.apply {
-//            if (this == null) return null;
-//            return Class.forName(this)
-//        }
-//    }
 
     /**
      * 判断类是否是指定的Jar中
@@ -131,106 +100,6 @@ object ClassUtil {
         var sects = type.protectionDomain.codeSource.location.path.split("/")
         return sects.contains(jarFileName) && sects.last().contains(jarFileName)
     }
-
-
-    /**
-     * 查找类。
-     */
-    @JvmOverloads
-    @JvmStatic
-    fun findClasses(basePack: String, filter: ((String) -> Boolean)? = null): List<Class<*>> {
-        val baseResourcePath = basePack.replace(".", "/").trim('/');
-        val ret = mutableListOf<Class<*>>();
-        val resource = ClassPathResource(baseResourcePath);
-        if (resource.exists() == false) {
-            return listOf();
-        }
-        val url =
-            resource.url; //得到的结果大概是：jar:file:/C:/Users/ibm/.m2/repository/junit/junit/4.12/junit-4.12.jar!/org/junit
-
-        ResourceUtil. findResources(url, baseResourcePath, { jarEntryName ->
-            //如果是死循环,则停止
-            if (jarEntryName == basePack || jarEntryName == baseResourcePath) {
-                return@findResources false
-            }
-
-            if (!jarEntryName.endsWith(".class")) {
-                //如果是包名
-                ret.addAll(findClasses(jarEntryName, filter))
-
-                return@findResources false
-            }
-
-            val className = jarEntryName.Slice(0, -".class".length)
-                .replace('/', '.')
-
-            if (filter != null && !filter.invoke(className)) {
-                return@findResources false;
-            }
-
-            val cls = Class.forName(className)
-            ret.add(cls);
-            return@findResources true
-        })
-        return ret;
-    }
-
-
-
-
-    private fun getClassName(fullPath: String, basePack: String, jarPath: String): String {
-        if (fullPath.endsWith(".class") == false) {
-            return "";
-        }
-
-        if (fullPath.startsWith(jarPath) == false) {
-            return ""
-        }
-
-        var path2 = fullPath.substring(jarPath.length + 1).replace(File.separatorChar, '.');
-
-        if (path2.contains(basePack) == false) {
-            return ""
-        }
-
-        return path2.Slice(0, -".class".length)
-    }
-
-//    private @JvmStatic fun getResourceFromJar(
-//            fullPath: String,
-//            basePack: String,
-//            jarPath: String,
-//            filter: ((Class<*>) -> Boolean)? = null
-//    ): List<Class<*>> {
-//        var list = mutableListOf<Class<*>>()
-//        var className = ""
-//        var file = File(fullPath)
-//        if (file.isFile) {
-//            className = getClassName(file.name, basePack, jarPath);
-//            if (className.HasValue) {
-//                var cls = Class.forName(className)
-//                if (filter?.invoke(cls) ?: true) {
-//                    list.add(cls);
-//                }
-//            }
-//            return list;
-//        } else {
-//            file.listFiles().forEach {
-//                if (it.isFile) {
-//                    className = getClassName(it.path, basePack, jarPath);
-//                    if (className.HasValue) {
-//                        var cls = Class.forName(className);
-//                        if (filter?.invoke(cls) ?: true) {
-//                            list.add(cls);
-//                        }
-//                    }
-//                } else {
-//                    list.addAll(getClassesFromFile(it.path, basePack, jarPath, filter))
-//                }
-//            }
-//        }
-//        return list;
-//    }
 
 
     @JvmStatic
@@ -291,11 +160,6 @@ object ClassUtil {
 
         return type.constructors.firstOrNull { it.parameters.size == 0 }?.newInstance()
     }
-
-
-
-
-
 
 
 }

@@ -17,7 +17,7 @@ object Enum4JsGenerator {
     @JvmStatic
     fun work(basePackage: String): List<String> {
         var ret = mutableListOf<String>()
-        val fileList = ClassUtil.getClassesWithBaseType(basePackage, Enum::class.java)
+        val fileList = ClassUtil.findClasses(basePackage, false, Enum::class.java)
 
         fileList.forEach {
             ret.add(work(it))
@@ -40,8 +40,8 @@ object Enum4JsGenerator {
                     jsonList.map {
                         it.toString() + ":\"" +
                                 (if (strField != null) ReflectUtil.getPrivatePropertyValue(
-                                    it,
-                                    strField
+                                        it,
+                                        strField
                                 ) else it.toString()) + "\""
                     }.joinToString(",") + "});"
 

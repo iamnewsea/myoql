@@ -20,7 +20,7 @@ class ReflectUtils : TestBase() {
 
     @Test
     fun r2() {
-        ClassUtil.getClasses("nbcp").forEach {
+        ClassUtil.findClassNames("nbcp", true).forEach {
             println(it)
         }
     }
