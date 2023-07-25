@@ -9,18 +9,18 @@ import nbcp.mvc.comm.HttpFeignLogData
 import nbcp.mvc.mvc.ClientIp
 import nbcp.mvc.mvc.MvcContext
 import nbcp.mvc.mvc.XTraceId
+import reactor.core.publisher.Flux
 
 object HttpContext {
-    val isWebFluxEnv:Boolean
+    val isWebFluxEnv: Boolean
         get() {
             return ClassUtil.existsClass("org.springframework.web.reactive.config.WebFluxConfigurationSupport");
         }
 
-    val isMvcEnv :Boolean
-        get(){
+    val isMvcEnv: Boolean
+        get() {
             return ClassUtil.existsClass("org.springframework.web.servlet.HandlerInterceptor")
         }
-
 
 
     private var _last_feign = ThreadLocal.withInitial<HttpFeignLogData?> { null }
@@ -36,27 +36,33 @@ object HttpContext {
             _last_feign.set(value);
         }
 
-    val clientIp:String
-        get(){
-            if( isMvcEnv){
-                return MvcContext.request.ClientIp;
+    val clientIp: String
+        get() {
+            if (isMvcEnv) {
+                if (MvcContext.hasRequest) {
+                    return MvcContext.request.ClientIp;
+                }
             }
 
-            if( isWebFluxEnv){
-                return FluxContext.exchange.ClientIp
+            if (isWebFluxEnv) {
+                if (FluxContext.hasRequest) {
+                    return FluxContext.exchange.ClientIp
+                }
             }
 
             return "";
         }
 
-    val xTraceId:String
-        get(){
-            if( isMvcEnv){
-                return MvcContext.request.XTraceId;
-            }
-
-            if( isWebFluxEnv){
-                return FluxContext.exchange.XTraceId
+    val xTraceId: String
+        get() {
+            if (isMvcEnv) {
+                if (MvcContext.hasRequest) {
+                    return MvcContext.request.XTraceId;
+                }
+            } else if (isWebFluxEnv) {
+                if (FluxContext.hasRequest) {
+                    return FluxContext.exchange.XTraceId
+                }
             }
 
             return "";
