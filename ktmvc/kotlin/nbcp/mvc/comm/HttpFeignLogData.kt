@@ -8,6 +8,6 @@ class HttpFeignLogData {
     var requestUrl = ""
     var status = 0;
     var responseBody = "";
-    var requestHeaders = StringMap();
-    var responseHeaders = StringMap();
+    var requestHeaders = mapOf<String,String>();
+    var responseHeaders = mapOf<String,String>();
 }
