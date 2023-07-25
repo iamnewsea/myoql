@@ -1,5 +1,6 @@
 package nbcp.base.component
 
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanDefinitionHolder
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ResourceLoaderAware
@@ -8,11 +9,12 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.type.AnnotationMetadata
 import org.springframework.core.type.filter.TypeFilter
+import org.springframework.stereotype.Component
 
 abstract class BaseImportBeanDefinitionRegistrar(
-    var basePackage: String,
-    val includeFilters: List<TypeFilter>,
-    val excludeFilters: List<TypeFilter> = listOf()
+        var basePackage: String,
+        val includeFilters: List<TypeFilter>,
+        val excludeFilters: List<TypeFilter> = listOf()
 ) : ImportBeanDefinitionRegistrar, ResourceLoaderAware {
     private lateinit var resourceLoader: ResourceLoader
 
@@ -24,11 +26,11 @@ abstract class BaseImportBeanDefinitionRegistrar(
      * @author: jiaYao
      */
     class MyOqlClassPathBeanDefinitionScanner(
-        registry: BeanDefinitionRegistry, useDefaultFilters: Boolean,
-        val includeFilters: List<TypeFilter>,
-        val excludeFilters: List<TypeFilter>
+            registry: BeanDefinitionRegistry, useDefaultFilters: Boolean,
+            val includeFilters: List<TypeFilter>,
+            val excludeFilters: List<TypeFilter>
     ) :
-        ClassPathBeanDefinitionScanner(registry, useDefaultFilters) {
+            ClassPathBeanDefinitionScanner(registry, useDefaultFilters) {
         /**
          * @addIncludeFilter 将自定义的注解添加到扫描任务中
          * @addExcludeFilter 将带有自定义注解的类 ，不加载到容器中
@@ -62,15 +64,18 @@ abstract class BaseImportBeanDefinitionRegistrar(
      * @param registry
      */
     override fun registerBeanDefinitions(
-        importingClassMetadata: AnnotationMetadata,
-        registry: BeanDefinitionRegistry
+            importingClassMetadata: AnnotationMetadata,
+            registry: BeanDefinitionRegistry
     ) {
         // 当前MyClassPathBeanDefinitionScanner已被修改为扫描带有指定注解的类
         val scanner = MyOqlClassPathBeanDefinitionScanner(registry, false, includeFilters, excludeFilters)
         scanner.resourceLoader = resourceLoader
         scanner.registerFilters()
         scanner.doScan(basePackage)
+
+        LoggerFactory.getLogger(this::class.java).info("扫描: " + basePackage);
     }
+
 
     override fun setResourceLoader(resourceLoader: ResourceLoader) {
         this.resourceLoader = resourceLoader

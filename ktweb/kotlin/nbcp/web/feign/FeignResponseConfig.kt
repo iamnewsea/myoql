@@ -1,4 +1,4 @@
-package nbcp.web.fiegn
+package nbcp.web.feign
 
 import nbcp.HttpContext
 import nbcp.base.comm.StringMap

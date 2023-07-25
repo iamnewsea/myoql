@@ -1,4 +1,4 @@
-package nbcp.web.fiegn
+package nbcp.web.feign
 
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.GetMapping

@@ -1,5 +1,5 @@
 nbcp.base.utils.SpringUtil
-nbcp.base.KotlinExtendInitConfig
+nbcp.base.KotlinBaseExtendInitConfig
 nbcp.base.aop.LogLevelAopService
 nbcp.base.aop.GroupLogAopService
 nbcp.base.component.DbJsonMapper

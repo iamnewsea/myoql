@@ -1,6 +1,9 @@
 package nbcp.myoql
 
+import nbcp.base.KotlinBaseExtendInitConfig
 import nbcp.base.component.BaseImportBeanDefinitionRegistrar
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.type.filter.AnnotationTypeFilter
 import org.springframework.stereotype.Component
@@ -10,8 +13,8 @@ import org.springframework.stereotype.Service
 //@Component
 //@Configuration
 class KotlinMyOqlExtendConfig : BaseImportBeanDefinitionRegistrar(
-    "nbcp",
-    listOf(
+        "nbcp.myoql",
+        listOf(
 //        AssignableTypeFilter(IMongoEntityQuery::class.java),
 //        AssignableTypeFilter(IMongoEntityInsert::class.java),
 //        AssignableTypeFilter(IMongoEntityUpdate::class.java),
@@ -31,11 +34,9 @@ class KotlinMyOqlExtendConfig : BaseImportBeanDefinitionRegistrar(
 //        AssignableTypeFilter(IUploadFileDbService::class.java),
 //        AssignableTypeFilter(MyOqlMultipleDataSourceDefine::class.java),
 //        AssignableTypeFilter(MyOqlBaseActionLogDefine::class.java),
-        AnnotationTypeFilter(Service::class.java),
-        AnnotationTypeFilter(Component::class.java),
-        AnnotationTypeFilter(Configuration::class.java)
-    )
-){
-
-
+                AnnotationTypeFilter(Service::class.java),
+                AnnotationTypeFilter(Component::class.java),
+                AnnotationTypeFilter(Configuration::class.java)
+        )
+) {
 }

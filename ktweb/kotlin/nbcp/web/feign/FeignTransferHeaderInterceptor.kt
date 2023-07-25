@@ -1,4 +1,4 @@
-package nbcp.web.fiegn
+package nbcp.web.feign
 
 import feign.RequestInterceptor
 import feign.RequestTemplate

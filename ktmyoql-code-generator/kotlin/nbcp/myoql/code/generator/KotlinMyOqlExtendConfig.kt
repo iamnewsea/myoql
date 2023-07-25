@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 //@Component
 //@Configuration
 class KotlinMyOqlExtendConfig : BaseImportBeanDefinitionRegistrar(
-    "nbcp",
+    "nbcp.myoql",
     listOf(
 //        AssignableTypeFilter(IMongoEntityQuery::class.java),
 //        AssignableTypeFilter(IMongoEntityInsert::class.java),
