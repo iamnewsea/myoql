@@ -5,7 +5,6 @@ import nbcp.base.extend.*
 import nbcp.mvc.listener.MyMvcEnvironmentPreparedEventListener
 import nbcp.myoql.listener.MyOqlEnvironmentPreparedListener
 import nbcp.web.comm.LoginUserParameterBeanProcessor
-import nbcp.web.feign.FeignResponseConfig
 import nbcp.web.feign.FeignTransferHeaderInterceptor
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent
@@ -21,7 +20,7 @@ import org.springframework.stereotype.Component
         value = [
             LoginUserParameterBeanProcessor::class,
             FeignTransferHeaderInterceptor::class,
-            FeignResponseConfig::class
+//            FeignResponseConfig::class
         ]
 )
 @Component
