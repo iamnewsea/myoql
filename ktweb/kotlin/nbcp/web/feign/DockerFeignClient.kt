@@ -1,5 +1,6 @@
 package nbcp.web.feign
 
+import nbcp.base.extend.remove
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -39,6 +40,14 @@ interface DockerFeignClient {
         var NetworkSettings = DockerNetworkSettings();
 
         var Mounts = listOf<DockerMount>();
+
+        val dockerName: String
+            get() {
+                if (Names.isNullOrEmpty()) {
+                    return "";
+                }
+                return Names.first().remove("/");
+            }
     }
 
     @GetMapping("/containers/json")
