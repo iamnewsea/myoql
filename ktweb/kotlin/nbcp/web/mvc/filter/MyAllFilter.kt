@@ -1,6 +1,7 @@
 package nbcp.web.mvc.filter
 
 import ch.qos.logback.classic.Level
+import nbcp.sys.MvcActionAware
 import nbcp.base.comm.config
 import nbcp.base.comm.const
 import nbcp.base.enums.LogLevelScopeEnum
@@ -111,11 +112,6 @@ open class MyAllFilter : Filter {
         var logLevel = getLogLevel(request);
 
         if (logLevel != null) {
-            if (logLevel == LogLevelScopeEnum.OFF) {
-                chain.doFilter(request, response)
-                return;
-            }
-
             usingScope(logLevel) {
                 procFilter(request, response, chain);
             }
@@ -145,7 +141,10 @@ open class MyAllFilter : Filter {
                 logger.Important("admin-token参数值不匹配！忽略 log-level")
             }
 
-            var ignoreLog = matchUrI(httpRequest.requestURI, IGNORE_LOG_URLS)
+
+            var path = httpRequest.requestURI
+            var ignoreLog = matchUrI(path, IGNORE_LOG_URLS) ||
+                    matchUrI(path, MvcActionAware.stopLogs)
 
             if (ignoreLog) {
                 logLevel = Level.OFF;

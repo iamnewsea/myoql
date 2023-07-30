@@ -219,7 +219,7 @@ fun <T> Class<T>.GetEnumNumberField(): Field? {
 
     this.declaredFields
             .filter {
-                it.IsPrivate && it.IsStatic && it.type.IsNumberType
+                it.IsPrivate && Modifier.isFinal(it.modifiers) && it.type.IsNumberType
             }
             .let { ret_fields ->
                 if (ret_fields.size == 1) {

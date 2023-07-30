@@ -1,5 +1,6 @@
 package nbcp.mvc
 
+import nbcp.sys.MvcActionAware
 import nbcp.base.comm.const
 import nbcp.base.component.WebJsonMapper
 import nbcp.mvc.comm.*
@@ -14,13 +15,12 @@ import org.springframework.http.converter.AbstractHttpMessageConverter
 import org.springframework.http.converter.FormHttpMessageConverter
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.converter.StringHttpMessageConverter
-import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.util.unit.DataSize
 import org.springframework.util.unit.DataUnit
 
 //@Component
-@Import(JsonModelParameterBeanProcessor::class)
+@Import(JsonModelParameterBeanProcessor::class, MvcActionAware::class)
 class MyMvcInitConfig : BeanPostProcessor {
     companion object {
         private var inited = false;
