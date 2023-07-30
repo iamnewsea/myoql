@@ -15,6 +15,7 @@ import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
+import org.springframework.util.AntPathMatcher
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.util.ContentCachingRequestWrapper
@@ -89,7 +90,7 @@ open class MyAllFilter : Filter {
         }
         httpRequest.setAttribute("(MyAllFilterProced)", true);
 
-        if (matchUrI(httpRequest.requestURI, IGNORE_URLS)) {
+        if (matchUrl(httpRequest.requestURI, IGNORE_URLS)) {
             chain.doFilter(oriRequest, oriResponse)
             return;
         }
@@ -143,8 +144,8 @@ open class MyAllFilter : Filter {
 
 
             var path = httpRequest.requestURI
-            var ignoreLog = matchUrI(path, IGNORE_LOG_URLS) ||
-                    matchUrI(path, MvcActionAware.stopLogs)
+            var ignoreLog = matchUrl(path, IGNORE_LOG_URLS) ||
+                    matchUrl(path, MvcActionAware.stopLogs)
 
             if (ignoreLog) {
                 logLevel = Level.OFF;
@@ -154,24 +155,9 @@ open class MyAllFilter : Filter {
         if (logLevel == null) return null;
         return logLevel.levelInt.ToEnum<LogLevelScopeEnum>()
     }
-
-    private fun matchUrI(requestURI: String, defineUris: List<String>): Boolean {
-        return defineUris.any {
-            var url = it;
-            var exact = url.startsWith("(") && url.endsWith(")")
-            if (exact) {
-                url = url.Slice(1, -1);
-            }
-
-            if (url.startsWith("/") == false) {
-                url = "/" + url;
-            }
-            if (exact) {
-                return@any requestURI.startsWith(url, true)
-            } else {
-                return@any requestURI.equals(url, true)
-            }
-        }
+    var matcher = AntPathMatcher();
+    private fun matchUrl(requestURI: String, defineUris: List<String>): Boolean {
+        return defineUris.any { matcher.match(it,requestURI)}
     }
 
 

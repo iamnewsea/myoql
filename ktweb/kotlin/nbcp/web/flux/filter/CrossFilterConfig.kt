@@ -17,6 +17,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpMethod
 import org.springframework.http.server.reactive.ServerHttpRequest
+import org.springframework.util.AntPathMatcher
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
@@ -171,8 +172,8 @@ class CrossFilterConfig {
 
 
             var path = httpRequest.path.value()
-            var ignoreLog = matchUrI(path, ignoreLogUrls) ||
-                    matchUrI(path, MvcActionAware.stopLogs)
+            var ignoreLog = matchUrl(path, ignoreLogUrls) ||
+                    matchUrl(path, MvcActionAware.stopLogs)
 
             if (ignoreLog) {
                 logLevel = Level.OFF;
@@ -190,6 +191,7 @@ class CrossFilterConfig {
     @Value("\${app.filter.ignore-urls:/health}")
     var ignoreUrls: List<String> = listOf()
 
+    var matcher = AntPathMatcher();
 
     fun getInnerException(e: Throwable): Throwable {
         var err = e;
@@ -209,31 +211,16 @@ class CrossFilterConfig {
 
 
     fun ignoreFilter(request: ServerHttpRequest): Boolean {
-        return matchUrI(request.path.value(), ignoreUrls)
+        return matchUrl(request.path.value(), ignoreUrls)
     }
 
     fun ignoreLog(request: ServerHttpRequest): Boolean {
         var path = request.path.value();
-        return matchUrI(path, ignoreLogUrls) || matchUrI(path, MvcActionAware.stopLogs)
+        return matchUrl(path, ignoreLogUrls) || matchUrl(path, MvcActionAware.stopLogs)
     }
 
 
-    private fun matchUrI(requestURI: String, defineUris: List<String>): Boolean {
-        return defineUris.any {
-            var url = it;
-            var exact = url.startsWith("(") && url.endsWith(")")
-            if (exact) {
-                url = url.Slice(1, -1);
-            }
-
-            if (url.startsWith("/") == false) {
-                url = "/" + url;
-            }
-            if (exact) {
-                return@any requestURI.startsWith(url, true)
-            } else {
-                return@any requestURI.equals(url, true)
-            }
-        }
+    private fun matchUrl(requestURI: String, defineUris: List<String>): Boolean {
+        return defineUris.any { matcher.match(it,requestURI)}
     }
 }
