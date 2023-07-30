@@ -59,9 +59,14 @@ class CrossFilterConfig {
             var ret: Mono<Void>? = null;
 
             if (logLevel != null) {
-                usingScope(logLevel) {
-                    ret = invokeFilter(exchange_ori, chain, exchange)
-                }
+                //https://www.jianshu.com/p/d1e4cda8fcbb
+                scopes.push(logLevel)
+                ret = invokeFilter(exchange_ori, chain, exchange).then(Mono.defer({
+                    scopes.pop()
+
+                    return@defer Mono.empty();
+                }))
+
             } else {
                 ret = invokeFilter(exchange_ori, chain, exchange)
             }
