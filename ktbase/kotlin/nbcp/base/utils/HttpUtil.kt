@@ -644,8 +644,6 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
         val boundary = CodeUtil.getCode();
 
         this.request.requestMethod = "POST"
-        this.request.connectTimeout = 1200_000
-        this.request.readTimeout = 1200_000
         this.request.headers.set("Connection", "keep-alive")
         this.request.headers.set("Content-Type", "multipart/form-data; boundary=${boundary}")
         this.request.chunkedStreamingMode = CACHESIZE
