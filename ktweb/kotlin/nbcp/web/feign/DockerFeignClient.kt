@@ -61,7 +61,10 @@ interface DockerFeignClient {
     }
 
     @GetMapping("/containers/json")
-    fun contains(): List<DockerContainer>
+    fun contains(
+            @RequestParam(required = false) all: Boolean? = null,
+            @RequestParam(required = false) filter: String? = null
+    ): List<DockerContainer>
 
     @PostMapping("/containers/{id}/kill")
     fun kill(@PathVariable id: String)
