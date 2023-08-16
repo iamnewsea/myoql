@@ -49,7 +49,7 @@ class ScheduleOffConfigurer : SchedulingConfigurer {
 
         if (cleared) {
             logger.Important("""
-~~-~~-~~-~~  Clear All Scheduling !!! ~~-~~-~~-~~ 
+~~-~~-~~-~~ 由于 app.scheduler 设置，导致清除了定义任务 ! ~~-~~-~~-~~ 
 """)
         }
     }
