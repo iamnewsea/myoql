@@ -45,15 +45,23 @@ object ClassUtil {
      */
     @JvmStatic
     fun findClassNames(resourcePattern: String, onlyInStartApplication: Boolean = false, callback: ((String) -> Boolean)? = null): Set<String> {
-        val resolver = PathMatchingResourcePatternResolver()
+
         //如果这里写： classpath:**/*.class ，表示查找启动工程下的类。
-        var locationPattern = resourcePattern.replace(".","/")
+        var locationPattern = resourcePattern.replace(".", "/")
         if (onlyInStartApplication) {
-            locationPattern = "classpath:${locationPattern}.class"
+            locationPattern = "classpath:${locationPattern}" + "/**/*.class"
         } else {
-            locationPattern = "classpath*:${locationPattern}.class"
+            locationPattern = "classpath*:${locationPattern}" + "/**/*.class"
         }
 
+        return findResources(locationPattern, callback)
+    }
+
+    @JvmStatic
+    fun findResources(
+            locationPattern: String,
+            callback: ((String) -> Boolean)? = null): Set<String> {
+        val resolver = PathMatchingResourcePatternResolver()
         val ret = mutableSetOf<String>();
         val resources = resolver.getResources(locationPattern)
         for (res in resources) {
