@@ -61,7 +61,7 @@ interface DockerFeignClient {
     }
 
     @GetMapping("/containers/json")
-    fun contains(
+    fun containers(
             @RequestParam(required = false) all: Boolean? = null,
             @RequestParam(required = false) filters: String? = null
     ): List<DockerContainer>
