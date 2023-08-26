@@ -14,7 +14,12 @@ class KotlinCoderUtil {
         @JvmStatic
         fun getAnnotationCodes(annotations: Array<out Annotation>): List<String> {
             return annotations
-                .sortedBy { it::annotationClass.name }
+                .sortedWith({ a, b ->
+                    memberComparator(
+                        a.annotationClass.simpleName,
+                        b.annotationClass.simpleName
+                    )
+                })
                 .map { an ->
                     return@map getAnnotationCode(an)
                 }
@@ -22,11 +27,16 @@ class KotlinCoderUtil {
 
         }
 
-        val memberComparator: Comparator<String> =
-            compareBy(
-                { 0 - it.filter { it.isUpperCase() }.length },
-                { it.length },
-                { it })
+        fun memberComparator(a: String?, b: String?): Int {
+            if (a == null && b == null) return 0;
+            if (a == null) return -1;
+            if (b == null) return 1;
+            var ret = a.filter { it.isUpperCase() }.length - b.filter { it.isUpperCase() }.length
+            if (ret != 0) return ret;
+            ret = a.length - b.length;
+            if (ret != 0) return ret;
+            return a.compareTo(b);
+        }
 
 
         @JvmStatic
@@ -58,12 +68,18 @@ class KotlinCoderUtil {
 
             var list = members
                 .keys
-                .sortedWith(memberComparator)
+                .sortedWith({ a, b ->
+                    return@sortedWith memberComparator(a.name, b.name);
+                })
                 .map { key ->
                     var v = members.get(key)!!;
+                    if( v == key.defaultValue){
+                        return@map ""
+                    }
 
-                    return@map """${key} = ${getValueString(v)}"""
+                    return@map """${key.name} = ${getValueString(v)}"""
                 }
+                .filter { it.HasValue }
 
             return ret + "(" + list.joinToString(", ") + ")"
         }
