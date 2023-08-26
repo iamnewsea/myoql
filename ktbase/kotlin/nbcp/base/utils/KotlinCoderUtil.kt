@@ -14,12 +14,20 @@ class KotlinCoderUtil {
         @JvmStatic
         fun getAnnotationCodes(annotations: Array<out Annotation>): List<String> {
             return annotations
+                .sortedBy { it::annotationClass.name }
                 .map { an ->
                     return@map getAnnotationCode(an)
                 }
                 .filter { it.HasValue }
 
         }
+
+        val memberComparator: Comparator<String> =
+            compareBy(
+                { 0 - it.filter { it.isUpperCase() }.length },
+                { it.length },
+                { it })
+
 
         @JvmStatic
         @JvmOverloads
@@ -48,12 +56,14 @@ class KotlinCoderUtil {
                 return ret;
             }
 
-            var list = members.map { kv ->
-                var key = kv.key
-                var v = kv.value!!;
+            var list = members
+                .keys
+                .sortedWith(memberComparator)
+                .map { key ->
+                    var v = members.get(key)!!;
 
-                return@map """${key} = ${getValueString(v)}"""
-            }
+                    return@map """${key} = ${getValueString(v)}"""
+                }
 
             return ret + "(" + list.joinToString(", ") + ")"
         }
@@ -73,15 +83,18 @@ class KotlinCoderUtil {
             } else if (v_type.IsBooleanType) {
                 return value.AsString().lowercase()
             } else if (v_type.isArray) {
-                return "arrayOf(" + (value as Array<Any>).map { getValueString(it) }.joinToString(", ") + ")"
+                return "arrayOf(" + (value as Array<Any>).map { getValueString(it) }
+                    .joinToString(", ") + ")"
             } else if (v_type.IsCollectionType) {
-                return "listOf(" + (value as List<Any>).map { getValueString(it) }.joinToString(", ") + ")"
+                return "listOf(" + (value as List<Any>).map { getValueString(it) }
+                    .joinToString(", ") + ")"
             } else if (v_type.isAssignableFrom(Map::class.java)) {
                 throw RuntimeException("不识别Map")
             }
 
             var args =
-                v_type.AllFields.map { return@map it.name + " = " + getValueString(it.get(value)) }.joinToString(", ")
+                v_type.AllFields.map { return@map it.name + " = " + getValueString(it.get(value)) }
+                    .joinToString(", ")
             //对象
             return v_type.name + "(" + args + ")"
         }
