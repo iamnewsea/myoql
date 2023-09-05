@@ -22,7 +22,8 @@ class ScheduleOffConfigurer : SchedulingConfigurer {
     }
 
     override fun configureTasks(taskRegistrar: ScheduledTaskRegistrar) {
-        if (config.getConfig("app.scheduler").AsBoolean(true)) {
+        var scheduler = config.getConfig("app.scheduler");
+        if (scheduler.AsBoolean(true)) {
             return;
         }
 
@@ -48,9 +49,11 @@ class ScheduleOffConfigurer : SchedulingConfigurer {
             }
 
         if (cleared) {
-            logger.Important("""
-~~-~~-~~-~~ 由于 app.scheduler 设置，导致清除了定义任务 ! ~~-~~-~~-~~ 
-""")
+            logger.Important(
+                """
+~~-~~-~~-~~ 由于 app.scheduler 设置了 ${scheduler}，系统清除了定时任务 ! ~~-~~-~~-~~ 
+"""
+            )
         }
     }
 }
