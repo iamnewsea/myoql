@@ -35,6 +35,7 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
             <version>${maven.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
@@ -81,7 +82,7 @@
     </build>
     <profiles>
         <profile>
-            <id>release</id>
+            <id>center</id>
             <build>
                 <plugins>
                     <plugin>
@@ -103,46 +104,24 @@
 
             <distributionManagement>
                 <repository>
-                    <id>release</id>
+                    <id>center</id>
                     <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
                 </repository>
-            </distributionManagement>
-        </profile>
-        <profile>
-            <id>snapshot</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.0.1</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-
-            <distributionManagement>
                 <snapshotRepository>
-                    <id>snapshot</id>
+                    <id>center</id>
                     <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
                 </snapshotRepository>
             </distributionManagement>
         </profile>
+
+        <profile>
+            <id>nexus</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>nexus</id>
+                    <url>http://dc-qq:8081/repository/maven-snapshots/</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
     </profiles>
-
-
-    <distributionManagement>
-        <repository>
-            <id>${repository.id}</id>
-            <url>${repository.url}</url>
-        </repository>
-    </distributionManagement>
 </project>
