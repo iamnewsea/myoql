@@ -13,7 +13,8 @@ import java.io.File
 
 
 class NpmPublishTest : TestBase() {
-
+//    var nexusUrl = "http://172.10.185.1:8081/repository/npm-hosted";
+    var nexusUrl = "http://dc-qq:8081/repository/npm2";
 
     @Test
     fun getDockerTags() {
@@ -64,7 +65,7 @@ class NpmPublishTest : TestBase() {
 
         list.add("echo 安装${name}, 路径: ${path}");
         list.add("cd ${path}");
-        list.add("npm publish --registry http://172.10.185.1:8081/repository/npm-hosted");
+        list.add("npm publish --registry ${nexusUrl}");
         list.add("cd -");
         return list;
     }
