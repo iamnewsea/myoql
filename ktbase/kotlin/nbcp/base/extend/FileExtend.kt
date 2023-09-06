@@ -19,30 +19,42 @@ val File.FullName: String
         return this.path
     }
 
-
 /**
  * 递归列出所有文件及子文件。
  */
 @JvmOverloads
 fun File.ListRecursionFiles(
-    pathCallback: ((String) -> Boolean)? = null,
-    fileCallback: ((String) -> Boolean)? = null
-): List<String> {
+    pathCallback: ((File) -> Boolean)? = null,
+    fileCallback: ((File) -> Boolean)? = null
+): Set<String> {
     var ret = mutableSetOf<String>()
     if (this.isFile) {
-        if (fileCallback?.invoke(this.FullName) ?: true) {
+        if (fileCallback?.invoke(this) ?: true) {
             ret.add(this.FullName)
         }
-        return ret.toList();
+        return ret;
     }
 
-    if (pathCallback?.invoke(this.FullName) ?: true) {
+    if (pathCallback?.invoke(this) ?: true) {
         //遍历子
         this.listFiles().map {
             ret.addAll(it.ListRecursionFiles(pathCallback, fileCallback))
         }
     }
-    return ret.toList();
+    return ret;
+}
+
+
+
+
+/**
+ * 递归列出所有文件及子文件。
+ */
+@JvmOverloads
+fun File.RecursionPaths(
+    pathCallback: ((File) -> Boolean)
+): Set<String> {
+    return this.ListRecursionFiles(pathCallback);
 }
 
 /**
@@ -343,4 +355,15 @@ private fun isMatched(line: String, filter: List<String>, not: List<String>): Bo
     }
 
     return ret;
+}
+
+
+fun File.getRelativePath(rootFile: File): String {
+    var path = this.path;
+    var rootPath = rootFile.path;
+    if (!path.startsWith(rootPath)) {
+        return "";
+    }
+
+    return path.Slice(rootPath.length + 1);
 }
