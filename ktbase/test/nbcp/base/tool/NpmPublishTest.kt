@@ -87,7 +87,7 @@ class NpmPublishTest : TestBase() {
         list.add("echo 安装${name}, 路径: ${path}");
         list.add("cd ${path}");
         list.add("npm publish --registry ${nexusUrl}");
-        list.add("if [ $? -ne 0 ]; then echo 'error'; exit 1; fi ");
+//        list.add("if [ $? -ne 0 ]; then echo 'error \${$?}'; exit 1; fi ");
         list.add("cd -");
         return list;
     }
