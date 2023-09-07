@@ -358,7 +358,10 @@ private fun isMatched(line: String, filter: List<String>, not: List<String>): Bo
 }
 
 
-fun File.getRelativePath(rootFile: File): String {
+/**
+ *
+ */
+fun File.getRelativePathStartsWith(rootFile: File): String {
     var path = this.path;
     var rootPath = rootFile.path;
     if (!path.startsWith(rootPath)) {
