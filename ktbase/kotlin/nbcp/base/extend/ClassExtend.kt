@@ -134,7 +134,7 @@ fun Field.IsCollectionType(type: String): Boolean {
     var field = this;
     return field.type.IsCollectionType &&
             (field.genericType as ParameterizedType).GetActualClass(
-                    0
+                0
             ).IsType(type)
 
 }
@@ -145,7 +145,9 @@ fun Field.IsCollectionType(type: String): Boolean {
 val Field.IsCollectionEnum: Boolean
     get() {
         val field = this;
-        return (field.type.IsCollectionType && (field.genericType as ParameterizedType).GetActualClass(0).isEnum) ||
+        return (field.type.IsCollectionType && (field.genericType as ParameterizedType).GetActualClass(
+            0
+        ).isEnum) ||
                 (field.type.isArray && field.type.componentType.javaClass.isEnum)
     }
 
@@ -203,8 +205,8 @@ fun <T> Class<T>.GetEnumList(values: String = ""): List<T> {
 
     if (values.HasValue) {
         return values.split(",")
-                .map { v -> list.find { it.toString() == v } }
-                .filterNotNull()
+            .map { v -> list.find { it.toString() == v } }
+            .filterNotNull()
     }
 
     return list.toList()
@@ -218,16 +220,16 @@ fun <T> Class<T>.GetEnumNumberField(): Field? {
 
 
     this.declaredFields
-            .filter {
-                it.IsPrivate && Modifier.isFinal(it.modifiers) && it.type.IsNumberType
+        .filter {
+            it.IsPrivate && Modifier.isFinal(it.modifiers) && it.type.IsNumberType
+        }
+        .let { ret_fields ->
+            if (ret_fields.size == 1) {
+                var ret = ret_fields.first();
+                ret.isAccessible = true;
+                return ret;
             }
-            .let { ret_fields ->
-                if (ret_fields.size == 1) {
-                    var ret = ret_fields.first();
-                    ret.isAccessible = true;
-                    return ret;
-                }
-            }
+        }
 
 
     return null;
@@ -282,25 +284,29 @@ fun <T> Class<T>.GetEnumStringField(): Field? {
 
 
     this.declaredFields
-            .filter {
-                it.IsPrivate && it.IsStatic && it.type.IsStringType
+        .filter {
+            it.IsPrivate && it.IsStatic && it.type.IsStringType
+        }
+        .let { ret_fields ->
+            if (ret_fields.any()) {
+                var ret = ret_fields.first();
+                ret.isAccessible = true;
+                return ret;
             }
-            .let { ret_fields ->
-                if (ret_fields.any()) {
-                    var ret = ret_fields.first();
-                    ret.isAccessible = true;
-                    return ret;
-                }
-            }
+        }
 
 
     return null;
 }
 
-private fun getPropertySetMethod(methods: List<Method>, fieldType: Class<*>, methodName: String): Method? {
+private fun getPropertySetMethod(
+    methods: List<Method>,
+    fieldType: Class<*>,
+    methodName: String
+): Method? {
     return methods.filter { it.name == methodName }
-            .filter { it.parameterCount == 1 && it.parameters.first().type == fieldType }
-            .firstOrNull()
+        .filter { it.parameterCount == 1 && it.parameters.first().type == fieldType }
+        .firstOrNull()
 }
 
 
@@ -369,7 +375,8 @@ val Class<*>.AllGetPropertyMethods: List<Method>
         return ret;
     }
 
-/** 获取该类以及基类的所有字段。 并设置为可写。
+/**
+ * 获取该类以及基类的所有字段。 并设置为可写。
  * 如果父类与子类有相同的字段，返回子类字段。
  * 移除 IsTransient 非序列化字段
  */
@@ -377,26 +384,37 @@ val Class<*>.AllFields: List<Field>
     get() {
         var ret = mutableListOf<Field>();
         if (this.IsSimpleType()) return ret;
-
-        if (
-                this.isArray ||
-                this.IsCollectionType ||
-                this.IsMapType
-        ) {
+        if (this.isArray) {
             return ret;
         }
 
-        //如果是Map
+
+        //如果是Map, 有些对象，会继承Map
+        var isMap = this.IsMapType;
+        var isList = this.IsCollectionType;
+        var mapFields =
+            listOf("head", "tail", "accessOrder", "threshold", "loadFactor", "size");
 
         var fields = this.declaredFields
-                .filter {
-                    if (it.IsStatic) return@filter false;
-                    if (it.IsTransient) return@filter false;
+            .filter {
+                if (it.IsStatic) return@filter false;
+                if (it.IsTransient) return@filter false;
 
-                    it.isAccessible = true;
 
-                    return@filter true
-                };
+                if (isMap) {
+                    if (mapFields.contains(it.name)) {
+                        return@filter false;
+                    }
+                } else if (isList) {
+                    if (it.name == "size") {
+                        return@filter false;
+                    }
+                }
+
+                it.isAccessible = true;
+
+                return@filter true
+            };
 
         ret.addAll(fields);
 
@@ -406,6 +424,8 @@ val Class<*>.AllFields: List<Field>
 
         var allKeys = ret.map { it.name };
         ret.addAll(this.superclass.AllFields.filter { it.name.IsIn(allKeys) == false });
+
+
         return ret;
     }
 

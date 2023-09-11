@@ -106,7 +106,7 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
 
                         ReflectUtil.setValueByWbsPath(
                             entity,
-                            *sortNumber.field.split(".").toTypedArray(),
+                            sortNumber.field,
                             ignoreCase = false,
                             value = sortNumberValue
                         )

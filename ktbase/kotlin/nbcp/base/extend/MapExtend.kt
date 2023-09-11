@@ -5,10 +5,7 @@ package nbcp.base.extend
 
 import nbcp.base.comm.JsonMap
 import nbcp.base.db.JsonKeyValuePair
-import nbcp.base.utils.UrlUtil
-import nbcp.base.utils.MyUtil
-import nbcp.base.utils.ReflectUtil
-import nbcp.base.utils.StringUtil
+import nbcp.base.utils.*
 import java.util.*
 
 
@@ -103,7 +100,10 @@ fun <V> MutableMap<String, V>.onlyHoldKeys(keys: Set<String>) {
 /**
  * 多层级获取属性值
  */
-inline fun <reified T> Map<String, *>.getTypeValue(vararg keys: String, ignoreCase: Boolean = false): T? {
+inline fun <reified T> Map<String, *>.getTypeValue(
+    vararg keys: String,
+    ignoreCase: Boolean = false
+): T? {
     var ret = ReflectUtil.getValueByWbsPath(this, *keys, ignoreCase = ignoreCase);
     if (ret === null) return null;
     if (ret is T) return ret;
@@ -138,11 +138,18 @@ fun Map<*, *>.getIntValue(vararg keys: String, ignoreCase: Boolean = false): Int
  * 多层级设置值
  */
 fun Map<String, *>.setValueByWbsPath(
-    vararg keys: String,
+    keyWbs: String,
     value: Any?,
-    ignoreCase: Boolean = false
+    ignoreCase: Boolean = false,
+    touchEnum: WbsNoKeyTouchEnum = WbsNoKeyTouchEnum.Fill
 ): Boolean {
-    return ReflectUtil.setValueByWbsPath(this, *keys, value = value, ignoreCase = ignoreCase);
+    return ReflectUtil.setValueByWbsPath(
+        this,
+        keyWbs,
+        value = value,
+        ignoreCase = ignoreCase,
+        touchEnum = touchEnum
+    );
 }
 
 
@@ -251,7 +258,13 @@ fun MutableMap<String, Any?>.removeByWbsPath(vararg keys: String): Boolean {
     var target = this.getValueByWbsPath(*unwindKeys.ArraySlice(0, -1).toTypedArray())
     if (target == null) return false;
     if (target is MutableMap<*, *> == false) {
-        throw RuntimeException("移除的对象不是Map,是:${target::class.java.name} ,path: ${unwindKeys.joinToString(".")}")
+        throw RuntimeException(
+            "移除的对象不是Map,是:${target::class.java.name} ,path: ${
+                unwindKeys.joinToString(
+                    "."
+                )
+            }"
+        )
     }
     return target.remove(unwindKeys.last()) != null
 }
@@ -259,7 +272,10 @@ fun MutableMap<String, Any?>.removeByWbsPath(vararg keys: String): Boolean {
 /**
  * 判断数据是否相同， 不区分顺序。只关心内容，对值进行简单比较
  */
-fun Map<*, *>.EqualMapContent(value: Map<*, *>, compare: ((Any?, Any?) -> Boolean)? = null): Boolean {
+fun Map<*, *>.EqualMapContent(
+    value: Map<*, *>,
+    compare: ((Any?, Any?) -> Boolean)? = null
+): Boolean {
     if (this.size == 0 && value.size == 0) return true;
     else if (this.size == 0) return false;
     else if (value.size == 0) return false;

@@ -8,6 +8,7 @@ import nbcp.base.extend.*
 import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.MyUtil
 import nbcp.base.utils.StringUtil
+import nbcp.base.utils.WbsNoKeyTouchEnum
 import nbcp.myoql.db.comm.DbDefine
 import nbcp.myoql.db.comm.IkFieldDefine
 import java.io.File
@@ -62,13 +63,18 @@ class EsMappingGenerator {
                 groupEntities.forEach {
                     count++;
                     var entType = it;
-                    var dbName = entType.getAnnotation(DbName::class.java)?.value.AsString(entType.simpleName)
+                    var dbName =
+                        entType.getAnnotation(DbName::class.java)?.value.AsString(entType.simpleName)
 
                     dbName = StringUtil.getKebabCase(dbName)
 
-                    println("${count.toString().padStart(2, ' ')} 生成Mapping：${groupName}.${dbName}".ToTab(1))
+                    println(
+                        "${
+                            count.toString().padStart(2, ' ')
+                        } 生成Mapping：${groupName}.${dbName}".ToTab(1)
+                    )
 
-                    var json = genEntity(it, "", { "" })
+                    var json = genEntity(it)
 
                     var mappings = JsonMap("properties" to json)
 
@@ -164,20 +170,29 @@ class EsMappingGenerator {
     /**
      * TODO 优先使用最外层实体的定义，如果外层没有，再使用当前实体的定义。
      */
-    fun genEntity(entType: Class<*>, wbs: String, getParentDbDefFunc: (String) -> String): JsonMap {
+    fun genEntity(entType: Class<*>): JsonMap {
         var json = JsonMap();
         var dbDefines = getDefines(entType);
 
-        var getDefSelf: (String) -> String = getDefSelf@{ fieldName ->
-            var def: String? = getParentDbDefFunc(if (wbs.HasValue) wbs + "." + fieldName else fieldName);
+        var getDef4SimpleType: (Field) -> JsonMap = getDefSelf@{ field ->
+            var fieldName = field.name
+            var def = dbDefines.get(fieldName);
             if (def.HasValue) {
-                return@getDefSelf def!!;
+                return@getDefSelf def!!.FromJson<JsonMap>()!!;
             }
-            def = dbDefines.get(fieldName);
-            if (def.HasValue) {
-                return@getDefSelf def!!;
+
+
+            var defineJson = JsonMap("type" to getJsType(field.type))
+            if (field.type.IsAnyDateOrTimeType) {
+                //默认是 strict_date_optional_time||epoch_millis
+                //自定义为不记录毫秒
+                //strict_date_optional_time 合法格式： 2020-01-01T00:00:00Z , 2020-01-01
+                defineJson.put(
+                    "format",
+                    "strict_date_optional_time||yyyy-MM-dd HH:mm:ss||epoch_second"
+                )
             }
-            return@getDefSelf ""
+            return@getDefSelf defineJson
         }
 
         entType.AllFields
@@ -187,45 +202,27 @@ class EsMappingGenerator {
                     return@forEach
                 }
 
-                val type = getActType(it);
-
-                var defineJson = getDefSelf(it.name).FromJson<JsonMap>()
+                val type = getActType(it)
+                var defineJson = JsonMap();
 
                 if (type.IsSimpleType()) {
-                    if (defineJson == null) {
-                        defineJson = JsonMap("type" to getJsType(it.type))
-                        if (type.IsAnyDateOrTimeType) {
-                            //默认是 strict_date_optional_time||epoch_millis
-                            //自定义为不记录毫秒
-                            //strict_date_optional_time 合法格式： 2020-01-01T00:00:00Z , 2020-01-01
-                            defineJson.put("format", "strict_date_optional_time||yyyy-MM-dd HH:mm:ss||epoch_second")
-                        }
-                    }
+                    defineJson = getDef4SimpleType(it)
 
                     json.put(it.name, defineJson);
-                    return@forEach
-                }
+                } else {
+                    var subDef = genEntity(type)
 
-
-                if (defineJson == null) {
-                    defineJson = JsonMap();
-                }
-//                if (defineJson.containsKey("type") == false) {
-//                    defineJson.put("type", "nested")
-//                }
-
-                genEntity(
-                    type,
-                    if (wbs.HasValue) wbs + "." + it.name else it.name,
-                    getDefSelf
-                ).also { json ->
-                    if (json.any()) {
-                        defineJson.put("properties", json)
+                    if (subDef.any()) {
+                        json.put(it.name, JsonMap("properties" to subDef))
                     }
                 }
-
-                json.put(it.name, defineJson)
             }
+
+
+        //处理最外层的 IkFieldDefine
+        dbDefines.filter { it.key.contains(".") }.forEach {
+            json.setValueByWbsPath(it.key, value = it.value, touchEnum = WbsNoKeyTouchEnum.Error);
+        }
 
         return json;
     }

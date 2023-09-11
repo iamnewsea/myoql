@@ -80,7 +80,7 @@ TomcatWebServer:8002 -- nacos: saas-dev.nancal.com:8848(yuxh) -- nacos-config:no
         println(ReflectUtil.getValueByWbsPath(json, "b.c"))
         println(ReflectUtil.getValueByWbsPath(json, "d.id"))
         println(ReflectUtil.getValueByWbsPath(json, "e[0]"))
-        println(ReflectUtil.getValueByWbsPath(json, "x.y.z", fillMap = true))
+        println(ReflectUtil.getValueByWbsPath(json, "x.y.z" ))
         println(json.ToJson())
     }
 
