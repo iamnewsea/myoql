@@ -213,7 +213,8 @@ class EsMappingGenerator {
                     var subDef = genEntity(type)
 
                     if (subDef.any()) {
-                        json.put(it.name, JsonMap("properties" to subDef))
+                        //https://www.jianshu.com/p/6e3d970c65cd
+                        json.put(it.name, JsonMap("type" to "nested", "properties" to subDef))
                     }
                 }
             }
