@@ -5,6 +5,7 @@ package nbcp.base.extend
 
 import nbcp.base.comm.BufferTailReader
 import nbcp.base.comm.const
+import nbcp.base.utils.FileUtil
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream
@@ -43,8 +44,6 @@ fun File.ListRecursionFiles(
     }
     return ret;
 }
-
-
 
 
 /**
@@ -369,4 +368,11 @@ fun File.getRelativePathStartsWith(rootFile: File): String {
     }
 
     return path.Slice(rootPath.length + 1);
+}
+
+/**
+ * 代替默认扩展函数 resolve
+ */
+fun File.resolvePath(vararg paths: String): String {
+    return FileUtil.resolvePath(this.path, *paths)
 }

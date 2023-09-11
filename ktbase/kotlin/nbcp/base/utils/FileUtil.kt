@@ -90,9 +90,4 @@ object FileUtil {
         return map.filterKeys { value.startsWith(it) }.values.firstOrNull() ?: ""
     }
 
-    fun writeContent(fileName: String, txt: String) {
-        FileWriter(fileName).use { f ->
-            f.write(txt);
-        }
-    }
 }
