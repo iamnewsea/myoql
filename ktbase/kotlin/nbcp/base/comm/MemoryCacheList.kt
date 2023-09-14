@@ -50,53 +50,13 @@ class MemoryCacheList() : ArrayList<Cache<String, Any>>() {
                 .build<String, Any>()
 
 
-        /**
-         * 访问30秒后过期
-         */
-        var expireAfterAccess30Secondes = CacheBuilder.newBuilder()
-                .expireAfterAccess(Duration.ofSeconds(30))
-                .build<String, Any>()
-
-        /**
-         * 访问1分钟后过期
-         */
-        var expireAfterAccess1Minute = CacheBuilder.newBuilder()
-                .expireAfterAccess(Duration.ofMinutes(1))
-                .build<String, Any>()
-
-        /**
-         * 访问1小时后过期
-         */
-        var expireAfterAccess1Hour = CacheBuilder.newBuilder()
-                .expireAfterAccess(Duration.ofHours(1))
-                .build<String, Any>()
-
-        /**
-         * 访问4小时后过期
-         */
-        var expireAfterAccess4Hours = CacheBuilder.newBuilder()
-                .expireAfterAccess(Duration.ofHours(4))
-                .build<String, Any>()
-
-        /**
-         * 访问12小时后过期
-         */
-        var expireAfterAccess12Hours = CacheBuilder.newBuilder()
-                .expireAfterAccess(Duration.ofHours(12))
-                .build<String, Any>()
-
 
         var myMemoryCaches = MemoryCacheList(
                 expireAfterWrite30Secondes,
                 expireAfterWrite1Minute,
                 expireAfterWrite1Hour,
                 expireAfterWrite4Hours,
-                expireAfterWrite12Hours,
-                expireAfterAccess30Secondes,
-                expireAfterAccess1Minute,
-                expireAfterAccess1Hour,
-                expireAfterAccess4Hours,
-                expireAfterAccess12Hours,
+                expireAfterWrite12Hours
         )
 
 

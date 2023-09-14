@@ -9,7 +9,7 @@ class CacheTest : TestBase() {
     @Test
     fun ab() {
         for (i in 1..5) {
-            var v = MemoryCacheList.expireAfterAccess1Hour.get("OK") {
+            var v = MemoryCacheList.expireAfterWrite1Hour.get("OK") {
                 println("--------------")
                 return@get "OK"
             }
