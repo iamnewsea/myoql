@@ -222,7 +222,7 @@ class EsMappingGenerator {
 
         //处理最外层的 IkFieldDefine
         dbDefines.filter { it.key.contains(".") }.forEach {
-            json.setValueByWbsPath(it.key, value = it.value, touchEnum = WbsNoKeyTouchEnum.Error);
+            json.setValueByWbsPath(it.key, value = it.value, touchType = WbsNoKeyTouchEnum.Error);
         }
 
         return json;
