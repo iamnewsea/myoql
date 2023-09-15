@@ -141,14 +141,14 @@ fun Map<String, *>.setValueByWbsPath(
     keyWbs: String,
     value: Any?,
     ignoreCase: Boolean = false,
-    touchEnum: WbsNoKeyTouchEnum = WbsNoKeyTouchEnum.Fill
+    touchType: WbsNoKeyTouchEnum = WbsNoKeyTouchEnum.Fill
 ): Boolean {
     return ReflectUtil.setValueByWbsPath(
         this,
         keyWbs,
         value = value,
         ignoreCase = ignoreCase,
-        touchEnum = touchEnum
+        touchType = touchType
     );
 }
 

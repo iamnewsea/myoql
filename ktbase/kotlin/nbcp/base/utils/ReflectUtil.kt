@@ -22,7 +22,7 @@ object ReflectUtil {
         keyWbs: String,
         value: Any?,
         ignoreCase: Boolean = false,
-        touchEnum: WbsNoKeyTouchEnum = WbsNoKeyTouchEnum.Fill
+        touchType: WbsNoKeyTouchEnum = WbsNoKeyTouchEnum.Fill
     ): Boolean {
         if (keyWbs.isNullOrEmpty()) return false;
 
@@ -48,12 +48,11 @@ object ReflectUtil {
         var objValue: Any? = data;
 
         if (beforeKeys.any()) {
-
             objValue = getValueByWbsPath(
                 data,
                 *beforeKeys.toTypedArray(),
                 ignoreCase = ignoreCase,
-                touchEnum = touchEnum
+                touchType = touchType
             );
         }
 
@@ -204,7 +203,7 @@ object ReflectUtil {
         data: Any,
         vararg keys: String,
         ignoreCase: Boolean = false,
-        touchEnum: WbsNoKeyTouchEnum = WbsNoKeyTouchEnum.Fill
+        touchType: WbsNoKeyTouchEnum = WbsNoKeyTouchEnum.Ignore
     ): Any? {
         if (keys.any() == false) return null;
 
@@ -220,7 +219,7 @@ object ReflectUtil {
                 data,
                 *unwindKeys,
                 ignoreCase = ignoreCase,
-                touchEnum = touchEnum
+                touchType = touchType
             );
         }
 
@@ -244,7 +243,7 @@ object ReflectUtil {
                     data,
                     keys = *keys2.toTypedArray(),
                     ignoreCase = ignoreCase,
-                    touchEnum = touchEnum
+                    touchType = touchType
                 );
             }
             var start_index = key.lastIndexOf('[');
@@ -257,7 +256,7 @@ object ReflectUtil {
                     data,
                     keys = *keys2.toTypedArray(),
                     ignoreCase = ignoreCase,
-                    touchEnum = touchEnum
+                    touchType = touchType
                 )
             }
         }
@@ -268,7 +267,7 @@ object ReflectUtil {
             if (vbKeys.size > 1) {
                 throw RuntimeException("找到多个 key: ${key}")
             } else if (vbKeys.size == 0) {
-                if (touchEnum == WbsNoKeyTouchEnum.Fill) {
+                if (touchType == WbsNoKeyTouchEnum.Fill) {
 
                     if (isLastKey) {
                         (data as MutableMap<String, Any?>).put(key, JsonMap());
@@ -279,7 +278,7 @@ object ReflectUtil {
                     } else {
                         (data as MutableMap<String, Any?>).put(key, JsonMap());
                     }
-                } else if (touchEnum == WbsNoKeyTouchEnum.Error) {
+                } else if (touchType == WbsNoKeyTouchEnum.Error) {
                     throw RuntimeException("找不到 key: ${key}")
                 } else {
                     return null;
@@ -300,7 +299,7 @@ object ReflectUtil {
                 v,
                 *left_keys.toTypedArray(),
                 ignoreCase = ignoreCase,
-                touchEnum = touchEnum
+                touchType = touchType
             )
         } else if (key == "[]") {
             var data2: List<*>
@@ -320,7 +319,7 @@ object ReflectUtil {
                         it!!,
                         *left_keys.toTypedArray(),
                         ignoreCase = ignoreCase,
-                        touchEnum = touchEnum
+                        touchType = touchType
                     )
                 }
                 .filter { it != null }
@@ -339,7 +338,7 @@ object ReflectUtil {
 
                 //如果不够
                 if (data.size < index) {
-                    if (touchEnum == WbsNoKeyTouchEnum.Fill) {
+                    if (touchType == WbsNoKeyTouchEnum.Fill) {
                         for (i in data.size until index) {
                             (data as MutableList<Any?>).add(JsonMap())
                         }
@@ -370,7 +369,7 @@ object ReflectUtil {
                 data2,
                 *left_keys.toTypedArray(),
                 ignoreCase = ignoreCase,
-                touchEnum = touchEnum
+                touchType = touchType
             )
         }
 
@@ -386,7 +385,7 @@ object ReflectUtil {
             v,
             *left_keys.toTypedArray(),
             ignoreCase = ignoreCase,
-            touchEnum = touchEnum
+            touchType = touchType
         )
     }
 }
