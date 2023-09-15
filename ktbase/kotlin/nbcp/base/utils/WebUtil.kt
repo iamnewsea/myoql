@@ -107,9 +107,11 @@ object WebUtil {
     }
 
 
-
+    /**
+     * 补充 HttpHostUrl
+     */
     @JvmStatic
-    fun getHttpHostUrl(host: String): String {
+    fun getFullHttpUrl(host: String): String {
         if (host.isEmpty()) return ""
 
         if (host.startsWith("http://", true) || host.startsWith("https://", true)) {

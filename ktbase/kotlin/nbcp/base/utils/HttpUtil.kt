@@ -152,7 +152,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
     var url: String = ""
         get
         set(value) {
-            field = WebUtil.getHttpHostUrl(value)
+            field = WebUtil.getFullHttpUrl(value)
         }
 
     init {

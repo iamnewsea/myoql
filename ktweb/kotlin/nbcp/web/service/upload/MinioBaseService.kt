@@ -7,7 +7,6 @@ import nbcp.base.comm.JsonResult
 import nbcp.base.extend.AsString
 import nbcp.base.extend.HasValue
 import nbcp.base.extend.Skip
-import nbcp.base.utils.MyUtil
 import nbcp.base.utils.UrlUtil
 import nbcp.base.utils.WebUtil
 import org.slf4j.LoggerFactory
@@ -50,7 +49,7 @@ class MinioBaseService : ISaveFileService {
 
 
     private val minioClient by lazy {
-        var host = WebUtil.getHttpHostUrl(API_HOST.AsString(WEB_HOST))
+        var host = WebUtil.getFullHttpUrl(API_HOST.AsString(WEB_HOST))
 
 
         return@lazy MinioClient.builder().endpoint(host).credentials(MINIO_ACCESSKEY, MINIO_SECRETKEY).build()
