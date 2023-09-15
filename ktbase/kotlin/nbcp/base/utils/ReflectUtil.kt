@@ -269,9 +269,12 @@ object ReflectUtil {
                 throw RuntimeException("找到多个 key: ${key}")
             } else if (vbKeys.size == 0) {
                 if (touchEnum == WbsNoKeyTouchEnum.Fill) {
+
                     if (isLastKey) {
-                        (data as MutableMap<String, Any?>).put(key, mutableListOf<Any?>());
-                    } else if (left_keys.any() && left_keys.first().startsWith("[")) {
+                        (data as MutableMap<String, Any?>).put(key, JsonMap());
+                    } else if (key == "[]" || (left_keys.any() && left_keys.first()
+                            .startsWith("["))
+                    ) {
                         (data as MutableMap<String, Any?>).put(key, mutableListOf<Any?>());
                     } else {
                         (data as MutableMap<String, Any?>).put(key, JsonMap());
