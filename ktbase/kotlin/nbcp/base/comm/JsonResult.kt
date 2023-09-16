@@ -25,6 +25,11 @@ open class JsonResult : Serializable {
 
     var cause: String? = null
 
+    val hasError: Boolean
+        get() {
+            return this.code != 0;
+        }
+
     companion object {
         @JvmStatic
         @JvmOverloads
