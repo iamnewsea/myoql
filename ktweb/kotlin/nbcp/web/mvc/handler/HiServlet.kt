@@ -1,5 +1,6 @@
 package nbcp.web.mvc.handler
 
+import nbcp.base.comm.config
 import nbcp.base.extend.*
 import nbcp.base.utils.ClassUtil
 import nbcp.base.utils.JarUtil
@@ -39,13 +40,18 @@ open class HiServlet {
         }
 
 
-        var envKey = request.getParameter("env-key")
-        if (envKey.HasValue) {
-            val env = SpringUtil.context.environment;
-            var value = env.getProperty(envKey)
-            if (value != null) {
-                response.WriteTextValue(value)
+        var envKeys = request.getParameter("env-key").AsString().split(",").filter { it.HasValue }
+        if (envKeys.any()) {
+//            val env = SpringUtil.context.environment;
+            var value = "";
+            for (envKey in envKeys) {
+                value = config.getConfig(envKey).AsString();
+                if (value.HasValue) {
+                    response.WriteTextValue(value)
+                    return;
+                }
             }
+
             return;
         }
 

@@ -2,6 +2,7 @@ package nbcp.web.service.upload
 
 import io.minio.*
 import nbcp.base.comm.JsonResult
+import nbcp.base.comm.ListResult
 import nbcp.base.extend.AsString
 import nbcp.base.extend.HasValue
 import nbcp.base.extend.Skip
@@ -164,6 +165,24 @@ class MinioBaseService : ISaveFileService {
             return@use UrlUtil.joinUrl(responseHost, response.bucket(), response.`object`())
         }
     }
+
+
+    fun listFile(bucket: String, path: String): ListResult<String> {
+        var list = minioClient.listObjects(
+            ListObjectsArgs.builder()
+                .bucket(bucket)
+                .prefix(path)
+                .build()
+        )
+            .filter { it.get().isDir == false }
+            .map {
+                it.get().objectName()
+            };
+
+        return ListResult.of(list);
+    }
+
+    public
 
 
     override fun delete(url: String): JsonResult {
