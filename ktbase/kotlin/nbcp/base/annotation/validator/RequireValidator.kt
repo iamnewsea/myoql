@@ -12,16 +12,27 @@ class RequireValidator : ConstraintValidator<Require?, Any?> {
         super.initialize(constraintAnnotation)
     }
 
-    override fun isValid(value: Any?, constraintValidatorContext: ConstraintValidatorContext): Boolean {
+    override fun isValid(
+        value: Any?,
+        constraintValidatorContext: ConstraintValidatorContext
+    ): Boolean {
         if (value == null) {
             return false
         }
 
-        if (value is String) {
-            if (value.isEmpty()) {
-                return false
-            }
+        if (value is String && value.isEmpty()) {
+            return false
         }
+
+        if (value is Array<*> && value.size == 0) {
+            return false;
+        }
+
+        if (value is Collection<*> && value.size == 0) {
+            return false;
+        }
+
+
         return true
     }
 }
