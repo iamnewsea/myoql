@@ -1,8 +1,6 @@
 package nbcp.web.service.upload
 
-import io.minio.MinioClient
-import io.minio.PutObjectArgs
-import io.minio.RemoveObjectArgs
+import io.minio.*
 import nbcp.base.comm.JsonResult
 import nbcp.base.extend.AsString
 import nbcp.base.extend.HasValue
@@ -34,9 +32,15 @@ class MinioBaseService : ISaveFileService {
     @Value("\${app.upload.minio.web-host:}")
     lateinit var WEB_HOST: String
 
+    /**
+     * minio:9001 --> service account 创建。
+     */
     @Value("\${app.upload.minio.key:}")
     lateinit var MINIO_ACCESSKEY: String
 
+    /**
+     * minio:9001 --> service account 创建。
+     */
     @Value("\${app.upload.minio.secret:}")
     lateinit var MINIO_SECRETKEY: String
 
@@ -52,10 +56,44 @@ class MinioBaseService : ISaveFileService {
         var host = WebUtil.getFullHttpUrl(API_HOST.AsString(WEB_HOST))
 
 
-        return@lazy MinioClient.builder().endpoint(host).credentials(MINIO_ACCESSKEY, MINIO_SECRETKEY).build()
+        return@lazy MinioClient.builder().endpoint(host)
+            .credentials(MINIO_ACCESSKEY, MINIO_SECRETKEY).build()
     }
 
-    override fun save(fileStream: InputStream, group: String, fileData: UploadFileNameData): String {
+
+    fun createBucket(group: String) {
+        var ret = minioClient.makeBucket(
+            MakeBucketArgs
+                .builder()
+                .bucket(group)
+                .apply {
+                    if (MINIO_REGION.HasValue) {
+                        this.region(MINIO_REGION)
+                    }
+                }
+                .build());
+
+
+        //应该再通过Api 设置权限为 Public ，但是好像Api太复杂。
+        //minioClient.getBucketPolicy()
+//        minioClient.setBucketPolicy(
+//            SetBucketPolicyArgs
+//                .builder()
+//                .bucket(group)
+//                .config("""""")
+//                .build()
+//        )
+    }
+
+
+    /**
+     * @param group: 桶，必须提前创建好,并设置桶为 Public。
+     */
+    override fun save(
+        fileStream: InputStream,
+        group: String,
+        fileData: UploadFileNameData
+    ): String {
         if (check() == false) {
             throw java.lang.RuntimeException("minIO缺少配置项！")
         }
