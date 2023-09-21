@@ -5,17 +5,6 @@ import nbcp.base.extend.CloneObject
 import nbcp.base.extend.HasValue
 import nbcp.base.utils.CodeUtil
 import nbcp.myoql.db.db
-import java.io.Serializable
-
-
-abstract class BaseAliasSqlSect : Serializable {
-    var aliaValue: String = ""
-
-    abstract fun toSingleSqlData(): SqlParameterData;
-    open fun getAliasName(): String {
-        return this.aliaValue
-    }
-}
 
 
 open class SqlParameterData constructor() : BaseAliasSqlSect() {

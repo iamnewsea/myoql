@@ -103,7 +103,7 @@ class SqlInsertClip<M : SqlBaseMetaTable<out T>, T : Serializable>(var mainEntit
     }
 
     override fun toSql(): SqlParameterData {
-        var autoIncrmentKey = this.mainEntity.getAutoIncrementKey()
+//        var autoIncrmentKey = this.mainEntity.getAutoIncrementKey()
 
         if (entities.size == 1) {
             var entity = entities.first()

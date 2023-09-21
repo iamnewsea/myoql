@@ -110,4 +110,24 @@ data class s_user(
 其中：
 
     添加完成后， 可以通过 entity.id 获取添加后的id值。也可以通过 db.lastAutoId 获取最后插入数据库的Id值。
+
+# 动态数据源
+
+```
+usingScope( DataSourceScope(DataSourceBuilder
+    .create()
+    .xxx()
+    .build() ) ){
     
+    var sql = RawQuerySqlClip("""
+create table abc ( 
+    `id` varchar(20) NOT NULL COMMENT '主键id',
+    name varchar(30) null comment 'name', 
+     PRIMARY KEY (`id`) USING BTREE ) 
+) COMMENT='应用管理基本信息'
+ENGINE=InnoDB
+""" );
+
+    sql.exec();
+}
+```
