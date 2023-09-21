@@ -6,7 +6,6 @@ import nbcp.base.comm.const
 import nbcp.base.exception.ParameterInvalidException
 import nbcp.base.extend.*
 import nbcp.base.utils.ClassUtil
-import nbcp.base.utils.MyUtil
 import nbcp.base.utils.StringUtil
 import nbcp.mvc.annotation.*
 import org.slf4j.LoggerFactory
@@ -66,21 +65,6 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
         return true
     }
 
-//    private fun getMyRequest(request: HttpServletRequest): HttpServletRequest? {
-//        if (request is HttpServletRequest) {
-//            return request;
-//        }
-//        if ((request is ServletRequestWrapper) == false) {
-//            return null
-//        }
-//
-//        var requestWrapper = request as ServletRequestWrapper
-//        if (requestWrapper.request == null) {
-//            return null;
-//        }
-//
-//        return getMyRequest(requestWrapper.request as HttpServletRequest)
-//    }
 
     override fun resolveArgument(
         parameter: MethodParameter,
@@ -115,7 +99,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
             }
 
             if (strValue.isEmpty()) {
-                checkRequire(parameter, webRequest)
+                throwWithRequire(parameter, webRequest)
             }
 
             return strValue;
@@ -123,11 +107,13 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
 
         if (value == null) {
             if (parameter.parameterType.isArray) {
-                value = java.lang.reflect.Array.newInstance(parameter.parameterType.componentType, 0);
+                value =
+                    java.lang.reflect.Array.newInstance(parameter.parameterType.componentType, 0);
             } else if (parameter.parameterType.IsCollectionType) {
                 value = listOf<Any>()
             } else if (parameter.parameterType.IsNumberType) {
-                var defNumberValue = parameter.getParameterAnnotation(DefaultNumberValue::class.java)
+                var defNumberValue =
+                    parameter.getParameterAnnotation(DefaultNumberValue::class.java)
                 if (defNumberValue != null) {
                     value = defNumberValue.value
                 } else {
@@ -137,7 +123,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
         }
 
         if (value == null) {
-            checkRequire(parameter, webRequest);
+            throwWithRequire(parameter, webRequest);
         }
 
         //如果是列表。
@@ -167,7 +153,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
             }
 
             if (value is Collection<*> && value.size == 0) {
-                checkRequire(parameter, webRequest);
+                throwWithRequire(parameter, webRequest);
             }
             return value;
         } else if (parameter.parameterType.isArray) {
@@ -196,7 +182,7 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
 
 
             if (value is Array<*> && value.size == 0) {
-                checkRequire(parameter, webRequest);
+                throwWithRequire(parameter, webRequest);
             }
             return value;
         }
@@ -216,14 +202,18 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
     /**
      * 处理参数别名
      */
-    private fun translateAliasParam(webRequest: HttpServletRequest, parameter: MethodParameter): Any? {
+    private fun translateAliasParam(
+        webRequest: HttpServletRequest,
+        parameter: MethodParameter
+    ): Any? {
 
         if (parameter.parameterName == "skip") {
-            val pageNumber = (getValueFromRequest(webRequest, parameter, "pageNumber") ?: getValueFromRequest(
-                webRequest,
-                parameter,
-                "pageNo"
-            )).AsInt(-1)
+            val pageNumber =
+                (getValueFromRequest(webRequest, parameter, "pageNumber") ?: getValueFromRequest(
+                    webRequest,
+                    parameter,
+                    "pageNo"
+                )).AsInt(-1)
             val pageSize = getValueFromRequest(webRequest, parameter, "pageSize").AsInt(-1)
 
             if (pageNumber > 0 && pageSize > 0) {
@@ -282,7 +272,8 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
                         return postBody.ConvertType(parameter.parameterType);
                     }
                     if (parameter.parameterType.IsCollectionType) {
-                        var p1Type = (parameter.genericParameterType as ParameterizedType).GetActualClass(0)
+                        var p1Type =
+                            (parameter.genericParameterType as ParameterizedType).GetActualClass(0)
                         return postBody.FromListJson(p1Type);
                     }
                     return postBody.ConvertType(parameter.parameterType);
@@ -301,8 +292,8 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
         return value;
     }
 
-    private fun checkRequire(parameter: MethodParameter, webRequest: HttpServletRequest) {
-        var require = parameter.getParameterAnnotation(nbcp.base.annotation.Require::class.java)
+    private fun throwWithRequire(parameter: MethodParameter, webRequest: HttpServletRequest) {
+        var require = parameter.getParameterAnnotation(Require::class.java)
         if (require == null) {
             return;
         }
@@ -322,7 +313,11 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
         throw ParameterInvalidException(parameter.parameterName!!)
     }
 
-    private fun getFromQuery(webRequest: HttpServletRequest, parameter: MethodParameter, parameterName: String): Any? {
+    private fun getFromQuery(
+        webRequest: HttpServletRequest,
+        parameter: MethodParameter,
+        parameterName: String
+    ): Any? {
         val queryMap = webRequest.queryJson
 
         var parameterNameLocal = parameterName;
@@ -353,7 +348,8 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
                         .toTypedArray()
                 }
             } else if (parameter.parameterType.IsCollectionType) {
-                var genType = (parameter.genericParameterType as ParameterizedType).GetActualClass(0);
+                var genType =
+                    (parameter.genericParameterType as ParameterizedType).GetActualClass(0);
                 if (!genType.IsStringType) {
 
                     value = value.map { it!!.ConvertType(genType) }
