@@ -255,7 +255,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
             if (columns.any() == false) {
                 ret.expression += this.mainEntity.quoteTableName + ".*"
             } else {
-                var selectColumn = db.sql.mergeSqlData(*columns.toTypedArray())
+                var selectColumn = db.sql.mergeSqlSects(*columns.toTypedArray())
 
                 ret.expression += selectColumn.expression
                 ret.values += selectColumn.values
@@ -263,7 +263,7 @@ class SqlQueryClip<M : SqlBaseMetaTable<T>, T : Serializable>(var mainEntity: M)
 
             joins.forEach {
                 if (it.select.any()) {
-                    val select_columns = db.sql.mergeSqlData(*it.select.toTypedArray())
+                    val select_columns = db.sql.mergeSqlSects(*it.select.toTypedArray())
                     ret.expression += "," + select_columns.expression
                     ret.values += select_columns.values
                 }

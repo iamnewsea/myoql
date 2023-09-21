@@ -2,11 +2,8 @@ package nbcp.myoql.db
 
 import com.zaxxer.hikari.HikariDataSource
 import nbcp.base.comm.*
-import nbcp.base.db.*
-import nbcp.base.enums.*
 import nbcp.base.extend.*
 import nbcp.base.utils.*
-import nbcp.myoql.db.*
 import nbcp.myoql.db.comm.*
 import nbcp.myoql.db.enums.*
 import nbcp.myoql.db.sql.DataSourceScope
@@ -14,6 +11,8 @@ import nbcp.myoql.db.sql.SqlEntityCollector
 import nbcp.myoql.db.sql.base.BaseAliasSqlSect
 import nbcp.myoql.db.sql.base.SqlColumnName
 import nbcp.myoql.db.sql.base.SqlParameterData
+import nbcp.myoql.db.sql.component.RawQuerySqlClip
+import nbcp.myoql.db.sql.component.RawUpdateSqlClip
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
 import org.springframework.util.StringUtils
@@ -71,7 +70,7 @@ object dbSql {
     }
 
     @JvmStatic
-    fun mergeSqlData(vararg columns: BaseAliasSqlSect): SqlParameterData {
+    fun mergeSqlSects(vararg columns: BaseAliasSqlSect): SqlParameterData {
         var ret = SqlParameterData();
 
         ret.expression = columns.map {
@@ -110,7 +109,8 @@ object dbSql {
         properties.password = password;
 
         dataSource =
-            properties.initializeDataSourceBuilder().type(HikariDataSource::class.java).build() as HikariDataSource
+            properties.initializeDataSourceBuilder().type(HikariDataSource::class.java)
+                .build() as HikariDataSource
         if (StringUtils.hasText(properties.name)) {
             dataSource.poolName = properties.name
         }
@@ -124,7 +124,9 @@ object dbSql {
      */
     @JvmStatic
     fun getScopeDataSource(): DataSource? {
-        return scopes.getLatest(DataSourceScope::class.java)?.value ?: SpringUtil.getBeanWithNull(DataSource::class)
+        return scopes.getLatest(DataSourceScope::class.java)?.value ?: SpringUtil.getBeanWithNull(
+            DataSource::class
+        )
     }
 
     @JvmStatic
@@ -135,6 +137,31 @@ object dbSql {
             })"
         )
     }
+
+
+    /**
+     * 动态执行sql
+     */
+    fun rawQuery(
+        sqlWithVar: String,
+        sqlValue: JsonMap = JsonMap(),
+        tableName: String = ""
+    ): RawQuerySqlClip {
+        return RawQuerySqlClip(sqlWithVar, sqlValue, tableName)
+    }
+
+
+    /**
+     * 动态执行sql
+     */
+    fun rawUpdate(
+        sqlWithVar: String,
+        sqlValue: JsonMap = JsonMap(),
+        tableName: String = ""
+    ): RawUpdateSqlClip {
+        return RawUpdateSqlClip(sqlWithVar, sqlValue, tableName)
+    }
+
 //    /**
 //     * 根据表名，以及是不是读取操作，动态返回DataSource
 //     */
