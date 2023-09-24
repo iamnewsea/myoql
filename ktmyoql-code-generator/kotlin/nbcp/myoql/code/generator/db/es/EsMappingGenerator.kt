@@ -148,36 +148,47 @@ class EsMappingGenerator {
         return field.type
     }
 
-    fun getDefines(entType: Class<*>): Map<String, String> {
+    fun getDefines(entType: Class<*>): Map<String, Any?> {
         var defines = entType.getAnnotationsByType(DbDefine::class.java)
 
-        defines.map { it.fieldName to it.define }
+        var ret = defines.map { it.fieldName to it.define }
             .toMap()
-            .toMutableMap()
-            .apply {
-                var ikMap = mapOf<String, String>()
-                var ikDefines = entType.getAnnotation(IkFieldDefine::class.java)
-                if (ikDefines != null) {
-                    ikMap =
-                        ikDefines.fieldNames.map { it to """{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}""" }
-                            .toMap()
-                }
+            .toMap();
 
-                return ikMap + this
-            }
+
+        var ikMap = mapOf<String, String>()
+        var ikDefines = entType.getAnnotation(IkFieldDefine::class.java)
+        if (ikDefines != null) {
+            ikMap =
+                ikDefines.fieldNames.map { it to """{"type":"text","index":"true","boost":"1","analyzer":"ik_max_word","search_analyzer":"ik_max_word"}""" }
+                    .toMap()
+        }
+
+        ret = ikMap + ret
+
+        // 把 key 展开。
+        var objKeys = ret.keys.filter { it.contains(".") }.toList();
+
+        objKeys.forEach {
+            ret.setValueByWbsPath(it, ret.get(it))
+        }
+
+        ret = ret - objKeys;
+
+        return ret;
     }
 
     /**
      * TODO 优先使用最外层实体的定义，如果外层没有，再使用当前实体的定义。
      */
-    fun genEntity(entType: Class<*>): JsonMap {
+    fun genEntity(entType: Class<*>, parentDef: Map<String, Any?>? = null): JsonMap {
         var json = JsonMap();
-        var dbDefines = getDefines(entType);
+        var dbDefines = getDefines(entType) + (parentDef ?: mapOf());
 
         var getDef4SimpleType: (Field) -> JsonMap = getDefSelf@{ field ->
             var fieldName = field.name
             var def = dbDefines.get(fieldName);
-            if (def.HasValue) {
+            if (def != null && def is String) {
                 return@getDefSelf def!!.FromJson<JsonMap>()!!;
             }
 
@@ -210,7 +221,12 @@ class EsMappingGenerator {
 
                     json.put(it.name, defineJson);
                 } else {
-                    var subDef = genEntity(type)
+                    var def = dbDefines.get(it.name);
+                    if (def != null && def is String) {
+                        throw RuntimeException("${entType.simpleName}.${it.name} 是对象类型，不能单独定义");
+                    }
+
+                    var subDef = genEntity(type, def as Map<String,Any?>?)
 
                     if (subDef.any()) {
                         //https://www.jianshu.com/p/6e3d970c65cd
