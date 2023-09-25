@@ -75,9 +75,6 @@ public class SplitLibMojo
     @Parameter(property = "override", defaultValue = "false")
     private Boolean override;
 
-    @Parameter(property = "classifier", defaultValue = "")
-    private String classifier;
-
     private String jarExePath = "";
 
     private File jarFile = null;
@@ -105,8 +102,7 @@ public class SplitLibMojo
 
         Set<String> groupIds = getKeepGroupIds();
 
-        jarFile = new File(FileUtil.resolvePath(outputDirectory.getPath(),
-                project.getArtifactId() + "-" + project.getVersion() + ((classifier == null || classifier.length() == 0) ? "" : ("-" + classifier)) + ".jar"));
+        jarFile = getJarExeFile();
         extractJar(jarFile.getPath());
 
 
@@ -173,6 +169,37 @@ public class SplitLibMojo
 
             new File(FileUtil.resolvePath(splitLibPath.getPath(), "lib")).renameTo(libPath);
         }
+    }
+
+    private File getJarExeFile() {
+        var file = new File(FileUtil.resolvePath(outputDirectory.getPath()));
+        var title = project.getArtifactId() + "-" + project.getVersion();
+        var len = 0;
+        File maxNameFile = null;
+        for (File item : file.listFiles()) {
+            if (!item.isFile()) {
+                continue;
+            }
+
+            var fileName = item.getName();
+            if (!fileName.toLowerCase().endsWith(".java")) {
+                continue;
+            }
+
+            if (!fileName.startsWith(title)) {
+                continue;
+            }
+
+            if( fileName.length() > len){
+                maxNameFile = item;
+            }
+        }
+
+        if (maxNameFile == null) {
+            throw new RuntimeException("路径 " + file.getPath() + " 下找不到 Jar 包");
+        }
+
+        return maxNameFile;
     }
 
     private File initWorkPath() {
