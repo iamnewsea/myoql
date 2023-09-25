@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cn.dev8</groupId>
-    <version>1.1.12-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
     <artifactId>split-lib-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
 
@@ -98,9 +98,20 @@
                                 </goals>
                             </execution>
                         </executions>
+
                     </plugin>
                 </plugins>
             </build>
+            <distributionManagement>
+                <repository>
+                    <id>center</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+                <snapshotRepository>
+                    <id>center</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+                </snapshotRepository>
+            </distributionManagement>
         </profile>
 
     </profiles>
