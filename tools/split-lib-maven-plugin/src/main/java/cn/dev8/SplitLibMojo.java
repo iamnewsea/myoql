@@ -182,7 +182,7 @@ public class SplitLibMojo
             }
 
             var fileName = item.getName();
-            if (!fileName.toLowerCase().endsWith(".java")) {
+            if (!fileName.toLowerCase().endsWith(".jar")) {
                 continue;
             }
 
@@ -190,7 +190,7 @@ public class SplitLibMojo
                 continue;
             }
 
-            if( fileName.length() > len){
+            if (fileName.length() > len) {
                 maxNameFile = item;
             }
         }
