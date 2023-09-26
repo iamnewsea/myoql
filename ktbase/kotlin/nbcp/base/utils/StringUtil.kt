@@ -175,39 +175,41 @@ object StringUtil {
     }
 
     /**
-     * 格式化模板
+     * 使用变量格式化字符串
+     *
+     * @param text 模板，其中变量内容可以定 ${varName|trim|bc}
+     * @param funcCallback
+     * 不是默认函数的时候,调用 funcCallback 自定义处理.
+     * 第一个参数是key, 第二个是value, 第三个参数是函数名,第四个参数是函数参数 , 返回新值
+     * 如果模板使用了函数,而没有传递,抛出异常.
+     * 如: ${id|type} ,type(id) 不是默认定义,需要通过 funcCallback 传
      */
     @JvmStatic
     @JvmOverloads
     fun formatTemplateJson(
             /**
-             * 如 dbr.${group|w}
+             * 如 dbr.${group|trim:.|bc}
              */
             text: String,
             /**
              * 如: {group:"abc"}
              */
             json: StringMap,
-            /**
-             * 不是默认函数的时候,调用 funcCallback 自定义处理.
-             * 第一个参数是key, 第二个是value, 第三个参数是函数名,第四个参数是函数参数 , 返回新值
-             * 如果模板使用了函数,而没有传递,抛出异常.
-             * 如: ${id|type} ,type(id) 不是默认定义,需要通过 funcCallback 传
-             */
             funcCallback: ((String, String?, String, String) -> String?)? = null,
             style: String = "\${}"
     ): String {
 
-        var map: StringKeyMap<((String) -> String)> = StringKeyMap()
-        map.put("-", { getKebabCase(it) })
-        map.put("_", { getUnderlineCase(it) })
-        map.put("bc", { getBigCamelCase(it) })
-        map.put("sc", { getSmallCamelCase(it) })
-        map.put("u", { it.uppercase() })
-        map.put("l", { it.lowercase() })
+        var styleMap: StringKeyMap<((String) -> String)> = StringKeyMap()
+        styleMap.put("-", { getKebabCase(it) })
+        styleMap.put("_", { getUnderlineCase(it) })
+        styleMap.put("bc", { getBigCamelCase(it) })
+        styleMap.put("sc", { getSmallCamelCase(it) })
+        styleMap.put("u", { it.uppercase() })
+        styleMap.put("l", { it.lowercase() })
+        styleMap.put("trim", { it.trim() })
 
-        var map2: StringKeyMap<((String).(String) -> String)> = StringKeyMap()
-        map2.put("trim", { trim(this, it) })
+        var fuctionMap: StringKeyMap<((String).(String) -> String)> = StringKeyMap()
+        fuctionMap.put("trim", { trim(this, it) })
 
 
         return text.formatWithJson(
@@ -252,8 +254,8 @@ object StringUtil {
                             }
 
                             //如果定义了默认的funcName
-                            if (value != null && map2.containsKey(funcName)) {
-                                var funcBody = map2.get(funcName)!!
+                            if (value != null && fuctionMap.containsKey(funcName)) {
+                                var funcBody = fuctionMap.get(funcName)!!
                                 result = funcBody.invoke(value, paramValue)
                             } else if (funcCallback != null) {
                                 result = funcCallback.invoke(key, value, funcName, paramValue)
@@ -261,8 +263,8 @@ object StringUtil {
                                 throw RuntimeException("找不到 ${funcName}")
                             }
                         } else if (params.size == 0) {
-                            if (value != null && map.containsKey(funcName)) {
-                                val funcBody = map.get(funcName)!!
+                            if (value != null && styleMap.containsKey(funcName)) {
+                                val funcBody = styleMap.get(funcName)!!
                                 result = funcBody.invoke(value)
                             } else if (funcCallback != null) {
                                 result = funcCallback.invoke(key, value, funcName, "")
