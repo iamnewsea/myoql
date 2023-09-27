@@ -103,6 +103,8 @@ public class SplitLibMojo
         Set<String> groupIds = getKeepGroupIds();
 
         jarFile = getJarExeFile();
+
+        getLog().info("split-lib 拆包路径:" + jarFile.getPath()+ ", 拆分的包名为：" + String.join(",", groupIds));
         extractJar(jarFile.getPath());
 
 
@@ -199,7 +201,6 @@ public class SplitLibMojo
             throw new RuntimeException("路径 " + file.getPath() + " 下找不到 Jar 包");
         }
 
-        getLog().info("jar包路径: " + maxNameFile.getPath());
         return maxNameFile;
     }
 
@@ -260,7 +261,6 @@ public class SplitLibMojo
             groupIds.add(groupIdString);
         }
 
-        getLog().info("split-lib 拆分的包名为：" + String.join(",", groupIds));
         return groupIds;
     }
 
