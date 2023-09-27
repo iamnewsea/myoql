@@ -199,6 +199,7 @@ public class SplitLibMojo
             throw new RuntimeException("路径 " + file.getPath() + " 下找不到 Jar 包");
         }
 
+        getLog().info("jar包路径: " + maxNameFile.getPath());
         return maxNameFile;
     }
 
