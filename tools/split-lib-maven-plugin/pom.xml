@@ -132,5 +132,18 @@
                 </snapshotRepository>
             </distributionManagement>
         </profile>
+        <profile>
+            <id>amy</id>
+            <distributionManagement>
+                <repository>
+                    <id>amy</id>
+                    <url>http://dc-qq:8081/repository/maven-releases/</url>
+                </repository>
+                <snapshotRepository>
+                    <id>amy</id>
+                    <url>http://dc-qq:8081/repository/maven-snapshots/</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
     </profiles>
 </project>

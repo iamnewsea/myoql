@@ -194,6 +194,7 @@ public class SplitLibMojo
 
             if (fileName.length() > len) {
                 maxNameFile = item;
+                len = fileName.length();
             }
         }
 
