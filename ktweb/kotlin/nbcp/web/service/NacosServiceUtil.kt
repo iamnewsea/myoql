@@ -1,6 +1,7 @@
 package nbcp.web.service
 
 import nbcp.base.comm.*
+import nbcp.base.enums.RequestMethod
 import nbcp.base.extend.*
 import nbcp.base.utils.HttpUtil
 import nbcp.base.utils.UrlUtil
@@ -76,7 +77,7 @@ object NacosServiceUtil {
         val groupLocal = group.AsString("DEFAULT_GROUP")
         val http =
             HttpUtil("${getConfigServerHost(serverHost)}/v1/cs/configs?dataId=${dataId}&group=${groupLocal}&tenant=$ns")
-        http.request.requestMethod = "DELETE"
+        http.request.requestMethod = RequestMethod.DELETE
         val res = http.doNet();
         if (http.isSuccess) {
             return ApiResult.of(res)

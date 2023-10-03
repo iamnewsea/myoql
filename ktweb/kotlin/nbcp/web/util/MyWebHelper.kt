@@ -20,10 +20,14 @@ object MyWebUtil {
      * 把当前请求转向另一个目标，并把目标结果输出。
      */
     @JvmStatic
-    fun transform(request: HttpServletRequest, response: HttpServletResponse, targetUrl: String): HttpUtil {
+    fun transform(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        targetUrl: String
+    ): HttpUtil {
         var http = HttpUtil(targetUrl)
-        http.request.requestMethod = request.method
-        if (request.method == "POST" || request.method == "PUT") {
+        http.request.requestMethod = request.method.ToEnum(RequestMethod::class.java)!!
+        if (request.method basicSame "POST" || request.method basicSame "PUT") {
             http.setPostBody(request.inputStream.readContentString())
         }
 
@@ -50,7 +54,10 @@ object MyWebUtil {
             headerArray.forEach { headerName ->
                 var responseHeaderName = responseHeaderNames.firstOrNull { headerName basicSame it }
                 if (responseHeaderName != null) {
-                    response.setHeader(responseHeaderName, http.response.headers.get(responseHeaderName))
+                    response.setHeader(
+                        responseHeaderName,
+                        http.response.headers.get(responseHeaderName)
+                    )
                 }
             }
         }
@@ -59,9 +66,6 @@ object MyWebUtil {
         return http
     }
 }
-
-
-
 
 
 //fun <M : MongoBaseMetaCollection<out E>, E : Any> MongoSetEntityUpdateClip<M, E>.withRequestParams(): MongoSetEntityUpdateClip<M, E> {

@@ -9,6 +9,7 @@ import nbcp.base.data.HttpRequestData
 import nbcp.base.data.HttpResponseData
 import nbcp.base.db.*
 import nbcp.base.enums.FileExtensionTypeEnum
+import nbcp.base.enums.RequestMethod
 import nbcp.base.extend.*
 import org.slf4j.LoggerFactory
 import java.awt.image.BufferedImage
@@ -232,7 +233,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
 
     @JvmOverloads
     fun doGet(query: String = ""): String {
-        this.request.requestMethod = "GET"
+        this.request.requestMethod = RequestMethod.GET
 
         if (query.HasValue) {
             var queryObj = UrlUtil.parseUrlQueryJson(if (query.startsWith('?')) query else "?" + query)
@@ -286,7 +287,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
             this.request.headers.set("Accept", "application/json")
         }
 
-        this.request.requestMethod = "PUT"
+        this.request.requestMethod = RequestMethod.PUT
 
         if (requestBody.HasValue) {
             this.setPostBody(requestBody)
@@ -306,7 +307,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
             this.request.headers.set("Accept", "application/json")
         }
 
-        this.request.requestMethod = "POST"
+        this.request.requestMethod = RequestMethod.POST
 
         if (requestBody.HasValue) {
             this.setPostBody(requestBody)
@@ -376,7 +377,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
             conn.connectTimeout = this.request.connectTimeout
             conn.readTimeout = this.request.readTimeout
 
-            conn.requestMethod = this.request.requestMethod
+            conn.requestMethod = this.request.requestMethod.toString()
             if (this.request.chunkedStreamingMode > 0) {
                 conn.setChunkedStreamingMode(this.request.chunkedStreamingMode)
             }
@@ -590,7 +591,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
             return ret;
         }
 
-        this.request.requestMethod = "GET"
+        this.request.requestMethod = RequestMethod.GET
         this.resultAction = { input ->
             val bytes = ByteArray(CACHESIZE);
 
@@ -643,7 +644,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
 
         val boundary = CodeUtil.getCode();
 
-        this.request.requestMethod = "POST"
+        this.request.requestMethod = RequestMethod.POST
         this.request.headers.set("Connection", "keep-alive")
         this.request.headers.set("Content-Type", "multipart/form-data; boundary=${boundary}")
         this.request.chunkedStreamingMode = CACHESIZE

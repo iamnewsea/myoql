@@ -3,6 +3,7 @@ package nbcp.myoql.weixin.system
 import nbcp.base.comm.ApiResult
 import nbcp.base.comm.JsonMap
 import nbcp.base.comm.const
+import nbcp.base.enums.RequestMethod
 import nbcp.base.extend.AllFields
 import nbcp.base.extend.FromJson
 import nbcp.base.extend.HasValue
@@ -161,7 +162,7 @@ object WxSystemGroup {
         }
 
         var http = HttpUtil(requestUrl)
-        http.request.requestMethod == "POST"
+        http.request.requestMethod == RequestMethod.POST
         http.setPostBody(postBody.ToJson());
 
         var bytes = http.doNet();
