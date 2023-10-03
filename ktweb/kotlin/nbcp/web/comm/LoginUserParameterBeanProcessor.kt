@@ -1,6 +1,6 @@
 package nbcp.web.comm
 
-import nbcp.mvc.mvc.JsonModelParameterBeanProcessor
+import nbcp.mvc.sys.JsonModelParameterBeanProcessor
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.stereotype.Component

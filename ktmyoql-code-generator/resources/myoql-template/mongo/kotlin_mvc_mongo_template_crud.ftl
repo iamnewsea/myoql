@@ -5,11 +5,13 @@ import org.springframework.data.mongodb.core.query.*
 import org.springframework.web.bind.annotation.*
 import @pkg@.db.mongo.*
 import @pkg@.db.mongo.entity.*
+import @pkg@.db.mongo.entity.${sc(group)}.*
+import nbcp.base.annotation.*
+import nbcp.mvc.annotation.*
 import nbcp.base.comm.*
+import nbcp.base.extend.*
 import nbcp.myoql.db.*
 import nbcp.myoql.db.mongo.*
-import nbcp.db.mongo.entity.*
-import nbcp.base.mvc.*
 import javax.servlet.http.*
 import java.time.*
 import nbcp.web.*

@@ -1,6 +1,6 @@
 package nbcp.mvc.extend
 
-import nbcp.mvc.mvc.MvcContext
+import nbcp.mvc.sys.MvcContext
 
 /**
  * 在中英环境下，返回多语言信息， 使用字典是比较麻烦的， 使用如下方式

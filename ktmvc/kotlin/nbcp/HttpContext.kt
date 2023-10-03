@@ -1,15 +1,13 @@
 package nbcp
 
-import nbcp.base.db.LoginUserModel
 import nbcp.base.utils.ClassUtil
 import nbcp.flux.ClientIp
 import nbcp.flux.FluxContext
 import nbcp.flux.XTraceId
 import nbcp.mvc.comm.HttpFeignLogData
-import nbcp.mvc.mvc.ClientIp
-import nbcp.mvc.mvc.MvcContext
-import nbcp.mvc.mvc.XTraceId
-import reactor.core.publisher.Flux
+import nbcp.mvc.sys.ClientIp
+import nbcp.mvc.sys.MvcContext
+import nbcp.mvc.sys.XTraceId
 
 object HttpContext {
     val isWebFluxEnv: Boolean

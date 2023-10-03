@@ -57,7 +57,7 @@ class ${entity}AutoController {
         @Require ${idKey}: ${kotlin_type(entity,idKey)},
         request: HttpServletRequest
     ): ApiResult<${entity}> {
-        dbr.${sc(group)}.${entity}.queryBy${W(idKey)}(${idKey})
+        dbr.${sc(group)}.${entity}.queryBy${bc(idKey)}(${idKey})
             .toEntity()
             .apply {
                 if (this == null) {
@@ -106,7 +106,7 @@ class ${entity}AutoController {
         //鉴权
         var userId = request.UserId
 
-        dbr.${sc(group)}.${entity}.updateBy${W(idKey)}(${idKey})
+        dbr.${sc(group)}.${entity}.updateBy${bc(idKey)}(${idKey})
             .set { it.status to status }
             .exec()
             .apply {
@@ -128,7 +128,7 @@ class ${entity}AutoController {
         //鉴权
         var userId = request.UserId
 
-        var entity = dbr.${sc(group)}.${entity}.queryBy${W(idKey)}(${idKey}).toEntity()
+        var entity = dbr.${sc(group)}.${entity}.queryBy${bc(idKey)}(${idKey}).toEntity()
         if (entity == null) {
             return JsonResult.error("找不到数据")
         }
@@ -137,7 +137,7 @@ class ${entity}AutoController {
 <#else>
         //实体上没有配置垃圾箱功能，物理删除后会丢失数据！
 </#if>
-        dbr.${sc(group)}.${entity}.deleteBy${W(idKey)}(${idKey})
+        dbr.${sc(group)}.${entity}.deleteBy${bc(idKey)}(${idKey})
             .exec()
             .apply {
                 if (this == 0) {

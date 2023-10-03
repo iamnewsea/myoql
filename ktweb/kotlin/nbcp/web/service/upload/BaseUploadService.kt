@@ -5,8 +5,8 @@ import nbcp.base.db.*
 import nbcp.base.enums.*
 import nbcp.base.extend.*
 import nbcp.base.utils.*
-import nbcp.mvc.mvc.WriteJsonRawValue
-import nbcp.mvc.mvc.findParameterStringValue
+import nbcp.mvc.sys.WriteJsonRawValue
+import nbcp.mvc.sys.findParameterStringValue
 import nbcp.myoql.db.mongo.entity.SysAnnex
 import nbcp.myoql.model.IUploadFileDbService
 import nbcp.web.*

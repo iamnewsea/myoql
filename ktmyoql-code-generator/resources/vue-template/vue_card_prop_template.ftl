@@ -94,10 +94,7 @@
 <#if field.getName() == "creator" || field.getName() == "createBy">
 <#elseif field.getName() == "updater" || field.getName() == "updateBy">
 <#elseif isRes(field,"IdName")>
-import Ref${W
-
-(field.getName())
-}
+import Ref${bc(field.getName())}
     from
         "@/component/empty-ref"
 
@@ -105,7 +102,7 @@ import Ref${W
 </#list>
 export default {
     components: {<#list fields as field><#if field.getName() == "creator" || field.getName() == "createBy" || field.getName() == "updater" || field.getName() == "updateBy"><#elseif isRes(field,"IdName")>
-        "ref-${kb(field.getName())}": Ref${W(field.getName())},
+        "ref-${kb(field.getName())}": Ref${bc(field.getName())},
 </#if></#list>},
     data() {
         return {

@@ -10,8 +10,8 @@ import nbcp.base.extend.AsStringWithNull
 import nbcp.base.extend.HasValue
 import nbcp.base.extend.findParameterKey
 import nbcp.base.utils.*
-import nbcp.mvc.mvc.MvcContext
-import nbcp.mvc.mvc.findParameterStringValue
+import nbcp.mvc.sys.MvcContext
+import nbcp.mvc.sys.findParameterStringValue
 import org.springframework.http.HttpHeaders
 import javax.servlet.http.HttpServletRequest
 

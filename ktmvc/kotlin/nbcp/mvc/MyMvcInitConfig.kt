@@ -4,7 +4,7 @@ import nbcp.sys.MvcActionAware
 import nbcp.base.comm.const
 import nbcp.base.component.WebJsonMapper
 import nbcp.mvc.comm.*
-import nbcp.mvc.mvc.JsonModelParameterBeanProcessor
+import nbcp.mvc.sys.JsonModelParameterBeanProcessor
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters
