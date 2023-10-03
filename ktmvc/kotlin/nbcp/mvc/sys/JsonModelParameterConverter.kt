@@ -298,18 +298,18 @@ class JsonModelParameterConverter() : HandlerMethodArgumentResolver, Ordered {
             return;
         }
 
-        var caller = ""
-        if (parameter.executable is Method) {
-            var method = parameter.executable as Method
-            caller = "${method.name}(${
-                method.parameters.map { it.toString() }.joinToString()
-            }):${method.returnType.name}"
-        } else {
-            var method = parameter.executable
-            caller = "${method.name}(${method.parameters.map { it.toString() }.joinToString()})"
-        }
+//        var caller = ""
+//        if (parameter.executable is Method) {
+//            var method = parameter.executable as Method
+//            caller = "${method.name}(${
+//                method.parameters.map { it.toString() }.joinToString()
+//            }):${method.returnType.name}"
+//        } else {
+//            var method = parameter.executable
+//            caller = "${method.name}(${method.parameters.map { it.toString() }.joinToString()})"
+//        }
 
-        logger.Error { require.message.AsString("请求:${webRequest.fullUrl} --> 方法:${caller} 中，找不到参数${parameter.parameterName}") }
+        logger.Error { "找不到参数值 ${parameter.parameterName}" }
         throw ParameterInvalidException(parameter.parameterName!!)
     }
 

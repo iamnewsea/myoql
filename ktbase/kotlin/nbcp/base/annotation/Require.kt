@@ -17,7 +17,6 @@ import kotlin.reflect.KClass
 @Documented
 @Constraint(validatedBy = arrayOf(RequireValidator::class))
 annotation class Require(
-        val message: String = "必传项!",
         val groups: Array<KClass<*>> = [],
         val payload: Array<KClass<out Payload>> = []
 )
