@@ -1,5 +1,5 @@
 package nbcp.base.enums
 
-enum class RequestMethod {
+enum class HttpMethod {
     GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE
 }

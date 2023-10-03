@@ -3,7 +3,6 @@
 
 package nbcp.web.util
 
-import io.jsonwebtoken.Jwts
 import nbcp.base.comm.*
 import nbcp.base.db.*
 import nbcp.base.enums.*
@@ -26,7 +25,7 @@ object MyWebUtil {
         targetUrl: String
     ): HttpUtil {
         var http = HttpUtil(targetUrl)
-        http.request.requestMethod = request.method.ToEnum(RequestMethod::class.java)!!
+        http.request.httpMethod = request.method.ToEnum(HttpMethod::class.java)!!
         if (request.method basicSame "POST" || request.method basicSame "PUT") {
             http.setPostBody(request.inputStream.readContentString())
         }

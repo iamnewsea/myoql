@@ -9,9 +9,10 @@ import nbcp.base.data.HttpRequestData
 import nbcp.base.data.HttpResponseData
 import nbcp.base.db.*
 import nbcp.base.enums.FileExtensionTypeEnum
-import nbcp.base.enums.RequestMethod
+import nbcp.base.enums.HttpMethod
 import nbcp.base.extend.*
 import org.slf4j.LoggerFactory
+import org.springframework.context.ApplicationEvent
 import java.awt.image.BufferedImage
 import java.io.*
 import java.net.HttpURLConnection
@@ -34,6 +35,15 @@ data class FileMessage @JvmOverloads constructor(
         var msg: String = ""
 );
 
+
+class HttpUtilPreEvent(val http:HttpUtil): ApplicationEvent(http) {
+
+}
+
+
+class HttpUtilPostEvent(val http:HttpUtil): ApplicationEvent(http) {
+
+}
 
 //@Configuration
 //class RestTemplateConfig {
@@ -233,7 +243,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
 
     @JvmOverloads
     fun doGet(query: String = ""): String {
-        this.request.requestMethod = RequestMethod.GET
+        this.request.httpMethod = HttpMethod.GET
 
         if (query.HasValue) {
             var queryObj = UrlUtil.parseUrlQueryJson(if (query.startsWith('?')) query else "?" + query)
@@ -287,7 +297,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
             this.request.headers.set("Accept", "application/json")
         }
 
-        this.request.requestMethod = RequestMethod.PUT
+        this.request.httpMethod = HttpMethod.PUT
 
         if (requestBody.HasValue) {
             this.setPostBody(requestBody)
@@ -307,7 +317,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
             this.request.headers.set("Accept", "application/json")
         }
 
-        this.request.requestMethod = RequestMethod.POST
+        this.request.httpMethod = HttpMethod.POST
 
         if (requestBody.HasValue) {
             this.setPostBody(requestBody)
@@ -354,6 +364,9 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
 
     fun doNet(): String {
         clearData()
+
+        SpringUtil.context.publishEvent(HttpUtilPreEvent(this))
+
         var startAt = LocalDateTime.now();
 
         var conn = URL(url).openConnection() as HttpURLConnection;
@@ -377,7 +390,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
             conn.connectTimeout = this.request.connectTimeout
             conn.readTimeout = this.request.readTimeout
 
-            conn.requestMethod = this.request.requestMethod.toString()
+            conn.requestMethod = this.request.httpMethod.toString()
             if (this.request.chunkedStreamingMode > 0) {
                 conn.setChunkedStreamingMode(this.request.chunkedStreamingMode)
             }
@@ -437,6 +450,8 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
                 responseStream = conn.errorStream;
             }
 
+            SpringUtil.context.publishEvent(HttpUtilPostEvent(this))
+
             if (responseStream != null) {
                 if (this.resultAction != null) {
                     DataInputStream(responseStream).use { input -> this.resultAction?.invoke(input) }
@@ -482,7 +497,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
 
     private fun getLogMessage(): String {
         var msgs = mutableListOf<String>();
-        msgs.add("${this.request.requestMethod} ${url}\t[status:${this.status}]");
+        msgs.add("${this.request.httpMethod} ${url}\t[status:${this.status}]");
 
         msgs.add(this.request.headers.map {
             return@map "\t${it.key}:${it.value}"
@@ -591,7 +606,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
             return ret;
         }
 
-        this.request.requestMethod = RequestMethod.GET
+        this.request.httpMethod = HttpMethod.GET
         this.resultAction = { input ->
             val bytes = ByteArray(CACHESIZE);
 
@@ -644,7 +659,7 @@ class HttpUtil @JvmOverloads constructor(url: String = "") {
 
         val boundary = CodeUtil.getCode();
 
-        this.request.requestMethod = RequestMethod.POST
+        this.request.httpMethod = HttpMethod.POST
         this.request.headers.set("Connection", "keep-alive")
         this.request.headers.set("Content-Type", "multipart/form-data; boundary=${boundary}")
         this.request.chunkedStreamingMode = CACHESIZE

@@ -3,7 +3,7 @@ package nbcp.myoql.weixin.system
 import nbcp.base.comm.ApiResult
 import nbcp.base.comm.JsonMap
 import nbcp.base.comm.const
-import nbcp.base.enums.RequestMethod
+import nbcp.base.enums.HttpMethod
 import nbcp.base.extend.AllFields
 import nbcp.base.extend.FromJson
 import nbcp.base.extend.HasValue
@@ -11,7 +11,6 @@ import nbcp.base.extend.ToJson
 import nbcp.base.utils.Base64Util
 import nbcp.base.utils.HttpUtil
 import nbcp.base.utils.Md5Util
-import nbcp.base.utils.MyUtil
 import nbcp.myoql.weixin.wx
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.security.AlgorithmParameters
@@ -162,7 +161,7 @@ object WxSystemGroup {
         }
 
         var http = HttpUtil(requestUrl)
-        http.request.requestMethod == RequestMethod.POST
+        http.request.httpMethod == HttpMethod.POST
         http.setPostBody(postBody.ToJson());
 
         var bytes = http.doNet();

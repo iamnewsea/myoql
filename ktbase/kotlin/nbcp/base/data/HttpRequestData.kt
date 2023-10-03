@@ -1,7 +1,7 @@
 package nbcp.base.data
 
 import nbcp.base.comm.StringMap
-import nbcp.base.enums.RequestMethod
+import nbcp.base.enums.HttpMethod
 import nbcp.base.extend.AsString
 import nbcp.base.extend.getByIgnoreCaseKey
 import nbcp.base.utils.HttpUtil
@@ -15,7 +15,7 @@ data class HttpRequestData @JvmOverloads constructor(
     var readTimeout: Int = 30_000,
     var chunkedStreamingMode: Int = 0,
 
-    var requestMethod: RequestMethod = RequestMethod.GET,
+    var httpMethod: HttpMethod = HttpMethod.GET,
     var headers: StringMap = StringMap()
 ) {
     init {
