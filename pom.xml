@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.5</version>
+        <version>2.7.16</version>
     </parent>
 
 
@@ -45,7 +45,7 @@
         <mybatis-plus.version>3.4.3.4</mybatis-plus.version>
         <mybatis-spring.version>2.0.6</mybatis-spring.version>
         <!-- jackson.version 设置为 2.13.0 会有错误 -->
-        <jackson.version>2.12.5</jackson.version>
+        <jackson.version>2.13.5</jackson.version>
         <bcprov.version>1.69</bcprov.version>
         <asm.version>9.2</asm.version>
         <okhttp.version>4.9.3</okhttp.version>
@@ -58,6 +58,7 @@
         <maven-assembly.version>3.3.0</maven-assembly.version>
         <maven-jar.version>3.2.2</maven-jar.version>
         <guava.version>31.1-jre</guava.version>
+        <elasticsearch.version>7.17.13</elasticsearch.version>
     </properties>
 
     <dependencies>
@@ -130,7 +131,11 @@
             <scope>provided</scope>
         </dependency>
 
-
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
 
 
         <dependency>
