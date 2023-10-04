@@ -67,6 +67,10 @@ object dbEs {
 
     private val restClientMap = mutableMapOf<String, RestHighLevelClient>()
 
+    /**
+     * @param uri: es连接字符串
+     *
+     */
     @JvmStatic
     @JvmOverloads
     fun getRestClient(uri: String, pathPrefix: String = "", timeout: Int = 0): RestHighLevelClient {
