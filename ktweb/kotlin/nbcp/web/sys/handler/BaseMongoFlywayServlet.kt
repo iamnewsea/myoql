@@ -33,10 +33,10 @@ open class BaseMongoFlywayServlet {
     @RequestMapping("/ops/flyway/mongo/replay", method = arrayOf(RequestMethod.GET, RequestMethod.POST))
     fun doGet(version: String, request: HttpServletRequest, response: HttpServletResponse): JsonResult {
         db.morBase.sysFlywayVersion.delete()
-            .where { it.version match_not_equal 0 }
+            .where { it.version mongoNotEquals 0 }
             .apply {
                 if (version.HasValue) {
-                    this.where { it.version match_gte version.AsInt() }
+                    this.where { it.version mongoGreaterThanEquals version.AsInt() }
                 }
             }
             .exec();

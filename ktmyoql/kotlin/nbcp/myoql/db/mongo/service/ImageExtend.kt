@@ -8,7 +8,7 @@ import nbcp.myoql.db.mongo.MongoUpdateClip
 import nbcp.myoql.db.mongo.base.MongoColumnName
 import nbcp.myoql.db.mongo.component.MongoBaseMetaCollection
 import nbcp.myoql.db.mongo.enums.MongoImageActionEnum
-import nbcp.myoql.db.mongo.extend.match
+import nbcp.myoql.db.mongo.extend.mongoEquals
 import nbcp.myoql.db.mongo.queryById
 import nbcp.myoql.db.mongo.updateById
 import org.bson.Document
@@ -22,7 +22,7 @@ import org.bson.Document
  */
 private fun <M : MongoBaseMetaCollection<E>, E : Any> M.remove(fieldName: String, id: String, imageId: String): Int {
     return this.updateById(id)
-            .pull({ MongoColumnName(fieldName) }, "_id" match imageId)
+            .pull({ MongoColumnName(fieldName) }, "_id" mongoEquals imageId)
             .exec()
 }
 
@@ -76,7 +76,7 @@ fun <M : MongoBaseMetaCollection<E>, E : Any> M.swap(fieldName: String, id: Stri
 
     images.Swap(index1, index2);
 
-    MongoUpdateClip(this).where("id" match id)
+    MongoUpdateClip(this).where("id" mongoEquals id)
             .set(fieldName, images)
             .exec()
 

@@ -67,16 +67,16 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
      * 从数组对象中查询，并返回数组中的第一个匹配项。
      * @param where: match_elemMatch 操作符返回的对象。
      */
-    fun where_select_elemMatch_first_item(where: (M) -> Criteria): MongoQueryClip<M, E> {
+    fun whereSelectElemMatchFirstItem(where: (M) -> Criteria): MongoQueryClip<M, E> {
         this.where(where);
-        return this.select_elemMatch_first_item(where)
+        return this.selectElemMatchFirstItem(where)
     }
 
     /**
      * 返回数组中的第一个匹配项。
      * @param where: match_elemMatch 操作符返回的对象。
      */
-    fun select_elemMatch_first_item(where: (M) -> Criteria): MongoQueryClip<M, E> {
+    fun selectElemMatchFirstItem(where: (M) -> Criteria): MongoQueryClip<M, E> {
         var doc = where(moerEntity).toDocument();
         this.selectProjections.putAll(doc)
         return this;
@@ -85,21 +85,21 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
     /**
      * 获取Array的某几个
      */
-    fun select_array_from_first(select: (M) -> MongoColumnName, skip: Int, take: Int): MongoQueryClip<M, E> {
-        return select_array_slice(select(this.moerEntity).toString(), skip, take)
+    fun selectArrayFirst(select: (M) -> MongoColumnName, skip: Int, take: Int): MongoQueryClip<M, E> {
+        return selectArraySlice(select(this.moerEntity).toString(), skip, take)
     }
 
     /**
      * 从Array最后位置获取。
      */
-    fun select_array_from_last(select: (M) -> MongoColumnName, take: Int): MongoQueryClip<M, E> {
-        return select_array_slice(select(this.moerEntity).toString(), if (take < 0) take else (0 - take))
+    fun selectArrayLast(select: (M) -> MongoColumnName, take: Int): MongoQueryClip<M, E> {
+        return selectArraySlice(select(this.moerEntity).toString(), if (take < 0) take else (0 - take))
     }
 
     /**
      * https://docs.mongodb.com/manual/reference/operator/projection/slice/#proj._S_slice
      */
-    private fun select_array_slice(select: String, vararg values: Int): MongoQueryClip<M, E> {
+    private fun selectArraySlice(select: String, vararg values: Int): MongoQueryClip<M, E> {
         if (values.isEmpty() || values.size > 2) {
             throw DbDataInvalidException()
         }
@@ -118,7 +118,7 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
         return this;
     }
 
-    fun whereOr(vararg wheres: (M) -> Criteria): MongoQueryClip<M, E> {
+    fun linkOr(vararg wheres: (M) -> Criteria): MongoQueryClip<M, E> {
         whereOr(*wheres.map { it(moerEntity) }.toTypedArray())
         return this;
     }
@@ -126,7 +126,7 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
     /**
      * 对同一个字段多个条件时使用。
      */
-    fun whereAnd(vararg wheres: (M) -> Criteria): MongoQueryClip<M, E> {
+    fun linkAnd(vararg wheres: (M) -> Criteria): MongoQueryClip<M, E> {
         whereAnd(*wheres.map { it(moerEntity) }.toTypedArray())
         return this;
     }

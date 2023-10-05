@@ -32,7 +32,7 @@ open class SqlColumnName(
     var name: String = name
 
 
-    private fun SqlColumnName.column_match_value(op: String, value: Serializable): WhereData {
+    private fun SqlColumnName.sqlMatch(op: String, value: Serializable): WhereData {
         var valueValue = proc_value(value);
         return WhereData("${this.fullName} ${op} :${this.paramVarKeyName}", JsonMap(this.paramVarKeyName to valueValue))
     }
@@ -42,18 +42,18 @@ open class SqlColumnName(
      * like 操作
      * @param value: 可以包含合法的 %,_
      */
-    infix fun like(value: String): WhereData = this.column_match_value("like", value)
+    infix fun like(value: String): WhereData = this.sqlMatch("like", value)
 
     /**
      * like "%查询内容%"
      */
-    infix fun like_all(value: String): WhereData = this.column_match_value("like", ("%" + value + "%"))
+    infix fun likeAll(value: String): WhereData = this.sqlMatch("like", ("%" + value + "%"))
 
 
     /**
      * 相等操作, 也可以比较 Json 数组的相等。
      */
-    infix fun match(value: Serializable): WhereData {
+    infix fun sqlEquals(value: Serializable): WhereData {
         if (value is SqlColumnName) {
             return WhereData("${this.fullName} = ${value.fullName}")
         }
@@ -67,13 +67,13 @@ open class SqlColumnName(
                 json_equals.values
             )
         }
-        return this.column_match_value("=", value);
+        return this.sqlMatch("=", value);
     }
 
     /**
      * 相等操作, 也可以比较 Json 数组内容的相等。
      */
-    infix fun match_array_content(value: Serializable): WhereData {
+    infix fun sqlEqualsArrayContent(value: Serializable): WhereData {
         if (value is SqlColumnName) {
             return WhereData("${this.fullName} = ${value.fullName}")
         }
@@ -104,17 +104,17 @@ open class SqlColumnName(
                 )
             }
         }
-        return this.column_match_value("=", value);
+        return this.sqlMatch("=", value);
     }
 
-    infix fun match_regexp(value: String): WhereData {
-        return this.column_match_value("regexp", value);
+    infix fun sqlRegexp(value: String): WhereData {
+        return this.sqlMatch("regexp", value);
     }
 
     /*
     * 不等操作
     */
-    infix fun match_not_equal(value: Serializable): WhereData {
+    infix fun sqlNotEquals(value: Serializable): WhereData {
         if (value is SqlColumnName) {
             return WhereData("${this.fullName} != ${value.fullName}")
         }
@@ -128,10 +128,10 @@ open class SqlColumnName(
                 json_equals.values
             )
         }
-        return this.column_match_value("!=", value);
+        return this.sqlMatch("!=", value);
     }
 
-    infix fun match_json_array_contains(value: Serializable): WhereData {
+    infix fun sqlJsonArrayContains(value: Serializable): WhereData {
         if (value is SqlColumnName) {
             return WhereData("${this.json_contains(value)} = 1")
         }
@@ -157,7 +157,7 @@ open class SqlColumnName(
         throw java.lang.RuntimeException("json_contains要求列必须是JSON类型！")
     }
 
-    infix fun match_json_array_not_contains(value: Serializable): WhereData {
+    infix fun sqlJsonArrayNotContains(value: Serializable): WhereData {
         if (value is SqlColumnName) {
             return WhereData("${this.json_contains(value)} = 0")
         }
@@ -183,7 +183,7 @@ open class SqlColumnName(
     }
 
 
-    infix fun match_json_object_contains(value: Serializable): WhereData {
+    infix fun sqlJsonObjectContains(value: Serializable): WhereData {
         if (value is SqlColumnName) {
             return WhereData("${this.json_contains(value)} = 1")
         }
@@ -198,7 +198,7 @@ open class SqlColumnName(
         throw java.lang.RuntimeException("json_contains要求列必须是JSON类型！")
     }
 
-    infix fun match_json_object_not_contains(value: Serializable): WhereData {
+    infix fun sqlJsonObjectNotContains(value: Serializable): WhereData {
         if (value is SqlColumnName) {
             return WhereData("${this.json_contains(value)} = 0")
         }
@@ -215,46 +215,46 @@ open class SqlColumnName(
     /**
      * 大于等于操作
      */
-    infix fun match_gte(value: Serializable): WhereData {
+    infix fun sqlGreaterThanEquals(value: Serializable): WhereData {
         if (value is SqlColumnName) {
             return WhereData("${this.fullName} >= ${value.fullName}")
         }
-        return this.column_match_value(">=", value)
+        return this.sqlMatch(">=", value)
     }
 
     /**
      * 大于操作，不包含等于
      */
-    infix fun match_greaterThan(value: Serializable): WhereData {
+    infix fun sqlGreaterThan(value: Serializable): WhereData {
         if (value is SqlColumnName) {
             return WhereData("${this.fullName} > ${value.fullName}")
         }
-        return this.column_match_value(">", value);
+        return this.sqlMatch(">", value);
     }
 
     /**
      * 小于等于操作。
      */
-    infix fun match_lte(value: Serializable): WhereData {
+    infix fun sqlLessThanEquals(value: Serializable): WhereData {
         if (value is SqlColumnName) {
             return WhereData("${this.fullName} <= ${value.fullName}")
         }
 
-        return this.column_match_value("<=", value)
+        return this.sqlMatch("<=", value)
     }
 
     /**
      * 小于操作，不包含等于
      */
-    infix fun match_lessThan(value: Serializable): WhereData {
+    infix fun sqlLessThan(value: Serializable): WhereData {
         if (value is SqlColumnName) {
             return WhereData("${this.fullName} < ${value.fullName}")
         }
-        return this.column_match_value("<", value)
+        return this.sqlMatch("<", value)
     }
 
 
-    private fun match_until(min: Any, max: Any): WhereData {
+    private fun sqlUntil(min: Any, max: Any): WhereData {
         var minValue = proc_value(min);
         var maxValue = proc_value(max);
 
@@ -267,18 +267,18 @@ open class SqlColumnName(
     /**
      * 开闭区间，表示大于等于 并且 小于
      */
-    fun <T : Serializable> match_until(min: T, max: T): WhereData {
+    fun <T : Serializable> sqlUntil(min: T, max: T): WhereData {
         if (min is SqlColumnName && max is SqlColumnName) {
             return WhereData("${this.fullName} >= ${min.fullName} and ${this.fullName} < ${max.fullName}")
         }
-        return this.match_until(min, max);
+        return this.sqlUntil(min, max);
     }
 
 
     /**
      * in (values)操作
      */
-    infix inline fun <reified T : Serializable> match_in(values: Array<T>): WhereData {
+    infix inline fun <reified T : Serializable> sqlIn(values: Array<T>): WhereData {
         if (T::class.java == SqlColumnName::class.java) {
             return WhereData(
                 "${this.fullName} in (${
@@ -307,7 +307,7 @@ open class SqlColumnName(
     /**
      * in 子查询
      */
-    infix fun SqlColumnName.match_in(select: SqlQueryClip<*, *>): WhereData {
+    infix fun SqlColumnName.sqlIn(select: SqlQueryClip<*, *>): WhereData {
         var subSelect = select.toSql()
         var ret = WhereData("${this.fullName} in ( ${subSelect.expression} )")
         ret.values += subSelect.values
@@ -317,7 +317,7 @@ open class SqlColumnName(
     /**
      * not in (values) 操作
      */
-    infix inline fun <reified T : Serializable> match_not_in(values: Array<T>): WhereData {
+    infix inline fun <reified T : Serializable> sqlNotIn(values: Array<T>): WhereData {
         if (T::class.java == SqlColumnName::class.java) {
             return WhereData(
                 "${this.fullName} not in (${
@@ -345,7 +345,7 @@ open class SqlColumnName(
     /**
      * not in 子查询
      */
-    infix fun match_not_in(select: SqlQueryClip<*, *>): WhereData {
+    infix fun sqlNotIn(select: SqlQueryClip<*, *>): WhereData {
         var subSelect = select.toSql()
         var ret = WhereData("${this.fullName} not in ( ${subSelect.expression} )")
         ret.values += subSelect.values

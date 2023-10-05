@@ -30,8 +30,8 @@ class Test_Mongo_Update : TestBase() {
     @Test
     fun test_save() {
         var d = db.morBase.sysLastSortNumber.update()
-            .where { it.table match "abc" }
-            .where { it.group match "def" }
+            .where { it.table mongoEquals "abc" }
+            .where { it.group mongoEquals "def" }
             .inc { it.value op_inc 3 }
             .saveAndReturnNew();
 

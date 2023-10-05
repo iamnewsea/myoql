@@ -57,7 +57,7 @@ class FlywayMongoBeanProcessor : FlywayBaseComponent() {
 
 
         var dbMaxVersion = db.morBase.sysFlywayVersion.query()
-                .where { it.isSuccess match true }
+                .where { it.isSuccess mongoEquals true }
                 .orderByDesc { it.version }
                 .toEntity()
                 ?.version

@@ -26,8 +26,8 @@ class MongoColumnTranslateResult(
     var changed: Boolean = false
 )
 
-infix fun String.match(to: Any?): Criteria {
-    return MongoColumnName(this).match(to)
+infix fun String.mongoEquals(to: Any?): Criteria {
+    return MongoColumnName(this).mongoEquals(to)
 }
 ///**
 // * 用于 project

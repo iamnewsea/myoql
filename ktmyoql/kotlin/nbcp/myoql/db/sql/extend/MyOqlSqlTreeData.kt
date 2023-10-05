@@ -57,7 +57,7 @@ class MyOqlSqlTreeData<M : SqlBaseMetaTable<T>, T : Serializable>(
 
     private fun loadSubsFromDb(pidValue: Collection<Serializable>): MutableList<JsonMap> {
         var ret = baseQuery.CloneObject()
-        ret.where { pidColumn match_in pidValue.toTypedArray() }
+        ret.where { pidColumn sqlIn pidValue.toTypedArray() }
         return ret.toMapList()
     }
 }

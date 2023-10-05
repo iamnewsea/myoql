@@ -40,7 +40,7 @@ ${endif}
                 }
 ${if:name}
                 if(name.HasValue){
-                    this.where{ it.name match_like name }
+                    this.where{ it.name esLike name }
                 }
 ${endif}
             }

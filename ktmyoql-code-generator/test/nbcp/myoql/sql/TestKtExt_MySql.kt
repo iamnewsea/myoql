@@ -5,7 +5,6 @@ import nbcp.base.db.IdName
 import nbcp.base.enums.LogLevelScopeEnum
 import nbcp.base.extend.ToJson
 import nbcp.base.extend.usingScope
-import nbcp.base.utils.MyUtil
 import nbcp.base.utils.SpringUtil
 import nbcp.base.utils.StringUtil
 import nbcp.myoql.TestBase
@@ -65,10 +64,10 @@ class TestKtExt_MySql : TestBase() {
         var ent = db.sqlBase.s_annex.queryById("56Fgk7UEAm0Z")
             .apply {
                 var where = WhereData();
-                where.or(db.sqlBase.s_annex.ext match "png")
-                where.or(db.sqlBase.s_annex.ext match "gif")
-                where.or(db.sqlBase.s_annex.ext match "jpg")
-                where.or(db.sqlBase.s_annex.ext match "bmp")
+                where.or(db.sqlBase.s_annex.ext sqlEquals "png")
+                where.or(db.sqlBase.s_annex.ext sqlEquals "gif")
+                where.or(db.sqlBase.s_annex.ext sqlEquals "jpg")
+                where.or(db.sqlBase.s_annex.ext sqlEquals "bmp")
                 this.where { where }
             }
             .toSql();

@@ -1,7 +1,6 @@
 package nbcp.myoql.db.mongo.event;
 
 import nbcp.base.extend.*
-import nbcp.base.utils.MyUtil
 import nbcp.base.utils.ReflectUtil
 import nbcp.myoql.db.BaseEntity
 import nbcp.myoql.db.comm.EventResult
@@ -119,8 +118,8 @@ class MongoDefaultInsertEvent : IMongoEntityInsert {
 
     private fun getSortNumber(tableName: String, groupBy: String, step: Number): Float? {
         return db.morBase.sysLastSortNumber.update()
-            .where { it.table match tableName }
-            .where { it.group match groupBy }
+            .where { it.table mongoEquals tableName }
+            .where { it.group mongoEquals groupBy }
             .inc { it.value op_inc step }
             .saveAndReturnNew()
             ?.value

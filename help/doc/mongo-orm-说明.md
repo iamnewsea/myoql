@@ -55,7 +55,7 @@ data class SysCity(
      
     match 表示相等 
     match_like 表示使用正则表达式的方式进行模糊匹配
-    match_not_equal 表示不相等 
+    match_not_equals 表示不相等 
     match_pattern 表示正则
     match_type 表示判断类型
     match_gte 表示大于等于

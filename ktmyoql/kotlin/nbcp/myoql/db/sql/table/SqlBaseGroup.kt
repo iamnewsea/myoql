@@ -64,15 +64,15 @@ class SqlBaseGroup : IDataGroup{
 
 
         fun queryById (id: String): SqlQueryClip<s_annex_table, nbcp.myoql.db.sql.entity.s_annex> {
-            return this.query().where{ it.id match id }
+            return this.query().where{ it.id sqlEquals id }
         }
 
         fun deleteById (id: String): SqlDeleteClip<s_annex_table> {
-            return this.delete().where{ it.id match id }
+            return this.delete().where{ it.id sqlEquals id }
         }
 
         fun updateById (id: String): SqlUpdateClip<s_annex_table> {
-            return this.update().where{ it.id match id }
+            return this.update().where{ it.id sqlEquals id }
         }
 
     }
@@ -103,15 +103,15 @@ class SqlBaseGroup : IDataGroup{
 
 
         fun queryByCode (code: Int): SqlQueryClip<s_city_table, nbcp.myoql.db.sql.entity.s_city> {
-            return this.query().where{ it.code match code }
+            return this.query().where{ it.code sqlEquals code }
         }
 
         fun deleteByCode (code: Int): SqlDeleteClip<s_city_table> {
-            return this.delete().where{ it.code match code }
+            return this.delete().where{ it.code sqlEquals code }
         }
 
         fun updateByCode (code: Int): SqlUpdateClip<s_city_table> {
-            return this.update().where{ it.code match code }
+            return this.update().where{ it.code sqlEquals code }
         }
 
     }
@@ -141,15 +141,15 @@ class SqlBaseGroup : IDataGroup{
 
 
         fun queryById (id: String): SqlQueryClip<s_dustbin_table, nbcp.myoql.db.sql.entity.s_dustbin> {
-            return this.query().where{ it.id match id }
+            return this.query().where{ it.id sqlEquals id }
         }
 
         fun deleteById (id: String): SqlDeleteClip<s_dustbin_table> {
-            return this.delete().where{ it.id match id }
+            return this.delete().where{ it.id sqlEquals id }
         }
 
         fun updateById (id: String): SqlUpdateClip<s_dustbin_table> {
-            return this.update().where{ it.id match id }
+            return this.update().where{ it.id sqlEquals id }
         }
 
     }
@@ -180,15 +180,15 @@ class SqlBaseGroup : IDataGroup{
 
 
         fun queryById (id: String): SqlQueryClip<s_flyway_table, nbcp.myoql.db.sql.entity.s_flyway> {
-            return this.query().where{ it.id match id }
+            return this.query().where{ it.id sqlEquals id }
         }
 
         fun deleteById (id: String): SqlDeleteClip<s_flyway_table> {
-            return this.delete().where{ it.id match id }
+            return this.delete().where{ it.id sqlEquals id }
         }
 
         fun updateById (id: String): SqlUpdateClip<s_flyway_table> {
-            return this.update().where{ it.id match id }
+            return this.update().where{ it.id sqlEquals id }
         }
 
     }
@@ -222,15 +222,15 @@ class SqlBaseGroup : IDataGroup{
 
 
         fun queryById (id: String): SqlQueryClip<s_log_table, nbcp.myoql.db.sql.entity.s_log> {
-            return this.query().where{ it.id match id }
+            return this.query().where{ it.id sqlEquals id }
         }
 
         fun deleteById (id: String): SqlDeleteClip<s_log_table> {
-            return this.delete().where{ it.id match id }
+            return this.delete().where{ it.id sqlEquals id }
         }
 
         fun updateById (id: String): SqlUpdateClip<s_log_table> {
-            return this.update().where{ it.id match id }
+            return this.update().where{ it.id sqlEquals id }
         }
 
     }

@@ -4,7 +4,7 @@
 package nbcp.myoql.db.mongo
 
 import nbcp.myoql.db.mongo.component.MongoBaseMetaCollection
-import nbcp.myoql.db.mongo.extend.match
+import nbcp.myoql.db.mongo.extend.mongoEquals
 
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria
@@ -19,7 +19,7 @@ fun <M : MongoBaseMetaCollection<T>, T : Any> M.query(whereData: Criteria): Mong
 }
 
 fun <M : MongoBaseMetaCollection<T>, T : Any> M.queryById(id: String): MongoQueryClip<M, T> =
-    this.query().where("id" match id);
+    this.query().where("id" mongoEquals id);
 
 
 fun <M : MongoBaseMetaCollection<out E>, E : Any> M.updateById(id: String): MongoUpdateClip<M, E> {
@@ -27,7 +27,7 @@ fun <M : MongoBaseMetaCollection<out E>, E : Any> M.updateById(id: String): Mong
     if (idValue.isEmpty()) {
         throw RuntimeException("按id更新mongo数据时，id不能为空！")
     }
-    return MongoUpdateClip(this).where("id" match idValue);
+    return MongoUpdateClip(this).where("id" mongoEquals idValue);
 }
 
 /**
@@ -45,7 +45,7 @@ fun <M : MongoBaseMetaCollection<out Any>> M.batchInsert(): MongoInsertClip<M> {
 
 fun <M : MongoBaseMetaCollection<out E>, E : Any> M.updateById(id: ObjectId): MongoUpdateClip<M, E> {
     var ret = this.update();
-    ret.where("id" match id);
+    ret.where("id" mongoEquals id);
     return ret;
 }
 
@@ -57,7 +57,7 @@ fun <M : MongoBaseMetaCollection<out Any>> M.delete(): MongoDeleteClip<M> = Mong
 
 fun <M : MongoBaseMetaCollection<out Any>> M.deleteById(id: String): MongoDeleteClip<M> {
     var ret = MongoDeleteClip(this);
-    ret.where("id" match id)
+    ret.where("id" mongoEquals id)
     return ret;
 }
 

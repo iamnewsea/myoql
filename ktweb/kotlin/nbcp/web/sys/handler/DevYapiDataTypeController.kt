@@ -14,7 +14,7 @@ import nbcp.myoql.db.mongo.MongoBaseQueryClip
 import nbcp.myoql.db.mongo.MongoTemplateScope
 import nbcp.myoql.db.mongo.base.MongoColumnName
 import nbcp.myoql.db.mongo.component.MongoBaseUpdateClip
-import nbcp.myoql.db.mongo.extend.match_or
+import nbcp.myoql.db.mongo.extend.linkOr
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
@@ -50,8 +50,8 @@ class DevYapiDataTypeServlet {
         usingScope(MongoTemplateScope(db.mongo.getMongoTemplateByUri(connString)!!)) {
             var query = MongoBaseQueryClip("interface")
 
-            var where = (MongoColumnName("req_body_other") match_like "title\":\":") match_or
-                    (MongoColumnName("res_body") match_like "title\":\":")
+            var where = (MongoColumnName("req_body_other") mongoLike "title\":\":") linkOr
+                    (MongoColumnName("res_body") mongoLike "title\":\":")
 
             query.whereData.putAll(where.criteriaObject)
             var list = query.toMapList();
@@ -80,7 +80,7 @@ class DevYapiDataTypeServlet {
 
 
                 var update = MongoBaseUpdateClip("interface")
-                update.whereData.putAll((MongoColumnName("_id") match id).criteriaObject)
+                update.whereData.putAll((MongoColumnName("_id") mongoEquals id).criteriaObject)
                 update.setValue("req_body_other", req_body_other)
                 update.setValue("res_body", res_body)
                 update.exec();

@@ -34,7 +34,7 @@ open class CityServlet {
         var list = db.morBase.sysCity.query()
             .select { it.code }
             .select { it.shortName }
-            .where { it.pcode match pcode }
+            .where { it.pcode mongoEquals pcode }
             .toList()
             .map { cn_city_model(it.code, it.shortName) }
 
@@ -55,7 +55,7 @@ open class CityServlet {
         var list = db.morBase.sysCity.query()
             .select { it.code }
             .select { it.shortName }
-            .where { it.code match_in city_codes }
+            .where { it.code mongoIn city_codes }
             .orderByAsc { it.code }
             .toList()
             .map { cn_city_model(it.code, it.shortName) }

@@ -7,7 +7,7 @@ import nbcp.myoql.db.db
 import nbcp.myoql.db.mongo.base.MongoColumnName
 import nbcp.myoql.db.mongo.component.MongoBaseMetaCollection
 import nbcp.myoql.db.mongo.component.MongoClipBase
-import nbcp.myoql.db.mongo.extend.match
+import nbcp.myoql.db.mongo.extend.mongoEquals
 
 /**
  * Created by udi on 17-4-7.
@@ -226,7 +226,7 @@ class MongoSetEntityUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(
         }
 
         whereData2.forEach { key, value ->
-            update.where(key match value);
+            update.where(key mongoEquals value);
         }
 
         setData2.forEach { key, value ->

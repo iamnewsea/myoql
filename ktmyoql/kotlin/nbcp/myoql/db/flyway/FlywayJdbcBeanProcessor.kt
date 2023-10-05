@@ -57,7 +57,7 @@ class FlywayJdbcBeanProcessor : FlywayBaseComponent(){
         }
 
         var dbMaxVersion = db.sqlBase.s_flyway.query()
-            .where { it.isSuccess match true }
+            .where { it.isSuccess sqlEquals true }
             .orderByDesc { it.version }
             .toEntity()
             ?.version

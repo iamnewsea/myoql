@@ -249,15 +249,15 @@ class MongoBaseGroup : IDataGroup {
         val updateAt = MongoColumnName("updateAt")
 
         fun queryByCode(code: Int): MongoQueryClip<SysCityEntity, nbcp.myoql.db.mongo.entity.SysCity> {
-            return this.query().where { it.code match code }
+            return this.query().where { it.code mongoEquals code }
         }
 
         fun deleteByCode(code: Int): MongoDeleteClip<SysCityEntity> {
-            return this.delete().where { it.code match code }
+            return this.delete().where { it.code mongoEquals code }
         }
 
         fun updateByCode(code: Int): MongoUpdateClip<SysCityEntity, nbcp.myoql.db.mongo.entity.SysCity> {
-            return this.update().where { it.code match code }
+            return this.update().where { it.code mongoEquals code }
         }
 
     }

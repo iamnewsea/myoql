@@ -55,7 +55,7 @@ class MyOqlMongoTreeData<M : MongoBaseMetaCollection<T>, T : Any>(
 
     private fun loadSubsFromDb(pidValue: List<Any>): List<Document> {
         var ret = baseQuery.CloneObject()
-        ret.where { pidColumn match_in pidValue.toTypedArray() }
+        ret.where { pidColumn mongoIn pidValue.toTypedArray() }
         return ret.toMapList()
     }
 }

@@ -57,7 +57,7 @@ fun <M : SqlBaseMetaTable<T>, T : Serializable> M.insertIfNotExists(
         if (value == null) {
             query.where { key.isNullOrEmpty() }
         } else {
-            query.where { key match value as Serializable }
+            query.where { key sqlEquals value as Serializable }
         }
     }
 
@@ -82,7 +82,7 @@ fun <M : SqlBaseMetaTable<out T>, T : Serializable> M.save(entity: T, unionKey: 
         if (value == null) {
             update.where { key.isNullOrEmpty() }
         } else {
-            update.where { key match value as Serializable }
+            update.where { key sqlEquals value as Serializable }
         }
     }
 

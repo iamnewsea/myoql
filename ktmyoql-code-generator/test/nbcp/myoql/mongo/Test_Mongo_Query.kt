@@ -21,7 +21,7 @@ class Test_Mongo_Query : TestBase() {
     @Test
     fun clone() {
         var query = db.morBase.sysLog.query()
-                .where { it.id.match_hasValue() }
+                .where { it.id.mongoHasValue() }
 
         println(query.whereData.ToJson(JsonStyleScopeEnum.WITH_NULL))
     }
@@ -50,9 +50,9 @@ return  this.tags && this.tags.some(function(it) { return it == v } )
         var start = LocalDateTime.now().minusHours(1)
         var end = LocalDateTime.now().plusHours(1);
         var query = db.morBase.sysLog.query()
-                .where { it.createAt match_until (start to end) }
-                .where { it.level match 8 }
-                .whereOr({ it.msg match_like "df" }, { it.tags match "df" })
+                .where { it.createAt mongoUntil (start to end) }
+                .where { it.level mongoEquals 8 }
+                .linkOr({ it.msg mongoLike "df" }, { it.tags mongoEquals "df" })
 
         var d = db.mongo.getMergedMongoCriteria(query.whereData)
         var e = db.mongo.getCriteriaFromDocument(d.toDocument());
@@ -66,10 +66,10 @@ return  this.tags && this.tags.some(function(it) { return it == v } )
             db.morBase.sysAnnex.aggregate()
                     .addPipeLine(
                             PipeLineEnum.ADD_FIELDS,
-                            db.mongo.cond(db.morBase.sysAnnex.group match "digitalthread", "1", "0").As("u")
+                            db.mongo.cond(db.morBase.sysAnnex.group mongoEquals "digitalthread", "1", "0").As("u")
                     )
                     .beginMatch()
-                    .where { it.ext match "png" }
+                    .where { it.ext mongoEquals "png" }
                     .endMatch()
                     .addPipeLine(PipeLineEnum.SORT, JsonMap("u" to 1))
                     .limit(0, 2)
@@ -87,7 +87,7 @@ return  this.tags && this.tags.some(function(it) { return it == v } )
             var where1 = JsonMap("\$gte" to 1, "\$lte" to 9)
 
             db.morBase.sysAnnex.query()
-                    .where_select_elemMatch_first_item { it.tags match_elemMatch where1 }
+                    .whereSelectElemMatchFirstItem { it.tags mongoElemMatch where1 }
                     .whereData
                     .apply {
                         println(this.ToJson())
@@ -113,13 +113,13 @@ return  this.tags && this.tags.some(function(it) { return it == v } )
                     "tags" to
                             db.mongo.filter(
                                     "\$tags", "item",
-                                    (MongoColumnName("\$item") match 3).toExpression()
+                                    (MongoColumnName("\$item") mongoEquals 3).toExpression()
                             )
             )
 
             db.morBase.sysAnnex.aggregate()
                     .beginMatch()
-                    .where { it.tags match_elemMatch where1 }
+                    .where { it.tags mongoElemMatch where1 }
                     .endMatch()
                     .addPipeLine(PipeLineEnum.PROJECT, project)
                     .toList()

@@ -19,7 +19,7 @@ import java.lang.reflect.ParameterizedType
 /**
  *  ( it.name match "a") match_and (it.id match 1)
  */
-infix fun Criteria?.match_and(to: Criteria): Criteria {
+infix fun Criteria?.linkAnd(to: Criteria): Criteria {
     if (this == null) return to;
     var where = Criteria();
 
@@ -30,7 +30,7 @@ infix fun Criteria?.match_and(to: Criteria): Criteria {
 /**
  *  ( it.name match "a") match_or (it.id match 1)  match_or (id.age match 18)
  */
-infix fun Criteria?.match_or(to: Criteria): Criteria {
+infix fun Criteria?.linkOr(to: Criteria): Criteria {
     if (this == null) return to;
     var where = Criteria();
 

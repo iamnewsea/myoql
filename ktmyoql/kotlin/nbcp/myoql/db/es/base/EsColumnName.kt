@@ -1,8 +1,6 @@
 package nbcp.myoql.db.es.base
 
-import nbcp.base.comm.JsonMap
 import nbcp.base.comm.MyString
-import nbcp.myoql.db.db
 import nbcp.myoql.db.es.component.WhereData
 
 /**
@@ -11,22 +9,12 @@ import nbcp.myoql.db.es.component.WhereData
 open class EsColumnName @JvmOverloads constructor(_es_value: String = "") : MyString(_es_value) {
 
     infix fun term(target: Any?): WhereData {
-        var target = db.es.proc_es_value(target);
-
-        return WhereData("term" to JsonMap(
-            this.toString() to target
-        )
-        )
+        return WhereData.esEquals(this.toString(),target)
     }
 
 
     infix fun match(target: Any?): WhereData {
-        var target = db.es.proc_es_value(target);
-
-        return WhereData("match" to JsonMap(
-            this.toString() to target
-        )
-        )
+        return WhereData.esMatch(this.toString(),target)
     }
 
 
