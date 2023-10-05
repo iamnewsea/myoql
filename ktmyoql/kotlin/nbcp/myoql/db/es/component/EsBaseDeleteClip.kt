@@ -97,7 +97,7 @@ open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhere
         var error: Exception? = null
         var response: Response? = null
         try {
-            response = esTemplate.lowLevelClient.performRequest(request)
+            response = esTemplate.performRequest(request)
             if (response.statusLine.statusCode != 200) {
                 return ret;
             }

@@ -56,7 +56,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
         var error: Exception? = null
         var responseData: Map<String, Any?>? = null
         try {
-            response = esTemplate.lowLevelClient.performRequest(request)
+            response = esTemplate.performRequest(request)
             db.executeTime = LocalDateTime.now() - startAt
 
             if (response.statusLine.statusCode != 200) {

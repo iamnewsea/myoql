@@ -2,7 +2,7 @@
 
 ## 配置
 
-spring.elasticsearch.rest.uris=http://ip:9200
+spring.elasticsearch.uris=http://ip:9200
 
 组件使用高级别Api，进行Orm封装。
 程序需要引用

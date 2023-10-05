@@ -6,7 +6,7 @@ import nbcp.myoql.db.es.component.EsBaseDeleteClip
 import nbcp.myoql.db.es.component.EsBaseInsertClip
 import nbcp.myoql.db.es.component.EsBaseQueryClip
 import nbcp.myoql.db.es.component.EsBaseUpdateClip
-import org.elasticsearch.client.RestHighLevelClient
+import org.elasticsearch.client.RestClient
 
 interface IEsEntityQuery {
     fun beforeQuery(query: EsBaseQueryClip): EventResult
@@ -40,5 +40,5 @@ interface IEsEntityDelete {
 
 
 interface IEsDataSource {
-    fun run(collection: String, isRead: Boolean): RestHighLevelClient?
+    fun run(collection: String, isRead: Boolean): RestClient?
 }

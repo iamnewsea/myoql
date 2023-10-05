@@ -138,7 +138,7 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
         var response: Response? = null;
         var error: Exception? = null;
         try {
-            response = esTemplate.lowLevelClient.performRequest(request)
+            response = esTemplate.performRequest(request)
             if (response.statusLine.statusCode != 200) {
                 return ret;
             }

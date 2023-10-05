@@ -14,7 +14,6 @@ import org.apache.http.HttpHost
 import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
-import org.elasticsearch.client.RestHighLevelClient
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -65,42 +64,43 @@ object dbEs {
         )
     }
 
-    private val restClientMap = mutableMapOf<String, RestHighLevelClient>()
-
     /**
      * @param uri: es连接字符串
      *
      */
     @JvmStatic
     @JvmOverloads
-    fun getRestClient(uri: String, pathPrefix: String = "", timeout: Int = 0): RestHighLevelClient {
+    fun getRestClient(uris: String, pathPrefix: String = "", timeout: Int = 0): RestClient {
 
-        var key = "${uri}-${pathPrefix}-${timeout}"
-        var retValue = restClientMap.get(key);
-        if (retValue != null) {
-            return retValue;
-        }
-
-        var configs = uri
+        var configs = uris
             .split(",")
             .map { it.trim() }
             .filter { it.HasValue }
-            .map {
-                var sect = it.split(":")
-                if (sect[1].startsWith("//") == false) {
-                    throw RuntimeException("spring.elasticsearch.rest.uris 格式错误")
+            .map {uri ->
+                var sect = uri.split(":")
+                if( sect.size == 1){
+                    return@map HttpHost(sect[0], 9200, "http");
                 }
+                else if( sect.size == 2){
+                    var port = sect[1];
+                    if( port.IsNumberic() == false){
+                        throw RuntimeException("spring.elasticsearch.uris 中的端口格式错误, " + uri)
+                    }
+                    return@map HttpHost(sect[0], sect[1].AsInt(9200)  , "http");
+                }
+                else if( sect.size == 3){
+                    var protocal = sect[0]
+                    var ip = sect[1].substring(2)
+                    var port =  sect[2].AsInt(9200)
 
-                var protocal = sect[0]
-                var ip = sect[1].substring(2)
-                var port = if (sect.size >= 2) sect[2].AsInt() else 9200
 
-
-                return@map HttpHost(ip, port, protocal);
+                    return@map HttpHost(ip, port, protocal);
+                }
+                throw RuntimeException("spring.elasticsearch.uris 格式错误, " + uri)
             }
 
         if (configs.isEmpty()) {
-            throw RuntimeException("spring.elasticsearch.rest.uris 定义错误")
+            throw RuntimeException("spring.elasticsearch.uris 定义错误")
         }
 
         //配置可选参数
@@ -137,10 +137,7 @@ object dbEs {
 //            httpClientBuilder.setProxy(HttpHost("proxy", 9000, "http"))
 //        }
 
-        retValue = RestHighLevelClient(builder)
-
-        restClientMap.put(key, retValue);
-        return retValue;
+        return builder.build();
     }
 
     @JvmStatic

@@ -5,8 +5,9 @@ import nbcp.base.comm.const
 import nbcp.base.extend.*
 import nbcp.myoql.db.es.base.EsResultMsg
 import org.elasticsearch.action.admin.indices.alias.get.GetAliasesRequest
+import org.elasticsearch.client.ElasticsearchClient
 import org.elasticsearch.client.RequestOptions
-import org.elasticsearch.client.Response
+import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestHighLevelClient
 
 /**
@@ -17,9 +18,10 @@ import org.elasticsearch.client.RestHighLevelClient
 /**
  * 获取所有索引的别名。
  */
-fun RestHighLevelClient.getAllIndexAlias(): Set<String> {
+fun RestClient.getAllAlias(): Set<String> {
+    var client = RestHighLevelClient(RestClient.builder(*this.nodes.toTypedArray()));
     var request = GetAliasesRequest();
-    return this.indices().getAlias(request, RequestOptions.DEFAULT)
+    return client.indices().getAlias(request, RequestOptions.DEFAULT)
         .aliases
         .values
         .map { it.map { it.alias() } }

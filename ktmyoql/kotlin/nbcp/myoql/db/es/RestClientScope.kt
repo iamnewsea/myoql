@@ -1,6 +1,6 @@
 package nbcp.myoql.db.es
 
 import nbcp.base.scope.IScopeData
-import org.elasticsearch.client.RestHighLevelClient
+import org.elasticsearch.client.RestClient
 
-data class RestClientScope(val value: RestHighLevelClient): IScopeData;
+data class RestClientScope(val value: RestClient): IScopeData;

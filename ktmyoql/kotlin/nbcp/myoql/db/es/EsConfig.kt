@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 
 //@Component
 //@ConditionalOnClass(RestClient::class)
-//@ConditionalOnProperty("spring.elasticsearch.rest.uris")
+//@ConditionalOnProperty("spring.elasticsearch.uris")
 //@Lazy
 //class MyOqlEsConfig {
 //    companion object {
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component
 //    @Lazy
 //    fun myoqlEsDataSource(): RestClient {
 //        return db.es.getRestClient(
-//            config.getConfig("spring.elasticsearch.rest.uris", ""),
+//            config.getConfig("spring.elasticsearch.uris", ""),
 //            config.getConfig("spring.elasticsearch.path-prefix", ""),
 //            config.getConfig("spring.elasticsearch.timeout").AsInt()
 //        )
