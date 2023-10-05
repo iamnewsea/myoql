@@ -9,6 +9,7 @@ import org.elasticsearch.client.ElasticsearchClient
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestHighLevelClient
+import org.elasticsearch.rest.RestStatus
 
 /**
  * Created by udi on 17-7-10.
@@ -16,15 +17,22 @@ import org.elasticsearch.client.RestHighLevelClient
 
 
 /**
- * 获取所有索引的别名。
+ * 获取所有索引。如果有别名，返回别名。
  */
-fun RestClient.getAllAlias(): Set<String> {
+fun RestClient.getAllIndex(): Set<String> {
     var client = RestHighLevelClient(RestClient.builder(*this.nodes.toTypedArray()));
     var request = GetAliasesRequest();
-    return client.indices().getAlias(request, RequestOptions.DEFAULT)
-        .aliases
-        .values
-        .map { it.map { it.alias() } }
+    var response = client.indices().getAlias(request, RequestOptions.DEFAULT)
+    if (response.status() != RestStatus.OK) {
+        throw response.exception
+    }
+
+    return response.aliases.map {
+        if (it.value.isNotEmpty()) {
+            return@map it.value.map { it.alias() }
+        }
+        return@map listOf(it.key.toString())
+    }
         .Unwind()
-        .toSet();
+        .toSet()
 }
