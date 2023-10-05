@@ -9,9 +9,9 @@ import nbcp.myoql.db.db
 import nbcp.myoql.db.sql.component.SqlQueryClip
 import nbcp.myoql.db.sql.component.WhereData
 import nbcp.myoql.db.sql.enums.DbType
-import nbcp.myoql.db.sql.extend.json_contains
-import nbcp.myoql.db.sql.extend.json_equals
-import nbcp.myoql.db.sql.extend.json_length
+import nbcp.myoql.db.sql.extend.jsonContains
+import nbcp.myoql.db.sql.extend.jsonEquals
+import nbcp.myoql.db.sql.extend.jsonLength
 import nbcp.myoql.db.sql.extend.proc_value
 import java.io.Serializable
 
@@ -60,7 +60,7 @@ open class SqlColumnName(
 
         //仅支持 数组相等。
         if (this.dbType == DbType.JSON) {
-            val json_equals = this.json_equals(value.ToJson())
+            val json_equals = this.jsonEquals(value.ToJson())
 
             return WhereData(
                 "${json_equals.expression} = 1",
@@ -73,7 +73,7 @@ open class SqlColumnName(
     /**
      * 相等操作, 也可以比较 Json 数组内容的相等。
      */
-    infix fun sqlEqualsArrayContent(value: Serializable): WhereData {
+    infix fun sqlArrayContentEquals(value: Serializable): WhereData {
         if (value is SqlColumnName) {
             return WhereData("${this.fullName} = ${value.fullName}")
         }
@@ -81,23 +81,23 @@ open class SqlColumnName(
         //仅支持 数组相等。
         if (this.dbType == DbType.JSON) {
             val v_type = value::class.java
-            val json_length = this.json_length()
+            val json_length = this.jsonLength()
             if (v_type.isArray) {
                 var ary = value as Array<Any?>;
-                val json_contains = this.json_contains(db.sql.json_array(ary.toList()))
+                val json_contains = this.jsonContains(db.sql.json_array(ary.toList()))
                 return WhereData(
                     "${json_length.expression} = ${ary.size} and ${json_contains.expression} = 1",
                     json_length.values + json_contains.values
                 )
             } else if (v_type.IsCollectionType) {
                 var ary = value as Collection<Any?>;
-                val json_contains = this.json_contains(db.sql.json_array(ary))
+                val json_contains = this.jsonContains(db.sql.json_array(ary))
                 return WhereData(
                     "${json_length.expression} = ${ary.size} and ${json_contains.expression} = 1",
                     json_length.values + json_contains.values
                 )
             } else {
-                val json_contains = this.json_contains(db.sql.json_array(listOf(value)))
+                val json_contains = this.jsonContains(db.sql.json_array(listOf(value)))
                 return WhereData(
                     "${json_length.expression} = 1 or ${json_contains.expression} = 1",
                     json_length.values + json_contains.values
@@ -121,7 +121,7 @@ open class SqlColumnName(
 
         //仅支持 数组相等。
         if (this.dbType == DbType.JSON) {
-            val json_equals = this.json_equals(value.ToJson())
+            val json_equals = this.jsonEquals(value.ToJson())
 
             return WhereData(
                 "${json_equals.expression} = 0",
@@ -133,7 +133,7 @@ open class SqlColumnName(
 
     infix fun sqlJsonArrayContains(value: Serializable): WhereData {
         if (value is SqlColumnName) {
-            return WhereData("${this.json_contains(value)} = 1")
+            return WhereData("${this.jsonContains(value)} = 1")
         }
 
         //仅支持 数组相等。
@@ -142,14 +142,14 @@ open class SqlColumnName(
 
             if (v_type.isArray) {
                 val ary = value as Array<Any?>;
-                val json_contains = this.json_contains(db.sql.json_array(ary.toList()))
+                val json_contains = this.jsonContains(db.sql.json_array(ary.toList()))
                 return WhereData("${json_contains.expression} = 1", json_contains.values)
             } else if (v_type.IsCollectionType) {
                 val ary = value as Collection<Any?>;
-                val json_contains = this.json_contains(db.sql.json_array(ary))
+                val json_contains = this.jsonContains(db.sql.json_array(ary))
                 return WhereData("${json_contains.expression} = 1", json_contains.values)
             } else {
-                val json_contains = this.json_contains(db.sql.json_array(listOf(value)))
+                val json_contains = this.jsonContains(db.sql.json_array(listOf(value)))
                 return WhereData("${json_contains.expression} = 1", json_contains.values)
             }
         }
@@ -159,7 +159,7 @@ open class SqlColumnName(
 
     infix fun sqlJsonArrayNotContains(value: Serializable): WhereData {
         if (value is SqlColumnName) {
-            return WhereData("${this.json_contains(value)} = 0")
+            return WhereData("${this.jsonContains(value)} = 0")
         }
 
         //仅支持 数组相等。
@@ -167,14 +167,14 @@ open class SqlColumnName(
             val v_type = value::class.java
             if (v_type.isArray) {
                 val ary = value as Array<Any?>;
-                val json_contains = this.json_contains(db.sql.json_array(ary.toList()))
+                val json_contains = this.jsonContains(db.sql.json_array(ary.toList()))
                 return WhereData("${json_contains.expression} = 0")
             } else if (v_type.IsCollectionType) {
                 val ary = value as Collection<Any?>;
-                val json_contains = this.json_contains(db.sql.json_array(ary))
+                val json_contains = this.jsonContains(db.sql.json_array(ary))
                 return WhereData("${json_contains.expression} = 0")
             } else {
-                val json_contains = this.json_contains(db.sql.json_array(listOf(value)))
+                val json_contains = this.jsonContains(db.sql.json_array(listOf(value)))
                 return WhereData("${json_contains.expression} = 0")
             }
         }
@@ -185,12 +185,12 @@ open class SqlColumnName(
 
     infix fun sqlJsonObjectContains(value: Serializable): WhereData {
         if (value is SqlColumnName) {
-            return WhereData("${this.json_contains(value)} = 1")
+            return WhereData("${this.jsonContains(value)} = 1")
         }
 
         //仅支持 数组相等。
         if (this.dbType == DbType.JSON) {
-            val json_contains = this.json_contains(value.ToJson())
+            val json_contains = this.jsonContains(value.ToJson())
             return WhereData("${json_contains.expression} = 1", json_contains.values)
 
         }
@@ -200,12 +200,12 @@ open class SqlColumnName(
 
     infix fun sqlJsonObjectNotContains(value: Serializable): WhereData {
         if (value is SqlColumnName) {
-            return WhereData("${this.json_contains(value)} = 0")
+            return WhereData("${this.jsonContains(value)} = 0")
         }
 
         //仅支持 数组相等。
         if (this.dbType == DbType.JSON) {
-            val json_contains = this.json_contains(value.ToJson())
+            val json_contains = this.jsonContains(value.ToJson())
             return WhereData("${json_contains.expression} = 0")
         }
 

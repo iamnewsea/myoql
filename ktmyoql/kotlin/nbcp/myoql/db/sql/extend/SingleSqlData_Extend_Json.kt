@@ -11,7 +11,7 @@ import nbcp.myoql.db.sql.base.SqlParameterData
 /**
  * 函数名称和数据库函数相同，可用于数组。
  */
-fun BaseAliasSqlSect.json_length(): SqlParameterData {
+fun BaseAliasSqlSect.jsonLength(): SqlParameterData {
     var ret = this.toSingleSqlData();
     ret.expression = "json_length(${ret.expression})"
     return ret;
@@ -22,7 +22,7 @@ fun BaseAliasSqlSect.json_length(): SqlParameterData {
 /**
  * 判断是否包含，可用于数组。
  */
-fun BaseAliasSqlSect.json_contains(jsonDoc: BaseAliasSqlSect): SqlParameterData {
+fun BaseAliasSqlSect.jsonContains(jsonDoc: BaseAliasSqlSect): SqlParameterData {
     var ret = this.toSingleSqlData();
     ret.expression = "json_contains("
     ret += this.toSingleSqlData()
@@ -35,7 +35,7 @@ fun BaseAliasSqlSect.json_contains(jsonDoc: BaseAliasSqlSect): SqlParameterData 
 /**
  * 判断是否有交集，可用于数组。
  */
-fun BaseAliasSqlSect.json_overlaps(jsonDoc: BaseAliasSqlSect): SqlParameterData {
+fun BaseAliasSqlSect.jsonOverlaps(jsonDoc: BaseAliasSqlSect): SqlParameterData {
     var ret = this.toSingleSqlData();
     ret.expression = "json_overlaps("
     ret += this.toSingleSqlData()
@@ -48,7 +48,7 @@ fun BaseAliasSqlSect.json_overlaps(jsonDoc: BaseAliasSqlSect): SqlParameterData 
 /**
  * 判断是否Json相同。
  */
-fun BaseAliasSqlSect.json_equals(jsonDoc: BaseAliasSqlSect): SqlParameterData {
+fun BaseAliasSqlSect.jsonEquals(jsonDoc: BaseAliasSqlSect): SqlParameterData {
     var ret = this.toSingleSqlData();
     ret.expression = "json_equals("
     ret += this.toSingleSqlData()
@@ -64,7 +64,7 @@ fun BaseAliasSqlSect.json_equals(jsonDoc: BaseAliasSqlSect): SqlParameterData {
 /**
  * 判断是否包含，可用于数组。
  */
-fun BaseAliasSqlSect.json_contains(jsonString: String): SqlParameterData {
+fun BaseAliasSqlSect.jsonContains(jsonString: String): SqlParameterData {
     var ret = this.toSingleSqlData();
     ret.expression = "json_contains("
     ret += this.toSingleSqlData()
@@ -76,7 +76,7 @@ fun BaseAliasSqlSect.json_contains(jsonString: String): SqlParameterData {
 /**
  * 判断是否有交集，可用于数组。
  */
-fun BaseAliasSqlSect.json_overlaps(jsonString: String): SqlParameterData {
+fun BaseAliasSqlSect.jsonOverlaps(jsonString: String): SqlParameterData {
     var ret = this.toSingleSqlData();
     ret.expression = "json_overlaps("
     ret += this.toSingleSqlData()
@@ -88,7 +88,7 @@ fun BaseAliasSqlSect.json_overlaps(jsonString: String): SqlParameterData {
 /**
  * 判断是否Json相同。
  */
-fun BaseAliasSqlSect.json_equals(jsonString: String): SqlParameterData {
+fun BaseAliasSqlSect.jsonEquals(jsonString: String): SqlParameterData {
     var ret = this.toSingleSqlData();
     ret.expression = "json_equals("
     ret += this.toSingleSqlData()
