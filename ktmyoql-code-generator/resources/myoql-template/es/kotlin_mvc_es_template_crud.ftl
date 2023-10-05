@@ -40,7 +40,7 @@ class ${entity}AutoController {
                 }
 <#if hasField(entity,"name")>
                 if (name.HasValue) {
-                    this.where { it.name match_like name }
+                    this.where { it.name matchLike name }
                 }
 </#if>
             }

@@ -36,11 +36,11 @@ class ${entity}AutoController {
         dbr.${sc(group)}.${entity}.query()
             .apply {
                 if (${idKey}.HasValue) {
-                    this.where{it.${idKey} match ${idKey}}
+                    this.where{it.${idKey} sqlEuals ${idKey}}
                 }
 <#if hasField(entity,"name")>
                 if (name.HasValue) {
-                    this.where { it.name like name }
+                    this.where { it.name sqlLike name }
                 }
 </#if>
             }
