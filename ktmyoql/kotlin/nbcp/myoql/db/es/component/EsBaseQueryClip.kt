@@ -76,7 +76,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
                 collectionName,
                 request,
                 response?.statusLine?.statusCode.AsString() + "," +
-                    responseData?.getStringValue("hits.total.value").AsString()
+                        responseData?.getStringValue("hits.total.value").AsString()
             )
         }
     }
@@ -92,7 +92,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
         }
 //        var isString = clazz.IsStringType;
 
-        var list: List<Map<String, Any>> = listOf()
+        var list: List<Map<String, Any?>> = listOf()
 
         var ret = mutableListOf<R>();
         var url = getUrl("_search")
@@ -109,15 +109,28 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
             return ret;
         }
 
+        db.affectRowCount = 0;
+
         this.total = hits.getIntValue("total", "value");
         if (this.total <= 0) {
             return ret;
         }
 
-        list = (hits.getTypeValue<Collection<*>>("hits") ?: listOf<Any>())
-            .map { (it as Map<String, *>).getTypeValue<Map<String, Any>>("_source") }
-            .filter { it != null }
-            .map { it!! }
+        var hitResult = hits.getTypeValue<Collection<*>>("hits");
+        if (hitResult.isNullOrEmpty()) {
+            return ret;
+        }
+
+        list = hitResult
+            .map {
+                var m = it as Map<String, *>;
+                var ret = m.getTypeValue<MutableMap<String, Any?>>("_source")!!
+                if (ret.containsKey("_id") == false) {
+                    ret.put("_id", m.get("_id"))
+                }
+                return@map ret
+            }
+
 
         db.affectRowCount = list.size
 
@@ -129,14 +142,6 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
                 mapFunc(it);
             }
 
-
-//            if (isString) {
-//                if (lastKey.isEmpty()) {
-//                    lastKey = it.keys.last()
-//                }
-//
-//                ret.add(ReflectUtil.getValueByWbsPath(it, *lastKey.split(".").toTypedArray()).AsString() as R)
-//            } else
             if (type.IsSimpleType()) {
                 if (lastKey.isEmpty()) {
                     lastKey = it.keys.last()
@@ -154,7 +159,6 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
             }
         }
 
-
         if (skipNullCount > 0) {
             logger.warn("skipNullRows:${skipNullCount}")
         }
@@ -163,7 +167,10 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
     }
 
     @JvmOverloads
-    fun <R> toListResult(type: Class<R>, mapFunc: ((Map<String, Any?>) -> Unit)? = null): ListResult<R> {
+    fun <R> toListResult(
+        type: Class<R>,
+        mapFunc: ((Map<String, Any?>) -> Unit)? = null
+    ): ListResult<R> {
         var ret = ListResult<R>();
         ret.data = toList(type, mapFunc);
         ret.total = this.total;
@@ -223,7 +230,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
         return result.getTypeValue<Map<String, *>>("aggregations") ?: JsonMap()
     }
 
-    private fun getUrl(action:String): String {
+    private fun getUrl(action: String): String {
         var search = JsonMap();
         if (this.routing.HasValue) {
             search.put("routing", this.routing)
