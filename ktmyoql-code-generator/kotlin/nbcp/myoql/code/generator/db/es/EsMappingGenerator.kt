@@ -281,7 +281,7 @@ class EsMappingGenerator {
         }
 
         if (type.IsBooleanType) {
-            return "bool"
+            return "boolean"
         }
 
         if (type.IsSimpleType()) {
