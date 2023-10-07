@@ -360,11 +360,6 @@ ${title}
 
 
         @JvmStatic
-        val redisHost: String
-            get() = getConfig("spring.redis.host", "");
-
-
-        @JvmStatic
         val wxAppId: String
             get() = getConfig("app.wx.appId").must { it.HasValue }.elseThrow { "必须指定 app.wx.appId" }
 

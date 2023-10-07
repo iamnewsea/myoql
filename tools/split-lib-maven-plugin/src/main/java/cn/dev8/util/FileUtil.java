@@ -47,11 +47,11 @@ public class FileUtil {
         var splitList = new ArrayList<List<String>>();
 
         for (var it : Arrays.asList(path)) {
-            splitList.add(ListUtil.<String>fromArray(it.split("[\\\\|/]")));
+            splitList.add(ListUtil.<String>fromItems(it.split("[\\\\|/]")));
         }
 
 
-        var spreadList = ListUtil.<String>unwindWithList(splitList);
+        var spreadList = ListUtil.<String>unwind(splitList);
 
         for (var i = spreadList.size() - 1; i >= 0; i--) {
             var it = spreadList.get(i);

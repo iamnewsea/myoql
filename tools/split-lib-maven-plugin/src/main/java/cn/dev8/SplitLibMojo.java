@@ -16,10 +16,7 @@ package cn.dev8;
  * limitations under the License.
  */
 
-import cn.dev8.util.FileUtil;
-import cn.dev8.util.ListUtil;
-import cn.dev8.util.ShellUtil;
-import cn.dev8.util.StringUtil;
+import cn.dev8.util.*;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import lombok.var;
@@ -30,6 +27,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.dom4j.io.SAXReader;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -56,30 +54,32 @@ public class SplitLibMojo
      * Location of the file.
      */
     @Parameter(defaultValue = "${project.build.directory}", property = "outputDir", required = true)
-    private File outputDirectory;
+    File outputDirectory;
 
 
     @Parameter(defaultValue = "${project}", readonly = true, required = true)
-    private MavenProject project;
+    MavenProject project;
 
     /**
      * 默认仅保留和该项目相同的 groupId
      */
     @Parameter(property = "keepGroupIds", defaultValue = "")
-    private String keepGroupIds;
+    String keepGroupIds;
 
     @Parameter(property = "skip", defaultValue = "false")
-    private Boolean skip;
+    Boolean skip;
 
 
     @Parameter(property = "override", defaultValue = "false")
-    private Boolean override;
+    Boolean override;
 
-    private String jarExePath = "";
+    String jarExePath = "";
 
-    private File jarFile = null;
+    File jarFile = null;
 
-    private String nowString = "";
+    String nowString = "";
+
+    String classifier = "";
 
     @SneakyThrows
     public void execute()
@@ -95,8 +95,8 @@ public class SplitLibMojo
             throw new RuntimeException("找不到 " + outputDirectory + " !");
         }
 
+
         File splitLibPath = initWorkPath();
-        checkLayout();
 
         jarExePath = getJarExePath();
 
@@ -104,7 +104,7 @@ public class SplitLibMojo
 
         jarFile = getJarExeFile();
 
-        getLog().info("split-lib 拆包路径:" + jarFile.getPath()+ ", 拆分的包名为：" + String.join(",", groupIds));
+        getLog().info("split-lib 拆包路径:" + jarFile.getPath() + ", 拆分的包名为：" + String.join(",", groupIds));
         extractJar(jarFile.getPath());
 
 
@@ -174,37 +174,17 @@ public class SplitLibMojo
     }
 
     private File getJarExeFile() {
-        var file = new File(FileUtil.resolvePath(outputDirectory.getPath()));
-        var title = project.getArtifactId() + "-" + project.getVersion();
-        var len = 0;
-        File maxNameFile = null;
-        for (File item : file.listFiles()) {
-            if (!item.isFile()) {
-                continue;
-            }
-
-            var fileName = item.getName();
-            if (!fileName.toLowerCase().endsWith(".jar")) {
-                continue;
-            }
-
-            if (!fileName.startsWith(title)) {
-                continue;
-            }
-
-            if (fileName.length() > len) {
-                maxNameFile = item;
-                len = fileName.length();
-            }
+        var jarFileName = project.getArtifactId() + "-" + project.getVersion();
+        if (StringUtil.hasValue(this.classifier)) {
+            jarFileName += "-" + this.classifier;
         }
+        jarFileName += ".jar";
 
-        if (maxNameFile == null) {
-            throw new RuntimeException("路径 " + file.getPath() + " 下找不到 Jar 包");
-        }
-
-        return maxNameFile;
+        return new File(outputDirectory, jarFileName);
     }
 
+
+    @SneakyThrows
     private File initWorkPath() {
         var splitLibPath = new File(FileUtil.resolvePath(outputDirectory.getPath(), "split-lib"));
         if (splitLibPath.exists() && FileUtil.deleteAll(splitLibPath, false)) {
@@ -215,6 +195,42 @@ public class SplitLibMojo
         }
 
         splitLibPath.mkdirs();
+
+
+        var doc = new SAXReader().read(this.project.getFile());
+        var plugins = XmlUtil.getElements(doc, "project/build/plugins/plugin");
+        for (var it : plugins) {
+            var groupId = XmlUtil.getSingleElement(it, "groupId").getTextTrim();
+            if (!groupId.equals("org.springframework.boot")) {
+                continue;
+            }
+            var artifactId = XmlUtil.getSingleElement(it, "artifactId").getTextTrim();
+            if (!artifactId.equals("spring-boot-maven-plugin")) {
+                continue;
+            }
+
+            var layoutDom = XmlUtil.getSingleElement(it, "configuration/layout");
+            if (layoutDom == null || !layoutDom.getTextTrim().equals("ZIP")) {
+                var message = "split-lib 检查不通过！ org.springframework.boot:spring-boot-maven-plugin.configuration.layout must be ZIP!";
+
+                getLog().error(message);
+
+                var writer = new FileWriter(FileUtil.resolvePath(outputDirectory.getPath(), "split-lib", "split-lib-check.txt"));
+                writer.write("[" + project.getName() + "]" + FileUtil.LINE_BREAK + "execute split-lib-maven-plugin at : " + nowString + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
+                writer.write(message);
+                writer.flush();
+                writer.close();
+
+                throw new RuntimeException(message);
+            }
+
+            var classifierDom = XmlUtil.getSingleElement(it, "configuration/classifier");
+            if (classifierDom != null) {
+                classifier = classifierDom.getTextTrim();
+            }
+            break;
+        }
+
         return splitLibPath;
     }
 
@@ -245,7 +261,7 @@ public class SplitLibMojo
         HashSet<String> groupIds = new HashSet<String>();
 
         var groupIdString = project.getGroupId();
-        var groupIdsArray = ListUtil.<String>fromArray(groupIdString.split("\\."));
+        var groupIdsArray = ListUtil.<String>asList(groupIdString.split("\\."));
         if (groupIdsArray.size() > 1) {
             ListUtil.removeLast(groupIdsArray);
             groupIdString = String.join(".", groupIdsArray);
@@ -263,32 +279,6 @@ public class SplitLibMojo
         }
 
         return groupIds;
-    }
-
-    @SneakyThrows
-    private void checkLayout() {
-        var pomContent = FileUtil.readFileContent(project.getFile().getPath());
-
-        var checked = pomContent.contains("org.springframework.boot") &&
-                pomContent.contains("spring-boot-maven-plugin") &&
-                pomContent.contains("<layout>ZIP</layout>");
-
-
-        if (checked) {
-            return;
-        }
-
-        var message = "split-lib 检查不通过！ org.springframework.boot:spring-boot-maven-plugin.configuration.layout must be ZIP!";
-
-        getLog().error(message);
-
-        var writer = new FileWriter(FileUtil.resolvePath(outputDirectory.getPath(), "split-lib", "split-lib-check.txt"));
-        writer.write("[" + project.getName() + "]" + FileUtil.LINE_BREAK + "execute split-lib-maven-plugin at : " + nowString + FileUtil.LINE_BREAK + FileUtil.LINE_BREAK);
-        writer.write(message);
-        writer.flush();
-        writer.close();
-
-        throw new RuntimeException(message);
     }
 
 
@@ -311,7 +301,7 @@ public class SplitLibMojo
         cmd.add(FileUtil.resolvePath(workPath, "..", jarFile.getName()));
         cmd.add("*");
 
-        getLog().info("当前目录：" + workPath);
+//        getLog().info("当前目录：" + workPath);
         getLog().info(String.join(" ", cmd));
 
         var bash_cmd = new ArrayList<String>();
@@ -436,4 +426,5 @@ public class SplitLibMojo
 
         return null;
     }
+
 }

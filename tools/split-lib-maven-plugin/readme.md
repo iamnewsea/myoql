@@ -1,6 +1,11 @@
 # split-lib 使用方式：
 
-# 手动安装
+## 调试
+1. 在Idea项目打开 `Project Structure`  --> `Libraries` , 手动添加 jar 包
+2. 在Idea项目的 `External Libraries`, 打开文件， 设置断点。
+3. 在Idea项目 `Mvaven`  要启动的模块 --> `Plugins` --> `split-lib-maven-plugin` 右键调试！
+
+## 手动安装
 
 ```
 mvn dependency:get -DremoteRepositories=https://oss.sonatype.org/content/repositories/snapshots -DgroupId=cn.dev8  -DartifactId=split-lib-maven-plugin -Dversion=1.1.9-SNAPSHOT
@@ -30,7 +35,7 @@ mvn cn.dev8:split-lib-maven-plugin:1.1.9-SNAPSHOT:split-lib  -DkeepGroupIds=%*
 mvn cn.dev8:split-lib-maven-plugin:1.1.9-SNAPSHOT:split-lib  -DkeepGroupIds=$*
 ```
 
-# 命令行执行：
+## 命令行执行：
 
 ```
 先package.
@@ -38,7 +43,7 @@ cd module!
 mvn cn.dev8:split-lib-maven-plugin:1.1.9-SNAPSHOT:split-lib  -DkeepGroupIds=cn.dev8,com.nancal
 ```
 
-# 集成到程序里 （可忽略，直接使用命令行执行更方便！）
+## 集成到程序里 （可忽略，直接使用命令行执行更方便！）
 
 ``` 
 <profile>
