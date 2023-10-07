@@ -133,6 +133,7 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
 
         request.entity = NStringEntity(requestBody, ContentType.create("application/x-ndjson", const.utf8))
 
+        logger.info(request.ToJson())
 
         val startAt = LocalDateTime.now()
         var response: Response? = null;
@@ -145,6 +146,7 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
 
             db.executeTime = LocalDateTime.now() - startAt
 //            responseBody = response.entity.content.readBytes().toString(const.utf8)
+            logger.info(response.ToJson())
 
             usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {
                 settingResult.forEach {

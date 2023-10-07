@@ -102,6 +102,7 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
         }
         request.entity = NStringEntity(requestBody, ContentType.create("application/x-ndjson", const.utf8))
 
+        logger.info(request.ToJson())
         var responseBody = EsResultMsg()
         val startAt = LocalDateTime.now()
         try {
@@ -111,6 +112,9 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
             }
 
             db.executeTime = LocalDateTime.now() - startAt
+
+            logger.info(response.ToJson())
+
             responseBody = response.getResultMsg();
 
             if (responseBody.error) {

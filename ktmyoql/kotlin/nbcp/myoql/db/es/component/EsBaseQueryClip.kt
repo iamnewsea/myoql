@@ -55,6 +55,9 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
         val startAt = LocalDateTime.now();
         var error: Exception? = null
         var responseData: Map<String, Any?>? = null
+
+        logger.info(request.ToJson())
+
         try {
             response = esTemplate.performRequest(request)
             db.executeTime = LocalDateTime.now() - startAt
@@ -63,6 +66,7 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
                 return mapOf()
             }
 
+            logger.info(response.ToJson())
             responseData = response.entity.content
                 .readContentString()
                 .FromJson<Map<String, Any?>>() ?: mapOf();
