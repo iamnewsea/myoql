@@ -75,30 +75,34 @@ class CrossFilterConfig {
         }
     }
 
-    private fun invokeFilter(exchange_ori: ServerWebExchange, chain: WebFilterChain, ori_exchange: ServerWebExchange): Mono<Void> {
+    private fun invokeFilter(
+        exchange_ori: ServerWebExchange,
+        chain: WebFilterChain,
+        ori_exchange: ServerWebExchange
+    ): Mono<Void> {
         if (ignoreFilter(ori_exchange.request)) {
             return chain.filter(ori_exchange)
         }
 
         var exchange = ori_exchange;
         exchange.request.getCorsResponseMap(ALLOW_ORIGINS.split(","), DENY_HEADERS)
-                .apply {
-                    if (this.any()) {
-                        var originClient = exchange.request.getHeader("origin")
+            .apply {
+                if (this.any()) {
+                    var originClient = exchange.request.getHeader("origin")
 
-                        var request2 = exchange.request.mutate().headers {
-                            it.remove("origin")
-                        }.build()
+                    var request2 = exchange.request.mutate().headers {
+                        it.remove("origin")
+                    }.build()
 
-                        if (ignoreLog(exchange.request) == false) {
-                            logger.Important("跨域移除(origin)${originClient}, (url)${exchange.request.uri}")
-                        }
-
-                        exchange = exchange.mutate().request(request2).build();
+                    if (ignoreLog(exchange.request) == false) {
+                        logger.Important("跨域移除(origin)${originClient}, (url)${exchange.request.uri}")
                     }
-                }.forEach { key, value ->
-                    exchange.response.headers.set(key, value);
+
+                    exchange = exchange.mutate().request(request2).build();
                 }
+            }.forEach { key, value ->
+                exchange.response.headers.set(key, value);
+            }
 
 
         if (exchange.request.method == HttpMethod.OPTIONS) {
@@ -125,22 +129,23 @@ class CrossFilterConfig {
 
             for (key in exchange.request.headers.keys.filter {
                 it.IsIn(
-                        "token",
-                        "api-token",
-                        "apiToken",
-                        ignoreCase = true
+                    "token",
+                    "api-token",
+                    "apiToken",
+                    ignoreCase = true
                 )
             }) {
                 errorInfo.add("\t${key}: ${exchange.request.headers.get(key)?.joinToString(",")}")
             }
 
             errorInfo.add(
-                    err::class.java.simpleName + ": " + err.Detail.AsString(err.message.AsString()).AsString("(未知错误)")
-                            .substring(0, 256)
+                err::class.java.simpleName + ": " + err.Detail.AsString(err.message.AsString())
+                    .AsString("(未知错误)")
+                    .substring(0, 256)
             )
 
             errorInfo.addAll(err.stackTrace.map { "\t" + it.className + "." + it.methodName + ": " + it.lineNumber }
-                    .take(24))
+                .take(24))
 
             var errorMsg = errorInfo.joinToString(const.line_break)
 
@@ -153,10 +158,8 @@ class CrossFilterConfig {
     private fun getLogLevel(httpRequest: ServerHttpRequest): LogLevelScopeEnum? {
         var logLevel: Level? = null;
 
-        var logLevelString = httpRequest.queryJson.findParameterKey("logLevel").AsString();
-        if (logLevelString.HasValue &&
-                config.adminToken == httpRequest.queryJson.findParameterKey("adminToken")
-        ) {
+        var logLevelString = httpRequest.queryJson.findParameterKey("log-level").AsString();
+        if (logLevelString.HasValue) {
             if (logLevelString.IsNumberic()) {
                 var logLevelInt = logLevelString.AsInt()
                 if (logLevelInt > 0) {
@@ -221,6 +224,6 @@ class CrossFilterConfig {
 
 
     private fun matchUrl(requestURI: String, defineUris: List<String>): Boolean {
-        return defineUris.any { matcher.match(it,requestURI)}
+        return defineUris.any { matcher.match(it, requestURI) }
     }
 }
