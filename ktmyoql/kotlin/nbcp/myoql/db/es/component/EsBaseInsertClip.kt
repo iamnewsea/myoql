@@ -113,8 +113,6 @@ open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhere
 
             db.executeTime = LocalDateTime.now() - startAt
 
-            logger.info(response.ToJson())
-
             responseBody = response.getResultMsg();
 
             if (responseBody.error) {

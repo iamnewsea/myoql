@@ -146,7 +146,6 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
 
             db.executeTime = LocalDateTime.now() - startAt
 //            responseBody = response.entity.content.readBytes().toString(const.utf8)
-            logger.info(response.ToJson())
 
             usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {
                 settingResult.forEach {

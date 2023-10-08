@@ -66,7 +66,6 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
                 return mapOf()
             }
 
-            logger.info(response.ToJson())
             responseData = response.entity.content
                 .readContentString()
                 .FromJson<Map<String, Any?>>() ?: mapOf();
