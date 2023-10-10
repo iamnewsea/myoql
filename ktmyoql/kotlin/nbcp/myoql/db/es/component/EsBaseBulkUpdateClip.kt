@@ -32,7 +32,6 @@ open class EsBaseBulkUpdateClip(tableName: String) : EsClipBase(tableName) {
     var entities = mutableListOf<Any>()
 
 
-
     /**
      * 批量添加中的添加实体。
      */
@@ -106,7 +105,7 @@ open class EsBaseBulkUpdateClip(tableName: String) : EsClipBase(tableName) {
             search.put("routing", this.routing)
         }
 
-        var request = Request("POST", "/_bulk" +
+        var request = Request("POST", this.collectionName + "/_bulk" +
                 search.toUrlQuery().IfHasValue { "?" + it }
         )
 
@@ -136,7 +135,8 @@ open class EsBaseBulkUpdateClip(tableName: String) : EsClipBase(tableName) {
             requestBody = data.map { it.ToJson() + const.line_break }.joinToString("")
         }
 
-        request.entity = NStringEntity(requestBody, ContentType.create("application/x-ndjson", const.utf8))
+        request.entity =
+            NStringEntity(requestBody, ContentType.create("application/x-ndjson", const.utf8))
 
         logger.info(request.ToJson())
 
@@ -152,7 +152,12 @@ open class EsBaseBulkUpdateClip(tableName: String) : EsClipBase(tableName) {
             db.executeTime = LocalDateTime.now() - startAt
 //            responseBody = response.entity.content.readBytes().toString(const.utf8)
 
-            usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {
+            usingScope(
+                arrayOf(
+                    MyOqlDbScopeEnum.IGNORE_AFFECT_ROW,
+                    MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME
+                )
+            ) {
                 settingResult.forEach {
                     it.first.update(this, it.second)
                 }

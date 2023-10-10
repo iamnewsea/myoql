@@ -18,7 +18,7 @@ import java.time.LocalDateTime
 /**
  * 使用 _delete_by_query
  */
-open class EsBaseBulkDeleteClip(tableName: String) : EsClipBase(tableName){
+open class EsBaseBulkDeleteClip(tableName: String) : EsClipBase(tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
@@ -75,8 +75,8 @@ open class EsBaseBulkDeleteClip(tableName: String) : EsClipBase(tableName){
             search.put("routing", this.routing)
         }
 
-        var request = Request("POST", "/_bulk" +
-            search.toUrlQuery().IfHasValue { "?" + it }
+        var request = Request("POST", this.collectionName + "/_bulk" +
+                search.toUrlQuery().IfHasValue { "?" + it }
         )
 
         var data = mutableListOf<Any>()
@@ -93,7 +93,8 @@ open class EsBaseBulkDeleteClip(tableName: String) : EsClipBase(tableName){
             requestBody = data.map { it.ToJson() + const.line_break }.joinToString("")
         }
 
-        request.entity = NStringEntity(requestBody, ContentType.create("application/x-ndjson", const.utf8))
+        request.entity =
+            NStringEntity(requestBody, ContentType.create("application/x-ndjson", const.utf8))
 
         logger.info(request.ToJson())
 //        var responseBody = "";
@@ -107,7 +108,12 @@ open class EsBaseBulkDeleteClip(tableName: String) : EsClipBase(tableName){
             }
 
             db.executeTime = LocalDateTime.now() - startAt
-            usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {
+            usingScope(
+                arrayOf(
+                    MyOqlDbScopeEnum.IGNORE_AFFECT_ROW,
+                    MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME
+                )
+            ) {
                 settingResult.forEach {
                     it.first.delete(this, it.second)
                 }

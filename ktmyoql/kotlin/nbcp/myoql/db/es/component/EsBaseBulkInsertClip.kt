@@ -74,7 +74,7 @@ open class EsBaseBulkInsertClip(tableName: String) : EsClipBase(tableName) {
             search.put("routing", this.routing)
         }
 
-        var request = Request("POST", "/_bulk" +
+        var request = Request("POST", this.collectionName + "/_bulk" +
             search.toUrlQuery().IfHasValue { "?" + it }
         )
 
