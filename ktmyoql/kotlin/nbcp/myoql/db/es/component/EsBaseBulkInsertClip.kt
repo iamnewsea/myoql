@@ -20,7 +20,7 @@ import java.time.LocalDateTime
 /**
  * https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html
  */
-open class EsBaseInsertClip(tableName: String) : EsClipBase(tableName), IEsWhereable {
+open class EsBaseBulkInsertClip(tableName: String) : EsClipBase(tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

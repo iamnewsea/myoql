@@ -9,6 +9,9 @@ import nbcp.base.extend.ToJson
 class SearchBodyClip {
     var skip = 0L;
     var take = -1;
+
+    var ids = mutableSetOf<String>()
+
     /*
 "query": {
 	"bool": {
@@ -112,6 +115,16 @@ class SearchBodyClip {
         if (this.filter.isNotEmpty()) {
             json["filter"] = this.filter
         }
+
+        if (ids.any()) {
+            if (json["filter"] == null) {
+                json["filter"] = JsonMap();
+            }
+
+            var f = json["filter"] as JsonMap
+            f.put("ids", JsonMap("values" to ids))
+        }
+
         if (this._source.isNotEmpty()) {
             json["_source"] = this._source
         }

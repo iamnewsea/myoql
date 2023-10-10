@@ -9,7 +9,6 @@ import nbcp.myoql.db.enums.MyOqlDbScopeEnum
 import nbcp.myoql.db.es.component.*
 import nbcp.myoql.db.es.event.*
 import org.elasticsearch.client.RestClient
-import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.stereotype.Component
@@ -154,7 +153,7 @@ class EsEntityCollector : BeanPostProcessor {
         return list.toTypedArray()
     }
 
-    fun onInserting(insert: EsBaseInsertClip): Array<Pair<IEsEntityInsert, EventResult>> {
+    fun onInserting(insert: EsBaseBulkInsertClip): Array<Pair<IEsEntityInsert, EventResult>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IEsEntityInsert, EventResult>>()
         usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {
@@ -170,7 +169,7 @@ class EsEntityCollector : BeanPostProcessor {
         return list.toTypedArray()
     }
 
-    fun onUpdating(update: EsBaseUpdateClip): Array<Pair<IEsEntityUpdate, EventResult>> {
+    fun onUpdating(update: EsBaseBulkUpdateClip): Array<Pair<IEsEntityUpdate, EventResult>> {
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IEsEntityUpdate, EventResult>>()
         usingScope(arrayOf(MyOqlDbScopeEnum.IGNORE_AFFECT_ROW, MyOqlDbScopeEnum.IGNORE_EXECUTE_TIME)) {
@@ -186,7 +185,7 @@ class EsEntityCollector : BeanPostProcessor {
         return list.toTypedArray()
     }
 
-    fun onDeleting(delete: EsBaseDeleteClip): Array<Pair<IEsEntityDelete, EventResult>> {
+    fun onDeleting(delete: EsBaseBulkDeleteClip): Array<Pair<IEsEntityDelete, EventResult>> {
 
         //先判断是否进行了类拦截.
         var list = mutableListOf<Pair<IEsEntityDelete, EventResult>>()

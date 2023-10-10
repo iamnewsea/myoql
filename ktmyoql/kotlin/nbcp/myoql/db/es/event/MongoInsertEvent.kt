@@ -6,7 +6,7 @@ import nbcp.base.extend.IsStringType
 import nbcp.base.utils.CodeUtil
 import nbcp.myoql.db.BaseEntity
 import nbcp.myoql.db.comm.EventResult
-import nbcp.myoql.db.es.component.EsBaseInsertClip
+import nbcp.myoql.db.es.component.EsBaseBulkInsertClip
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
@@ -15,7 +15,7 @@ import java.time.LocalDateTime
  */
 @Component
 class EsInsertEvent : IEsEntityInsert {
-    override fun beforeInsert(insert: EsBaseInsertClip): EventResult {
+    override fun beforeInsert(insert: EsBaseBulkInsertClip): EventResult {
         insert.entities.forEach { entity ->
 
             if (entity is BaseEntity) {
@@ -54,7 +54,7 @@ class EsInsertEvent : IEsEntityInsert {
         return EventResult(true, null);
     }
 
-    override fun insert(insert: EsBaseInsertClip, eventData: EventResult) {
+    override fun insert(insert: EsBaseBulkInsertClip, eventData: EventResult) {
 
     }
 

@@ -22,7 +22,7 @@ abstract class EsBaseMetaEntity<T:Any>(
      * 插入单条实体
      */
     fun doInsert(entity: T): String {
-        var batchInsert = EsBaseInsertClip(this.tableName)
+        var batchInsert = EsBaseBulkInsertClip(this.tableName)
         batchInsert.addEntity(entity)
         batchInsert.exec();
 

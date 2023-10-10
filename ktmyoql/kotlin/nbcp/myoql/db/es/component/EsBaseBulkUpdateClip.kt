@@ -16,10 +16,13 @@ import org.elasticsearch.client.Response
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 
-open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhereable {
+
+/**
+ * 使用 _update_by_query
+ */
+open class EsBaseBulkUpdateClip(tableName: String) : EsClipBase(tableName) {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
-
     }
 
 
@@ -27,6 +30,8 @@ open class EsBaseUpdateClip(tableName: String) : EsClipBase(tableName), IEsWhere
     var pipeline = ""
     var refresh: EsPutRefreshEnum? = null
     var entities = mutableListOf<Any>()
+
+
 
     /**
      * 批量添加中的添加实体。

@@ -19,6 +19,17 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
     var routing = "";
     var search = SearchBodyClip()
 
+    /**
+     * 批量添加中的添加实体。
+     */
+    override fun whereId(id: String) {
+        if (id.isEmpty()) {
+            throw RuntimeException("批量删除时需要指定Id")
+        }
+
+        this.search.ids.add(id)
+    }
+
     fun selectField(column: String) {
         search._source.add(column);
     }

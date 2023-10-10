@@ -15,7 +15,10 @@ import org.elasticsearch.client.Response
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 
-open class EsBaseDeleteClip(tableName: String) : EsClipBase(tableName), IEsWhereable {
+/**
+ * 使用 _delete_by_query
+ */
+open class EsBaseBulkDeleteClip(tableName: String) : EsClipBase(tableName){
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }

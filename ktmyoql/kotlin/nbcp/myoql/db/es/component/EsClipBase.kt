@@ -50,7 +50,3 @@ open class EsClipBase(var collectionName: String) : Serializable {
             return SpringUtil.getBean<RestClient>()
         }
 }
-
-interface IEsWhereable {
-
-}

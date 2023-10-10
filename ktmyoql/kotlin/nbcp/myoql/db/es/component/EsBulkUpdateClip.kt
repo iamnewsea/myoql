@@ -1,7 +1,7 @@
 package nbcp.myoql.db.es
 
 import nbcp.myoql.db.es.component.EsBaseMetaEntity
-import nbcp.myoql.db.es.component.EsBaseUpdateClip
+import nbcp.myoql.db.es.component.EsBaseBulkUpdateClip
 import nbcp.myoql.db.es.enums.EsPutRefreshEnum
 import java.io.Serializable
 
@@ -16,27 +16,27 @@ import java.io.Serializable
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/docs-update-by-query.html
  * https://www.elastic.co/guide/cn/elasticsearch/guide/current/partial-updates.html
  */
-class EsUpdateClip<M : EsBaseMetaEntity<E>,E : Serializable>(var moerEntity: M)
-    : EsBaseUpdateClip(moerEntity.tableName) {
+class EsBulkUpdateClip<M : EsBaseMetaEntity<E>,E : Serializable>(var moerEntity: M)
+    : EsBaseBulkUpdateClip(moerEntity.tableName) {
 
-    fun add(entity: E): EsUpdateClip<M, E> {
+    fun add(entity: E): EsBulkUpdateClip<M, E> {
         super.addEntity(entity)
         return this;
     }
 
     @JvmOverloads
-    fun routing(routing:String = ""):  EsUpdateClip<M, E> {
+    fun routing(routing:String = ""):  EsBulkUpdateClip<M, E> {
         this.withRouting(routing)
         return this;
     }
 
     @JvmOverloads
-    fun pipeline(pipeline:String = ""): EsUpdateClip<M, E> {
+    fun pipeline(pipeline:String = ""): EsBulkUpdateClip<M, E> {
         this.withPipeLine(pipeline)
         return this;
     }
 
-    fun refresh(refresh: EsPutRefreshEnum): EsUpdateClip<M, E> {
+    fun refresh(refresh: EsPutRefreshEnum): EsBulkUpdateClip<M, E> {
         this.withRefresh(refresh)
         return this;
     }

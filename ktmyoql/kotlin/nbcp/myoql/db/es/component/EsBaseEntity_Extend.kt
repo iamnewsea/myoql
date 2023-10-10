@@ -1,6 +1,6 @@
 package nbcp.myoql.db.es.component
 
-import nbcp.myoql.db.es.EsUpdateClip
+import nbcp.myoql.db.es.EsBulkUpdateClip
 import nbcp.myoql.db.es.base.EsColumnName
 import java.io.Serializable
 
@@ -27,15 +27,15 @@ fun <M : EsBaseMetaEntity<T>, T : Serializable> M.queryById(id: String): EsQuery
 //    return EsSetEntityUpdateClip(this,entity);
 //}
 
-fun <M : EsBaseMetaEntity<E>, E : Serializable> M.batchInsert(): EsInsertClip<M, E> {
-    return EsInsertClip(this);
+fun <M : EsBaseMetaEntity<E>, E : Serializable> M.bulkInsert(): EsBulkInsertClip<M, E> {
+    return EsBulkInsertClip(this);
 }
 
-fun <M : EsBaseMetaEntity<E>, E : Serializable> M.update(): EsUpdateClip<M, E> {
-    return EsUpdateClip(this);
+fun <M : EsBaseMetaEntity<E>, E : Serializable> M.bulkUpdate(): EsBulkUpdateClip<M, E> {
+    return EsBulkUpdateClip(this);
 }
 
-fun <M : EsBaseMetaEntity<E>, E : Serializable> M.delete(): EsDeleteClip<M> = EsDeleteClip(this)
+fun <M : EsBaseMetaEntity<E>, E : Serializable> M.bulkDelete(): EsBulkDeleteClip<M> = EsBulkDeleteClip(this)
 
 //fun <M : EsBaseEntity<E>, E : Serializable> M.deleteById(id: String): EsDeleteClip<M> {
 //    var ret = EsDeleteClip(this);
