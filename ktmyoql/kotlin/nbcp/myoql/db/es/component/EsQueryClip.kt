@@ -9,8 +9,8 @@ import java.io.Serializable
  * EsQuery
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/search.html
  */
-class EsQueryClip<M : EsBaseMetaEntity<E>, E : Serializable>(var moerEntity: M) :
-    EsBaseQueryClip(moerEntity.tableName) {
+class EsQueryClip<M : EsBaseMetaEntity<E>, E : Serializable>(var esEntity: M) :
+    EsBaseQueryClip(esEntity.tableName) {
 
     @JvmOverloads
     fun routing(routing: String = ""): EsQueryClip<M, E> {
@@ -19,8 +19,7 @@ class EsQueryClip<M : EsBaseMetaEntity<E>, E : Serializable>(var moerEntity: M) 
     }
 
     fun limit(skip: Long, take: Int): EsQueryClip<M, E> {
-        this.search.skip = skip;
-        this.search.take = take;
+        setLimit(skip, take)
         return this;
     }
 
@@ -28,14 +27,16 @@ class EsQueryClip<M : EsBaseMetaEntity<E>, E : Serializable>(var moerEntity: M) 
      * 升序
      */
     fun orderByAsc(sortFunc: (M) -> EsColumnName): EsQueryClip<M, E> {
-        return this.orderBy(true, sortFunc(this.moerEntity))
+        setOrderByAsc(sortFunc(this.esEntity))
+        return this;
     }
 
     /**
      * 降序
      */
     fun orderByDesc(sortFunc: (M) -> EsColumnName): EsQueryClip<M, E> {
-        return this.orderBy(false, sortFunc(this.moerEntity))
+        setOrderByDesc(sortFunc(this.esEntity))
+        return this
     }
 
     private fun orderBy(asc: Boolean, column: EsColumnName): EsQueryClip<M, E> {
@@ -51,17 +52,17 @@ class EsQueryClip<M : EsBaseMetaEntity<E>, E : Serializable>(var moerEntity: M) 
     }
 
     fun should(vararg where: (M) -> WhereData): EsQueryClip<M, E> {
-        this.search.query.addShould(*where.map { it.invoke(this.moerEntity) }.toTypedArray())
+        setShould(*where.map { it.invoke(this.esEntity) }.toTypedArray())
         return this;
     }
 
     fun must(vararg where: (M) -> WhereData): EsQueryClip<M, E> {
-        this.search.query.addMust(*where.map { it.invoke(this.moerEntity) }.toTypedArray())
+        setMust(*where.map { it.invoke(this.esEntity) }.toTypedArray())
         return this;
     }
 
-    fun must_not(vararg where: (M) -> WhereData): EsQueryClip<M, E> {
-        this.search.query.addMustNot(*where.map { it.invoke(this.moerEntity) }.toTypedArray())
+    fun mustNot(vararg where: (M) -> WhereData): EsQueryClip<M, E> {
+        setMustNot(*where.map { it.invoke(this.esEntity) }.toTypedArray())
         return this;
     }
 
@@ -87,7 +88,7 @@ class EsQueryClip<M : EsBaseMetaEntity<E>, E : Serializable>(var moerEntity: M) 
     }
 
     fun select(column: (M) -> EsColumnName): EsQueryClip<M, E> {
-        this.search._source.add(column(this.moerEntity).toString())
+        this.search._source.add(column(this.esEntity).toString())
         return this;
     }
 
@@ -98,13 +99,13 @@ class EsQueryClip<M : EsBaseMetaEntity<E>, E : Serializable>(var moerEntity: M) 
 
     @JvmOverloads
     fun toList(mapFunc: ((Map<String, Any?>) -> Unit)? = null): MutableList<E> {
-        return toList(moerEntity.entityClass, mapFunc)
+        return toList(esEntity.entityClass, mapFunc)
     }
 
     @JvmOverloads
     fun toEntity(mapFunc: ((Map<String, Any?>) -> Unit)? = null): E? {
         this.search.take = 1;
-        return toList(moerEntity.entityClass, mapFunc).firstOrNull();
+        return toList(esEntity.entityClass, mapFunc).firstOrNull();
     }
 
     @JvmOverloads
@@ -116,7 +117,7 @@ class EsQueryClip<M : EsBaseMetaEntity<E>, E : Serializable>(var moerEntity: M) 
 
     @JvmOverloads
     fun toListResult(mapFunc: ((Map<String, Any?>) -> Unit)? = null): ListResult<E> {
-        return toListResult(this.moerEntity.entityClass, mapFunc);
+        return toListResult(this.esEntity.entityClass, mapFunc);
     }
 }
 

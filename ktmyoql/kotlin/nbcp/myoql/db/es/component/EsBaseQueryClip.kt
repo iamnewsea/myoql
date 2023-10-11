@@ -8,6 +8,7 @@ import nbcp.base.utils.Md5Util
 import nbcp.base.utils.MyUtil
 import nbcp.base.utils.ReflectUtil
 import nbcp.myoql.db.db
+import nbcp.myoql.db.es.base.EsColumnName
 import nbcp.myoql.db.es.logger.logGet
 import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
@@ -16,6 +17,9 @@ import java.time.LocalDateTime
 
 open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWhereable {
 
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    }
     var routing = "";
     var search = SearchBodyClip()
 
@@ -39,9 +43,6 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
         this.routing = routing;
     }
 
-    companion object {
-        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
-    }
 
 
     /**
@@ -53,6 +54,50 @@ open class EsBaseQueryClip(tableName: String) : EsClipBase(tableName), IEsWherea
         unKeys.add(search.toString())
 
         return Md5Util.getBase64Md5(unKeys.joinToString("\n"));
+    }
+
+
+
+    fun setLimit(skip: Long, take: Int)  {
+        this.search.skip = skip;
+        this.search.take = take;
+    }
+
+    /**
+     * 升序
+     */
+    fun setOrderByAsc(sort : EsColumnName)  {
+          this.orderBy(true, sort)
+    }
+
+    /**
+     * 降序
+     */
+    fun setOrderByDesc(sort :   EsColumnName)  {
+          this.orderBy(false, sort)
+    }
+
+    private fun orderBy(asc: Boolean, column: EsColumnName)  {
+        var order_str = "";
+        if (asc) {
+            order_str = "asc"
+        } else {
+            order_str = "desc"
+        }
+
+        this.search.sort.add(JsonMap(column.toString() to JsonMap("order" to order_str)))
+    }
+
+    fun setShould( vararg where:   WhereData) {
+        this.search.query.addShould(*where)
+    }
+
+    fun setMust(vararg  where:  WhereData)  {
+        this.search.query.addMust(* where )
+    }
+
+    fun setMustNot( vararg where:  WhereData)  {
+        this.search.query.addMustNot( *where )
     }
 
     var total: Int = -1;
