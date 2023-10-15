@@ -116,7 +116,7 @@ export default {
 </#list>
             }, //子对象需要声明。
 <#list enumTypes as type>
-            ${type.getSimpleName()}: jv.enum.${type}.getData(),
+            ${type.getSimpleName()}: jv.enum.${type.getSimpleName()}.getData(),
 </#list>
         }
     },

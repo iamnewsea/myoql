@@ -27,9 +27,15 @@
 <#elseif field.getType().isEnum()>
             <el-table-column align="center" label="${fieldCn(field)}" >
                 <template v-slot="scope">
-                    <img :src="scope.row.${field.getName()}_res" />
+                    <el-tag>{{scope.row.${field.getName()}_res"}}</el-tag>
                 </template>
             </el-table-column>
+<#elseif fieldIsEnumList(field)>
+    <el-table-column align="center" label="${fieldCn(field)}" >
+        <template v-slot="scope">
+            <el-tag v-for="item in scope.row.${field.getName()}_res" :key="item">{{item}}</el-tag>
+        </template>
+    </el-table-column>
 <#elseif isType(field,"IdName")>
             <el-table-column align="center" label="${fieldCn(field)}" prop="${field.getName()}.name"></el-table-column>
 <#elseif isType(field,"IdUrl")>
@@ -77,7 +83,7 @@ export default {
             //默认查询条件,默认存储
             query:{},
 <#list enumTypes as type>
-            ${type.getSimpleName()}: jv.enum.${type}.getData(),
+            ${type.getSimpleName()}: jv.enum.${type.getSimpleName()}.getData(),
 </#list>
         };
     },
