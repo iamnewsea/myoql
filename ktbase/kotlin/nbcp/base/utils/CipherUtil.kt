@@ -10,7 +10,6 @@ import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.DESKeySpec
 import javax.crypto.spec.DESedeKeySpec
 import javax.crypto.spec.SecretKeySpec
-import kotlin.experimental.and
 
 /**
  * 加密解密工具
@@ -41,16 +40,35 @@ object CipherUtil {
     }
 
     /**
-     *
+     * 使用 SHA1 加密
      */
     @JvmStatic
     fun sha1(text: String): String {
         var digest = MessageDigest.getInstance("SHA1");
         digest.update(text.toByteArray(const.utf8));
 
-        return digest.digest().map {
-            (it.toInt() and 255).toString(16).padStart(2, '0')
-        }.joinToString("").lowercase();
+        return digest.digest().toHex()
+    }
+
+
+    private fun ByteArray.toHex(): String {
+        return this.map { it.toHex() }.joinToString("").lowercase();
+    }
+
+    private fun Byte.toHex(): String {
+        return (this.toInt() and 255).toString(16).padStart(2, '0')
+    }
+
+    /**
+     * 使用 SHA256加密
+     *
+     * @see https://www.cnblogs.com/shineman-zhang/articles/14054982.html
+     */
+    @JvmStatic
+    fun encryptWithSHA256(value: String): String {
+        var messageDigest = MessageDigest.getInstance("SHA-256");
+        messageDigest.update(value.toByteArray(const.utf8));
+        return messageDigest.digest().toHex()
     }
 
 
@@ -75,7 +93,7 @@ object CipherUtil {
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec)
             val encrypted = cipher.doFinal(sSrc.toByteArray(const.utf8))
 
-            return  Base64Util.encode2Base64(encrypted)
+            return Base64Util.encode2Base64(encrypted)
         }
 
         // 解密
