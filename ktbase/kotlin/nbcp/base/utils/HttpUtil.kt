@@ -10,7 +10,7 @@ import nbcp.base.data.HttpResponseData
 import nbcp.base.db.*
 import nbcp.base.enums.FileExtensionTypeEnum
 import nbcp.base.enums.HttpMethod
-import nbcp.base.extend.*
+import nbcp.base.extend.*;
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEvent
 import java.awt.image.BufferedImage

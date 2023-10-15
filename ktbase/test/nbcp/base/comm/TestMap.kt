@@ -1,7 +1,7 @@
 package nbcp.base.comm
 
 import nbcp.base.TestBase
-import nbcp.base.extend.ToJson
+import nbcp.base.extend.*
 import nbcp.base.extend.removeByWbsPath
 import nbcp.base.extend.setValueByWbsPath
 import org.junit.jupiter.api.Test

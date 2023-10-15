@@ -1,7 +1,7 @@
 package nbcp.myoql.weixin.h5
 
 import nbcp.base.comm.ApiResult
-import nbcp.base.extend.FromJson
+import nbcp.base.extend.*
 import nbcp.base.extend.HasValue
 import nbcp.base.utils.HttpUtil
 import nbcp.myoql.weixin.system.wx_return_data

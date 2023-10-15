@@ -2,8 +2,7 @@ package nbcp.myoql.bean
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import nbcp.base.component.DbJsonMapper
-import nbcp.base.extend.addObjectMapperTypeModule
-import nbcp.base.extend.clazzesIsSimpleDefine
+import nbcp.base.extend.*
 import nbcp.base.utils.SpringUtil
 import nbcp.myoql.db.mongo.DocumentJsonDeserializer
 import nbcp.myoql.db.mongo.DocumentJsonSerializer

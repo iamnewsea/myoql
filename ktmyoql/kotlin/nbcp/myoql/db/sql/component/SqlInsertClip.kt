@@ -4,8 +4,9 @@ package nbcp.myoql.db.sql.component
 import nbcp.base.comm.JsonMap
 import nbcp.base.comm.const
 import nbcp.base.extend.*
+import nbcp.base.extend.*
+import nbcp.base.extend.*
 import nbcp.base.utils.CodeUtil
-import nbcp.base.utils.MyUtil
 import nbcp.base.utils.ReflectUtil
 import nbcp.myoql.db.BaseEntity
 import nbcp.myoql.db.db

@@ -5,8 +5,10 @@ package nbcp.base.extend
 
 import nbcp.base.enums.JsonSceneScopeEnum
 import nbcp.base.enums.JsonStyleScopeEnum
+import nbcp.base.extend.AsString
+import nbcp.base.extend.scopes
+import nbcp.base.extend.usingScope
 import nbcp.base.scope.getJsonMapper
-import nbcp.base.utils.MyUtil
 import nbcp.base.utils.ReflectUtil
 import kotlin.reflect.KClass
 

@@ -1,6 +1,6 @@
 package nbcp.base
 
-import nbcp.base.extend.ToJson
+import nbcp.base.extend.*
 import org.junit.jupiter.api.Test
 
 

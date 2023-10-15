@@ -3,7 +3,7 @@ package nbcp.myoql.mongo
 import nbcp.base.comm.JsonMap
 import nbcp.base.enums.JsonStyleScopeEnum
 import nbcp.base.enums.LogLevelScopeEnum
-import nbcp.base.extend.ToJson
+import nbcp.base.extend.*
 import nbcp.base.extend.usingScope
 import nbcp.myoql.TestBase
 import nbcp.myoql.db.db

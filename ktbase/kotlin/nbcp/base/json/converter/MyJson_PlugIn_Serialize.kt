@@ -1,14 +1,15 @@
-package nbcp.base.comm.json
+package nbcp.base.json.converter
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
-import nbcp.base.extend.AsDate
+import nbcp.base.comm.MyRawString
 import java.util.*
 
-class DateJsonDeserializer : JsonDeserializer<Date>() {
-    override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): Date? {
+
+class MyRawStringDeserializer : JsonDeserializer<MyRawString>() {
+    override fun deserialize(json: JsonParser?, p1: DeserializationContext?): MyRawString? {
         if (json == null) {
             return null;
         }
@@ -18,14 +19,8 @@ class DateJsonDeserializer : JsonDeserializer<Date>() {
         }
 
         if (json.valueAsString == null) {
-            return null;
+            return MyRawString();
         }
-
-        var stringValue = json.valueAsString
-        if (stringValue.contains("-") || stringValue.contains("/")) {
-            return stringValue.AsDate();
-        }
-
-        return Date(json.longValue);
+        return MyRawString(json.valueAsString)
     }
 }

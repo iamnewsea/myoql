@@ -5,7 +5,7 @@ import nbcp.base.comm.const
 import nbcp.base.extend.AsBoolean
 import nbcp.base.extend.AsInt
 import nbcp.base.extend.AsString
-import nbcp.base.extend.FromJson
+import nbcp.base.extend.*
 import nbcp.myoql.db.es.base.EsResultMsg
 import org.elasticsearch.client.Response
 

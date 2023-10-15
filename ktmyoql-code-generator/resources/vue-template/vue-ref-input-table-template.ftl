@@ -40,6 +40,7 @@
 export default {
     name: "table-${kb(entity)}",
     props: {
+        title: {type: String , default: ""},
         readOnly: {type: Boolean, default: false},
         value: {
             type: Array, default: function () {
@@ -49,14 +50,10 @@ export default {
     },
     data() {
       return {
-          value2: null,
-<#list fields as field>
-    <#if field.getType().isEnum()>
-    ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
-<#elseif fieldIsEnumList(field)>
-${fieldListType(field)}: jv.enum.${fieldListType(field)}.getData(),
-</#if>
-    </#list>
+<#list enumTypes as type>
+    ${type.getSimpleName()}: jv.enum.${type}.getData(),
+</#list>
+          value2: null
       }
     },
     computed:{

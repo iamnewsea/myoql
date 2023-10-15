@@ -1,7 +1,7 @@
 package nbcp.myoql.base
 
 import nbcp.base.enums.JsonSceneScopeEnum
-import nbcp.base.extend.FromJson
+import nbcp.base.extend.*
 import nbcp.base.extend.usingScope
 import nbcp.myoql.TestBase
 import nbcp.myoql.db.CityCodeName

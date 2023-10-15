@@ -3,6 +3,7 @@
 
 package nbcp.base.extend
 
+import com.fasterxml.jackson.annotation.JsonValue
 import java.lang.reflect.*
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -200,46 +201,6 @@ val Class<*>.IsNumberType: Boolean
         return false;
     }
 
-/**
- * 获取枚举类的所有成员
- */
-@JvmOverloads
-fun <T> Class<T>.GetEnumList(values: String = ""): List<T> {
-    if (this.isEnum == false) return listOf()
-
-    var list = this.enumConstants
-
-    if (values.HasValue) {
-        return values.split(",")
-            .map { v -> list.find { it.toString() == v } }
-            .filterNotNull()
-    }
-
-    return list.toList()
-}
-
-/**
- * 获取枚举类的数字类型的字段。
- */
-fun <T> Class<T>.GetEnumNumberField(): Field? {
-    if (this.isEnum == false) return null
-
-
-    this.declaredFields
-        .filter {
-            it.IsPrivate && Modifier.isFinal(it.modifiers) && it.type.IsNumberType
-        }
-        .let { ret_fields ->
-            if (ret_fields.size == 1) {
-                var ret = ret_fields.first();
-                ret.isAccessible = true;
-                return ret;
-            }
-        }
-
-
-    return null;
-}
 
 val Method.IsPrivate: Boolean
     get() {
@@ -291,7 +252,7 @@ fun <T> Class<T>.GetEnumStringField(): Field? {
 
     this.declaredFields
         .filter {
-            it.IsPrivate && it.IsStatic && it.type.IsStringType
+            it.IsPrivate && it.type.IsStringType
         }
         .let { ret_fields ->
             if (ret_fields.any()) {

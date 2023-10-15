@@ -1,7 +1,7 @@
 package nbcp.myoql.weixin.miniprogram
 
 import nbcp.base.comm.ApiResult
-import nbcp.base.extend.FromJson
+import nbcp.base.extend.*
 import nbcp.base.extend.HasValue
 import nbcp.base.utils.HttpUtil
 import nbcp.myoql.db.redis.proxy.RedisStringProxy

@@ -1,7 +1,7 @@
 package nbcp.base.db
 
 import nbcp.base.extend.Slice
-import nbcp.base.extend.ToJson
+import nbcp.base.extend.*;
 import java.io.Serializable
 
 /**

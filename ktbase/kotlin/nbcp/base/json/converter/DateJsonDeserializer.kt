@@ -1,14 +1,14 @@
-package nbcp.base.comm.json
+package nbcp.base.json.converter
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
-import nbcp.base.extend.AsLocalTime
-import java.time.LocalTime
+import nbcp.base.extend.AsDate
+import java.util.*
 
-class LocalTimeJsonDeserializer : JsonDeserializer<LocalTime>() {
-    override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): LocalTime? {
+class DateJsonDeserializer : JsonDeserializer<Date>() {
+    override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): Date? {
         if (json == null) {
             return null;
         }
@@ -21,6 +21,11 @@ class LocalTimeJsonDeserializer : JsonDeserializer<LocalTime>() {
             return null;
         }
 
-        return json.valueAsString.AsLocalTime();
+        var stringValue = json.valueAsString
+        if (stringValue.contains("-") || stringValue.contains("/")) {
+            return stringValue.AsDate();
+        }
+
+        return Date(json.longValue);
     }
 }

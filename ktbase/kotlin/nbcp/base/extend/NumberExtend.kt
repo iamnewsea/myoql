@@ -76,11 +76,11 @@ fun Long.ToLocalDateTime(): LocalDateTime {
     return LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
 }
 
-inline fun <reified T> Int.ToEnum(): T? {
+inline fun <reified T: Enum<T>> Int.ToEnum(): T? {
     return this.ToEnum(T::class.java)
 }
 
-fun <T : Any> Int.ToEnum(enumClazz: KClass<T>): T? {
+fun <T : Enum<T>> Int.ToEnum(enumClazz: KClass<T>): T? {
     return this.ToEnum(enumClazz.java)
 }
 

@@ -4,6 +4,7 @@ import nbcp.base.TestBase
 import nbcp.base.comm.JsonMap
 import nbcp.base.enums.JsonStyleScopeEnum
 import nbcp.base.data.CookieData
+import nbcp.base.extend.*
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

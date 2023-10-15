@@ -1,7 +1,7 @@
 package nbcp.myoql.db.es.component
 
 import nbcp.base.comm.JsonMap
-import nbcp.base.extend.ToJson
+import nbcp.base.extend.*
 
 /**
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/search-search.html

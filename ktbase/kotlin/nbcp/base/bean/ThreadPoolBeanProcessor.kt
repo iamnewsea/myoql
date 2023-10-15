@@ -1,13 +1,8 @@
 package nbcp.base.bean
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.databind.ObjectMapper
 import nbcp.base.comm.config
 import nbcp.base.extend.AsInt
-import nbcp.base.extend.initObjectMapper
 import org.springframework.beans.factory.config.BeanPostProcessor
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.stereotype.Component
 

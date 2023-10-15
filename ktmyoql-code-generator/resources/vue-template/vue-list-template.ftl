@@ -76,12 +76,8 @@ export default {
         return {
             //默认查询条件,默认存储
             query:{},
-<#list fields as field>
-<#if field.getType().isEnum()>
-            ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
-<#elseif fieldIsEnumList(field)>
-            ${fieldListType(field)}: jv.enum.${fieldListType(field)}.getData(),
-</#if>
+<#list enumTypes as type>
+            ${type.getSimpleName()}: jv.enum.${type}.getData(),
 </#list>
         };
     },

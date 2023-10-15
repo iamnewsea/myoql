@@ -106,13 +106,6 @@ export default {
 </#if></#list>},
     data() {
         return {
-<#list fields as field>
-<#if field.getType().isEnum()>
-            ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
-<#elseif fieldIsEnumList(field)>
-            ${fieldListType(field)}: jv.enum.${fieldListType(field)}.getData(),
-</#if>
-</#list>
             info: {
 <#list fields as field>
 <#if fieldIsList(field)>
@@ -122,6 +115,9 @@ export default {
 </#if>
 </#list>
             }, //子对象需要声明。
+<#list enumTypes as type>
+            ${type.getSimpleName()}: jv.enum.${type}.getData(),
+</#list>
         }
     },
     props: {

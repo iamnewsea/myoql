@@ -4,7 +4,7 @@
 package nbcp.myoql.db.mongo.extend
 
 import nbcp.base.comm.*
-import nbcp.base.extend.ToJson
+import nbcp.base.extend.*
 import nbcp.base.utils.*
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.query.Criteria

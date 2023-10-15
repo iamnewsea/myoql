@@ -4,7 +4,7 @@ import nbcp.base.TestBase
 import nbcp.base.comm.JsonMap
 import nbcp.base.comm.StringMap
 import nbcp.base.db.IdName
-import nbcp.base.extend.ToJson
+import nbcp.base.extend.*
 import nbcp.base.extend.splitBoundary
 import nbcp.base.extend.takeNumber
 import org.junit.jupiter.api.Test

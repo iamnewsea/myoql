@@ -1,15 +1,13 @@
-package nbcp.base.comm.json
+package nbcp.base.json.converter
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
-import nbcp.base.comm.MyRawString
-import java.util.*
+import nbcp.base.comm.MyString
 
-
-class MyRawStringDeserializer : JsonDeserializer<MyRawString>() {
-    override fun deserialize(json: JsonParser?, p1: DeserializationContext?): MyRawString? {
+class MyStringDeserializer : JsonDeserializer<MyString>() {
+    override fun deserialize(json: JsonParser?, p1: DeserializationContext?): MyString? {
         if (json == null) {
             return null;
         }
@@ -19,8 +17,8 @@ class MyRawStringDeserializer : JsonDeserializer<MyRawString>() {
         }
 
         if (json.valueAsString == null) {
-            return MyRawString();
+            return MyString();
         }
-        return MyRawString(json.valueAsString)
+        return MyString(json.valueAsString)
     }
 }

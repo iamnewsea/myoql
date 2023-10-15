@@ -1,9 +1,13 @@
 package nbcp.myoql.code.generator.db.mongo
 
 import nbcp.base.comm.StringMap
-import nbcp.base.db.annotation.*
+import nbcp.base.db.annotation.DbEntityGroup
+import nbcp.base.db.annotation.DbName
 import nbcp.base.extend.*
-import nbcp.base.utils.*
+import nbcp.base.utils.ClassUtil
+import nbcp.base.utils.CnAnnotationUtil
+import nbcp.base.utils.ReflectUtil
+import nbcp.base.utils.StringUtil
 import java.io.File
 import java.io.FileWriter
 import java.lang.reflect.Field
@@ -40,7 +44,7 @@ class MarkdownGenerator {
 
         println("---------------生成 markdown---------------")
         writeToFile(
-                """
+            """
 # ${title}
 """
         );
@@ -51,7 +55,7 @@ class MarkdownGenerator {
             var groupEntities = group.value
 
             writeToFile(
-                    """
+                """
 ## ${StringUtil.getBigCamelCase(groupName)} 模块
 
 """
@@ -59,7 +63,7 @@ class MarkdownGenerator {
 
             var tables = groupEntities.map { "| ${it.simpleName} | ${CnAnnotationUtil.getCnValue(it)} |" }
             writeToFile(
-                    """ 
+                """ 
 
 | 表名  |  备注  |
 | --- | --- |
@@ -75,7 +79,7 @@ ${tables.joinToString("\n")}
 
 
         writeToFile(
-                """
+            """
 # 实体定义详情
 """
         );
@@ -85,7 +89,7 @@ ${tables.joinToString("\n")}
             var groupEntities = group.value
 
             writeToFile(
-                    """
+                """
 ### ${StringUtil.getBigCamelCase(groupName)} 模块
 
 """
@@ -93,7 +97,7 @@ ${tables.joinToString("\n")}
 
             var tables = groupEntities.map { "| ${it.simpleName} | ${CnAnnotationUtil.getCnValue(it)} |" }
             writeToFile(
-                    """ 
+                """ 
 
 | 表名  |  备注  |
 | --- | --- |
@@ -113,17 +117,17 @@ ${tables.joinToString("\n")}
 
 
         writeToFile(
-                """
+            """
 ## 使用的枚举
 """
         );
         enums.forEach {
-            writeToFile(genEnum(it));
+            writeToFile(genEnum(it as Class<out Enum<*>>));
         }
 
 
         writeToFile(
-                """
+            """
 
 ## 关于嵌入的实体（非集合实体，是集合引用到的实体）
 
@@ -136,7 +140,7 @@ ${tables.joinToString("\n")}
 
 
         writeToFile(
-                """
+            """
 <style>
 body{
     margin: 0 auto;
@@ -238,15 +242,15 @@ body table thead th{
         var ret = mutableMapOf<String, MutableList<Class<*>>>();
 
         ClassUtil.findClassesWithAnnotationType(basePackage, false, DbEntityGroup::class.java)
-                .forEach {
-                    var groupName = it.getAnnotation(DbEntityGroup::class.java).value;
+            .forEach {
+                var groupName = it.getAnnotation(DbEntityGroup::class.java).value;
 
-                    if (ret.containsKey(groupName) == false) {
-                        ret[groupName] = mutableListOf();
-                    }
-
-                    ret[groupName]!!.add(it)
+                if (ret.containsKey(groupName) == false) {
+                    ret[groupName] = mutableListOf();
                 }
+
+                ret[groupName]!!.add(it)
+            }
         return ret
     }
 
@@ -259,32 +263,32 @@ body table thead th{
         if (deep == 6) return listOf();
 
         var ret = type.AllFields
-                .filter {
-                    if (it.type.IsSimpleType()) return@filter false;
-                    if (Map::class.java.isAssignableFrom(it.type)) {
-                        return@filter false;
-                    }
-
-                    return@filter true;
-                }.map {
-                    if (it.type.isArray) {
-                        return@map it.type.componentType;
-                    }
-                    if (List::class.java.isAssignableFrom(it.type)) {
-                        return@map (it.genericType as ParameterizedType).GetActualClass(0);
-
-                    }
-                    return@map it.type;
-                }.filter {
-                    if (it.IsSimpleType()) return@filter false;
-                    if (Map::class.java.isAssignableFrom(it)) {
-                        return@filter false;
-                    }
-
-                    return@filter true;
+            .filter {
+                if (it.type.IsSimpleType()) return@filter false;
+                if (Map::class.java.isAssignableFrom(it.type)) {
+                    return@filter false;
                 }
-                .distinctBy { it.name }
-                .toMutableList()
+
+                return@filter true;
+            }.map {
+                if (it.type.isArray) {
+                    return@map it.type.componentType;
+                }
+                if (List::class.java.isAssignableFrom(it.type)) {
+                    return@map (it.genericType as ParameterizedType).GetActualClass(0);
+
+                }
+                return@map it.type;
+            }.filter {
+                if (it.IsSimpleType()) return@filter false;
+                if (Map::class.java.isAssignableFrom(it)) {
+                    return@filter false;
+                }
+
+                return@filter true;
+            }
+            .distinctBy { it.name }
+            .toMutableList()
 
         var subClasses = mutableListOf<Class<*>>()
         ret.forEach {
@@ -296,38 +300,23 @@ body table thead th{
         return ret.distinctBy { it.name }
     }
 
-    @JvmOverloads
-    fun findEnumClasses(type: Class<*>, deep: Int = 0): List<Class<*>> {
-
-        if (deep == 6) return listOf();
-
-        var ret = type.AllFields
-                .filter {
-                    return@filter it.type.isEnum;
-                }.map {
-                    return@map it.type;
-                }
-                .distinctBy { it.name }
-                .toMutableList()
-        return ret.distinctBy { it.name }
-    }
 
     fun getEmbClasses(groups: MutableMap<String, out List<Class<*>>>): List<Class<*>> {
         return groups.values.Unwind()
-                .map {
-                    return@map findEmbClasses(it)
-                }
-                .Unwind()
-                .distinctBy { it.name }
-                .sortedBy { it.name }
+            .map {
+                return@map findEmbClasses(it)
+            }
+            .Unwind()
+            .distinctBy { it.name }
+            .sortedBy { it.name }
     }
 
-    fun getEnums(groups: MutableMap<String, out List<Class<*>>>): MutableList<Class<*>> {
-        var list = mutableListOf<Class<*>>()
+    fun getEnums(groups: MutableMap<String, out List<Class<*>>>): MutableList<Class<Enum<*>>> {
+        var list = mutableListOf<Class<Enum<*>>>()
 
         groups.values.forEach {
             it.forEach {
-                findEnumClasses(it).forEach {
+                it.findAllEnum().forEach {
 
                     if (list.map { it.name }.contains(it.name) == false) {
                         list.add(it);
@@ -384,13 +373,13 @@ body table thead th{
         }
 
         if (type.IsSimpleType() ||
-                Map::class.java.isAssignableFrom(type)
+            Map::class.java.isAssignableFrom(type)
         ) {
             return "\"${name}\"" to retTypeIsBasicType
         }
 
         if (List::class.java.isAssignableFrom(type) ||
-                type.isArray
+            type.isArray
         ) {
             //应该递归调用自己.
             return "" to retTypeIsBasicType
@@ -418,7 +407,7 @@ body table thead th{
         return "-----找不到getEntityValue-----" to false;
     }
 
-    fun genEnum(entType: Class<*>): String {
+    fun <T : Enum<T>> genEnum(entType: Class<T>): String {
         var entTypeName = entType.name.split(".").last();
         if (entTypeName.endsWith("\$Companion")) {
             return "";
@@ -427,20 +416,20 @@ body table thead th{
         var number_remark = entType.GetEnumNumberField();
         var string_remark = entType.GetEnumStringField();
         var props = entType.GetEnumList()
-                .map {
-                    var s = mutableListOf<String>();
-                    s.add("* ${it.toString()}")
+            .map {
+                var s = mutableListOf<String>();
+                s.add("* ${it.toString()}")
 
-                    if (number_remark != null) {
-                        s.add("(" + ReflectUtil.getValueByWbsPath(it, number_remark.name).AsString() + ")");
-                    }
-                    if (string_remark != null) {
-                        s.add(": " + ReflectUtil.getValueByWbsPath(it, string_remark.name).AsString());
-                    }
-
-
-                    return@map s.joinToString(" ");
+                if (number_remark != null) {
+                    s.add("(" + ReflectUtil.getValueByWbsPath(it, number_remark.name).AsString() + ")");
                 }
+                if (string_remark != null) {
+                    s.add(": " + ReflectUtil.getValueByWbsPath(it, string_remark.name).AsString());
+                }
+
+
+                return@map s.joinToString(" ");
+            }
 
         var entityTypeName = entTypeName;
 //        var entityVarName = getEntityName(entTypeName);
@@ -458,12 +447,12 @@ ${props.joinToString("\n")}
         }
 
         var props = entType.AllFields
-                .filter { it.name != "Companion" }
-                .map {
+            .filter { it.name != "Companion" }
+            .map {
 //                    var v1 = getMetaValue(it, entTypeName, 1)
 
-                    return@map "| ${it.name} | ${it.type.simpleName} | ${CnAnnotationUtil.getCnValue(it.type)}  |"
-                }
+                return@map "| ${it.name} | ${it.type.simpleName} | ${CnAnnotationUtil.getCnValue(it.type)}  |"
+            }
 
         var entityTypeName = entTypeName;
 //        var entityVarName = getEntityName(entTypeName);
@@ -493,11 +482,11 @@ ${props.joinToString("\n")}
         }
 
         var props = entType.AllFields
-                .filter { it.name != "Companion" }
-                .map {
+            .filter { it.name != "Companion" }
+            .map {
 //                    var (retValue, retTypeIsBasicType) = getEntityValue(it)
-                    return@map "| ${it.name} | ${it.type.simpleName} | ${CnAnnotationUtil.getCnValue(it.type)} |"
-                }
+                return@map "| ${it.name} | ${it.type.simpleName} | ${CnAnnotationUtil.getCnValue(it.type)} |"
+            }
 
 //        var entityTypeName = entTypeName + "Entity"
 //        var entityVarName = getEntityName(entTypeName)

@@ -1,9 +1,9 @@
 package nbcp.myoql.code.generator.tool
 
+import nbcp.base.extend.GetEnumJsonValueValue
 import nbcp.base.extend.GetEnumList
 import nbcp.base.extend.GetEnumStringField
 import nbcp.base.utils.ClassUtil
-import nbcp.base.utils.MyUtil
 import nbcp.base.utils.ReflectUtil
 
 /**
@@ -20,13 +20,13 @@ object Enum4JsGenerator {
         val fileList = ClassUtil.findClasses(basePackage, false, Enum::class.java)
 
         fileList.forEach {
-            ret.add(work(it))
+            ret.add(work(it as Class<out Enum<*>>))
         }
         return ret;
     }
 
     @JvmStatic
-    fun work(jsonEnumClass: Class<*>): String {
+    fun <T : Enum<T>> work(jsonEnumClass: Class<T>): String {
         if (jsonEnumClass.isEnum == false) {
             return "";
         }
@@ -38,10 +38,10 @@ object Enum4JsGenerator {
 
             ret = """jv.defEnum("${jsonEnumClass.simpleName}",{""" +
                     jsonList.map {
-                        it.toString() + ":\"" +
+                        it.GetEnumJsonValueValue() + ":\"" +
                                 (if (strField != null) ReflectUtil.getPrivatePropertyValue(
-                                        it,
-                                        strField
+                                    it,
+                                    strField
                                 ) else it.toString()) + "\""
                     }.joinToString(",") + "});"
 

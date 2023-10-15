@@ -77,11 +77,6 @@
             <el-input v-model="info.${field.getName()}" chk="?float" />
         </kv>
     <#elseif fieldNeedInputTable(field)>
-        <kv label="${fieldCn(field)}">
-            <ref-table-${kb(fieldInputTable(field).getSimpleName())} v-model="info.${field.getName()}">
-
-            </ref-table-${kb(fieldInputTable(field).getSimpleName())}>
-        </kv>
     <#elseif field.getName() == "name">
         <kv label="${fieldCn(field)}">
             <el-input v-model="info.${field.getName()}" chk="*" />
@@ -106,6 +101,14 @@
             </el-card>
         </el-col>
     </el-row>
+    <div>
+        <#list fields as field>
+        <#if fieldNeedInputTable(field)>
+            <ref-table-${kb(fieldInputTable(field).getSimpleName())} title="${fieldCn(field)}" v-model="info.${field.getName()}">
+            </ref-table-${kb(fieldInputTable(field).getSimpleName())}>
+        </#if>
+        </#list>
+    </div>
 </div>
 </template>
 <style scoped>
@@ -128,13 +131,6 @@ export default {
 </#if></#list>},
     data() {
         return {
-<#list fields as field>
-<#if field.getType().isEnum()>
-            ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
-<#elseif fieldIsEnumList(field)>
-            ${fieldListType(field)}: jv.enum.${fieldListType(field)}.getData(),
-</#if>
-</#list>
             info: {
 <#list fields as field>
 <#if fieldIsList(field)>
@@ -144,6 +140,10 @@ export default {
 </#if>
 </#list>
             }, //子对象需要声明。
+
+<#list enumTypes as type>
+            ${type.getSimpleName()}: jv.enum.${type}.getData(),
+</#list>
         }
     },
     props: {

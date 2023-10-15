@@ -3,6 +3,7 @@ package nbcp.myoql.model
 import nbcp.base.comm.JsonMap
 import nbcp.base.comm.const
 import nbcp.base.extend.*
+import nbcp.base.extend.*
 import java.io.Serializable
 
 /**

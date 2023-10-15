@@ -10,7 +10,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import nbcp.base.comm.*
-import nbcp.base.comm.json.*
+import nbcp.base.json.EnumModule
+import nbcp.base.json.converter.*
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -53,13 +54,16 @@ fun ObjectMapper.initObjectMapper() {
     addObjectMapperTypeModule(LocalDate::class.java, LocalDateJsonSerializer(), LocalDateJsonDeserializer())
     addObjectMapperTypeModule(LocalTime::class.java, LocalTimeJsonSerializer(), LocalTimeJsonDeserializer())
     addObjectMapperTypeModule(
-            LocalDateTime::class.java,
-            LocalDateTimeJsonSerializer(),
-            LocalDateTimeJsonDeserializer()
+        LocalDateTime::class.java,
+        LocalDateTimeJsonSerializer(),
+        LocalDateTimeJsonDeserializer()
     )
     addObjectMapperTypeModule(Timestamp::class.java, TimestampJsonSerializer(), TimestampJsonDeserializer())
     addObjectMapperTypeModule(MyRawString::class.java, MyRawStringSerializer(), MyRawStringDeserializer())
 //    addObjectMapperTypeModule(IDbStringValue::class.java, MyDbValueSerializer(), MyDbValueDeserializer())
+
+
+    this.registerModule(EnumModule())
 }
 
 

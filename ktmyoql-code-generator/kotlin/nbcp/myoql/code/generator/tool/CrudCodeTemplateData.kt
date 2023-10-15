@@ -39,6 +39,11 @@ class CrudCodeTemplateData(
                 }
         }
 
+    val enumTypes: Set<Class<*>>
+        get(){
+            return entityClass.findAllEnum()
+        }
+
     val inputTableTypes: Set<Class<*>>
         get() {
             var list = mutableSetOf<Class<*>>();

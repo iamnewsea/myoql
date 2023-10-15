@@ -5,6 +5,7 @@ package nbcp.base.extend
 
 import nbcp.base.comm.JsonMap
 import nbcp.base.db.JsonKeyValuePair
+import nbcp.base.extend.*;
 import nbcp.base.utils.*
 import java.util.*
 

@@ -4,10 +4,9 @@ import nbcp.base.comm.ListResult
 import nbcp.base.db.IdUrl
 import nbcp.base.enums.JsonSceneScopeEnum
 import nbcp.base.extend.AsString
-import nbcp.base.extend.ToJson
+import nbcp.base.extend.*
 import nbcp.base.extend.Xml2Json
 import nbcp.base.extend.usingScope
-import nbcp.base.utils.MyUtil
 import nbcp.base.utils.StringUtil
 import org.junit.jupiter.api.Test
 import java.io.BufferedReader

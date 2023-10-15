@@ -2,6 +2,8 @@ package nbcp.myoql.weixin.officeaccount
 
 import nbcp.base.comm.StringMap
 import nbcp.base.extend.*
+import nbcp.base.extend.*
+import nbcp.base.extend.*
 import nbcp.base.utils.HttpUtil
 import nbcp.myoql.db.redis.proxy.RedisStringProxy
 import nbcp.myoql.weixin.wx

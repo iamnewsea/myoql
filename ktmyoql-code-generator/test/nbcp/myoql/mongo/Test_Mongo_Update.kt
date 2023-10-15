@@ -2,7 +2,7 @@ package nbcp.myoql.mongo
 
 import nbcp.base.comm.JsonMap
 import nbcp.base.db.IdName
-import nbcp.base.extend.ToJson
+import nbcp.base.extend.*
 import nbcp.base.utils.CodeUtil
 import nbcp.myoql.TestBase
 import nbcp.myoql.db.comm.op_inc

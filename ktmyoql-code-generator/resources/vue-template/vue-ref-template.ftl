@@ -68,12 +68,8 @@ export default {
     },
     data() {
       return {
-<#list fields as field>
-<#if field.getType().isEnum()>
-                ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
-<#elseif fieldIsEnumList(field)>
-                ${fieldListType(field)}: jv.enum.${fieldListType(field)}.getData(),
-</#if>
+<#list enumTypes as type>
+          ${type.getSimpleName()}: jv.enum.${type}.getData(),
 </#list>
       }
     },

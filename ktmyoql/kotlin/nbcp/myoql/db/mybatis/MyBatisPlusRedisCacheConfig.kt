@@ -3,7 +3,7 @@ package nbcp.myoql.db.mybatis
 import com.baomidou.mybatisplus.core.conditions.ISqlSegment
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
 import nbcp.base.extend.*
-import nbcp.base.utils.MyUtil
+import nbcp.base.extend.*
 import nbcp.base.utils.ReflectUtil
 import nbcp.myoql.annotation.*
 import org.aopalliance.intercept.MethodInterceptor

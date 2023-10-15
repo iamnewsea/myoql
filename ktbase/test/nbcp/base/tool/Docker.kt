@@ -3,8 +3,7 @@ package nbcp.base.tool
 import nbcp.base.TestBase
 import nbcp.base.comm.StringMap
 import nbcp.base.extend.AsString
-import nbcp.base.extend.FromListJson
-import nbcp.base.extend.formatWithJson
+import nbcp.base.extend.*
 import nbcp.base.utils.HttpUtil
 import org.junit.jupiter.api.Test
 

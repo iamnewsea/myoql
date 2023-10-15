@@ -1,6 +1,7 @@
 package nbcp.base.extend
 
 import nbcp.base.TestBase
+import nbcp.base.extend.*
 import org.junit.jupiter.api.Test
 
 class TestKtExt_Map : TestBase() {

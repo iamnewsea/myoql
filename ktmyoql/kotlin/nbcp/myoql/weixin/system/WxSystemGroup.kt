@@ -5,9 +5,9 @@ import nbcp.base.comm.JsonMap
 import nbcp.base.comm.const
 import nbcp.base.enums.HttpMethod
 import nbcp.base.extend.AllFields
-import nbcp.base.extend.FromJson
+import nbcp.base.extend.*
 import nbcp.base.extend.HasValue
-import nbcp.base.extend.ToJson
+import nbcp.base.extend.*
 import nbcp.base.utils.Base64Util
 import nbcp.base.utils.HttpUtil
 import nbcp.base.utils.Md5Util

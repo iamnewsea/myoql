@@ -1,26 +1,21 @@
-package nbcp.base.comm.json
+package nbcp.base.json.converter
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import nbcp.base.enums.JsonStyleScopeEnum
-import nbcp.base.extend.Format
-import nbcp.base.extend.getDateFormat
+import nbcp.base.extend.*;
 import nbcp.base.extend.scopes
-import java.util.*
+import java.time.LocalDateTime
 
-/**
- * Created by yuxh on 2018/9/18
- * Javascript 中时间格式 斜线表示本地时间 。 减号表示 UTC。
- * 如：new Date("2020/02/17") 是当地时间
- * 本插件使用减号，需要客户端在处理时间的时候，使用 斜线 替换 减号。
- */
-class DateJsonSerializer : JsonSerializer<Date>() {
-    override fun serialize(value: Date?, generator: JsonGenerator, serializers: SerializerProvider) {
+class LocalDateTimeJsonSerializer : JsonSerializer<LocalDateTime>() {
+    override fun serialize(value: LocalDateTime?, generator: JsonGenerator, serializers: SerializerProvider) {
         if (value == null) {
             generator.writeNull()
         } else {
+            //想办法在输出的时候，表示该字段是一个时间类型。 客户端收到后，统一转换。添加 _res
             //使用上下文格式转换。 , 不使用传过来的  (serializers.config.dateFormat as SimpleDateFormat).toPattern()
+
             var style = scopes.getLatest(
                 JsonStyleScopeEnum.DATE_LOCAL_STYLE,
                 JsonStyleScopeEnum.DATE_UTC_STYLE,

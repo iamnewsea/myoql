@@ -1,13 +1,14 @@
-package nbcp.base.comm.json
+package nbcp.base.json.converter
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
-import nbcp.base.comm.MyString
+import nbcp.base.extend.AsLocalTime
+import java.time.LocalTime
 
-class MyStringDeserializer : JsonDeserializer<MyString>() {
-    override fun deserialize(json: JsonParser?, p1: DeserializationContext?): MyString? {
+class LocalTimeJsonDeserializer : JsonDeserializer<LocalTime>() {
+    override fun deserialize(json: JsonParser?, ctxt: DeserializationContext?): LocalTime? {
         if (json == null) {
             return null;
         }
@@ -17,8 +18,9 @@ class MyStringDeserializer : JsonDeserializer<MyString>() {
         }
 
         if (json.valueAsString == null) {
-            return MyString();
+            return null;
         }
-        return MyString(json.valueAsString)
+
+        return json.valueAsString.AsLocalTime();
     }
 }

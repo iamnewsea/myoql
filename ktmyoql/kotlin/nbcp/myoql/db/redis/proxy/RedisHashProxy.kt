@@ -1,6 +1,6 @@
 package nbcp.myoql.db.redis.proxy
 
-import nbcp.base.extend.ConvertJson
+import nbcp.base.extend.*
 import nbcp.myoql.db.redis.BaseRedisProxy
 
 /**
