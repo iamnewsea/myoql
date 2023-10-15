@@ -13,11 +13,14 @@ open class BaseFreemarkerModel {
     val bc = FreemarkerBigCamelCase()
     val sc = FreemarkerSmallCamelCase()
     fun getIsObject() = FreemarkerIsObject()
-    fun getIsRes() = FreemarkerIsType()
+
+    fun getIsType() = FreemarkerIsType()
     val allFields = FreemarkerAllField()
     val fieldIsEnumList = FreemarkerFieldIsEnumList()
     val fieldCn = FreemarkerFieldCn()
     val fieldValue = FreemarkerFieldValue()
     val fieldIsList = FreemarkerIsList()
     val fieldListType = FreemarkerFieldListType()
+    val fieldNeedInputTable = FreemarkerFieldNeedInputTable()
+    val fieldInputTable = FreemarkerFieldInputTable()
 }

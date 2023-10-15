@@ -130,8 +130,11 @@ val Class<*>.IsCollectionType: Boolean
     }
 
 
-fun Field.IsCollectionType(type: String): Boolean {
+fun Field.IsCollectionType(type: String = ""): Boolean {
     var field = this;
+    if( type.isNullOrEmpty()){
+        return field.type.IsCollectionType;
+    }
     return field.type.IsCollectionType &&
             (field.genericType as ParameterizedType).GetActualClass(
                 0
@@ -152,8 +155,11 @@ val Field.IsCollectionEnum: Boolean
     }
 
 
-fun Field.IsArrayType(type: String): Boolean {
+fun Field.IsArrayType(type: String = ""): Boolean {
     var field = this;
+    if(type.isNullOrEmpty()){
+        return field.type.isArray;
+    }
     return field.type.isArray && field.type.componentType.javaClass.IsType(type)
 }
 

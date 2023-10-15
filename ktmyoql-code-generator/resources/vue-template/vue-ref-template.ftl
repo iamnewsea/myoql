@@ -1,8 +1,8 @@
 <template>
     <my-ref
-        v-if="value2"
+        v-if="table"
         url="${url}/list"
-        v-model="value2"
+        v-model="table"
         @loaded="procData"
         :multi="multi"
         :page-size="10"
@@ -13,8 +13,6 @@
         @input="v=>$emit('input',v)"
         :readOnly="readOnly"
     >
-        <el-table-column type="index" align="center" width="50"></el-table-column>
-        <!--<template v-slot="scope"></template>-->
 <#list fields as field>
 <#if field.getName() == "id">
 <#elseif field.getName() == "creator" || field.getName() == "createBy">
@@ -27,11 +25,11 @@
                 {{ scope.row.name }}
             </template>
         </el-table-column>
-<#elseif isRes(field)>
+<#elseif isType(field)>
         <el-table-column align="center" label="${fieldCn(field)}" prop="${field.getName()}_res"></el-table-column>
-<#elseif isRes(field,"IdName")>
+<#elseif isType(field,"IdName")>
         <el-table-column align="center" label="${fieldCn(field)}" prop="${field.getName()}.name"></el-table-column>
-<#elseif isRes(field,"IdUrl")>
+<#elseif isType(field,"IdUrl")>
         <el-table-column label="${fieldCn(field)}" align="center">
             <template v-slot="scope">
                 <img :src="scope.row.url" />
@@ -70,7 +68,6 @@ export default {
     },
     data() {
       return {
-          value2: null,
 <#list fields as field>
 <#if field.getType().isEnum()>
                 ${field.getType().getSimpleName()}: jv.enum.${field.getType().getSimpleName()}.getData(),
@@ -80,17 +77,16 @@ export default {
 </#list>
       }
     },
-    watch:{
-        value:{
-          deep: true,immediate: true, handler(v){
-              this.value2 = v;
+    computed:{
+      table: {
+          get() {
+              return this.value;
+          },
+          set(folders){
+              var v = Object.assign({}, v);
+              this.$emit("input", v);
           }
-        },
-        value2:{
-            deep: true,immediate: true, handler(v){
-                this.$emit("input",v);
-            }
-        }
+      }
     },
     methods: {
       procData(res, op) {

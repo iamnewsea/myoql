@@ -1,8 +1,6 @@
 package nbcp.myoql.code.generator.tool
 
-import nbcp.base.extend.AllFields
-import nbcp.base.extend.AsString
-import nbcp.base.extend.kotlinTypeName
+import nbcp.base.extend.*
 import nbcp.base.utils.CnAnnotationUtil
 import nbcp.base.utils.MyUtil
 import nbcp.base.utils.StringUtil
@@ -10,6 +8,7 @@ import nbcp.myoql.code.generator.tool.freemarker.*
 import nbcp.myoql.code.generator.tool.freemarker.*
 import nbcp.myoql.code.generator.tool.freemarker.*
 import java.lang.reflect.Field
+import java.lang.reflect.ParameterizedType
 
 class CrudCodeTemplateData(
     var group: String,
@@ -38,6 +37,39 @@ class CrudCodeTemplateData(
 
                     return@sortedBy 0
                 }
+        }
+
+    val inputTableTypes: Set<Class<*>>
+        get() {
+            var list = mutableSetOf<Class<*>>();
+
+            entityClass.AllFields
+                .forEach {
+                    if (it.IsCollectionType()) {
+                        var comType = (it.genericType as ParameterizedType).GetActualClass(0)
+
+                        if (!comType.IsSimpleType()) {
+                            list.add(comType)
+                        }
+
+                        return@forEach
+                    }
+
+
+                    if (it.IsArrayType()) {
+                        var comType = it.type.componentType;
+
+                        if (!comType.IsSimpleType()) {
+                            list.add(comType)
+                        }
+                        return@forEach
+                    }
+
+                    return@forEach
+                }
+
+
+            return list;
         }
 
     val title: String

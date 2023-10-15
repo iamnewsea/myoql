@@ -15,17 +15,17 @@ object CrudCodeGeneratorUtil {
      */
     @JvmStatic
     fun genMongoMvcCrud(group: String, pkg: String, entity: BaseMetaData<out Any>): String {
-        return gen(group, entity, "/myoql-template/mongo/kotlin_mvc_mongo_template_crud.ftl").replace("@pkg@", pkg);
+        return gen(group, entity, "/myoql-template/mongo/kotlin-mvc-mongo-template-crud.ftl").replace("@pkg@", pkg);
     }
 
     @JvmStatic
     fun genMySqlMvcCrud(group: String, pkg: String, entity: BaseMetaData<out Any>): String {
-        return gen(group, entity, "/myoql-template/mysql/kotlin_mvc_mysql_template_crud.ftl").replace("@pkg@", pkg);
+        return gen(group, entity, "/myoql-template/mysql/kotlin-mvc-mysql-template-crud.ftl").replace("@pkg@", pkg);
     }
 
     @JvmStatic
     fun genEsMvcCrud(group: String, pkg: String, entity: BaseMetaData<out Any>): String {
-        return gen(group, entity, "/myoql-template/es/kotlin_mvc_es_template_crud.ftl").replace("@pkg@", pkg);
+        return gen(group, entity, "/myoql-template/es/kotlin-mvc-es-template-crud.ftl").replace("@pkg@", pkg);
     }
 
     /**
@@ -33,7 +33,7 @@ object CrudCodeGeneratorUtil {
      */
     @JvmStatic
     fun genVueList(group: String, entity: BaseMetaData<out Any>): String {
-        return gen(group, entity, "/vue-template/vue_list_template.ftl");
+        return gen(group, entity, "/vue-template/vue-list-template.ftl");
     }
 
     /**
@@ -41,7 +41,7 @@ object CrudCodeGeneratorUtil {
      */
     @JvmStatic
     fun genVueCard(group: String, entity: BaseMetaData<out Any>): String {
-        return gen(group, entity, "/vue-template/vue_card_template.ftl");
+        return gen(group, entity, "/vue-template/vue-card-template.ftl");
     }
 
     /**
@@ -49,13 +49,27 @@ object CrudCodeGeneratorUtil {
      */
     @JvmStatic
     fun genVueRef(group: String, entity: BaseMetaData<out Any>): String {
-        return gen(group, entity, "/vue-template/vue_ref_template.ftl");
+        return gen(group, entity, "/vue-template/vue-ref-template.ftl");
+    }
+
+
+    @JvmStatic
+    fun genVueRefInputTable(entityClass: Class<*>): String{
+        return proc(
+            "/vue-template/vue-ref-input-table-template.ftl",
+            CrudCodeTemplateData(
+                "",
+                entityClass,
+                "",
+                ""
+            )
+        )
     }
 
     @JvmStatic
-    fun genVueCard(entityClass: Class<*>): String {
+    fun genVueRefCard(entityClass: Class<*>): String {
         return proc(
-            "/vue-template/vue_card_prop_template.ftl",
+            "/vue-template/vue-ref-card-template.ftl",
             CrudCodeTemplateData(
                 "",
                 entityClass,

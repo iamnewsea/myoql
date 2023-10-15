@@ -12,8 +12,6 @@
             :store="true"
             :query="query"
         >
-            <el-table-column type="index" align="center" width="50"></el-table-column>
-                        <!--<template v-slot="scope"></template>-->
 <#list fields as field>
 <#if field.getName() == "id">
 <#elseif field.getName() == "creator" || field.getName() == "createBy">
@@ -26,11 +24,15 @@
                     <div class="link" @click="edit_click(scope.row)">{{ scope.row.name }}</div>
                 </template>
             </el-table-column>
-<#elseif isRes(field)>
-            <el-table-column align="center" label="${fieldCn(field)}" prop="${field.getName()}_res"></el-table-column>
-<#elseif isRes(field,"IdName")>
+<#elseif field.getType().isEnum()>
+            <el-table-column align="center" label="${fieldCn(field)}" >
+                <template v-slot="scope">
+                    <img :src="scope.row.${field.getName()}_res" />
+                </template>
+            </el-table-column>
+<#elseif isType(field,"IdName")>
             <el-table-column align="center" label="${fieldCn(field)}" prop="${field.getName()}.name"></el-table-column>
-<#elseif isRes(field,"IdUrl")>
+<#elseif isType(field,"IdUrl")>
             <el-table-column label="${fieldCn(field)}" align="center">
                 <template v-slot="scope">
                     <img :src="scope.row.url" />

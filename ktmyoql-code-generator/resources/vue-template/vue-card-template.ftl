@@ -24,7 +24,7 @@
                     <kv label="${fieldCn(field)}">
                         <selector multi value-is-object v-model="info.${field.getName()}" enum="${fieldListType(field)}" />
                     </kv>
-    <#elseif isRes(field,"IdUrl")>
+    <#elseif isType(field,"IdUrl")>
                     <kv>
                         <label slot="k">${fieldCn(field)}</label>
                         <upload
@@ -48,59 +48,65 @@
                                 maxSize="5M"
                         ></upload>
                     </kv>
-    <#elseif isRes(field,"IdName")>
+    <#elseif isType(field,"IdName")>
                     <kv label="${fieldCn(field)}">
                         <ref-${kb(field.getName())} v-model="info.${field.getName()}"></ref-${kb(field.getName())}>
                     </kv>
-    <#elseif isRes(field,"boolean")>
+    <#elseif isType(field,"boolean")>
                     <kv label="${fieldCn(field)}">
                         <selector v-model="info.${field.getName()}" :data="{true:'是',false:'否','':'全部'}" />
                     </kv>
-    <#elseif isRes(field,"LocalDate")>
+    <#elseif isType(field,"LocalDate")>
                     <kv label="${fieldCn(field)}">
                         <el-date-picker v-model="info.${field.getName()}" placeholder="选择日期" />
                     </kv>
-    <#elseif isRes(field,"LocalDateTime")>
+    <#elseif isType(field,"LocalDateTime")>
                     <kv label="${fieldCn(field)}">
                         <el-date-picker v-model="info.${field.getName()}" placeholder="选择日期时间"  type="datetime" />
                     </kv>
-    <#elseif isRes(field,"LocalTime")>
+    <#elseif isType(field,"LocalTime")>
                     <kv label="${fieldCn(field)}">
                         <el-time-select v-model="info.${field.getName()}" placeholder="选择时间" />
                     </kv>
-    <#elseif isRes(field,"byte","int","long")>
+    <#elseif isType(field,"byte","int","long")>
                     <kv label="${fieldCn(field)}">
                         <el-input v-model="info.${field.getName()}" chk="?int" />
                     </kv>
-    <#elseif isRes(field,"float","double")>
+    <#elseif isType(field,"float","double")>
         <kv label="${fieldCn(field)}">
             <el-input v-model="info.${field.getName()}" chk="?float" />
         </kv>
+    <#elseif fieldNeedInputTable(field)>
+        <kv label="${fieldCn(field)}">
+            <ref-table-${kb(fieldInputTable(field).getSimpleName())} v-model="info.${field.getName()}">
+
+            </ref-table-${kb(fieldInputTable(field).getSimpleName())}>
+        </kv>
     <#elseif field.getName() == "name">
-                    <kv label="${fieldCn(field)}">
-                        <el-input v-model="info.${field.getName()}" chk="*" />
-                    </kv>
+        <kv label="${fieldCn(field)}">
+            <el-input v-model="info.${field.getName()}" chk="*" />
+        </kv>
     <#elseif field.getName() == "remark">
         <kv label="${fieldCn(field)}">
             <el-input v-model="info.${field.getName()}" type="textarea"/>
         </kv>
     <#else>
-                    <kv label="${fieldCn(field)}">
-                        <el-input v-model="info.${field.getName()}" />
-                    </kv>
+        <kv label="${fieldCn(field)}">
+            <el-input v-model="info.${field.getName()}" />
+        </kv>
 </#if>
 </#list>
                 </el-card>
             </el-col>
             <el-col>
-                <el-card shadow="always">
-                    <div slot="header">
-                        <span>扩展信息</span>
-                    </div>
-                </el-card>
-            </el-col>
-        </el-row>
-    </div>
+            <el-card shadow="always">
+                <div slot="header">
+                    <span>扩展信息</span>
+                </div>
+            </el-card>
+        </el-col>
+    </el-row>
+</div>
 </template>
 <style scoped>
 </style>
@@ -108,18 +114,16 @@
 /**
  * Created by CodeGenerator  at ${now}
  */
-<#list fields as field>
-<#if field.getName() == "creator" || field.getName() == "createBy">
-<#elseif field.getName() == "updater" || field.getName() == "updateBy">
-<#elseif isRes(field,"IdName")>
-import Ref${bc(field.getName())}
-    from
-        "@/component/empty-ref"
+<#list inputTableTypes as type>
 
+<#if isType(type,"IdName")>
+import RefTable${bc(type.getSimpleName())}  "@/component/empty-ref"
+<#else>
+import RefTable${bc(type.getSimpleName())} from "./ref-table-${kb(type.getSimpleName())}"
 </#if>
 </#list>
 export default {
-    components: {<#list fields as field><#if field.getName() == "creator" || field.getName() == "createBy" || field.getName() == "updater" || field.getName() == "updateBy"><#elseif isRes(field,"IdName")>
+    components: {<#list fields as field><#if field.getName() == "creator" || field.getName() == "createBy" || field.getName() == "updater" || field.getName() == "updateBy"><#elseif isType(field,"IdName")>
         "ref-${kb(field.getName())}": Ref${bc(field.getName())},
 </#if></#list>},
     data() {
@@ -133,7 +137,7 @@ export default {
 </#list>
             info: {
 <#list fields as field>
-<#if fieldIsList(field,"Object")>
+<#if fieldIsList(field)>
                 ${field.getName()}: [],
 <#elseif isObject(field)>
                 ${field.getName()}: {},

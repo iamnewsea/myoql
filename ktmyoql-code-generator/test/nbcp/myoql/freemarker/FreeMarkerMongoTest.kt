@@ -38,7 +38,7 @@ class FreeMarkerMongoTest : TestBase() {
 
             var fileNameAuto = File.separator + group + File.separator + entity_upper + "Controller.kt";
 
-            var content = CrudCodeGeneratorUtil.genVueCard(entity::class.java);
+            var content = CrudCodeGeneratorUtil.genVueRefCard(entity::class.java);
             println("================================")
             println(content)
             println("================================")
