@@ -2,7 +2,7 @@
     <input-table style="width:100%"
                  :readOnly="readOnly"
                  v-model="table" @add="v=>{}">
-        <div slot="head" v-if="title">
+        <div slot="head" v-if="title" class="title">
             {{title}}
         </div>
 <#list fields as field>
@@ -30,15 +30,15 @@
             </template>
         </el-table-column>
     <#elseif isType(field,"IdName")>
-        <el-table-column align="center" label="${fieldCn(field)}" prop="${field.getName()}.name">
-            <ref-${kb(field.getName())} v-model="scope.row.${field.getName()}"></ref-${kb(field.getName())}>
+        <el-table-column align="center" label="${fieldCn(field)}">
+            <ref-${kb(field.getName())} v-model="scope.row.${field.getName()}.id"></ref-${kb(field.getName())}>
         </el-table-column>
     <#elseif isType(field,"IdUrl")>
         <el-table-column label="${fieldCn(field)}" align="center">
             <template v-slot="scope">
                 <upload
                         :maxCount="1"
-                        v-model="scope.row.${field.getName()}"
+                        v-model="scope.row.${field.getName()}.id"
                         fileType="img"
                         scales="16:9"
                         :maxWidth="1024"
@@ -46,8 +46,32 @@
                 ></upload>
             </template>
         </el-table-column>
+    <#elseif isType(field,"boolean")>
+        <el-table-column align="center" label="${fieldCn(field)}">
+            <template v-slot="scope">
+                <selector v-model="scope.row.${field.getName()}" :data="{true:'是',false:'否','':'全部'}" />
+            </template>
+        </el-table-column>
+    <#elseif isType(field,"LocalDate")>
+        <el-table-column align="center" label="${fieldCn(field)}">
+            <template v-slot="scope">
+                <el-date-picker v-model="scope.row.${field.getName()}" placeholder="选择日期" />
+            </template>
+        </el-table-column>
+    <#elseif isType(field,"LocalDateTime")>
+        <el-table-column align="center" label="${fieldCn(field)}">
+            <template v-slot="scope">
+                <el-date-picker v-model="scope.row.${field.getName()}" placeholder="选择日期时间"  type="datetime" />
+            </template>
+        </el-table-column>
+    <#elseif isType(field,"LocalTime")>
+        <el-table-column align="center" label="${fieldCn(field)}">
+            <template v-slot="scope">
+                <el-time-select v-model="scope.row.${field.getName()}" placeholder="选择时间" />
+            </template>
+        </el-table-column>
     <#else>
-        <el-table-column align="center" label="${fieldCn(field)}" prop="${field.getName()}">
+        <el-table-column align="center" label="${fieldCn(field)}">
             <template v-slot="scope">
                 <el-input v-model="scope.row.${field.getName()}"></el-input>
             </template>
@@ -57,7 +81,14 @@
     </input-table>
 
 </template>
-<style scoped>
+<style scoped lang="scss">
+    .title{
+        margin-top:10px;
+        &:after{
+            content: "：";
+            display: inline-block;
+        }
+    }
 </style>
 <script>
 /**
