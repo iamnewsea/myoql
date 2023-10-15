@@ -20,7 +20,7 @@
     <#elseif field.getType().isEnum()>
         <el-table-column align="center" label="${fieldCn(field)}" >
             <template v-slot="scope">
-                <selector  v-model="scope.row.${field.getName()}" enum="${fieldListType(field)}" />
+                <selector  v-model="scope.row.${field.getName()}" enum="${field.getType().getSimpleName()}" />
             </template>
         </el-table-column>
     <#elseif fieldIsEnumList(field)>

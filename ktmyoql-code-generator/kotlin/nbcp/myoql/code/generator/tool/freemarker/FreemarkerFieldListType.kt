@@ -1,6 +1,7 @@
 package nbcp.myoql.code.generator.tool.freemarker
 
 import nbcp.base.extend.GetActualClass
+import nbcp.base.extend.IsCollectionType
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 
@@ -12,7 +13,9 @@ class FreemarkerFieldListType : BaseMethodModelFreemarker() {
                 return paramValue.type.componentType
             }
 
-            return (paramValue.genericType as ParameterizedType).GetActualClass(0).simpleName
+            if (paramValue.IsCollectionType()) {
+                return (paramValue.genericType as ParameterizedType).GetActualClass(0).simpleName
+            }
         }
         throw RuntimeException("不识别的类型${paramValue}: ${paramValue.javaClass.simpleName}")
     }
