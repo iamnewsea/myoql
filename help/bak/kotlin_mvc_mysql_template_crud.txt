@@ -37,7 +37,7 @@ ${endif}
         dbr.${group|w}.${entity}.query()
             .apply{
                 if(${idKey}.HasValue){
-                    this.where{it.${idKey} match ${idKey}}
+                    this.where{it.${idKey} mongoEquals ${idKey}}
                 }
 ${if:name}
                 if(name.HasValue){

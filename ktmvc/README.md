@@ -43,10 +43,10 @@
 
 ##Mongo实体查询语法：
     var list = mor.组名.实体名.Query()
-       .where(mor.组名.实体名.列名  match 值 )
-       .where(mor.组名.实体名.列名  match_like 值 )
-       .where(mor.组名.实体名.列名  match_ne 值 )
-       .where(mor.组名.实体名.列名  match_gte 值 )
+       .where(mor.组名.实体名.列名  mongoEquals 值 )
+       .where(mor.组名.实体名.列名  mongoLike 值 )
+       .where(mor.组名.实体名.列名  mongoNotEquals 值 )
+       .where(mor.组名.实体名.列名  mongoGreeterThanEquals 值 )
        .select(mor.组名.实体名.列名)
        .select(mor.组名.实体名.列名)
        .limit(跳过行数,获取行数)
@@ -55,11 +55,11 @@
     
     其中：
         查询实体的where条件，使用 and 进行连接。 
-        match 表示相等 
-        match_like 表示使用正则表达式的方式进行模糊匹配
-        match_ne 表示不相等 
-        match_gte 表示大于等于
-        match_lte 表示小于等于
+        mongoEquals 表示相等 
+        mongolike 表示使用正则表达式的方式进行模糊匹配
+        mongoNotEquals 表示不相等 
+        mongoGreeterThanEquals 表示大于等于
+        mongoLessThanEquals 表示小于等于
         
     或者：
     var entity = mor.组件.实体名.findById( Id字符串 或 ObjectId类型)

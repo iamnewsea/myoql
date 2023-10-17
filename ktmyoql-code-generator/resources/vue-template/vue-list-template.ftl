@@ -27,7 +27,7 @@
 <#elseif field.getType().isEnum()>
             <el-table-column align="center" label="${fieldCn(field)}" >
                 <template v-slot="scope">
-                    <el-tag>{{scope.row.${field.getName()}_res"}}</el-tag>
+                    <el-tag>{{scope.row.${field.getName()}_res}}</el-tag>
                 </template>
             </el-table-column>
 <#elseif fieldIsEnumList(field)>

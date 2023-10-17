@@ -44,13 +44,13 @@ open class MongoColumnName @JvmOverloads constructor(private var mongo_column_na
 
     /**
      * 模糊查询，用法：
-     * mor.code.qrCodeInfo.product.name match_pattern "国际"
+     * mor.code.qrCodeInfo.product.name mongoPattern "国际"
      * 即：内容包含 "国际"。
      *
-     * mor.code.qrCodeInfo.product.name match_pattern "^国际"
+     * mor.code.qrCodeInfo.product.name mongoPattern "^国际"
      * 即：内容以 "国际" 开头。
      *
-     * mor.code.qrCodeInfo.product.name match_pattern "国际$"
+     * mor.code.qrCodeInfo.product.name mongoPattern "国际$"
      * 即：内容以 "国际" 结尾。
      * @param pattern: 不会转义
      */
@@ -180,7 +180,7 @@ open class MongoColumnName @JvmOverloads constructor(private var mongo_column_na
      *
      * 程序：
      * mor.base.sysAnnex.query()
-     *   .where_select_elemMatch { it.tags  match_elemMatch ( MongoColumName("score") match 5) }
+     *   .where_select_elemMatch { it.tags  mongoElemMatch ( MongoColumName("score") mongoEquals 5) }
      *   .toList()
      * ---
      * 如果附加字段是简单类型的数组，如:
@@ -194,7 +194,7 @@ open class MongoColumnName @JvmOverloads constructor(private var mongo_column_na
      *
      * 程序：
      * mor.base.sysAnnex.query()
-     *   .where_select_elemMatch { it.tags  ,  MongoColumName() match "a" }
+     *   .where_select_elemMatch { it.tags  ,  MongoColumName() mongoEquals "a" }
      *   .toList()
      *
      * https://docs.mongodb.com/manual/reference/operator/query/elemMatch/index.html
@@ -213,8 +213,8 @@ open class MongoColumnName @JvmOverloads constructor(private var mongo_column_na
 
     /**
      * 用法：
-     * 判断数组没有值，好处理： tags match_size 0
-     * 判断数组有值,转化为：第一元素是否存在  MongoColumnName("tags.0")  match_exists true
+     * 判断数组没有值，好处理： tags mongoSize 0
+     * 判断数组有值,转化为：第一元素是否存在  MongoColumnName("tags.0")  mongoExists true
      */
     infix fun mongoExists(value: Boolean): Criteria {
         var (key) = db.mongo.proc_mongo_key_value(this, null);
@@ -222,7 +222,7 @@ open class MongoColumnName @JvmOverloads constructor(private var mongo_column_na
     }
 
     /**
-     * field match_hasValue  => field exists  and field != null and field != ""
+     * field mongoHasValue  => field exists  and field != null and field != ""
      */
     fun mongoHasValue(): Criteria {
         var where = Criteria();
@@ -231,7 +231,7 @@ open class MongoColumnName @JvmOverloads constructor(private var mongo_column_na
     }
 
     /**
-     * field match_isNull => field not exists  or field == null  or field == ""
+     * field mongoisNull => field not exists  or field == null  or field == ""
      */
     fun mongoIsNullOrEmpty(): Criteria {
         var where = Criteria();

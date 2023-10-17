@@ -49,13 +49,11 @@ data class s_user(
 ## Sql 查询：
 
     var list = dbr.组名.实体名.query()
-       .where{ it.列名  match 值 }
-       .where{ it.列名.character_length()  match 值 }
-       .where{ it.列名  match 值 }
-       .where{ it.列名  match 值 }
-       .where{ it.列名  like 值 }
-       .where{ it.列名  match_ne 值 }
-       .where{ it.列名  match_gte 值 } 
+       .where{ it.列名  sqlEquals 值 }
+       .where{ it.列名.character_length()  sqlEquals 值 }
+       .where{ it.列名  mongoLike 值 }
+       .where{ it.列名  mongoNotEquals 值 }
+       .where{ it.列名  mongoGreeterThanEquals 值 } 
        .select{ it.列名 }
        .select{ it.列名 }
        .limit(跳过行数,获取行数)
@@ -64,14 +62,14 @@ data class s_user(
     
 其中：查询实体的 where 条件，运算符有以下：
  
-    match 表示相等 
-    like 表示使用正则表达式的方式进行模糊匹配
-    match_not_equals 表示不相等 
-    match_gte 表示大于等于
-    match_lte 表示小于等于
-    match_between 表示 大于等于，并且 小于
-    match_in 表示包含
-    match_notin 表示不包含
+    sqlEquals 表示相等 
+    mongoLike 表示使用正则表达式的方式进行模糊匹配
+    mongoNotEquals 表示不相等 
+    mongoGreeterThanEquals 表示大于等于
+    mongoLessThanEquals 表示小于等于
+    mongoBetween 表示 大于等于，并且 小于
+    mongoIn 表示包含
+    mongoNotIn 表示不包含
         
 其中：执行返回结果可以是以下：
 
@@ -96,7 +94,7 @@ data class s_user(
 或者:
 
     var n = mor.组件.实体名.delete()
-        .where{ it.列名  match 值 }
+        .where{ it.列名  sqlEquals 值 }
         .exec()
     
 ## Sql 添加:

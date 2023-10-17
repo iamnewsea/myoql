@@ -11,7 +11,7 @@ import nbcp.base.extend.*
  * 如更新了引用实体，corp.id = 1 ,corp.name = 'a'
  * 则：
  * mor.定义的实体
- *  .where { it.corp.id match 1 }
+ *  .where { it.corp.id mongoEquals 1 }
  *  .set { it.corp.name to 'a' }
  *  .exec()
  */

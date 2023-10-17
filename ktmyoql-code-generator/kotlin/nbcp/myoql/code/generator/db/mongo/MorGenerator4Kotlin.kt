@@ -549,7 +549,7 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
                         }"
                     }.joinToString(",")
                 }): MongoQueryClip<${entityTypeName}, ${entType.name}> {
-        return this.query()${keys.map { ".where { it.${it} match ${StringUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+        return this.query()${keys.map { ".where { it.${it} mongoEquals ${StringUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
     fun deleteBy${
@@ -563,7 +563,7 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
                         }"
                     }.joinToString(",")
                 }): MongoDeleteClip<${entityTypeName}> {
-        return this.delete()${keys.map { ".where { it.${it} match ${StringUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+        return this.delete()${keys.map { ".where { it.${it} mongoEquals ${StringUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 
     fun updateBy${
@@ -577,7 +577,7 @@ val ${it.name} = ${retValue}""".removeEmptyLine().ToTab(1)
                         }"
                     }.joinToString(",")
                 }): MongoUpdateClip<${entityTypeName}, ${entType.name}> {
-        return this.update()${keys.map { ".where { it.${it} match ${StringUtil.getSmallCamelCase(it)} }" }.joinToString("")}
+        return this.update()${keys.map { ".where { it.${it} mongoEquals ${StringUtil.getSmallCamelCase(it)} }" }.joinToString("")}
     }
 """
             )

@@ -58,7 +58,7 @@ class DbrGenerator4Kotlin {
         importPackages: Array<String> = arrayOf(),   //import 包名
         entityFilter: ((Class<*>) -> Boolean) = { true },
         nameMapping: StringMap = StringMap(), // 名称转换
-        ignoreGroups: List<String> = listOf("MongoBase")  //忽略的包名
+        ignoreGroups: List<String> = listOf("SqlBase")  //忽略的包名
     ) {
         targetEntityPathName = FileUtil.resolvePath(targetPath, metaPackageName.split(".").joinToString("/"))
         this.nameMapping = nameMapping
@@ -325,7 +325,7 @@ class ${StringUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                     }.joinToString(",")
                 }): SqlQueryClip<${entityTableMetaName}, ${entType.name}> {
         return this.query()${
-                    keys.map { ".where{ it.${it.replace(".", "_")} match ${StringUtil.getSmallCamelCase(it)} }" }
+                    keys.map { ".where{ it.${it.replace(".", "_")} sqlEquals ${StringUtil.getSmallCamelCase(it)} }" }
                         .joinToString("")
                 }
     }
@@ -342,7 +342,7 @@ class ${StringUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                     }.joinToString(",")
                 }): SqlDeleteClip<${entityTableMetaName}> {
         return this.delete()${
-                    keys.map { ".where{ it.${it.replace(".", "_")} match ${StringUtil.getSmallCamelCase(it)} }" }
+                    keys.map { ".where{ it.${it.replace(".", "_")} sqlEquals ${StringUtil.getSmallCamelCase(it)} }" }
                         .joinToString("")
                 }
     }
@@ -359,7 +359,7 @@ class ${StringUtil.getBigCamelCase(group.key)}Group : IDataGroup{
                     }.joinToString(",")
                 }): SqlUpdateClip<${entityTableMetaName}> {
         return this.update()${
-                    keys.map { ".where{ it.${it.replace(".", "_")} match ${StringUtil.getSmallCamelCase(it)} }" }
+                    keys.map { ".where{ it.${it.replace(".", "_")} sqlEquals ${StringUtil.getSmallCamelCase(it)} }" }
                         .joinToString("")
                 }
     }

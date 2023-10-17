@@ -36,7 +36,7 @@ ${endif}
         mor.${group|w}.${entityField}.query()
             .apply{
                 if(id.HasValue){
-                    this.where{it.id match id}
+                    this.where{it.id mongoEquals id}
                 }
 ${if:name}
                 if(name.HasValue){

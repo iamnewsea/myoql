@@ -152,8 +152,8 @@ class MongoUpdateClip<M : MongoBaseMetaCollection<out E>, E : Any>(var moerEntit
      * key:是实体的属性，内容是数组，如 roles。
      * pullWhere 是要删除实体的条件。
      * 如：
-     * .pull( it.menus, "id" match "ab")
-     * .pull( it.roles, "id" match "def")
+     * .pull( it.menus, "id" mongoEquals "ab")
+     * .pull( it.roles, "id" mongoEquals "def")
      * ==>
      * { $pull: { "menus":{"id:"ab"} , "roles":{"id:"def"} } }
      *

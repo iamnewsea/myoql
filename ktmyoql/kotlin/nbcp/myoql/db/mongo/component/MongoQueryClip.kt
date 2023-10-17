@@ -65,7 +65,7 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
 
     /**
      * 从数组对象中查询，并返回数组中的第一个匹配项。
-     * @param where: match_elemMatch 操作符返回的对象。
+     * @param where: mongoElemMatch 操作符返回的对象。
      */
     fun whereSelectElemMatchFirstItem(where: (M) -> Criteria): MongoQueryClip<M, E> {
         this.where(where);
@@ -74,7 +74,7 @@ class MongoQueryClip<M : MongoBaseMetaCollection<E>, E : Any>(var moerEntity: M)
 
     /**
      * 返回数组中的第一个匹配项。
-     * @param where: match_elemMatch 操作符返回的对象。
+     * @param where: mongoElemMatch 操作符返回的对象。
      */
     fun selectElemMatchFirstItem(where: (M) -> Criteria): MongoQueryClip<M, E> {
         var doc = where(moerEntity).toDocument();

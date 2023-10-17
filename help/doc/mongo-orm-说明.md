@@ -41,10 +41,10 @@ data class SysCity(
 ## Mongo 查询：
     
     var list = mor.组名.实体名.query()
-       .where{ it.列名  match 值 }
-       .where{ it.列名  match_like 值 }
-       .where{ it.列名  match_ne 值 }
-       .where{ it.列名  match_gte 值 }
+       .where{ it.列名  mongoEquals 值 }
+       .where{ it.列名  mongoLike 值 }
+       .where{ it.列名  mongoNotEquals 值 }
+       .where{ it.列名  matchGreeterThanEquals 值 }
        .select{ it.列名 }
        .select{ it.列名 }
        .limit(跳过行数,获取行数)
@@ -53,16 +53,16 @@ data class SysCity(
         
 其中：查询实体的 where 条件，运算符有以下：
      
-    match 表示相等 
-    match_like 表示使用正则表达式的方式进行模糊匹配
-    match_not_equals 表示不相等 
-    match_pattern 表示正则
-    match_type 表示判断类型
-    match_gte 表示大于等于
-    match_lte 表示小于等于
-    match_exists 表示判断存在
-    match_in 表示包含
-    match_notin 表示不包含
+    mongoEquals 表示相等 
+    mongoLike 表示使用正则表达式的方式进行模糊匹配
+    mongoNotEquals 表示不相等 
+    mongoPattern 表示正则
+    mongoType 表示判断类型
+    mongoGreeterThanEquals 表示大于等于
+    mongoLessThanEquals 表示小于等于
+    mongoExists 表示判断存在
+    mongoIn 表示包含
+    mongoNotIn 表示不包含
             
 其中：执行返回结果可以是以下：
     
@@ -98,7 +98,7 @@ data class SysCity(
 或者:
 
     var n = mor.组件.实体名.delete()
-        .where{ it.列名  match 值 }
+        .where{ it.列名  mongoEquals 值 }
         .exec()
     
 ## Mongo 添加:

@@ -36,7 +36,7 @@ class ${entity}AutoController {
         mor.${sc(group)}.${sc(entity)}.query()
             .apply {
                 if (id.HasValue) {
-                    this.where { it.id match id }
+                    this.where { it.id esEquals id }
                 }
 <#if hasField(entity,"name")>
                 if (name.HasValue) {

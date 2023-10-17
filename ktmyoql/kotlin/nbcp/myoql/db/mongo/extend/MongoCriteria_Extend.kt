@@ -17,7 +17,7 @@ import java.lang.reflect.ParameterizedType
 
 
 /**
- *  ( it.name match "a") match_and (it.id match 1)
+ *  ( it.name mongoEquals "a") linkAnd (it.id mongoEquals 1)
  */
 infix fun Criteria?.linkAnd(to: Criteria): Criteria {
     if (this == null) return to;
@@ -28,7 +28,7 @@ infix fun Criteria?.linkAnd(to: Criteria): Criteria {
 }
 
 /**
- *  ( it.name match "a") match_or (it.id match 1)  match_or (id.age match 18)
+ *  ( it.name mongoEquals "a") linkOr (it.id mongoEquals 1)  linkOr (id.age mongoEquals 18)
  */
 infix fun Criteria?.linkOr(to: Criteria): Criteria {
     if (this == null) return to;
