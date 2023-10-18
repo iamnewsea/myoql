@@ -84,8 +84,7 @@
         </el-row>
     </div>
 </template>
-<style scoped>
-</style>
+
 <script>
 /**
  * Created by CodeGenerator  at ${now}
@@ -140,3 +139,6 @@ export default {
     }
 }
 </script>
+
+<style scoped lang="scss">
+</style>

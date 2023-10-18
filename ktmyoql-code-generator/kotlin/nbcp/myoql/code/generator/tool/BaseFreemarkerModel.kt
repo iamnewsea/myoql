@@ -21,6 +21,7 @@ open class BaseFreemarkerModel {
     val fieldValue = FreemarkerFieldValue()
     val fieldIsList = FreemarkerIsList()
     val fieldListType = FreemarkerFieldListType()
-    val fieldNeedInputTable = FreemarkerFieldNeedInputTable()
+    val fieldIsInputTable = FreemarkerFieldIsInputTable()
+    val fieldIsEmbedObjet = FreemarkerFieldIsEmbedObjet()
     val fieldInputTable = FreemarkerFieldInputTable()
 }

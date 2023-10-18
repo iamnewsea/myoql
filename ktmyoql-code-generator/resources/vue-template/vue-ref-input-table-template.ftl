@@ -81,15 +81,7 @@
     </input-table>
 
 </template>
-<style scoped lang="scss">
-    .title{
-        margin-top:10px;
-        &:after{
-            content: "：";
-            display: inline-block;
-        }
-    }
-</style>
+
 <script>
 /**
  * Created by CodeGenerator at ${now}
@@ -141,3 +133,13 @@ export default {
     }
   }
 </script>
+
+<style scoped lang="scss">
+    .title{
+        margin-top:10px;
+    &:after{
+         content: "：";
+         display: inline-block;
+     }
+    }
+</style>

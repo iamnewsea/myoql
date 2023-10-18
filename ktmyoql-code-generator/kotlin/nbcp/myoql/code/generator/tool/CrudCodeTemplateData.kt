@@ -7,6 +7,7 @@ import nbcp.base.utils.StringUtil
 import nbcp.myoql.code.generator.tool.freemarker.*
 import nbcp.myoql.code.generator.tool.freemarker.*
 import nbcp.myoql.code.generator.tool.freemarker.*
+import nbcp.myoql.db.BaseEntity
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 
@@ -42,6 +43,36 @@ class CrudCodeTemplateData(
     val enumTypes: Set<Class<*>>
         get(){
             return entityClass.findAllEnum()
+        }
+
+    val embedModelTypes: Set<Class<*>>
+        get(){
+            var list = mutableSetOf<Class<*>>();
+            entityClass.AllFields
+                .forEach {
+                    if (it.IsCollectionType()) {
+                        return@forEach
+                    }
+
+
+                    if (it.IsArrayType()) {
+                        return@forEach
+                    }
+
+                    if( it.type.IsSimpleType()){
+                        return@forEach
+                    }
+
+                    if( it.type is BaseEntity){
+                        return@forEach
+                    }
+
+                    list.add(it.type)
+                    return@forEach
+                }
+
+
+            return list;
         }
 
     val inputTableTypes: Set<Class<*>>

@@ -76,7 +76,8 @@
         <kv label="${fieldCn(field)}">
             <el-input v-model="info.${field.getName()}" chk="?float" />
         </kv>
-    <#elseif fieldNeedInputTable(field)>
+    <#elseif fieldIsInputTable(field)>
+        <ref-table-${kb(field.type.getSimpleName())} v-model="info.${field.getName()}"> </ref-table-${kb(field.type.getSimpleName())}>
     <#elseif field.getName() == "name">
         <kv label="${fieldCn(field)}">
             <el-input v-model="info.${field.getName()}" chk="*" />
@@ -103,7 +104,7 @@
     </el-row>
     <div>
         <#list fields as field>
-        <#if fieldNeedInputTable(field)>
+        <#if fieldIsInputTable(field)>
             <ref-table-${kb(fieldInputTable(field).getSimpleName())} title="${fieldCn(field)}" v-model="info.${field.getName()}">
             </ref-table-${kb(fieldInputTable(field).getSimpleName())}>
         </#if>
@@ -111,8 +112,7 @@
     </div>
 </div>
 </template>
-<style scoped>
-</style>
+
 <script>
 /**
  * Created by CodeGenerator  at ${now}
@@ -125,10 +125,28 @@ import RefTable${bc(type.getSimpleName())}  "@/component/empty-ref"
 import RefTable${bc(type.getSimpleName())} from "./ref-table-${kb(type.getSimpleName())}"
 </#if>
 </#list>
+<#list fieldIsEmbedObjet as type>
+<#if isType(type,"IdName")>
+<#else>
+import Ref${bc(type.getSimpleName())} from "./ref-${kb(type.getSimpleName())}"
+</#if>
+</#list>
 export default {
-    components: {<#list fields as field><#if field.getName() == "creator" || field.getName() == "createBy" || field.getName() == "updater" || field.getName() == "updateBy"><#elseif isType(field,"IdName")>
-        "ref-${kb(field.getName())}": Ref${bc(field.getName())},
-</#if></#list>},
+    components: {
+<#list inputTableTypes as field>
+        <#if isType(type,"IdName")>
+        "empty-ref":RefTable${bc(type.getSimpleName())},
+        <#else>
+        "ref-table-${kb(type.getSimpleName())}": RefTable${bc(type.getSimpleName())},
+        </#if>
+</#list>
+<#list fieldIsEmbedObjet as type>
+<#if isType(type,"IdName")>
+<#else>
+        "ref-${kb(type.getSimpleName())}": Ref${bc(type.getSimpleName())}
+</#if>
+</#list>
+    },
     data() {
         return {
             info: {
@@ -184,3 +202,6 @@ export default {
     }
 }
 </script>
+
+<style scoped lang="scss">
+</style>
