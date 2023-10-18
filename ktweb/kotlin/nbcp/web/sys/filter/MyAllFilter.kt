@@ -170,7 +170,7 @@ open class MyAllFilter : Filter {
         chain: FilterChain
     ) {
         var startAt = LocalDateTime.now()
-        beforeRequest(request)
+//        beforeRequest(request)
         var errorMsg = ""
         try {
             chain.doFilter(request, response);
@@ -232,9 +232,9 @@ open class MyAllFilter : Filter {
         }
     }
 
-    private fun beforeRequest(request: ContentCachingRequestWrapper) {
-        logger.Important("[--> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
-    }
+//    private fun beforeRequest(request: ContentCachingRequestWrapper) {
+//        logger.Important("[ --> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
+//    }
 
 
     fun afterComplete(
@@ -282,7 +282,7 @@ open class MyAllFilter : Filter {
         val endAt = LocalDateTime.now();
         logger.InfoError(errorMsg.HasValue || !response.status.IfUntil(200, 400)) {
             var msgs = mutableListOf<String>()
-            msgs.add("--> ${request.fullUrl}")
+            msgs.add("--> ${request.tokenValue} ${request.ClientIp} ${request.method} ${request.fullUrl}")
 
             for (h in request.headerNames) {
                 msgs.add("\t${h}: ${request.getHeader(h)}")
@@ -322,7 +322,6 @@ open class MyAllFilter : Filter {
                 }
             }
 
-            msgs.add("<--]")
             return@InfoError msgs.joinToString(const.line_break)
         }
     }
