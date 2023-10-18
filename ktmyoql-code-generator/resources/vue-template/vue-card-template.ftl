@@ -125,7 +125,7 @@ import RefTable${bc(type.getSimpleName())}  "@/component/empty-ref"
 import RefTable${bc(type.getSimpleName())} from "./ref-table-${kb(type.getSimpleName())}"
 </#if>
 </#list>
-<#list fieldIsEmbedObjet as type>
+<#list embedModelTypes as type>
 <#if isType(type,"IdName")>
 <#else>
 import Ref${bc(type.getSimpleName())} from "./ref-${kb(type.getSimpleName())}"
@@ -140,7 +140,7 @@ export default {
         "ref-table-${kb(type.getSimpleName())}": RefTable${bc(type.getSimpleName())},
         </#if>
 </#list>
-<#list fieldIsEmbedObjet as type>
+<#list embedModelTypes as type>
 <#if isType(type,"IdName")>
 <#else>
         "ref-${kb(type.getSimpleName())}": Ref${bc(type.getSimpleName())}
